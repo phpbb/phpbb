@@ -115,10 +115,10 @@ class bbcode_firstpass extends bbcode
 			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
 			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
+			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\]((?s).*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
 			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#iUe' => "\$this->bbcode_img('\$1')")),
 			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
-			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
+			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
 			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#ise' => "\$this->bbcode_underline('\$1')")),
 			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#ise' => "\$this->bbcode_parse_list('\$0')")),
 			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
@@ -1062,9 +1062,20 @@ class parse_message extends bbcode_firstpass
 	{
 		global $config, $db, $user;
 
-		$mode = ($mode != 'post') ? 'sig' : 'post';
-
 		$this->mode = $mode;
+
+		if (!isset($config['max_' . $mode . '_chars']))
+		{
+			$config['max_' . $mode . '_chars'] = 0;
+		}
+		if (!isset($config['max_' . $mode . '_smilies']))
+		{
+			$config['max_' . $mode . '_smilies'] = 0;
+		}
+		if (!isset($config['max_' . $mode . '_urls']))
+		{
+			$config['max_' . $mode . '_urls'] = 0;
+		}
 
 		$this->allow_img_bbcode = $allow_img_bbcode;
 		$this->allow_flash_bbcode = $allow_flash_bbcode;
@@ -1089,14 +1100,22 @@ class parse_message extends bbcode_firstpass
 		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
-		// Message length check. 0 disables this check completely.
-		if ($config['max_' . $mode . '_chars'] > 0)
-		{
-			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
+		// Store message length...
+		$message_length = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 
-			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
+		// Maximum message length check. 0 disables this check completely.
+		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
+		{
+			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
+		}
+
+		// Minimum message length check for post only
+		if ($mode === 'post')
+		{
+			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1145,7 +1164,7 @@ class parse_message extends bbcode_firstpass
 
 		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
 		// The maximum length check happened before any parsings.
-		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
+		if ($mode === 'post' && utf8_clean_string($this->message) === '')
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
@@ -1298,7 +1317,7 @@ class parse_message extends bbcode_firstpass
 				}
 
 				// (assertion)
-				$match[] = '(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)';
+				$match[] = preg_quote($row['code'], '#');
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			$db->sql_freeresult($result);
@@ -1308,7 +1327,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$num_matches = preg_match_all('#' . implode('|', $match) . '#', $this->message, $matches);
+				$num_matches = preg_match_all('#(?<=^|[\n .])(?:' . implode('|', $match) . ')(?![^<>]*>)#', $this->message, $matches);
 				unset($matches);
 
 				if ($num_matches !== false && $num_matches > $max_smilies)
@@ -1319,14 +1338,14 @@ class parse_message extends bbcode_firstpass
 			}
 
 			// Make sure the delimiter # is added in front and at the end of every element within $match
-			$this->message = trim(preg_replace(explode(chr(0), '#' . implode('#' . chr(0) . '#', $match) . '#'), $replace, $this->message));
+			$this->message = trim(preg_replace(explode(chr(0), '#(?<=^|[\n .])' . implode('(?![^<>]*>)#' . chr(0) . '#(?<=^|[\n .])', $match) . '(?![^<>]*>)#'), $replace, $this->message));
 		}
 	}
 
 	/**
 	* Parse Attachments
 	*/
-	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
+	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false, $post_msg_id = 0, $topic_id = 0)
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db;
 
@@ -1479,16 +1498,25 @@ class parse_message extends bbcode_firstpass
 							'filesize'			=> $filedata['filesize'],
 							'filetime'			=> $filedata['filetime'],
 							'thumbnail'			=> $filedata['thumbnail'],
-							'is_orphan'			=> 1,
+							'is_orphan'			=> ($post_msg_id) ? 0 : 1,
 							'in_message'		=> ($is_message) ? 1 : 0,
 							'poster_id'			=> $user->data['user_id'],
 						);
+
+						if ($post_msg_id)
+						{
+							$sql_ary['post_msg_id'] = $post_msg_id;
+							if ($topic_id)
+							{
+								$sql_ary['topic_id'] = $topic_id;
+							}
+						}
 
 						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 						$new_entry = array(
 							'attach_id'		=> $db->sql_nextid(),
-							'is_orphan'		=> 1,
+							'is_orphan'		=> ($post_msg_id) ? 0 : 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
 						);
@@ -1612,7 +1640,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_option_text'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
 
-		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
 
 		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
@@ -1635,7 +1663,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
 			}
-			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
 			if (strlen($poll['poll_title']) > 255)
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];

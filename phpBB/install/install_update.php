@@ -203,10 +203,10 @@ class install_update extends module
 			}
 
 			// What about the language file? Got it updated?
-			if (in_array('language/en/install.php', $this->update_info['files']))
+			if (in_array('language/en/install.' . $phpEx, $this->update_info['files']))
 			{
 				$lang = array();
-				include($this->new_location . 'language/en/install.php');
+				include($this->new_location . 'language/en/install.' . $phpEx);
 				// only add new keys to user's language in english
 				$new_keys = array_diff(array_keys($lang), array_keys($user->lang));
 				foreach ($new_keys as $i => $new_key)
@@ -915,6 +915,11 @@ class install_update extends module
 				// Now init the connection
 				if ($update_mode == 'download')
 				{
+					if (function_exists('phpbb_is_writable') && !phpbb_is_writable($phpbb_root_path . 'store/'))
+					{
+						trigger_error(sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $phpbb_root_path . 'store/'), E_USER_ERROR);
+					}
+
 					if ($use_method == '.zip')
 					{
 						$compress = new compress_zip('w', $phpbb_root_path . 'store/' . $archive_filename . $use_method);
@@ -1551,7 +1556,7 @@ class install_update extends module
 				if ($info === false)
 				{
 					$update_info = array();
-					include($phpbb_root_path . 'install/update/index.php');
+					include($phpbb_root_path . 'install/update/index.' . $phpEx);
 					$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 
 					if ($info !== false)
@@ -1565,13 +1570,19 @@ class install_update extends module
 				global $phpbb_root_path, $phpEx;
 
 				$update_info = array();
-				include($phpbb_root_path . 'install/update/index.php');
+				include($phpbb_root_path . 'install/update/index.' . $phpEx);
 
 				$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 				$errstr = ($info === false) ? $user->lang['WRONG_INFO_FILE_FORMAT'] : '';
 
 				if ($info !== false)
 				{
+					// We assume that all file extensions have been renamed to .$phpEx,
+					// if someone is using a non .php file extension for php files.
+					// However, in $update_info['files'] we use hardcoded .php.
+					// We therefore replace .php with .$phpEx.
+					$info['files'] = preg_replace('/\.php$/i', ".$phpEx", $info['files']);
+
 					// Adjust the update info file to hold some specific style-related information
 					$info['custom'] = array();
 /*

@@ -17,9 +17,9 @@
 			<!-- ENDIF -->
 
 			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
-			<p class="author<!-- IF history_row.S_CURRENT_MSG --> current<!-- ENDIF -->">{history_row.MINI_POST_IMG} {L_SENT_AT}: <strong>{history_row.SENT_DATE}</strong><br />
+			<p class="author">{history_row.MINI_POST_IMG} {L_SENT_AT}: <strong>{history_row.SENT_DATE}</strong><br />
 				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}</p>
-			<div class="content<!-- IF history_row.S_CURRENT_MSG --> current<!-- ENDIF -->">{history_row.MESSAGE}</div>
+			<div class="content">{history_row.MESSAGE}</div>
 			<div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div>
 		</div>
 

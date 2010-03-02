@@ -37,12 +37,7 @@ class acp_update
 		$errstr = '';
 		$errno = 0;
 
-		$info = get_remote_file('www.phpbb.com', '/updatecheck', ((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
-
-		if ($info === false)
-		{
-			trigger_error($errstr, E_USER_WARNING);
-		}
+		$info = obtain_latest_version_info(request_var('versioncheck_force', false), true);
 
 		$info = explode("\n", $info);
 		$latest_version = trim($info[0]);
@@ -68,6 +63,7 @@ class acp_update
 			'S_UP_TO_DATE_AUTO'	=> $up_to_date_automatic,
 			'S_VERSION_CHECK'	=> true,
 			'U_ACTION'			=> $this->u_action,
+			'U_VERSIONCHECK_FORCE' => append_sid($this->u_action . '&amp;versioncheck_force=1'),
 
 			'LATEST_VERSION'	=> $latest_version,
 			'CURRENT_VERSION'	=> $config['version'],

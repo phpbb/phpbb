@@ -102,6 +102,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
+
+	// Check for unread global announcements (index page only)
+	$ga_unread = false;
+	if ($root_data['forum_id'] == 0)
+	{
+		$unread_ga_list = get_unread_topics($user->data['user_id'], 'AND t.forum_id = 0', '', 1);
+
+		if (!empty($unread_ga_list))
+		{
+			$ga_unread = true;
+		}
+	}
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$forum_id = $row['forum_id'];
@@ -154,6 +167,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 		}
 
+		// Count the difference of real to public topics, so we can display an information to moderators
+		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] != $row['forum_topics'])) ? $forum_id : 0;
 		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 
 		// Display active topics from this forum?
@@ -212,6 +227,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$subforums[$parent_id][$row['parent_id']]['children'][] = $forum_id;
 			}
 
+			if (!$forum_rows[$parent_id]['forum_id_unapproved_topics'] && $row['forum_id_unapproved_topics'])
+			{
+				$forum_rows[$parent_id]['forum_id_unapproved_topics'] = $forum_id;
+			}
+
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 
 			// Do not list redirects in LINK Forums as Posts.
@@ -248,6 +268,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			else
 			{
+				// Add 0 to forums array to mark global announcements correctly
+				$forum_ids[] = 0;
 				markread('topics', $forum_ids);
 				$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			}
@@ -299,6 +321,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$forum_id = $row['forum_id'];
 
 		$forum_unread = (isset($forum_tracking_info[$forum_id]) && $row['orig_forum_last_post_time'] > $forum_tracking_info[$forum_id]) ? true : false;
+
+		// Mark the first visible forum on index as unread if there's any unread global announcement
+		if (($forum_id == $forum_ids_moderator[0]) && ($root_data['forum_id'] == 0) && $ga_unread)
+		{
+			$forum_unread = true;
+		}
 
 		$folder_image = $folder_alt = $l_subforums = '';
 		$subforums_list = array();
@@ -428,6 +456,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
+			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options'])) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
 			'FORUM_NAME'			=> $row['forum_name'],
@@ -451,6 +480,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
+			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
@@ -473,8 +503,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
-		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
-	);
+		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPICS_UNAPPROVED'),
+	));
 
 	if ($return_moderators)
 	{
@@ -514,7 +545,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $auth;
+	global $db, $user, $template, $auth, $config;
 	global $phpEx, $phpbb_root_path;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
@@ -561,8 +592,10 @@ function generate_forum_nav(&$forum_data)
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']))
-	);
+		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
+
+		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
+	));
 
 	return;
 }
@@ -658,14 +691,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $config, $template, $db, $phpbb_root_path, $phpEx, $user, $auth;
 
-	// Have we disabled the display of moderators? If so, then return
-	// from whence we came ...
-	if (!$config['load_moderators'])
-	{
-		return;
-	}
-
-	$forum_sql = '';
+	$forum_id_ary = array();
 
 	if ($forum_id !== false)
 	{
@@ -674,13 +700,8 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			$forum_id = array($forum_id);
 		}
 
-		// If we don't have a forum then we can't have a moderator
-		if (!sizeof($forum_id))
-		{
-			return;
-		}
-
-		$forum_sql = 'AND m.' . $db->sql_in_set('forum_id', $forum_id);
+		// Exchange key/value pair to be able to faster check for the forum id existence
+		$forum_id_ary = array_flip($forum_id);
 	}
 
 	$sql_array = array(
@@ -701,17 +722,25 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			),
 		),
 
-		'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+		'WHERE'		=> 'm.display_on_index = 1',
 	);
 
+	// We query every forum here because for caching we should not have any parameter.
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		$f_id = (int) $row['forum_id'];
+
+		if (!isset($forum_id_ary[$f_id]))
+		{
+			continue;
+		}
+
 		if (!empty($row['user_id']))
 		{
-			$forum_moderators[$row['forum_id']][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+			$forum_moderators[$f_id][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		}
 		else
 		{
@@ -719,11 +748,11 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 			if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
 			{
-				$forum_moderators[$row['forum_id']][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
+				$forum_moderators[$f_id][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
 			}
 			else
 			{
-				$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
+				$forum_moderators[$f_id][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
 			}
 		}
 	}
@@ -1200,14 +1229,15 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 * @param string $avatar_width Width of users avatar
 * @param string $avatar_height Height of users avatar
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
 * @return string Avatar image
 */
-function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
+function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
 
-	if (empty($avatar) || !$avatar_type)
+	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
 		return '';
 	}
@@ -1217,11 +1247,26 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	switch ($avatar_type)
 	{
 		case AVATAR_UPLOAD:
+			if (!$config['allow_avatar_upload'] && !$ignore_config)
+			{
+				return '';
+			}
 			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
 		break;
 
 		case AVATAR_GALLERY:
+			if (!$config['allow_avatar_local'] && !$ignore_config)
+			{
+				return '';
+			}
 			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+		break;
+
+		case AVATAR_REMOTE:
+			if (!$config['allow_avatar_remote'] && !$ignore_config)
+			{
+				return '';
+			}
 		break;
 	}
 

@@ -1,7 +1,32 @@
 <!-- INCLUDE overall_header.html -->
 
-
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
+
+<!-- IF S_LANG_OPTIONS -->
+<script type="text/javascript">
+// <![CDATA[
+	/**
+	* Change language
+	*/
+	function change_language(lang_iso)
+	{
+		document.forms['register'].change_lang.value = lang_iso;
+		document.forms['register'].submit();
+	}
+
+// ]]>
+</script>
+
+	<form method="post" action="{S_UCP_ACTION}" id="register">
+		<p class="rightside">
+			<label for="lang">{L_LANGUAGE}:</label><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select>
+			{S_HIDDEN_FIELDS}
+		</p>
+	</form>
+
+	<div class="clear"></div>
+
+<!-- ENDIF -->
 
 	<form method="post" action="{S_UCP_ACTION}" id="agreement">
 

@@ -276,6 +276,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type INT2 DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
 	seed INT4 DEFAULT '0' NOT NULL CHECK (seed >= 0),
+	attempts INT4 DEFAULT '0' NOT NULL CHECK (attempts >= 0),
 	PRIMARY KEY (session_id, confirm_id)
 );
 
@@ -381,6 +382,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
 	forum_flags INT2 DEFAULT '32' NOT NULL,
+	forum_options INT4 DEFAULT '0' NOT NULL CHECK (forum_options >= 0),
 	display_subforum_list INT2 DEFAULT '1' NOT NULL CHECK (display_subforum_list >= 0),
 	display_on_index INT2 DEFAULT '1' NOT NULL CHECK (display_on_index >= 0),
 	enable_indexing INT2 DEFAULT '1' NOT NULL CHECK (enable_indexing >= 0),
@@ -440,6 +442,7 @@ CREATE TABLE phpbb_groups (
 	group_id INT4 DEFAULT nextval('phpbb_groups_seq'),
 	group_type INT2 DEFAULT '1' NOT NULL,
 	group_founder_manage INT2 DEFAULT '0' NOT NULL CHECK (group_founder_manage >= 0),
+	group_skip_auth INT2 DEFAULT '0' NOT NULL CHECK (group_skip_auth >= 0),
 	group_name varchar_ci DEFAULT '' NOT NULL,
 	group_desc varchar(4000) DEFAULT '' NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
@@ -516,6 +519,7 @@ CREATE TABLE phpbb_log (
 );
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type);
+CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time);
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
@@ -627,6 +631,7 @@ CREATE INDEX phpbb_posts_topic_id ON phpbb_posts (topic_id);
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip);
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
 /*
@@ -656,6 +661,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count INT2 DEFAULT '0' NOT NULL CHECK (message_edit_count >= 0),
 	to_address varchar(4000) DEFAULT '' NOT NULL,
 	bcc_address varchar(4000) DEFAULT '' NOT NULL,
+	message_reported INT2 DEFAULT '0' NOT NULL CHECK (message_reported >= 0),
 	PRIMARY KEY (msg_id)
 );
 
@@ -737,6 +743,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required INT2 DEFAULT '0' NOT NULL CHECK (field_required >= 0),
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
+	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
 	field_show_profile INT2 DEFAULT '0' NOT NULL CHECK (field_show_profile >= 0),
 	field_hide INT2 DEFAULT '0' NOT NULL CHECK (field_hide >= 0),
 	field_no_view INT2 DEFAULT '0' NOT NULL CHECK (field_no_view >= 0),
@@ -807,6 +814,7 @@ CREATE TABLE phpbb_reports (
 	report_id INT4 DEFAULT nextval('phpbb_reports_seq'),
 	reason_id INT2 DEFAULT '0' NOT NULL CHECK (reason_id >= 0),
 	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	pm_id INT4 DEFAULT '0' NOT NULL CHECK (pm_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	user_notify INT2 DEFAULT '0' NOT NULL CHECK (user_notify >= 0),
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
@@ -815,6 +823,8 @@ CREATE TABLE phpbb_reports (
 	PRIMARY KEY (report_id)
 );
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports (pm_id);
 
 /*
 	Table: 'phpbb_reports_reasons'
@@ -1206,7 +1216,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewonline >= 0),
 	user_allow_viewemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewemail >= 0),
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
-	user_options INT4 DEFAULT '895' NOT NULL CHECK (user_options >= 0),
+	user_options INT4 DEFAULT '230271' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_type INT2 DEFAULT '0' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),
@@ -1226,6 +1236,9 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
+	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
+	user_reminded INT2 DEFAULT '0' NOT NULL,
+	user_reminded_time INT4 DEFAULT '0' NOT NULL CHECK (user_reminded_time >= 0),
 	PRIMARY KEY (user_id)
 );
 

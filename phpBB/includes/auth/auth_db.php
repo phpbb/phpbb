@@ -68,7 +68,6 @@ function login_db(&$username, &$password)
 	if ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'])
 	{
 		$confirm_id = request_var('confirm_id', '');
-		$confirm_code = request_var('confirm_code', '');
 
 		// Visual Confirmation handling
 		if (!$confirm_id)
@@ -81,41 +80,15 @@ function login_db(&$username, &$password)
 		}
 		else
 		{
-			global $user;
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_LOGIN);
+			$vc_response = $captcha->validate();
 
-			$sql = 'SELECT code
-				FROM ' . CONFIRM_TABLE . "
-				WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-					AND session_id = '" . $db->sql_escape($user->session_id) . "'
-					AND confirm_type = " . CONFIRM_LOGIN;
-			$result = $db->sql_query($sql);
-			$confirm_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($confirm_row)
-			{
-				if (strcasecmp($confirm_row['code'], $confirm_code) === 0)
-				{
-					$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'
-							AND confirm_type = " . CONFIRM_LOGIN;
-					$db->sql_query($sql);
-				}
-				else
-				{
-					return array(
-						'status'		=> LOGIN_ERROR_ATTEMPTS,
-						'error_msg'		=> 'CONFIRM_CODE_WRONG',
-						'user_row'		=> $row,
-					);
-				}
-			}
-			else
+			if ($vc_response)
 			{
 				return array(
 					'status'		=> LOGIN_ERROR_ATTEMPTS,
-					'error_msg'		=> 'CONFIRM_CODE_WRONG',
+					'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
 					'user_row'		=> $row,
 				);
 			}
@@ -157,7 +130,7 @@ function login_db(&$username, &$password)
 				$row['user_pass_convert'] = 0;
 				$row['user_password'] = $hash;
 			}
-			else 
+			else
 			{
 				// Although we weren't able to convert this password we have to
 				// increase login attempt count to make sure this cannot be exploited

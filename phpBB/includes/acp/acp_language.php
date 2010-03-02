@@ -766,28 +766,41 @@ class acp_language
 					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
+				if (confirm_box(true))
+				{
+					$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
-				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
-					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-				$db->sql_query($sql);
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
+						WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
+					$db->sql_query($sql);
 
-				// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
-				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
-				$db->sql_query($sql);
+					// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
+					$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
+					$db->sql_query($sql);
 
-				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
-				$db->sql_query($sql);
+					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
+					$db->sql_query($sql);
 
-				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-				$result = $db->sql_query($sql);
+					$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
+					$result = $db->sql_query($sql);
 
-				$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
 
-				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
+					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
+					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
+				}
+				else
+				{
+					$s_hidden_fields = array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action,
+						'id'		=> $lang_id,
+					);
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+				}
 			break;
 
 			case 'install':
@@ -1254,7 +1267,7 @@ $lang = array_merge($lang, array(
 		$keys = func_get_args();
 
 		$non_static		= array_shift($keys);
-		$value			= array_shift($keys);
+		$value			= utf8_normalize_nfc(array_shift($keys));
 
 		if (!$non_static)
 		{

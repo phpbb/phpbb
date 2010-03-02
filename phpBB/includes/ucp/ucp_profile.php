@@ -110,7 +110,7 @@ class ucp_profile
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
-							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32($data['email']) . strlen($data['email']) : $user->data['user_email_hash'],
+							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? phpbb_email_hash($data['email']) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
@@ -380,25 +380,7 @@ class ucp_profile
 						$db->sql_query($sql);
 
 						// Update Custom Fields
-						if (sizeof($cp_data))
-						{
-							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
-								WHERE user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
-
-							if (!$db->sql_affectedrows())
-							{
-								$cp_data['user_id'] = (int) $user->data['user_id'];
-
-								$db->sql_return_on_error(true);
-
-								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
-								$db->sql_query($sql);
-
-								$db->sql_return_on_error(false);
-							}
-						}
+						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -474,9 +456,9 @@ class ucp_profile
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $user->optionget('sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $user->optionget('sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? (bool) $user->optionget('sig_links') : false;
 
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
@@ -485,6 +467,10 @@ class ucp_profile
 				if ($submit || $preview)
 				{
 					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 
 					if (!sizeof($error))
 					{
@@ -505,8 +491,13 @@ class ucp_profile
 
 						if (!sizeof($error) && $submit)
 						{
+							$user->optionset('sig_bbcode', $enable_bbcode);
+							$user->optionset('sig_smilies', $enable_smilies);
+							$user->optionset('sig_links', $enable_urls);
+
 							$sql_ary = array(
 								'user_sig'					=> (string) $message_parser->message,
+								'user_options'				=> $user->data['user_options'],
 								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
@@ -573,7 +564,7 @@ class ucp_profile
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				add_form_key('ucp_avatar');
 
@@ -596,33 +587,44 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
+				if (!$config['allow_avatar'] && $user->data['user_avatar_type'])
+				{
+					$error[] = $user->lang['AVATAR_NOT_ALLOWED'];
+				}
+				else if ((($user->data['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
+				 (($user->data['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
+				 (($user->data['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
+				{
+					$error[] = $user->lang['AVATAR_TYPE_NOT_ALLOWED'];
+				}
+
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
+					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height'], 'USER_AVATAR', true),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 
 					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
 
-					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
+					'S_FORM_ENCTYPE'	=> ($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) ? ' enctype="multipart/form-data"' : '',
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 				));
 
-				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
+				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
 				{
 					avatar_gallery($category, $avatar_select, 4);
 				}
-				else
+				else if ($config['allow_avatar'])
 				{
-					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
+					$avatars_enabled = (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
 
 					$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
 						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),
 
 						'S_AVATARS_ENABLED'		=> $avatars_enabled,
-						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
-						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
+						'S_UPLOAD_AVATAR_FILE'	=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
+						'S_UPLOAD_AVATAR_URL'	=> ($can_upload && $config['allow_avatar_remote_upload']) ? true : false,
 						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
 						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
 					);

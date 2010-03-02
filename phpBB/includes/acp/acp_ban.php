@@ -156,7 +156,8 @@ class acp_ban
 					FROM ' . BANLIST_TABLE . '
 					WHERE (ban_end >= ' . time() . "
 							OR ban_end = 0)
-						AND ban_ip <> ''";
+						AND ban_ip <> ''
+					ORDER BY ban_ip";
 			break;
 
 			case 'email':
@@ -168,7 +169,8 @@ class acp_ban
 					FROM ' . BANLIST_TABLE . '
 					WHERE (ban_end >= ' . time() . "
 							OR ban_end = 0)
-						AND ban_email <> ''";
+						AND ban_email <> ''
+					ORDER BY ban_email";
 			break;
 		}
 		$result = $db->sql_query($sql);
@@ -181,7 +183,22 @@ class acp_ban
 			$banned_options .= '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
 
 			$time_length = ($row['ban_end']) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
-			$ban_length[$row['ban_id']] = (isset($ban_end_text[$time_length])) ? $ban_end_text[$time_length] : $user->lang['UNTIL'] . ' -> ' . $user->format_date($row['ban_end']);
+
+			if ($time_length == 0)
+			{
+				// Banned permanently
+				$ban_length[$row['ban_id']] = $user->lang['PERMANENT'];
+			}
+			else if (isset($ban_end_text[$time_length]))
+			{
+				// Banned for a given duration
+				$ban_length[$row['ban_id']] = sprintf($user->lang['BANNED_UNTIL_DURATION'], $ban_end_text[$time_length], $user->format_date($row['ban_end'], false, true));
+			}
+			else
+			{
+				// Banned until given date
+				$ban_length[$row['ban_id']] = sprintf($user->lang['BANNED_UNTIL_DATE'], $user->format_date($row['ban_end'], false, true));
+			}
 
 			$ban_reasons[$row['ban_id']] = $row['ban_reason'];
 			$ban_give_reasons[$row['ban_id']] = $row['ban_give_reason'];

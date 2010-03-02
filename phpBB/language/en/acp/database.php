@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_BACKUP'	=> 'Download backup',
 
 	'FILE_TYPE'			=> 'File type',
+	'FILE_WRITE_FAIL'	=> 'Unable to write file to storage folder.',
 	'FULL_BACKUP'		=> 'Full',
 
 	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',

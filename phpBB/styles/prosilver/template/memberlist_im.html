@@ -7,13 +7,13 @@
 
 <div class="panel bg2">
 	<div class="inner"><span class="corners-top"><span></span></span>
-	
+
 	<p>{L_SEND_IM_EXPLAIN}</p>
 
 	<fieldset>
 	<dl class="fields2">
 		<dt><label>{L_IM_RECIPIENT}:</label></dt>
-		<dd><strong>{USERNAME}</strong><!-- IF S_SEND_ICQ or S_SEND_AIM or S_SEND_MSNM --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
+		<dd><strong>{USERNAME}</strong><!-- IF S_SEND_ICQ or S_SEND_AIM or S_SEND_MSNM or S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
 	</dl>
 
 	<!-- IF S_SEND_ICQ -->
@@ -81,8 +81,9 @@
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>
-<a  href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
 </form>
+
+<a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
 
 <script type="text/javascript">
 // <![CDATA[

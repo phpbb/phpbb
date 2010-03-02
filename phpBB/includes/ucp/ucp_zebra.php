@@ -52,6 +52,18 @@ class ucp_zebra
 			{
 				if (confirm_box(true))
 				{
+					// Remove users
+					if (!empty($data['usernames']))
+					{
+						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
+							WHERE user_id = ' . $user->data['user_id'] . '
+								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
+						$db->sql_query($sql);
+
+						$updated = true;
+					}
+
+					// Add users
 					if ($data['add'])
 					{
 						$data['add'] = array_map('trim', array_map('utf8_clean_string', explode("\n", $data['add'])));
@@ -124,6 +136,10 @@ class ucp_zebra
 								{
 									$user_id_ary[] = $row['user_id'];
 								}
+								else if ($row['user_id'] != ANONYMOUS)
+								{
+									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_BOTS'];
+								}
 								else
 								{
 									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
@@ -182,18 +198,6 @@ class ucp_zebra
 								$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
 							}
 						}
-					}
-					else if (sizeof($data['usernames']))
-					{
-						// Force integer values
-						$data['usernames'] = array_map('intval', $data['usernames']);
-
-						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-							WHERE user_id = ' . $user->data['user_id'] . '
-								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
-						$db->sql_query($sql);
-
-						$updated = true;
 					}
 
 					if ($updated)

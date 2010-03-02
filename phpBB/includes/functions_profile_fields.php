@@ -92,18 +92,6 @@ class custom_profile
 	{
 		switch ($field_type)
 		{
-			case FIELD_INT:
-			case FIELD_DROPDOWN:
-				$field_value = (int) $field_value;
-			break;
-
-			case FIELD_BOOL:
-				$field_value = (bool) $field_value;
-			break;
-		}
-
-		switch ($field_type)
-		{
 			case FIELD_DATE:
 				$field_validate = explode('-', $field_value);
 
@@ -133,6 +121,8 @@ class custom_profile
 			break;
 
 			case FIELD_BOOL:
+				$field_value = (bool) $field_value;
+			
 				if (!$field_value && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -140,10 +130,12 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (empty($field_value) && !$field_data['field_required'])
+				if (trim($field_value) === '' && !$field_data['field_required'])
 				{
 					return false;
 				}
+				
+				$field_value = (int) $field_value;
 
 				if ($field_value < $field_data['field_minlen'])
 				{
@@ -156,6 +148,8 @@ class custom_profile
 			break;
 
 			case FIELD_DROPDOWN:
+				$field_value = (int) $field_value;
+			
 				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -259,7 +253,7 @@ class custom_profile
 	}
 
 	/**
-	* Submit profile field
+	* Submit profile field for validation
 	* @access public
 	*/
 	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
@@ -347,6 +341,66 @@ class custom_profile
 			}
 		}
 		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Update profile field data directly
+	*/
+	function update_profile_field_data($user_id, &$cp_data)
+	{
+		global $db;
+
+		if (!sizeof($cp_data))
+		{
+			return;
+		}
+
+		switch ($db->sql_layer)
+		{
+			case 'oracle':
+			case 'firebird':
+			case 'postgres':
+				$right_delim = $left_delim = '"';
+			break;
+
+			case 'sqlite':
+			case 'mssql':
+			case 'mssql_odbc':
+				$right_delim = ']';
+				$left_delim = '[';
+			break;
+
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$right_delim = $left_delim = '`';
+			break;
+		}
+
+		// use new array for the UPDATE; changes in the key do not affect the original array
+		$cp_data_sql = array();
+		foreach ($cp_data as $key => $value)
+		{
+			// Firebird is case sensitive with delimiter
+			$cp_data_sql[$left_delim . (($db->sql_layer == 'firebird' || $db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
+		}
+
+		$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $cp_data_sql) . "
+			WHERE user_id = $user_id";
+		$db->sql_query($sql);
+
+		if (!$db->sql_affectedrows())
+		{
+			$cp_data_sql['user_id'] = (int) $user_id;
+
+			$db->sql_return_on_error(true);
+
+			$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data_sql);
+			$db->sql_query($sql);
+
+			$db->sql_return_on_error(false);
+		}
 	}
 
 	/**
@@ -454,7 +508,7 @@ class custom_profile
 		switch ($this->profile_types[$field_type])
 		{
 			case 'int':
-				if ($value == '')
+				if ($value === '')
 				{
 					return NULL;
 				}
@@ -584,7 +638,7 @@ class custom_profile
 				}
 			}
 
-			return (is_null($value)) ? '' : (int) $value;
+			return (is_null($value) || $value === '') ? '' : (int) $value;
 		}
 		else
 		{

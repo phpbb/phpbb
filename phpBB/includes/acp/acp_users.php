@@ -385,6 +385,31 @@ class acp_users
 
 							user_active_flip('flip', $user_id);
 
+							if ($user_row['user_type'] == USER_INACTIVE)
+							{
+								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+								{
+									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+									$messenger = new messenger(false);
+
+									$messenger->template('admin_welcome_activated', $user_row['user_lang']);
+
+									$messenger->to($user_row['user_email'], $user_row['username']);
+
+									$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+									$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+									$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+									$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+									$messenger->assign_vars(array(
+										'USERNAME'	=> htmlspecialchars_decode($user_row['username']))
+									);
+
+									$messenger->send(NOTIFY_EMAIL);
+								}
+							}
+
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
@@ -493,6 +518,56 @@ class acp_users
 								);
 							}
 
+						break;
+
+						case 'deloutbox':
+
+							if (confirm_box(true))
+							{
+								$msg_ids = array();
+								$lang = 'EMPTY';
+
+								$sql = 'SELECT msg_id
+									FROM ' . PRIVMSGS_TO_TABLE . "
+									WHERE author_id = $user_id
+										AND folder_id = " . PRIVMSGS_OUTBOX;
+								$result = $db->sql_query($sql);
+
+								if ($row = $db->sql_fetchrow($result))
+								{
+									if (!function_exists('delete_pm'))
+									{
+										include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+									}
+
+									do
+									{
+										$msg_ids[] = (int) $row['msg_id'];
+									}
+									while ($row = $db->sql_fetchrow($result));
+
+									$db->sql_freeresult($result);
+
+									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
+
+									add_log('admin', 'LOG_USER_DEL_OUTBOX', $user_row['username']);
+
+									$lang = 'EMPTIED';
+								}
+								$db->sql_freeresult($result);
+
+								trigger_error($user->lang['USER_OUTBOX_' . $lang] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+							else
+							{
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+									'u'				=> $user_id,
+									'i'				=> $id,
+									'mode'			=> $mode,
+									'action'		=> $action,
+									'update'		=> true))
+								);
+							}
 						break;
 
 						case 'moveposts':
@@ -650,6 +725,28 @@ class acp_users
 							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
+
+						case 'leave_nr':
+
+							if (confirm_box(true))
+							{
+								remove_newly_registered($user_id, $user_row);
+
+								add_log('admin', 'LOG_USER_REMOVED_NR', $user_row['username']);
+								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+							else
+							{
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+									'u'				=> $user_id,
+									'i'				=> $id,
+									'mode'			=> $mode,
+									'action'		=> $action,
+									'update'		=> true))
+								);
+							}
+
+						break;
 					}
 
 					// Handle registration info updates
@@ -775,7 +872,7 @@ class acp_users
 						{
 							$sql_ary += array(
 								'user_email'		=> $update_email,
-								'user_email_hash'	=> crc32($update_email) . strlen($update_email)
+								'user_email_hash'	=> phpbb_email_hash($update_email),
 							);
 
 							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
@@ -820,7 +917,11 @@ class acp_users
 
 				if ($user_id == $user->data['user_id'])
 				{
-					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH', 'deloutbox' => 'DEL_OUTBOX');
+					if ($user_row['user_new'])
+					{
+						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
+					}
 				}
 				else
 				{
@@ -836,11 +937,16 @@ class acp_users
 						$quick_tool_ary += array('active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
 					}
 
-					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH', 'deloutbox' => 'DEL_OUTBOX');
 
 					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
+					}
+
+					if ($user_row['user_new'])
+					{
+						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
 					}
 				}
 
@@ -1035,6 +1141,161 @@ class acp_users
 
 			break;
 
+			case 'warnings':
+				$user->add_lang('mcp');
+
+				// Set up general vars
+				$start		= request_var('start', 0);
+				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
+				$deleteall	= (isset($_POST['delall'])) ? true : false;
+				$confirm	= (isset($_POST['confirm'])) ? true : false;
+				$marked		= request_var('mark', array(0));
+				$message	= utf8_normalize_nfc(request_var('message', '', true));
+
+				// Sort keys
+				$sort_days	= request_var('st', 0);
+				$sort_key	= request_var('sk', 't');
+				$sort_dir	= request_var('sd', 'd');
+
+				// Delete entries if requested and able
+				if ($deletemark || $deleteall || $confirm)
+				{
+					if (confirm_box(true))
+					{
+						$where_sql = '';
+						$deletemark = request_var('delmarked', 0);
+						$deleteall = request_var('delall', 0);
+						if ($deletemark && $marked)
+						{
+							$sql_in = array();
+							foreach ($marked as $mark)
+							{
+								$sql_in[] = $mark;
+							}
+							$where_sql = ' AND ' . $db->sql_in_set('warning_id', $sql_in);
+							unset($sql_in);
+						}
+
+						if ($where_sql || $deleteall)
+						{
+							$sql = 'DELETE FROM ' . WARNINGS_TABLE . "
+								WHERE user_id = $user_id
+									$where_sql";
+							$db->sql_query($sql);
+
+							if ($deleteall)
+							{
+								$log_warnings = $deleted_warnings = 0;
+							}
+							else
+							{
+								$num_warnings = (int) $db->sql_affectedrows();
+								$deleted_warnings = ' user_warnings - ' . $num_warnings;
+								$log_warnings = ($num_warnings > 2) ? 2 : $num_warnings;
+							}
+
+							$sql = 'UPDATE ' . USERS_TABLE . "
+								SET user_warnings = $deleted_warnings
+								WHERE user_id = $user_id";
+							$db->sql_query($sql);
+
+							switch ($log_warnings)
+							{
+								case 2:
+									add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+								break;
+								case 1:
+									add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
+								break;
+								default:
+									add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
+								break;
+							}
+						}
+					}
+					else
+					{
+						$s_hidden_fields = array(
+							'i'				=> $id,
+							'mode'			=> $mode,
+							'u'				=> $user_id,
+							'mark'			=> $marked,
+						);
+						if (isset($_POST['delmarked']))
+						{
+							$s_hidden_fields['delmarked'] = 1;
+						}
+						if (isset($_POST['delall']))
+						{
+							$s_hidden_fields['delall'] = 1;
+						}
+						if (isset($_POST['delall']) || (isset($_POST['delmarked']) && sizeof($marked)))
+						{
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+						}
+					}
+				}
+
+				$sql = 'SELECT w.warning_id, w.warning_time, w.post_id, l.log_operation, l.log_data, l.user_id AS mod_user_id, m.username AS mod_username, m.user_colour AS mod_user_colour
+					FROM ' . WARNINGS_TABLE . ' w
+					LEFT JOIN ' . LOG_TABLE . ' l
+						ON (w.log_id = l.log_id)
+					LEFT JOIN ' . USERS_TABLE . ' m
+						ON (l.user_id = m.user_id)
+					WHERE w.user_id = ' . $user_id . '
+					ORDER BY w.warning_time DESC';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (!$row['log_operation'])
+					{
+						// We do not have a log-entry anymore, so there is no data available
+						$row['action'] = $user->lang['USER_WARNING_LOG_DELETED'];
+					}
+					else
+					{
+						$row['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
+						if (!empty($row['log_data']))
+						{
+							$log_data_ary = @unserialize($row['log_data']);
+							$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
+
+							if (isset($user->lang[$row['log_operation']]))
+							{
+								// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
+								// It doesn't matter if we add more arguments than placeholders
+								if ((substr_count($row['action'], '%') - sizeof($log_data_ary)) > 0)
+								{
+									$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($row['action'], '%') - sizeof($log_data_ary), ''));
+								}
+								$row['action'] = vsprintf($row['action'], $log_data_ary);
+								$row['action'] = bbcode_nl2br(censor_text($row['action']));
+							}
+							else if (!empty($log_data_ary))
+							{
+								$row['action'] .= '<br />' . implode('', $log_data_ary);
+							}
+						}
+					}
+
+
+					$template->assign_block_vars('warn', array(
+						'ID'		=> $row['warning_id'],
+						'USERNAME'	=> ($row['log_operation']) ? get_username_string('full', $row['mod_user_id'], $row['mod_username'], $row['mod_user_colour']) : '-',
+						'ACTION'	=> make_clickable($row['action']),
+						'DATE'		=> $user->format_date($row['warning_time']),
+					));
+				}
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'S_WARNINGS'	=> true,
+					'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
+				));
+
+			break;
+
 			case 'profile':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -1136,54 +1397,7 @@ class acp_users
 						$db->sql_query($sql);
 
 						// Update Custom Fields
-						if (sizeof($cp_data))
-						{
-							switch ($db->sql_layer)
-							{
-								case 'oracle':
-								case 'firebird':
-								case 'postgres':
-									$right_delim = $left_delim = '"';
-								break;
-
-								case 'sqlite':
-								case 'mssql':
-								case 'mssql_odbc':
-									$right_delim = ']';
-									$left_delim = '[';
-								break;
-
-								case 'mysql':
-								case 'mysql4':
-								case 'mysqli':
-									$right_delim = $left_delim = '`';
-								break;
-							}
-
-							foreach ($cp_data as $key => $value)
-							{
-								// Firebird is case sensitive with delimiter
-								$cp_data[$left_delim . (($db->sql_layer == 'firebird') ? strtoupper($key) : $key) . $right_delim] = $value;
-								unset($cp_data[$key]);
-							}
-
-							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
-								WHERE user_id = $user_id";
-							$db->sql_query($sql);
-
-							if (!$db->sql_affectedrows())
-							{
-								$cp_data['user_id'] = (int) $user_id;
-
-								$db->sql_return_on_error(true);
-
-								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
-								$db->sql_query($sql);
-
-								$db->sql_return_on_error(false);
-							}
-						}
+						$cp->update_profile_field_data($user_id, $cp_data);
 
 						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1476,8 +1690,19 @@ class acp_users
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
+				if (!$config['allow_avatar'] && $user_row['user_avatar_type'])
+				{
+					$error[] = $user->lang['USER_AVATAR_NOT_ALLOWED'];
+				}
+				else if ((($user_row['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
+				 (($user_row['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
+				 (($user_row['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
+				{
+					$error[] = $user->lang['USER_AVATAR_TYPE_NOT_ALLOWED'];
+				}
+
 				// Generate users avatar
-				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
+				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height'], 'USER_AVATAR', true) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 				$avatar_select = basename(request_var('avatar_select', ''));
@@ -1490,10 +1715,11 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_AVATAR'			=> true,
-					'S_CAN_UPLOAD'		=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
-					'S_ALLOW_REMOTE'	=> ($config['allow_avatar_remote']) ? true : false,
-					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
-					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+					'S_UPLOAD_FILE'		=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_upload']) ? true : false,
+					'S_REMOTE_UPLOAD'	=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_remote_upload']) ? true : false,
+					'S_ALLOW_REMOTE'	=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
+					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar'] && $config['allow_avatar_local'] && !$display_gallery) ? true : false,
+					'S_IN_GALLERY'		=> ($config['allow_avatar'] && $config['allow_avatar_local'] && $display_gallery) ? true : false,
 
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
@@ -1551,9 +1777,9 @@ class acp_users
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $this->optionget($user_row, 'sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $this->optionget($user_row, 'sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? (bool) $this->optionget($user_row, 'sig_links') : false;
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
 
 				$preview		= (isset($_POST['preview'])) ? true : false;
@@ -1561,6 +1787,10 @@ class acp_users
 				if ($submit || $preview)
 				{
 					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 
 					$message_parser = new parse_message($signature);
 
@@ -1579,8 +1809,13 @@ class acp_users
 
 					if (!sizeof($error) && $submit)
 					{
+						$this->optionset($user_row, 'sig_bbcode', $enable_bbcode);
+						$this->optionset($user_row, 'sig_smilies', $enable_smilies);
+						$this->optionset($user_row, 'sig_links', $enable_urls);
+
 						$sql_ary = array(
 							'user_sig'					=> (string) $message_parser->message,
+							'user_options'				=> $user_row['user_options'],
 							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> (string) $message_parser->bbcode_bitfield
 						);
@@ -1871,6 +2106,29 @@ class acp_users
 						}
 
 					break;
+
+					case 'approve':
+
+						if (confirm_box(true))
+						{
+							if (!$group_id)
+							{
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+							group_user_attributes($action, $group_id, $user_id);
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								'u'				=> $user_id,
+								'i'				=> $id,
+								'mode'			=> $mode,
+								'action'		=> $action,
+								'g'				=> $group_id))
+							);
+						}
+
+					break;
 				}
 
 				// Add user to group?
@@ -1963,10 +2221,12 @@ class acp_users
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_APPROVE'			=> ($group_type == 'pending') ? $this->u_action . "&amp;action=approve&amp;u=$user_id&amp;g=" . $data['group_id'] : '',
 
 							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
 							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],
 
+							'S_IS_MEMBER'		=> ($group_type != 'pending') ? true : false,
 							'S_NO_DEFAULT'		=> ($user_row['group_id'] != $data['group_id']) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == 'special') ? true : false,
 							)

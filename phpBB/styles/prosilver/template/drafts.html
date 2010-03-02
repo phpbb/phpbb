@@ -10,7 +10,7 @@
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
-<div class="forumbg">
+<div class="<!-- IF not S_PRIVMSGS -->forumbg<!-- ELSE -->panel<!-- ENDIF -->">
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 	<ul class="topiclist">
@@ -21,7 +21,7 @@
 			</dl>
 		</li>
 	</ul>
-	<ul class="topiclist topics">
+	<ul class="topiclist<!-- IF not S_PRIVMSGS --> topics<!-- ELSE --> cplist<!-- ENDIF -->">
 
 	<!-- BEGIN draftrow -->
 	<li class="row<!-- IF draftrow.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">

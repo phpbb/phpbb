@@ -16,7 +16,6 @@ var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
 
 var baseHeight;
-window.onload = initInsertions;
 
 /**
 * Shows the help messages in the helpline window
@@ -259,7 +258,7 @@ function addquote(post_id, username)
 */
 function mozWrap(txtarea, open, close)
 {
-	var selLength = txtarea.textLength;
+	var selLength = (typeof(txtarea.textLength) == 'undefined') ? txtarea.value.length : txtarea.textLength;
 	var selStart = txtarea.selectionStart;
 	var selEnd = txtarea.selectionEnd;
 	var scrollTop = txtarea.scrollTop;

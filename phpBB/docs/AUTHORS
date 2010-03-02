@@ -20,32 +20,39 @@
 Please see: http://www.phpbb.com/about/team/ for a list of all the people currently
 involved in phpBB.
 
-phpBB Lead Developer  : Acyd Burn (Meik Sievertsen)
+phpBB Lead Developer	:	Acyd Burn (Meik Sievertsen)
 
-phpBB Developers      : APTX (Marek A. R.)
-                        DavidMJ (David M.)
-                        dhn (Dominik Dröscher)
-                        kellanved (Henry Sudhof)
-                        naderman (Nils Adermann)
-                        ToonArmy (Chris Smith)
-                        Vic D'Elfant (Vic D'Elfant)
+phpBB Developers	:	APTX (Marek A. R.)
+				bantu (Andreas Fischer)
+				DavidMJ (David M.)
+				dhn (Dominik Dröscher)
+				kellanved (Henry Sudhof)
+				naderman (Nils Adermann)
+				Terrafrost (Jim Wigginton)
+				ToonArmy (Chris Smith)
+
+Contributions by	:	leviatan21 (Gabriel Vazquez)
+				nickvergessen (Joas Schilling)
+				Raimon (Raimon Meuldijk)
+				rxu (Ruslan Uzdenov)
+				Xore (Robert Hetzler)
 
 
 -- Previous Contributors --
 
-phpBB Project Manager : theFinn (James Atkinson) [Founder - 04/2007]
-			SHS` (Jonathan Stanley)
+phpBB Project Manager	:	theFinn (James Atkinson) [Founder - 04/2007]
+				SHS` (Jonathan Stanley)
 
-phpBB Lead Developer  : psoTFX (Paul S. Owen) [2001 - 09/2005]
+phpBB Lead Developer	:	psoTFX (Paul S. Owen) [2001 - 09/2005]
 
-phpBB Developers      : Ashe (Ludovic Arnaud)   [10/2002 - 11/2003, 06/2006 - 10/2006]
-                        BartVB (Bart van Bragt) [11/2000 - 03/2006]
-                        GrahamJE (Graham Eames) [09/2005 - 11/2006]
-
+phpBB Developers	:	Ashe (Ludovic Arnaud)       [10/2002 - 11/2003, 06/2006 - 10/2006]
+				BartVB (Bart van Bragt)     [11/2000 - 03/2006]
+				GrahamJE (Graham Eames)     [09/2005 - 11/2006]
+				Vic D'Elfant (Vic D'Elfant) [04/2007 - 04/2009]
 
 -- Copyrights --
 
-Visual Confirmation   : Xore (Robert Hetzler)
+Visual Confirmation	:	Xore (Robert Hetzler)
 
 Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Group
 prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Group

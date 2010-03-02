@@ -13,21 +13,21 @@
 		<dd><label for="delete"><input type="checkbox" name="delete" id="delete" /> {L_DELETE_AVATAR}</label></dd>
 	</dl>
 
-	<!-- IF S_UPLOAD_AVATAR_FILE or S_CAN_UPLOAD -->
+	<!-- IF S_UPLOAD_AVATAR_FILE -->
 		<dl>
 			<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
 			<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
 		</dl>
 	<!-- ENDIF -->
 
-	<!-- IF S_UPLOAD_AVATAR_URL or S_EDIT -->
+	<!-- IF S_UPLOAD_AVATAR_URL -->
 		<dl>
 			<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
 			<dd><input type="text" name="uploadurl" id="uploadurl" value="{AVATAR_URL}" class="inputbox" /></dd>
 		</dl>
 	<!-- ENDIF -->
 
-	<!-- IF S_LINK_AVATAR or S_EDIT -->
+	<!-- IF S_LINK_AVATAR -->
 		<dl>
 			<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
 			<dd><input type="text" name="remotelink" id="remotelink" value="{AVATAR_REMOTE}" class="inputbox" /></dd>
@@ -41,7 +41,7 @@
 		</dl>
 	<!-- ENDIF -->
 	</fieldset>
-	
+
 	<!-- IF S_IN_AVATAR_GALLERY -->
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
@@ -50,7 +50,7 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<h3>{L_AVATAR_GALLERY}</h3>
-	
+
 		<fieldset>
 			<label for="category">{L_AVATAR_CATEGORY}: <select name="category" id="category">{S_CAT_OPTIONS}</select></label>
 			<input type="submit" value="{L_GO}" name="display_gallery" class="button2" />
@@ -63,7 +63,7 @@
 				<input type="radio" name="avatar_select" id="av-{avatar_row.S_ROW_COUNT}-{avatar_row.avatar_column.S_ROW_COUNT}" value="{avatar_row.avatar_column.AVATAR_FILE}" /></label>
 		<!-- END avatar_column --><!-- END avatar_row -->
 		</div>
-	
+
 	<!-- ENDIF -->
 
 	<span class="corners-bottom"><span></span></span></div>

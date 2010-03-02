@@ -27,6 +27,8 @@ class messenger
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
+
+	var $tpl_obj = NULL;
 	var $tpl_msg = array();
 	var $eol = "\n";
 
@@ -171,13 +173,13 @@ class messenger
 	/**
 	* Set email template to use
 	*/
-	function template($template_file, $template_lang = '')
+	function template($template_file, $template_lang = '', $template_path = '')
 	{
 		global $config, $phpbb_root_path, $user;
 
 		if (!trim($template_file))
 		{
-			trigger_error('No template file set', E_USER_ERROR);
+			trigger_error('No template file for emailing set.', E_USER_ERROR);
 		}
 
 		if (!trim($template_lang))
@@ -185,25 +187,28 @@ class messenger
 			$template_lang = basename($config['default_lang']);
 		}
 
-		if (empty($this->tpl_msg[$template_lang . $template_file]))
+		// tpl_msg now holds a template object we can use to parse the template file
+		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$tpl_file = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-			$tpl_file .= $template_lang . "/email/$template_file.txt";
+			$this->tpl_msg[$template_lang . $template_file] = new template();
+			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
-			if (!file_exists($tpl_file))
+			if (!$template_path)
 			{
-				trigger_error("Could not find email template file [ $tpl_file ]", E_USER_ERROR);
+				$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+				$template_path .= $template_lang . '/email';
 			}
 
-			if (($data = @file_get_contents($tpl_file)) === false)
-			{
-				trigger_error("Failed opening template file [ $tpl_file ]", E_USER_ERROR);
-			}
+			$tpl->set_custom_template($template_path, $template_lang . '_email');
 
-			$this->tpl_msg[$template_lang . $template_file] = $data;
+			$tpl->set_filenames(array(
+				'body'		=> $template_file . '.txt',
+			));
 		}
 
-		$this->msg = $this->tpl_msg[$template_lang . $template_file];
+		$this->tpl_obj = &$this->tpl_msg[$template_lang . $template_file];
+		$this->vars = &$this->tpl_obj->_rootref;
+		$this->tpl_msg = '';
 
 		return true;
 	}
@@ -213,7 +218,22 @@ class messenger
 	*/
 	function assign_vars($vars)
 	{
-		$this->vars = (empty($this->vars)) ? $vars : $this->vars + $vars;
+		if (!is_object($this->tpl_obj))
+		{
+			return;
+		}
+
+		$this->tpl_obj->assign_vars($vars);
+	}
+
+	function assign_block_vars($blockname, $vars)
+	{
+		if (!is_object($this->tpl_obj))
+		{
+			return;
+		}
+
+		$this->tpl_obj->assign_block_vars($blockname, $vars);
 	}
 
 	/**
@@ -224,15 +244,32 @@ class messenger
 		global $config, $user;
 
 		// We add some standard variables we always use, no need to specify them always
-		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
-		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
-		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? htmlspecialchars_decode($config['sitename']) : $this->vars['SITENAME'];
+		if (!isset($this->vars['U_BOARD']))
+		{
+			$this->assign_vars(array(
+				'U_BOARD'	=> generate_board_url(),
+			));
+		}
 
-		// Escape all quotes, else the eval will fail.
-		$this->msg = str_replace ("'", "\'", $this->msg);
-		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->vars['\\1'])) ? \$this->vars['\\1'] : '') . '", $this->msg);
+		if (!isset($this->vars['EMAIL_SIG']))
+		{
+			$this->assign_vars(array(
+				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])),
+			));
+		}
 
-		eval("\$this->msg = '$this->msg';");
+		if (!isset($this->vars['SITENAME']))
+		{
+			$this->assign_vars(array(
+				'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
+			));
+		}
+
+		// Parse message through template
+		$this->msg = trim($this->tpl_obj->assign_display('body'));
+
+		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
+		$this->msg = str_replace("\r\n", "\n", $this->msg);
 
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
@@ -356,7 +393,7 @@ class messenger
 
 		$headers[] = 'X-Priority: ' . $this->mail_priority;
 		$headers[] = 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High'));
-		$headers[] = 'X-Mailer: PhpBB3';
+		$headers[] = 'X-Mailer: phpBB3';
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
 
@@ -408,6 +445,8 @@ class messenger
 			$this->from = '<' . $config['board_contact'] . '>';
 		}
 
+		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
+
 		// Build to, cc and bcc strings
 		$to = $cc = $bcc = '';
 		foreach ($this->addresses as $type => $address_ary)
@@ -419,7 +458,7 @@ class messenger
 
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ? '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ? mail_encode($which_ary['name'], $encode_eol) . ' <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -438,13 +477,7 @@ class messenger
 			}
 			else
 			{
-				// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
-				// Reference: http://bugs.php.net/bug.php?id=15841
-				$headers = implode($this->eol, $headers);
-
-				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
-				$err_msg = ob_get_clean();
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $this->eol, $err_msg);
 			}
 
 			if (!$result)
@@ -687,9 +720,7 @@ class queue
 						}
 						else
 						{
-							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode($this->eol, $headers));
-							$err_msg = ob_get_clean();
+							$result = phpbb_mail($to, $subject, $msg, $headers, $this->eol, $err_msg);
 						}
 
 						if (!$result)
@@ -1441,13 +1472,15 @@ class smtp_class
 * is basically doomed with an unreadable subject.
 *
 * Please note that this version fully supports RFC 2045 section 6.8.
+*
+* @param string $eol End of line we are using (optional to be backwards compatible)
 */
-function mail_encode($str)
+function mail_encode($str, $eol = "\r\n")
 {
 	// define start delimimter, end delimiter and spacer
 	$start = "=?UTF-8?B?";
 	$end = "?=";
-	$delimiter = "\r\n ";
+	$delimiter = "$eol ";
 
 	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
 	$split_length = 60;
@@ -1482,6 +1515,27 @@ function mail_encode($str)
 	}
 
 	return substr($str, 0, -strlen($delimiter));
+}
+
+/**
+* Wrapper for sending out emails with the PHP's mail function
+*/
+function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
+{
+	global $config;
+
+	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+	// Reference: http://bugs.php.net/bug.php?id=15841
+	$headers = implode($eol, $headers);
+
+	ob_start();
+	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
+	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
+	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
+	$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+	$err_msg = ob_get_clean();
+
+	return $result;
 }
 
 ?>

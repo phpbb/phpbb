@@ -164,15 +164,18 @@ class mcp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
+		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
+
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort);
+		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
 
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
@@ -182,13 +185,14 @@ class mcp_logs
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 			'S_LOGS'				=> ($log_count > 0),
+			'S_KEYWORDS'			=> $keywords,
 			)
 		);
 
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewforum');
 			foreach ($checks as $check)
 			{

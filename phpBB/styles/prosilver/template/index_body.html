@@ -6,7 +6,7 @@
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
 <ul class="linklist">
 	<!-- IF S_DISPLAY_SEARCH -->
-		<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a><!-- IF S_USER_LOGGED_IN --> &bull; <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a><!-- ENDIF --> &bull; <a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+		<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a><!-- IF S_USER_LOGGED_IN --> &bull; <a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a> &bull; <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a><!-- ENDIF --> &bull; <a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
 	<!-- ENDIF -->
 	<!-- IF not S_IS_BOT and U_MARK_FORUMS --><li class="rightside"><a href="{U_MARK_FORUMS}" accesskey="m">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
 </ul>
@@ -18,7 +18,7 @@
 	<form method="post" action="{S_LOGIN_ACTION}" class="headerspace">
 	<h3><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a><!-- IF S_REGISTER_ENABLED -->&nbsp; &bull; &nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a><!-- ENDIF --></h3>
 		<fieldset class="quick-login">
-			<label for="username">{L_USERNAME}:</label>&nbsp;<input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" />  
+			<label for="username">{L_USERNAME}:</label>&nbsp;<input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" />
 			<label for="password">{L_PASSWORD}:</label>&nbsp;<input type="password" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" />
 			<!-- IF S_AUTOLOGIN_ENABLED -->
 				| <label for="autologin">{L_LOG_ME_IN} <input type="checkbox" name="autologin" id="autologin" /></label>

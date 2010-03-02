@@ -210,23 +210,36 @@ parse_css_file = {PARSE_CSS_FILE}
 							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$sql = 'UPDATE ' . STYLES_TABLE . '
-							SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
-							WHERE style_id = ' . $style_id;
-						$db->sql_query($sql);
-
-						// Set style to default for any member using deactivated style
-						if ($action == 'deactivate')
+						if (($action == 'deactivate' && confirm_box(true)) || $action == 'activate')
 						{
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_style = ' . $config['default_style'] . "
-								WHERE user_style = $style_id";
+							$sql = 'UPDATE ' . STYLES_TABLE . '
+								SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
+								WHERE style_id = ' . $style_id;
 							$db->sql_query($sql);
 
-							$sql = 'UPDATE ' . FORUMS_TABLE . '
-								SET forum_style = 0
-								WHERE forum_style = ' . $style_id;
-							$db->sql_query($sql);
+							// Set style to default for any member using deactivated style
+							if ($action == 'deactivate')
+							{
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET user_style = ' . $config['default_style'] . "
+									WHERE user_style = $style_id";
+								$db->sql_query($sql);
+
+								$sql = 'UPDATE ' . FORUMS_TABLE . '
+									SET forum_style = 0
+									WHERE forum_style = ' . $style_id;
+								$db->sql_query($sql);
+							}
+						}
+						else if ($action == 'deactivate')
+						{
+							$s_hidden_fields = array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'style_id'	=> $style_id,
+							);
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					break;
 				}
@@ -734,7 +747,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				if (!($fp = @fopen($file, 'wb')))
 				{
-					trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					// File exists and is writeable, but still not able to be written to
+					trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				fwrite($fp, $template_data);
 				fclose($fp);
@@ -825,6 +839,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 			$db->sql_freeresult($result);
 			unset($file_info);
+		}
+
+		if (empty($filelist['']))
+		{
+			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Now create the categories
@@ -1024,12 +1043,12 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		foreach ($file_ary as $file)
 		{
-			$file 		= str_replace('/', '.', $file);
+			$file		= str_replace('/', '.', $file);
 
 			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
-			$tpl_file 	= str_replace('.', '/', $file);
-			$tpl_file 	= str_replace('///', '../', $tpl_file);
+			$tpl_file	= str_replace('.', '/', $file);
+			$tpl_file	= str_replace('///', '../', $tpl_file);
 
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
 
@@ -1061,6 +1080,11 @@ parse_css_file = {PARSE_CSS_FILE}
 				}
 			}
 
+			// Correct the filename if it is stored in database and the file is in a subfolder.
+			if ($template_row['template_storedb'])
+			{
+				$file = str_replace('.', '/', $file);
+			}
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -1068,7 +1092,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
 				'FILENAME_PATH'	=> $file_tpl,
-				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize("{$phpbb_root_path}cache/$filename") / 1024),
+				'FILESIZE'		=> get_formatted_filesize(filesize("{$phpbb_root_path}cache/$filename")),
 				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime($file_tpl) : $filemtime[$file . '.html']))
 			);
 		}
@@ -1265,7 +1289,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			'TEXT_ROWS'			=> $text_rows)
 		);
 	}
-
 
 	/**
 	* Edit imagesets
@@ -2404,7 +2427,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-
 		if ($mode == 'template')
 		{
 			$super = array();
@@ -2535,8 +2557,21 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
-				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$template_path$pathfile$file"));
+
+				$filesize = filesize("{$phpbb_root_path}styles/$template_path$pathfile$file");
+
+				if ($filesize)
+				{
+					$template_data = fread($fp, $filesize);
+				}
+
 				fclose($fp);
+
+				if (!$filesize)
+				{
+					// File is empty
+					continue;
+				}
 
 				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
 				{
@@ -3204,7 +3239,6 @@ parse_css_file = {PARSE_CSS_FILE}
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-
 		if ($row)
 		{
 			// If it exist, we just use the style on installation
@@ -3254,7 +3288,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			$inherit_path = '';
 			$inherit_bf = false;
 		}
-
 
 		if (sizeof($error))
 		{
@@ -3524,7 +3557,6 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
-
 
 		$sql = "SELECT {$mode}_inherits_id
 			FROM $sql_from

@@ -3,11 +3,11 @@
 <h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
 
 <!-- IF FORUM_DESC or MODERATORS or U_MCP -->
-<p>
+<div>
 	<!-- NOTE: remove the style="display: none" when you want to have the forum description on the forum body -->
-	<!-- IF FORUM_DESC --><span style="display: none">{FORUM_DESC}<br /></span><!-- ENDIF -->
+	<!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 	<!-- IF MODERATORS --><strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}<!-- ENDIF -->
-</p>
+</div>
 <!-- ENDIF -->
 
 <!-- IF S_FORUM_RULES -->

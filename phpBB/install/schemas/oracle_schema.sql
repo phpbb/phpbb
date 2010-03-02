@@ -338,6 +338,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type number(3) DEFAULT '0' NOT NULL,
 	code varchar2(8) DEFAULT '' ,
 	seed number(10) DEFAULT '0' NOT NULL,
+	attempts number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
 /
@@ -504,6 +505,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar2(765) DEFAULT '' ,
 	forum_last_poster_colour varchar2(6) DEFAULT '' ,
 	forum_flags number(4) DEFAULT '32' NOT NULL,
+	forum_options number(20) DEFAULT '0' NOT NULL,
 	display_subforum_list number(1) DEFAULT '1' NOT NULL,
 	display_on_index number(1) DEFAULT '1' NOT NULL,
 	enable_indexing number(1) DEFAULT '1' NOT NULL,
@@ -586,6 +588,7 @@ CREATE TABLE phpbb_groups (
 	group_id number(8) NOT NULL,
 	group_type number(4) DEFAULT '1' NOT NULL,
 	group_founder_manage number(1) DEFAULT '0' NOT NULL,
+	group_skip_auth number(1) DEFAULT '0' NOT NULL,
 	group_name varchar2(255) DEFAULT '' ,
 	group_desc clob DEFAULT '' ,
 	group_desc_bitfield varchar2(255) DEFAULT '' ,
@@ -712,6 +715,8 @@ CREATE TABLE phpbb_log (
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type)
 /
+CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time)
+/
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id)
 /
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id)
@@ -820,7 +825,7 @@ CREATE TABLE phpbb_poll_votes (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
-	vote_user_ip varchar2(40) DEFAULT ''
+	vote_user_ip varchar2(40) DEFAULT '' 
 )
 /
 
@@ -875,6 +880,8 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id)
 /
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved)
 /
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username)
+/
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time)
 /
 
@@ -919,6 +926,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count number(4) DEFAULT '0' NOT NULL,
 	to_address clob DEFAULT '' ,
 	bcc_address clob DEFAULT '' ,
+	message_reported number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs PRIMARY KEY (msg_id)
 )
 /
@@ -1055,6 +1063,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar2(60) DEFAULT '' ,
 	field_required number(1) DEFAULT '0' NOT NULL,
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
+	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
 	field_show_profile number(1) DEFAULT '0' NOT NULL,
 	field_hide number(1) DEFAULT '0' NOT NULL,
 	field_no_view number(1) DEFAULT '0' NOT NULL,
@@ -1160,6 +1169,7 @@ CREATE TABLE phpbb_reports (
 	report_id number(8) NOT NULL,
 	reason_id number(4) DEFAULT '0' NOT NULL,
 	post_id number(8) DEFAULT '0' NOT NULL,
+	pm_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	user_notify number(1) DEFAULT '0' NOT NULL,
 	report_closed number(1) DEFAULT '0' NOT NULL,
@@ -1169,6 +1179,10 @@ CREATE TABLE phpbb_reports (
 )
 /
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id)
+/
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports (pm_id)
+/
 
 CREATE SEQUENCE phpbb_reports_seq
 /
@@ -1464,7 +1478,7 @@ CREATE TABLE phpbb_styles_template_data (
 	template_filename varchar2(100) DEFAULT '' ,
 	template_included clob DEFAULT '' ,
 	template_mtime number(11) DEFAULT '0' NOT NULL,
-	template_data clob DEFAULT ''
+	template_data clob DEFAULT '' 
 )
 /
 
@@ -1760,7 +1774,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
-	user_options number(11) DEFAULT '895' NOT NULL,
+	user_options number(11) DEFAULT '230271' NOT NULL,
 	user_avatar varchar2(255) DEFAULT '' ,
 	user_avatar_type number(2) DEFAULT '0' NOT NULL,
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,
@@ -1780,6 +1794,9 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar2(32) DEFAULT '' ,
 	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
+	user_new number(1) DEFAULT '1' NOT NULL,
+	user_reminded number(4) DEFAULT '0' NOT NULL,
+	user_reminded_time number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
 	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)
 )

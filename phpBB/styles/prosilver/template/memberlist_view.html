@@ -34,14 +34,16 @@
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}:</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
 		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
-			<!-- IF U_ADD_FRIEND and U_ADD_FOE-->
-				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
-				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
+			<!-- IF U_REMOVE_FRIEND -->
+				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
+			<!-- ELSEIF U_REMOVE_FOE -->
+				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
 			<!-- ELSE -->
-				<!-- IF U_REMOVE_FRIEND -->
-					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
-				<!-- ELSE -->
-					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
+				<!-- IF U_ADD_FRIEND -->
+					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
+				<!-- ENDIF -->
+				<!-- IF U_ADD_FOE -->
+					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- ENDIF -->
@@ -59,14 +61,13 @@
 		<dl class="details">
 		<!-- IF U_EMAIL --><dt>{L_EMAIL_ADDRESS}:</dt> <dd><a href="{U_EMAIL}">{L_SEND_EMAIL_USER} {USERNAME}</a></dd><!-- ENDIF -->
 		<!-- IF U_WWW --><dt>{L_WEBSITE}:</dt> <dd><a href="{U_WWW}" title="{L_VISIT_WEBSITE}: {U_WWW}">{U_WWW}</a></dd><!-- ENDIF -->
-		<!-- IF U_PM --><dt>{L_PM}:</dt> <dd><a href="{U_PM}">{L_SEND_PRIVATE_MESSAGE}</a></dd>
-		<!-- ENDIF -->
+		<!-- IF U_PM --><dt>{L_PM}:</dt> <dd><a href="{U_PM}">{L_SEND_PRIVATE_MESSAGE}</a></dd><!-- ENDIF -->
 		<!-- IF U_MSN or USER_MSN --><dt>{L_MSNM}:</dt> <dd><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_MSNM_MESSAGE}</a><!-- ELSE -->{USER_MSN}<!-- ENDIF --></dd><!-- ENDIF -->
 		<!-- IF U_YIM or USER_YIM --><dt>{L_YIM}:</dt> <dd><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false;">{L_SEND_YIM_MESSAGE}</a><!-- ELSE -->{USER_YIM}<!-- ENDIF --></dd><!-- ENDIF -->
 		<!-- IF U_AIM or USER_AIM --><dt>{L_AIM}:</dt> <dd><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_AIM_MESSAGE}</a><!-- ELSE -->{USER_AIM}<!-- ENDIF --></dd><!-- ENDIF -->
 		<!-- IF U_ICQ or USER_ICQ --><dt>{L_ICQ}:</dt> <dd><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_ICQ_MESSAGE}</a><!-- ELSE -->{USER_ICQ}<!-- ENDIF --></dd><!-- ENDIF -->
 		<!-- IF U_JABBER and S_JABBER_ENABLED --><dt>{L_JABBER}:</dt> <dd><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_JABBER_MESSAGE}</a></dd><!-- ELSEIF USER_JABBER --><dt>{L_JABBER}:</dt> <dd>{USER_JABBER}</dd><!-- ENDIF -->
-		<!-- IF S_PROFILE_FIELD_1 -->
+		<!-- IF S_PROFILE_FIELD1 -->
 			<!-- NOTE: Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 			<dt>{postrow.PROFILE_FIELD1_NAME}:</dt> <dd>{postrow.PROFILE_FIELD1_VALUE}</dd>
 		<!-- ENDIF -->
@@ -78,12 +79,12 @@
 		<dl class="details">
 			<dt>{L_JOINED}:</dt> <dd>{JOINED}</dd>
 			<dt>{L_VISITED}:</dt> <dd>{VISITED}</dd>
-			<!-- IF U_NOTES or U_WARN -->
+			<!-- IF S_WARNINGS -->
 			<dt>{L_WARNINGS}: </dt>
-			<dd><strong>{WARNINGS}</strong> [ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</dd>
+			<dd><strong>{WARNINGS}</strong><!-- IF U_NOTES or U_WARN --> [ <!-- IF U_NOTES --><a href="{U_NOTES}">{L_VIEW_NOTES}</a><!-- ENDIF --> <!-- IF U_WARN --><!-- IF U_NOTES --> | <!-- ENDIF --><a href="{U_WARN}">{L_WARN_USER}</a><!-- ENDIF --> ]<!-- ENDIF --></dd>
 			<!-- ENDIF -->
 			<dt>{L_TOTAL_POSTS}:</dt>
-				<dd>{POSTS} | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong>
+				<dd>{POSTS} <!-- IF S_DISPLAY_SEARCH -->| <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong><!-- ENDIF -->
 					<!-- IF POSTS_PCT --><br />({POSTS_PCT} / {POSTS_DAY})<!-- ENDIF -->
 					<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />(<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)<!-- ELSEIF POSTS_IN_QUEUE --><br />({L_POSTS_IN_QUEUE})<!-- ENDIF -->
 				</dd>

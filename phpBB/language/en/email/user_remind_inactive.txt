@@ -2,7 +2,7 @@ Subject: Inactive account reminder
 
 Hello {USERNAME},
 
-On {REGISTER_DATE} you registered a new account at "{SITENAME}". To date you have not activated this account which is a prerequisite for board login. For your convenience the activation link is repeated below.
+This notification is a reminder that your account at "{SITENAME}", created on {REGISTER_DATE}, remains inactive. If you would like to activate this account, please visit the following link:
 
 {U_ACTIVATE}
 

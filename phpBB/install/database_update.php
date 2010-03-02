@@ -8,10 +8,13 @@
 *
 */
 
-$updates_to_version = '3.0.5';
+$updates_to_version = '3.0.6-RC1';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
+
+// Which oldest version does this updater support?
+$oldest_from_version = '3.0.0';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -219,6 +222,33 @@ if (empty($config['dbms_version']))
 	set_config('dbms_version', $db->sql_server_info(true));
 }
 
+// Firebird update from Firebord 2.0 to 2.1+ required?
+if ($db->sql_layer == 'firebird')
+{
+	// We do not trust any PHP5 function enabled, we will simply test for a function new in 2.1
+	$db->sql_return_on_error(true);
+
+	$sql = 'SELECT 1 FROM RDB$DATABASE
+		WHERE BIN_AND(10, 1) = 0';
+	$result = $db->sql_query($sql);
+
+	if (!$result || $db->sql_error_triggered)
+	{
+		echo '<br /><br />';
+		echo '<h1>' . $lang['ERROR'] . '</h1><br />';
+
+		echo '<p>' . $lang['FIREBIRD_DBMS_UPDATE_REQUIRED'] . '</p>';
+
+		_print_footer();
+
+		exit_handler();
+		exit;
+	}
+
+	$db->sql_freeresult($result);
+	$db->sql_return_on_error(false);
+}
+
 // MySQL update from MySQL 3.x/4.x to > 4.1.x required?
 if ($db->sql_layer == 'mysql' || $db->sql_layer == 'mysql4' || $db->sql_layer == 'mysqli')
 {
@@ -246,26 +276,23 @@ if ($db->sql_layer == 'mysql' || $db->sql_layer == 'mysql4' || $db->sql_layer ==
 		echo '<h1>' . $lang['ERROR'] . '</h1><br />';
 
 		echo '<p>' . sprintf($lang['MYSQL_SCHEMA_UPDATE_REQUIRED'], $config['dbms_version'], $db->sql_server_info(true)) . '</p>';
-?>
-					</div>
-				</div>
-			<span class="corners-bottom"><span></span></span>
-		</div>
-		</div>
-	</div>
 
-	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; 2000, 2002, 2005, 2007 phpBB Group
-	</div>
-</div>
-
-</body>
-</html>
-<?php
+		_print_footer();
 
 		exit_handler();
 		exit;
 	}
+}
+
+// Now check if the user wants to update from a version we no longer support updates from
+if (version_compare($current_version, $oldest_from_version, '<'))
+{
+	echo '<br /><br /><h1>' . $lang['ERROR'] . '</h1><br />';
+	echo '<p>' . sprintf($lang['DB_UPDATE_NOT_SUPPORTED'], $oldest_from_version, $current_version) . '</p>';
+
+	_print_footer();
+	exit_handler();
+	exit;
 }
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
@@ -452,8 +479,21 @@ add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 // Now we purge the session table as well as all cache files
 $cache->purge();
 
-?>
+_print_footer();
 
+garbage_collection();
+
+if (function_exists('exit_handler'))
+{
+	exit_handler();
+}
+
+/**
+* Print out footer
+*/
+function _print_footer()
+{
+	echo <<<EOF
 					</div>
 				</div>
 			<span class="corners-bottom"><span></span></span>
@@ -468,14 +508,7 @@ $cache->purge();
 
 </body>
 </html>
-
-<?php
-
-garbage_collection();
-
-if (function_exists('exit_handler'))
-{
-	exit_handler();
+EOF;
 }
 
 /**
@@ -497,7 +530,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 	{
 		$errored = true;
 		$error_ary['sql'][] = $db->sql_error_sql;
-		$error_ary['error_code'][] = $db->_sql_error();
+		$error_ary['error_code'][] = $db->sql_error_returned;
 	}
 
 	$db->sql_return_on_error(false);
@@ -540,6 +573,130 @@ function _write_result($no_updates, $errored, $error_ary)
 			echo '<strong>' . $lang['NO_ERRORS'] . '</strong></p>';
 		}
 	}
+}
+
+function _add_modules($modules_to_install)
+{
+	global $phpbb_root_path, $phpEx, $db;
+
+	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+
+	$_module = new acp_modules();
+
+	foreach ($modules_to_install as $module_mode => $module_data)
+	{
+		$_module->module_class = $module_data['class'];
+
+		// Determine parent id first
+		$sql = 'SELECT module_id
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+				AND module_langname = '" . $db->sql_escape($module_data['cat']) . "'
+				AND module_mode = ''
+				AND module_basename = ''";
+		$result = $db->sql_query($sql);
+
+		// There may be more than one categories with the same name
+		$categories = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$categories[] = (int) $row['module_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($categories))
+		{
+			continue;
+		}
+
+		// Add the module to all categories found
+		foreach ($categories as $parent_id)
+		{
+			// Check if the module already exists
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = '" . $db->sql_escape($module_data['base']) . "'
+					AND module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND module_langname = '" . $db->sql_escape($module_data['title']) . "'
+					AND module_mode = '" . $db->sql_escape($module_mode) . "'
+					AND module_auth = '" . $db->sql_escape($module_data['auth']) . "'
+					AND parent_id = {$parent_id}";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			// If it exists, we simply continue with the next category
+			if ($row)
+			{
+				continue;
+			}
+
+			// Build the module sql row
+			$module_row = array(
+				'module_basename'	=> $module_data['base'],
+				'module_enabled'	=> (isset($module_data['enabled'])) ? (int) $module_data['enabled'] : 1,
+				'module_display'	=> (isset($module_data['display'])) ? (int) $module_data['display'] : 1,
+				'parent_id'			=> $parent_id,
+				'module_class'		=> $module_data['class'],
+				'module_langname'	=> $module_data['title'],
+				'module_mode'		=> $module_mode,
+				'module_auth'		=> $module_data['auth'],
+			);
+
+			$_module->update_module_data($module_row, true);
+
+			// Ok, do we need to re-order the module, move it up or down?
+			if (!isset($module_data['after']))
+			{
+				continue;
+			}
+
+			$after_mode = $module_data['after'][0];
+			$after_langname = $module_data['after'][1];
+
+			// First of all, get the module id for the module this one has to be placed after
+			$sql = 'SELECT left_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND module_basename = '" . $db->sql_escape($module_data['base']) . "'
+					AND module_langname = '" . $db->sql_escape($after_langname) . "'
+					AND module_mode = '" . $db->sql_escape($after_mode) . "'
+					AND parent_id = '{$parent_id}'";
+			$result = $db->sql_query($sql);
+			$first_left_id = (int) $db->sql_fetchfield('left_id');
+			$db->sql_freeresult($result);
+
+			if (!$first_left_id)
+			{
+				continue;
+			}
+
+			// Ok, count the number of modules between $after_mode and the added module
+			$sql = 'SELECT COUNT(module_id) as num_modules
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND parent_id = {$parent_id}
+					AND left_id BETWEEN {$first_left_id} AND {$module_row['left_id']}
+				GROUP BY left_id
+				ORDER BY left_id";
+			$result = $db->sql_query($sql);
+			$steps = (int) $db->sql_fetchfield('num_modules');
+			$db->sql_freeresult($result);
+
+			// We need to substract 2
+			$steps -= 2;
+
+			if ($steps <= 0)
+			{
+				continue;
+			}
+
+			// Ok, move module up $num_modules times. ;)
+			$_module->move_module_by($module_row, 'move_up', $steps);
+		}
+	}
+
+	$_module->remove_cache_file();
 }
 
 /****************************************************************************
@@ -677,6 +834,52 @@ function database_update_info()
 
 		// No changes from 3.0.5-RC1 to 3.0.5
 		'3.0.5-RC1'		=> array(),
+
+		// Changes from 3.0.5 to 3.0.6-RC1
+		'3.0.5'		=> array(
+			'add_columns'		=> array(
+				CONFIRM_TABLE			=> array(
+					'attempts'		=> array('UINT', 0),
+				),
+				USERS_TABLE			=> array(
+					'user_new'			=> array('BOOL', 1),
+					'user_reminded'		=> array('TINT:4', 0),
+					'user_reminded_time'=> array('TIMESTAMP', 0),
+				),
+				GROUPS_TABLE			=> array(
+					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
+				),
+				PRIVMSGS_TABLE		=> array(
+					'message_reported'	=> array('BOOL', 0),
+				),
+				REPORTS_TABLE		=> array(
+					'pm_id'				=> array('UINT', 0),
+				),
+				PROFILE_FIELDS_TABLE			=> array(
+					'field_show_on_vt'		=> array('BOOL', 0),
+				),
+				FORUMS_TABLE		=> array(
+					'forum_options'			=> array('UINT:20', 0),
+				),
+			),
+			'change_columns'		=> array(
+				USERS_TABLE				=> array(
+					'user_options'		=> array('UINT:11', 230271),
+				),
+			),
+			'add_index'		=> array(
+				LOG_TABLE			=> array(
+					'log_time'		=> array('log_time'),
+				),
+				REPORTS_TABLE		=> array(
+					'post_id'		=> array('post_id'),
+					'pm_id'			=> array('pm_id'),
+				),
+				POSTS_TABLE			=> array(
+					'post_username'		=> array('post_username'),
+				),
+			),
+		),
 	);
 }
 
@@ -903,7 +1106,6 @@ function change_database_data(&$no_updates, $version)
 			set_config('captcha_gd_wave', 0);
 			set_config('captcha_gd_3d_noise', 1);
 			set_config('captcha_gd_fonts', 1);
-
 			set_config('confirm_refresh', 1);
 
 			// Maximum number of keywords
@@ -939,6 +1141,7 @@ function change_database_data(&$no_updates, $version)
 				SET bot_agent = 'ichiro/'
 				WHERE bot_agent = 'ichiro/2'";
 			_sql($sql, $errored, $error_ary);
+
 
 			// Before we are able to add a unique key to auth_option, we need to remove duplicate entries
 
@@ -1011,6 +1214,297 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.5-RC1 to 3.0.5
 		case '3.0.5-RC1':
+		break;
+
+		// Changes from 3.0.5 to 3.0.6-RC1
+		case '3.0.5':
+			// Let's see if the GD Captcha can be enabled... we simply look for what *is* enabled...
+			if (!empty($config['captcha_gd']) && !isset($config['captcha_plugin']))
+			{
+				set_config('captcha_plugin', 'phpbb_captcha_gd');
+			}
+			else if (!isset($config['captcha_plugin']))
+			{
+				set_config('captcha_plugin', 'phpbb_captcha_nogd');
+			}
+
+			// Entries for the Feed Feature
+			set_config('feed_enable', '0');
+			set_config('feed_limit', '10');
+
+			set_config('feed_overall_forums', '1');
+			set_config('feed_overall_forums_limit', '15');
+
+			set_config('feed_overall_topics', '0');
+			set_config('feed_overall_topics_limit', '15');
+
+			set_config('feed_forum', '1');
+			set_config('feed_topic', '1');
+			set_config('feed_item_statistics', '1');
+
+			// Entries for smiley pagination
+			set_config('smilies_per_page', '50');
+
+			// Entry for reporting PMs
+			set_config('allow_pm_report', '1');
+
+			// Install modules
+			$modules_to_install = array(
+				'feed'					=> array(
+					'base'		=> 'board',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_FEED_SETTINGS',
+					'auth'		=> 'acl_a_board',
+					'cat'		=> 'ACP_BOARD_CONFIGURATION',
+					'after'		=> array('signature', 'ACP_SIGNATURE_SETTINGS')
+				),
+				'warnings'				=> array(
+					'base'		=> 'users',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_USER_WARNINGS',
+					'auth'		=> 'acl_a_user',
+					'display'	=> 0,
+					'cat'		=> 'ACP_CAT_USERS',
+					'after'		=> array('feedback', 'ACP_USER_FEEDBACK')
+				),
+				'send_statistics'		=> array(
+					'base'		=> 'send_statistics',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_SEND_STATISTICS',
+					'auth'		=> 'acl_a_server',
+					'cat'		=> 'ACP_SERVER_CONFIGURATION'
+				),
+				'setting_forum_copy'	=> array(
+					'base'		=> 'permissions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_FORUM_PERMISSIONS_COPY',
+					'auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
+					'cat'		=> 'ACP_FORUM_BASED_PERMISSIONS',
+					'after'		=> array('setting_forum_local', 'ACP_FORUM_PERMISSIONS')
+				),
+				'pm_reports'			=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORTS_OPEN',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+				'pm_reports_closed'		=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORTS_CLOSED',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+				'pm_report_details'		=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORT_DETAILS',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+			);
+
+			_add_modules($modules_to_install);
+
+			// Add newly_registered group... but check if it already exists (we always supported running the updater on any schema)
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . "
+				WHERE group_name = 'NEWLY_REGISTERED'";
+			$result = $db->sql_query($sql);
+			$group_id = (int) $db->sql_fetchfield('group_id');
+			$db->sql_freeresult($result);
+
+			if (!$group_id)
+			{
+				$sql = 'INSERT INTO ' .  GROUPS_TABLE . " (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('NEWLY_REGISTERED', 3, 0, '', 0, '', '', '', 5)";
+				_sql($sql, $errored, $error_ary);
+
+				$group_id = $db->sql_nextid();
+			}
+
+			// Insert new user role... at the end of the chain
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_name = 'ROLE_USER_NEW_MEMBER'
+					AND role_type = 'u_'";
+			$result = $db->sql_query($sql);
+			$u_role = (int) $db->sql_fetchfield('role_id');
+			$db->sql_freeresult($result);
+
+			if (!$u_role)
+			{
+				$sql = 'SELECT MAX(role_order) as max_order_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_type = 'u_'";
+				$result = $db->sql_query($sql);
+				$next_order_id = (int) $db->sql_fetchfield('max_order_id');
+				$db->sql_freeresult($result);
+
+				$next_order_id++;
+
+				$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . " (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_NEW_MEMBER', 'ROLE_DESCRIPTION_USER_NEW_MEMBER', 'u_', $next_order_id)";
+				_sql($sql, $errored, $error_ary);
+				$u_role = $db->sql_nextid();
+
+				if (!$errored)
+				{
+					// Now add the correct data to the roles...
+					// The standard role says that new users are not able to send a PM, Mass PM, are not able to PM groups
+					$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $u_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group')";
+					_sql($sql, $errored, $error_ary);
+
+					// Add user role to group
+					$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES ($group_id, 0, 0, $u_role, 0)";
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			// Insert new forum role
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_name = 'ROLE_FORUM_NEW_MEMBER'
+					AND role_type = 'f_'";
+			$result = $db->sql_query($sql);
+			$f_role = (int) $db->sql_fetchfield('role_id');
+			$db->sql_freeresult($result);
+
+			if (!$f_role)
+			{
+				$sql = 'SELECT MAX(role_order) as max_order_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_type = 'f_'";
+				$result = $db->sql_query($sql);
+				$next_order_id = (int) $db->sql_fetchfield('max_order_id');
+				$db->sql_freeresult($result);
+
+				$next_order_id++;
+
+				$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . " (role_name, role_description, role_type, role_order) VALUES  ('ROLE_FORUM_NEW_MEMBER', 'ROLE_DESCRIPTION_FORUM_NEW_MEMBER', 'f_', $next_order_id)";
+				_sql($sql, $errored, $error_ary);
+				$f_role = $db->sql_nextid();
+
+				if (!$errored)
+				{
+					$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $f_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove')";
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			// Set every members user_new column to 0 (old users) only if there is no one yet (this makes sure we do not execute this more than once)
+			$sql = 'SELECT 1
+				FROM ' . USERS_TABLE . '
+				WHERE user_new = 0';
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$row)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_new = 0';
+				_sql($sql, $errored, $error_ary);
+			}
+
+			// Newly registered users limit
+			if (!isset($config['new_member_post_limit']))
+			{
+				set_config('new_member_post_limit', (!empty($config['enable_queue_trigger'])) ? $config['queue_trigger_posts'] : 0);
+			}
+
+			if (!isset($config['new_member_group_default']))
+			{
+				set_config('new_member_group_default', 0);
+			}
+
+			// To mimick the old "feature" we will assign the forum role to every forum, regardless of the setting (this makes sure there are no "this does not work!!!! YUO!!!" posts...
+			// Check if the role is already assigned...
+			$sql = 'SELECT forum_id
+				FROM ' . ACL_GROUPS_TABLE . '
+				WHERE group_id = ' . $group_id . '
+					AND auth_role_id = ' . $f_role;
+			$result = $db->sql_query($sql);
+			$is_options = (int) $db->sql_fetchfield('forum_id');
+			$db->sql_freeresult($result);
+
+			// Not assigned at all... :/
+			if (!$is_options)
+			{
+				// Get postable forums
+				$sql = 'SELECT forum_id
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type != ' . FORUM_LINK;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					_sql('INSERT INTO ' . ACL_GROUPS_TABLE . ' (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (' . $group_id . ', ' . (int) $row['forum_id'] . ', 0, ' . $f_role . ', 0)', $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+			}
+
+			// Clear permissions...
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+			$auth_admin->acl_clear_prefetch();
+
+			if (!isset($config['allow_avatar']))
+			{
+				if ($config['allow_avatar_upload'] || $config['allow_avatar_local'] || $config['allow_avatar_remote'])
+				{
+					set_config('allow_avatar', '1');
+				}
+				else
+				{
+					set_config('allow_avatar', '0');
+				}
+			}
+
+			if (!isset($config['allow_avatar_remote_upload']))
+			{
+				if ($config['allow_avatar_remote'] && $config['allow_avatar_upload'])
+				{
+					set_config('allow_avatar_remote_upload', '1');
+				}
+				else
+				{
+					set_config('allow_avatar_remote_upload', '0');
+				}
+			}
+
+			// Minimum number of characters
+			if (!isset($config['min_post_chars']))
+			{
+				set_config('min_post_chars', '1');
+			}
+
+			if (!isset($config['allow_quick_reply']))
+			{
+				set_config('allow_quick_reply', '1');
+			}
+
+			// Set every members user_options column to enable
+			// bbcode, smilies and URLs for signatures by default
+			$sql = 'SELECT user_options
+				FROM ' . USERS_TABLE . '
+				WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+			$result = $db->sql_query_limit($sql, 1);
+			$user_option = (int) $db->sql_fetchfield('user_options');
+			$db->sql_freeresult($result);
+
+			// Check if we already updated the database by checking bit 15 which we used to store the sig_bbcode option
+			if (!($user_option & 1 << 15))
+			{
+				// 229376 is the added value to enable all three signature options
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = user_options + 229376';
+				_sql($sql, $errored, $error_ary);
+			}
+
+			if (!isset($config['delete_time']))
+			{
+				set_config('delete_time', $config['edit_time']);
+			}
+
+			$no_updates = false;
 		break;
 	}
 }
@@ -1340,6 +1834,14 @@ class updater_db_tools
 		}
 
 		$statements = array();
+		$sqlite = false;
+
+		// For SQLite we need to perform the schema changes in a much more different way
+		if ($this->db->sql_layer == 'sqlite' && $this->return_statements)
+		{
+			$sqlite_data = array();
+			$sqlite = true;
+		}
 
 		// Change columns?
 		if (!empty($schema_changes['change_columns']))
@@ -1349,16 +1851,27 @@ class updater_db_tools
 				foreach ($columns as $column_name => $column_data)
 				{
 					// If the column exists we change it, else we add it ;)
-					if ($this->sql_column_exists($table, $column_name))
+					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data);
+						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
-						$result = $this->sql_column_add($table, $column_name, $column_data);
+						$result = $this->sql_column_add($table, $column_name, $column_data, true);
 					}
 
-					if ($this->return_statements)
+					if ($sqlite)
+					{
+						if ($column_exists)
+						{
+							$sqlite_data[$table]['change_columns'][] = $result;
+						}
+						else
+						{
+							$sqlite_data[$table]['add_columns'][] = $result;
+						}
+					}
+					else if ($this->return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -1373,17 +1886,30 @@ class updater_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet, else change it (to be consistent)
-					if ($this->sql_column_exists($table, $column_name))
+					// Only add the column if it does not exist yet
+					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data);
+						continue;
+						// This is commented out here because it can take tremendous time on updates
+//						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
-						$result = $this->sql_column_add($table, $column_name, $column_data);
+						$result = $this->sql_column_add($table, $column_name, $column_data, true);
 					}
 
-					if ($this->return_statements)
+					if ($sqlite)
+					{
+						if ($column_exists)
+						{
+							$sqlite_data[$table]['change_columns'][] = $result;
+						}
+						else
+						{
+							$sqlite_data[$table]['add_columns'][] = $result;
+						}
+					}
+					else if ($this->return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -1418,9 +1944,13 @@ class updater_db_tools
 					// Only remove the column if it exists...
 					if ($this->sql_column_exists($table, $column))
 					{
-						$result = $this->sql_column_remove($table, $column);
+						$result = $this->sql_column_remove($table, $column, true);
 
-						if ($this->return_statements)
+						if ($sqlite)
+						{
+							$sqlite_data[$table]['drop_columns'][] = $result;
+						}
+						else if ($this->return_statements)
 						{
 							$statements = array_merge($statements, $result);
 						}
@@ -1434,9 +1964,13 @@ class updater_db_tools
 		{
 			foreach ($schema_changes['add_primary_keys'] as $table => $columns)
 			{
-				$result = $this->sql_create_primary_key($table, $columns);
+				$result = $this->sql_create_primary_key($table, $columns, true);
 
-				if ($this->return_statements)
+				if ($sqlite)
+				{
+					$sqlite_data[$table]['primary_key'] = $result;
+				}
+				else if ($this->return_statements)
 				{
 					$statements = array_merge($statements, $result);
 				}
@@ -1474,6 +2008,147 @@ class updater_db_tools
 						$statements = array_merge($statements, $result);
 					}
 				}
+			}
+		}
+
+		if ($sqlite)
+		{
+			foreach ($sqlite_data as $table_name => $sql_schema_changes)
+			{
+				// Create temporary table with original data
+				$statements[] = 'begin';
+
+				$sql = "SELECT sql
+					FROM sqlite_master
+					WHERE type = 'table'
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $this->db->sql_query($sql);
+
+				if (!$result)
+				{
+					continue;
+				}
+
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				// Get the columns...
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$plain_table_cols = trim($matches[1]);
+				$new_table_cols = preg_split('/,(?![\s\w]+\))/m', $plain_table_cols);
+				$column_list = array();
+
+				foreach ($new_table_cols as $declaration)
+				{
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
+				}
+
+				// note down the primary key notation because sqlite only supports adding it to the end for the new table
+				$primary_key = false;
+				$_new_cols = array();
+
+				foreach ($new_table_cols as $key => $declaration)
+				{
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						$primary_key = $declaration;
+						continue;
+					}
+					$_new_cols[] = $declaration;
+				}
+
+				$new_table_cols = $_new_cols;
+
+				// First of all... change columns
+				if (!empty($sql_schema_changes['change_columns']))
+				{
+					foreach ($sql_schema_changes['change_columns'] as $column_sql)
+					{
+						foreach ($new_table_cols as $key => $declaration)
+						{
+							$entities = preg_split('#\s+#', trim($declaration));
+							if (strpos($column_sql, $entities[0] . ' ') === 0)
+							{
+								$new_table_cols[$key] = $column_sql;
+							}
+						}
+					}
+				}
+
+				if (!empty($sql_schema_changes['add_columns']))
+				{
+					foreach ($sql_schema_changes['add_columns'] as $column_sql)
+					{
+						$new_table_cols[] = $column_sql;
+					}
+				}
+
+				// Now drop them...
+				if (!empty($sql_schema_changes['drop_columns']))
+				{
+					foreach ($sql_schema_changes['drop_columns'] as $column_name)
+					{
+						// Remove from column list...
+						$new_column_list = array();
+						foreach ($column_list as $key => $value)
+						{
+							if ($value === $column_name)
+							{
+								continue;
+							}
+
+							$new_column_list[] = $value;
+						}
+
+						$column_list = $new_column_list;
+
+						// Remove from table...
+						$_new_cols = array();
+						foreach ($new_table_cols as $key => $declaration)
+						{
+							$entities = preg_split('#\s+#', trim($declaration));
+							if (strpos($column_name . ' ', $entities[0] . ' ') === 0)
+							{
+								continue;
+							}
+							$_new_cols[] = $declaration;
+						}
+						$new_table_cols = $_new_cols;
+					}
+				}
+
+				// Primary key...
+				if (!empty($sql_schema_changes['primary_key']))
+				{
+					$new_table_cols[] = 'PRIMARY KEY (' . implode(', ', $sql_schema_changes['primary_key']) . ')';
+				}
+				// Add a new one or the old primary key
+				else if ($primary_key !== false)
+				{
+					$new_table_cols[] = $primary_key;
+				}
+
+				$columns = implode(',', $column_list);
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $new_table_cols) . ');';
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
 			}
 		}
 
@@ -1561,7 +2236,7 @@ class updater_db_tools
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE table_name = '{$table}'";
+					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -1579,7 +2254,7 @@ class updater_db_tools
 			case 'firebird':
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
-					WHERE RDB\$RELATION_NAME = '{$table}'";
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -1732,10 +2407,12 @@ class updater_db_tools
 		{
 			case 'firebird':
 				$sql .= " {$column_type} ";
+				$return_array['column_type_sql_type'] = " {$column_type} ";
 
 				if (!is_null($column_data[1]))
 				{
 					$sql .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
+					$return_array['column_type_sql_default'] = ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 				}
 
 				$sql .= 'NOT NULL';
@@ -1889,7 +2566,7 @@ class updater_db_tools
 	/**
 	* Add new column
 	*/
-	function sql_column_add($table_name, $column_name, $column_data)
+	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
@@ -1897,27 +2574,38 @@ class updater_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
+				// Does not support AFTER statement, only POSITION (and there you need the column position)
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
+				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
+				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
 			break;
 
 			case 'oracle':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'postgres':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name . ' ' . $column_data['column_type_sql'];
+				}
+
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
@@ -1982,7 +2670,7 @@ class updater_db_tools
 	/**
 	* Drop column
 	*/
-	function sql_column_remove($table_name, $column_name)
+	function sql_column_remove($table_name, $column_name, $inline = false)
 	{
 		$statements = array();
 
@@ -2010,6 +2698,12 @@ class updater_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name;
+				}
+
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
@@ -2103,7 +2797,7 @@ class updater_db_tools
 	/**
 	* Add primary key
 	*/
-	function sql_create_primary_key($table_name, $column)
+	function sql_create_primary_key($table_name, $column, $inline = false)
 	{
 		$statements = array();
 
@@ -2130,6 +2824,12 @@ class updater_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column;
+				}
+
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
@@ -2243,7 +2943,7 @@ class updater_db_tools
 	/**
 	* Change column type (not name!)
 	*/
-	function sql_column_change($table_name, $column_name, $column_data)
+	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
@@ -2252,7 +2952,15 @@ class updater_db_tools
 		{
 			case 'firebird':
 				// Change type...
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				if (!empty($column_data['column_type_sql_default']))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" SET DEFAULT ' . ' ' . $column_data['column_type_sql_default'];
+				}
+				else
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				}
 			break;
 
 			case 'mssql':
@@ -2332,6 +3040,11 @@ class updater_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name . ' ' . $column_data['column_type_sql'];
+				}
 
 				$sql = "SELECT sql
 					FROM sqlite_master

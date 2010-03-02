@@ -58,7 +58,7 @@ class filespec
 
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = trim(htmlspecialchars(basename($upload_ary['name'])));
+		$name = trim(utf8_htmlspecialchars(utf8_basename($upload_ary['name'])));
 		$this->realname = $this->uploadname = (STRIP) ? stripslashes($name) : $name;
 		$this->mimetype = $upload_ary['type'];
 
@@ -290,7 +290,7 @@ class filespec
 
 		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on') ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
-		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
+		$this->destination_file = $this->destination_path . '/' . utf8_basename($this->realname);
 
 		// Check if the file already exist, else there is something wrong...
 		if (file_exists($this->destination_file) && !$overwrite)
@@ -313,11 +313,8 @@ class filespec
 						if (!@move_uploaded_file($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-							return false;
 						}
 					}
-
-					@unlink($this->filename);
 
 				break;
 
@@ -328,11 +325,8 @@ class filespec
 						if (!@copy($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-							return false;
 						}
 					}
-
-					@unlink($this->filename);
 
 				break;
 
@@ -341,14 +335,21 @@ class filespec
 					if (!@copy($this->filename, $this->destination_file))
 					{
 						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-						return false;
 					}
-					@unlink($this->filename);
 
 				break;
 			}
 
+			// Remove temporary filename
+			@unlink($this->filename);
+
+			if (sizeof($this->error))
+			{
+				return false;
+			}
+
 			phpbb_chmod($this->destination_file, $chmod);
+			return true;
 		}
 
 		// Try to get real filesize from destination folder
@@ -417,10 +418,9 @@ class filespec
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || $this->filesize == 0))
 		{
-			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES'] );
 			$max_filesize = get_formatted_filesize($this->upload->max_filesize, false);
 
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
 
 			return false;
 		}
@@ -635,7 +635,7 @@ class fileupload
 
 		if ($filedata === false)
 		{
-			$_FILES[$form_name]['name'] = basename($source_file);
+			$_FILES[$form_name]['name'] = utf8_basename($source_file);
 			$_FILES[$form_name]['size'] = 0;
 			$mimetype = '';
 
@@ -747,7 +747,7 @@ class fileupload
 		$ext = array_pop($url['path']);
 
 		$url['path'] = implode('', $url['path']);
-		$upload_ary['name'] = basename($url['path']) . (($ext) ? '.' . $ext : '');
+		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
 		$filename = $url['path'];
 		$filesize = 0;
 
@@ -855,10 +855,9 @@ class fileupload
 			break;
 
 			case 2:
-				$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
 				$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
 			break;
 
 			case 3:
@@ -891,10 +890,9 @@ class fileupload
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
 		{
-			$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
 			$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
 		}
 
 		// check Filename

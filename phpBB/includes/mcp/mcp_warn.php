@@ -204,7 +204,7 @@ class mcp_warn
 
 		$sql = 'SELECT u.*, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
-			WHERE post_id = $post_id
+			WHERE p.post_id = $post_id
 				AND u.user_id = p.poster_id";
 		$result = $db->sql_query($sql);
 		$user_row = $db->sql_fetchrow($result);

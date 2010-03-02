@@ -70,7 +70,7 @@ if (!extension_loaded('xml'))
 		$pos = 0;
 		$len = strlen($str);
 		$ret = '';
-	
+
 		while ($pos < $len)
 		{
 			$ord = ord($str[$pos]) & 0xF0;
@@ -252,7 +252,7 @@ else
 		if (is_null($offset))
 		{
 			$ar	= explode($needle, $str);
-			
+
 			if (sizeof($ar) > 1)
 			{
 				// Pop off the end of the string where the last	match was made
@@ -527,7 +527,7 @@ else
 			$op = '^(?:' . $op . '.{' . $oy . '})';
 		}
 		else
-		{	
+		{
 			// offset == 0; just anchor the pattern
 			$op = '^';
 		}
@@ -560,7 +560,7 @@ else
 
 				$lx = (int) ($length / 65535);
 				$ly = $length % 65535;
-				
+
 				// negative length requires a captured group
 				// of length characters
 				if ($lx)
@@ -632,7 +632,7 @@ function utf8_str_split($str, $split_len = 1)
 	{
 		return array($str);
 	}
-	
+
 	preg_match_all('/.{' . $split_len . '}|[^\x00]{1,' . $split_len . '}$/us', $str, $ar);
 	return $ar[0];
 }
@@ -1915,6 +1915,81 @@ function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 
 	unset($new_lines[$index]);
 	return implode($break, $new_lines);
+}
+
+/**
+* UTF8-safe basename() function
+*
+* basename() has some limitations and is dependent on the locale setting
+* according to the PHP manual. Therefore we provide our own locale independant
+* basename function.
+*
+* @param string $filename The filename basename() should be applied to
+* @return string The basenamed filename
+*/
+function utf8_basename($filename)
+{
+	// We always check for forward slash AND backward slash
+	// because they could be mixed or "sneaked" in. ;)
+	// You know, never trust user input...
+	if (strpos($filename, '/') !== false)
+	{
+		$filename = utf8_substr($filename, utf8_strrpos($filename, '/') + 1);
+	}
+
+	if (strpos($filename, '\\') !== false)
+	{
+		$filename = utf8_substr($filename, utf8_strrpos($filename, '\\') + 1);
+	}
+
+	return $filename;
+}
+
+/**
+* UTF8-safe str_replace() function
+*
+* @param string $search The value to search for
+* @param string $replace The replacement string
+* @param string $subject The target string
+* @return string The resultant string
+*/
+function utf8_str_replace($search, $replace, $subject)
+{
+	if (!is_array($search))
+	{
+		$search = array($search);
+		if (is_array($replace))
+		{
+			$replace = (string) $replace;
+			trigger_error('Array to string conversion', E_USER_NOTICE);
+		}
+	}
+
+	$length = sizeof($search);
+
+	if (!is_array($replace))
+	{
+		$replace = array_fill(0, $length, $replace);
+	}
+	else
+	{
+		$replace = array_pad($replace, $length, '');
+	}
+
+	for ($i = 0; $i < $length; $i++)
+	{
+		$search_length = utf8_strlen($search[$i]);
+		$replace_length = utf8_strlen($replace[$i]);
+
+		$offset = 0;
+		while (($start = utf8_strpos($subject, $search[$i], $offset)) !== false)
+		{
+			$subject = utf8_substr($subject, 0, $start) . $replace[$i] . utf8_substr($subject, $start + $search_length);
+			$offset = $start + $replace_length;
+		}
+	}
+
+	return $subject;
 }
 
 ?>

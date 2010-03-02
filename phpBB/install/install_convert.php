@@ -611,7 +611,7 @@ class install_convert extends module
 		$config['max_quote_depth'] = 0;
 
 		// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-		$config['max_post_chars'] = 0;
+		$config['max_post_chars'] = $config['min_post_chars'] = 0;
 
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
@@ -989,7 +989,7 @@ class install_convert extends module
 				$config['max_quote_depth'] = 0;
 
 				// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-				$config['max_post_chars'] = 0;
+				$config['max_post_chars'] = $config['min_post_chars'] = 0;
 			}
 
 			$template->assign_block_vars('checks', array(
@@ -1558,7 +1558,7 @@ class install_convert extends module
 	*/
 	function finish_conversion()
 	{
-		global $db, $phpbb_root_path, $convert, $config, $language, $user, $template;
+		global $db, $phpbb_root_path, $phpEx, $convert, $config, $language, $user, $template;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1567,7 +1567,7 @@ class install_convert extends module
 				OR config_name = 'convert_db_user'");
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
-		@unlink($phpbb_root_path . 'cache/data_global.php');
+		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
 		cache_moderators();
 
 		// And finally, add a note to the log

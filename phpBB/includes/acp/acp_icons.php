@@ -89,6 +89,18 @@ class acp_icons
 						continue;
 					}
 
+					// adjust the width and height to be lower than 128px while perserving the aspect ratio
+					if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+					{
+						$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
+						$img_size[0] = 127;
+					}
+					else if ($img_size[1] > 127)
+					{
+						$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
+						$img_size[1] = 127;
+					}
+
 					$_images[$path . $img]['file'] = $path . $img;
 					$_images[$path . $img]['width'] = $img_size[0];
 					$_images[$path . $img]['height'] = $img_size[1];
@@ -168,19 +180,19 @@ class acp_icons
 						}
 					}
 				}
-				
+
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
-				
+
 				$data = array();
 				$after = false;
 				$display = 0;
 				$order_lists = array('', '');
 				$add_order_lists = array('', '');
 				$display_count = 0;
-				
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
@@ -231,15 +243,15 @@ class acp_icons
 					$data = $_images;
 				}
 
-				$colspan = (($mode == 'smilies') ? '7' : '5');
+				$colspan = (($mode == 'smilies') ? 7 : 5);
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
-				
+
 				$template->assign_vars(array(
 					'S_EDIT'		=> true,
 					'S_SMILIES'		=> ($mode == 'smilies') ? true : false,
 					'S_ADD'			=> ($action == 'add') ? true : false,
-					
+
 					'S_ORDER_LIST_DISPLAY'		=> $order_list . $order_lists[1],
 					'S_ORDER_LIST_UNDISPLAY'	=> $order_list . $order_lists[0],
 					'S_ORDER_LIST_DISPLAY_COUNT'	=> $display_count + 1,
@@ -286,10 +298,10 @@ class acp_icons
 						'S_ADD_CODE'		=> true,
 
 						'S_IMG_OPTIONS'		=> $smiley_options,
-						
+
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
-						
+
 						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 						'PHPBB_ROOT_PATH'	=> $phpbb_root_path,
@@ -303,7 +315,7 @@ class acp_icons
 				}
 
 				return;
-	
+
 			break;
 
 			case 'create':
@@ -311,7 +323,7 @@ class acp_icons
 
 				// Get items to create/modify
 				$images = (isset($_POST['image'])) ? array_keys(request_var('image', array('' => 0))) : array();
-				
+
 				// Now really get the items
 				$image_id		= (isset($_POST['id'])) ? request_var('id', array('' => 0)) : array();
 				$image_order	= (isset($_POST['order'])) ? request_var('order', array('' => 0)) : array();
@@ -348,6 +360,25 @@ class acp_icons
 					}
 				}
 
+				if ($mode == 'smilies' && $action == 'create')
+				{
+					$smiley_count = $this->item_count($table);
+					
+					$addable_smileys_count = sizeof($images);
+					foreach ($images as $image)
+					{
+						if (!isset($image_add[$image]))
+						{
+							--$addable_smileys_count;
+						}
+					}
+					
+					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
+					{
+						trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+				}
+
 				$icons_updated = 0;
 				$errors = array();
 				foreach ($images as $image)
@@ -367,6 +398,17 @@ class acp_icons
 							$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $image);
 							$image_width[$image] = $img_size[0];
 							$image_height[$image] = $img_size[1];
+						}
+
+						if ($image_width[$image] > 127 && $image_width[$image] > $image_height[$image])
+						{
+							$image_height[$image] = (int) ($image_height[$image] * (127 / $image_width[$image]));
+							$image_width[$image] = 127;
+						}
+						else if ($image_height[$image] > 127)
+						{
+							$image_width[$image] = (int) ($image_width[$image] * (127 / $image_height[$image]));
+							$image_height[$image] = 127;
 						}
 
 						$img_sql = array(
@@ -426,13 +468,13 @@ class acp_icons
 							$db->sql_query($sql);
 							$icons_updated++;
 						}
-						
+
  					}
 				}
-				
+
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
-				
+
 				$level = E_USER_NOTICE;
 				switch ($icons_updated)
 				{
@@ -440,11 +482,11 @@ class acp_icons
 						$suc_lang = "{$lang}_NONE";
 						$level = E_USER_WARNING;
 						break;
-						
+
 					case 1:
 						$suc_lang = "{$lang}_ONE";
 						break;
-						
+
 					default:
 						$suc_lang = $lang;
 				}
@@ -495,7 +537,6 @@ class acp_icons
 						}
 					}
 
-
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
@@ -539,6 +580,15 @@ class acp_icons
 							$cur_img[$row[$field_sql]] = 1;
 						}
 						$db->sql_freeresult($result);
+					}
+
+					if ($mode == 'smilies')
+					{
+						$smiley_count = $this->item_count($table);
+						if ($smiley_count + sizeof($pak_ary) > SMILEY_LIMIT)
+						{
+							trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						}
 					}
 
 					foreach ($pak_ary as $pak_entry)
@@ -835,11 +885,14 @@ class acp_icons
 		);
 
 		$spacer = false;
+		$pagination_start = request_var('start', 0);
+
+		$item_count = $this->item_count($table);
 
 		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $pagination_start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -855,9 +908,9 @@ class acp_icons
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'])
-			);
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+			));
 
 			if (!$spacer && !$row['display_on_posting'])
 			{
@@ -865,6 +918,28 @@ class acp_icons
 			}
 		}
 		$db->sql_freeresult($result);
+
+		$template->assign_var('PAGINATION',
+			generate_pagination($this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true)
+		);
+	}
+	
+	/**
+	 * Returns the count of smilies or icons in the database
+	 *
+	 * @param string $table The table of items to count.
+	 * @return int number of items
+	 */
+	/* private */ function item_count($table)
+	{
+		global $db;
+
+		$sql = "SELECT COUNT(*) AS count
+			FROM $table";
+		$result = $db->sql_query($sql);
+		$item_count = (int) $db->sql_fetchfield('count');
+		$db->sql_freeresult($result);
+		return $item_count;
 	}
 }
 

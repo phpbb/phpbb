@@ -1,27 +1,26 @@
-<!-- INCLUDE ucp_header.html -->
+	<!-- INCLUDE ucp_header.html -->
 
 <!-- INCLUDE ucp_pm_message_header.html -->
 
-	<span class="corners-bottom"><span></span></span></div>
-</div>
 
 <!-- IF S_DISPLAY_HISTORY and (U_VIEW_PREVIOUS_HISTORY or U_VIEW_NEXT_HISTORY) -->
-	<fieldset class="display-options clearfix">
+	<fieldset class="display-options clearfix bg1 pm-message-nav">
 		<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_VIEW_PREVIOUS_HISTORY}</a><!-- ENDIF -->
 		<!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}" class="right-box {S_CONTENT_FLOW_END}">{L_VIEW_NEXT_HISTORY}</a><!-- ENDIF -->
 	</fieldset>
 <!-- ENDIF -->
 
 
-<div id="post-{MESSAGE_ID}" class="post pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
-	<div class="inner"><span class="corners-top"><span></span></span>
+<div id="post-{MESSAGE_ID}" class="panel clearfix post pm-panel-message pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
+<div>
 
 	<div class="postbody">
 
-		<!-- IF U_DELETE or U_EDIT or U_QUOTE -->
+		<!-- IF U_DELETE or U_EDIT or U_QUOTE or U_REPORT -->
 		<ul class="profile-icons">
 			<!-- IF U_EDIT --><li class="edit-icon"><a href="{U_EDIT}" title="{L_POST_EDIT_PM}"><span>{L_POST_EDIT_PM}</span></a></li><!-- ENDIF -->
 			<!-- IF U_DELETE --><li class="delete-icon"><a href="{U_DELETE}" title="{L_DELETE_MESSAGE}"><span>{L_DELETE_MESSAGE}</span></a></li><!-- ENDIF -->
+			<!-- IF U_REPORT --><li class="report-icon"><a href="{U_REPORT}" title="{L_REPORT_PM}"><span>{L_REPORT_PM}</span></a></li><!-- ENDIF -->
 			<!-- IF U_QUOTE --><li class="quote-icon"><a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}"><span>{L_POST_QUOTE_PM}</span></a></li><!-- ENDIF -->
 		</ul>
 		<!-- ENDIF -->
@@ -67,7 +66,7 @@
 		<!-- IF RANK_TITLE --><dd>{RANK_TITLE}</dd><!-- ENDIF -->
 		<!-- IF RANK_IMG --><dd>{RANK_IMG}</dd><!-- ENDIF -->
 		<dd>&nbsp;</dd>
-		<!-- IF AUTHOR_POSTS --><dd><strong>{L_POSTS}:</strong> {AUTHOR_POSTS}</dd><!-- ENDIF -->
+		<dd><strong>{L_POSTS}:</strong> {AUTHOR_POSTS}</dd>
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}:</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}:</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
 		

@@ -106,14 +106,14 @@ onload_functions.push('subPanels()');
 			<div class="inner"><span class="corners-top"><span></span></span>
 
 			<div class="postbody" id="pr{postrow.POST_ID}">
-				<div class="right-box"><a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a> | {L_SELECT}: <input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></div>
+				<ul class="profile-icons"><li class="info-icon"><a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}"><span>{L_POST_DETAILS}</span></a></li><li>{L_SELECT}: <input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></li></ul>
 
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
 				<p class="author"><a href="#pr{postrow.POST_ID}">{postrow.MINI_POST_IMG}</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></p>
 
 				<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
 				<p class="rules">
-					<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a><!-- ENDIF -->
+					<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a><br /><!-- ENDIF -->
 					<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a><!-- ENDIF -->
 				</p>
 				<!-- ENDIF -->

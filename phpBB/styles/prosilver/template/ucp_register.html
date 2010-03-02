@@ -11,6 +11,10 @@
 		document.forms['register'].submit.click();
 	}
 
+	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_REFRESH -->
+	onload_functions.push('apply_onkeypress_event()');
+	<!-- ENDIF -->
+
 // ]]>
 </script>
 
@@ -26,10 +30,6 @@
 	<!-- IF L_REG_COND -->
 		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
 	<!-- ENDIF -->
-	<!-- IF .profile_fields -->
-		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
-	<!-- ENDIF -->
-
 	<dl>
 		<dt><label for="username">{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
 		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" title="{L_USERNAME}" /></dd>
@@ -48,19 +48,22 @@
 	</dl>
 	<dl>
 		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label></dt>
-		<dd><input type="password" tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
+		<dd><input type="password"  tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
 	</dl>
 
 	<hr />
 
 	<dl>
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
-		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
+		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
 	<dl>
 		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" class="autowidth">{S_TZ_OPTIONS}</select></dd>
+		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
 	</dl>
+
+	<!-- IF .profile_fields -->
+		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
 
 	<!-- BEGIN profile_fields -->
 		<dl>
@@ -70,32 +73,18 @@
 			<dd>{profile_fields.FIELD}</dd>
 		</dl>
 	<!-- END profile_fields -->
-	</fieldset>
+	<!-- ENDIF -->
 
-<!-- IF S_CONFIRM_CODE -->
+	</fieldset>
 	<span class="corners-bottom"><span></span></span></div>
 </div>
-
-<div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
-
-	<h3>{L_CONFIRMATION}</h3>
-	<p>{L_CONFIRM_EXPLAIN}</p>
-
-	<fieldset class="fields2">
-	<dl>
-		<dt><label for="confirm_code">{L_CONFIRM_CODE}:</label></dt>
-		<dd>{CONFIRM_IMG}</dd>
-		<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" class="inputbox narrow" title="{L_CONFIRM_CODE}" /></dd>
-		<dd>{L_CONFIRM_CODE_EXPLAIN}<!-- IF S_CONFIRM_REFRESH --> {L_VC_REFRESH_EXPLAIN}<!-- ENDIF --></dd>
-		<!-- IF S_CONFIRM_REFRESH --><dd><input type="submit" value="{L_VC_REFRESH}" class="button2" /></dd> <!-- ENDIF -->
-	</dl>
-	</fieldset>
+<!-- IF CAPTCHA_TEMPLATE -->
+	<!-- DEFINE $CAPTCHA_TAB_INDEX = 8 -->
+	<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 <!-- ENDIF -->
 
 <!-- IF S_COPPA -->
-	<span class="corners-bottom"><span></span></span></div>
-</div>
+
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
@@ -103,10 +92,9 @@
 	<h4>{L_COPPA_COMPLIANCE}</h4>
 
 	<p>{L_COPPA_EXPLAIN}</p>
-<!-- ENDIF -->
-
 	<span class="corners-bottom"><span></span></span></div>
 </div>
+<!-- ENDIF -->
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
@@ -114,7 +102,7 @@
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-		<input type="submit" name="submit" id="submit" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" tabindex="9" name="submit" id="submit" value="{L_SUBMIT}" class="button1 default-submit-action" />
 		{S_FORM_TOKEN}
 	</fieldset>
 

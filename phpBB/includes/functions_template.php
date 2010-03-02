@@ -128,9 +128,9 @@ class template_compile
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->.*?<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
 
-		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
+		preg_match_all('#<!-- INCLUDE (\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$include_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDE [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDE -->', $code);
+		$code = preg_replace('#<!-- INCLUDE (?:\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', '<!-- INCLUDE -->', $code);
 
 		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$includephp_blocks = $matches[1];
@@ -193,8 +193,39 @@ class template_compile
 
 				case 'INCLUDE':
 					$temp = array_shift($include_blocks);
+
+					// Dynamic includes
+					// Cheap match rather than a full blown regexp, we already know
+					// the format of the input so just use string manipulation.
+					if ($temp[0] == '{')
+					{
+						$file = false;
+
+						if ($temp[1] == '$')
+						{
+							$var = substr($temp, 2, -1);
+							//$file = $this->template->_tpldata['DEFINE']['.'][$var];
+							$temp = "\$this->_tpldata['DEFINE']['.']['$var']";
+						}
+						else
+						{
+							$var = substr($temp, 1, -1);
+							//$file = $this->template->_rootref[$var];
+							$temp = "\$this->_rootref['$var']";
+						}
+					}
+					else
+					{
+						$file = $temp;
+					}
+
 					$compile_blocks[] = '<?php ' . $this->compile_tag_include($temp) . ' ?>';
-					$this->template->_tpl_include($temp, false);
+
+					// No point in checking variable includes
+					if ($file)
+					{
+						$this->template->_tpl_include($file, false);
+					}
 				break;
 
 				case 'INCLUDEPHP':
@@ -220,15 +251,22 @@ class template_compile
 			$template_php .= (!$no_echo) ? (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '') : (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
+		// Remove unused opening/closing tags
+		$template_php = str_replace(' ?><?php ', ' ', $template_php);
+
+		// Now add a newline after each php closing tag which already has a newline
+		// PHP itself strips a newline if a closing tag is used (this is documented behaviour) and it is mostly not intended by style authors to remove newlines
+		$template_php = preg_replace('#\?\>([\r\n])#', '?>\1\1', $template_php);
+
 		// There will be a number of occasions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
 		if ($no_echo)
 		{
-			return "\$$echo_var .= '" . str_replace(' ?><?php ', ' ', $template_php) . "'";
+			return "\$$echo_var .= '" . $template_php . "'";
 		}
 
-		return str_replace(' ?><?php ', ' ', $template_php);
+		return $template_php;
 	}
 
 	/**
@@ -594,6 +632,12 @@ class template_compile
 	*/
 	function compile_tag_include($tag_args)
 	{
+		// Process dynamic includes
+		if ($tag_args[0] == '$')
+		{
+			return "if (isset($tag_args)) { \$this->_tpl_include($tag_args); }";
+		}
+
 		return "\$this->_tpl_include('$tag_args');";
 	}
 
@@ -603,7 +647,7 @@ class template_compile
 	*/
 	function compile_tag_include_php($tag_args)
 	{
-		return "include('" . $tag_args . "');";
+		return "\$this->_php_include('$tag_args');";
 	}
 
 	/**

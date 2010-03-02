@@ -15,6 +15,15 @@
 {META}
 <title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
 
+<!-- IF S_ENABLE_FEEDS -->
+	<link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{U_FEED}" />
+	<!-- IF S_ENABLE_FEEDS_NEWS --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_FEED_NEWS}" href="{U_FEED}?mode=news" /><!-- ENDIF -->
+	<!-- IF S_ENABLE_FEEDS_FORUMS --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_ALL_FORUMS}" href="{U_FEED}?mode=forums" /><!-- ENDIF -->
+	<!-- IF S_ENABLE_FEEDS_TOPICS --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_ALL_TOPICS}" href="{U_FEED}?mode=topics" /><!-- ENDIF -->
+	<!-- IF S_ENABLE_FEEDS_FORUM and S_FORUM_ID --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_FORUM} - {FORUM_NAME}" href="{U_FEED}?f={S_FORUM_ID}" /><!-- ENDIF -->
+	<!-- IF S_ENABLE_FEEDS_TOPIC and S_TOPIC_ID --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_TOPIC} - {TOPIC_TITLE}" href="{U_FEED}?f={S_FORUM_ID}&amp;t={S_TOPIC_ID}" /><!-- ENDIF -->
+<!-- ENDIF -->
+
 <link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
 
 <script type="text/javascript">
@@ -159,7 +168,7 @@ function marklist(id, name, state)
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
 						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a><!-- ENDIF -->
-					<!-- ELSEIF S_REGISTER_ENABLED --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
+					<!-- ELSEIF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
 			</td>
@@ -192,7 +201,7 @@ function marklist(id, name, state)
 	<p class="searchbar">
 		<span style="float: {S_CONTENT_FLOW_BEGIN};"><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a> | <a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></span>
 		<!-- IF S_USER_LOGGED_IN -->
-		<span style="float: {S_CONTENT_FLOW_END};"><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a> | <a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></span>
+		<span style="float: {S_CONTENT_FLOW_END};"><a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a> | <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a> | <a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></span>
 		<!-- ENDIF -->
 	</p>
 	<!-- ENDIF -->

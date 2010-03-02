@@ -235,8 +235,8 @@ class dbal
 	*/
 	function sql_like_expression($expression)
 	{
-		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
-		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
+		$expression = utf8_str_replace(array('_', '%'), array("\_", "\%"), $expression);
+		$expression = utf8_str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
 		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
 	}
@@ -412,6 +412,24 @@ class dbal
 	}
 
 	/**
+	* Run binary AND operator on DB column.
+	* Results in sql statement: "{$column_name} & (1 << {$bit}) {$compare}"
+	*
+	* @param string $column_name The column name to use
+	* @param int $bit The value to use for the AND operator, will be converted to (1 << $bit). Is used by options, using the number schema... 0, 1, 2...29
+	* @param string $compare Any custom SQL code after the check (for example "= 0")
+	*/
+	function sql_bit_and($column_name, $bit, $compare = '')
+	{
+		if (method_exists($this, '_sql_bit_and'))
+		{
+			return $this->_sql_bit_and($column_name, $bit, $compare);
+		}
+
+		return $column_name . ' & ' . (1 << $bit) . (($compare) ? ' ' . $compare : '');
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
@@ -435,8 +453,7 @@ class dbal
 				// If by accident the sql array is only one-dimensional we build a normal insert statement
 				if (!is_array($_sql_ary))
 				{
-					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
-					return true;
+					return $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
 				}
 
 				$values = array();
@@ -447,7 +464,7 @@ class dbal
 				$ary[] = '(' . implode(', ', $values) . ')';
 			}
 
-			$this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
+			return $this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
 		}
 		else
 		{
@@ -458,7 +475,12 @@ class dbal
 					return false;
 				}
 
-				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+				$result = $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+
+				if (!$result)
+				{
+					return false;
+				}
 			}
 		}
 

@@ -39,7 +39,7 @@ class acp_ranks
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
 
-		$form_name = 'acp_prune';
+		$form_name = 'acp_ranks';
 		add_form_key($form_name);
 
 		switch ($action)
@@ -168,25 +168,22 @@ class acp_ranks
 					{
 						$img = $path . $img;
 
-						if (!in_array($img, $existing_imgs) || $action == 'edit')
+						if ($ranks && $img == $ranks['rank_image'])
 						{
-							if ($ranks && $img == $ranks['rank_image'])
-							{
-								$selected = ' selected="selected"';
-								$edit_img = $img;
-							}
-							else
-							{
-								$selected = '';
-							}
-
-							if (strlen($img) > 255)
-							{
-								continue;
-							}
-
-							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+							$selected = ' selected="selected"';
+							$edit_img = $img;
 						}
+						else
+						{
+							$selected = '';
+						}
+
+						if (strlen($img) > 255)
+						{
+							continue;
+						}
+
+						$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . ((in_array($img, $existing_imgs)) ? ' ' . $user->lang['RANK_IMAGE_IN_USE'] : '') . '</option>';
 					}
 				}
 

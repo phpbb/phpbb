@@ -2,7 +2,7 @@
 <!-- IF U_MCP --><p>[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ENDIF -->
 <h2><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
-<!-- IF FORUM_DESC --><span style="display: none">{FORUM_DESC}<br /></span><!-- ENDIF -->
+<!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
 <!-- IF MODERATORS or U_MCP -->
 	<p>
@@ -123,7 +123,7 @@
 			<!-- ELSE -->
 
 		<!-- IF not S_IS_BOT -->
-			<!-- IF postrow.U_QUOTE or postrow.U_INFO or postrow.U_DELETE or postrow.U_EDIT -->
+			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
 				<ul class="profile-icons">
 					<!-- IF postrow.U_EDIT --><li class="edit-icon"><a href="{postrow.U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}"><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
@@ -140,7 +140,7 @@
 
 			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_REPORTED -->
 				<p class="rules">
-					<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a><!-- ENDIF -->
+					<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a><br /><!-- ENDIF -->
 					<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a><!-- ENDIF -->
 				</p>
 			<!-- ENDIF -->
@@ -163,7 +163,7 @@
 				</div>
 			<!-- ENDIF -->
 
-			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice">{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
+			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice"><br /><br />{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
 			<!-- IF postrow.SIGNATURE --><div id="sig{postrow.POST_ID}" class="signature">{postrow.SIGNATURE}</div><!-- ENDIF -->
 		<!-- ENDIF -->
 
@@ -222,7 +222,9 @@
 
 	<hr class="divider" />
 <!-- END postrow -->
-
+<!-- IF S_QUICK_REPLY -->
+	<!-- INCLUDE quickreply_editor.html -->
+<!-- ENDIF -->
 <!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE -->
 	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
 

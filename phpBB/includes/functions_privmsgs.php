@@ -1145,8 +1145,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 		{
 			$sql = 'SELECT user_id, username, user_colour
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', $u) . '
-					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE ' . $db->sql_in_set('user_id', $u);
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1356,6 +1355,12 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// Additionally, do not include the sender if he is in the group he wants to send to. ;)
+				if ($row['user_id'] === $user->data['user_id'])
+				{
+					continue;
+				}
+
 				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
 				$recipients[$row['user_id']] = $field;
 			}
@@ -1405,7 +1410,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
-				'bcc_address'		=> implode(':', $bcc)
+				'bcc_address'		=> implode(':', $bcc),
+				'message_reported'	=> 0,
 			);
 		break;
 
@@ -1545,7 +1551,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
@@ -1691,13 +1697,33 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 {
 	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
 
+	// Select all receipts and the author from the pm we currently view, to only display their pm-history
+	$sql = 'SELECT author_id, user_id
+		FROM ' . PRIVMSGS_TO_TABLE . "
+		WHERE msg_id = $msg_id
+			AND folder_id <> " . PRIVMSGS_HOLD_BOX;
+	$result = $db->sql_query($sql);
+
+	$recipients = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$recipients[] = (int) $row['user_id'];
+		$recipients[] = (int) $row['author_id'];
+	}
+	$db->sql_freeresult($result);
+	$recipients = array_unique($recipients);
+
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
 		FROM ' . PRIVMSGS_TABLE . ' p, ' . PRIVMSGS_TO_TABLE . ' t, ' . USERS_TABLE . ' u
 		WHERE t.msg_id = p.msg_id
 			AND p.author_id = u.user_id
-			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ")
+			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+			AND ' . $db->sql_in_set('t.author_id', $recipients, false, true) . "
 			AND t.user_id = $user_id";
+
+	// We no longer need those.
+	unset($recipients);
 
 	if (!$message_row['root_level'])
 	{
@@ -1781,7 +1807,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 		$decoded_message = false;
 
-		if ($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id'])
+		if ($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS)
 		{
 			$decoded_message = $message;
 			decode_message($decoded_message, $row['bbcode_uid']);
@@ -1824,10 +1850,10 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 			'MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
-		unset($rowset[$id]);
+		unset($rowset[$i]);
 		$prev_id = $id;
 	}
 
@@ -1861,6 +1887,95 @@ function set_user_message_limit()
 	$db->sql_freeresult($result);
 
 	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+}
+
+/**
+* Generates an array of coloured recipient names from a list of PMs - (groups & users)
+*
+* @param	array	$pm_by_id	An array of rows from PRIVMSGS_TABLE, keys are the msg_ids.
+*
+* @return	array				2D Array: array(msg_id => array('username or group string', ...), ...)
+*								Usernames are generated with {@link get_username_string get_username_string}
+*								Groups are coloured and have a link to the membership page
+*/
+function get_recipient_strings($pm_by_id)
+{
+	global $user, $db;
+
+	$address_list = $recipient_list = $address = array();
+
+	$_types = array('u', 'g');
+
+	foreach ($pm_by_id as $message_id => $row)
+	{
+		$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+
+		foreach ($_types as $ug_type)
+		{
+			if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
+			{
+				foreach ($address[$message_id][$ug_type] as $ug_id => $in_to)
+				{
+					$recipient_list[$ug_type][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+				}
+			}
+		}
+	}
+
+	foreach ($_types as $ug_type)
+	{
+		if (!empty($recipient_list[$ug_type]))
+		{
+			if ($ug_type == 'u')
+			{
+				$sql = 'SELECT user_id as id, username as name, user_colour as colour
+					FROM ' . USERS_TABLE . '
+					WHERE ';
+			}
+			else
+			{
+				$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
+					FROM ' . GROUPS_TABLE . '
+					WHERE ';
+			}
+			$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
+
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($ug_type == 'g')
+				{
+					$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+				}
+
+				$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
+			}
+			$db->sql_freeresult($result);
+		}
+	}
+
+	foreach ($address as $message_id => $adr_ary)
+	{
+		foreach ($adr_ary as $type => $id_ary)
+		{
+			foreach ($id_ary as $ug_id => $_id)
+			{
+				if ($type == 'u')
+				{
+					$address_list[$message_id][] = get_username_string('full', $ug_id, $recipient_list[$type][$ug_id]['name'], $recipient_list[$type][$ug_id]['colour']);
+				}
+				else
+				{
+					$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
+					$link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
+					$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
+				}
+			}
+		}
+	}
+
+	return $address_list;
 }
 
 ?>

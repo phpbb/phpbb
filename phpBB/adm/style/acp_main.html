@@ -14,6 +14,19 @@
 
 	<p>{L_ADMIN_INTRO}</p>
 
+	<!-- IF S_VERSIONCHECK_FAIL -->
+		<div class="errorbox notice">
+			<p>{L_VERSIONCHECK_FAIL}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+		</div>
+	<!-- ELSEIF not S_VERSION_UP_TO_DATE -->
+		<div class="errorbox">
+			<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+		</div>
+	<!-- ENDIF -->
+
+
 	<!-- IF S_REMOVE_INSTALL -->
 		<div class="errorbox">
 			<h3>{L_WARNING}</h3>
@@ -85,7 +98,9 @@
 	</tr>
 	<tr>
 		<td>{L_BOARD_VERSION}: </td>
-		<td><strong>{BOARD_VERSION}</strong></td>
+		<td>
+			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF --> title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+		</td>
 	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}: </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
@@ -137,6 +152,12 @@
 			</form>
 
 			<!-- IF S_FOUNDER -->
+			<form id="action_purge_sessions_form" method="post" action="{U_ACTION}">
+				<dl>
+					<dt><label for="action_purge_sessions">{L_PURGE_SESSIONS}</label><br /><span>{L_PURGE_SESSIONS_EXPLAIN}</span></dt>
+					<dd><input type="hidden" name="action" value="purge_sessions" /><input class="button2" type="submit" id="action_purge_sessions" name="action_purge_sessions" value="{L_RUN}" /></dd>
+				</dl>
+			</form>
 			<form id="action_purge_cache_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_purge_cache">{L_PURGE_CACHE}</label><br /><span>{L_PURGE_CACHE_EXPLAIN}</span></dt>
@@ -193,19 +214,24 @@
 			<th>{L_USERNAME}</th>
 			<th>{L_JOINED}</th>
 			<th>{L_INACTIVE_DATE}</th>
-			<th>{L_INACTIVE_REASON}</th>
 			<th>{L_LAST_VISIT}</th>
+			<th>{L_INACTIVE_REASON}</th>
 		</tr>
 		</thead>
 		<tbody>
 		<!-- BEGIN inactive -->
 			<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-				<td><a href="{inactive.U_USER_ADMIN}">{inactive.USERNAME}</a></td>
-				<td>{inactive.JOINED}</td>
-				<td>{inactive.INACTIVE_DATE}</td>
-				<td>{inactive.REASON}</td>
-				<td>{inactive.LAST_VISIT}</td>
+				<td style="vertical-align: top;">
+					{inactive.USERNAME_FULL}
+					<!-- IF inactive.POSTS --><br />{L_POSTS}: <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
+				</td>
+				<td style="vertical-align: top;">{inactive.JOINED}</td>
+				<td style="vertical-align: top;">{inactive.INACTIVE_DATE}</td>
+				<td style="vertical-align: top;">{inactive.LAST_VISIT}</td>
+				<td style="vertical-align: top;">
+					{inactive.REASON}
+					<!-- IF inactive.REMINDED --><br />{inactive.REMINDED_EXPLAIN}<!-- ENDIF -->
 			</tr>
 		<!-- BEGINELSE -->
 			<tr>

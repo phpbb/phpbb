@@ -77,6 +77,7 @@ class mcp_reports
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id
+						AND r.pm_id = 0
 					ORDER BY report_closed ASC';
 				$result = $db->sql_query_limit($sql, 1);
 				$report = $db->sql_fetchrow($result);
@@ -149,13 +150,11 @@ class mcp_reports
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
-						ORDER BY filetime DESC, post_msg_id ASC';
+						ORDER BY filetime DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -258,7 +257,7 @@ class mcp_reports
 				}
 				unset($forum_list_read);
 
-				if ($topic_id && $forum_id)
+				if ($topic_id)
 				{
 					$topic_info = get_topic_data(array($topic_id));
 
@@ -267,12 +266,15 @@ class mcp_reports
 						trigger_error('TOPIC_NOT_EXIST');
 					}
 
-					$topic_info = $topic_info[$topic_id];
-					$forum_id = $topic_info['forum_id'];
-				}
-				else if ($topic_id && !$forum_id)
-				{
-					$topic_id = 0;
+					if ($forum_id != $topic_info[$topic_id]['forum_id'])
+					{
+						$topic_id = 0;
+					}
+					else
+					{
+						$topic_info = $topic_info[$topic_id];
+						$forum_id = (int) $topic_info['forum_id'];
+					}
 				}
 
 				$forum_list = array();
@@ -329,7 +331,7 @@ class mcp_reports
 				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
 				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
-				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
+				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')
 				{
@@ -346,9 +348,10 @@ class mcp_reports
 						$report_state
 						AND r.post_id = p.post_id
 						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
-						' . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = p.poster_id' : '') . '
+						' . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = r.user_id' : '') . '
 						' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 						AND t.topic_id = p.topic_id
+						AND r.pm_id = 0
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -371,6 +374,7 @@ class mcp_reports
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
 							AND ru.user_id = r.user_id
+							AND r.pm_id = 0
 						ORDER BY ' . $sort_order_sql;
 					$result = $db->sql_query($sql);
 
@@ -438,35 +442,54 @@ class mcp_reports
 /**
 * Closes a report
 */
-function close_report($report_id_list, $mode, $action)
+function close_report($report_id_list, $mode, $action, $pm = false)
 {
-	global $db, $template, $user, $config;
+	global $db, $template, $user, $config, $auth;
 	global $phpEx, $phpbb_root_path;
 
-	$sql = 'SELECT r.post_id
-		FROM ' . REPORTS_TABLE . ' r
-		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list);
+	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
+	$id_column = ($pm) ? 'pm_id' : 'post_id';
+	$module = ($pm) ? 'pm_reports' : 'reports';
+	$pm_prefix = ($pm) ? 'PM_' : '';
+
+	$sql = "SELECT r.$id_column
+		FROM " . REPORTS_TABLE . ' r
+		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . $pm_where;
 	$result = $db->sql_query($sql);
 
 	$post_id_list = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$post_id_list[] = $row['post_id'];
+		$post_id_list[] = $row[$id_column];
 	}
 	$post_id_list = array_unique($post_id_list);
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
+	if ($pm)
 	{
-		trigger_error('NOT_AUTHORISED');
+		if (!$auth->acl_getf_global('m_report'))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+	}
+	else
+	{
+		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
 	}
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
+	elseif ($action == 'delete' && strpos($user->data['session_page'], 'mode=pm_report_details') !== false)
+	{
+		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=pm_reports');
+	}
 	else if ($action == 'close' && !request_var('r', 0))
 	{
-		$redirect = request_var('redirect', build_url(array('mode', 'p', 'quickmod')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', 'p', 'quickmod')) . '&amp;mode=' . $module);
 	}
 	else
 	{
@@ -477,7 +500,7 @@ function close_report($report_id_list, $mode, $action)
 	$topic_ids = array();
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'					=> 'reports',
+		'i'					=> $module,
 		'mode'				=> $mode,
 		'report_id_list'	=> $report_id_list,
 		'action'			=> $action,
@@ -486,13 +509,13 @@ function close_report($report_id_list, $mode, $action)
 
 	if (confirm_box(true))
 	{
-		$post_info = get_post_data($post_id_list, 'm_report');
+		$post_info = ($pm) ? get_pm_data($post_id_list) : get_post_data($post_id_list, 'm_report');
 
-		$sql = 'SELECT r.report_id, r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
-			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
+		$sql = "SELECT r.report_id, r.$id_column, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
+			FROM " . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
 			WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '
-				AND r.user_id = u.user_id';
+				AND r.user_id = u.user_id' . $pm_where;
 		$result = $db->sql_query($sql);
 
 		$reports = $close_report_posts = $close_report_topics = $notify_reporters = $report_id_list = array();
@@ -503,8 +526,12 @@ function close_report($report_id_list, $mode, $action)
 
 			if (!$report['report_closed'])
 			{
-				$close_report_posts[] = $report['post_id'];
-				$close_report_topics[] = $post_info[$report['post_id']]['topic_id'];
+				$close_report_posts[] = $report[$id_column];
+
+				if (!$pm)
+				{
+					$close_report_topics[] = $post_info[$report['post_id']]['topic_id'];
+				}
 			}
 
 			if ($report['user_notify'] && !$report['report_closed'])
@@ -519,7 +546,7 @@ function close_report($report_id_list, $mode, $action)
 			$close_report_posts = array_unique($close_report_posts);
 			$close_report_topics = array_unique($close_report_topics);
 
-			if (sizeof($close_report_posts))
+			if (!$pm && sizeof($close_report_posts))
 			{
 				// Get a list of topics that still contain reported posts
 				$sql = 'SELECT DISTINCT topic_id
@@ -558,18 +585,33 @@ function close_report($report_id_list, $mode, $action)
 
 			if (sizeof($close_report_posts))
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_reported = 0
-					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
-				$db->sql_query($sql);
-
-				if (sizeof($close_report_topics))
+				if ($pm)
 				{
-					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_reported = 0
-						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
-							OR ' . $db->sql_in_set('topic_moved_id', $close_report_topics);
+					$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+						SET message_reported = 0
+						WHERE ' . $db->sql_in_set('msg_id', $close_report_posts);
 					$db->sql_query($sql);
+
+					if ($action == 'delete')
+					{echo "aha";
+						delete_pm(ANONYMOUS, $close_report_posts, PRIVMSGS_INBOX);
+					}
+				}
+				else
+				{
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET post_reported = 0
+						WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
+					$db->sql_query($sql);
+
+					if (sizeof($close_report_topics))
+					{
+						$sql = 'UPDATE ' . TOPICS_TABLE . '
+							SET topic_reported = 0
+							WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
+								OR ' . $db->sql_in_set('topic_moved_id', $close_report_topics);
+						$db->sql_query($sql);
+					}
 				}
 			}
 
@@ -579,7 +621,14 @@ function close_report($report_id_list, $mode, $action)
 
 		foreach ($reports as $report)
 		{
-			add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+			if ($pm)
+			{
+				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+			}
+			else
+			{
+				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+			}
 		}
 
 		$messenger = new messenger();
@@ -594,39 +643,53 @@ function close_report($report_id_list, $mode, $action)
 					continue;
 				}
 
-				$post_id = $reporter['post_id'];
+				$post_id = $reporter[$id_column];
 
-				$messenger->template('report_' . $action . 'd', $reporter['user_lang']);
+				$messenger->template((($pm) ? 'pm_report_' : 'report_') . $action . 'd', $reporter['user_lang']);
 
 				$messenger->to($reporter['user_email'], $reporter['username']);
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-					'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
-					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
-					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
-				);
+				if ($pm)
+				{
+					$messenger->assign_vars(array(
+						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
+						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
+						'PM_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['message_subject'])),
+					));
+				}
+				else
+				{
+					$messenger->assign_vars(array(
+						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
+						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
+						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
+						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
+					);
+				}
 
 				$messenger->send($reporter['user_notify_type']);
 			}
 		}
 		
-		foreach ($post_info as $post)
+		if (!$pm)
 		{
-			$forum_ids[$post['forum_id']] = $post['forum_id'];
-			$topic_ids[$post['topic_id']] = $post['topic_id'];
+			foreach ($post_info as $post)
+			{
+				$forum_ids[$post['forum_id']] = $post['forum_id'];
+				$topic_ids[$post['topic_id']] = $post['topic_id'];
+			}
 		}
-		
+
 		unset($notify_reporters, $post_info, $reports);
 
 		$messenger->save_queue();
 
-		$success_msg = (sizeof($report_id_list) == 1) ? 'REPORT_' . strtoupper($action) . 'D_SUCCESS' : 'REPORTS_' . strtoupper($action) . 'D_SUCCESS';
+		$success_msg = (sizeof($report_id_list) == 1) ? "{$pm_prefix}REPORT_" . strtoupper($action) . 'D_SUCCESS' : "{$pm_prefix}REPORTS_" . strtoupper($action) . 'D_SUCCESS';
 	}
 	else
 	{
-		confirm_box(false, $user->lang[strtoupper($action) . '_REPORT' . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
+		confirm_box(false, $user->lang[strtoupper($action) . "_{$pm_prefix}REPORT" . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");
@@ -639,15 +702,21 @@ function close_report($report_id_list, $mode, $action)
 	else
 	{
 		meta_refresh(3, $redirect);
+
 		$return_forum = '';
-		if (sizeof($forum_ids == 1))
-		{
-			$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
-		}
 		$return_topic = '';
-		if (sizeof($topic_ids == 1))
+
+		if (!$pm)
 		{
-			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			if (sizeof($forum_ids) === 1)
+			{
+				$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			}
+			
+			if (sizeof($topic_ids) === 1)
+			{
+				$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			}
 		}
 		
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));

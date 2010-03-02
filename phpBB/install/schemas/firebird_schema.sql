@@ -227,7 +227,8 @@ CREATE TABLE phpbb_confirm (
 	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	confirm_type INTEGER DEFAULT 0 NOT NULL,
 	code VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	seed INTEGER DEFAULT 0 NOT NULL
+	seed INTEGER DEFAULT 0 NOT NULL,
+	attempts INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
@@ -362,6 +363,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	forum_last_poster_colour VARCHAR(6) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	forum_flags INTEGER DEFAULT 32 NOT NULL,
+	forum_options INTEGER DEFAULT 0 NOT NULL,
 	display_subforum_list INTEGER DEFAULT 1 NOT NULL,
 	display_on_index INTEGER DEFAULT 1 NOT NULL,
 	enable_indexing INTEGER DEFAULT 1 NOT NULL,
@@ -425,6 +427,7 @@ CREATE TABLE phpbb_groups (
 	group_id INTEGER NOT NULL,
 	group_type INTEGER DEFAULT 1 NOT NULL,
 	group_founder_manage INTEGER DEFAULT 0 NOT NULL,
+	group_skip_auth INTEGER DEFAULT 0 NOT NULL,
 	group_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	group_desc BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	group_desc_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
@@ -526,6 +529,7 @@ CREATE TABLE phpbb_log (
 ALTER TABLE phpbb_log ADD PRIMARY KEY (log_id);;
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log(log_type);;
+CREATE INDEX phpbb_log_log_time ON phpbb_log(log_time);;
 CREATE INDEX phpbb_log_forum_id ON phpbb_log(forum_id);;
 CREATE INDEX phpbb_log_topic_id ON phpbb_log(topic_id);;
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log(reportee_id);;
@@ -647,6 +651,7 @@ CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts(post_username);;
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts(topic_id, post_time);;
 
 CREATE GENERATOR phpbb_posts_gen;;
@@ -682,7 +687,8 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_time INTEGER DEFAULT 0 NOT NULL,
 	message_edit_count INTEGER DEFAULT 0 NOT NULL,
 	to_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
-	bcc_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	bcc_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	message_reported INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_privmsgs ADD PRIMARY KEY (msg_id);;
@@ -786,6 +792,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation VARCHAR(20) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	field_required INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_reg INTEGER DEFAULT 0 NOT NULL,
+	field_show_on_vt INTEGER DEFAULT 0 NOT NULL,
 	field_show_profile INTEGER DEFAULT 0 NOT NULL,
 	field_hide INTEGER DEFAULT 0 NOT NULL,
 	field_no_view INTEGER DEFAULT 0 NOT NULL,
@@ -869,6 +876,7 @@ CREATE TABLE phpbb_reports (
 	report_id INTEGER NOT NULL,
 	reason_id INTEGER DEFAULT 0 NOT NULL,
 	post_id INTEGER DEFAULT 0 NOT NULL,
+	pm_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	user_notify INTEGER DEFAULT 0 NOT NULL,
 	report_closed INTEGER DEFAULT 0 NOT NULL,
@@ -878,6 +886,8 @@ CREATE TABLE phpbb_reports (
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports(post_id);;
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports(pm_id);;
 
 CREATE GENERATOR phpbb_reports_gen;;
 SET GENERATOR phpbb_reports_gen TO 0;;
@@ -1343,7 +1353,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INTEGER DEFAULT 1 NOT NULL,
 	user_allow_viewemail INTEGER DEFAULT 1 NOT NULL,
 	user_allow_massemail INTEGER DEFAULT 1 NOT NULL,
-	user_options INTEGER DEFAULT 895 NOT NULL,
+	user_options INTEGER DEFAULT 230271 NOT NULL,
 	user_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	user_avatar_type INTEGER DEFAULT 0 NOT NULL,
 	user_avatar_width INTEGER DEFAULT 0 NOT NULL,
@@ -1362,7 +1372,10 @@ CREATE TABLE phpbb_users (
 	user_interests BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	user_actkey VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	user_newpasswd VARCHAR(40) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	user_form_salt VARCHAR(32) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE
+	user_form_salt VARCHAR(32) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	user_new INTEGER DEFAULT 1 NOT NULL,
+	user_reminded INTEGER DEFAULT 0 NOT NULL,
+	user_reminded_time INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;

@@ -127,8 +127,8 @@ switch ($mode)
 			'AGREEMENT_TITLE'		=> $user->lang[$title],
 			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], $config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
-			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'])
-		);
+			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'],
+		));
 
 		page_footer();
 
@@ -143,6 +143,12 @@ switch ($mode)
 
 			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
+				// Only delete board cookies, no other ones...
+				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
+				{
+					continue;
+				}
+
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
 
 				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
@@ -186,7 +192,7 @@ switch ($mode)
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == $user->data['user_id'])
+		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == $user->data['user_id'] || !check_link_hash(request_var('hash', ''), 'switchperm'))
 		{
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
@@ -214,11 +220,6 @@ switch ($mode)
 		}
 
 		$auth->acl_cache($user->data);
-
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_perm_from = 0
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
 
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . '

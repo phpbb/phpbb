@@ -8,11 +8,13 @@
 		<dd><label><input type="checkbox" class="radio" name="delete" /> {L_DELETE_AVATAR}</label></dd>
 	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
-		<!-- IF S_CAN_UPLOAD -->
+		<!-- IF S_UPLOAD_FILE -->
 			<dl> 
 				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
 				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></dd>
 			</dl>
+		<!-- ENDIF -->
+		<!-- IF S_REMOTE_UPLOAD -->
 			<dl>
 				<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
 				<dd><input name="uploadurl" type="text" id="uploadurl" value="" /></dd>

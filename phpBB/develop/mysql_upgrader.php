@@ -40,11 +40,16 @@ $row = $db->sql_fetchrow($result);
 
 $db->sql_freeresult($result);
 
-$mysql_indexer = false;
+$mysql_indexer = $drop_index = false;
 
 if (strtolower($row['Type']) === 'mediumtext')
 {
 	$mysql_indexer = true;
+}
+
+if (strtolower($row['Key']) === 'mul')
+{
+	$drop_index = true;
 }
 
 echo "USE $dbname;$newline$newline";
@@ -123,6 +128,13 @@ foreach ($schema_data as $table_name => $table_data)
 
 	// Create Table statement
 	$generator = $textimage = false;
+
+	// Do we need to DROP a fulltext index before we alter the table?
+	if ($table_name == ($prefix . 'posts') && $drop_index)
+	{
+		echo "ALTER TABLE {$table_name}{$newline}";
+		echo "DROP INDEX post_text,{$newline}DROP INDEX post_subject,{$newline}DROP INDEX post_content;{$newline}{$newline}";
+	}
 
 	$line = "ALTER TABLE {$table_name} $newline";
 
@@ -236,6 +248,12 @@ foreach ($schema_data as $table_name => $table_data)
 	$line .= "\tDEFAULT CHARSET=utf8 COLLATE=utf8_bin;$newline$newline";
 
 	echo $line . "$newline";
+
+	// Do we now need to re-add the fulltext index? ;)
+	if ($table_name == ($prefix . 'posts') && $drop_index)
+	{
+		echo "ALTER TABLE $table_name ADD FULLTEXT (post_subject), ADD FULLTEXT (post_text), ADD FULLTEXT post_content (post_subject, post_text){$newline}";
+	}
 }
 
 /**
@@ -455,6 +473,7 @@ function get_schema_struct()
 			'confirm_type'		=> array('TINT:3', 0),
 			'code'				=> array('VCHAR:8', ''),
 			'seed'				=> array('UINT:10', 0),
+			'attempts'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> array('session_id', 'confirm_id'),
 		'KEYS'			=> array(
@@ -544,6 +563,7 @@ function get_schema_struct()
 			'forum_last_poster_name'=> array('VCHAR_UNI', ''),
 			'forum_last_poster_colour'=> array('VCHAR:6', ''),
 			'forum_flags'			=> array('TINT:4', 32),
+			'forum_options'			=> array('UINT:20', 0),
 			'display_subforum_list'	=> array('BOOL', 1),
 			'display_on_index'		=> array('BOOL', 1),
 			'enable_indexing'		=> array('BOOL', 1),
@@ -597,6 +617,7 @@ function get_schema_struct()
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
 			'group_founder_manage'	=> array('BOOL', 0),
+			'group_skip_auth'		=> array('BOOL', 0),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
 			'group_desc_bitfield'	=> array('VCHAR:255', ''),
@@ -667,6 +688,7 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'log_id',
 		'KEYS'			=> array(
 			'log_type'				=> array('INDEX', 'log_type'),
+			'log_time'				=> array('INDEX', 'log_time'),
 			'forum_id'				=> array('INDEX', 'forum_id'),
 			'topic_id'				=> array('INDEX', 'topic_id'),
 			'reportee_id'			=> array('INDEX', 'reportee_id'),
@@ -801,6 +823,7 @@ function get_schema_struct()
 			'message_edit_count'	=> array('USINT', 0),
 			'to_address'			=> array('TEXT_UNI', ''),
 			'bcc_address'			=> array('TEXT_UNI', ''),
+			'message_reported'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'msg_id',
 		'KEYS'			=> array(
@@ -876,6 +899,7 @@ function get_schema_struct()
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
+			'field_show_on_vt'		=> array('BOOL', 0),
 			'field_show_profile'	=> array('BOOL', 0),
 			'field_hide'			=> array('BOOL', 0),
 			'field_no_view'			=> array('BOOL', 0),
@@ -934,6 +958,7 @@ function get_schema_struct()
 			'report_id'				=> array('UINT', NULL, 'auto_increment'),
 			'reason_id'				=> array('USINT', 0),
 			'post_id'				=> array('UINT', 0),
+			'pm_id'					=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
 			'user_notify'			=> array('BOOL', 0),
 			'report_closed'			=> array('BOOL', 0),
@@ -941,6 +966,10 @@ function get_schema_struct()
 			'report_text'			=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
+		'KEYS'			=> array(
+			'post_id'			=> array('INDEX', 'post_id'),
+			'pm_id'				=> array('INDEX', 'pm_id'),
+		),
 	);
 
 	$schema_data['phpbb_reports_reasons'] = array(
@@ -1302,7 +1331,7 @@ function get_schema_struct()
 			'user_allow_viewonline'		=> array('BOOL', 1),
 			'user_allow_viewemail'		=> array('BOOL', 1),
 			'user_allow_massemail'		=> array('BOOL', 1),
-			'user_options'				=> array('UINT:11', 895),
+			'user_options'				=> array('UINT:11', 230271),
 			'user_avatar'				=> array('VCHAR', ''),
 			'user_avatar_type'			=> array('TINT:2', 0),
 			'user_avatar_width'			=> array('USINT', 0),
@@ -1322,7 +1351,9 @@ function get_schema_struct()
 			'user_actkey'				=> array('VCHAR:32', ''),
 			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
-
+			'user_new'					=> array('BOOL', 1),
+			'user_reminded'				=> array('TINT:4', 0),
+			'user_reminded_time'		=> array('TIMESTAMP', 0),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(

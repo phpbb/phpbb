@@ -133,6 +133,7 @@ $lang = array_merge($lang, array(
 	'DB_PASSWORD'				=> 'Database password',
 	'DB_PORT'					=> 'Database server port',
 	'DB_PORT_EXPLAIN'			=> 'Leave this blank unless you know the server operates on a non-standard port.',
+	'DB_UPDATE_NOT_SUPPORTED'	=> 'We are sorry, but this script does not support updating from versions of phpBB prior to “%1$s”. The version you currently have installed is “%2$s”. Please update to a previous version before running this script. Assistance with this is available in the Support Forum on phpBB.com.',
 	'DB_USERNAME'				=> 'Database username',
 	'DB_TEST'					=> 'Test connection',
 	'DEFAULT_LANG'				=> 'Default board language',
@@ -166,6 +167,9 @@ $lang = array_merge($lang, array(
 	'FILES_REQUIRED_EXPLAIN'	=> '<strong>Required</strong> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see “Not Found” you need to create the relevant file or directory. If you see “Unwritable” you need to change the permissions on the file or directory to allow phpBB to write to it.',
 	'FILLING_TABLE'				=> 'Filling table <strong>%s</strong>',
 	'FILLING_TABLES'			=> 'Filling tables',
+
+	'FIREBIRD_DBMS_UPDATE_REQUIRED'		=> 'phpBB no longer supports Firebird/Interbase prior to Version 2.1. Please update your Firebird installation to at least 2.1.0 before proceeding with the update.',
+
 	'FINAL_STEP'				=> 'Process final step',
 	'FORUM_ADDRESS'				=> 'Board address',
 	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the URL of your former board, for example <samp>http://www.example.com/phpBB2/</samp>. If an address is entered here and not left empty every instance of this address will be replaced by your new board address within messages, private messages and signatures.',
@@ -184,11 +188,11 @@ $lang = array_merge($lang, array(
 	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
 	'INSTALL_CONGRATS'			=> 'Congratulations!',
 	'INSTALL_CONGRATS_EXPLAIN'	=> '
-		<p>You have now successfully installed phpBB %1$s. From here, you have two options as to what to do with your newly installed phpBB3:</p>
+		You have successfully installed phpBB %1$s. Please proceed by choosing one of the following options:</p>
 		<h2>Convert an existing board to phpBB3</h2>
-		<p>The phpBB Unified Convertor Framework supports the conversion of phpBB 2.0.x and other board systems to phpBB3. If you have an existing board that you wish to convert, please <a href="%2$s">proceed on to the convertor</a>.</p>
+		<p>The phpBB Unified Convertor Framework supports the conversion of phpBB 2.0.x and other board systems to phpBB3. If you have an existing board that you wish to convert, please <a href="%2$s">proceed to the convertor</a>.</p>
 		<h2>Go live with your phpBB3!</h2>
-		<p>Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Documentation</a> and the <a href="http://www.phpbb.com/community/viewforum.php?f=46">support forums</a>, see the <a href="%3$s">README</a> for further information.</p><p><strong>Please now delete, move or rename the install directory before you use your board. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.</strong></p>',
+		<p>Clicking the button below will take you to a form for submitting statistical data to phpBB in your Administration Control Panel (ACP). We would appreciate it if you could help us by sending that information. Afterwards you should take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Documentation</a>, <a href="%3$s">README</a> and the <a href="http://www.phpbb.com/community/viewforum.php?f=46">Support Forums</a>.</p><p><strong>Please delete, move or rename the install directory before using your board. While this directory exists, only the Administration Control Panel (ACP) will be accessible.</strong>',
 	'INSTALL_INTRO'				=> 'Welcome to Installation',
 
 	'INSTALL_INTRO_BODY'		=> 'With this option, it is possible to install phpBB3 onto your server.</p><p>In order to proceed, you will need your database settings. If you do not know your database settings, please contact your host and ask for them. You will not be able to continue without them. You need:</p>
@@ -208,7 +212,7 @@ $lang = array_merge($lang, array(
 		<li>MySQL 3.23 or above (MySQLi supported)</li>
 		<li>PostgreSQL 7.3+</li>
 		<li>SQLite 2.8.2+</li>
-		<li>Firebird 2.0+</li>
+		<li>Firebird 2.1+</li>
 		<li>MS SQL Server 2000 or above (directly or via ODBC)</li>
 		<li>Oracle</li>
 	</ul>
@@ -230,7 +234,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_MYSQLI'		=> 'The version of MySQL installed on this machine is incompatible with the “MySQL with MySQLi Extension” option you have selected. Please try the “MySQL” option instead.',
 	'INST_ERR_DB_NO_SQLITE'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 2.8.2.',
 	'INST_ERR_DB_NO_ORACLE'		=> 'The version of Oracle installed on this machine requires you to set the <var>NLS_CHARACTERSET</var> parameter to <var>UTF8</var>. Either upgrade your installation to 9.2+ or change the parameter.',
-	'INST_ERR_DB_NO_FIREBIRD'	=> 'The version of Firebird installed on this machine is older than 2.0, please upgrade to a newer version.',
+	'INST_ERR_DB_NO_FIREBIRD'	=> 'The version of Firebird installed on this machine is older than 2.1, please upgrade to a newer version.',
 	'INST_ERR_DB_NO_FIREBIRD_PS'=> 'The database you selected for Firebird has a page size less than 8192, it must be at least 8192.',
 	'INST_ERR_DB_NO_POSTGRES'	=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
 	'INST_ERR_DB_NO_NAME'		=> 'No database name specified.',
@@ -364,7 +368,7 @@ $lang = array_merge($lang, array(
 
 // Updater
 $lang = array_merge($lang, array(
-	'ALL_FILES_UP_TO_DATE'		=> 'All files are up to date with the latest phpBB version. You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
+	'ALL_FILES_UP_TO_DATE'		=> 'All files are up to date with the latest phpBB version. You should now <a href="../ucp.php?mode=login&amp;redirect=adm/index.php%3Fi=send_statistics%26mode=send_statistics">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory! Please send us updated information about your server and board configurations from the <a href="../ucp.php?mode=login&amp;redirect=adm/index.php%3Fi=send_statistics%26mode=send_statistics">Send statistics</a> module in your ACP.',
 	'ARCHIVE_FILE'				=> 'Source file within archive',
 
 	'BACK'				=> 'Back',
@@ -466,7 +470,7 @@ $lang = array_merge($lang, array(
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
-	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently differences of %1$d of %2$d files have been checked.<br />Please wait until all files are checked.',
+	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently differences from %1$d of %2$d files have been checked.<br />Please wait until all files are checked.',
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 
@@ -559,14 +563,15 @@ $lang = array_merge($lang, array(
 	'USER_ACTIVE'					=> 'Active user',
 	'USER_INACTIVE'					=> 'Inactive user',
 
-	'VERSION_CHECK'				=> 'Version check',
-	'VERSION_CHECK_EXPLAIN'		=> 'Checks to see if the version of phpBB you are currently running is up to date.',
-	'VERSION_NOT_UP_TO_DATE'	=> 'Your version of phpBB is not up to date. Please continue the update process.',
-	'VERSION_NOT_UP_TO_DATE_ACP'=> 'Your version of phpBB is not up to date.<br />Below you will find a link to the release announcement for the latest version as well as instructions on how to perform the update.',
-	'VERSION_UP_TO_DATE'		=> 'Your installation is up to date, no updates are available for your version of phpBB. You may want to continue anyway to perform a file validity check.',
-	'VERSION_UP_TO_DATE_ACP'	=> 'Your installation is up to date, no updates are available for your version of phpBB. You do not need to update your installation.',
-	'VIEWING_FILE_CONTENTS'		=> 'Viewing file contents',
-	'VIEWING_FILE_DIFF'			=> 'Viewing file differences',
+	'VERSION_CHECK'					=> 'Version check',
+	'VERSION_CHECK_EXPLAIN'			=> 'Checks to see if your phpBB installation is up to date.',
+	'VERSION_NOT_UP_TO_DATE'		=> 'Your phpBB installation is not up to date. Please continue the update process.',
+	'VERSION_NOT_UP_TO_DATE_ACP'	=> 'Your phpBB installation is not up to date.<br />Below is a link to the release announcement, which contains more information as well as instructions on updating.',
+	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your phpBB installation is not up to date.',
+	'VERSION_UP_TO_DATE'			=> 'Your phpBB installation is up to date. Although there are no updates available at this time, you may continue in order to perform a file validity check.',
+	'VERSION_UP_TO_DATE_ACP'		=> 'Your phpBB installation is up to date. There are no updates available at this time.',
+	'VIEWING_FILE_CONTENTS'			=> 'Viewing file contents',
+	'VIEWING_FILE_DIFF'				=> 'Viewing file differences',
 
 	'WRONG_INFO_FILE_FORMAT'	=> 'Wrong info file format',
 ));

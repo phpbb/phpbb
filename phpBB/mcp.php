@@ -77,6 +77,7 @@ if ($mode == 'topic_logs')
 $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
+$report_id = request_var('r', 0);
 $user_id = request_var('u', 0);
 $username = utf8_normalize_nfc(request_var('username', '', true));
 
@@ -211,9 +212,14 @@ if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
 	$module->set_display('queue', 'approve_details', false);
 }
 
-if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed')
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'pm_report_details')
 {
 	$module->set_display('reports', 'report_details', false);
+}
+
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'report_details')
+{
+	$module->set_display('pm_reports', 'pm_report_details', false);
 }
 
 if (!$topic_id)
@@ -323,13 +329,14 @@ function _module_reports_url($mode, &$module_row)
 
 function extra_url()
 {
-	global $forum_id, $topic_id, $post_id, $user_id;
+	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
 	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
+	$url_extra .= ($report_id) ? "&amp;r=$report_id" : '';
 
 	return $url_extra;
 }
@@ -564,9 +571,51 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 }
 
 /**
+* Get simple pm data
+*/
+function get_pm_data($pm_ids)
+{
+	global $db, $auth, $config, $user;
+
+	$rowset = array();
+
+	if (!sizeof($pm_ids))
+	{
+		return array();
+	}
+
+	$sql_array = array(
+		'SELECT'	=> 'p.*, u.*',
+
+		'FROM'		=> array(
+			USERS_TABLE			=> 'u',
+			PRIVMSGS_TABLE		=> 'p',
+		),
+
+		'WHERE'		=> $db->sql_in_set('p.msg_id', $pm_ids) . '
+			AND u.user_id = p.author_id',
+	);
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$result = $db->sql_query($sql);
+	unset($sql_array);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$rowset[$row['msg_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+
+	return $rowset;
+}
+
+/**
 * sorting in mcp
 *
 * @param string $where_sql should either be WHERE (default if ommited) or end with AND or OR
+*
+* $mode reports and reports_closed: the $where parameters uses aliases p for posts table and r for report table
+* $mode unapproved_posts: the $where parameters uses aliases p for posts table and t for topic table
 */
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
@@ -614,12 +663,14 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
-			$where_sql .= ($topic_id) ? ' topic_id = ' . $topic_id . ' AND' : '';
+			$where_sql .= ($topic_id) ? ' p.topic_id = ' . $topic_id . ' AND' : '';
 
-			$sql = 'SELECT COUNT(post_id) AS total
-				FROM ' . POSTS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND post_approved = 0';
+			$sql = 'SELECT COUNT(p.post_id) AS total
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
+				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
+					AND p.post_approved = 0
+					AND t.topic_id = p.topic_id
+					AND t.topic_first_post_id <> p.post_id';
 
 			if ($min_time)
 			{
@@ -643,40 +694,55 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 		break;
 
+		case 'pm_reports':
+		case 'pm_reports_closed':
 		case 'reports':
 		case 'reports_closed':
-			$type = 'reports';
+			$pm = (strpos($mode, 'pm_') === 0) ? true : false;
+
+			$type = ($pm) ? 'pm_reports' : 'reports';
 			$default_key = 't';
 			$default_dir = 'd';
 			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
 
 			if ($topic_id)
 			{
-				$where_sql .= ' p.topic_id = ' . $topic_id;
+				$where_sql .= ' p.topic_id = ' . $topic_id . ' AND ';
 			}
 			else if ($forum_id)
 			{
-				$where_sql .= ' p.forum_id = ' . $forum_id;
+				$where_sql .= ' p.forum_id = ' . $forum_id . ' AND ';
+			}
+			else if (!$pm)
+			{
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true) . ' AND ';
+			}
+
+			if ($mode == 'reports' || $mode == 'pm_reports')
+			{
+				$where_sql .= ' r.report_closed = 0 AND ';
 			}
 			else
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true);
+				$where_sql .= ' r.report_closed = 1 AND ';
 			}
 
-			if ($mode == 'reports')
+			if ($pm)
 			{
-				$where_sql .= ' AND r.report_closed = 0';
+				$sql = 'SELECT COUNT(r.report_id) AS total
+					FROM ' . REPORTS_TABLE . ' r, ' . PRIVMSGS_TABLE . " p
+					$where_sql r.post_id = 0
+						AND p.msg_id = r.pm_id
+						$limit_time_sql";
 			}
 			else
 			{
-				$where_sql .= ' AND r.report_closed = 1';
+				$sql = 'SELECT COUNT(r.report_id) AS total
+					FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
+					$where_sql r.pm_id = 0
+						AND p.post_id = r.post_id
+						$limit_time_sql";
 			}
-
-			$sql = 'SELECT COUNT(r.report_id) AS total
-				FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
-				$where_sql
-					AND p.post_id = r.post_id
-					$limit_time_sql";
 		break;
 
 		case 'viewlogs':
@@ -717,6 +783,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.post_time', 't' => 'r.report_time', 's' => 'p.post_subject');
+		break;
+
+		case 'pm_reports':
+			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
+			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.message_time', 't' => 'r.report_time', 's' => 'p.message_subject');
 		break;
 
 		case 'logs':

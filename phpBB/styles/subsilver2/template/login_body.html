@@ -65,26 +65,13 @@
 	</td>
 </tr>
 
-<!-- IF S_CONFIRM_CODE -->
+<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
 </table>
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr> 
-		<th colspan="2" valign="middle">{L_LOGIN_CONFIRMATION}</th>
-	</tr>
-	<tr> 
-		<td class="row3" colspan="2"><span class="gensmall">{L_LOGIN_CONFIRM_EXPLAIN}</span></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2" align="center">
-			<input type="hidden" name="confirm_id" value="{CONFIRM_ID}" />
-			{CONFIRM_IMAGE}
-		</td>
-	</tr>
-	<tr> 
-		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" /></td>
-	</tr>
+		
+	<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 <!-- ENDIF -->
+
 <tr>
 	<td class="cat" <!-- IF not S_ADMIN_AUTH or S_CONFIRM_CODE -->colspan="2"<!-- ENDIF --> align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="5" /></td>
 </tr>

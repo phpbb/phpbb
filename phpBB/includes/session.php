@@ -213,7 +213,7 @@ class session
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
-		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
+		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? htmlspecialchars((string) $_SERVER['HTTP_X_FORWARDED_FOR']) : '';
 
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
@@ -221,10 +221,10 @@ class session
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
-			$this->forwarded_for = preg_replace('#, +#', ', ', $this->forwarded_for);
+			$this->forwarded_for = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->forwarded_for));
 
 			// split the list of IPs
-			$ips = explode(', ', $this->forwarded_for);
+			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
@@ -267,7 +267,28 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars((string) $_SERVER['REMOTE_ADDR']) : '';
+		$this->ip = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->ip));
+
+		// split the list of IPs
+		$ips = explode(' ', $this->ip);
+
+		// Default IP if REMOTE_ADDR is invalid
+		$this->ip = '127.0.0.1';
+
+		foreach ($ips as $ip)
+		{
+			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
+			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+			{
+				// Just break
+				break;
+			}
+
+			// Use the last in chain
+			$this->ip = $ip;
+		}
+
 		$this->load = false;
 
 		// Load limit check (if applicable)
@@ -395,6 +416,11 @@ class session
 								$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 									WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 								$db->sql_query($sql);
+							}
+
+							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+							{
+								$this->leave_newly_registered();
 							}
 						}
 
@@ -601,7 +627,7 @@ class session
 			}
 			else
 			{
-				$ips = explode(', ', $this->forwarded_for);
+				$ips = explode(' ', $this->forwarded_for);
 				$ips[] = $this->ip;
 				$this->check_ban($this->data['user_id'], $ips);
 			}
@@ -891,7 +917,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config;
+		global $db, $config, $phpbb_root_path, $phpEx;
 
 		$batch_size = 10;
 
@@ -949,42 +975,17 @@ class session
 					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
 				$db->sql_query($sql);
 			}
-			$this->confirm_gc();
+
+			// only called from CRON; should be a safe workaround until the infrastructure gets going
+			if (!class_exists('captcha_factory'))
+			{
+				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
+			}
+			phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
 		}
 
 		return;
 	}
-
-	function confirm_gc($type = 0)
-	{
-		global $db, $config;
-
-		$sql = 'SELECT DISTINCT c.session_id
-				FROM ' . CONFIRM_TABLE . ' c
-				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-				WHERE s.session_id IS NULL' .
-					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$sql_in = array();
-			do
-			{
-				$sql_in[] = (string) $row['session_id'];
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			if (sizeof($sql_in))
-			{
-				$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('session_id', $sql_in);
-				$db->sql_query($sql);
-			}
-		}
-		$db->sql_freeresult($result);
-	}
-
 
 	/**
 	* Sets a cookie
@@ -1360,6 +1361,20 @@ class session
 			WHERE user_id = ' . (int) $user_id;
 		$db->sql_query($sql);
 
+		// Update last visit info first before deleting sessions
+		$sql = 'SELECT session_time, session_page
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . (int) $user_id . '
+			ORDER BY session_time DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+			WHERE user_id = " . (int) $user_id;
+		$db->sql_query($sql);
+
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
@@ -1384,6 +1399,8 @@ class session
 	*/
 	function validate_referer($check_script_path = false)
 	{
+		global $config;
+
 		// no referer - nothing to validate, user's fault for turning it off (we only check on POST; so meta can't be the reason)
 		if (empty($this->referer) || empty($this->host))
 		{
@@ -1393,7 +1410,7 @@ class session
 		$host = htmlspecialchars($this->host);
 		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
 
-		if (!(stripos($ref, $host) === 0) && (!$config['force_server'] || !(stripos($ref, $config['server_name']) === 0)))
+		if (!(stripos($ref, $host) === 0) && (!$config['force_server_vars'] || !(stripos($ref, $config['server_name']) === 0)))
 		{
 			return false;
 		}
@@ -1451,8 +1468,8 @@ class user extends session
 	var $img_lang;
 	var $img_array = array();
 
-	// Able to add new option (id 7)
-	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10);
+	// Able to add new options (up to id 31)
+	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10, 'sig_bbcode' => 15, 'sig_smilies' => 16, 'sig_links' => 17);
 	var $keyvalues = array();
 
 	/**
@@ -1554,7 +1571,7 @@ class user extends session
 		$this->add_lang($lang_set);
 		unset($lang_set);
 
-		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
+		if (!empty($_GET['style']) && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
 		{
 			global $SID, $_EXTRA_URL;
 
@@ -1776,7 +1793,7 @@ class user extends session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
-		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
+		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
 			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
@@ -1853,7 +1870,7 @@ class user extends session
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
-		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && $this->data['is_registered'] && $auth->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
+		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && !empty($this->data['is_registered']) && $auth->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
 			{
@@ -2026,6 +2043,34 @@ class user extends session
 				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
+			if (!file_exists($language_filename))
+			{
+				global $config;
+
+				if ($this->lang_name == 'en')
+				{
+					// The user's selected language is missing the file, the board default's language is missing the file, and the file doesn't exist in /en.
+					$language_filename = str_replace($this->lang_path . 'en', $this->lang_path . $this->data['user_lang'], $language_filename);
+					trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
+				}
+				else if ($this->lang_name == basename($config['default_lang']))
+				{
+					// Fall back to the English Language
+					$this->lang_name = 'en';
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+				}
+				else if ($this->lang_name == $this->data['user_lang'])
+				{
+					// Fall back to the board default language
+					$this->lang_name = basename($config['default_lang']);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+				}
+
+				// Reset the lang name
+				$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+				return;
+			}
+
 			// Do not suppress error if in DEBUG_EXTRA mode
 			$include_result = (defined('DEBUG_EXTRA')) ? (include $language_filename) : (@include $language_filename);
 
@@ -2186,7 +2231,10 @@ class user extends session
 				return $img_data;
 			}
 
-			$img_data['src'] = $phpbb_root_path . 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			// Use URL if told so
+			$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
+			$img_data['src'] = $root_path . 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
 			$img_data['width'] = $this->img_array[$img]['image_width'];
 			$img_data['height'] = $this->img_array[$img]['image_height'];
 		}
@@ -2258,6 +2306,36 @@ class user extends session
 		{
 			return $var;
 		}
+	}
+
+	/**
+	* Funtion to make the user leave the NEWLY_REGISTERED system group.
+	* @access public
+	*/
+	function leave_newly_registered()
+	{
+		global $db;
+
+		if (empty($this->data['user_new']))
+		{
+			return false;
+		}
+
+		if (!function_exists('remove_newly_registered'))
+		{
+			global $phpbb_root_path, $phpEx;
+
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+		if ($group = remove_newly_registered($this->data['user_id'], $this->data))
+		{
+			$this->data['group_id'] = $group;
+
+		}
+		$this->data['user_permissions'] = '';
+		$this->data['user_new'] = 0;
+
+		return true;
 	}
 }
 

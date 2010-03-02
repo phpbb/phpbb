@@ -61,9 +61,7 @@
 	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr>
-	<th nowrap="nowrap">{L_AUTHOR}</th>
-	<th nowrap="nowrap">{L_MESSAGE}</th>
-	<th nowrap="nowrap">{L_SELECT}</th>
+	<th nowrap="nowrap" colspan="3">{L_TOPIC_REVIEW}: {TOPIC_TITLE}</th>
 </tr>
 <tr>
 	<td class="row3" colspan="3" align="center"><span class="gensmall">{RETURN_TOPIC}</span></td>
@@ -81,19 +79,12 @@
 			</tr>
 			</table>
 		</td>
-		<td rowspan="2" width="5%" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></td>
+		<td width="5%" align="center"><a href="{postrow.U_POST_DETAILS}">{INFO_IMG}</a></td>
 	</tr>
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td valign="bottom">
-			<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr valign="middle">
-				<td align="center"><span class="gensmall">[ <a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a> ]</span></td>
-			</tr>
-			</table>
-		</td>
-		<td width="100%" valign="top">
+		<td width="100%" valign="top" colspan="2">
 			<table width="100%" cellspacing="0" cellpadding="2" border="0">
 			<tr>
 				<td valign="top">
@@ -120,8 +111,8 @@
 					<table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr valign="middle">
 						<td width="100%">
-							<!-- IF postrow.S_POST_UNAPPROVED and postrow.U_MCP_APPROVE -->{UNAPPROVED_IMG} <span class="postapprove"><a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><!-- ENDIF -->
-							<!-- IF postrow.S_POST_REPORTED and postrow.U_MCP_REPORT -->{REPORTED_IMG}<span class="postreported"><a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
+							<!-- IF postrow.S_POST_UNAPPROVED and postrow.U_MCP_APPROVE --><span class="postapprove">{UNAPPROVED_IMG} <a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><br /><!-- ENDIF -->
+							<!-- IF postrow.S_POST_REPORTED and postrow.U_MCP_REPORT --><span class="postreported">{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
 						</td>
 						<td width="10" nowrap="nowrap">{postrow.MINI_POST_IMG}</td>
 						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
@@ -131,6 +122,7 @@
 			</tr>
 			</table>
 		</td>
+		<td width="5%" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></td>
 	</tr>
 	<tr>
 		<td class="row3" colspan="3" height="1"><img src="images/spacer.gif" width="1" height="1" alt="" /></td>

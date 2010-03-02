@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.5');
+define('PHPBB_VERSION', '3.0.6-RC1');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -91,6 +91,11 @@ define('FORUM_FLAG_PRUNE_ANNOUNCE', 4);
 define('FORUM_FLAG_PRUNE_STICKY', 8);
 define('FORUM_FLAG_ACTIVE_TOPICS', 16);
 define('FORUM_FLAG_POST_REVIEW', 32);
+define('FORUM_FLAG_QUICK_REPLY', 64);
+
+// Forum Options... sequential order. Modifications should begin at number 10 (number 29 is maximum)
+define('FORUM_OPTION_FEED_NEWS', 1);
+define('FORUM_OPTION_FEED_EXCLUDE', 2);
 
 // Optional text flags
 define('OPTION_FLAG_BBCODE', 1);
@@ -159,6 +164,9 @@ define('BBCODE_UID_LEN', 8);
 
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
+
+// Smiley hard limit
+define('SMILEY_LIMIT', 1000);
 
 // Magic url types
 define('MAGIC_URL_EMAIL', 1);

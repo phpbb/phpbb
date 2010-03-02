@@ -91,8 +91,9 @@ if ($id)
 	$recompile = $config['load_tplcompile'];
 	if (!$user)
 	{
-		$id			= $config['default_style'];
-		$recompile	= false;
+		$id			= ($id) ? $id : $config['default_style'];
+//		Commented out because calls do not always include the SID anymore
+//		$recompile	= false;
 		$user		= array('user_id' => ANONYMOUS);
 	}
 

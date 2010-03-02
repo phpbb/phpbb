@@ -1,8 +1,31 @@
 <!-- INCLUDE overall_header.html -->
 
-
-
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
+
+<!-- IF S_LANG_OPTIONS -->
+<script type="text/javascript">
+// <![CDATA[
+	/**
+	* Change language
+	*/
+	function change_language(lang_iso)
+	{
+		document.forms['register'].change_lang.value = lang_iso;
+		document.forms['register'].submit();
+	}
+
+// ]]>
+</script>
+
+	<form method="post" action="{S_UCP_ACTION}" id="register">
+		<table width="100%" cellspacing="0">
+			<tr>
+				<td class="gensmall" align="{S_CONTENT_FLOW_END}">{L_LANGUAGE}: <select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></td>
+			</tr>
+		</table>
+		{S_HIDDEN_FIELDS}
+	</form>
+<!-- ENDIF -->
 
 	<form method="post" action="{S_UCP_ACTION}">
 

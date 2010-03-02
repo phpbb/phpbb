@@ -43,7 +43,7 @@
 		</tr>
 		<tr> 
 			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}: </b></td>
-			<td><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_SELF}">{L_SEARCH_YOUR_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+			<td><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_SELF}">{L_SEARCH_YOUR_POSTS}</a><!-- ENDIF --></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
 		</tr>
 		<!-- IF S_SHOW_ACTIVITY -->
 			<tr>

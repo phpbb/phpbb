@@ -29,6 +29,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
 	$author_id	= (int) $message_row['author_id'];
+	$view		= request_var('view', '');
 
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
@@ -168,6 +169,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 
+	// Number of "to" recipients
+	$num_recipients = (int) preg_match_all('/:?(u|g)_([0-9]+):?/', $message_row['to_address'], $match);
+
 	$template->assign_vars(array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -178,7 +182,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'RANK_IMG'			=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
-		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
+		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
 		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
@@ -189,10 +193,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
 		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
 		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
+		'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_PM'),
 		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
 		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
 
-		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
+		'SENT_DATE'			=> ($view == 'print') ? $user->format_date($message_row['message_time'], false, true) : $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
@@ -209,16 +214,21 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EMAIL'			=> $user_info['email'],
+		'U_REPORT'			=> ($config['allow_pm_report']) ? append_sid("{$phpbb_root_path}report.$phpEx", "pm=" . $message_row['msg_id']) : '',
 		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EDIT'			=> (($message_row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_POST_REPLY_ALL'	=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;reply_to_all=1&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
+
+		'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
 
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
+		'S_PM_RECIPIENTS'	=> $num_recipients,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')

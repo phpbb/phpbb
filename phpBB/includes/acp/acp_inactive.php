@@ -51,6 +51,19 @@ class acp_inactive
 		$form_key = 'acp_inactive';
 		add_form_key($form_key);
 
+		// We build the sort key and per page settings here, because they may be needed later
+
+		// Number of entries to display
+		$per_page = request_var('users_per_page', (int) $config['topics_per_page']);
+
+		// Sorting
+		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+		$sort_by_text = array('i' => $user->lang['SORT_INACTIVE'], 'j' => $user->lang['SORT_REG_DATE'], 'l' => $user->lang['SORT_LAST_VISIT'], 'd' => $user->lang['SORT_LAST_REMINDER'], 'r' => $user->lang['SORT_REASON'], 'u' => $user->lang['SORT_USERNAME'], 'p' => $user->lang['SORT_POSTS'], 'e' => $user->lang['SORT_REMINDER']);
+		$sort_by_sql = array('i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'd' => 'user_reminded_time', 'r' => 'user_inactive_reason', 'u' => 'username_clean', 'p' => 'user_posts', 'e' => 'user_reminded');
+
+		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+
 		if ($submit && sizeof($mark))
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
@@ -67,7 +80,7 @@ class acp_inactive
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
-				
+
 					$user_affected = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
@@ -100,7 +113,7 @@ class acp_inactive
 						{
 							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-							$messenger = new messenger();
+							$messenger = new messenger(false);
 
 							foreach ($inactive_users as $row)
 							{
@@ -122,6 +135,12 @@ class acp_inactive
 
 							$messenger->save_queue();
 						}
+
+						// For activate we really need to redirect, else a refresh can result in users being deactivated again
+						$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
+						$u_action .= ($per_page != $config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+
+						redirect($u_action);
 					}
 					else if ($action == 'delete')
 					{
@@ -175,7 +194,7 @@ class acp_inactive
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 						$messenger = new messenger();
-						$usernames = array();
+						$usernames = $user_ids = array();
 
 						do
 						{
@@ -198,27 +217,33 @@ class acp_inactive
 							$messenger->send($row['user_notify_type']);
 
 							$usernames[] = $row['username'];
+							$user_ids[] = (int) $row['user_id'];
 						}
 						while ($row = $db->sql_fetchrow($result));
 
 						$messenger->save_queue();
 
+						// Add the remind state to the database
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET user_reminded = user_reminded + 1,
+								user_reminded_time = ' . time() . '
+							WHERE ' . $db->sql_in_set('user_id', $user_ids);
+						$db->sql_query($sql);
+
 						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
 						unset($usernames);
 					}
 					$db->sql_freeresult($result);
-		
+
+					// For remind we really need to redirect, else a refresh can result in more than one reminder
+					$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
+					$u_action .= ($per_page != $config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+
+					redirect($u_action);
+
 				break;
 			}
 		}
-
-		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('i' => $user->lang['SORT_INACTIVE'], 'j' => $user->lang['SORT_REG_DATE'], 'l' => $user->lang['SORT_LAST_VISIT'], 'r' => $user->lang['SORT_REASON'], 'u' => $user->lang['SORT_USERNAME']);
-		$sort_by_sql = array('i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'r' => 'user_inactive_reason', 'u' => 'username_clean');
-
-		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
-		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 		// Define where and sort sql for use in displaying logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
@@ -227,19 +252,30 @@ class acp_inactive
 		$inactive = array();
 		$inactive_count = 0;
 
-		$start = view_inactive_users($inactive, $inactive_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
+		$start = view_inactive_users($inactive, $inactive_count, $per_page, $start, $sql_where, $sql_sort);
 
 		foreach ($inactive as $row)
 		{
 			$template->assign_block_vars('inactive', array(
 				'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
+				'REMINDED_DATE'	=> $user->format_date($row['user_reminded_time']),
 				'JOINED'		=> $user->format_date($row['user_regdate']),
 				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+
 				'REASON'		=> $row['inactive_reason'],
 				'USER_ID'		=> $row['user_id'],
-				'USERNAME'		=> $row['username'],
-				'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
-			);
+				'POSTS'			=> ($row['user_posts']) ? $row['user_posts'] : 0,
+				'REMINDED'		=> $row['user_reminded'],
+
+				'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
+
+				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview')),
+				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+
+				'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+				'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
+			));
 		}
 
 		$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
@@ -255,9 +291,10 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> on_page($inactive_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, $config['topics_per_page'], $start, true),
-			
+			'S_ON_PAGE'		=> on_page($inactive_count, $per_page, $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page", $inactive_count, $per_page, $start, true),
+			'USERS_PER_PAGE'	=> $per_page,
+
 			'U_ACTION'		=> $this->u_action . '&amp;start=' . $start,
 		));
 

@@ -33,6 +33,7 @@ class acp_logs
 		// Set up general vars
 		$action		= request_var('action', '');
 		$forum_id	= request_var('f', 0);
+		$topic_id	= request_var('t', 0);
 		$start		= request_var('start', 0);
 		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
 		$deleteall	= (!empty($_POST['delall'])) ? true : false;
@@ -104,6 +105,9 @@ class acp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
+		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
+
 		$l_title = $user->lang['ACP_' . strtoupper($mode) . '_LOGS'];
 		$l_title_explain = $user->lang['ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN'];
 
@@ -123,7 +127,7 @@ class acp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
+		view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
 
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
@@ -131,12 +135,13 @@ class acp_logs
 			'U_ACTION'		=> $this->u_action,
 
 			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
 			'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
+			'S_KEYWORDS'	=> $keywords,
 			)
 		);
 

@@ -24,6 +24,7 @@ class acp_permissions_info
 				'trace'					=> array('title' => 'ACP_PERMISSION_TRACE', 'auth' => 'acl_a_viewauth', 'display' => false, 'cat' => array('ACP_PERMISSION_MASKS')),
 
 				'setting_forum_local'	=> array('title' => 'ACP_FORUM_PERMISSIONS', 'auth' => 'acl_a_fauth && (acl_a_authusers || acl_a_authgroups)', 'cat' => array('ACP_FORUM_BASED_PERMISSIONS')),
+				'setting_forum_copy'	=> array('title' => 'ACP_FORUM_PERMISSIONS_COPY', 'auth' => 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth', 'cat' => array('ACP_FORUM_BASED_PERMISSIONS')),
 				'setting_mod_local'		=> array('title' => 'ACP_FORUM_MODERATORS', 'auth' => 'acl_a_mauth && (acl_a_authusers || acl_a_authgroups)', 'cat' => array('ACP_FORUM_BASED_PERMISSIONS')),
 				'setting_user_global'	=> array('title' => 'ACP_USERS_PERMISSIONS', 'auth' => 'acl_a_authusers && (acl_a_aauth || acl_a_mauth || acl_a_uauth)', 'cat' => array('ACP_GLOBAL_PERMISSIONS', 'ACP_CAT_USERS')),
 				'setting_user_local'	=> array('title' => 'ACP_USERS_FORUM_PERMISSIONS', 'auth' => 'acl_a_authusers && (acl_a_mauth || acl_a_fauth)', 'cat' => array('ACP_FORUM_BASED_PERMISSIONS', 'ACP_CAT_USERS')),

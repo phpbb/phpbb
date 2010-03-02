@@ -193,9 +193,12 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
+		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
+
 		$log_data = array();
 		$log_count = 0;
-		view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
+		view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort, $keywords);
 
 		if ($log_count)
 		{
@@ -219,11 +222,12 @@ class mcp_notes
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+			'S_KEYWORDS'			=> $keywords,
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'RANK_TITLE'		=> $rank_title,

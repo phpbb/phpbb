@@ -8,9 +8,11 @@
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks', '1');
@@ -21,9 +23,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_report', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_flash', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_quick_reply', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
@@ -60,6 +64,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cache_gc', '7200');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_plugin', 'phpbb_captcha_nogd');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_foreground_noise', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_x_grid', '25');
@@ -85,6 +90,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
@@ -92,7 +98,15 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_queue_trigger', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_forums', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_forums_limit', '15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topics', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topics_limit', '15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_forum', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_topic', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_item_statistics', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_lifetime', '7200');
@@ -161,7 +175,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_num_search_keywords', '10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '30');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '100');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_font_size', '200');
@@ -179,8 +193,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_post_chars', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_post_limit', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_group_default', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
@@ -190,7 +207,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_recipients'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_trigger_posts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
@@ -212,6 +228,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CONFIG_SITENAME}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_auth_method', 'PLAIN');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');
@@ -222,7 +239,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.6-RC1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 
@@ -399,6 +416,11 @@ INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order)
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_POLLS', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 6);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_LIMITED_POLLS', 'ROLE_DESCRIPTION_FORUM_LIMITED_POLLS', 'f_', 4);
 
+# 23
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_NEW_MEMBER', 'ROLE_DESCRIPTION_USER_NEW_MEMBER', 'u_', 6);
+
+# 24
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_NEW_MEMBER', 'ROLE_DESCRIPTION_FORUM_NEW_MEMBER', 'f_', 10);
 
 # -- phpbb_styles
 INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1, 1);
@@ -500,6 +522,7 @@ INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_co
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('GLOBAL_MODERATORS', 3, 0, '00AA00', 1, '', '', '', 0);
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('ADMINISTRATORS', 3, 1, 'AA0000', 1, '', '', '', 0);
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('BOTS', 3, 0, '9E8DA7', 0, '', '', '', 5);
+INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('NEWLY_REGISTERED', 3, 0, '', 0, '', '', '', 5);
 
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (1, 1, 0, 0);
@@ -581,6 +604,13 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 # Limited Access + Polls (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 22, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_sticky', 'f_user_lock', 'f_votechg');
 
+# New Member (u_)
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 23, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group');
+
+# New Member (f_)
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 24, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove');
+
+
 # Permissions
 
 # GUESTS - u_download and u_search ability
@@ -630,6 +660,12 @@ INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, 
 
 # Bots having bot access
 INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (6, 2, 0, 19, 0);
+
+# NEW MEMBERS aren't allowed to PM
+INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 0, 0, 23, 0);
+
+# NEW MEMBERS on the queue
+INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 2, 0, 24, 0);
 
 
 # -- Demo Topic

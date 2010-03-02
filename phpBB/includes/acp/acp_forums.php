@@ -75,6 +75,13 @@ class acp_forums
 					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+			case 'copy_perm':
+
+				if (!(($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
+				{
+					trigger_error($user->lang['NO_PERMISSION_COPY'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
 			break;
 		}
 
@@ -118,6 +125,7 @@ class acp_forums
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
 						'forum_parents'			=> '',
+						'forum_options'			=> 0,
 						'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
@@ -139,6 +147,7 @@ class acp_forums
 						'enable_icons'			=> request_var('enable_icons', false),
 						'enable_prune'			=> request_var('enable_prune', false),
 						'enable_post_review'	=> request_var('enable_post_review', true),
+						'enable_quick_reply'	=> request_var('enable_quick_reply', false),
 						'prune_days'			=> request_var('prune_days', 7),
 						'prune_viewed'			=> request_var('prune_viewed', 7),
 						'prune_freq'			=> request_var('prune_freq', 1),
@@ -181,73 +190,22 @@ class acp_forums
 					if (!sizeof($errors))
 					{
 						$forum_perm_from = request_var('forum_perm_from', 0);
+						$cache->destroy('sql', FORUMS_TABLE);
 
 						// Copy permissions?
 						if (!empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
 							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
-							// if we edit a forum delete current permissions first
-							if ($action == 'edit')
-							{
-								$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
-
-								$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
-							}
-
-							// From the mysql documentation:
-							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-							// Due to this we stay on the safe side if we do the insertion "the manual way"
-
-							// Copy permisisons from/to the acl users table (only forum_id gets changed)
-							$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
-								FROM ' . ACL_USERS_TABLE . '
-								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
-
-							$users_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$users_sql_ary[] = array(
-									'user_id'			=> (int) $row['user_id'],
-									'forum_id'			=> (int) $forum_data['forum_id'],
-									'auth_option_id'	=> (int) $row['auth_option_id'],
-									'auth_role_id'		=> (int) $row['auth_role_id'],
-									'auth_setting'		=> (int) $row['auth_setting']
-								);
-							}
-							$db->sql_freeresult($result);
-
-							// Copy permisisons from/to the acl groups table (only forum_id gets changed)
-							$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
-								FROM ' . ACL_GROUPS_TABLE . '
-								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
-
-							$groups_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$groups_sql_ary[] = array(
-									'group_id'			=> (int) $row['group_id'],
-									'forum_id'			=> (int) $forum_data['forum_id'],
-									'auth_option_id'	=> (int) $row['auth_option_id'],
-									'auth_role_id'		=> (int) $row['auth_role_id'],
-									'auth_setting'		=> (int) $row['auth_setting']
-								);
-							}
-							$db->sql_freeresult($result);
-
-							// Now insert the data
-							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
-							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
+						}
+						else if (($action != 'edit') && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
+						{
+							$this->copy_permission_page($forum_data);
+							return;
 						}
 
 						$auth->acl_clear_prefetch();
-						$cache->destroy('sql', FORUMS_TABLE);
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
@@ -423,6 +381,7 @@ class acp_forums
 					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? FORUM_FLAG_PRUNE_STICKY : 0;
 					$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
 					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
+					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
 
 				// Show form to create/modify a forum
@@ -485,6 +444,7 @@ class acp_forums
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
 							'forum_flags'			=> FORUM_FLAG_POST_REVIEW,
+							'forum_options'			=> 0,
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
 						);
@@ -682,6 +642,7 @@ class acp_forums
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
+					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
 				));
 
@@ -739,6 +700,32 @@ class acp_forums
 				);
 
 				return;
+			break;
+
+			case 'copy_perm':
+				$forum_perm_from = request_var('forum_perm_from', 0);
+
+				// Copy permissions?
+				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
+				{
+					copy_forum_permissions($forum_perm_from, $forum_id, true);
+					cache_moderators();
+					$auth->acl_clear_prefetch();
+					$cache->destroy('sql', FORUMS_TABLE);
+
+					$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_id;
+
+					$message = $user->lang['FORUM_UPDATED'];
+
+					// Redirect to permissions
+					if ($auth->acl_get('a_fauth'))
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+					}
+
+					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+				}
+
 			break;
 		}
 
@@ -941,6 +928,7 @@ class acp_forums
 		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? FORUM_FLAG_PRUNE_STICKY : 0;
 		$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
 		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? FORUM_FLAG_POST_REVIEW : 0;
+		$forum_data['forum_flags'] += ($forum_data['enable_quick_reply']) ? FORUM_FLAG_QUICK_REPLY : 0;
 
 		// Unset data that are not database fields
 		$forum_data_sql = $forum_data;
@@ -951,6 +939,7 @@ class acp_forums
 		unset($forum_data_sql['prune_sticky']);
 		unset($forum_data_sql['show_active']);
 		unset($forum_data_sql['enable_post_review']);
+		unset($forum_data_sql['enable_quick_reply']);
 		unset($forum_data_sql['forum_password_confirm']);
 
 		// What are we going to do tonight Brain? The same thing we do everynight,
@@ -1927,6 +1916,30 @@ class acp_forums
 
 		adm_page_footer();
 	}
+
+	/**
+	* Display copy permission page
+	*/
+	function copy_permission_page($forum_data)
+	{
+		global $phpEx, $phpbb_admin_path, $template, $user;
+
+		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
+		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
+
+		$l_acl = sprintf($user->lang['COPY_TO_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+
+		$this->tpl_name = 'acp_forums_copy_perm';
+
+		$template->assign_vars(array(
+			'U_ACL'				=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url),
+			'L_ACL_LINK'		=> $l_acl,
+			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
+			'S_COPY_ACTION'		=> $action,
+			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], $forum_data['forum_id'], false, false, false),
+		));
+	}
+
 }
 
 ?>

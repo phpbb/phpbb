@@ -51,7 +51,15 @@
 			<!-- ENDIF -->
 			<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 				<tr>
-					<td class="genmed" align="center">[ <!-- IF U_ADD_FRIEND and U_ADD_FOE--><a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> | <a href="{U_ADD_FOE}">{L_ADD_FOE}</a><!-- ENDIF --><!-- IF U_REMOVE_FRIEND --><a href="{U_REMOVE_FRIEND}">{L_REMOVE_FRIEND}</a><!-- ENDIF --><!-- IF U_REMOVE_FOE --><a href="{U_REMOVE_FOE}">{L_REMOVE_FOE}</a><!-- ENDIF --> ]</td>
+					<td class="genmed" align="center">[
+						<!-- IF U_REMOVE_FRIEND -->
+							<a href="{U_REMOVE_FRIEND}">{L_REMOVE_FRIEND}</a>
+						<!-- ELSEIF U_REMOVE_FOE -->
+							<a href="{U_REMOVE_FOE}">{L_REMOVE_FOE}</a>
+						<!-- ELSE -->
+							<!-- IF U_ADD_FRIEND --><a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a><!-- ENDIF --><!-- IF U_ADD_FOE --><!-- IF U_ADD_FRIEND --> | <!-- ENDIF --><a href="{U_ADD_FOE}">{L_ADD_FOE}</a><!-- ENDIF -->
+						<!-- ENDIF -->
+					]</td>
 				</tr>
 			<!-- ENDIF -->
 			</table>
@@ -66,17 +74,17 @@
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_VISITED}: </td>
 				<td width="100%"><b class="gen">{VISITED}</b></td>
 			</tr>
-			<!-- IF U_NOTES or U_WARN -->
+			<!-- IF S_WARNINGS -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
-					<td width="100%"><b class="gen">{WARNINGS}</b><br /><span class="genmed">[ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</span></td>
+					<td width="100%"><b class="gen">{WARNINGS}</b><!-- IF U_NOTES or U_WARN --><br /><span class="genmed"> [ <!-- IF U_NOTES --><a href="{U_NOTES}">{L_VIEW_NOTES}</a><!-- ENDIF --> <!-- IF U_WARN --><!-- IF U_NOTES --> | <!-- ENDIF --><a href="{U_WARN}">{L_WARN_USER}</a><!-- ENDIF --> ]</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
 				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF -->
 				<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />[<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>]<!-- ELSEIF POSTS_IN_QUEUE --><br />[{L_POSTS_IN_QUEUE}]<!-- ENDIF -->
-				<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
+				<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a><!-- ENDIF --></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
@@ -126,7 +134,7 @@
 			</tr>
 			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_JABBER}: </td>
-				<td><!-- IF U_JABBER and S_JABBER_ENABLED --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
+				<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
 			</table>
 		</td>

@@ -38,15 +38,28 @@ switch ($mode)
 }
 
 // Pull the array data from the lang pack
+$switch_column = $found_switch = false;
 $help_blocks = array();
 foreach ($user->help as $help_ary)
 {
 	if ($help_ary[0] == '--')
 	{
-		$template->assign_block_vars('faq_block', array(
-			'BLOCK_TITLE'		=> $help_ary[1])
-		);
+		if ($help_ary[1] == '--')
+		{
+			$switch_column = true;
+			$found_switch = true;
+			continue;
+		}
 
+		$template->assign_block_vars('faq_block', array(
+			'BLOCK_TITLE'		=> $help_ary[1],
+			'SWITCH_COLUMN'		=> $switch_column,
+		));
+
+		if ($switch_column)
+		{
+			$switch_column = false;
+		}
 		continue;
 	}
 
@@ -58,11 +71,13 @@ foreach ($user->help as $help_ary)
 
 // Lets build a page ...
 $template->assign_vars(array(
-	'L_FAQ_TITLE'	=> $l_title,
-	'L_BACK_TO_TOP'	=> $user->lang['BACK_TO_TOP'])
-);
+	'L_FAQ_TITLE'				=> $l_title,
+	'L_BACK_TO_TOP'				=> $user->lang['BACK_TO_TOP'],
 
-page_header($l_title);
+	'SWITCH_COLUMN_MANUALLY'	=> (!$found_switch) ? true : false,
+));
+
+page_header($l_title, false);
 
 $template->set_filenames(array(
 	'body' => 'faq_body.html')

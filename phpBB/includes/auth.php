@@ -64,9 +64,9 @@ class auth
 			$db->sql_freeresult($result);
 
 			$cache->put('_acl_options', $this->acl_options);
-			$this->acl_cache($userdata);
 		}
-		else if (!trim($userdata['user_permissions']))
+
+		if (!trim($userdata['user_permissions']))
 		{
 			$this->acl_cache($userdata);
 		}
@@ -608,22 +608,26 @@ class auth
 
 		// Now grab group settings - non-role specific...
 		$sql_ary[] = 'SELECT ug.user_id, a.forum_id, a.auth_setting, a.auth_option_id' . $sql_opts_select . '
-			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug' . $sql_opts_from . '
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g' . $sql_opts_from . '
 			WHERE a.auth_role_id = 0 ' .
 				(($sql_opts_from) ? 'AND a.auth_option_id = ao.auth_option_id ' : '') . '
 				AND a.group_id = ug.group_id
+				AND g.group_id = ug.group_id
 				AND ug.user_pending = 0
+				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts";
 
 		// Now grab group settings - role specific...
 		$sql_ary[] = 'SELECT ug.user_id, a.forum_id, r.auth_setting, r.auth_option_id' . $sql_opts_select . '
-			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug, ' . ACL_ROLES_DATA_TABLE . ' r' . $sql_opts_from . '
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g, ' . ACL_ROLES_DATA_TABLE . ' r' . $sql_opts_from . '
 			WHERE a.auth_role_id = r.role_id ' .
 				(($sql_opts_from) ? 'AND r.auth_option_id = ao.auth_option_id ' : '') . '
 				AND a.group_id = ug.group_id
+				AND g.group_id = ug.group_id
 				AND ug.user_pending = 0
+				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts";
@@ -825,9 +829,11 @@ class auth
 
 		// Now grab group-specific permission settings
 		$sql = 'SELECT a.forum_id, a.auth_option_id, a.auth_role_id, a.auth_setting
-			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
 			WHERE a.group_id = ug.group_id
+				AND g.group_id = ug.group_id
 				AND ug.user_pending = 0
+				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				AND ug.user_id = ' . $user_id;
 		$result = $db->sql_query($sql);
 

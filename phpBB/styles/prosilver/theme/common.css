@@ -10,8 +10,7 @@
 html {
 	font-size: 100%;
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-IE browsers */
-	height: 100%;
-	margin-bottom: 1px;
+	height: 101%;
 }
 
 body {
@@ -611,6 +610,7 @@ p.rules {
 
 p.rules img {
 	vertical-align: middle;
+	padding-top: 5px;
 }
 
 p.rules a {

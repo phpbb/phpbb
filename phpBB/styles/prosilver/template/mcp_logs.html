@@ -8,6 +8,9 @@
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 	<ul class="linklist">
+		<li class="leftside">
+			{L_SEARCH_KEYWORDS}: <input type="text" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		</li>
 		<li class="rightside pagination">
 			<!-- IF TOTAL -->{TOTAL} <!-- ENDIF -->
 			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
@@ -71,7 +74,7 @@
 			<fieldset class="display-actions">
 				<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
 				&nbsp;<input class="button1" type="submit" value="{L_DELETE_MARKED}" name="action[del_marked]" />
-	
+
 				<div><a href="#" onclick="marklist('mcp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'mark', false); return false;">{L_UNMARK_ALL}</a></div>
 			</fieldset>
 		<!-- ENDIF -->

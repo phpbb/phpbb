@@ -2,11 +2,13 @@
 
 <form id="mcp" method="post" action="{S_MCP_ACTION}">
 
+<!-- IF not S_PM -->
 <fieldset class="forum-selection">
 	<label for="fo">{L_FORUM}: <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
 	<input type="submit" name="sort" value="{L_GO}" class="button2" />
 	{S_FORM_TOKEN}
 </fieldset>
+<!-- ENDIF -->
 
 <h2>{L_TITLE}</h2>
 
@@ -26,7 +28,7 @@
 			<li class="header">
 				<dl>
 					<dt>{L_VIEW_DETAILS}</dt>
-					<dd class="moderation"><span>{L_REPORTER} &amp; {L_FORUM}</span></dd>
+					<dd class="moderation"><span>{L_REPORTER}<!-- IF not S_PM --> &amp; {L_FORUM}<!-- ENDIF --></span></dd>
 					<dd class="mark">{L_MARK}</dd>
 				</dl>
 			</li>
@@ -36,14 +38,25 @@
 		<!-- BEGIN postrow -->
 			<li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
+					<!-- IF S_PM -->
+					<dt>
+						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+						<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
+						<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
+					</dt>
+					<dd class="moderation">
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}</span>
+					</dd>
+					<!-- ELSE -->
 					<dt>
 						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
 						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 					</dt>
 					<dd class="moderation">
-						<span>{postrow.REPORTER_FULL} {L_REPORTED_ON_DATE} {postrow.REPORT_TIME}<br />
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
 						{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span>
 					</dd>
+					<!-- ENDIF -->
 					<dd class="mark"><input type="checkbox" name="report_id_list[]" value="{postrow.REPORT_ID}" /></dd>
 				</dl>
 			</li>

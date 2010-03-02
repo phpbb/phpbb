@@ -63,16 +63,19 @@
 		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
 	</tr>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
-		<!-- IF S_CAN_UPLOAD -->
+		<!-- IF S_UPLOAD_AVATAR_FILE -->
 			<tr>
 				<td class="row1" width="35%"><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></td>
 				<td class="row2"><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></td>
 			</tr>
+		<!-- ENDIF -->
+		<!-- IF S_UPLOAD_AVATAR_URL -->
 			<tr>
 				<td class="row1" width="35%"><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></td>
 				<td class="row2"><input name="uploadurl" type="text" id="uploadurl" value="" /></td>
 			</tr>
 		<!-- ENDIF -->
+		<!-- IF S_LINK_AVATAR -->
 		<tr>
 			<td class="row1" width="35%"><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></td>
 			<td class="row2"><input name="remotelink" type="text" id="remotelink" value="" /></td>
@@ -81,6 +84,7 @@
 			<td class="row1" width="35%"><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
 			<td class="row2"><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></td>
 		</tr>
+		<!-- ENDIF -->
 		<!-- IF S_DISPLAY_GALLERY -->
 			<tr>
 				<td class="row1" width="35%"><label>{L_AVATAR_GALLERY}:</label></td>
@@ -193,7 +197,7 @@
 
 	<h1>{L_ADD_USERS}</h1>
 
-	<p>{L_ADD_USERS_EXPLAIN}</p>
+	<p>{L_ADD_USERS_UCP_EXPLAIN}</p>
 
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>

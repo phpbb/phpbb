@@ -38,7 +38,7 @@ class ucp_remind
 		{
 			$sql = 'SELECT user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
 				FROM ' . USERS_TABLE . "
-				WHERE user_email = '" . $db->sql_escape($email) . "'
+				WHERE user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);

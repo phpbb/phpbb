@@ -347,6 +347,11 @@ class phpbb_db_tools
 		// holds the DDL for a column
 		$columns = $statements = array();
 
+		if ($this->sql_table_exists($table_name))
+		{
+			return $this->_sql_run_sql($statements);
+		}
+
 		// Begin transaction
 		$statements[] = 'begin';
 
@@ -580,6 +585,14 @@ class phpbb_db_tools
 		}
 
 		$statements = array();
+		$sqlite = false;
+
+		// For SQLite we need to perform the schema changes in a much more different way
+		if ($this->db->sql_layer == 'sqlite' && $this->return_statements)
+		{
+			$sqlite_data = array();
+			$sqlite = true;
+		}
 
 		// Change columns?
 		if (!empty($schema_changes['change_columns']))
@@ -589,16 +602,27 @@ class phpbb_db_tools
 				foreach ($columns as $column_name => $column_data)
 				{
 					// If the column exists we change it, else we add it ;)
-					if ($this->sql_column_exists($table, $column_name))
+					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data);
+						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
-						$result = $this->sql_column_add($table, $column_name, $column_data);
+						$result = $this->sql_column_add($table, $column_name, $column_data, true);
 					}
 
-					if ($this->return_statements)
+					if ($sqlite)
+					{
+						if ($column_exists)
+						{
+							$sqlite_data[$table]['change_columns'][] = $result;
+						}
+						else
+						{
+							$sqlite_data[$table]['add_columns'][] = $result;
+						}
+					}
+					else if ($this->return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -614,16 +638,27 @@ class phpbb_db_tools
 				foreach ($columns as $column_name => $column_data)
 				{
 					// Only add the column if it does not exist yet, else change it (to be consistent)
-					if ($this->sql_column_exists($table, $column_name))
+					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data);
+						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
-						$result = $this->sql_column_add($table, $column_name, $column_data);
+						$result = $this->sql_column_add($table, $column_name, $column_data, true);
 					}
 
-					if ($this->return_statements)
+					if ($sqlite)
+					{
+						if ($column_exists)
+						{
+							$sqlite_data[$table]['change_columns'][] = $result;
+						}
+						else
+						{
+							$sqlite_data[$table]['add_columns'][] = $result;
+						}
+					}
+					else if ($this->return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -658,9 +693,13 @@ class phpbb_db_tools
 					// Only remove the column if it exists...
 					if ($this->sql_column_exists($table, $column))
 					{
-						$result = $this->sql_column_remove($table, $column);
+						$result = $this->sql_column_remove($table, $column, true);
 
-						if ($this->return_statements)
+						if ($sqlite)
+						{
+							$sqlite_data[$table]['drop_columns'][] = $result;
+						}
+						else if ($this->return_statements)
 						{
 							$statements = array_merge($statements, $result);
 						}
@@ -674,9 +713,13 @@ class phpbb_db_tools
 		{
 			foreach ($schema_changes['add_primary_keys'] as $table => $columns)
 			{
-				$result = $this->sql_create_primary_key($table, $columns);
+				$result = $this->sql_create_primary_key($table, $columns, true);
 
-				if ($this->return_statements)
+				if ($sqlite)
+				{
+					$sqlite_data[$table]['primary_key'] = $result;
+				}
+				else if ($this->return_statements)
 				{
 					$statements = array_merge($statements, $result);
 				}
@@ -714,6 +757,147 @@ class phpbb_db_tools
 						$statements = array_merge($statements, $result);
 					}
 				}
+			}
+		}
+
+		if ($sqlite)
+		{
+			foreach ($sqlite_data as $table_name => $sql_schema_changes)
+			{
+				// Create temporary table with original data
+				$statements[] = 'begin';
+
+				$sql = "SELECT sql
+					FROM sqlite_master
+					WHERE type = 'table'
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $this->db->sql_query($sql);
+
+				if (!$result)
+				{
+					continue;
+				}
+
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				// Get the columns...
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$plain_table_cols = trim($matches[1]);
+				$new_table_cols = preg_split('/,(?![\s\w]+\))/m', $plain_table_cols);
+				$column_list = array();
+
+				foreach ($new_table_cols as $declaration)
+				{
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
+				}
+
+				// note down the primary key notation because sqlite only supports adding it to the end for the new table
+				$primary_key = false;
+				$_new_cols = array();
+
+				foreach ($new_table_cols as $key => $declaration)
+				{
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						$primary_key = $declaration;
+						continue;
+					}
+					$_new_cols[] = $declaration;
+				}
+
+				$new_table_cols = $_new_cols;
+
+				// First of all... change columns
+				if (!empty($sql_schema_changes['change_columns']))
+				{
+					foreach ($sql_schema_changes['change_columns'] as $column_sql)
+					{
+						foreach ($new_table_cols as $key => $declaration)
+						{
+							$entities = preg_split('#\s+#', trim($declaration));
+							if (strpos($column_sql, $entities[0] . ' ') === 0)
+							{
+								$new_table_cols[$key] = $column_sql;
+							}
+						}
+					}
+				}
+
+				if (!empty($sql_schema_changes['add_columns']))
+				{
+					foreach ($sql_schema_changes['add_columns'] as $column_sql)
+					{
+						$new_table_cols[] = $column_sql;
+					}
+				}
+
+				// Now drop them...
+				if (!empty($sql_schema_changes['drop_columns']))
+				{
+					foreach ($sql_schema_changes['drop_columns'] as $column_name)
+					{
+						// Remove from column list...
+						$new_column_list = array();
+						foreach ($column_list as $key => $value)
+						{
+							if ($value === $column_name)
+							{
+								continue;
+							}
+
+							$new_column_list[] = $value;
+						}
+
+						$column_list = $new_column_list;
+
+						// Remove from table...
+						$_new_cols = array();
+						foreach ($new_table_cols as $key => $declaration)
+						{
+							$entities = preg_split('#\s+#', trim($declaration));
+							if (strpos($column_name . ' ', $entities[0] . ' ') === 0)
+							{
+								continue;
+							}
+							$_new_cols[] = $declaration;
+						}
+						$new_table_cols = $_new_cols;
+					}
+				}
+
+				// Primary key...
+				if (!empty($sql_schema_changes['primary_key']))
+				{
+					$new_table_cols[] = 'PRIMARY KEY (' . implode(', ', $sql_schema_changes['primary_key']) . ')';
+				}
+				// Add a new one or the old primary key
+				else if ($primary_key !== false)
+				{
+					$new_table_cols[] = $primary_key;
+				}
+
+				$columns = implode(',', $column_list);
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $new_table_cols) . ');';
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
 			}
 		}
 
@@ -801,7 +985,7 @@ class phpbb_db_tools
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE table_name = '{$table}'";
+					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -819,7 +1003,7 @@ class phpbb_db_tools
 			case 'firebird':
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
-					WHERE RDB\$RELATION_NAME = '{$table}'";
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -972,10 +1156,12 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				$sql .= " {$column_type} ";
+				$return_array['column_type_sql_type'] = " {$column_type} ";
 
 				if (!is_null($column_data[1]))
 				{
 					$sql .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
+					$return_array['column_type_sql_default'] = ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 				}
 
 				$sql .= 'NOT NULL';
@@ -1129,7 +1315,7 @@ class phpbb_db_tools
 	/**
 	* Add new column
 	*/
-	function sql_column_add($table_name, $column_name, $column_data)
+	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
@@ -1158,6 +1344,12 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name . ' ' . $column_data['column_type_sql'];
+				}
+
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
@@ -1222,7 +1414,7 @@ class phpbb_db_tools
 	/**
 	* Drop column
 	*/
-	function sql_column_remove($table_name, $column_name)
+	function sql_column_remove($table_name, $column_name, $inline = false)
 	{
 		$statements = array();
 
@@ -1250,6 +1442,12 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name;
+				}
+
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
@@ -1292,7 +1490,7 @@ class phpbb_db_tools
 
 					$columns = implode(',', $column_list);
 
-					$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+					$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
 
 					// create a new table and fill it up. destroy the temp one
 					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
@@ -1346,6 +1544,11 @@ class phpbb_db_tools
 	function sql_table_drop($table_name)
 	{
 		$statements = array();
+
+		if (!$this->sql_table_exists($table_name))
+		{
+			return $this->_sql_run_sql($statements);
+		}
 
 		// the most basic operation, get rid of the table
 		$statements[] = 'DROP TABLE ' . $table_name;
@@ -1405,7 +1608,7 @@ class phpbb_db_tools
 	/**
 	* Add primary key
 	*/
-	function sql_create_primary_key($table_name, $column)
+	function sql_create_primary_key($table_name, $column, $inline = false)
 	{
 		$statements = array();
 
@@ -1432,6 +1635,12 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column;
+				}
+
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
@@ -1639,7 +1848,7 @@ class phpbb_db_tools
 	/**
 	* Change column type (not name!)
 	*/
-	function sql_column_change($table_name, $column_name, $column_data)
+	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
@@ -1648,7 +1857,15 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				// Change type...
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				if (!empty($column_data['column_type_sql_default']))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" SET DEFAULT ' . ' ' . $column_data['column_type_sql_default'];
+				}
+				else
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				}
 			break;
 
 			case 'mssql':
@@ -1728,6 +1945,11 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+
+				if ($inline && $this->return_statements)
+				{
+					return $column_name . ' ' . $column_data['column_type_sql'];
+				}
 
 				$sql = "SELECT sql
 					FROM sqlite_master

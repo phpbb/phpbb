@@ -28,6 +28,9 @@ $topic_id	= request_var('t', 0);
 $post_id	= request_var('p', 0);
 $voted_id	= request_var('vote_id', array('' => 0));
 
+$voted_id = (sizeof($voted_id) > 1) ? array_unique($voted_id) : $voted_id;
+
+
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
 
@@ -41,6 +44,7 @@ $sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
+$s_can_vote = false;
 /**
 * @todo normalize?
 */
@@ -82,6 +86,7 @@ if ($view && !$post_id)
 			WHERE topic_id = $topic_id
 				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
 				AND post_time > $topic_last_read
+				AND forum_id = $forum_id
 			ORDER BY post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
@@ -184,6 +189,7 @@ $sql_array = array(
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
+	$sql_array['SELECT'] .= ', p.post_approved';
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
 }
 
@@ -231,7 +237,7 @@ if (!$post_id)
 }
 else
 {
-	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
+	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id";
 }
 
 $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
@@ -259,6 +265,7 @@ $result = $db->sql_query($sql);
 $topic_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
+// link to unapproved post or incorrect link
 if (!$topic_data)
 {
 	// If post_id was submitted, we try at least to display the topic as a last resort...
@@ -270,9 +277,21 @@ if (!$topic_data)
 	trigger_error('NO_TOPIC');
 }
 
+$forum_id = (int) $topic_data['forum_id'];
 // This is for determining where we are (page)
 if ($post_id)
 {
+	// are we where we are supposed to be?
+	if (!$topic_data['post_approved'] && !$auth->acl_get('m_approve', $topic_data['forum_id']))
+	{
+		// If post_id was submitted, we try at least to display the topic as a last resort...
+		if ($topic_id)
+		{
+			redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
+		}
+
+		trigger_error('NO_TOPIC');
+	}
 	if ($post_id == $topic_data['topic_first_post_id'] || $post_id == $topic_data['topic_last_post_id'])
 	{
 		$check_sort = ($post_id == $topic_data['topic_first_post_id']) ? 'd' : 'a';
@@ -303,9 +322,7 @@ if ($post_id)
 	}
 }
 
-$forum_id = (int) $topic_data['forum_id'];
 $topic_id = (int) $topic_data['topic_id'];
-
 //
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
 
@@ -394,7 +411,8 @@ if (!isset($topic_tracking_info))
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.post_time', 's' => 'p.post_subject');
+$sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => 'p.post_time', 's' => array('p.post_subject', 'p.post_id'));
+$join_user_sql = array('a' => true, 't' => false, 's' => false);
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 
@@ -549,7 +567,10 @@ generate_forum_rules($topic_data);
 
 // Moderators
 $forum_moderators = array();
-get_moderators($forum_moderators, $forum_id);
+if ($config['load_moderators'])
+{
+	get_moderators($forum_moderators, $forum_id);
+}
 
 // This is only used for print view so ...
 $server_path = (!$view) ? $phpbb_root_path : generate_board_url() . '/';
@@ -597,7 +618,7 @@ $template->assign_vars(array(
 	'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
 	'WARN_IMG'			=> $user->img('icon_user_warn', 'WARN_USER'),
 
-	'S_IS_LOCKED'			=>($topic_data['topic_status'] == ITEM_UNLOCKED) ? false : true,
+	'S_IS_LOCKED'			=> ($topic_data['topic_status'] == ITEM_UNLOCKED && $topic_data['forum_status'] == ITEM_UNLOCKED) ? false : true,
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
@@ -612,6 +633,7 @@ $template->assign_vars(array(
 
 	'S_DISPLAY_POST_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
 	'S_DISPLAY_REPLY_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
+	'S_ENABLE_FEEDS_TOPIC'	=> ($config['feed_topic'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $topic_data['forum_options'])) ? true : false,
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
@@ -683,13 +705,15 @@ if (!empty($topic_data['poll_start']))
 	$s_can_vote = ($auth->acl_get('f_vote', $forum_id) &&
 		(($topic_data['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
 		$topic_data['topic_status'] != ITEM_LOCKED &&
-		$topic_data['forum_status'] != ITEM_LOCKED) ? true : false;
+		$topic_data['forum_status'] != ITEM_LOCKED &&
+		(!sizeof($cur_voted_id) ||
+		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']))) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
 
 	if ($update && $s_can_vote)
 	{
 
-		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id))
+		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id) || !check_form_key('posting'))
 		{
 			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
@@ -702,9 +726,13 @@ if (!empty($topic_data['poll_start']))
 			{
 				$message = 'TOO_MANY_VOTE_OPTIONS';
 			}
-			else
+			else if (in_array(VOTE_CONVERTED, $cur_voted_id))
 			{
 				$message = 'VOTE_CONVERTED';
+			}
+			else
+			{
+				$message = 'FORM_INVALID';
 			}
 
 			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
@@ -858,6 +886,7 @@ if (!empty($topic_data['poll_start']))
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = false;
 $sql_limit = $config['posts_per_page'];
+$sql_sort_order = $direction = '';
 
 if ($start > $total_posts / 2)
 {
@@ -869,14 +898,23 @@ if ($start > $total_posts / 2)
 	}
 
 	// Select the sort order
-	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
+	$direction = (($sort_dir == 'd') ? 'ASC' : 'DESC');
 	$sql_start = max(0, $total_posts - $sql_limit - $start);
 }
 else
 {
 	// Select the sort order
-	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+	$direction = (($sort_dir == 'd') ? 'DESC' : 'ASC');
 	$sql_start = $start;
+}
+
+if (is_array($sort_by_sql[$sort_key]))
+{
+	$sql_sort_order = implode(' ' . $direction . ', ', $sort_by_sql[$sort_key]) . ' ' . $direction;
+}
+else
+{
+	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . $direction;
 }
 
 // Container for user details, only process once
@@ -887,10 +925,10 @@ $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
 $sql = 'SELECT p.post_id
-	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql[$sort_key][0] == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
+	FROM ' . POSTS_TABLE . ' p' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
 		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
-		" . (($sort_by_sql[$sort_key][0] == 'u') ? 'AND u.user_id = p.poster_id': '') . "
+		" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
@@ -1092,6 +1130,11 @@ while ($row = $db->sql_fetchrow($result))
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($row['user_yim']) . '&amp;.src=pg' : '',
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$poster_id&amp;sr=posts") : '',
+
+				'author_full'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour']),
+				'author_colour'		=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour']),
+				'author_username'	=> get_username_string('username', $poster_id, $row['username'], $row['user_colour']),
+				'author_profile'	=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
 			);
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
@@ -1150,7 +1193,22 @@ if ($config['load_cpf_viewtopic'])
 	$cp = new custom_profile();
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
-	$profile_fields_cache = $cp->generate_profile_fields_template('grab', $id_cache);
+	$profile_fields_tmp = $cp->generate_profile_fields_template('grab', $id_cache);
+
+	// filter out fields not to be displayed on viewtopic. Yes, it's a hack, but this shouldn't break any MODs.
+	$profile_fields_cache = array();
+	foreach ($profile_fields_tmp as $profile_user_id => $profile_fields)
+	{
+		$profile_fields_cache[$profile_user_id] = array();
+		foreach ($profile_fields as $used_ident => $profile_field)
+		{
+			if ($profile_field['data']['field_show_on_vt'])
+			{
+				$profile_fields_cache[$profile_user_id][$used_ident] = $profile_field;
+			}
+		}
+	}
+	unset($profile_fields_tmp);
 }
 
 // Generate online information for user
@@ -1384,7 +1442,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		// It is safe to grab the username from the user cache array, we are at the last
 		// post and only the topic poster and last poster are allowed to bump.
 		// Admins and mods are bound to the above rules too...
-		$l_bumped_by = '<br /><br />' . sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
+		$l_bumped_by = sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
 	}
 	else
 	{
@@ -1407,12 +1465,28 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$s_first_unread = $first_unread = true;
 	}
 
+	$edit_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_edit', $forum_id) || (
+		$user->data['user_id'] == $poster_id &&
+		$auth->acl_get('f_edit', $forum_id) &&
+		!$row['post_edit_locked'] &&
+		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
+	)));
+
+	$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || (
+		$user->data['user_id'] == $poster_id &&
+		$auth->acl_get('f_delete', $forum_id) &&
+		$topic_data['topic_last_post_id'] == $row['post_id'] &&
+		($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
+		// we do not want to allow removal of the last post if a moderator locked it!
+		!$row['post_edit_locked']
+	)));
+
 	//
 	$postrow = array(
-		'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
-		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
-		'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
-		'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR_COLOUR'	=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_colour'] : get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR'			=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_username'] : get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'U_POST_AUTHOR'			=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_profile'] : get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 
 		'RANK_TITLE'		=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMG'			=> $user_cache[$poster_id]['rank_image'],
@@ -1440,10 +1514,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'U_EDIT'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
-		'U_DELETE'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && !$row['post_edit_locked'] && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
@@ -1534,13 +1608,34 @@ if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($use
 	}
 }
 
+// Get last post time for all global announcements
+// to keep proper forums tracking
+if ($topic_data['topic_type'] == POST_GLOBAL)
+{
+	$sql = 'SELECT topic_last_post_time as forum_last_post_time
+		FROM ' . TOPICS_TABLE . '
+		WHERE forum_id = 0
+		ORDER BY topic_last_post_time DESC';
+	$result = $db->sql_query_limit($sql, 1);
+	$topic_data['forum_last_post_time'] = (int) $db->sql_fetchfield('forum_last_post_time');
+	$db->sql_freeresult($result);
+
+	$sql = 'SELECT mark_time as forum_mark_time
+		FROM ' . FORUMS_TRACK_TABLE . '
+		WHERE forum_id = 0
+			AND user_id = ' . $user->data['user_id'];
+	$result = $db->sql_query($sql);
+	$topic_data['forum_mark_time'] = (int) $db->sql_fetchfield('forum_mark_time');
+	$db->sql_freeresult($result);
+}
+
 // Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
 {
-	markread('topic', $forum_id, $topic_id, $max_post_time);
+	markread('topic', (($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_id, $max_post_time);
 
 	// Update forum info
-	$all_marked_read = update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+	$all_marked_read = update_forum_tracking_info((($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
 }
 else
 {
@@ -1582,6 +1677,45 @@ else if (!$all_marked_read)
 	}
 }
 
+// let's set up quick_reply
+$s_quick_reply = $user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $auth->acl_get('f_reply', $forum_id);
+
+if ($s_can_vote || $s_quick_reply)
+{
+	add_form_key('posting');
+
+	if ($s_quick_reply)
+	{
+		$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs', $forum_id) && $auth->acl_get('u_sig');
+		$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('f_smilies', $forum_id);
+		$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('f_bbcode', $forum_id);
+		$s_notify		= $config['allow_topic_notify'] && $user->data['user_notify'];
+
+		$qr_hidden_fields = array(
+			'topic_cur_post_id'		=> (int) $topic_data['topic_last_post_id'],
+			'lastclick'				=> (int) time(),
+			'topic_id'				=> (int) $topic_data['topic_id'],
+			'forum_id'				=> (int) $forum_id,
+		);
+
+		// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
+		(!$s_bbcode)					? $qr_hidden_fields['disable_bbcode'] = 1		: true;
+		(!$s_smilies)					? $qr_hidden_fields['disable_smilies'] = 1		: true;
+		(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
+		($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
+		($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
+
+		$template->assign_vars(array(
+			'S_QUICK_REPLY'			=> true,
+			'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
+			'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
+			'SUBJECT'				=> 'Re: ' . censor_text($topic_data['topic_title']),
+		));
+	}
+}
+// now I have the urge to wash my hands :(
+
+
 // We overwrite $_REQUEST['f'] if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
@@ -1591,7 +1725,7 @@ if (empty($_REQUEST['f']))
 }
 
 // Output the page
-page_header($user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title']);
+page_header($user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title'], true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')

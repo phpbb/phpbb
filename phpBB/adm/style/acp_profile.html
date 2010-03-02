@@ -56,6 +56,10 @@
 			<dd><input type="checkbox" class="radio" id="field_show_on_reg" name="field_show_on_reg" value="1"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
+			<dt><label for="field_show_on_vt">{L_DISPLAY_ON_VT}:</label><br /><span>{L_DISPLAY_ON_VT_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_vt" name="field_show_on_vt" value="1"<!-- IF S_SHOW_ON_VT --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
 			<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
 			<dd><input type="checkbox" class="radio" id="field_required" name="field_required" value="1"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
@@ -127,7 +131,7 @@
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			<input class="button1" type="submit" name="prev" value="{L_PROFILE_BASIC_OPTIONS}" />
 		</fieldset>
-		
+
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
 			{S_FORM_TOKEN}
@@ -151,15 +155,15 @@
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			<input class="button1" type="submit" name="prev" value="{L_PROFILE_TYPE_OPTIONS}" />
 		</fieldset>
-		
+
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
 			<input class="button1" type="submit" name="save" value="{L_SAVE}" />
 			{S_FORM_TOKEN}
 		</fieldset>
-	
+
 	<!-- ENDIF -->
-	
+
 	</form>
 
 <!-- ELSE -->
@@ -194,14 +198,14 @@
 				{ICON_MOVE_UP_DISABLED}
 				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 			<!-- ELSEIF not fields.S_FIRST_ROW && not fields.S_LAST_ROW-->
-				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 			<!-- ELSEIF fields.S_LAST_ROW && not fields.S_FIRST_ROW -->
 				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a>
-				{ICON_MOVE_DOWN_DISABLED}	
+				{ICON_MOVE_DOWN_DISABLED}
 			<!-- ENDIF -->
 			<!-- IF not fields.S_NEED_EDIT -->
-				<a href="{fields.U_EDIT}">{ICON_EDIT}</a> 
+				<a href="{fields.U_EDIT}">{ICON_EDIT}</a>
 			<!-- ELSE -->
 				{ICON_EDIT_DISABLED}
 			<!-- ENDIF -->
@@ -209,12 +213,16 @@
 		</td>
 
 	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row3">
+		<td colspan="4">{L_ACP_NO_ITEMS}</td>
+	</tr>
 	<!-- END fields -->
 	</tbody>
 	</table>
 
 	<form id="profile_fields" method="post" action="{U_ACTION}">
-	
+
 	<fieldset class="quick">
 		<input class="text small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
 		<input class="button1" type="submit" name="submit" value="{L_CREATE_NEW_FIELD}" />

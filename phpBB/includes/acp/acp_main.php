@@ -97,6 +97,10 @@ class acp_main
 						$confirm = true;
 						$confirm_lang = 'PURGE_CACHE_CONFIRM';
 					break;
+					case 'purge_sessions':
+						$confirm = true;
+						$confirm_lang = 'PURGE_SESSIONS_CONFIRM';
+					break;
 
 					default:
 						$confirm = true;
@@ -341,8 +345,74 @@ class acp_main
 
 						add_log('admin', 'LOG_PURGE_CACHE');
 					break;
+
+					case 'purge_sessions':
+						if ((int) $user->data['user_type'] !== USER_FOUNDER)
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
+
+						foreach ($tables as $table)
+						{
+							switch ($db->sql_layer)
+							{
+								case 'sqlite':
+								case 'firebird':
+									$db->sql_query("DELETE FROM $table");
+								break;
+
+								default:
+									$db->sql_query("TRUNCATE TABLE $table");
+								break;
+							}
+						}
+
+						// let's restore the admin session
+						$reinsert_ary = array(
+								'session_id'			=> (string) $user->session_id,
+								'session_page'			=> (string) substr($user->page['page'], 0, 199),
+								'session_forum_id'		=> $user->page['forum'],
+								'session_user_id'		=> (int) $user->data['user_id'],
+								'session_start'			=> (int) $user->data['session_start'],
+								'session_last_visit'	=> (int) $user->data['session_last_visit'],
+								'session_time'			=> (int) $user->time_now,
+								'session_browser'		=> (string) trim(substr($user->browser, 0, 149)),
+								'session_forwarded_for'	=> (string) $user->forwarded_for,
+								'session_ip'			=> (string) $user->ip,
+								'session_autologin'		=> (int) $user->data['session_autologin'],
+								'session_admin'			=> 1,
+								'session_viewonline'	=> (int) $user->data['session_viewonline'],
+						);
+
+						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
+						$db->sql_query($sql);
+
+						add_log('admin', 'LOG_PURGE_SESSIONS');
+					break;
 				}
 			}
+		}
+
+		// Version check
+		$user->add_lang('install');
+
+		$latest_version_info = false;
+		if (($latest_version_info = obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
+		{
+			$template->assign_var('S_VERSIONCHECK_FAIL', true);
+		}
+		else
+		{
+			$latest_version_info = explode("\n", $latest_version_info);
+
+			$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
+			$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+
+			$template->assign_vars(array(
+				'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+			));
 		}
 
 		// Get forum statistics
@@ -435,13 +505,15 @@ class acp_main
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'TOTAL_ORPHAN'		=> $total_orphan,
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
-			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
+			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 			'BOARD_VERSION'		=> $config['version'],
 
 			'U_ACTION'			=> $this->u_action,
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
+			'U_VERSIONCHECK'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
+			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=1&amp;versioncheck_force=1'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
@@ -468,6 +540,8 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
+			$user->add_lang('memberlist');
+
 			$inactive = array();
 			$inactive_count = 0;
 
@@ -477,13 +551,24 @@ class acp_main
 			{
 				$template->assign_block_vars('inactive', array(
 					'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
+					'REMINDED_DATE'	=> $user->format_date($row['user_reminded_time']),
 					'JOINED'		=> $user->format_date($row['user_regdate']),
 					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+
 					'REASON'		=> $row['inactive_reason'],
 					'USER_ID'		=> $row['user_id'],
-					'USERNAME'		=> $row['username'],
-					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
-				);
+					'POSTS'			=> ($row['user_posts']) ? $row['user_posts'] : 0,
+					'REMINDED'		=> $row['user_reminded'],
+
+					'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
+
+					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview')),
+					'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+					'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+
+					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+					'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
+				));
 			}
 
 			$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
@@ -499,12 +584,12 @@ class acp_main
 		}
 
 		// Warn if install is still present
-		if (file_exists($phpbb_root_path . 'install'))
+		if (file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));

@@ -21,6 +21,12 @@ if (!defined('IN_PHPBB'))
 */
 function can_load_dll($dll)
 {
+	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
+	// as the installer doesn't understand that the extension has a prerequisite.
+	if ($dll == 'sqlite' && version_compare(PHP_VERSION, '5.0.0', '>=') && !extension_loaded('pdo'))
+	{
+		return false;
+	}
 	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && function_exists('dl') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
 }
 
@@ -175,7 +181,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 function dbms_select($default = '', $only_20x_options = false)
 {
 	global $lang;
-	
+
 	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
@@ -396,10 +402,10 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					}
 					else
 					{
-						$sql = "SELECT FIRST 0 char_length('')
-							FROM RDB\$DATABASE";
+						$sql = 'SELECT 1 FROM RDB$DATABASE
+							WHERE BIN_AND(10, 1) = 0';
 						$result = $db->sql_query($sql);
-						if (!$result) // This can only fail if char_length is not defined
+						if (!$result) // This can only fail if BIN_AND is not defined
 						{
 							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
@@ -440,7 +446,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					unset($final);
 				}
 			break;
-			
+
 			case 'oracle':
 				if ($unicode_check)
 				{
@@ -462,7 +468,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					}
 				}
 			break;
-			
+
 			case 'postgres':
 				if ($unicode_check)
 				{

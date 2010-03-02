@@ -121,6 +121,17 @@ a:active {
 	font-weight: bold;
 }
 
+/* List items */
+ul, ol {
+	list-style-position: inside;
+	margin-left: 1em;
+}
+
+li {
+	display: list-item;
+	list-style-type: inherit;
+}
+
 /* Main blocks
 ---------------------------------------- */
 #wrap {
@@ -184,6 +195,7 @@ a:active {
 	width: 76%;
 	margin: 0 0 0 3%;
 	min-height: 350px;
+	overflow-y: auto;
 }
 
 .rtl #main {

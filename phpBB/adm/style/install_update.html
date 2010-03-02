@@ -219,8 +219,7 @@
 					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
 				<dd style="margin-left: 60%;">
-					<!-- IF not new.S_BINARY -->[ <a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>
-					<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 				</dd>
 				<!-- IF new.S_CUSTOM -->
 					<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
@@ -243,7 +242,7 @@
 					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
 						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 					</dt>
-					<dd style="margin-left: 60%;"><!-- IF not not_modified.S_BINARY -->[ <a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<dd style="margin-left: 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 					<!-- IF not_modified.S_CUSTOM -->
 						<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 					<!-- ENDIF -->
@@ -271,7 +270,7 @@
 				</dl>
 				<dl>
 					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
-					<dd style="margin-left: 60%;"><!-- IF not modified.S_BINARY -->[ <a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<dd style="margin-left: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 				</dl>
 				<dl>
 					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
@@ -298,8 +297,7 @@
 					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
 				<dd style="margin-left: 60%;">
-					<!-- IF not new_conflict.S_BINARY -->[ <a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>
-					<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 				</dd>
 				<!-- IF new_conflict.S_CUSTOM -->
 					<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
@@ -323,7 +321,7 @@
 						<!-- IF conflict.NUM_CONFLICTS --><br /><span>{L_NUM_CONFLICTS}: {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
 					</dt>
 					<dd style="margin-left: 60%;">
-						<!-- IF not conflict.S_BINARY -->[ <a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a> ]<br />{L_DOWNLOAD_CONFLICTS_EXPLAIN}
+						<!-- IF not conflict.S_BINARY -->[<a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a>]<br />{L_DOWNLOAD_CONFLICTS_EXPLAIN}
 						<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 					</dd>
 					<!-- IF conflict.S_CUSTOM -->
@@ -396,7 +394,7 @@
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
-		<input type="submit" class="button2" value="{L_CHECK_FILES_AGAIN}" name="check_again" />&nbsp; &nbsp;<input type="submit" class="button1" value="{L_DOWNLOAD}" name="download" />
+		<input type="submit" class="button2" value="{L_CONTINUE_UPDATE}" name="check_again" />&nbsp; &nbsp;<input type="submit" class="button1" value="{L_DOWNLOAD}" name="download" />
 	</fieldset>
 
 	</form>
@@ -462,7 +460,7 @@
 	</dl>
 	<!-- END data -->
 	</fieldset>
-	
+
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input class="button2" type="submit" name="check_again" value="{L_BACK}" />

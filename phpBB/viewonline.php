@@ -187,7 +187,7 @@ while ($row = $db->sql_fetchrow($result))
 		continue;
 	}
 
-	preg_match('#^([a-z/_]+)#i', $row['session_page'], $on_page);
+	preg_match('#^([a-z0-9/_-]+)#i', $row['session_page'], $on_page);
 	if (!sizeof($on_page))
 	{
 		$on_page[1] = '';

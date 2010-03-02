@@ -249,7 +249,7 @@ if (!$attachment)
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-$attachment['physical_filename'] = basename($attachment['physical_filename']);
+$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 $display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))

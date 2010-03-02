@@ -80,6 +80,7 @@ $lang = array_merge($lang, array(
 	'ACP_ADMINISTRATORS_EXPLAIN'				=> 'Here you can assign administrator permissions to users or groups. All users with administrator permissions can view the administration control panel.',
 	'ACP_FORUM_MODERATORS_EXPLAIN'				=> 'Here you can assign users and groups as forum moderators. To assign users access to forums, to define global moderative permissions or administrators please use the appropriate page.',
 	'ACP_FORUM_PERMISSIONS_EXPLAIN'				=> 'Here you can alter which users and groups can access which forums. To assign moderators or define administrators please use the appropriate page.',
+	'ACP_FORUM_PERMISSIONS_COPY_EXPLAIN'		=> 'Here you can copy forum permissions from one forum to one or more other forums.',
 	'ACP_GLOBAL_MODERATORS_EXPLAIN'				=> 'Here you can assign global moderator permissions to users or groups. These moderators are like ordinary moderators except they have access to every forum on your board.',
 	'ACP_GROUPS_FORUM_PERMISSIONS_EXPLAIN'		=> 'Here you can assign forum permissions to groups.',
 	'ACP_GROUPS_PERMISSIONS_EXPLAIN'			=> 'Here you can assign global permissions to groups - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. Individual users permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group’s permissions.',
@@ -108,6 +109,12 @@ $lang = array_merge($lang, array(
 	'APPLY_PERMISSIONS'			=> 'Apply permissions',
 	'APPLY_PERMISSIONS_EXPLAIN'	=> 'The permissions and role defined for this item will only be applied to this item and all checked items.',
 	'AUTH_UPDATED'				=> 'Permissions have been updated.',
+
+	'COPY_PERMISSIONS_CONFIRM'				=> 'Are you sure you wish to carry out this operation? Please be aware that this will overwrite any existing permissions on the selected targets.',
+	'COPY_PERMISSIONS_FORUM_FROM_EXPLAIN'	=> 'The source forum you want to copy permissions from.',
+	'COPY_PERMISSIONS_FORUM_TO_EXPLAIN'		=> 'The destination forums you want the copied permissions applied to.',
+	'COPY_PERMISSIONS_FROM'					=> 'Copy permissions from',
+	'COPY_PERMISSIONS_TO'					=> 'Apply permissions to',
 
 	'CREATE_ROLE'				=> 'Create role',
 	'CREATE_ROLE_FROM'			=> 'Use settings from…',
@@ -164,6 +171,7 @@ $lang = array_merge($lang, array(
 	'ROLE_FORUM_POLLS'			=> 'Standard Access + Polls',
 	'ROLE_FORUM_READONLY'		=> 'Read Only Access',
 	'ROLE_FORUM_STANDARD'		=> 'Standard Access',
+	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly registered User',
 	'ROLE_MOD_FULL'				=> 'Full Moderator',
 	'ROLE_MOD_QUEUE'			=> 'Queue Moderator',
 	'ROLE_MOD_SIMPLE'			=> 'Simple Moderator',
@@ -173,6 +181,8 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_NOAVATAR'		=> 'No Avatar',
 	'ROLE_USER_NOPM'			=> 'No Private Messages',
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
+	'ROLE_USER_NEW_MEMBER'		=> 'Newly registered User',
+
 
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
 	'ROLE_DESCRIPTION_ADMIN_FULL'			=> 'Has access to all administrative functions of this board.<br />Not recommended.',
@@ -187,6 +197,7 @@ $lang = array_merge($lang, array(
 	'ROLE_DESCRIPTION_FORUM_POLLS'			=> 'Like Standard Access but can also create polls.',
 	'ROLE_DESCRIPTION_FORUM_READONLY'		=> 'Can read the forum, but cannot create new topics or reply to posts.',
 	'ROLE_DESCRIPTION_FORUM_STANDARD'		=> 'Can use most forum features including attachments and deleting own topics, but cannot lock own topics, and cannot create polls.',
+	'ROLE_DESCRIPTION_FORUM_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <samp>NEVER</samp> permissions to lock features for new users.',
 	'ROLE_DESCRIPTION_MOD_FULL'				=> 'Can use all moderating features, including banning.',
 	'ROLE_DESCRIPTION_MOD_QUEUE'			=> 'Can use the Moderation Queue to validate and edit posts, but nothing else.',
 	'ROLE_DESCRIPTION_MOD_SIMPLE'			=> 'Can only use basic topic actions. Cannot send warnings or use moderation queue.',
@@ -196,6 +207,7 @@ $lang = array_merge($lang, array(
 	'ROLE_DESCRIPTION_USER_NOAVATAR'		=> 'Has a limited feature set and is not allowed to use the Avatar feature.',
 	'ROLE_DESCRIPTION_USER_NOPM'			=> 'Has a limited feature set, and is not allowed to use Private Messages.',
 	'ROLE_DESCRIPTION_USER_STANDARD'		=> 'Can access most but not all user features. Cannot change user name or ignore the flood limit, for instance.',
+	'ROLE_DESCRIPTION_USER_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <samp>NEVER</samp> permissions to lock features for new users.',
 
 	'ROLE_DESCRIPTION_EXPLAIN'		=> 'You are able to enter a short explanation of what the role is doing or for what it is meant for. The text you enter here will be displayed within the permissions screens too.',
 	'ROLE_DESCRIPTION_LONG'			=> 'The role description is too long, please limit it to 4000 characters.',
@@ -241,7 +253,7 @@ $lang = array_merge($lang, array(
 	'TRACE_USER_GLOBAL_YES_TOTAL_NEVER'		=> 'The forum independent user permission evaluates to <samp>YES</samp> which overwrites the current local result <samp>NEVER</samp>. %sTrace global permission%s',
 	'TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'	=> 'The forum independent user permission evaluates to <samp>NEVER</samp> which doesn’t influence the local permission. %sTrace global permission%s',
 
-	'TRACE_USER_FOUNDER'					=> 'The user has the founder type set, therefore admin permissions are set to <samp>YES</samp> by default.',
+	'TRACE_USER_FOUNDER'					=> 'The user is a founder, therefore admin permissions are always set to <samp>YES</samp>.',
 	'TRACE_USER_KEPT'						=> 'The user’s permission is <samp>NO</samp> so the old total value is kept.',
 	'TRACE_USER_KEPT_LOCAL'					=> 'The user’s permission for this forum is <samp>NO</samp> so the old total value is kept.',
 	'TRACE_USER_NEVER_TOTAL_NEVER'			=> 'The user’s permission is set to <samp>NEVER</samp> and the total value is set to <samp>NEVER</samp>, so nothing is changed.',

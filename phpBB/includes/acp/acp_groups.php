@@ -309,6 +309,7 @@ class acp_groups
 						'message_limit'		=> request_var('group_message_limit', 0),
 						'max_recipients'	=> request_var('group_max_recipients', 0),
 						'founder_manage'	=> 0,
+						'skip_auth'			=> request_var('group_skip_auth', 0),
 					);
 
 					if ($user->data['user_type'] == USER_FOUNDER)
@@ -400,11 +401,26 @@ class acp_groups
 						// were made.
 
 						$group_attributes = array();
-						$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit', 'max_recipients', 'founder_manage');
-						foreach ($test_variables as $test)
+						$test_variables = array(
+							'rank'			=> 'int',
+							'colour'		=> 'string',
+							'avatar'		=> 'string',
+							'avatar_type'	=> 'int',
+							'avatar_width'	=> 'int',
+							'avatar_height'	=> 'int',
+							'receive_pm'	=> 'int',
+							'legend'		=> 'int',
+							'message_limit'	=> 'int',
+							'max_recipients'=> 'int',
+							'founder_manage'=> 'int',
+							'skip_auth'		=> 'int',
+						);
+
+						foreach ($test_variables as $test => $type)
 						{
 							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
 							{
+								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
 							}
 						}
@@ -562,7 +578,7 @@ class acp_groups
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 					'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
-
+					'GROUP_SKIP_AUTH'		=> (!empty($group_row['group_skip_auth'])) ? ' checked="checked"' : '',
 
 					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
@@ -591,8 +607,7 @@ class acp_groups
 					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
-					)
-				);
+				));
 
 				return;
 			break;
@@ -607,7 +622,7 @@ class acp_groups
 				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_colour, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
 					WHERE ug.group_id = $group_id
 						AND u.user_id = ug.user_id
@@ -621,11 +636,12 @@ class acp_groups
 						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
+						'USERNAME_COLOUR'	=> $row['user_colour'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id'])
-					);
+						'USER_ID'			=> $row['user_id'],
+					));
 				}
 				$db->sql_freeresult($result);
 
@@ -662,7 +678,7 @@ class acp_groups
 				));
 
 				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
 					WHERE ug.group_id = $group_id
 						AND u.user_id = ug.user_id
@@ -687,6 +703,7 @@ class acp_groups
 						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
+						'USERNAME_COLOUR'	=> $row['user_colour'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
@@ -763,8 +780,7 @@ class acp_groups
 
 					'GROUP_NAME'	=> $group_name,
 					'TOTAL_MEMBERS'	=> $row['total_members'],
-					)
-				);
+				));
 			}
 		}
 	}

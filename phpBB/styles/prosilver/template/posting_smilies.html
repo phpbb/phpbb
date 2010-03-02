@@ -12,11 +12,12 @@
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
 		<!-- BEGIN smiley --> 
-			<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a> 
+			<a href="#" onclick="initInsertions(); insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a> 
 		<!-- END smiley	-->
 	
 	<span class="corners-bottom"><span></span></span></div>
 </div>
+<div>{PAGINATION}</div>
 <a  href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
 
 <!-- INCLUDE simple_footer.html -->

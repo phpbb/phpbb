@@ -42,15 +42,18 @@
 </div>
 
 <fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1" />
 	{S_FORM_TOKEN}
 </fieldset>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>		
+	<div class="inner"><span class="corners-top"><span></span></span>
 
 	<ul class="linklist">
+		<li class="leftside">
+			{L_SEARCH_KEYWORDS}: <input type="text" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		</li>
 		<li class="rightside pagination">
 			<!-- IF TOTAL_REPORTS -->{TOTAL_REPORTS} <!-- ENDIF -->
 			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
@@ -90,8 +93,8 @@
 	<fieldset class="display-options">
 		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-		<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>		
+		<label>{L_DISPLAY_LOG}: {S_SELECT_SORT_DAYS}</label>
+		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 		<input type="submit" name="sort" value="{L_GO}" class="button2" />
 	</fieldset>
 
@@ -105,7 +108,7 @@
 	</ul>
 
 	<span class="corners-bottom"><span></span></span></div>
-</div>	
+</div>
 
 <!-- IF S_CLEAR_ALLOWED -->
 <fieldset class="display-actions">
@@ -114,7 +117,7 @@
 </fieldset>
 
 <fieldset class="display-actions">
-	<div><a href="#" onclick="marklist('mcp', 'marknote', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('mcp', 'marknote', false); return false;">{L_UNMARK_ALL}</a></div>		
+	<div><a href="#" onclick="marklist('mcp', 'marknote', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('mcp', 'marknote', false); return false;">{L_UNMARK_ALL}</a></div>
 </fieldset>
 <!-- ENDIF -->
 </form>

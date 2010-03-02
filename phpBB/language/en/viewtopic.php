@@ -48,6 +48,7 @@ $lang = array_merge($lang, array(
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'CODE'					=> 'Code',
+	'COLLAPSE_QR'			=> 'Hide Quick Reply',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
@@ -59,7 +60,8 @@ $lang = array_merge($lang, array(
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
-
+	'FULL_EDITOR'			=> 'Full Editor',
+	
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
 	'LOGIN_VIEWTOPIC'		=> 'The board requires you to be registered and logged in to view this topic.',
@@ -86,11 +88,13 @@ $lang = array_merge($lang, array(
 	'PRINT_TOPIC'			=> 'Print view',
 
 	'QUICK_MOD'				=> 'Quick-mod tools',
+	'QUICKREPLY'			=> 'Quick Reply',
 	'QUOTE'					=> 'Quote',
 
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
+	'SHOW_QR'				=> 'Quick Reply',
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
 	'TOTAL_VOTES'			=> 'Total votes',

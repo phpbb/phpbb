@@ -135,11 +135,14 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 else
 {
 	$template->assign_var('S_HAS_SUBFORUM', false);
-	get_moderators($moderators, $forum_id);
+	if ($config['load_moderators'])
+	{
+		get_moderators($moderators, $forum_id);
+	}
 }
 
 // Dump out the page header and load viewforum template
-page_header($user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);
+page_header($user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name'], true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
@@ -163,8 +166,6 @@ if (!$auth->acl_get('f_read', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
-		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
-		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url())),
 	));
 
 	page_footer();
@@ -176,7 +177,8 @@ if ($mark_read == 'topics')
 	$token = request_var('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', $forum_id);
+		// Add 0 to forums array to mark global announcements correctly
+		markread('topics', array($forum_id, 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
@@ -615,8 +617,8 @@ if (sizeof($topic_list))
 		$view_topic_url_params = 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $topic_id;
 		$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
-		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', (($row['forum_id']) ? $row['forum_id'] : $forum_id))) ? true : false;
+		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', (($row['forum_id']) ? $row['forum_id'] : $forum_id))) ? true : false;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
 
 		// Send vars to template

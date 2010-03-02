@@ -83,6 +83,10 @@
 
 <!-- INCLUDE acp_users_feedback.html -->
 
+<!-- ELSEIF S_WARNINGS -->
+
+<!-- INCLUDE acp_users_warnings.html -->
+
 <!-- ELSEIF S_PROFILE -->
 
 <!-- INCLUDE acp_users_profile.html -->
@@ -131,8 +135,8 @@
 		<!-- ELSE -->
 			<!-- IF group.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 				<td><a href="{group.U_EDIT_GROUP}">{group.GROUP_NAME}</a></td>
-				<td><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE --><strong>{L_GROUP_DEFAULT}</strong><!-- ENDIF --></td>
-				<td><!-- IF not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+				<td><!-- IF group.S_IS_MEMBER --><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE --><strong>{L_GROUP_DEFAULT}</strong><!-- ENDIF --><!-- ELSEIF not group.S_IS_MEMBER and group.U_APPROVE --><a href="{group.U_APPROVE}">{L_GROUP_APPROVE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+				<td><!-- IF group.S_IS_MEMBER and not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 				<td><a href="{group.U_DELETE}">{L_GROUP_DELETE}</a></td>
 			</tr>
 		<!-- ENDIF -->

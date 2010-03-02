@@ -132,6 +132,18 @@ dd.posts, dd.topics, dd.views {
 	font-size: 1.2em;
 }
 
+/* List in forum description */
+dl.icon dt ol,
+dl.icon dt ul {
+	list-style-position: inside;
+	margin-left: 1em;
+}
+
+dl.icon dt li {
+	display: list-item;
+	list-style-type: inherit;
+}
+
 dd.lastpost {
 	width: 25%;
 	font-size: 1.1em;
@@ -295,6 +307,7 @@ div[class].topic-actions {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	color: #333333;
+	padding-bottom: 1px;
 }
 
 .content h2, .panel h2 {

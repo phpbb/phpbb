@@ -32,11 +32,6 @@
 		<td class="row2" colspan="2"><span class="gensmall">{L_REG_COND}</span></td>
 	</tr>
 <!-- ENDIF -->
-<!-- IF .profile_fields -->
-	<tr>
-		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
-	</tr>
-<!-- ENDIF -->
 
 <tr>
 	<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
@@ -66,6 +61,10 @@
 	<td class="row1"><b class="genmed">{L_TIMEZONE}: </b></td>
 	<td class="row2"><select name="tz">{S_TZ_OPTIONS}</select></td>
 </tr>
+<!-- IF .profile_fields -->
+	<tr>
+		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
+	</tr>
 <!-- BEGIN profile_fields -->
 	<tr>
 		<td class="row1" width="35%">
@@ -75,23 +74,13 @@
 		</td>
 		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall error">{profile_fields.ERROR}</span><!-- ENDIF --></td>
 	</tr>
+	
 <!-- END profile_fields -->
-
-<!-- IF S_CONFIRM_CODE -->
-	<tr>
-		<th colspan="2" valign="middle">{L_CONFIRMATION}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2"><span class="gensmall">{L_CONFIRM_EXPLAIN}</span></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2" align="center">{CONFIRM_IMG}</td>
-	</tr>
-	<tr>
-		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN} <!-- IF S_CONFIRM_REFRESH -->{L_VC_REFRESH_EXPLAIN}<!-- ENDIF --></span></td>
-		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" /><!-- IF S_CONFIRM_REFRESH -->&nbsp;<input type="submit" value="{L_VC_REFRESH}" class="btnlite" /><!-- ENDIF --></td>
-	</tr>
 <!-- ENDIF -->
+
+		<!-- IF CAPTCHA_TEMPLATE -->
+		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+		<!-- ENDIF -->
 
 <!-- IF S_COPPA -->
 	<tr>

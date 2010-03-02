@@ -119,7 +119,13 @@ class ucp_pm
 
 				if (!$auth->acl_get('u_sendpm'))
 				{
-					trigger_error('NO_AUTH_SEND_MESSAGE');
+					// trigger_error('NO_AUTH_SEND_MESSAGE');
+					$template->assign_vars(array(
+						'S_NO_AUTH_SEND_MESSAGE'	=> true,
+					));
+
+					$tpl_file = 'ucp_pm_viewfolder';
+					break;
 				}
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);

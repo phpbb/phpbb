@@ -37,13 +37,11 @@ class ucp_register
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		$confirm_id			= request_var('confirm_id', '');
-		$confirm_refresh	= (isset($_POST['confirm_refresh']) && $config['confirm_refresh']) ? ((!empty($_POST['confirm_refresh'])) ? 1 : 0) : false;
-		$coppa				= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed				= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit				= (isset($_POST['submit'])) ? true : false;
-		$change_lang		= request_var('change_lang', '');
-		$user_lang			= request_var('lang', $user->lang_name);
+		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
+		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
+		$submit			= (isset($_POST['submit'])) ? true : false;
+		$change_lang	= request_var('change_lang', '');
+		$user_lang		= request_var('lang', $user->lang_name);
 
 		if ($agreed)
 		{
@@ -53,7 +51,6 @@ class ucp_register
 		{
 			add_form_key('ucp_register_terms');
 		}
-
 
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
@@ -69,8 +66,9 @@ class ucp_register
 					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
 				}
 
-				$user->lang_name = $lang = $use_lang;
+				$user->lang_name = $user_lang = $use_lang;
 				$user->lang = array();
+				$user->data['user_lang'] = $user->lang_name;
 				$user->add_lang(array('common', 'ucp'));
 			}
 			else
@@ -80,17 +78,19 @@ class ucp_register
 			}
 		}
 
+
 		$cp = new custom_profile();
 
 		$error = $cp_data = $cp_error = array();
-
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
-			$s_hidden_fields = ($confirm_id) ? array('confirm_id' => $confirm_id) : array();
+			$s_hidden_fields = array(
+				'change_lang'	=> $change_lang,
+			);
 
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
@@ -100,12 +100,23 @@ class ucp_register
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
 					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-					'confirm_code'		=> request_var('confirm_code', ''),
-					'confirm_id'		=> request_var('confirm_id', ''),
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
+
 			}
+
+			// Checking amount of available languages
+			$sql = 'SELECT lang_id
+				FROM ' . LANG_TABLE;
+			$result = $db->sql_query($sql);
+
+			$lang_row = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$lang_row[] = $row;
+			}
+			$db->sql_freeresult($result);
 
 			if ($coppa === false && $config['coppa_enable'])
 			{
@@ -114,6 +125,7 @@ class ucp_register
 				unset($now);
 
 				$template->assign_vars(array(
+					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
@@ -128,6 +140,7 @@ class ucp_register
 			else
 			{
 				$template->assign_vars(array(
+					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -137,11 +150,20 @@ class ucp_register
 					)
 				);
 			}
+			unset($lang_row);
 
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
-
+		
+		
+		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change. 
+		if ($config['enable_confirm'])
+		{
+			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_REG);
+		}
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;
@@ -168,7 +190,6 @@ class ucp_register
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
 			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-			'confirm_code'		=> request_var('confirm_code', ''),
 			'lang'				=> basename(request_var('lang', $user->lang_name)),
 			'tz'				=> request_var('tz', (float) $timezone),
 		);
@@ -188,16 +209,31 @@ class ucp_register
 					array('string', false, 6, 60),
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
-				'confirm_code'		=> array('string', !$config['enable_confirm'], CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
+
 			if (!check_form_key('ucp_register'))
 			{
 				$error[] = $user->lang['FORM_INVALID'];
 			}
+
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+
+			if ($config['enable_confirm'])
+			{
+				$vc_response = $captcha->validate($data);
+				if ($vc_response !== false)
+				{
+					$error[] = $vc_response;
+				}
+
+				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
+				{
+					$error[] = $user->lang['TOO_MANY_REGISTERS'];
+				}
+			}
 
 			// DNSBL check
 			if ($config['check_dnsbl'])
@@ -210,50 +246,6 @@ class ucp_register
 
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
-
-			// Visual Confirmation handling
-			$wrong_confirm = false;
-			if ($config['enable_confirm'])
-			{
-				if (!$confirm_id)
-				{
-					$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-					$wrong_confirm = true;
-				}
-				else
-				{
-					$sql = 'SELECT code
-						FROM ' . CONFIRM_TABLE . "
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'
-							AND confirm_type = " . CONFIRM_REG;
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($row)
-					{
-						if (strcasecmp($row['code'], $data['confirm_code']) === 0)
-						{
-							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-									AND session_id = '" . $db->sql_escape($user->session_id) . "'
-									AND confirm_type = " . CONFIRM_REG;
-							$db->sql_query($sql);
-						}
-						else
-						{
-							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-							$wrong_confirm = true;
-						}
-					}
-					else
-					{
-						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-						$wrong_confirm = true;
-					}
-				}
-			}
 
 			if (!sizeof($error))
 			{
@@ -326,6 +318,11 @@ class ucp_register
 					'user_inactive_reason'	=> $user_inactive_reason,
 					'user_inactive_time'	=> $user_inactive_time,
 				);
+
+				if ($config['new_member_post_limit'])
+				{
+					$user_row['user_new'] = 1;
+				}
 
 				// Register user...
 				$user_id = user_add($user_row, $cp_data);
@@ -441,85 +438,20 @@ class ucp_register
 		{
 			$s_hidden_fields['coppa'] = $coppa;
 		}
-		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-
-		$confirm_image = '';
-
-		// Visual Confirmation - Show images
 
 		if ($config['enable_confirm'])
 		{
-			if ($change_lang || $confirm_refresh)
-			{
-				$str = '&amp;change_lang=' . $change_lang;
-				$sql = 'SELECT code
-						FROM ' . CONFIRM_TABLE . "
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'
-							AND confirm_type = " . CONFIRM_REG;
-				$result = $db->sql_query($sql);
-				if (!$row = $db->sql_fetchrow($result))
-				{
-					$confirm_id = '';
-				}
-				$db->sql_freeresult($result);
-			}
-			else
-			{
-				$str = '';
-			}
-			if (!$change_lang || !$confirm_id || !$confirm_refresh)
-			{
-				$user->confirm_gc(CONFIRM_REG);
+			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+		$confirm_image = '';
 
-				$sql = 'SELECT COUNT(session_id) AS attempts
-					FROM ' . CONFIRM_TABLE . "
-					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
-						AND confirm_type = " . CONFIRM_REG;
-				$result = $db->sql_query($sql);
-				$attempts = (int) $db->sql_fetchfield('attempts');
-				$db->sql_freeresult($result);
-
-				if ($config['max_reg_attempts'] && $attempts > $config['max_reg_attempts'])
-				{
-					trigger_error('TOO_MANY_REGISTERS');
-				}
-
-				$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
-				$confirm_id = md5(unique_id($user->ip));
-				$seed = hexdec(substr(unique_id(), 4, 10));
-
-				// compute $seed % 0x7fffffff
-				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
-
-				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'confirm_id'	=> (string) $confirm_id,
-					'session_id'	=> (string) $user->session_id,
-					'confirm_type'	=> (int) CONFIRM_REG,
-					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)
-				);
-				$db->sql_query($sql);
-			}
-			else if ($confirm_refresh)
-			{
-				$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
-				$confirm_id = md5(unique_id($user->ip));
-				$seed = hexdec(substr(unique_id(), 4, 10));
-					// compute $seed % 0x7fffffff
-				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
-				$sql = 'UPDATE ' . CONFIRM_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
-					'confirm_type'	=> (int) CONFIRM_REG,
-					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)) . "
-					WHERE
-					confirm_id = '" . $db->sql_escape($confirm_id) . "' AND
-					session_id = '" . $db->sql_escape($session_id) . "' AND
-					confirm_type = " . (int) CONFIRM_REG;
-				$db->sql_query($sql);
-			}
-			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
-			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
+		// Visual Confirmation - Show images
+		if ($config['enable_confirm'])
+		{
+			$template->assign_vars(array(
+				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
+			));
 		}
 
 		//
@@ -542,22 +474,19 @@ class ucp_register
 			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
 			'EMAIL'				=> $data['email'],
 			'EMAIL_CONFIRM'		=> $data['email_confirm'],
-			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
-			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
+			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-			)
-		);
+		));
 
 		//
 		$user->profile_fields = array();

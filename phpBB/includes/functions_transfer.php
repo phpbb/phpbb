@@ -316,14 +316,14 @@ class ftp extends transfer
 			return 'ERR_CONNECTING_SERVER';
 		}
 
-		// attempt to turn pasv mode on
-		@ftp_pasv($this->connection, true);
-
 		// login to the server
 		if (!@ftp_login($this->connection, $this->username, $this->password))
 		{
 			return 'ERR_UNABLE_TO_LOGIN';
 		}
+
+		// attempt to turn pasv mode on
+		@ftp_pasv($this->connection, true);
 
 		// change to the root directory
 		if (!$this->_chdir($this->root_path))
@@ -462,6 +462,20 @@ class ftp extends transfer
 	{
 		$list = @ftp_nlist($this->connection, $dir);
 
+		// See bug #46295 - Some FTP daemons don't like './'
+		if ($dir === './')
+		{
+			// Let's try some alternatives
+			$list = (empty($list)) ? @ftp_nlist($this->connection, '.') : $list;
+			$list = (empty($list)) ? @ftp_nlist($this->connection, '') : $list;
+		}
+
+		// Return on error
+		if ($list === false)
+		{
+			return false;
+		}
+
 		// Remove path if prepended
 		foreach ($list as $key => $item)
 		{
@@ -469,7 +483,7 @@ class ftp extends transfer
 			$item = str_replace('\\', '/', $item);
 			$dir = str_replace('\\', '/', $dir);
 
-			if (strpos($item, $dir) === 0)
+			if (!empty($dir) && strpos($item, $dir) === 0)
 			{
 				$item = substr($item, strlen($dir));
 			}
@@ -723,12 +737,31 @@ class ftp_fsock extends transfer
 		$list = array();
 		while (!@feof($this->data_connection))
 		{
-			$list[] = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
+			$filename = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
+
+			if ($filename !== '')
+			{
+				$list[] = $filename;
+			}
 		}
 		$this->_close_data_connection();
 
 		// Clear buffer
 		$this->_check_command();
+
+		// See bug #46295 - Some FTP daemons don't like './'
+		if ($dir === './' && empty($list))
+		{
+			// Let's try some alternatives
+			$list = $this->_ls('.');
+
+			if (empty($list))
+			{
+				$list = $this->_ls('');
+			}
+
+			return $list;
+		}
 
 		// Remove path if prepended
 		foreach ($list as $key => $item)
@@ -737,7 +770,7 @@ class ftp_fsock extends transfer
 			$item = str_replace('\\', '/', $item);
 			$dir = str_replace('\\', '/', $dir);
 
-			if (strpos($item, $dir) === 0)
+			if (!empty($dir) && strpos($item, $dir) === 0)
 			{
 				$item = substr($item, strlen($dir));
 			}
@@ -826,7 +859,7 @@ class ftp_fsock extends transfer
 			$result = @fgets($this->connection, 512);
 			$response .= $result;
 		}
-		while (substr($response, 3, 1) != ' ');
+		while (substr($result, 3, 1) !== ' ');
 
 		if (!preg_match('#^[123]#', $response))
 		{

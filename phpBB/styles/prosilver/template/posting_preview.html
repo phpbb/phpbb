@@ -1,4 +1,4 @@
-<div class="post bg2" id="preview">
+<div class="post <!-- IF S_PRIVMSGS -->pm<!-- ELSE -->bg2<!-- ENDIF -->" id="preview">
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 <!-- IF S_HAS_POLL_OPTIONS -->
@@ -19,16 +19,16 @@
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
-<div class="post <!-- IF S_PRIVMSGS --> pm<!-- ELSE --> bg2<!-- ENDIF -->">
+<div class="post bg2">
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 <!-- ENDIF -->
 
 	<div class="postbody">
 		<h3>{L_PREVIEW}: {PREVIEW_SUBJECT}</h3>
-		
+
 		<div class="content">{PREVIEW_MESSAGE}</div>
-		
+
 		<!-- IF .attachment -->
 		<dl class="attachbox">
 			<dt>{L_ATTACHMENTS}</dt>
@@ -37,7 +37,7 @@
 			<!-- END attachment -->
 		</dl>
 		<!-- ENDIF -->
-		
+
 		<!-- IF PREVIEW_SIGNATURE --><div class="signature">{PREVIEW_SIGNATURE}</div><!-- ENDIF -->
 	</div>
 

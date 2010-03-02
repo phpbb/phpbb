@@ -163,6 +163,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type tinyint(3) DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
 	seed int(10) UNSIGNED DEFAULT '0' NOT NULL,
+	attempts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (session_id, confirm_id),
 	KEY confirm_type (confirm_type)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -248,6 +249,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
 	forum_flags tinyint(4) DEFAULT '32' NOT NULL,
+	forum_options int(20) UNSIGNED DEFAULT '0' NOT NULL,
 	display_subforum_list tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	display_on_index tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_indexing tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
@@ -297,6 +299,7 @@ CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
 	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	group_skip_auth tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name varchar(255) DEFAULT '' NOT NULL,
 	group_desc text NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
@@ -359,6 +362,7 @@ CREATE TABLE phpbb_log (
 	log_data mediumtext NOT NULL,
 	PRIMARY KEY (log_id),
 	KEY log_type (log_type),
+	KEY log_time (log_time),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
@@ -456,6 +460,7 @@ CREATE TABLE phpbb_posts (
 	KEY poster_ip (poster_ip),
 	KEY poster_id (poster_id),
 	KEY post_approved (post_approved),
+	KEY post_username (post_username),
 	KEY tid_post_time (topic_id, post_time)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
@@ -483,6 +488,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	to_address text NOT NULL,
 	bcc_address text NOT NULL,
+	message_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (msg_id),
 	KEY author_ip (author_ip),
 	KEY message_time (message_time),
@@ -550,6 +556,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_profile tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_hide tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -606,12 +613,15 @@ CREATE TABLE phpbb_reports (
 	report_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	reason_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	pm_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_notify tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumtext NOT NULL,
-	PRIMARY KEY (report_id)
+	PRIMARY KEY (report_id),
+	KEY post_id (post_id),
+	KEY pm_id (pm_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -943,7 +953,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_viewemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	user_options int(11) UNSIGNED DEFAULT '895' NOT NULL,
+	user_options int(11) UNSIGNED DEFAULT '230271' NOT NULL,
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
 	user_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
@@ -963,6 +973,9 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
+	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	user_reminded tinyint(4) DEFAULT '0' NOT NULL,
+	user_reminded_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

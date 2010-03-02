@@ -2,8 +2,8 @@
 
 <!-- IF not PROMPT -->
 	<!-- INCLUDE ucp_pm_message_header.html -->
+	<div class="panel pm-panel-message"><div>
 <!-- ENDIF -->
-
 
 <!-- IF PROMPT -->
 	<h2>{L_EXPORT_AS_CSV}</h2>
@@ -82,6 +82,8 @@
 		<!-- END messagerow -->
 
 		</ul>
+	<!-- ELSEIF S_NO_AUTH_SEND_MESSAGE -->
+		<p><strong><!-- IF S_USER_NEW -->{L_USER_NEW_PERMISSION_DISALLOWED}<!-- ELSE -->{L_NO_AUTH_SEND_MESSAGE}<!-- ENDIF --></p></strong>
 	<!-- ELSE -->
 		<p><strong>{L_NO_MESSAGES}</strong></p>
 	<!-- ENDIF -->

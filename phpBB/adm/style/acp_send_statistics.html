@@ -1,0 +1,71 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_SEND_STATISTICS}</h1>
+
+<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+
+<script type="text/javascript">
+//<![CDATA[
+var iframect = 0;
+
+function iframe_updated()
+{
+	if (iframect++ == 0)
+	{
+		return;
+	}
+
+	dE('questionnaire-form', -1);
+	dE('questionnaire-thanks', 1);
+}
+//]]>
+</script>
+
+<iframe onload="iframe_updated();" name="questionaire_result" style="display: none;"></iframe>
+
+<form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
+
+	<p><a href="{U_ACP_MAIN}">{L_DONT_SEND_STATISTICS}</a></p>
+
+	<p>{L_EXPLAIN_SHOW_STATISTICS}</p>
+
+	<p id="show-button"><input type="button" class="button2" onclick="dE('configlist', 1); dE('show-button', -1);" value="{L_SHOW_STATISTICS}" /></p>
+
+	<div id="configlist">
+		<input type="button" class="button2" onclick="dE('show-button', 1); dE('configlist', -1);" value="{L_HIDE_STATISTICS}" />
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
+		</p>
+
+		<!-- BEGIN providers -->
+		<fieldset>
+			<legend>{providers.NAME}</legend>
+			<!-- BEGIN values -->
+			<dl>
+				<dt>{providers.values.KEY}</dt>
+				<dd>{providers.values.VALUE}</dd>
+			</dl>
+			<!-- END values -->
+		</fieldset>
+		<!-- END providers -->
+	</div>
+	<p class="submit-buttons">
+		<input type="hidden" name="systemdata" value="{RAW_DATA}" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
+	</p>
+</form>
+
+<div id="questionnaire-thanks" class="successbox">
+	<p><strong>{L_THANKS_SEND_STATISTICS}</strong><br /><br /><a href="{U_ACP_MAIN}">&laquo; {L_GO_ACP_MAIN}</a></p>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+	dE('configlist', -1);
+	dE('questionnaire-thanks', -1);
+//]]>
+</script>
+
+<!-- INCLUDE overall_footer.html -->

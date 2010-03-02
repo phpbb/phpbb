@@ -34,12 +34,7 @@ body {
 }
 
 #wrapheader {
-	min-height: 120px;
 	height: auto !important;
-	height: 120px;
-/*	background-image: url('./images/background.gif');
-	background-repeat: repeat-x;*/
-/*	padding: 0 25px 15px 25px;*/
 	padding: 0;
 }
 
@@ -62,10 +57,11 @@ body {
 }
 
 #logodesc {
-	margin-bottom: 5px;
-	padding: 5px 25px;
-	background: #D9DFE4;
-	border-bottom: 1px solid #4787A7;
+	background-color: #C1CAD2;
+	background-image: url('./images/background.gif');
+	background-repeat: repeat-x;
+	background-position: center bottom;
+	padding: 0 25px 15px 25px;
 }
 
 #menubar {
@@ -227,6 +223,7 @@ p.topicdetails {
 
 .postapprove img, .postreported img {
 	vertical-align: bottom;
+	padding-top: 5px;
 }
 
 .postauthor {

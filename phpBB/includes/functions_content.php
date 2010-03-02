@@ -250,6 +250,11 @@ function get_context($text, $words, $length = 400)
 	// first replace all whitespaces with single spaces
 	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
 
+	// we need to turn the entities back into their original form, to not cut the message in between them
+	$entities = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
+	$characters = array('<', '>', '[', ']', '.', ':', ':');
+	$text = str_replace($entities, $characters, $text);
+
 	$word_indizes = array();
 	if (sizeof($words))
 	{
@@ -345,13 +350,13 @@ function get_context($text, $words, $length = 400)
 					}
 				}
 			}
-			return $final_text;
+			return str_replace($characters, $entities, $final_text);
 		}
 	}
 
 	if (!sizeof($words) || !sizeof($word_indizes))
 	{
-		return (utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text;
+		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
 	}
 }
 
@@ -680,6 +685,12 @@ function censor_text($text)
 {
 	static $censors;
 
+	// Nothing to do?
+	if ($text === '')
+	{
+		return '';
+	}
+
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
@@ -728,7 +739,8 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . $phpbb_root_path . $config['smilies_path'] . '/\2 />', $text);
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
 
@@ -836,8 +848,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -853,17 +865,15 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 		}
 
-		$filesize = $attachment['filesize'];
-		$size_lang = ($filesize >= 1048576) ? $user->lang['MIB'] : (($filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
-		$filesize = get_formatted_filesize($filesize, false);
+		$filesize = get_formatted_filesize($attachment['filesize'], false);
 
 		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
-			'FILESIZE'			=> $filesize,
-			'SIZE_LANG'			=> $size_lang,
-			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
+			'FILESIZE'			=> $filesize['value'],
+			'SIZE_LANG'			=> $filesize['unit'],
+			'DOWNLOAD_NAME'		=> utf8_basename($attachment['real_filename']),
 			'COMMENT'			=> $comment,
 		);
 
