@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.4-RC1';
+$updates_to_version = '3.0.4';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -587,6 +587,9 @@ $database_update_info = array(
 			),
 		),
 	),
+
+	// Changes from 3.0.4-RC1 to 3.0.4
+	'3.0.4-RC1'		=> array(),
 );
 
 // Determine mapping database type
@@ -2027,6 +2030,10 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$no_updates = false;
+		break;
+
+		// Changes from 3.0.4-RC1 to 3.0.4
+		case '3.0.4-RC1':
 		break;
 	}
 }

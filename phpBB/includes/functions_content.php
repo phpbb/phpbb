@@ -1144,7 +1144,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 
 /**
 * Get username details for placing into templates.
-* This function caches all modes on first call, except for no_profile - determined by $user_id/$guest_username combination.
+* This function caches all modes on first call, except for no_profile and anonymous user - determined by $user_id.
 *
 * @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour), full (for obtaining a html string representing a coloured link to the users profile) or no_profile (the same as full but forcing no profile link)
 * @param int $user_id The users id
@@ -1161,10 +1161,10 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	static $_profile_cache;
 	static $_base_profile_url;
 
-	$cache_key = $user_id . (string) $guest_username;
+	$cache_key = $user_id;
 
 	// If the get_username_string() function had been executed once with an (to us) unkown mode, all modes are pre-filled and we can just grab it.
-	if (isset($_profile_cache[$cache_key][$mode]))
+	if ($user_id && $user_id != ANONYMOUS && isset($_profile_cache[$cache_key][$mode]))
 	{
 		// If the mode is 'no_profile', we simply construct the TPL code due to calls to this mode being very very rare
 		if ($mode == 'no_profile')
