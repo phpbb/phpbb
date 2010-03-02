@@ -30,6 +30,15 @@ class phpbb_db_tools
 	*/
 	var $sql_layer = '';
 
+	/**
+	* @var object DB object
+	*/
+	var $db = NULL;
+
+	/**
+	* The Column types for every database we support
+	* @var array
+	*/
 	var $dbms_type_map = array(
 		'mysql_41'	=> array(
 			'INT:'		=> 'int(%d)',
@@ -242,20 +251,34 @@ class phpbb_db_tools
 		),
 	);
 
-	// A list of types being unsigned for better reference in some db's
+	/**
+	* A list of types being unsigned for better reference in some db's
+	* @var array
+	*/
 	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+
+	/**
+	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
+	* @var array
+	*/
 	var $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
 
 	/**
-	* Set this to true if you only want to return the 'to-be-executed' SQL statement(s) (as an array).
+	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
+	* This mode has no effect on some methods (inserting of data for example). This is expressed within the methods command.
 	*/
 	var $return_statements = false;
 
 	/**
+	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
+	*
+	* @param phpbb_dbal	$db					DBAL object
+	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	function phpbb_db_tools(&$db)
+	function phpbb_db_tools(&$db, $return_statements = false)
 	{
 		$this->db = $db;
+		$this->return_statements = $return_statements;
 
 		// Determine mapping database type
 		switch ($this->db->sql_layer)
@@ -291,6 +314,245 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Check if table exists
+	*
+	*
+	* @param string	$table_name	The table name to check for
+	* @return bool true if table exists, else false
+	*/
+	function sql_table_exists($table_name)
+	{
+		$this->db->sql_return_on_error(true);
+		$result = $this->db->sql_query_limit('SELECT * FROM ' . $table_name, 1);
+		$this->db->sql_return_on_error(false);
+
+		if ($result)
+		{
+			$this->db->sql_freeresult($result);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	* Create SQL Table
+	*
+	* @param string	$table_name	The table name to create
+	* @param array	$table_data	Array containing table data.
+	* @return array	Statements if $return_statements is true.
+	*/
+	function sql_create_table($table_name, $table_data)
+	{
+		// holds the DDL for a column
+		$columns = $statements = array();
+
+		// Begin transaction
+		$statements[] = 'begin';
+
+		// Determine if we have created a PRIMARY KEY in the earliest
+		$primary_key_gen = false;
+
+		// Determine if the table must be created with TEXTIMAGE
+		$create_textimage = false;
+
+		// Determine if the table requires a sequence
+		$create_sequence = false;
+
+		// Begin table sql statement
+		switch ($this->sql_layer)
+		{
+			case 'mssql':
+				$table_sql = 'CREATE TABLE [' . $table_name . '] (' . "\n";
+			break;
+
+			default:
+				$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
+			break;
+		}
+
+		// Iterate through the columns to create a table
+		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
+		{
+			// here lies an array, filled with information compiled on the column's data
+			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+
+			// here we add the definition of the new column to the list of columns
+			switch ($this->sql_layer)
+			{
+				case 'mssql':
+					$columns[] = "\t [{$column_name}] " . $prepared_column['column_type_sql_default'];
+				break;
+
+				default:
+					$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
+				break;
+			}
+
+			// see if we have found a primary key set due to a column definition if we have found it, we can stop looking
+			if (!$primary_key_gen)
+			{
+				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
+			}
+
+			// create textimage DDL based off of the existance of certain column types
+			if (!$create_textimage)
+			{
+				$create_textimage = isset($prepared_column['textimage']) && $prepared_column['textimage'];
+			}
+
+			// create sequence DDL based off of the existance of auto incrementing columns
+			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
+			{
+				$create_sequence = $column_name;
+			}
+		}
+
+		// this makes up all the columns in the create table statement
+		$table_sql .= implode(",\n", $columns);
+
+		// Close the table for two DBMS and add to the statements
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'mssql':
+				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
+				$statements[] = $table_sql;
+			break;
+		}
+
+		// we have yet to create a primary key for this table,
+		// this means that we can add the one we really wanted instead
+		if (!$primary_key_gen)
+		{
+			// Write primary key
+			if (isset($table_data['PRIMARY_KEY']))
+			{
+				if (!is_array($table_data['PRIMARY_KEY']))
+				{
+					$table_data['PRIMARY_KEY'] = array($table_data['PRIMARY_KEY']);
+				}
+
+				switch ($this->sql_layer)
+				{
+					case 'mysql_40':
+					case 'mysql_41':
+					case 'postgres':
+					case 'sqlite':
+						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+
+					case 'firebird':
+					case 'mssql':
+						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
+						foreach ($primary_key_stmts as $pk_stmt)
+						{
+							$statements[] = $pk_stmt;
+						}
+					break;
+
+					case 'oracle':
+						$table_sql .= ",\n\t CONSTRAINT pk_{$table_name} PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+				}
+			}
+		}
+
+		// close the table
+		switch ($this->sql_layer)
+		{
+			case 'mysql_41':
+				// make sure the table is in UTF-8 mode
+				$table_sql .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;";
+				$statements[] = $table_sql;
+			break;
+
+			case 'mysql_40':
+			case 'sqlite':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'postgres':
+				// do we need to add a sequence for auto incrementing columns?
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+				}
+
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'oracle':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+
+				// do we need to add a sequence and a tigger for auto incrementing columns?
+				if ($create_sequence)
+				{
+					// create the actual sequence
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq";
+
+					// the trigger is the mechanism by which we increment the counter
+					$trigger = "CREATE OR REPLACE TRIGGER t_{$table_name}\n";
+					$trigger .= "BEFORE INSERT ON {$table_name}\n";
+					$trigger .= "FOR EACH ROW WHEN (\n";
+					$trigger .= "\tnew.{$create_sequence} IS NULL OR new.{$create_sequence} = 0\n";
+					$trigger .= ")\n";
+					$trigger .= "BEGIN\n";
+					$trigger .= "\tSELECT {$table_name}_seq.nextval\n";
+					$trigger .= "\tINTO :new.{$create_sequence}\n";
+					$trigger .= "\tFROM dual\n";
+					$trigger .= "END;";
+
+					$statements[] = $trigger;
+				}
+			break;
+
+			case 'firebird':
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+				}
+			break;
+		}
+
+		// Write Keys
+		if (isset($table_data['KEYS']))
+		{
+			foreach ($table_data['KEYS'] as $key_name => $key_data)
+			{
+				if (!is_array($key_data[1]))
+				{
+					$key_data[1] = array($key_data[1]);
+				}
+
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
+				$key_stmts = ($key_data[0] == 'UNIQUE') ? $this->sql_create_unique_index($table_name, $key_name, $key_data[1]) : $this->sql_create_index($table_name, $key_name, $key_data[1]);
+
+				foreach ($key_stmts as $key_stmt)
+				{
+					$statements[] = $key_stmt;
+				}
+
+				$this->return_statements = $old_return_statements;
+			}
+		}
+
+		// Commit Transaction
+		$statements[] = 'commit';
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
 	* Handle passed database update array.
 	* Expected structure...
 	* Key being one of the following
@@ -308,7 +570,7 @@ class phpbb_db_tools
 	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
 	*		)
 	*
-	* For more information have a look at /develop/create_schema_files.php (only available through CVS)
+	* For more information have a look at /develop/create_schema_files.php (only available through SVN)
 	*/
 	function perform_schema_changes($schema_changes)
 	{
@@ -326,7 +588,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					$result = $this->sql_column_change($table, $column_name, $column_data);
+					// If the column exists we change it, else we add it ;)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
+					{
+						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
 					if ($this->return_statements)
 					{
@@ -343,15 +613,19 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet
-					if (!$this->sql_column_exists($table, $column_name))
+					// Only add the column if it does not exist yet, else change it (to be consistent)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
 					{
 						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
-						if ($this->return_statements)
-						{
-							$statements = array_merge($statements, $result);
-						}
+					if ($this->return_statements)
+					{
+						$statements = array_merge($statements, $result);
 					}
 				}
 			}
@@ -381,11 +655,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column)
 				{
-					$result = $this->sql_column_remove($table, $column);
-
-					if ($this->return_statements)
+					// Only remove the column if it exists...
+					if ($this->sql_column_exists($table, $column))
 					{
-						$statements = array_merge($statements, $result);
+						$result = $this->sql_column_remove($table, $column);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
 				}
 			}
@@ -447,6 +725,10 @@ class phpbb_db_tools
 
 	/**
 	* Check if a specified column exist
+	*
+	* @param string	$table			Table to check the column at
+	* @param string	$column_name	The column to check
+	*
 	* @return bool True if column exists, else false
 	*/
 	function sql_column_exists($table, $column_name)
@@ -632,7 +914,6 @@ class phpbb_db_tools
 		if (strpos($column_data[0], ':') !== false)
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
-
 			if (!is_array($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']))
 			{
 				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
@@ -705,6 +986,12 @@ class phpbb_db_tools
 					$sql .= ' COLLATE UNICODE';
 				}
 
+				$return_array['auto_increment'] = false;
+				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+				{
+					$return_array['auto_increment'] = true;
+				}
+
 			break;
 
 			case 'mssql':
@@ -725,10 +1012,19 @@ class phpbb_db_tools
 					}
 				}
 
+				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+				{
+//					$sql .= 'IDENTITY (1, 1) ';
+					$sql_default .= 'IDENTITY (1, 1) ';
+				}
+
+				$return_array['textimage'] = $column_type === '[text]';
+
 				$sql .= 'NOT NULL';
 				$sql_default .= 'NOT NULL';
 
 				$return_array['column_type_sql_default'] = $sql_default;
+
 			break;
 
 			case 'mysql_40':
@@ -763,10 +1059,17 @@ class phpbb_db_tools
 				// In Oracle empty strings ('') are treated as NULL.
 				// Therefore in oracle we allow NULL's for all DEFAULT '' entries
 				// Oracle does not like setting NOT NULL on a column that is already NOT NULL (this happens only on number fields)
-				if (preg_match('/number/i', $column_type))
+				if (!preg_match('/number/i', $column_type))
 				{
 					$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
 				}
+
+				$return_array['auto_increment'] = false;
+				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+				{
+					$return_array['auto_increment'] = true;
+				}
+
 			break;
 
 			case 'postgres':
@@ -774,9 +1077,11 @@ class phpbb_db_tools
 
 				$sql .= " {$column_type} ";
 
+				$return_array['auto_increment'] = false;
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
 					$default_val = "nextval('{$table_name}_seq')";
+					$return_array['auto_increment'] = true;
 				}
 				else if (!is_null($column_data[1]))
 				{
@@ -795,12 +1100,15 @@ class phpbb_db_tools
 					$return_array['constraint'] = "CHECK ({$column_name} >= 0)";
 					$sql .= " CHECK ({$column_name} >= 0)";
 				}
+
 			break;
 
 			case 'sqlite':
+				$return_array['primary_key_set'] = false;
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
 					$sql .= ' INTEGER PRIMARY KEY';
+					$return_array['primary_key_set'] = true;
 				}
 				else
 				{
@@ -809,6 +1117,7 @@ class phpbb_db_tools
 
 				$sql .= ' NOT NULL ';
 				$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}'" : '';
+
 			break;
 		}
 
@@ -828,7 +1137,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$statements[] = 'ALTER TABLE "' . $table_name . '" ADD "' . $column_name . '" ' . $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
@@ -920,7 +1229,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$statements[] = 'ALTER TABLE "' . $table_name . '" DROP "' . $column_name . '"';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP "' . strtoupper($column_name) . '"';
 			break;
 
 			case 'mssql':
@@ -1032,6 +1341,68 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Drop Table
+	*/
+	function sql_table_drop($table_name)
+	{
+		$statements = array();
+
+		// the most basic operation, get rid of the table
+		$statements[] = 'DROP TABLE ' . $table_name;
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$sql = 'SELECT RDB$GENERATOR_NAME as gen
+					FROM RDB$GENERATORS
+					WHERE RDB$SYSTEM_FLAG = 0
+						AND RDB$GENERATOR_NAME = \'' . strtoupper($table_name) . "_GEN'";
+				$result = $this->db->sql_query($sql);
+
+				// does a generator exist?
+				if ($row = $this->db->sql_fetchrow($result))
+				{
+					$statements[] = "DROP GENERATOR {$row['gen']};";
+				}
+				$this->db->sql_freeresult($result);
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT A.REFERENCED_NAME
+					FROM USER_DEPENDENCIES A, USER_TRIGGERS B
+					WHERE A.REFERENCED_TYPE = \'SEQUENCE\'
+						AND A.NAME = B.TRIGGER_NAME
+						AND B.TABLE_NAME = \'' . strtoupper($table_name) . "'";
+				$result = $this->db->sql_query($sql);
+
+				// any sequences ref'd to this table's triggers?
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
+				}
+				$this->db->sql_freeresult($result);
+
+			case 'postgres':
+				// PGSQL does not "tightly" bind sequences and tables, we must guess...
+				$sql = "SELECT relname
+					FROM pg_class
+					WHERE relkind = 'S'
+						AND relname = '{$table_name}_seq'";
+				$result = $this->db->sql_query($sql);
+
+				// We don't even care about storing the results. We already know the answer if we get rows back.
+				if ($this->db->sql_fetchrow($result))
+				{
+					$statements[] =  "DROP SEQUENCE {$table_name}_seq;\n";
+				}
+				$this->db->sql_freeresult($result);
+			break;
+		}
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
 	* Add primary key
 	*/
 	function sql_create_primary_key($table_name, $column)
@@ -1042,6 +1413,8 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 			case 'postgres':
+			case 'mysql_40':
+			case 'mysql_41':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
@@ -1052,11 +1425,6 @@ class phpbb_db_tools
 				$sql .= ') ON [PRIMARY]';
 
 				$statements[] = $sql;
-			break;
-
-			case 'mysql_40':
-			case 'mysql_41':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
 			case 'oracle':
@@ -1233,6 +1601,7 @@ class phpbb_db_tools
 						FROM user_indexes
 						WHERE table_name = '" . $table_name . "'
 							AND generated = 'N'";
+					$col = 'index_name';
 				break;
 
 				case 'sqlite':
@@ -1279,7 +1648,7 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				// Change type...
-				$statements[] = 'ALTER TABLE "' . $table_name . '" ALTER COLUMN "' . $column_name . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':

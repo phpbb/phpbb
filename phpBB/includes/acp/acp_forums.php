@@ -183,7 +183,7 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
+						if (!empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
 							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							// if we edit a forum delete current permissions first
@@ -560,13 +560,12 @@ class acp_forums
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . "
 						AND forum_id <> $forum_id";
-				$result = $db->sql_query($sql);
+				$result = $db->sql_query_limit($sql, 1);
 
+				$postable_forum_exists = false;
 				if ($db->sql_fetchrow($result))
 				{
-					$template->assign_vars(array(
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false))
-					);
+					$postable_forum_exists = true;
 				}
 				$db->sql_freeresult($result);
 
@@ -583,23 +582,22 @@ class acp_forums
 
 					$forums_list = make_forum_select($forum_data['parent_id'], $subforums_id);
 
-					$sql = 'SELECT forum_id
-						FROM ' . FORUMS_TABLE . '
-						WHERE forum_type = ' . FORUM_POST . "
-							AND forum_id <> $forum_id";
-					$result = $db->sql_query($sql);
-
-					if ($db->sql_fetchrow($result))
+					if ($postable_forum_exists)
 					{
 						$template->assign_vars(array(
 							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
 						);
 					}
-					$db->sql_freeresult($result);
 
 					$template->assign_vars(array(
 						'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
 						'S_FORUMS_LIST'			=> $forums_list)
+					);
+				}
+				else if ($postable_forum_exists)
+				{
+					$template->assign_vars(array(
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false))
 					);
 				}
 
@@ -714,7 +712,7 @@ class acp_forums
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . "
 						AND forum_id <> $forum_id";
-				$result = $db->sql_query($sql);
+				$result = $db->sql_query_limit($sql, 1);
 
 				if ($db->sql_fetchrow($result))
 				{
@@ -807,10 +805,6 @@ class acp_forums
 
 				$url = $this->u_action . "&amp;parent_id=$this->parent_id&amp;f={$row['forum_id']}";
 
-				$forum_title = ($forum_type != FORUM_LINK) ? '<a href="' . $this->u_action . '&amp;parent_id=' . $row['forum_id'] . '">' : '';
-				$forum_title .= $row['forum_name'];
-				$forum_title .= ($forum_type != FORUM_LINK) ? '</a>' : '';
-
 				$template->assign_block_vars('forums', array(
 					'FOLDER_IMAGE'		=> $folder_image,
 					'FORUM_IMAGE'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="" />' : '',
@@ -888,7 +882,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache;
+		global $db, $user, $cache, $phpbb_root_path;
 
 		$errors = array();
 
@@ -925,6 +919,11 @@ class acp_forums
 		$range_test_ary = array(
 			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
+
+		if (!file_exists($phpbb_root_path . $forum_data['forum_image']))
+		{
+			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
+		}
 
 		validate_range($range_test_ary, $errors);
 

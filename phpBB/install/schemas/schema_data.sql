@@ -64,6 +64,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_foreground_noise', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_x_grid', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_y_grid', '25');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_wave', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_3d_noise', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_fonts', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('confirm_refresh', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_attachment_content', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0');
@@ -156,6 +160,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '26
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars', '20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_num_search_keywords', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
@@ -192,7 +197,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_indexing_state', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_anonymous_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'fulltext_native');
@@ -218,7 +222,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.5-RC1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 
@@ -237,6 +241,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_s
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_seed_last_update', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_indexing_state', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);

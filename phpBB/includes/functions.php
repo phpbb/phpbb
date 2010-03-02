@@ -165,6 +165,37 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 }
 
 /**
+* Set dynamic config value with arithmetic operation.
+*/
+function set_config_count($config_name, $increment, $is_dynamic = false)
+{
+	global $db, $cache;
+
+	switch ($db->sql_layer)
+	{
+		case 'firebird':
+			$sql_update = 'CAST(CAST(config_value as integer) + ' . (int) $increment . ' as CHAR)';
+		break;
+
+		case 'postgres':
+			$sql_update = 'int4(config_value) + ' . (int) $increment;
+		break;
+
+		// MySQL, SQlite, mssql, mssql_odbc, oracle
+		default:
+			$sql_update = 'config_value + ' . (int) $increment;
+		break;
+	}
+
+	$db->sql_query('UPDATE ' . CONFIG_TABLE . ' SET config_value = ' . $sql_update . " WHERE config_name = '" . $db->sql_escape($config_name) . "'");
+
+	if (!$is_dynamic)
+	{
+		$cache->destroy('config');
+	}
+}
+
+/**
 * Generates an alphanumeric random string of given length
 */
 function gen_rand_string($num_chars = 8)
@@ -204,6 +235,11 @@ function unique_id($extra = 'c')
 function get_formatted_filesize($bytes, $add_size_lang = true)
 {
 	global $user;
+
+	if ($bytes >= pow(2, 30))
+	{
+		return ($add_size_lang) ? round($bytes / 1024 / 1024 / 1024, 2) . ' ' . $user->lang['GIB'] : round($bytes / 1024 / 1024 / 1024, 2);
+	}
 
 	if ($bytes >= pow(2, 20))
 	{
@@ -461,8 +497,9 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 
 /**
 * Global function for chmodding directories and files for internal use
+*
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
-* The function determines owner and group from common.php file and sets the same to the provided file. Permissions are mapped to the group, user always has rw(x) permission.
+* The function determines owner and group from common.php file and sets the same to the provided file.
 * The function uses bit fields to build the permissions.
 * The function sets the appropiate execute bit on directories.
 *
@@ -475,76 +512,106 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 *
 * NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
 *
-* @param $filename The file/directory to be chmodded
-* @param $perms Permissions to set
-* @return true on success, otherwise false
+* @param string	$filename	The file/directory to be chmodded
+* @param int	$perms		Permissions to set
 *
+* @return bool	true on success, otherwise false
 * @author faw, phpBB Group
 */
 function phpbb_chmod($filename, $perms = CHMOD_READ)
 {
+	static $_chmod_info;
+
 	// Return if the file no longer exists.
 	if (!file_exists($filename))
 	{
 		return false;
 	}
 
-	if (!function_exists('fileowner') || !function_exists('filegroup'))
+	// Determine some common vars
+	if (empty($_chmod_info))
 	{
-		$file_uid = $file_gid = false;
-		$common_php_owner = $common_php_group = false;
+		if (!function_exists('fileowner') || !function_exists('filegroup'))
+		{
+			// No need to further determine owner/group - it is unknown
+			$_chmod_info['process'] = false;
+		}
+		else
+		{
+			global $phpbb_root_path, $phpEx;
+
+			// Determine owner/group of common.php file and the filename we want to change here
+			$common_php_owner = fileowner($phpbb_root_path . 'common.' . $phpEx);
+			$common_php_group = filegroup($phpbb_root_path . 'common.' . $phpEx);
+
+			// And the owner and the groups PHP is running under.
+			$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
+			$php_gids = (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
+
+			// If we are unable to get owner/group, then do not try to set them by guessing
+			if (!$php_uid || empty($php_gids) || !$common_php_owner || !$common_php_group)
+			{
+				$_chmod_info['process'] = false;
+			}
+			else
+			{
+				$_chmod_info = array(
+					'process'		=> true,
+					'common_owner'	=> $common_php_owner,
+					'common_group'	=> $common_php_group,
+					'php_uid'		=> $php_uid,
+					'php_gids'		=> $php_gids,
+				);
+			}
+		}
 	}
-	else
+
+	if ($_chmod_info['process'])
 	{
-		global $phpbb_root_path, $phpEx;
-
-		// Determine owner/group of common.php file and the filename we want to change here
-		$common_php_owner = fileowner($phpbb_root_path . 'common.' . $phpEx);
-		$common_php_group = filegroup($phpbb_root_path . 'common.' . $phpEx);
-
 		$file_uid = fileowner($filename);
 		$file_gid = filegroup($filename);
 
-		// Try to set the owner to the same common.php has
-		if ($common_php_owner !== $file_uid && $common_php_owner !== false && $file_uid !== false)
+		// Change owner
+		if (@chown($filename, $_chmod_info['common_owner']))
 		{
-			// Will most likely not work
-			if (@chown($filename, $common_php_owner));
-			{
-				clearstatcache();
-				$file_uid = fileowner($filename);
-			}
+			clearstatcache();
+			$file_uid = fileowner($filename);
 		}
 
-		// Try to set the group to the same common.php has
-		if ($common_php_group !== $file_gid && $common_php_group !== false && $file_gid !== false)
+		// Change group
+		if (@chgrp($filename, $_chmod_info['common_group']))
 		{
-			if (@chgrp($filename, $common_php_group));
-			{
-				clearstatcache();
-				$file_gid = filegroup($filename);
-			}
+			clearstatcache();
+			$file_gid = filegroup($filename);
+		}
+
+		// If the file_uid/gid now match the one from common.php we can process further, else we are not able to change something
+		if ($file_uid != $_chmod_info['common_owner'] || $file_gid != $_chmod_info['common_group'])
+		{
+			$_chmod_info['process'] = false;
 		}
 	}
 
-	// And the owner and the groups PHP is running under.
-	$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
-	$php_gids = (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
+	// Still able to process?
+	if ($_chmod_info['process'])
+	{
+		if ($file_uid == $_chmod_info['php_uid'])
+		{
+			$php = 'owner';
+		}
+		else if (in_array($file_gid, $_chmod_info['php_gids']))
+		{
+			$php = 'group';
+		}
+		else
+		{
+			// Since we are setting the everyone bit anyway, no need to do expensive operations
+			$_chmod_info['process'] = false;
+		}
+	}
 
-	// Who is PHP?
-	if ($file_uid === false || $file_gid === false || $php_uid === false || $php_gids === false)
-	{
-		$php = NULL;
-	}
-	else if ($file_uid == $php_uid /* && $common_php_owner !== false && $common_php_owner === $file_uid*/)
-	{
-		$php = 'owner';
-	}
-	else if (in_array($file_gid, $php_gids))
-	{
-		$php = 'group';
-	}
-	else
+	// We are not able to determine or change something
+	if (!$_chmod_info['process'])
 	{
 		$php = 'other';
 	}
@@ -564,26 +631,22 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 	switch ($php)
 	{
-		case null:
 		case 'owner':
-			/* ATTENTION: if php is owner or NULL we set it to group here. This is the most failsafe combination for the vast majority of server setups.
-
 			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
 
 			clearstatcache();
 
-			if (!is_null($php) || (is_readable($filename) && is_writable($filename)))
+			if (is_readable($filename) && is_writable($filename))
 			{
 				break;
 			}
-		*/
 
 		case 'group':
 			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
 
 			clearstatcache();
 
-			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename)))
 			{
 				break;
 			}
@@ -593,7 +656,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename)))
 			{
 				break;
 			}
@@ -703,7 +766,7 @@ if (!function_exists('stripos'))
 */
 function is_absolute($path)
 {
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
+	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
 }
 
 /**
@@ -1065,7 +1128,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql_update = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$sql_update[] = $row['forum_id'];
+				$sql_update[] = (int) $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -2574,7 +2637,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$db->sql_query($sql);
 
 				// Generate code
-				$code = gen_rand_string(mt_rand(5, 8));
+				$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 				$confirm_id = md5(unique_id($user->ip));
 				$seed = hexdec(substr(unique_id(), 4, 10));
 
@@ -3182,6 +3245,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
+				// echo '<br /><br />BACKTRACE<br />' . get_backtrace() . '<br />' . "\n";
 			}
 
 			return;
@@ -3369,7 +3433,7 @@ function obtain_guest_count($forum_id = 0)
 				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
 			$reading_sql;
 	}
-	$result = $db->sql_query($sql, 60);
+	$result = $db->sql_query($sql);
 	$guests_online = (int) $db->sql_fetchfield('num_guests');
 	$db->sql_freeresult($result);
 

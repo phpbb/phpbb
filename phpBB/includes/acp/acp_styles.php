@@ -37,7 +37,10 @@ class acp_styles
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
 		$bitfield->set(0);
+		$bitfield->set(1);
+		$bitfield->set(2);
 		$bitfield->set(3);
+		$bitfield->set(4);
 		$bitfield->set(8);
 		$bitfield->set(9);
 		$bitfield->set(11);
@@ -743,7 +746,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				// If it's not stored in the db yet, then update the template setting and store all template files in the db
 				if (!$template_info['template_storedb'])
 				{
-					if ($this->get_super('template', $template_id))
+					if ($super = $this->get_super('template', $template_id))
 					{
 						$this->store_in_db('template', $super['template_id']);
 					}
@@ -1275,139 +1278,143 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'EDIT_IMAGESET';
 
+		if (!$imageset_id)
+		{
+			trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		$update		= (isset($_POST['update'])) ? true : false;
 
-		$imgname	= request_var('imgname', '');
-		$imgpath	= request_var('imgpath', '');
-		$imgsize	= request_var('imgsize', false);
-		$imgwidth	= request_var('imgwidth', 0);
-		$imgheight	= request_var('imgheight', 0);
-
+		$imgname	= request_var('imgname', 'site_logo');
 		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
-		$imgpath	= str_replace('..', '.', $imgpath);
+		$sql_extra = $imgnamelang = '';
 
-		if ($imageset_id)
+		$sql = 'SELECT imageset_path, imageset_name
+			FROM ' . STYLES_IMAGESET_TABLE . "
+			WHERE imageset_id = $imageset_id";
+		$result = $db->sql_query($sql);
+		$imageset_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$imageset_row)
 		{
-			$sql = 'SELECT imageset_path, imageset_name
-				FROM ' . STYLES_IMAGESET_TABLE . "
-				WHERE imageset_id = $imageset_id";
-			$result = $db->sql_query($sql);
-			$imageset_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
-			$imageset_path		= $imageset_row['imageset_path'];
-			$imageset_name		= $imageset_row['imageset_name'];
+		$imageset_path		= $imageset_row['imageset_path'];
+		$imageset_name		= $imageset_row['imageset_name'];
 
-			$sql_extra = '';
-			if (strpos($imgname, '-') !== false)
+		if (strpos($imgname, '-') !== false)
+		{
+			list($imgname, $imgnamelang) = explode('-', $imgname);
+			$sql_extra = " AND image_lang IN ('" . $db->sql_escape($imgnamelang) . "', '')";
+		}
+
+		$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+			WHERE imageset_id = $imageset_id
+				AND image_name = '" . $db->sql_escape($imgname) . "'$sql_extra";
+		$result = $db->sql_query($sql);
+		$imageset_data_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$image_filename	= $imageset_data_row['image_filename'];
+		$image_width	= $imageset_data_row['image_width'];
+		$image_height	= $imageset_data_row['image_height'];
+		$image_lang		= $imageset_data_row['image_lang'];
+		$image_id		= $imageset_data_row['image_id'];
+		$imgsize		= ($imageset_data_row['image_width'] && $imageset_data_row['image_height']) ? 1 : 0;
+
+		// Check to see whether the selected image exists in the table
+		$valid_name = ($update) ? false : true;
+
+		foreach ($this->imageset_keys as $category => $img_ary)
+		{
+			if (in_array($imgname, $img_ary))
 			{
-				list($imgname, $imgnamelang) = explode('-', $imgname);
-				$sql_extra = " AND image_lang IN ('" . $db->sql_escape($imgnamelang) . "', '')";
+				$valid_name = true;
+				break;
+			}
+		}
+
+		if ($update && isset($_POST['imgpath']) && $valid_name)
+		{
+			// If imgwidth and imgheight are non-zero grab the actual size
+			// from the image itself ... we ignore width settings for the poll center image
+			$imgwidth	= request_var('imgwidth', 0);
+			$imgheight	= request_var('imgheight', 0);
+			$imgsize	= request_var('imgsize', 0);
+			$imgpath	= request_var('imgpath', '');
+			$imgpath	= str_replace('..', '.', $imgpath);
+
+			// If no dimensions selected, we reset width and height to 0 ;)
+			if (!$imgsize)
+			{
+				$imgwidth = $imgheight = 0;
 			}
 
-			$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
-				FROM ' . STYLES_IMAGESET_DATA_TABLE . "
-				WHERE imageset_id = $imageset_id
-					AND image_name = '" . $db->sql_escape($imgname) . "'$sql_extra";
-			$result = $db->sql_query($sql);
-			$imageset_data_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$imglang = '';
 
-			$image_filename	= $imageset_data_row['image_filename'];
-			$image_width	= $imageset_data_row['image_width'];
-			$image_height	= $imageset_data_row['image_height'];
-			$image_lang		= $imageset_data_row['image_lang'];
-			$image_id		= $imageset_data_row['image_id'];
-
-			if (!$imageset_row)
+			if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
 			{
-				trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// Check to see whether the selected image exists in the table
-			$valid_name = ($update) ? false : true;
-
-			foreach ($this->imageset_keys as $category => $img_ary)
+			// Determine width/height. If dimensions included and no width/height given, we detect them automatically...
+			if ($imgsize && $imgpath)
 			{
-				if (in_array($imgname, $img_ary))
+				if (!$imgwidth || !$imgheight)
 				{
-					$valid_name = true;
-					break;
+					list($imgwidth_file, $imgheight_file) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+					$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
+					$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
 				}
+				$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
+				$imgheight	= (int) $imgheight;
 			}
 
-			if ($update && isset($_POST['imgpath']))
+			if (strpos($imgpath, '/') !== false)
 			{
-				if ($valid_name)
-				{
-					// If imgwidth and imgheight are non-zero grab the actual size
-					// from the image itself ... we ignore width settings for the poll center image
-					$imgwidth	= request_var('imgwidth', 0);
-					$imgheight	= request_var('imgheight', 0);
-					$imglang = '';
-
-					if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
-					{
-						trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
-					if ($imgsize && $imgpath)
-					{
-						if (!$imgwidth || !$imgheight)
-						{
-							list($imgwidth_file, $imgheight_file) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
-							$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
-							$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
-						}
-						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
-						$imgheight	= (int) $imgheight;
-					}
-
-
-					if (strpos($imgpath, '/') !== false)
-					{
-						list($imglang, $imgfilename) = explode('/', $imgpath);
-					}
-					else
-					{
-						$imgfilename = $imgpath;
-					}
-
-					$sql_ary = array(
-						'image_filename'	=> (string) $imgfilename,
-						'image_width'		=> (int) $imgwidth,
-						'image_height'		=> (int) $imgheight,
-						'image_lang'		=> (string) $imglang,
-					);
-
-					// already exists
-					if ($imageset_data_row)
-					{
-						$sql = 'UPDATE ' . STYLES_IMAGESET_DATA_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-							WHERE image_id = $image_id";
-						$db->sql_query($sql);
-					}
-					// does not exist
-					else if (!$imageset_data_row)
-					{
-						$sql_ary['image_name']	= $imgname;
-						$sql_ary['imageset_id']	= (int) $imageset_id;
-						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-					}
-
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-
-					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
-
-					$template->assign_var('SUCCESS', true);
-
-					$image_filename = $imgfilename;
-					$image_width	= $imgwidth;
-					$image_height	= $imgheight;
-					$image_lang		= $imglang;
-				}
+				list($imglang, $imgfilename) = explode('/', $imgpath);
 			}
+			else
+			{
+				$imgfilename = $imgpath;
+			}
+
+			$sql_ary = array(
+				'image_filename'	=> (string) $imgfilename,
+				'image_width'		=> (int) $imgwidth,
+				'image_height'		=> (int) $imgheight,
+				'image_lang'		=> (string) $imglang,
+			);
+
+			// already exists
+			if ($imageset_data_row)
+			{
+				$sql = 'UPDATE ' . STYLES_IMAGESET_DATA_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE image_id = $image_id";
+				$db->sql_query($sql);
+			}
+			// does not exist
+			else if (!$imageset_data_row)
+			{
+				$sql_ary['image_name']	= $imgname;
+				$sql_ary['imageset_id']	= (int) $imageset_id;
+				$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+			}
+
+			$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+
+			add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
+
+			$template->assign_var('SUCCESS', true);
+
+			$image_filename = $imgfilename;
+			$image_width	= $imgwidth;
+			$image_height	= $imgheight;
+			$image_lang		= $imglang;
 		}
 
 		$imglang = '';
@@ -1529,6 +1536,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
 			'A_NAME'			=> addslashes($imageset_name),
+			'PATH'				=> $imageset_path,
+			'A_PATH'			=> addslashes($imageset_path),
 			'ERROR'				=> !$valid_name,
 			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
 			'IMAGE_SELECT'		=> $image_found
@@ -3210,7 +3219,16 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (isset($cfg_data['inherit_from']) && $cfg_data['inherit_from'])
 		{
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb
+			if ($mode === 'template')
+			{
+				$select_bf = ', template_bitfield';
+			}
+			else
+			{
+				$select_bf = '';
+			}
+
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
@@ -3225,6 +3243,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$inherit_id = $row["{$mode}_id"];
 				$inherit_path = $row["{$mode}_path"];
+				$inherit_bf = ($mode === 'template') ? $row["{$mode}_bitfield"] : false;
 				$cfg_data['store_db'] = $row["{$mode}_storedb"];
 				$store_db = $row["{$mode}_storedb"];
 			}
@@ -3233,6 +3252,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$inherit_id = 0;
 			$inherit_path = '';
+			$inherit_bf = false;
 		}
 
 
@@ -3254,6 +3274,10 @@ parse_css_file = {PARSE_CSS_FILE}
 				if (!empty($cfg_data['template_bitfield']))
 				{
 					$sql_ary['bbcode_bitfield'] = $cfg_data['template_bitfield'];
+				}
+				else if ($inherit_bf)
+				{
+					$sql_ary['bbcode_bitfield'] = $inherit_bf;
 				}
 				else
 				{

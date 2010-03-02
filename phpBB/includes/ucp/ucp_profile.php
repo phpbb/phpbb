@@ -349,11 +349,11 @@ class ucp_profile
 					{
 						$data['notify'] = $user->data['user_notify_type'];
 
-						if (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml'))
+						if ($data['notify'] == NOTIFY_IM && (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml')))
 						{
 							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
 							// Disable notify by Jabber now for this user.
-							$data['notify'] = NOTIFY_BOTH;
+							$data['notify'] = NOTIFY_EMAIL;
 						}
 
 						$sql_ary = array(
@@ -549,6 +549,7 @@ class ucp_profile
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+					'MAX_FONT_SIZE'			=> (int) $config['max_sig_font_size'],
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 

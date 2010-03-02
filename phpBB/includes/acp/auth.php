@@ -58,7 +58,7 @@ class auth_admin extends auth
 			$cache->put('_acl_options', $this->acl_options);
 		}
 	}
-	
+
 	/**
 	* Get permission mask
 	* This function only supports getting permissions of one type (for example a_)
@@ -140,7 +140,7 @@ class auth_admin extends auth
 					$auth2 = &$auth;
 				}
 
-				
+
 				$hold_ary[$userdata['user_id']] = array();
 				foreach ($forum_ids as $f_id)
 				{
@@ -345,7 +345,7 @@ class auth_admin extends auth
 
 		// Build js roles array (role data assignments)
 		$s_role_js_array = '';
-		
+
 		if (sizeof($roles))
 		{
 			$s_role_js_array = array();
@@ -696,6 +696,7 @@ class auth_admin extends auth
 
 		$cur_options = array();
 
+		// Determine current options
 		$sql = 'SELECT auth_option, is_global, is_local
 			FROM ' . ACL_OPTIONS_TABLE . '
 			ORDER BY auth_option_id';
@@ -703,15 +704,7 @@ class auth_admin extends auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if ($row['is_global'])
-			{
-				$cur_options['global'][] = $row['auth_option'];
-			}
-
-			if ($row['is_local'])
-			{
-				$cur_options['local'][] = $row['auth_option'];
-			}
+			$cur_options[$row['auth_option']] = ($row['is_global'] && $row['is_local']) ? 'both' : (($row['is_global']) ? 'global' : 'local');
 		}
 		$db->sql_freeresult($result);
 
@@ -726,14 +719,11 @@ class auth_admin extends auth
 
 			foreach ($option_ary as $option_value)
 			{
-				if (!in_array($option_value, $cur_options[$type]))
-				{
-					$new_options[$type][] = $option_value;
-				}
+				$new_options[$type][] = $option_value;
 
 				$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
 
-				if (!in_array($flag, $cur_options[$type]) && !in_array($flag, $new_options[$type]))
+				if (!in_array($flag, $new_options[$type]))
 				{
 					$new_options[$type][] = $flag;
 				}
@@ -744,23 +734,53 @@ class auth_admin extends auth
 		$options = array();
 		$options['local'] = array_diff($new_options['local'], $new_options['global']);
 		$options['global'] = array_diff($new_options['global'], $new_options['local']);
-		$options['local_global'] = array_intersect($new_options['local'], $new_options['global']);
+		$options['both'] = array_intersect($new_options['local'], $new_options['global']);
 
-		$sql_ary = array();
+		// Now check which options to add/update
+		$add_options = $update_options = array();
 
+		// First local ones...
 		foreach ($options as $type => $option_ary)
 		{
 			foreach ($option_ary as $option)
 			{
-				$sql_ary[] = array(
-					'auth_option'	=> (string) $option,
-					'is_global'		=> ($type == 'global' || $type == 'local_global') ? 1 : 0,
-					'is_local'		=> ($type == 'local' || $type == 'local_global') ? 1 : 0
-				);
+				if (!isset($cur_options[$option]))
+				{
+					$add_options[] = array(
+						'auth_option'	=> (string) $option,
+						'is_global'		=> ($type == 'global' || $type == 'both') ? 1 : 0,
+						'is_local'		=> ($type == 'local' || $type == 'both') ? 1 : 0
+					);
+
+					continue;
+				}
+
+				// Else, update existing entry if it is changed...
+				if ($type === $cur_options[$option])
+				{
+					continue;
+				}
+
+				// New type is always both:
+				// If is now both, we set both.
+				// If it was global the new one is local and we need to set it to both
+				// If it was local the new one is global and we need to set it to both
+				$update_options[] = $option;
 			}
 		}
 
-		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
+		if (!empty($add_options))
+		{
+			$db->sql_multi_insert(ACL_OPTIONS_TABLE, $add_options);
+		}
+
+		if (!empty($update_options))
+		{
+			$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . '
+				SET is_global = 1, is_local = 1
+				WHERE ' . $db->sql_in_set('auth_option', $update_options);
+			$db->sql_query($sql);
+		}
 
 		$cache->destroy('_acl_options');
 		$this->acl_clear_prefetch();
@@ -802,7 +822,7 @@ class auth_admin extends auth
 		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
-		
+
 		// This ID (the any-flag) is set if one or more permissions are true...
 		$any_option_id = (int) $this->acl_options['id'][$flag];
 
@@ -916,7 +936,7 @@ class auth_admin extends auth
 		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
-		
+
 		// Remove any-flag from auth ary
 		if (isset($auth[$flag]))
 		{
@@ -1067,7 +1087,7 @@ class auth_admin extends auth
 		{
 			$where_sql[] = $db->sql_in_set('auth_option_id', array_map('intval', $option_id_ary));
 		}
-		
+
 		$sql = "DELETE FROM $table
 			WHERE " . implode(' AND ', $where_sql);
 		$db->sql_query($sql);
@@ -1090,7 +1110,7 @@ class auth_admin extends auth
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
-							
+
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
 
@@ -1179,9 +1199,9 @@ class auth_admin extends auth
 						'lang'	=> '{ acl_' . $permission . ' }'
 					);
 				}
-			
+
 				$cat = $user->lang['acl_' . $permission]['cat'];
-			
+
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{

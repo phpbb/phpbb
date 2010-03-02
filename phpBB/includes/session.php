@@ -182,7 +182,7 @@ class session
 			else
 			{
 				// Set to OS hostname or localhost
-				$host = (function_exists('php_uname')) ? php_uname('n') : 'localhost';
+				$host = (function_exists('php_uname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : 'localhost';
 			}
 		}
 
@@ -480,6 +480,13 @@ class session
 
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
+					$bot_ip = trim($bot_ip);
+
+					if (!$bot_ip)
+					{
+						continue;
+					}
+
 					if (strpos($this->ip, $bot_ip) === 0)
 					{
 						$bot = (int) $row['user_id'];
@@ -718,6 +725,15 @@ class session
 		// Since we re-create the session id here, the inserted row must be unique. Therefore, we display potential errors.
 		// Commented out because it will not allow forums to update correctly
 //		$db->sql_return_on_error(false);
+
+		// Something quite important: session_page always holds the *last* page visited, except for the *first* visit.
+		// We are not able to simply have an empty session_page btw, therefore we need to tell phpBB how to detect this special case.
+		// If the session id is empty, we have a completely new one and will set an "identifier" here. This identifier is able to be checked later.
+		if (empty($this->data['session_id']))
+		{
+			// This is a temporary variable, only set for the very first visit
+			$this->data['session_created'] = true;
+		}
 
 		$this->session_id = $this->data['session_id'] = md5(unique_id());
 
@@ -1204,7 +1220,7 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
 
 		if ($mode == 'register')
@@ -1377,7 +1393,7 @@ class session
 		$host = htmlspecialchars($this->host);
 		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
 
-		if (!(stripos($ref, $host) === 0))
+		if (!(stripos($ref, $host) === 0) && (!$config['force_server'] || !(stripos($ref, $config['server_name']) === 0)))
 		{
 			return false;
 		}
@@ -1527,7 +1543,10 @@ class user extends session
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
-		if ((@include $this->lang_path . $this->lang_name . "/common.$phpEx") === false)
+		// Do not suppress error if in DEBUG_EXTRA mode
+		$include_result = (defined('DEBUG_EXTRA')) ? (include $this->lang_path . $this->lang_name . "/common.$phpEx") : (@include $this->lang_path . $this->lang_name . "/common.$phpEx");
+
+		if ($include_result === false)
 		{
 			die('Language file ' . $this->lang_path . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
 		}
@@ -1657,7 +1676,8 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
-		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
+		// Same query in style.php
+		$sql = 'SELECT *
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
 			AND image_filename <> ''
@@ -1773,7 +1793,10 @@ class user extends session
 		// Is board disabled and user not an admin or moderator?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
-			header('HTTP/1.1 503 Service Unavailable');
+			if ($this->data['is_bot'])
+			{
+				header('HTTP/1.1 503 Service Unavailable');
+			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
@@ -1789,7 +1812,10 @@ class user extends session
 
 				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 				{
-					header('HTTP/1.1 503 Service Unavailable');
+					if ($this->data['is_bot'])
+					{
+						header('HTTP/1.1 503 Service Unavailable');
+					}
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
@@ -2000,7 +2026,10 @@ class user extends session
 				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
-			if ((@include $language_filename) === false)
+			// Do not suppress error if in DEBUG_EXTRA mode
+			$include_result = (defined('DEBUG_EXTRA')) ? (include $language_filename) : (@include $language_filename);
+
+			if ($include_result === false)
 			{
 				trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
 			}
@@ -2036,7 +2065,6 @@ class user extends session
 			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
 			$date_cache[$format] = array(
 				'is_short'		=> strpos($format, '|'),
-				'zone_offset'	=> $this->timezone + $this->dst,
 				'format_short'	=> substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
 				'format_long'	=> str_replace('|', '', $format),
 				'lang'			=> $this->lang['datetime'],
@@ -2049,8 +2077,11 @@ class user extends session
 			}
 		}
 
+		// Zone offset
+		$zone_offset = $this->timezone + $this->dst;
+
 		// Show date <= 1 hour ago as 'xx min ago'
-		// A small tolerence is given for times in the future and times in the future but in the same minute are displayed as '< than a minute ago'
+		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
 		if ($delta <= 3600 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
 		{
 			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
@@ -2058,11 +2089,11 @@ class user extends session
 
 		if (!$midnight)
 		{
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $date_cache[$format]['zone_offset']));
-			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $date_cache[$format]['zone_offset'];
+			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $zone_offset));
+			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $zone_offset;
 		}
 
-		if ($date_cache[$format]['is_short'] !== false && !$forcedate)
+		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
 		{
 			$day = false;
 
@@ -2081,11 +2112,11 @@ class user extends session
 
 			if ($day !== false)
 			{
-				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']));
+				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $zone_offset), $date_cache[$format]['lang']));
 			}
 		}
 
-		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']);
+		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $zone_offset), $date_cache[$format]['lang']);
 	}
 
 	/**
@@ -2155,7 +2186,7 @@ class user extends session
 				return $img_data;
 			}
 
-			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$img_data['src'] = $phpbb_root_path . 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
 			$img_data['width'] = $this->img_array[$img]['image_width'];
 			$img_data['height'] = $this->img_array[$img]['image_height'];
 		}

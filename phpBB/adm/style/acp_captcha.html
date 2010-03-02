@@ -22,6 +22,11 @@
 	<dd><label><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
+<dl>
+	<dt><label for="confirm_refresh">{L_VISUAL_CONFIRM_REFRESH}:</label><br /><span>{L_VISUAL_CONFIRM_REFRESH_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="confirm_refresh" name="confirm_refresh" value="1"<!-- IF CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+	<label><input type="radio" class="radio" name="confirm_refresh" value="0"<!-- IF not CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
+</dl>
 <!-- IF GD -->
 <dl>
 	<dt><label for="captcha_gd">{L_CAPTCHA_GD}:</label><br /><span>{L_CAPTCHA_GD_EXPLAIN}</span></dt>
@@ -40,6 +45,26 @@
 <dl>
 	<dt><label for="captcha_gd_y_grid">{L_CAPTCHA_GD_Y_GRID}:</label><br /><span>{L_CAPTCHA_GD_Y_GRID_EXPLAIN}</span></dt>
 	<dd><input id="captcha_gd_y_grid" name="captcha_gd_y_grid" value="{CAPTCHA_GD_Y_GRID}" type="text" /></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_wave">{L_CAPTCHA_GD_WAVE}:</label><br /><span>{L_CAPTCHA_GD_WAVE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_wave" name="captcha_gd_wave" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_WAVE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_wave" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_WAVE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+</dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_3d_noise">{L_CAPTCHA_GD_3D_NOISE}:</label><br /><span>{L_CAPTCHA_GD_3D_NOISE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_3d_noise" name="captcha_gd_3d_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_3D_NOISE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_3d_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_3D_NOISE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+</dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_fonts">{L_CAPTCHA_GD_FONTS}:</label><br /><span>{L_CAPTCHA_GD_FONTS_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_fonts" name="captcha_gd_fonts" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 1 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_DEFAULT}</label>
+		<label><input name="captcha_gd_fonts" value="2" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 2 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_NEW}</label>
+		<label><input name="captcha_gd_fonts" value="3" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 3 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_LOWER}</label>
+
+</dd>
 </dl>
 <!-- ENDIF -->
 

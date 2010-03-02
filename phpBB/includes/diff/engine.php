@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Code from pear.php.net, Text_Diff-1.0.0 package
+* Code from pear.php.net, Text_Diff-1.1.0 package
 * http://pear.php.net/package/Text_Diff/ (native engine)
 *
 * Modified by phpBB Group to meet our coding standards

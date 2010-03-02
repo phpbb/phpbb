@@ -119,12 +119,11 @@ CREATE TABLE phpbb_acl_options (
 	is_global number(1) DEFAULT '0' NOT NULL,
 	is_local number(1) DEFAULT '0' NOT NULL,
 	founder_only number(1) DEFAULT '0' NOT NULL,
-	CONSTRAINT pk_phpbb_acl_options PRIMARY KEY (auth_option_id)
+	CONSTRAINT pk_phpbb_acl_options PRIMARY KEY (auth_option_id),
+	CONSTRAINT u_phpbb_auth_option UNIQUE (auth_option)
 )
 /
 
-CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options (auth_option)
-/
 
 CREATE SEQUENCE phpbb_acl_options_seq
 /
@@ -821,7 +820,7 @@ CREATE TABLE phpbb_poll_votes (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
-	vote_user_ip varchar2(40) DEFAULT '' 
+	vote_user_ip varchar2(40) DEFAULT ''
 )
 /
 
@@ -1465,7 +1464,7 @@ CREATE TABLE phpbb_styles_template_data (
 	template_filename varchar2(100) DEFAULT '' ,
 	template_included clob DEFAULT '' ,
 	template_mtime number(11) DEFAULT '0' NOT NULL,
-	template_data clob DEFAULT '' 
+	template_data clob DEFAULT ''
 )
 /
 

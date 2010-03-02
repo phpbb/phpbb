@@ -340,7 +340,7 @@ class ucp_groups
 						'S_ROW_COUNT'		=> ${$block . '_count'}++)
 					);
 
-					$group_id_ary[] = $row['group_id'];
+					$group_id_ary[] = (int) $row['group_id'];
 				}
 				$db->sql_freeresult($result);
 

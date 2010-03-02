@@ -61,13 +61,13 @@
 
 		<!-- ELSEIF _file.S_FLASH_FILE -->
 			<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0" width="{_file.WIDTH}" height="{_file.HEIGHT}">
-				<param name="movie" value="{_file.U_DOWNLOAD_LINK}" />
+				<param name="movie" value="{_file.U_VIEW_LINK}" />
 				<param name="play" value="true" />
 				<param name="loop" value="true" />
 				<param name="quality" value="high" />
 				<param name="allowScriptAccess" value="never" />
 				<param name="allowNetworking" value="internal" />
-				<embed src="{_file.U_DOWNLOAD_LINK}" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" width="{_file.WIDTH}" height="{_file.HEIGHT}" play="true" loop="true" quality="high" allowscriptaccess="never" allownetworking="internal"></embed>
+				<embed src="{_file.U_VIEW_LINK}" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" width="{_file.WIDTH}" height="{_file.HEIGHT}" play="true" loop="true" quality="high" allowscriptaccess="never" allownetworking="internal"></embed>
 			</object>
 		<!-- ELSEIF _file.S_QUICKTIME_FILE -->
 			<object id="qtstream_{_file.ATTACH_ID}" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" width="0" height="16">

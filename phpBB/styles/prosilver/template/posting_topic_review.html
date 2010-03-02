@@ -6,8 +6,15 @@
 
 <div id="topicreview">
 	<!-- BEGIN topic_review_row -->
+
+	<!-- IF topic_review_row.S_IGNORE_POST -->
+	<div class="post bg3 post-ignore">
+		<div class="inner"><span class="corners-top"><span></span></span>
+			{topic_review_row.L_IGNORE_POST}
+	<!-- ELSE -->
 	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 		<div class="inner"><span class="corners-top"><span></span></span>
+	<!-- ENDIF -->
 
 		<div class="postbody" id="pr{topic_review_row.POST_ID}">
 			<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->

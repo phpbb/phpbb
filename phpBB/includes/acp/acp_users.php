@@ -972,6 +972,7 @@ class acp_users
 					{
 						$sql = 'DELETE FROM ' . LOG_TABLE . '
 							WHERE log_type = ' . LOG_USERS . "
+							AND reportee_id = $user_id
 							$where_sql";
 						$db->sql_query($sql);
 
@@ -1161,7 +1162,8 @@ class acp_users
 
 							foreach ($cp_data as $key => $value)
 							{
-								$cp_data[$left_delim . $key . $right_delim] = $value;
+								// Firebird is case sensitive with delimiter
+								$cp_data[$left_delim . (($db->sql_layer == 'firebird') ? strtoupper($key) : $key) . $right_delim] = $value;
 								unset($cp_data[$key]);
 							}
 
@@ -1846,6 +1848,16 @@ class acp_users
 							}
 
 							$error = array();
+
+							// The delete action was successful - therefore update the user row...
+							$sql = 'SELECT u.*, s.*
+								FROM ' . USERS_TABLE . ' u
+									LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+								WHERE u.user_id = ' . $user_id . '
+								ORDER BY s.session_time DESC';
+							$result = $db->sql_query($sql);
+							$user_row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
 						}
 						else
 						{

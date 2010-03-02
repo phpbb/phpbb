@@ -132,7 +132,7 @@
 	<tr class="<!-- IF memberrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 		<td><!-- IF memberrow.RANK_IMG --><span class="rank-img">{memberrow.RANK_IMG}</span><!-- ELSE --><span class="rank-img">{memberrow.RANK_TITLE}</span><!-- ENDIF --><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input type="checkbox" name="user" value="{memberrow.USERNAME}" /> <!-- ENDIF -->{memberrow.USERNAME_FULL}<!-- IF S_SELECT_SINGLE --><br />[&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="posts"><!-- IF memberrow.POSTS --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
-		<td class="info"><!-- IF memberrow.U_WWW or memberrow.LOCATION --><!-- IF memberrow.U_WWW --><div><a href="{memberrow.U_WWW}" title="{L_VISIT_WEBSITE}: {memberrow.U_WWW}">{memberrow.U_WWW}</a></div><!-- ENDIF --><!-- IF memberrow.LOCATION --><div>{memberrow.LOCATION}</div><!-- ENDIF --><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="info"><!-- IF memberrow.U_WWW or memberrow.LOCATION --><!-- IF memberrow.U_WWW --><div><a href="{memberrow.U_WWW}" title="{L_VISIT_WEBSITE}: {memberrow.U_WWW}">{memberrow.U_SHORT_WWW}</a></div><!-- ENDIF --><!-- IF memberrow.LOCATION --><div>{memberrow.LOCATION}</div><!-- ENDIF --><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td>{memberrow.JOINED}</td>
 		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
 	</tr>

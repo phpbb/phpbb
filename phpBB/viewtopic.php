@@ -262,9 +262,9 @@ $db->sql_freeresult($result);
 if (!$topic_data)
 {
 	// If post_id was submitted, we try at least to display the topic as a last resort...
-	if ($post_id && $forum_id && $topic_id)
+	if ($post_id && $topic_id)
 	{
-		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"));
+		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
 	}
 
 	trigger_error('NO_TOPIC');
@@ -604,7 +604,7 @@ $template->assign_vars(array(
 	'S_SINGLE_MODERATOR'	=> (!empty($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id]) > 1) ? false : true,
 	'S_TOPIC_ACTION' 		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start"),
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="action" id="quick-mod-select">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
+	'S_MOD_ACTION' 			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
 
 	'S_VIEWTOPIC'			=> true,
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
@@ -679,8 +679,8 @@ if (!empty($topic_data['poll_start']))
 		}
 	}
 
-	$s_can_vote = (((!sizeof($cur_voted_id) && $auth->acl_get('f_vote', $forum_id)) ||
-		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change'])) &&
+	// Can not vote at all if no vote permission
+	$s_can_vote = ($auth->acl_get('f_vote', $forum_id) &&
 		(($topic_data['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
 		$topic_data['topic_status'] != ITEM_LOCKED &&
 		$topic_data['forum_status'] != ITEM_LOCKED) ? true : false;
@@ -898,7 +898,7 @@ $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 $i = ($store_reverse) ? $sql_limit - 1 : 0;
 while ($row = $db->sql_fetchrow($result))
 {
-	$post_list[$i] = $row['post_id'];
+	$post_list[$i] = (int) $row['post_id'];
 	($store_reverse) ? $i-- : $i++;
 }
 $db->sql_freeresult($result);
@@ -952,12 +952,12 @@ while ($row = $db->sql_fetchrow($result))
 		$max_post_time = $row['post_time'];
 	}
 
-	$poster_id = $row['poster_id'];
+	$poster_id = (int) $row['poster_id'];
 
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
 	{
-		$attach_list[] = $row['post_id'];
+		$attach_list[] = (int) $row['post_id'];
 
 		if ($row['post_approved'])
 		{
@@ -1143,7 +1143,10 @@ $db->sql_freeresult($result);
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
 {
-	include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+	if (!class_exists('custom_profile'))
+	{
+		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+	}
 	$cp = new custom_profile();
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
@@ -1381,7 +1384,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		// It is safe to grab the username from the user cache array, we are at the last
 		// post and only the topic poster and last poster are allowed to bump.
 		// Admins and mods are bound to the above rules too...
-		$l_bumped_by = '<br /><br />' . sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time']));
+		$l_bumped_by = '<br /><br />' . sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
 	}
 	else
 	{
@@ -1421,7 +1424,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_WARNINGS'	=> $user_cache[$poster_id]['warnings'],
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 
-		'POST_DATE'			=> $user->format_date($row['post_time']),
+		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
 		'POST_SUBJECT'		=> $row['post_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
@@ -1514,7 +1517,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 unset($rowset, $user_cache);
 
 // Update topic view and if necessary attachment view counters ... but only for humans and if this is the first 'page view'
-if (isset($user->data['session_page']) && !$user->data['is_bot'] && strpos($user->data['session_page'], '&t=' . $topic_id) === false)
+if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($user->data['session_page'], '&t=' . $topic_id) === false || isset($user->data['session_created'])))
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "

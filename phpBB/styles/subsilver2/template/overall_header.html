@@ -11,6 +11,7 @@
 <meta name="copyright" content="2000, 2002, 2005, 2007 phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
 {META}
 <title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
 
@@ -39,12 +40,19 @@ function popup(url, width, height, name)
 function jumpto()
 {
 	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
-	var perpage = '{PER_PAGE}';
+	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
 
-	if (page !== null && !isNaN(page) && page > 0)
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0)
 	{
-		document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * perpage);
+		if (base_url.indexOf('?') == -1)
+		{
+			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
+		}
+		else
+		{
+			document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
+		}
 	}
 }
 

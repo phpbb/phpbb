@@ -88,8 +88,8 @@
 		<td class="row1" colspan="2" align="center">{CONFIRM_IMG}</td>
 	</tr>
 	<tr>
-		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" /></td>
+		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN} <!-- IF S_CONFIRM_REFRESH -->{L_VC_REFRESH_EXPLAIN}<!-- ENDIF --></span></td>
+		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" /><!-- IF S_CONFIRM_REFRESH -->&nbsp;<input type="submit" value="{L_VC_REFRESH}" class="btnlite" /><!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 

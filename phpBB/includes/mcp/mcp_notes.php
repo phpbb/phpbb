@@ -226,12 +226,15 @@ class mcp_notes
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
-			'USERNAME'			=> $userrow['username'],
-			'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
 			'RANK_TITLE'		=> $rank_title,
 			'JOINED'			=> $user->format_date($userrow['user_regdate']),
 			'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 			'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
+
+			'USERNAME_FULL'		=> get_username_string('full', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
+			'USERNAME_COLOUR'	=> get_username_string('colour', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
+			'USERNAME'			=> get_username_string('username', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
+			'U_PROFILE'			=> get_username_string('profile', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $rank_img,

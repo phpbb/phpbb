@@ -223,9 +223,12 @@ class template_compile
 		// There will be a number of occasions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
-		$template_php = str_replace(' ?><?php ', ' ', $template_php);
+		if ($no_echo)
+		{
+			return "\$$echo_var .= '" . str_replace(' ?><?php ', ' ', $template_php) . "'";
+		}
 
-		return (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
+		return str_replace(' ?><?php ', ' ', $template_php);
 	}
 
 	/**
@@ -253,19 +256,19 @@ class template_compile
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_rootref['L_\\1'])) ? \$this->_rootref['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$this->_rootref['L_\\1'])) ? \$this->_rootref['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_rootref['LA_\\1'])) ? \$this->_rootref['LA_\\1'] : ((isset(\$this->_rootref['L_\\1'])) ? addslashes(\$this->_rootref['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$this->_rootref['LA_\\1'])) ? \$this->_rootref['LA_\\1'] : ((isset(\$this->_rootref['L_\\1'])) ? addslashes(\$this->_rootref['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
 		}
 
 		// Handle remaining varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]+)\}#is', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]+)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return;
 	}
@@ -748,6 +751,8 @@ class template_compile
 
 		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . $phpEx;
 
+		$data = "<?php if (!defined('IN_PHPBB')) exit;" . ((strpos($data, '<?php') === 0) ? substr($data, 5) : ' ?>' . $data);
+
 		if ($fp = @fopen($filename, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
@@ -755,7 +760,7 @@ class template_compile
 			@flock($fp, LOCK_UN);
 			@fclose($fp);
 
-			phpbb_chmod($filename, CHMOD_WRITE);
+			phpbb_chmod($filename, CHMOD_READ | CHMOD_WRITE);
 		}
 
 		return;

@@ -108,7 +108,7 @@ class acp_email
 					$db->sql_freeresult($result);
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-	
+
 				$i = $j = 0;
 
 				// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
@@ -121,7 +121,7 @@ class acp_email
 				{
 					if (($row['user_notify_type'] == NOTIFY_EMAIL && $row['user_email']) ||
 						($row['user_notify_type'] == NOTIFY_IM && $row['user_jabber']) ||
-						($row['user_notify_type'] == NOTIFY_BOTH && $row['user_email'] && $row['user_jabber']))
+						($row['user_notify_type'] == NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
 					{
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
@@ -173,7 +173,7 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-			
+
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
 
@@ -181,7 +181,7 @@ class acp_email
 						'CONTACT_EMAIL' => $config['board_contact'],
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
-	
+
 					if (!($messenger->send($used_method)))
 					{
 						$errored = true;
@@ -239,7 +239,7 @@ class acp_email
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
 		$select_list .= group_select_options($group_id, $exclude);
-		
+
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . $user->lang['MAIL_HIGH_PRIORITY'] . '</option>';

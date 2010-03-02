@@ -61,7 +61,7 @@
 		<!-- IF S_GROUP_OPTIONS -->
 			<div class="column2">
 				<dl>
-					<dd><label for="group_list">{L_USERGROUPS}:</label> <select name="group_list[]" id="group_list "multiple="true" size="4" class="inputbox">{S_GROUP_OPTIONS}</select></dd>
+					<dd><label for="group_list">{L_USERGROUPS}:</label> <select name="group_list[]" id="group_list" multiple="multiple" size="4" class="inputbox">{S_GROUP_OPTIONS}</select></dd>
 				</dl>
 			</div>
 		<!-- ENDIF -->
@@ -139,7 +139,7 @@
 	</div>
 
 	<div id="message-box">
-		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
 </fieldset>
 
@@ -160,8 +160,8 @@
 			<!-- BEGIN attach_row -->
 			<dl>
 
-				<dt><label for="comment_list[{attach_row.ASSOC_INDEX}]">{L_FILE_COMMENT}:</label></dt>
-				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
+				<dt><label for="comment_list_{attach_row.ASSOC_INDEX}">{L_FILE_COMMENT}:</label></dt>
+				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list_{attach_row.ASSOC_INDEX}" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
 				<dd><a href="{attach_row.U_VIEW_ATTACHMENT}" class="{S_CONTENT_FLOW_END}">{attach_row.FILENAME}</a></dd>
 				<dd style="margin-top: 5px;">
 					<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.A_FILENAME}');" class="button2" />&nbsp; <!-- ENDIF -->

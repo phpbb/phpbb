@@ -619,7 +619,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config('num_topics', $config['num_topics'] - $approved_topics, true);
+		set_config_count('num_topics', $approved_topics * (-1), true);
 	}
 
 	return $return;
@@ -652,7 +652,23 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 			return false;
 		}
 
-		$where_clause = $db->sql_in_set($where_type, array_map('intval', $where_ids));
+		$where_ids = array_map('intval', $where_ids);
+
+/*		Possible code for splitting post deletion
+		if (sizeof($where_ids) >= 1001)
+		{
+			// Split into chunks of 1000
+			$chunks = array_chunk($where_ids, 1000);
+
+			foreach ($chunks as $_where_ids)
+			{
+				delete_posts($where_type, $_where_ids, $auto_sync, $posted_sync, $post_count_sync, $call_delete_topics);
+			}
+
+			return;
+		}*/
+
+		$where_clause = $db->sql_in_set($where_type, $where_ids);
 	}
 
 	$approved_posts = 0;
@@ -665,10 +681,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$post_ids[] = $row['post_id'];
-		$poster_ids[] = $row['poster_id'];
-		$topic_ids[] = $row['topic_id'];
-		$forum_ids[] = $row['forum_id'];
+		$post_ids[] = (int) $row['post_id'];
+		$poster_ids[] = (int) $row['poster_id'];
+		$topic_ids[] = (int) $row['topic_id'];
+		$forum_ids[] = (int) $row['forum_id'];
 
 		if ($row['post_postcount'] && $post_count_sync && $row['post_approved'])
 		{
@@ -776,7 +792,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts)
 	{
-		set_config('num_posts', $config['num_posts'] - $approved_posts, true);
+		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -814,11 +830,14 @@ function delete_attachments($mode, $ids, $resync = true)
 		return false;
 	}
 
+	$sql_where = '';
+
 	switch ($mode)
 	{
 		case 'post':
 		case 'message':
 			$sql_id = 'post_msg_id';
+			$sql_where = ' AND in_message = ' . ($mode == 'message' ? 1 : 0);
 		break;
 
 		case 'topic':
@@ -842,6 +861,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -867,6 +889,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	// Delete attachments
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	$db->sql_query($sql);
 	$num_deleted = $db->sql_affectedrows();
 
@@ -894,8 +919,8 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	if ($space_removed || $files_removed)
 	{
-		set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
-		set_config('num_files', $config['num_files'] - $files_removed, true);
+		set_config_count('upload_dir_size', $space_removed * (-1), true);
+		set_config_count('num_files', $files_removed * (-1), true);
 	}
 
 	// If we do not resync, we do not need to adjust any message, post, topic or user entries

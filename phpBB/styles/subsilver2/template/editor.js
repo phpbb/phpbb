@@ -16,7 +16,6 @@ var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
 
 var baseHeight;
-window.onload = initInsertions;
 
 /**
 * Shows the help messages in the helpline window

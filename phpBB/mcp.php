@@ -170,6 +170,12 @@ if ($quickmod)
 		break;
 
 		case 'topic_logs':
+			// Reset start parameter if we jumped from the quickmod dropdown
+			if (request_var('start', 0))
+			{
+				$_REQUEST['start'] = 0;
+			}
+
 			$module->set_active('logs', 'topic_logs');
 		break;
 

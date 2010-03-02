@@ -614,7 +614,7 @@ function create_thumbnail($source, $destination, $mimetype)
 	list($new_width, $new_height) = get_img_size_format($width, $height);
 
 	// Do not create a thumbnail if the resulting width/height is bigger than the original one
-	if ($new_width > $width && $new_height > $height)
+	if ($new_width >= $width && $new_height >= $height)
 	{
 		return false;
 	}
@@ -629,7 +629,7 @@ function create_thumbnail($source, $destination, $mimetype)
 			$config['img_imagick'] .= '/';
 		}
 
-		@passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
+		@passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" "' . str_replace('\\', '/', $destination) . '"');
 
 		if (file_exists($destination))
 		{
@@ -963,11 +963,18 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	}
 
 	$sql = $db->sql_build_query('SELECT', array(
-		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*',
+		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
 			POSTS_TABLE		=> 'p',
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(ZEBRA_TABLE => 'z'),
+				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
+			)
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
@@ -1060,6 +1067,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$post_subject = censor_text($post_subject);
 
+		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
+		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "f=$forum_id&amp;t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
+
 		$template->assign_block_vars($mode . '_row', array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1067,6 +1077,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
+			'S_FRIEND'			=> ($row['friend']) ? true : false,
+			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
+			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"dE('{$post_anchor}', 1); return false;\">", '</a>') : '',
 
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
@@ -1113,7 +1126,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!$topic_notification && !$forum_notification)
 	{
-		trigger_error('WRONG_NOTIFICATION_MODE');
+		trigger_error('NO_MODE');
 	}
 
 	if (($topic_notification && !$config['allow_topic_notify']) || ($forum_notification && !$config['allow_forum_notify']))
@@ -1725,6 +1738,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'topic_poster'				=> (int) $user->data['user_id'],
 				'topic_time'				=> $current_time,
+				'topic_last_view_time'		=> $current_time,
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
 				'topic_approved'			=> $post_approval,
@@ -1738,11 +1752,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
 			{
+				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_length = $poll['poll_length'] * 86400;
+				if ($poll_length < 0)
+				{
+					$poll_start = $poll_start + $poll_length;
+					if ($poll_start < 0)
+					{
+						$poll_start = 0;
+					}
+					$poll_length = 1;
+				}
+
 				$sql_data[TOPICS_TABLE]['sql'] = array_merge($sql_data[TOPICS_TABLE]['sql'], array(
 					'poll_title'		=> $poll['poll_title'],
-					'poll_start'		=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
+					'poll_start'		=> $poll_start,
 					'poll_max_options'	=> $poll['poll_max_options'],
-					'poll_length'		=> ($poll['poll_length'] * 86400),
+					'poll_length'		=> $poll_length,
 					'poll_vote_change'	=> $poll['poll_vote_change'])
 				);
 			}
@@ -1760,7 +1786,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 
 		case 'reply':
-			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . (($post_approval) ? ', topic_replies = topic_replies + 1' : '') . ((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_view_time = ' . $current_time . ',
+				topic_replies_real = topic_replies_real + 1,
+				topic_bumped = 0,
+				topic_bumper = 0' .
+				(($post_approval) ? ', topic_replies = topic_replies + 1' : '') .
+				((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
 			if ($post_approval && $topic_type != POST_GLOBAL)
@@ -1771,6 +1803,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_topic':
 		case 'edit_first_post':
+			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+			{
+				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_length = $poll['poll_length'] * 86400;
+				if ($poll_length < 0)
+				{
+					$poll_start = $poll_start + $poll_length;
+					if ($poll_start < 0)
+					{
+						$poll_start = 0;
+					}
+					$poll_length = 1;
+				}
+			}
 
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
@@ -1781,10 +1827,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'poll_title'				=> (isset($poll['poll_options'])) ? $poll['poll_title'] : '',
-				'poll_start'				=> (isset($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0,
+				'poll_start'				=> (isset($poll['poll_options'])) ? $poll_start : 0,
 				'poll_max_options'			=> (isset($poll['poll_options'])) ? $poll['poll_max_options'] : 1,
-				'poll_length'				=> (isset($poll['poll_options'])) ? ($poll['poll_length'] * 86400) : 0,
+				'poll_length'				=> (isset($poll['poll_options'])) ? $poll_length : 0,
 				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
+				'topic_last_view_time'		=> $current_time,
 
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
@@ -1810,8 +1857,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
 
-				set_config('num_topics', $config['num_topics'] - 1, true);
-				set_config('num_posts', $config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
+				set_config_count('num_topics', -1, true);
+				set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
 
 				// Only decrement this post, since this is the one non-approved now
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
@@ -1828,10 +1875,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_approved'])
 			{
-				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
+				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 
-				set_config('num_posts', $config['num_posts'] - 1, true);
+				set_config_count('num_posts', -1, true);
 
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
 				{
@@ -2098,8 +2145,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', $config['num_files'] + $files_added, true);
+			set_config_count('upload_dir_size', $space_taken, true);
+			set_config_count('num_files', $files_added, true);
 		}
 	}
 
@@ -2332,13 +2379,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($post_mode == 'post')
 		{
-			set_config('num_topics', $config['num_topics'] + 1, true);
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config_count('num_topics', 1, true);
+			set_config_count('num_posts', 1, true);
 		}
 
 		if ($post_mode == 'reply')
 		{
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config_count('num_posts', 1, true);
 		}
 	}
 

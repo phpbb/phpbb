@@ -206,7 +206,7 @@ class transfer
 		$directory = $this->root_path . str_replace($phpbb_root_path, '', $directory);
 
 		$this->_chdir($directory);
-		$result = $this->_ls('');
+		$result = $this->_ls();
 
 		if ($result !== false && is_array($result))
 		{
@@ -460,7 +460,24 @@ class ftp extends transfer
 	*/
 	function _ls($dir = './')
 	{
-		return @ftp_nlist($this->connection, $dir);
+		$list = @ftp_nlist($this->connection, $dir);
+
+		// Remove path if prepended
+		foreach ($list as $key => $item)
+		{
+			// Use same separator for item and dir
+			$item = str_replace('\\', '/', $item);
+			$dir = str_replace('\\', '/', $dir);
+
+			if (strpos($item, $dir) === 0)
+			{
+				$item = substr($item, strlen($dir));
+			}
+
+			$list[$key] = $item;
+		}
+
+		return $list;
 	}
 
 	/**
@@ -709,6 +726,24 @@ class ftp_fsock extends transfer
 			$list[] = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
 		}
 		$this->_close_data_connection();
+
+		// Clear buffer
+		$this->_check_command();
+
+		// Remove path if prepended
+		foreach ($list as $key => $item)
+		{
+			// Use same separator for item and dir
+			$item = str_replace('\\', '/', $item);
+			$dir = str_replace('\\', '/', $dir);
+
+			if (strpos($item, $dir) === 0)
+			{
+				$item = substr($item, strlen($dir));
+			}
+
+			$list[$key] = $item;
+		}
 
 		return $list;
 	}

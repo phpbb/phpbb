@@ -372,6 +372,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
+/*
+		[Fix] queued replies missing from "view new posts" (Bug #42705 - Patch by Paul)
+		- Creates temporary table, query is far from optimized
+
+					$sql = 'SELECT t.topic_id
+						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
+							AND t.topic_id = p.topic_id
+							AND t.topic_moved_id = 0
+							' . $m_approve_fid_sql . '
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+						GROUP BY t.topic_id
+						$sql_sort";
+*/
 					$field = 'topic_id';
 				}
 			break;
@@ -395,7 +409,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$id_ary[] = $row[$field];
+				$id_ary[] = (int) $row[$field];
 			}
 			$db->sql_freeresult($result);
 
@@ -767,7 +781,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$u_forum_id = $forum_id;
 			}
 
-			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : ''));
+			$view_topic_url_params = "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : '');
+			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
 			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
@@ -825,10 +840,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 
-					'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
+					'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 					'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-					'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
+					'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread',
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
 					'U_MCP_QUEUE'			=> $u_mcp_queue,
 				);

@@ -141,7 +141,9 @@ function login_db(&$username, &$password)
 			}
 
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
-			if (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])
+			// plain md5 support left in for conversions from other systems.
+			if ((strlen($row['user_password']) == 34 && (phpbb_check_hash(md5($password_old_format), $row['user_password']) || phpbb_check_hash(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
+				|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])))
 			{
 				$hash = phpbb_hash($password_new_format);
 
@@ -155,7 +157,7 @@ function login_db(&$username, &$password)
 				$row['user_pass_convert'] = 0;
 				$row['user_password'] = $hash;
 			}
-			else
+			else 
 			{
 				// Although we weren't able to convert this password we have to
 				// increase login attempt count to make sure this cannot be exploited

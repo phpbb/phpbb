@@ -160,7 +160,7 @@ onload_functions.push('subPanels()');
 		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF S_SPLIT_VIEW --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
 	</select>&nbsp;
 	<input class="button1" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" />
-	<div><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></div>
+	<div><a href="#" onclick="marklist('mcp', 'post', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'post', false); return false;">{L_UNMARK_ALL}</a></div>
 {S_HIDDEN_FIELDS}
 {S_FORM_TOKEN}
 </fieldset>

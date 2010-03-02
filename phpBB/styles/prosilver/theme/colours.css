@@ -882,7 +882,7 @@ dl.mini dt {
 	border-color: #5D8FBD;
 }
 
-pmlist li.pm_foe_colour, .pm_foe_colour {
+.pmlist li.pm_foe_colour, .pm_foe_colour {
 	border-color: #000000;
 }
 
@@ -906,6 +906,7 @@ Colours and backgrounds for forms.css
 select {
 	border-color: #666666;
 	background-color: #FAFAFA;
+	color: #000;
 }
 
 label {

@@ -44,7 +44,9 @@ ul.topiclist dd {
 
 ul.topiclist dfn {
 	/* Labels for post/view counts */
-	display: none;
+	position: absolute;
+	left: -999px;
+	width: 990px;
 }
 
 ul.topiclist li.row dt a.subforum {
@@ -278,6 +280,10 @@ div[class].topic-actions {
 
 #topicreview h2 {
 	border-bottom-width: 0;
+}
+
+.post-ignore .postbody {
+	display: none;
 }
 
 /* Content container styles

@@ -327,7 +327,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> 'auth_option_id',
 		'KEYS'			=> array(
-			'auth_option'		=> array('INDEX', 'auth_option'),
+			'auth_option'		=> array('UNIQUE', 'auth_option'),
 		),
 	);
 
@@ -1082,6 +1082,8 @@ function get_schema_struct()
 			'template_path'			=> array('VCHAR:100', ''),
 			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
+			'template_inherits_id'		=> array('UINT:4', 0),
+			'template_inherit_path'		=> array('VCHAR', ''),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
 		'KEYS'			=> array(

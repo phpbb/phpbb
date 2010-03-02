@@ -397,7 +397,7 @@ table.table1 .joined	{ text-align: left; width: 15%; }
 table.table1 .active	{ text-align: left; width: 15%; }
 table.table1 .mark		{ text-align: center; width: 7%; }
 table.table1 .info		{ text-align: left; width: 30%; }
-table.table1 .info div	{ width: 100%; white-space: nowrap; overflow: hidden; }
+table.table1 .info div	{ width: 100%; white-space: normal; overflow: hidden; }
 table.table1 .autocol	{ line-height: 2em; white-space: nowrap; }
 table.table1 thead .autocol { padding-left: 1em; }
 
@@ -599,7 +599,7 @@ div.rules {
 	font-size: 1.1em;
 }
 
-div.rules ul {
+div.rules ul, div.rules ol {
 	margin-left: 20px;
 }
 

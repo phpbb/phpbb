@@ -594,44 +594,67 @@ function mcp_move_topic($topic_ids)
 		$topic_data = get_topic_data($topic_ids);
 		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
 
-		$topics_moved = sizeof($topic_ids);
-		$topics_authed_moved = 0;
 		$forum_sync_data = array();
 
 		$forum_sync_data[$forum_id] = current($topic_data);
 		$forum_sync_data[$to_forum_id] = $forum_data;
 
+		// Real topics added to target forum
+		$topics_moved = sizeof($topic_data);
+
+		// Approved topics added to target forum
+		$topics_authed_moved = 0;
+
+		// Posts (topic replies + topic post if approved) added to target forum
+		$topic_posts_added = 0;
+
+		// Posts (topic replies + topic post if approved and not global announcement) removed from source forum
+		$topic_posts_removed = 0;
+
+		// Real topics removed from source forum (all topics without global announcements)
+		$topics_removed = 0;
+
+		// Approved topics removed from source forum (except global announcements)
+		$topics_authed_removed = 0;
+
 		foreach ($topic_data as $topic_id => $topic_info)
 		{
-			if ($topic_info['topic_approved'] == '1')
+			if ($topic_info['topic_approved'])
 			{
 				$topics_authed_moved++;
+				$topic_posts_added++;
+			}
+
+			$topic_posts_added += $topic_info['topic_replies'];
+
+			if ($topic_info['topic_type'] != POST_GLOBAL)
+			{
+				$topics_removed++;
+				$topic_posts_removed += $topic_info['topic_replies'];
+
+				if ($topic_info['topic_approved'])
+				{
+					$topics_authed_removed++;
+					$topic_posts_removed++;
+				}
 			}
 		}
 
 		$db->sql_transaction('begin');
 
-		$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts
-			FROM ' . TOPICS_TABLE . ' t
-			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
-		$row_data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
 		$sync_sql = array();
 
-		if ($row_data['topic_posts'])
+		if ($topic_posts_added)
 		{
-			$sync_sql[$forum_id][]		= 'forum_posts = forum_posts - ' . (int) $row_data['topic_posts'];
-			$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . (int) $row_data['topic_posts'];
+			$sync_sql[$to_forum_id][] = 'forum_posts = forum_posts + ' . $topic_posts_added;
 		}
 
 		if ($topics_authed_moved)
 		{
-			$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
+			$sync_sql[$to_forum_id][] = 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
 		}
 
-		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
+		$sync_sql[$to_forum_id][] = 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
 
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
@@ -692,17 +715,26 @@ function mcp_move_topic($topic_ids)
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
-				$topics_authed_moved--;
-				$topics_moved--;
+				// Shadow topics only count on new "topics" and not posts... a shadow topic alone has 0 posts
+				$topics_removed--;
+				$topics_authed_removed--;
 			}
 		}
 		unset($topic_data);
 
-		$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_moved;
-
-		if ($topics_authed_moved)
+		if ($topic_posts_removed)
 		{
-			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_moved;
+			$sync_sql[$forum_id][] = 'forum_posts = forum_posts - ' . $topic_posts_removed;
+		}
+
+		if ($topics_removed)
+		{
+			$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_removed;
+		}
+
+		if ($topics_authed_removed)
+		{
+			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_removed;
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
@@ -929,6 +961,11 @@ function mcp_delete_post($post_ids)
 	}
 	else
 	{
+		if ($affected_topics != 1 || $deleted_topics || !$topic_id)
+		{
+			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&i=main&mode=forum_view", false);
+		}
+
 		meta_refresh(3, $redirect);
 		trigger_error($success_msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 	}
@@ -1189,8 +1226,8 @@ function mcp_fork_topic($topic_ids)
 		}
 
 		sync('forum', 'forum_id', $to_forum_id);
-		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
-		set_config('num_posts', $config['num_posts'] + $total_posts, true);
+		set_config_count('num_topics', sizeof($new_topic_id_list), true);
+		set_config_count('num_posts', $total_posts, true);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

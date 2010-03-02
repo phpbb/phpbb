@@ -58,8 +58,12 @@
 			<option value="50">{L_FONT_TINY}</option>
 			<option value="85">{L_FONT_SMALL}</option>
 			<option value="100" selected="selected">{L_FONT_NORMAL}</option>
-			<option value="150">{L_FONT_LARGE}</option>
-			<option value="200">{L_FONT_HUGE}</option>
+			<!-- IF not MAX_FONT_SIZE or MAX_FONT_SIZE >= 150 -->
+				<option value="150">{L_FONT_LARGE}</option>
+				<!-- IF not MAX_FONT_SIZE or MAX_FONT_SIZE >= 200 -->
+					<option value="200">{L_FONT_HUGE}</option>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
 		</select></span>
 <!-- ENDIF -->
 	</td>

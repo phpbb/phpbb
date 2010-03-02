@@ -54,7 +54,7 @@
 	// <![CDATA[
 		function update_image(newimage)
 		{
-			document.getElementById('newimg').src = (newimage) ? '../styles/{A_NAME}/imageset/' + encodeURI(newimage) : 'images/no_image.png';
+			document.getElementById('newimg').src = (newimage) ? '../styles/{A_PATH}/imageset/' + encodeURI(newimage) : 'images/no_image.png';
 		}
 	// ]]>
 	</script>
@@ -455,30 +455,30 @@
 		<legend>{L_TITLE}</legend>
 	<dl>
 		<dt><label for="name">{L_NAME}:</label></dt>
-		<dd><!-- IF S_INSTALL --><b id="name">{NAME}</b><!-- ELSE --><input type="text" id="name" name="name" value="{NAME}" /><!-- ENDIF --></dd>
+		<dd><!-- IF S_INSTALL --><strong id="name">{NAME}</strong><!-- ELSE --><input type="text" id="name" name="name" value="{NAME}" /><!-- ENDIF --></dd>
 	</dl>
 	<dl>
 		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
-		<dd><!-- IF S_INSTALL --><b id="copyright">{COPYRIGHT}</b><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
+		<dd><!-- IF S_INSTALL --><strong id="copyright">{COPYRIGHT}</strong><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
 	</dl>
 	<!-- IF S_SUPERTEMPLATE -->
 	<dl>
 		<dt><label for="inheriting">{L_INHERITING_FROM}:</label></dt>
-		<dd><b id="inheriting">{S_SUPERTEMPLATE}</b></dd>
+		<dd><strong id="inheriting">{S_SUPERTEMPLATE}</strong></dd>
 	</dl>
 	<!-- ENDIF -->
 	<!-- IF S_STYLE and not S_BASIS -->
 		<dl>
 			<dt><label for="template_id">{L_STYLE_TEMPLATE}:</label></dt>
-			<dd><!-- IF S_INSTALL --><b id="template_id">{TEMPLATE_NAME}</b><!-- ELSE --><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select><!-- ENDIF --></dd>
+			<dd><!-- IF S_INSTALL --><strong id="template_id">{TEMPLATE_NAME}</strong><!-- ELSE --><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 		<dl>
 			<dt><label for="theme_id">{L_STYLE_THEME}:</label></dt>
-			<dd><!-- IF S_INSTALL --><b id="theme_id">{THEME_NAME}</b><!-- ELSE --><select id="theme_id" name="theme_id">{S_THEME_OPTIONS}</select><!-- ENDIF --></dd>
+			<dd><!-- IF S_INSTALL --><strong id="theme_id">{THEME_NAME}</strong><!-- ELSE --><select id="theme_id" name="theme_id">{S_THEME_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 		<dl>
 			<dt><label for="imageset_id">{L_STYLE_IMAGESET}:</label></dt>
-			<dd><!-- IF S_INSTALL --><b id="imageset_id">{IMAGESET_NAME}</b><!-- ELSE --><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select><!-- ENDIF --></dd>
+			<dd><!-- IF S_INSTALL --><strong id="imageset_id">{IMAGESET_NAME}</strong><!-- ELSE --><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF (S_TEMPLATE or S_THEME) and (S_LOCATION or not S_INSTALL) -->

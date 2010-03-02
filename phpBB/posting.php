@@ -49,7 +49,8 @@ $current_time = time();
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
-	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
+	$f = ($forum_id) ? 'f=' . $forum_id . '&amp;' : '';
+	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
 	redirect($redirect);
 }
 
@@ -74,6 +75,16 @@ switch ($mode)
 			trigger_error('NO_TOPIC');
 		}
 
+		// Force forum id
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		$f_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
+		$forum_id = (!$f_id) ? $forum_id : $f_id;
+
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
@@ -90,13 +101,24 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
+		// Force forum id
+		$sql = 'SELECT forum_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id = ' . $post_id;
+		$result = $db->sql_query($sql);
+		$f_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
+		$forum_id = (!$f_id) ? $forum_id : $f_id;
+
 		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)";
+					OR f.forum_id = $forum_id)" .
+				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	break;
 
 	case 'smilies':
@@ -646,7 +668,7 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_length']		= request_var('poll_length', 0);
 		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
 		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
-		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
+		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
 	}
 
 	// If replying/quoting and last post id has changed
@@ -1227,7 +1249,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_c
 	$db->sql_query($sql);
 
 	// Generate code
-	$code = gen_rand_string(mt_rand(5, 8));
+	$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 	$confirm_id = md5(unique_id($user->ip));
 	$seed = hexdec(substr(unique_id(), 4, 10));
 
@@ -1286,6 +1308,7 @@ $template->assign_vars(array(
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+	'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
 	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -1340,7 +1363,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX'		=> true,
-		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id)),
+		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id)),
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 

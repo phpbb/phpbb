@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.4');
+define('PHPBB_VERSION', '3.0.5-RC1');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -184,6 +184,10 @@ define('REFERER_VALIDATE_PATH', 2);
 @define('CHMOD_READ', 4);
 @define('CHMOD_WRITE', 2);
 @define('CHMOD_EXECUTE', 1);
+
+// Captcha code length
+define('CAPTCHA_MIN_CHARS', 4);
+define('CAPTCHA_MAX_CHARS', 7);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);

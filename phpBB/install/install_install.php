@@ -543,7 +543,7 @@ class install_install extends module
 		{
 			if (!isset($available_dbms[$data['dbms']]) || !$available_dbms[$data['dbms']]['AVAILABLE'])
 			{
-				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
 			else
@@ -2116,7 +2116,7 @@ class install_install extends module
 		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
 		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
 		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-		'ichiro [Crawler]'			=> array('ichiro/2', ''),
+		'ichiro [Crawler]'			=> array('ichiro/', ''),
 		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
 		'Metager [Bot]'				=> array('MetagerBot/', ''),
 		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),

@@ -3,10 +3,16 @@
 <p>{L_POST_REVIEW_EXPLAIN}</p>
 
 <!-- BEGIN post_review_row -->
-<div id="ppr{post_review_row.POST_ID}" class="post <!-- IF post_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF post_review_row.ONLINE_STATUS --> online<!-- ENDIF -->">
+<!-- IF post_review_row.S_IGNORE_POST -->
+<div class="post bg3 post-ignore">
 	<div class="inner"><span class="corners-top"><span></span></span>
+		{post_review_row.L_IGNORE_POST}
+<!-- ELSE -->
+<div class="post <!-- IF post_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF post_review_row.ONLINE_STATUS --> online<!-- ENDIF -->">
+	<div class="inner"><span class="corners-top"><span></span></span>
+<!-- ENDIF -->
 
-	<div class="postbody">
+	<div class="postbody" id="ppr{post_review_row.POST_ID}">
 		<h3><a href="#ppr{post_review_row.POST_ID}">{post_review_row.POST_SUBJECT}</a></h3>
 		<p class="author"><!-- IF S_IS_BOT -->{post_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{post_review_row.U_MINI_POST}">{post_review_row.MINI_POST_IMG}</a><!-- ENDIF --> {L_POST_BY_AUTHOR}<strong>  {post_review_row.POST_AUTHOR_FULL}</strong> &raquo; {post_review_row.POST_DATE}</p>
 		<div class="content">{post_review_row.MESSAGE}</div>

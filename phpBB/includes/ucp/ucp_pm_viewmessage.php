@@ -286,7 +286,7 @@ function get_user_information($user_id, $user_row)
 		$update_time = $config['load_online_time'] * 60;
 		if ($row)
 		{
-			$user_row['online'] = (time() - $update_time < $row['online_time'] && ($row['viewonline'])) ? true : false;
+			$user_row['online'] = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? true : false;
 		}
 	}
 

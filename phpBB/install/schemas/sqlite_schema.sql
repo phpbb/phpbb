@@ -51,7 +51,7 @@ CREATE TABLE phpbb_acl_options (
 	founder_only INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options (auth_option);
+CREATE UNIQUE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options (auth_option);
 
 # Table: 'phpbb_acl_roles'
 CREATE TABLE phpbb_acl_roles (

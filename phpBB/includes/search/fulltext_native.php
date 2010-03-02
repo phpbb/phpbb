@@ -81,7 +81,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_keywords($keywords, $terms)
 	{
-		global $db, $user;
+		global $db, $user, $config;
 
 		$keywords = trim($this->cleanup($keywords, '+-|()*'));
 
@@ -167,6 +167,13 @@ class fulltext_native extends search_backend
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
+		$num_keywords = sizeof(explode(' ', $keywords));
+
+		// We limit the number of allowed keywords to minimize load on the database
+		if ($config['max_num_search_keywords'] && $num_keywords > $config['max_num_search_keywords'])
+		{
+			trigger_error($user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $config['max_num_search_keywords'], $num_keywords));
+		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated
 
@@ -638,13 +645,21 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
+			if ($left_join_topics)
+			{
+				$sql_array_count['LEFT_JOIN'][] = array(
+					'FROM'	=> array(TOPICS_TABLE => 't'),
+					'ON'	=> 'p.topic_id = t.topic_id'
+				);
+			}
+
 			switch ($db->sql_layer)
 			{
 				case 'mysql4':
 				case 'mysqli':
 
 					// 3.x does not support SQL_CALC_FOUND_ROWS
-					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+					// $sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
 					$is_mysql = true;
 
 				break;
@@ -693,10 +708,10 @@ class fulltext_native extends search_backend
 				$sql_where[] = 'f.forum_id = p.forum_id';
 			break;
 		}
-		
+
 		if ($left_join_topics)
 		{
-			$sql_array['LEFT_JOIN'][$left_join_topics] = array(
+			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(TOPICS_TABLE => 't'),
 				'ON'	=> 'p.topic_id = t.topic_id'
 			);
@@ -725,6 +740,16 @@ class fulltext_native extends search_backend
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
 		if (!$total_results && $is_mysql)
 		{
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			$sql_array_copy = $sql_array;
+			$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
+
+			$sql = $db->sql_build_query('SELECT', $sql_array_copy);
+			unset($sql_array_copy);
+
+			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = $db->sql_query($sql);
 			$total_results = (int) $db->sql_fetchfield('total_results');
@@ -848,7 +873,7 @@ class fulltext_native extends search_backend
 			{
 				case 'mysql4':
 				case 'mysqli':
-					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
+//					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;
 				break;
 
@@ -941,6 +966,12 @@ class fulltext_native extends search_backend
 
 		if (!$total_results && $is_mysql)
 		{
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			$sql = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
+
+			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = $db->sql_query($sql);
 			$total_results = (int) $db->sql_fetchfield('total_results');
@@ -1110,7 +1141,7 @@ class fulltext_native extends search_backend
 
 		// Get unique words from the above arrays
 		$unique_add_words = array_unique(array_merge($words['add']['post'], $words['add']['title']));
-		
+
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
 		// we need to do now is add the new words (if they don't already exist)
