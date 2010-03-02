@@ -511,12 +511,11 @@ class ucp_register
 				$sql = 'UPDATE ' . CONFIRM_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
 					'confirm_type'	=> (int) CONFIRM_REG,
 					'code'			=> (string) $code,
-					'seed'			=> (int) $seed) . "
+					'seed'			=> (int) $seed)) . "
 					WHERE
 					confirm_id = '" . $db->sql_escape($confirm_id) . "' AND
 					session_id = '" . $db->sql_escape($session_id) . "' AND
-					confirm_type = " . (int) CONFIRM_REG
-				);
+					confirm_type = " . (int) CONFIRM_REG;
 				$db->sql_query($sql);
 			}
 			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';

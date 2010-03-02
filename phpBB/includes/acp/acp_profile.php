@@ -922,7 +922,7 @@ class acp_profile
 
 			case FIELD_TEXT:
 			case FIELD_STRING:
-				if ($cp->vars['lang_default_value'])
+				if (strlen($cp->vars['lang_default_value']))
 				{
 					$options['lang_default_value'] = ($field_type == FIELD_STRING) ? 'string' : 'text';
 				}

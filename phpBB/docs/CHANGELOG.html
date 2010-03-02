@@ -96,7 +96,7 @@
 		<li>[Fix] Added missing read permission information for some phpbb_chmod() calls</li>
 		<li>[Fix] Correctly display future dates (Bug #38755)</li>
 		<li>[Fix] Fix guest/bot session problems with apache authentication plugin (Bug #41085)</li>
-		<li>[Fix] Whois now works reliably for RIRs other than APNIC and RIPE</li>
+		<li>[Fix] Whois now works reliably for RIRs other than APNIC and RIPE. (Bug #40085)</li>
 		<li>[Fix] Correctly convert Niels' Birthday MOD to the date format used in phpBB3. (Bug #32895)</li>
 		<li>[Fix] Changed the success message when requesting a new password to be more accurate. (Bug #41405)</li>
 		<li>[Fix] Add missing anti-abuse email headers to acp_inactive.php and ucp_resend.php.</li>
@@ -153,6 +153,8 @@
 		<li>[Fix] Correct calculation of source/target forum statistics if mass moving topics with global announcements (Bug #44545)</li>
 		<li>[Fix] Fix column handling in db updater, custom profile fields an db tools for firebird DBMS (Bug #44555)</li>
 		<li>[Fix] IE8 textarea issues (Bug #43305)</li>
+		<li>[Fix] Prevent accounts from being activated by users when admin activation is turned on and the correct activation key is known.</li>
+		<li>[Fix] Allow the installer to operate under PHP 5.3. (Bug #45255)</li>
 		<li>[Change] Default difference view is now 'inline' instead of 'side by side'</li>
 		<li>[Change] Added new option for merging differences to conflicting files in automatic updater</li>
 		<li>[Change] Add link to user profile in the MCP for user notes and warn user.</li>
@@ -168,7 +170,6 @@
 		<li>[Feature] db_tools now support create table and drop table.</li>
 		<li>[Feature] Database updater checks for incompatible db schema (MySQL 3.x/4.x against MySQL 4.1.x/5.x/6.x)</li>
 		<li>[Feature] New search option: Maximum number of words allowed to search for.</li>
-		<li>[Sec] Prevent accounts from being activated by users when admin activation is turned on and the correct activation key is known.</li>
 		<li>[Sec] Only use forum id supplied for posting if global announcement detected. (Reported by nickvergessen)</li>
 	</ul>
 

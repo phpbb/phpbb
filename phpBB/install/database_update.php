@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.5-RC1';
+$updates_to_version = '3.0.5';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -674,6 +674,9 @@ function database_update_info()
 				),
 			),
 		),
+
+		// No changes from 3.0.5-RC1 to 3.0.5
+		'3.0.5-RC1'		=> array(),
 	);
 }
 
@@ -943,7 +946,7 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'SELECT auth_option
 				FROM ' . ACL_OPTIONS_TABLE . '
 				GROUP BY auth_option
-				HAVING COUNT(*) >= 1';
+				HAVING COUNT(*) >= 2';
 			$result = $db->sql_query($sql);
 
 			$auth_options = array();
@@ -1004,6 +1007,10 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 
+		break;
+
+		// No changes from 3.0.5-RC1 to 3.0.5
+		case '3.0.5-RC1':
 		break;
 	}
 }

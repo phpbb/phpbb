@@ -261,6 +261,11 @@ function get_context($text, $words, $length = 400)
 			{
 				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
 				{
+					if (empty($match[1]))
+					{
+						continue;
+					}
+
 					$pos = utf8_strpos($text, $match[1]);
 					if ($pos !== false)
 					{
