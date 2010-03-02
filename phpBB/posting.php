@@ -1152,7 +1152,7 @@ if (!sizeof($error) && $preview)
 		$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
 
 		// Not sure about parameters for bbcode/smilies/urls... in signatures
-		$parse_sig->format_display($config['allow_sig_bbcode'], true, $config['allow_sig_smilies']);
+		$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
 		$preview_signature = $parse_sig->message;
 		unset($parse_sig);
 	}
