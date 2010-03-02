@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -33,8 +32,8 @@ p {
 	font-size: 8pt;
 }
 
-hr { 
-	height: 0; 
+hr {
+	height: 0;
 	border: solid #D1D7DC 0;
 	border-top-width: 1px;
 }
@@ -93,7 +92,7 @@ h3 {
 }
 
 code {
-	color: #006600; 
+	color: #006600;
 	font-weight: normal;
 	font-family: 'Courier New', monospace;
 	border-color: #D1D7DC;
@@ -185,7 +184,120 @@ p a {
 	<div class="paragraph">
 
 	<ul class="menu">
-		<li>&nbsp;</li>
+		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>
+		<li>[Fix] Tiny language and grammar changes</li>
+		<li>[Fix] Several style related fixes, mainly fixing cross-browser issues</li>
+		<li>[Fix] Several RTL fixes within prosilver</li>
+		<li>[Fix] MCP looses forum_id in some panels (Bug #11255)</li>
+		<li>[Fix] Moderation queue used unfriendly notification of no posts/topics (Bug #11291)</li>
+		<li>[Fix] Array in Oracle DBAL not always set (Bug #11475)</li>
+		<li>[Fix] Improper continue; in acp_styles.php (Bug #11523)</li>
+		<li>[Fix] Imageset editor more friendly (Bug #11511)</li>
+		<li>[Fix] Made Custom BBCode validation more strict (Bug #11335)</li>
+		<li>[Fix] Proper sync of data on topic copy (Bug #11335)</li>
+		<li>[Fix] Introduced ORDER BY clauses to converter queries (Bug #10697)</li>
+		<li>[Fix] Stopped bots from getting added to the registered users group during conversion (Bug #11283)</li>
+		<li>[Fix] Filled &quot;SMILIEYS_DISABLED&quot; template variable (Bug #11257)</li>
+		<li>[Fix] Properly escaped the delimiter in disallowed username comparisons (Bug #11339)</li>
+		<li>[Fix] Check global purge setting (Bug #11555)</li>
+		<li>[Fix] Improper magic url parsing applied to already parsed [url=] bbcode tag (Bug #11429)</li>
+		<li>[Fix] Renamed two indicies for Oracle support (Bug #11457)</li>
+		<li>[Fix] Added support for ISO-8859-8(-i) in the character set convertor (Bug #11265, #12039)</li>
+		<li>[Fix] Added support for Oracle's &quot;easy connect naming&quot;</li>
+		<li>[Fix] Let Mark/Unmark All work in Manage Drafts (Bug #11679)</li>
+		<li>[Fix] Display correct message if no attachments found in user administration (Bug #11629)</li>
+		<li>[Fix] Let the &quot;Delete all board cookies&quot; being displayed for guests too (only prosilver) (Bug #11603)</li>
+		<li>[Fix] Do not display view topic link in MCP while there is no link present (Bug #11573)</li>
+		<li>[Fix] MySQL now properly sorts by post_subject (Bug #11637)</li>
+		<li>[Fix] Introduced checks to stop negative postcounts (Bug #11561, #11421)</li>
+		<li>[Fix] Allow IP v4/v6 urls for remote avatars (Bug #11633)</li>
+		<li>[Fix] Delete avatar files automatically (Bug #11631)</li>
+		<li>[Fix] Automatically add selected columns to group by statements in the converter (Bug #11465)</li>
+		<li>[Fix] Allow posts without subjects to be clicked in the MCP (Bug #11483)</li>
+		<li>[Fix] Sync the forums that shadow topics reside in when the topic that they point to is deleted</li>
+		<li>[Fix] Do not use the gen_random_string function to create cookie names during install (Bug #11431)</li>
+		<li>[Fix] Send stylesheet in style.php even without a valid session id (Bug #11531)</li>
+		<li>[Fix] request_var should strictly return the requested number of dimensions</li>
+		<li>[Fix] Correct assignment of custom width to $user-&gt;img(); / Correctly display poll bars in subsilver2 (Bug #11301)</li>
+		<li>[Fix] Allow removing polls in prosilver</li>
+		<li>[Fix] Correct link to post in managing users attachments (Bug #11765)</li>
+		<li>[Fix] Reload confirm screen for selecting new forum for global topic type change if not postable forum is chosen (Bug #11711)</li>
+		<li>[Fix] Correctly show system default color for disabled options in Internet Explorer which does not support disabled option fields</li>
+		<li>[Fix] Update query for custom profiles in user management used wrong order for left/right delimiter (affecting mssql) (Bug #11781)</li>
+		<li>[Fix] Inconsistent display of more smileys link fixed (Bug #11801)</li>
+		<li>[Fix] Outbox messages are no always neither new nor unread post-conversion (Bug #11461)</li>
+		<li>[Feature] Replaced outdated jabber class with the one from the flyspray project</li>
+		<li>[Feature] The converter no longer relies on the smiley ID to decide if it should be displayed on the posting page</li>
+		<li>[Change] Limit maximum number of allowed characters in messages to 60.000 by default. Admins should increase their PHP time limits if they want to raise this tremedously.</li>
+		<li>[Change] Some changes to the conversion documentation</li>
+		<li>[Fix] Only use permissions from existing forums during the conversion (Bug #11417)</li>
+		<li>[Fix] Do not permit the decimal as a valid prefix character (Bug #11967)</li>
+		<li>[Fix] Account for the fact that the IM fields might hold non-IM information</li>
+		<li>[Fix] Make the queue function on post details</li>
+		<li>[Fix] Check if there are active styles left before deleting a style</li>
+		<li>[Fix] Correctly update styles after the deletion of an imageset.</li>
+		<li>[Fix] Replaced jabber validation to use the method used by the new jabber class (Bug #9822)</li>
+		<li>[Sec] Adding confirm boxes to UCP group actions (ToonArmy)</li>
+		<li>[Feature] Added the option to disable the flash bbcode globally (DelvarWorld)</li>
+		<li>[Sec] Changed the embedding of Flash (NeoThermic, DelvarWorld)</li>
+		<li>[Fix] Use the signature setting for PMs (Bug #12001)</li>
+		<li>[Fix] Made the DBMS selection use language variables (Bug #11969)</li>
+		<li>[Fix] Make sure that a folder is used when viewing messages to oneself (Bug #12105)</li>
+		<li>[Fix] Account for the fact that a board might have no visible Admins (Bug #12185)</li>
+		<li>[Fix] Change group ranks even if empty (Bug #12231)</li>
+		<li>[Fix] Correctly propagate variables across the custom profile field wizard (Bug #12237)</li>
+		<li>[Fix] Correctly move pm's into folders if more than one is received (Bug #12135)</li>
+		<li>[Fix] Corrected various bugs with CPF on multi-language boards (Bug #11803)</li>
+		<li>[Fix] Disable notify checkbox in posting editor  when board email is disabled (Bug #12263)</li>
+		<li>[Fix] Removed maxlength from password/username fields (Bugs #12215, #11797)</li>
+		<li>[Fix] Use icon-unsubscribe in prosilver (Bug #12211)</li>
+		<li>[Fix] Seperated PREVIOUS/NEXT language vars for pagination and next/previous step (Bug #12197)</li>
+		<li>[Feature] append_sid() supporting anchor (Bug #11535) - patch provided by Schumi and ToonArmy</li>
+		<li>[Fix] Remember selected language while registering after submit (Bug #11435)</li>
+		<li>[Fix] UTF-8 support in theme and template editors (Bug #12251)</li>
+		<li>[Fix] Allow for posts per page in the MCP to change during topic selection (Bug #12067)</li>
+		<li>[Fix] Remove group avatars upon deletion from all profiles, not just the people having the group as default (Bug #12275, #12267)</li>
+		<li>[Fix] Allow for conversions to SQLite (Bug #12279) - patch provided by ToonArmy</li>
+		<li>[Fix] Apply colours to guests (Bug #12219)</li>
+		<li>[Fix] Set the Admin group as founder_manage during conversion (Bug #12287)</li>
+		<li>[Fix] Fixed a special quote BBCode case (Bug #12189)</li>
+		<li>[Fix] Correctly parse BBCodes in a post when a poll is being used (Bug #11833)</li>
+		<li>[Fix] Remember attached files on PM edit (Bug #12019)</li>
+		<li>[Fix] Correctly display poll ending on preview (Bug #12303)</li>
+		<li>[Feature] Display the success message on posting longer for posts awaiting approval (Bug #12053)</li>
+		<li>[Fix] Display maximum and entered number of characters for the &quot;maximum number of characters exceeded&quot; error messages (Bug #11981)</li>
+		<li>[Fix] Wrongly applied setting for allowing links in private messages (used the signature setting instead of the post setting) (Bug #11945)</li>
+		<li>[Fix] Unread flag for multipage topic wrongly set under some conditions (Bug #12127) - fix provided by asinshesq</li>
+		<li>[Fix] Able to delete posts within user prune panel (Bug #11849)</li>
+		<li>[Feature] Allow to specify dimensions of images manually on imageset config (Bug #11675)</li>
+		<li>[Fix] Correctly re-assign query result id after seeking rows (MSSQL/Firebird) (Bug #12369)</li>
+		<li>[Feature] Make effect of a changed hideonline permission instantaneous</li>
+		<li>[Fix] Do not overwrite larger memory values in the installer (Bug #12195)</li>
+		<li>[Fix] Order forums on role permission mask (Bug #12337)</li>
+		<li>[Fix] Show "no image" image when a non-selectable item was selected in the acp imageset editor - IE (Bug #12423)</li>
+		<li>[Fix] Update session information without new pageload (Bug #12393, Bug #12441)</li>
+		<li>[Fix] Let polls be edited correctly (Bug #12433)</li>
+		<li>[Fix] Overcome Oracle's inability to handle IN() clauses with over one thousand elements (Bug #12449)</li>
+		<li>[Fix] Simulate Firebird's affected rows mechanism for older versions of PHP</li>
+		<li>[Fix] Custom BBCodes properly handle lowercasing of parameterized tags (Bug #12377)</li>
+		<li>[Fix] Update the forum_id sequence for PostgreSQL during conversion (Bug #11927)</li>
+		<li>[Fix] Allow for multiple tags containing URL and LOCAL_URL tokens (Bug #12473)</li>
+		<li>[Fix] Properly display forum list in the MCP Queue (Bug #11313)</li>
+		<li>[Fix] Use the localised guest name for quotes (Bug #12483)</li>
+		<li>[Fix] Added post anchor to links in default warning message (Bug #12489)</li>
+		<li>[Fix] Allow 5 digits in editing time fields (Bug #12489)</li>
+		<li>[Fix] MS SQL DBAL drivers now write over extension limitations, they are too low for most installations (Bug #12415)</li>
+		<li>[Fix] Fix sorting by author on "unanswered posts" (Bug #12545)</li>
+		<li>[Fix] Allow searching for multibyte authors (Bug #11793)</li>
+		<li>[Fix] Writing directories/files with correct permissions using FTP for transfers on PHP4</li>
+		<li>[Fix] Oracle sequences during conversions are now corrected (Bug #12555)</li>
+		<li>[Fix] Allow users to continue after selecting "No" in the merge quickmod confirmation (Bug #12577)</li>
+		<li>[Fix] Correctly check permissions on the UCP subscription/bookmark pages (Bug #12595)</li>
+		<li>[Fix] Only convert non-orphaned PMs</li>
+		<li>[Fix] Fixed a few Postgres related errors (Bug #12587)</li>
+		<li>[Feature] New DBAL wrapper for LIKE expressions / sql_like_expression()</li>
+		<li>[Sec] Stricter validation of language entries. </li>
+
 	</ul>
 
 	</div>

@@ -63,7 +63,7 @@ class install_install extends module
 				$template->assign_vars(array(
 					'TITLE'			=> $lang['INSTALL_INTRO'],
 					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
-					'L_SUBMIT'		=> $lang['NEXT'],
+					'L_SUBMIT'		=> $lang['NEXT_STEP'],
 					'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
 					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language",
 				));
@@ -1359,7 +1359,10 @@ class install_install extends module
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
 		$cookie_name = 'phpbb3_';
-		$cookie_name .= strtolower(gen_rand_string(5));
+		$rand_str = md5(mt_rand());
+		$rand_str = str_replace('0', 'z', base_convert($rand_str, 16, 35));
+		$rand_str = substr($rand_str, 0, 5);
+		$cookie_name .= strtolower($rand_str);
 
 		$sql_ary[] = 'UPDATE ' . $table_prefix . "config
 			SET config_value = '" . $db->sql_escape($cookie_name) . "'
@@ -1642,14 +1645,19 @@ class install_install extends module
 								AND module_class = '" . $db->sql_escape($module_class) . "'
 								AND module_basename <> ''";
 						$result = $db->sql_query_limit($sql, 1);
-						$module_data = $db->sql_fetchrow($result);
+						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						unset($module_data['module_id']);
-						unset($module_data['left_id']);
-						unset($module_data['right_id']);
-
-						$module_data['parent_id'] = (int) $row2['module_id'];
+						$module_data = array(
+							'module_basename'	=> $row['module_basename'],
+							'module_enabled'	=> $row['module_enabled'],
+							'module_display'	=> $row['module_display'],
+							'parent_id'			=> (int) $row2['module_id'],
+							'module_class'		=> $row['module_class'],
+							'module_langname'	=> $row['module_langname'],
+							'module_mode'		=> $row['module_mode'],
+							'module_auth'		=> $row['module_auth'],
+						);
 
 						$_module->update_module_data($module_data, true);
 

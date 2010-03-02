@@ -32,7 +32,7 @@ $view			= request_var('view', '');
 $submit			= request_var('submit', false);
 $keywords		= request_var('keywords', '', true);
 $add_keywords	= request_var('add_keywords', '', true);
-$author			= request_var('author', '');
+$author			= request_var('author', '', true);
 $author_id		= request_var('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
 $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
@@ -84,7 +84,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// egosearch is an author search
 	if ($search_id == 'egosearch')
 	{
-		$author = $user->data['username'];
+		$author_id = $user->data['user_id'];
 	}
 
 	// If we are looking for authors get their ids
@@ -100,10 +100,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
 		}
 
-		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
+		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', utf8_clean_string($author))) . "'
+			WHERE $sql_where
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query_limit($sql, 100);
 
@@ -299,14 +300,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$last_post_time = '';
 				}
 
+
+				if ($sort_key == 'a')
+				{
+					$sort_join = USERS_TABLE . ' u, ';
+					$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
+				}
 				if ($show_results == 'posts')
 				{
-					if ($sort_key == 'a')
-					{
-						$sort_join = USERS_TABLE . ' u, ';
-						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
-					}
-
 					$sql = "SELECT p.post_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0

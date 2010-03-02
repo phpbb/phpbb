@@ -188,7 +188,7 @@ class dbal_sqlite extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -239,6 +239,22 @@ class dbal_sqlite extends dbal
 	function sql_escape($msg)
 	{
 		return @sqlite_escape_string($msg);
+	}
+
+	/**
+	* Correctly adjust LIKE expression for special characters
+	* For SQLite an underscore is a not-known character... this may change with SQLite3
+	*/
+	function sql_like_expression($expression)
+	{
+		// Unlike LIKE, GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
+		// We only catch * and ? here, not the character map possible on file globbing.
+		$expression = str_replace(array(chr(0) . '_', chr(0) . '%'), array(chr(0) . '?', chr(0) . '*'), $expression);
+
+		$expression = str_replace(array('?', '*'), array("\?", "\*"), $expression);
+		$expression = str_replace(array(chr(0) . "\?", chr(0) . "\*"), array('?', '*'), $expression);
+
+		return 'GLOB \'' . $this->sql_escape($expression) . '\'';
 	}
 
 	/**

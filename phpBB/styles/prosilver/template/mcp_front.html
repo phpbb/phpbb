@@ -123,7 +123,7 @@
 			<td>{log.ACTION}</td>
 			<td><span>{log.USERNAME}</span></td>
 			<td><span>{log.IP}</span></td>
-			<td><a href="{log.U_VIEW_TOPIC}" title="{L_VIEW_TOPIC}">{L_VIEW_TOPIC}</a></td>
+			<td><span><!-- IF log.U_VIEW_TOPIC --><a href="{log.U_VIEW_TOPIC}" title="{L_VIEW_TOPIC}">{L_VIEW_TOPIC}</a><!-- ENDIF -->&nbsp;</span></td>
 			<td><span><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF -->&nbsp;</span></td>
 			<td><span>{log.TIME}</span></td>
 		</tr>

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -367,7 +367,7 @@ class bbcode_firstpass extends bbcode
 	* Parse code text from code tag
 	* @private
 	*/
-	function bbcode_parse_code($stx, $code)
+	function bbcode_parse_code($stx, &$code)
 	{
 		switch (strtolower($stx))
 		{
@@ -447,7 +447,6 @@ class bbcode_firstpass extends bbcode
 		unset($htm_match[4], $htm_match[5]);
 		$htm_replace = array('\1', '\1', '\2', '\1');
 
-		$in = preg_replace($htm_match, $htm_replace, $in);
 		$out = $code_block = '';
 		$open = 1;
 
@@ -488,6 +487,7 @@ class bbcode_firstpass extends bbcode
 				if ($open == 1)
 				{
 					$code_block .= substr($in, 0, $pos2);
+					$code_block = preg_replace($htm_match, $htm_replace, $code_block);
 
 					// Parse this code block
 					$out .= $this->bbcode_parse_code($stx, $code_block);
@@ -514,6 +514,8 @@ class bbcode_firstpass extends bbcode
 		if ($code_block)
 		{
 			$code_block = substr($code_block, 0, -7);
+			$code_block = preg_replace($htm_match, $htm_replace, $code_block);
+
 			$out .= $this->bbcode_parse_code($stx, $code_block);
 		}
 
@@ -688,7 +690,7 @@ class bbcode_firstpass extends bbcode
 
 			if ($tok == ']')
 			{
-				if ($buffer == '/quote' && sizeof($close_tags))
+				if ($buffer == '/quote' && sizeof($close_tags) && substr($out, -1, 1) == '[')
 				{
 					// we have found a closing tag
 					$out .= array_pop($close_tags) . ']';
@@ -1039,7 +1041,7 @@ class parse_message extends bbcode_firstpass
 	
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
-				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
+				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
 				return $this->warn_msg;
 			}
 		}
@@ -1237,26 +1239,17 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$count = 0;
-				foreach ($match as $key => $smilie)
+				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+				unset($matches);
+
+				if ($num_matches !== false && $num_matches > $max_smilies)
 				{
-					if ($small_count = preg_match_all($smilie, $this->message, $array))
-					{
-						$count += $small_count;
-						if ($count > $max_smilies)
-						{
-							$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
-							return;
-						}
-					}
-					$this->message = preg_replace($smilie, $replace[$key], $this->message);
+					$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
+					return;
 				}
-				$this->message = trim($this->message);
 			}
-			else
-			{
-				$this->message = trim(preg_replace($match, $replace, $this->message));
-			}
+
+			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
 	}
 
@@ -1546,15 +1539,18 @@ class parse_message extends bbcode_firstpass
 		// Parse Poll Option text ;)
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_option_text'];
+		$bbcode_bitfield = $this->bbcode_bitfield;
 
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
 
+		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
 
 		// Parse Poll Title
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_title'];
+		$this->bbcode_bitfield = $bbcode_bitfield;
 
 		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
@@ -1576,8 +1572,8 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
+		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
-
 		unset($tmp_message);
 
 		if (sizeof($poll['poll_options']) == 1)

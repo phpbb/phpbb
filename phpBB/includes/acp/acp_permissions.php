@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -593,7 +593,7 @@ class acp_permissions
 	{
 		global $user, $auth;
 
-		$psubmit = request_var('psubmit', array(0));
+		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -616,7 +616,7 @@ class acp_permissions
 		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
-		$inherit = request_var('inherit', array(0));
+		$inherit = request_var('inherit', array(0 => array(0)));
 
 		$ug_id = array($ug_id);
 		$forum_id = array($forum_id);
@@ -1069,8 +1069,8 @@ class acp_permissions
 		global $db, $user;
 
 		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
-		$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
-
+		$sql_permission_option = ' AND o.auth_option ' . $db->sql_like_expression($permission_type . $db->any_char);
+		
 		$sql = $db->sql_build_query('SELECT_DISTINCT', array(
 			'SELECT'	=> 'u.username, u.username_clean, u.user_regdate, u.user_id',
 

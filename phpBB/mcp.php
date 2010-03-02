@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -267,7 +267,9 @@ function _module_warn_url($mode, &$module_row)
 {
 	if ($mode == 'front' || $mode == 'list')
 	{
-		return '';
+		global $forum_id;
+
+		return ($forum_id) ? "&amp;f=$forum_id" : '';
 	}
 
 	if ($mode == 'warn_post')
@@ -303,6 +305,11 @@ function _module_ban_url($mode, &$module_row)
 }
 
 function _module_queue_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_reports_url($mode, &$module_row)
 {
 	return extra_url();
 }

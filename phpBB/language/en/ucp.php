@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * ucp [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -210,6 +210,7 @@ $lang = array_merge($lang, array(
 	'GLOBAL_ANNOUNCEMENT'		=> 'Global announcement',
 
 	'HIDE_ONLINE'				=> 'Hide my online status',
+	'HIDE_ONLINE_EXPLAIN'		=> 'Changing this setting to "No" won\'t become effective until your next visit to the board.',
 	'HOLD_NEW_MESSAGES'			=> 'Do not accept new messages (New messages will be held back until enough space is available)',
 	'HOLD_NEW_MESSAGES_SHORT'	=> 'New messages will be held back',
 
@@ -238,7 +239,7 @@ $lang = array_merge($lang, array(
 	'MESSAGE_COLOURS'				=> 'Message colours',
 	'MESSAGE_DELETED'				=> 'Message successfully deleted.',
 	'MESSAGE_HISTORY'				=> 'Message history',
-	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by it’s author before it was delivered.',
+	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by its author before it was delivered.',
 	'MESSAGE_SENT_ON'				=> 'on',
 	'MESSAGE_STORED'				=> 'This message has been sent successfully.',
 	'MESSAGE_TO'					=> 'To',

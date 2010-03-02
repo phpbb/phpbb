@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -1137,21 +1137,12 @@ function user_group_auth($group, $select_query, $use_src_db)
 	}
 	else
 	{
-		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query));
+		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ' ', $select_query));
 		while ($row = $src_db->sql_fetchrow($result))
 		{
-			// make sure it's exactly 3 ints that were returned
-			$data = array();
-			reset($row);
-			for ($i = 0; $i < 3; $i++)
-			{
-				$data[] = (int) current($row);
-				next($row);
-			}
-
 			// this might become quite a lot of INSERTS unfortunately
-			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
-				VALUES (' . implode(', ', $data) . ')';
+			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
+				VALUES ({$row['user_id']}, $group_id, 0)";
 			$db->sql_query($sql);
 		}
 		$src_db->sql_freeresult($result);
@@ -1235,7 +1226,7 @@ function get_config()
 
 	if (!sizeof($convert_config))
 	{
-		$convert->p_master->error($lang['CONV_ERROR_CONFIG_EMPTY'], __LINE__, __FILE__);
+		$convert->p_master->error($user->lang['CONV_ERROR_CONFIG_EMPTY'], __LINE__, __FILE__);
 	}
 
 	return $convert_config;
@@ -1484,7 +1475,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_description = 'ROLE_DESCRIPTION_" . $db->sql_escape($acl_list) . "'";
+			WHERE role_name = 'ROLE_" . $db->sql_escape($acl_list) . "'";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1676,12 +1667,12 @@ function add_default_groups()
 	global $db;
 
 	$default_groups = array(
-		'GUESTS'			=> array('', 0),
-		'REGISTERED'		=> array('', 0),
-		'REGISTERED_COPPA'	=> array('', 0),
-		'GLOBAL_MODERATORS'	=> array('00AA00', 1),
-		'ADMINISTRATORS'	=> array('AA0000', 1),
-		'BOTS'				=> array('9E8DA7', 0)
+		'GUESTS'			=> array('', 0, 0),
+		'REGISTERED'		=> array('', 0, 0),
+		'REGISTERED_COPPA'	=> array('', 0, 0),
+		'GLOBAL_MODERATORS'	=> array('00AA00', 1, 0),
+		'ADMINISTRATORS'	=> array('AA0000', 1, 1),
+		'BOTS'				=> array('9E8DA7', 0, 0)
 	);
 
 	$sql = 'SELECT *
@@ -1707,6 +1698,7 @@ function add_default_groups()
 			'group_type'			=> GROUP_SPECIAL,
 			'group_colour'			=> $data[0],
 			'group_legend'			=> $data[1],
+			'group_founder_manage'	=> $data[2]
 		);
 	}
 
@@ -1714,6 +1706,27 @@ function add_default_groups()
 	{
 		$db->sql_multi_insert(GROUPS_TABLE, $sql_ary);
 	}
+}
+
+
+/** 
+* Sync post count. We might need to do this in batches.
+*/
+function sync_post_count($offset, $limit)
+{
+	global $db;
+	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_postcount = 1
+			GROUP BY poster_id
+			ORDER BY poster_id';
+	$result = $db->sql_query_limit($sql, $limit, $offset);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
+	}
+	$db->sql_freeresult($result);
 }
 
 /**
@@ -2076,7 +2089,7 @@ function fix_empty_primary_groups()
 */
 function remove_invalid_users()
 {
-	global $convert, $db;
+	global $convert, $db, $phpEx, $phpbb_root_path;
 
 	// username_clean is UNIQUE
 	$sql = 'SELECT user_id
@@ -2391,6 +2404,13 @@ function relative_base($path, $is_relative = true, $line = false, $file = false)
 	}
 
 	return $convert->options['forum_path'] . '/' . $path;
+}
+
+function get_smiley_display()
+{
+	static $smiley_count = 0;
+	$smiley_count++;
+	return ($smiley_count < 50) ? 1 : 0;
 }
 
 ?>

@@ -35,7 +35,7 @@ function resize_panel()
 <!--
 
 #main {
-	font-size: 1.25em;
+	font-size: 1em;
 	line-height: 0.7em;
 	margin: 0;
 	padding: 0;
@@ -214,13 +214,14 @@ table.hrdiff caption span {
 		<h1>{L_VIEWING_FILE_DIFF}</h1>
 <!-- ENDIF -->
 <!-- IF not S_DIFF_NEW_FILE -->
-		<br />
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 		<form method="post">
+		<fieldset class="quick">
 			<label for="diff_mode">{L_SELECT_DIFF_MODE}:</label>
 			<select name="diff_mode" id="diff_mode">{S_DIFF_MODE_OPTIONS}</select>
 
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_CHANGE}" />
+		</fieldset>
 		</form>
 <!-- ENDIF -->
 	</div>

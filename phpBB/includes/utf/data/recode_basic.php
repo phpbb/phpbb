@@ -406,9 +406,48 @@ function iso_8859_7($string)
 	return strtr($string, $transform);
 }
 
+function iso_8859_8($string)
+{
+	static $transform = array(
+		"\xC2\xAA" => "\xC3\x97",
+		"\xC2\xBA" => "\xC3\xB7",
+		"\xC3\x9F" => "\xE2\x80\x97",
+		"\xC3\xA0" => "\xD7\x90",
+		"\xC3\xA1" => "\xD7\x91",
+		"\xC3\xA2" => "\xD7\x92",
+		"\xC3\xA3" => "\xD7\x93",
+		"\xC3\xA4" => "\xD7\x94",
+		"\xC3\xA5" => "\xD7\x95",
+		"\xC3\xA6" => "\xD7\x96",
+		"\xC3\xA7" => "\xD7\x97",
+		"\xC3\xA8" => "\xD7\x98",
+		"\xC3\xA9" => "\xD7\x99",
+		"\xC3\xAA" => "\xD7\x9A",
+		"\xC3\xAB" => "\xD7\x9B",
+		"\xC3\xAC" => "\xD7\x9C",
+		"\xC3\xAD" => "\xD7\x9D",
+		"\xC3\xAE" => "\xD7\x9E",
+		"\xC3\xAF" => "\xD7\x9F",
+		"\xC3\xB0" => "\xD7\xA0",
+		"\xC3\xB1" => "\xD7\xA1",
+		"\xC3\xB2" => "\xD7\xA2",
+		"\xC3\xB3" => "\xD7\xA3",
+		"\xC3\xB4" => "\xD7\xA4",
+		"\xC3\xB5" => "\xD7\xA5",
+		"\xC3\xB6" => "\xD7\xA6",
+		"\xC3\xB7" => "\xD7\xA7",
+		"\xC3\xB8" => "\xD7\xA8",
+		"\xC3\xB9" => "\xD7\xA9",
+		"\xC3\xBA" => "\xD7\xAA",
+		"\xC3\xBD" => "\xE2\x80\x8E",
+		"\xC3\xBE" => "\xE2\x80\x8F",
+	);
+	return strtr(utf8_encode($string), $transform);
+}
+
 function iso_8859_9($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC3\x90" => "\xC4\x9E",
 		"\xC3\x9D" => "\xC4\xB0",
 		"\xC3\x9E" => "\xC5\x9E",
@@ -421,7 +460,7 @@ function iso_8859_9($string)
 
 function iso_8859_15($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC2\xA4" => "\xE2\x82\xAC",
 		"\xC2\xA6" => "\xC5\xA0",
 		"\xC2\xA8" => "\xC5\xA1",
@@ -965,7 +1004,7 @@ function cp1252($string)
 
 function cp1254($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC2\x80" => "\xE2\x82\xAC",
 		"\xC2\x82" => "\xE2\x80\x9A",
 		"\xC2\x83" => "\xC6\x92",

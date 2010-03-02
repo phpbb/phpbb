@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -669,7 +669,7 @@ class acp_users
 									// Make sure the user is not setting an Inactive or ignored user to be a founder
 									if ($user_row['user_type'] == USER_IGNORE)
 									{
-										trigger_error($user->lang['CANNOT_SET_FOUNDER_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+										trigger_error($user->lang['CANNOT_SET_FOUNDER_IGNORED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
 									if ($user_row['user_type'] == USER_INACTIVE)
@@ -970,7 +970,7 @@ class acp_users
 					'aim'			=> request_var('aim', $user_row['user_aim']),
 					'msn'			=> request_var('msn', $user_row['user_msnm']),
 					'yim'			=> request_var('yim', $user_row['user_yim']),
-					'jabber'		=> request_var('jabber', $user_row['user_jabber']),
+					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
 					'website'		=> request_var('website', $user_row['user_website']),
 					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
 					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
@@ -999,7 +999,7 @@ class acp_users
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
+							array('jabber')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),
@@ -1067,7 +1067,7 @@ class acp_users
 
 							foreach ($cp_data as $key => $value)
 							{
-								$cp_data[$right_delim . $key . $left_delim] = $value;
+								$cp_data[$left_delim . $key . $right_delim] = $value;
 								unset($cp_data[$key]);
 							}
 
@@ -1149,7 +1149,7 @@ class acp_users
 
 				$data = array(
 					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat'], true),
-					'lang'				=> request_var('lang', $user_row['user_lang']),
+					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
 					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
 					'dst'				=> request_var('dst', $user_row['user_dst']),
@@ -1616,7 +1616,7 @@ class acp_users
 					}
 					else
 					{
-						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}");
+						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . '#p' . $row['post_msg_id'];
 					}
 
 					$template->assign_block_vars('attach', array(
@@ -1830,19 +1830,14 @@ class acp_users
 				{
 					// Select auth options
 					$sql = 'SELECT auth_option, is_local, is_global
-						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option LIKE '%\_'";
-
-					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
-					{
-						$sql .= " ESCAPE '\\' ";
-					}
-
-					$sql .= 'AND is_global = 1
+						FROM ' . ACL_OPTIONS_TABLE . '
+						WHERE auth_option ' . $db->sql_like_expression($db->any_char . '_') . '
+							AND is_global = 1
 						ORDER BY auth_option';
 					$result = $db->sql_query($sql);
 
 					$hold_ary = array();
+					
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
@@ -1856,15 +1851,9 @@ class acp_users
 				{
 					$sql = 'SELECT auth_option, is_local, is_global
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option LIKE '%\_'";
-
-					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
-					{
-						$sql .= " ESCAPE '\\' ";
-					}
-
-					$sql .= 'AND is_local = 1
-						ORDER BY is_global DESC, auth_option';
+						WHERE auth_option " . $db->sql_like_expression($db->any_char . '_') . "
+							AND is_local = 1
+						ORDER BY is_global DESC, auth_option";
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

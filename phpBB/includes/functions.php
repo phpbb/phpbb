@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -78,6 +78,14 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 		list($key_type, $type) = each($default);
 		$type = gettype($type);
 		$key_type = gettype($key_type);
+		if ($type == 'array')
+		{
+			reset($default);
+			list($sub_key_type, $sub_type) = each(current($default));
+			$sub_type = gettype($sub_type);
+			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
+			$sub_key_type = gettype($sub_key_type);
+		}
 	}
 
 	if (is_array($var))
@@ -87,18 +95,25 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 
 		foreach ($_var as $k => $v)
 		{
-			if (is_array($v))
+			set_var($k, $k, $key_type);
+			if ($type == 'array' && is_array($v))
 			{
 				foreach ($v as $_k => $_v)
 				{
-					set_var($k, $k, $key_type);
-					set_var($_k, $_k, $key_type);
-					set_var($var[$k][$_k], $_v, $type, $multibyte);
+					if (is_array($_v))
+					{
+						$_v = null;
+					}
+					set_var($_k, $_k, $sub_key_type);
+					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
 				}
 			}
 			else
 			{
-				set_var($k, $k, $key_type);
+				if ($type == 'array' || is_array($v))
+				{
+					$v = null;
+				}
 				set_var($var[$k], $v, $type, $multibyte);
 			}
 		}
@@ -1257,7 +1272,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0
-					AND tt.topic_id IS NULL
+					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
@@ -1571,11 +1586,30 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	// Appending custom url parameter?
 	$append_url = (!empty($_EXTRA_URL)) ? implode($amp_delim, $_EXTRA_URL) : '';
 
+	$anchor = '';
+	if (strpos($url, '#') !== false)
+	{
+		list($url, $anchor) = explode('#', $url, 2);
+		$anchor = '#' . $anchor;
+	}
+	else if (!is_array($params) && strpos($params, '#') !== false)
+	{
+		list($params, $anchor) = explode('#', $params, 2);
+		$anchor = '#' . $anchor;
+	}
+
 	// Use the short variant if possible ;)
 	if ($params === false)
 	{
 		// Append session id
-		return (!$session_id) ? $url . (($append_url) ? $url_delim . $append_url : '') : $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . 'sid=' . $session_id;
+		if (!$session_id)
+		{
+			return $url . (($append_url) ? $url_delim . $append_url : '') . $anchor;
+		}
+		else
+		{
+			return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . 'sid=' . $session_id . $anchor;
+		}
 	}
 
 	// Build string if parameters are specified as array
@@ -1590,6 +1624,12 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 				continue;
 			}
 
+			if ($key == '#')
+			{
+				$anchor = '#' . $item;
+				continue;
+			}
+
 			$output[] = $key . '=' . $item;
 		}
 
@@ -1598,7 +1638,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 	// Append session id and parameters (even if they are empty)
 	// If parameters are empty, the developer can still append his/her parameters without caring about the delimiter
-	return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . $params . ((!$session_id) ? '' : $amp_delim . 'sid=' . $session_id);
+	return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . $params . ((!$session_id) ? '' : $amp_delim . 'sid=' . $session_id) . $anchor;
 }
 
 /**
@@ -2089,24 +2129,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
-
-			// Make sure the user is able to hide his session
-			if (!$viewonline)
-			{
-				$check_auth = new auth();
-				$check_auth->acl($user->data);
-
-				// Reset online status if not allowed to hide the session...
-				if (!$check_auth->acl_get('u_hideonline'))
-				{
-					$sql = 'UPDATE ' . SESSIONS_TABLE . '
-						SET session_viewonline = 1
-						WHERE session_user_id = ' . $user->data['user_id'];
-					$db->sql_query($sql);
-				}
-
-				unset($check_auth);
-			}
 
 			// Special case... the user is effectively banned, but we allow founders to login
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
@@ -2613,6 +2635,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 	// make sure no HTML entities were matched
 	$chars = array('<', '>', '"');
 	$split = false;
+
 	foreach ($chars as $char)
 	{
 		$next_split = strpos($url, $char);
@@ -2668,6 +2691,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			{
 				$url = substr($url, 0, -1);
 			}
+		break;
 	}
 
 	switch ($type)
@@ -2692,8 +2716,8 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 
 		case MAGIC_URL_EMAIL:
 			$tag	= 'e';
-			$url	= 'mailto:' . $url;
 			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$url	= 'mailto:' . $url;
 		break;
 	}
 
@@ -2734,19 +2758,19 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (>\]])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
 		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_LOCAL, '\$1', '\$2', '\$3', '$local_class')";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('url_inline') . ')#ie';
 		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_FULL, '\$1', '\$2', '', '$class')";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('www_url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#ie';
 		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_WWW, '\$1', '\$2', '', '$class')";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t (>\]])(' . get_preg_expression('email') . ')/ie';
+		$magic_url_match[] = '/(^|[\n\t (>])(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, '\$1', '\$2', '', '')";
 	}
 
@@ -2788,7 +2812,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		return str_replace('<img src="{SMILIES_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
+		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . $phpbb_root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
 
@@ -3853,14 +3877,7 @@ function page_header($page_title = '', $display_online_list = true)
 		{
 			$f = request_var('f', 0);
 
-			// Do not change this (it is defined as _f_={forum_id}x within session.php)
-			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
-
-			// Specify escape character for MSSQL
-			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
-			{
-				$reading_sql .= " ESCAPE '\\' ";
-			}
+			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("{$db->any_char}_f_={$f}x{$db->any_char}");
 		}
 
 		// Get number of online guests
@@ -3917,7 +3934,7 @@ function page_header($page_title = '', $display_online_list = true)
 						$user_colour = '';
 					}
 
-					if ($row['user_allow_viewonline'] && $row['session_viewonline'])
+					if ($row['session_viewonline'])
 					{
 						$user_online_link = $row['username'];
 						$logged_visible_online++;
@@ -3928,7 +3945,7 @@ function page_header($page_title = '', $display_online_list = true)
 						$logged_hidden_online++;
 					}
 
-					if (($row['user_allow_viewonline'] && $row['session_viewonline']) || $auth->acl_get('u_viewonline'))
+					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
 						if ($row['user_type'] <> USER_IGNORE)
 						{

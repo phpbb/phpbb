@@ -572,6 +572,8 @@ class install_convert extends module
 		}
 
 		$template->assign_vars(array(
+			'TITLE'		=> $lang['STAGE_SETTINGS'],
+			'BODY'		=> $lang['CONV_OPTIONS_BODY'],
 			'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
 			'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=$convertor_tag",
 		));
@@ -1110,6 +1112,20 @@ class install_convert extends module
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
 						break;
+
+						case 'oracle':
+							$result = $db->sql_query('SELECT MAX(' . $schema['autoincrement'] . ') as max_id FROM ' . $schema['target']);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							$largest_id = (int) $row['max_id'];
+
+							if ($largest_id)
+							{
+								$db->sql_query('DROP SEQUENCE ' . $schema['target'] . '_seq');
+								$db->sql_query('CREATE SEQUENCE ' . $schema['target'] . '_seq START WITH ' . ($largest_id + 1));
+							}
+						break;
 					}
 				}
 			}
@@ -1157,14 +1173,31 @@ class install_convert extends module
 			$sql .= (!empty($schema['where'])) ? "\nWHERE (" . $schema['where'] . ')' : '';
 
 			// Group By
-			$sql .= (!empty($schema['group_by'])) ? "\nGROUP BY " . $schema['group_by'] : '';
+			if (!empty($schema['group_by']))
+			{
+				$schema['group_by'] = array($schema['group_by']);
+				foreach($sql_data['select_fields'] as $select)
+				{
+					$alias = strpos(strtolower($select), ' as ');
+					$select = ($alias) ? substr($select, 0, $alias) : $select;
+					if (!in_array($select, $schema['group_by']))
+					{
+						$schema['group_by'][] = $select;
+					}
+				}
+			}
+			$sql .= (!empty($schema['group_by'])) ? "\nGROUP BY " . implode(', ', $schema['group_by']) : '';
 
 			// Having
 			$sql .= (!empty($schema['having'])) ? "\nHAVING " . $schema['having'] : '';
 
 			// Order By
+			if (empty($schema['order_by']) && !empty($schema['primary']))
+			{
+				$schema['order_by'] = $schema['primary'];
+			}
 			$sql .= (!empty($schema['order_by'])) ? "\nORDER BY " . $schema['order_by'] : '';
-
+			 
 			// Counting basically holds the amount of rows processed.
 			$counting = -1;
 			$batch_time = 0;
@@ -1228,7 +1261,6 @@ class install_convert extends module
 					if (!$convert_row)
 					{
 						// move to the next batch or table
-						$src_db->sql_freeresult($___result);
 						break;
 					}
 
@@ -1348,6 +1380,20 @@ class install_convert extends module
 
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
+						break;
+
+						case 'oracle':
+							$result = $db->sql_query('SELECT MAX(' . $schema['autoincrement'] . ') as max_id FROM ' . $schema['target']);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							$largest_id = (int) $row['max_id'];
+
+							if ($largest_id)
+							{
+								$db->sql_query('DROP SEQUENCE ' . $schema['target'] . '_seq');
+								$db->sql_query('CREATE SEQUENCE ' . $schema['target'] . '_seq START WITH ' . ($largest_id + 1));
+							}
 						break;
 					}
 				}

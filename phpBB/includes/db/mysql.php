@@ -212,7 +212,7 @@ class dbal_mysql extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -274,6 +274,15 @@ class dbal_mysql extends dbal
 		}
 
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
+	}
+
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
 	}
 
 	/**

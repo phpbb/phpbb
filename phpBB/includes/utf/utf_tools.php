@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * @todo make sure the replacements are called correctly
 * already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
@@ -713,6 +713,12 @@ function utf8_recode($string, $encoding)
 	{
 		$encoding = 'cp1252';
 	}
+	// convert iso-8859-8-i to iso-8859-8
+	else if ($encoding == 'iso-8859-8-i')
+	{
+		$encoding = 'iso-8859-8';
+		$string = hebrev($string);
+	}
 
 	// First, try iconv()
 	if (function_exists('iconv'))
@@ -782,6 +788,7 @@ function utf8_recode($string, $encoding)
 			case '2':
 			case '4':
 			case '7':
+			case '8':
 			case '9':
 			case '15':
 				if (!function_exists('iso_8859_' . $array[1]))

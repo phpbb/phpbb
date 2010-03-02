@@ -264,7 +264,7 @@ class dbal_postgres extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -343,6 +343,15 @@ class dbal_postgres extends dbal
 	function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
+	}
+
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
 	}
 
 	/**

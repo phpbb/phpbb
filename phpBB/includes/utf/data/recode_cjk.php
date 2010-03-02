@@ -7455,7 +7455,7 @@ function gb2312($string)
 
 function sjis($string)
 {
-	static $array = array(
+	static $transform = array(
 		"\x5C"=>"\xC2\xA5",
 		"\x7E"=>"\xE2\x80\xBE",
 		"\x81\x40"=>"\xE3\x80\x80",

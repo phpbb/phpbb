@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -449,8 +449,7 @@ class acp_profile
 						// Get the number of options if this key is 'field_maxlen'
 						$var = sizeof(explode("\n", request_var('lang_options', '', true)));
 					}
-
-					if ($field_type == FIELD_TEXT && $key == 'field_length')
+					else if ($field_type == FIELD_TEXT && $key == 'field_length')
 					{
 						if (isset($_REQUEST['rows']))
 						{
@@ -465,8 +464,7 @@ class acp_profile
 							$cp->vars['columns'] = $row_col[1];
 						}
 					}
-
-					if ($field_type == FIELD_DATE && $key == 'field_default_value')
+					else if ($field_type == FIELD_DATE && $key == 'field_default_value')
 					{
 						$always_now = request_var('always_now', 0);
 
@@ -542,12 +540,17 @@ class acp_profile
 					{
 						$cp->vars[$key] = $$key;
 					}
-					else if ($key == 'l_lang_options' && sizeof($cp->vars[$key]) > 1)
+					else if ($key == 'l_lang_options' && $field_type == FIELD_BOOL)
+					{
+						$cp->vars[$key] = request_var($key, array(0 => array('')), true);
+					}
+					else if ($key == 'l_lang_options' && is_array($cp->vars[$key]))
 					{
 						foreach ($cp->vars[$key] as $lang_id => $options)
 						{
 							$cp->vars[$key][$lang_id] = explode("\n", $options);
 						}
+						
 					}
 				}
 
@@ -622,13 +625,27 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if (!isset($_REQUEST[$key]))
+						if ($field_type == FIELD_TEXT && $key == 'field_length' && isset($_REQUEST['rows']))
 						{
-							$var = false;
+							$cp->vars['rows'] = request_var('rows', 0);
+							$cp->vars['columns'] = request_var('columns', 0);
+							$_new_key_ary[$key] = $cp->vars['rows'] . '|' . $cp->vars['columns'];
+						}
+						if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
+						{
+							$_new_key_ary[$key] = request_var($key, array(array('')), true);
+
 						}
 						else
 						{
-							$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							if (!isset($_REQUEST[$key]))
+							{
+								$var = false;
+							}
+							else
+							{
+								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							}
 						}
 					}
 
@@ -899,7 +916,7 @@ class acp_profile
 			foreach ($options as $field => $field_type)
 			{
 				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
-
+				
 				if ($field == 'lang_options')
 				{
 					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
@@ -1073,8 +1090,14 @@ class acp_profile
 		$cp->vars['l_lang_name']			= request_var('l_lang_name', array(0 => ''), true);
 		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', array(0 => ''), true);
 		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => ''), true);
-		$cp->vars['l_lang_options']			= request_var('l_lang_options', array(0 => ''), true);
-
+		if ($field_type != FIELD_BOOL)
+		{
+			$cp->vars['l_lang_options']			= request_var('l_lang_options', array(0 => ''), true);
+		}
+		else
+		{
+			$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => array('')), true);
+		}
 		if ($cp->vars['lang_options'])
 		{
 			if (!is_array($cp->vars['lang_options']))
@@ -1508,7 +1531,7 @@ class acp_profile
 			case 'oracle':
 
 				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD \"$field_ident\" ";
+				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident ";
 
 				switch ($field_type)
 				{

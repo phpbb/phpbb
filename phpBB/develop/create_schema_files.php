@@ -858,7 +858,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> array('role_id', 'auth_option_id'),
 		'KEYS'			=> array(
-			'ath_opt_id'	=> array('INDEX', 'auth_option_id'),
+			'ath_op_id'			=> array('INDEX', 'auth_option_id'),
 		),
 	);
 
@@ -1256,7 +1256,7 @@ function get_schema_struct()
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
 			'post_username'			=> array('VCHAR_UNI:255', ''),
-			'post_subject'			=> array('XSTEXT_UNI', ''),
+			'post_subject'			=> array('XSTEXT_UNI', '', 'true_sort'),
 			'post_text'				=> array('MTEXT_UNI', ''),
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),
@@ -1643,7 +1643,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'		=> 'image_id',
 		'KEYS'				=> array(
-			'i_id'			=> array('INDEX', 'imageset_id'),
+			'i_d'			=> array('INDEX', 'imageset_id'),
 		),
 	);
 

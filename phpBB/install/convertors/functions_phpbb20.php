@@ -59,6 +59,15 @@ function phpbb_insert_forums()
 
 	$max_forum_id++;
 
+	// pruning disabled globally?
+	$sql = "SELECT config_value
+		FROM {$convert->src_table_prefix}config
+		WHERE config_name = 'prune_enable'";
+	$result = $src_db->sql_query($sql);
+	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
+	$src_db->sql_freeresult($result);
+	
+	
 	// Insert categories
 	$sql = 'SELECT cat_id, cat_title
 		FROM ' . $convert->src_table_prefix . 'categories
@@ -206,7 +215,7 @@ function phpbb_insert_forums()
 			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
-			'enable_prune'		=> $row['prune_enable'],
+			'enable_prune'		=> ($prune_enabled) ? $row['prune_enable'] : 0,
 			'prune_next'		=> null_to_zero($row['prune_next']),
 			'prune_days'		=> null_to_zero($row['prune_days']),
 			'prune_viewed'		=> 0,
@@ -270,9 +279,27 @@ function phpbb_insert_forums()
 
 	switch ($db->sql_layer)
 	{
+		case 'postgres':
+			$db->sql_query("SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));');
+		break;
+
 		case 'mssql':
 		case 'mssql_odbc':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
+		break;
+
+		case 'oracle':
+			$result = $db->sql_query('SELECT MAX(forum_id) as max_id FROM ' . FORUMS_TABLE);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$largest_id = (int) $row['max_id'];
+
+			if ($largest_id)
+			{
+				$db->sql_query('DROP SEQUENCE ' . FORUMS_TABLE . '_seq');
+				$db->sql_query('CREATE SEQUENCE ' . FORUMS_TABLE . '_seq START WITH ' . ($largest_id + 1));
+			}
 		break;
 	}
 }
@@ -536,7 +563,6 @@ function phpbb_convert_authentication($mode)
 		while ($row = $src_db->sql_fetchrow($result))
 		{
 			$user_id = (int) phpbb_user_id($row['user_id']);
-
 			// Set founder admin...
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_type = ' . USER_FOUNDER . "
@@ -544,6 +570,13 @@ function phpbb_convert_authentication($mode)
 			$db->sql_query($sql);
 		}
 		$src_db->sql_freeresult($result);
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+		$result = $db->sql_query($sql);
+		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
 	}
 
 	// Grab forum auth information
@@ -564,10 +597,11 @@ function phpbb_convert_authentication($mode)
 	}
 	// Grab user auth information from 2.0.x board
 	$sql = "SELECT ug.user_id, aa.*
-		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g
+		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g, {$convert->src_table_prefix}forums f
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user = 1
-			AND ug.group_id = g.group_id";
+			AND ug.group_id = g.group_id
+			AND f.forum_id = aa.forum_id";
 	$result = $src_db->sql_query($sql);
 
 	$user_access = array();
@@ -710,7 +744,7 @@ function phpbb_convert_authentication($mode)
 	if ($mode == 'start')
 	{
 		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS, false);
-		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS, false);
+		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . " AND group_id <> $bot_group_id", false);
 
 		// Selecting from old table
 		if (!empty($config['increment_user_id']))
@@ -1693,7 +1727,7 @@ function phpbb_check_username_collisions()
 		break;
 
 		case 'oracle':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
 				user_id number(8) NOT NULL,
 				username_clean varchar2(255) DEFAULT \'\'
 			)';
@@ -1709,15 +1743,15 @@ function phpbb_check_username_collisions()
 		case 'sqlite':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
 				user_id INTEGER NOT NULL DEFAULT \'0\',
-				username_clean varchar(255) NOT NULL DEFAULT \'\',
+				username_clean varchar(255) NOT NULL DEFAULT \'\'
 			)';
 		break;
 	}
 
 	$db->sql_return_on_error(true);
 	$db->sql_query($drop_sql);
-	$db->sql_query($create_sql);
 	$db->sql_return_on_error(false);
+	$db->sql_query($create_sql);
 
 	// now select all user_ids and usernames and then convert the username (this can take quite a while!)
 	$sql = 'SELECT user_id, username

@@ -230,6 +230,7 @@ class acp_prune
 		if ($prune)
 		{
 			$action = request_var('action', 'deactivate');
+			$deleteposts = request_var('deleteposts', 0);
 
 			if (confirm_box(true))
 			{
@@ -361,7 +362,6 @@ class acp_prune
 		global $user, $db;
 
 		$users = request_var('users', '', true);
-		$deleteposts = request_var('deleteposts', 0);
 		
 		if ($users)
 		{
@@ -393,8 +393,8 @@ class acp_prune
 			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
 
 			$where_sql = '';
-			$where_sql .= ($username) ? " AND username_clean LIKE '" . $db->sql_escape(str_replace('*', '%', utf8_clean_string($username))) . "'" : '';
-			$where_sql .= ($email) ? " AND user_email LIKE '" . $db->sql_escape(str_replace('*', '%', $email)) . "' " : '';
+			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
+			$where_sql .= ($email) ? ' AND user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
 			$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
 			$where_sql .= ($count !== '') ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$where_sql .= (sizeof($active)) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) : '';

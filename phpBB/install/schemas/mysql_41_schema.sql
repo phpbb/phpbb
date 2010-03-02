@@ -72,7 +72,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (role_id, auth_option_id),
-	KEY ath_opt_id (auth_option_id)
+	KEY ath_op_id (auth_option_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -436,7 +436,7 @@ CREATE TABLE phpbb_posts (
 	enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_sig tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_username varchar(255) DEFAULT '' NOT NULL,
-	post_subject varchar(100) DEFAULT '' NOT NULL,
+	post_subject varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	post_text mediumtext NOT NULL,
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
 	post_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -788,7 +788,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (image_id),
-	KEY i_id (imageset_id)
+	KEY i_d (imageset_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

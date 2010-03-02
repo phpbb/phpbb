@@ -191,7 +191,7 @@ a:active {
 	height: 350px; 
 }
 
-.simple-page-body {
+#page-body.simple-page-body {
 	padding: 0;
 	padding-right: 10px;
 	min-width: 0;
@@ -351,12 +351,23 @@ span.corners-bottom span {
 	margin-left: 2px;
 }
 
+.rtl #toggle {
+	left: 75%;
+	margin-right: 0;
+	margin-left: 6px;
+}
+
 #toggle-handle {
 	display: block;
 	width: 18px;
 	height: 19px;
 	float: right;
 	background-image: url(../images/toggle.gif);
+}
+
+.rtl #toggle-handle {
+	background-image: url(../images/toggle.gif);
+	background-position: 100% 50%;
 }
 
 /* Menu */
@@ -721,7 +732,7 @@ option {
 }
 
 option.disabled-option {
-	color: #aaa;
+	color: graytext;
 }
 
 .rtl option {

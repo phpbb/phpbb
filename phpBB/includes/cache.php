@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acm
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -394,7 +394,7 @@ class cache extends acm
 			$usernames = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$usernames[] = utf8_clean_string(str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')));
+				$usernames[] = str_replace('%', '.*?', preg_quote(utf8_clean_string($row['disallow_username']), '#'));
 			}
 			$db->sql_freeresult($result);
 

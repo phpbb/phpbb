@@ -245,7 +245,7 @@ function compose_pm($id, $mode, $action)
 			$enable_urls = $post['enable_magic_url'];
 			$enable_sig = (isset($post['enable_sig'])) ? $post['enable_sig'] : 0;
 
-			$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
+			$message_attachment = (isset($post['message_attachment'])) ? $post['message_attachment'] : 0;
 			$message_subject = $post['message_subject'];
 			$message_time = $post['message_time'];
 			$bbcode_uid = $post['bbcode_uid'];
@@ -377,7 +377,7 @@ function compose_pm($id, $mode, $action)
 
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
-		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
+		$enable_sig		= ($config['allow_sig'] && $config['allow_sig_pm'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
 		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
 		$enable_bbcode	= ($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
 		$enable_urls	= true;
@@ -516,7 +516,7 @@ function compose_pm($id, $mode, $action)
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 		$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-		$enable_sig			= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
+		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
 		if ($submit)
 		{
@@ -538,7 +538,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Parse message
-		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_sig_links']);
+		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
 		if (sizeof($message_parser->warn_msg) && !$refresh)
@@ -925,11 +925,11 @@ function compose_pm($id, $mode, $action)
 		'S_BBCODE_CHECKED'		=> ($bbcode_checked) ? ' checked="checked"' : '',
 		'S_SMILIES_ALLOWED'		=> $smilies_status,
 		'S_SMILIES_CHECKED'		=> ($smilies_checked) ? ' checked="checked"' : '',
-		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $auth->acl_get('u_sig')),
+		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $config['allow_sig_pm'] && $auth->acl_get('u_sig')),
 		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
 		'S_LINKS_ALLOWED'		=> $url_status,
 		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
-		'S_SAVE_ALLOWED'		=> $auth->acl_get('u_savedrafts'),
+		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $action != 'edit') ? true : false,
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
 

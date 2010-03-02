@@ -72,7 +72,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (role_id, auth_option_id),
-	KEY ath_opt_id (auth_option_id)
+	KEY ath_op_id (auth_option_id)
 );
 
 
@@ -788,7 +788,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (image_id),
-	KEY i_id (imageset_id)
+	KEY i_d (imageset_id)
 );
 
 

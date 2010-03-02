@@ -28,32 +28,32 @@
 		<dl>
 			<dt><label<!-- IF S_CHECK_SELECT --> for="check_option"<!-- ENDIF -->>{L_IF}:</label></dt>
 			<dd>
-				<!-- IF S_CHECK_SELECT --><select name="check_option" id="check_option">{S_CHECK_OPTIONS}</select> <input type="submit" name="next" value="{L_NEXT}" class="button2" /><!-- ELSE -->{CHECK_CURRENT}<input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF -->
+				<!-- IF S_CHECK_SELECT --><select name="check_option" id="check_option">{S_CHECK_OPTIONS}</select> <input type="submit" name="next" value="{L_NEXT_STEP}" class="button2" /><!-- ELSE -->{CHECK_CURRENT}<input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF -->
 			</dd>
 		</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_RULE_DEFINED -->
 		<dl>
-			<dt><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
-			<dd><!-- IF S_RULE_SELECT --><select name="rule_option" id="rule_option">{S_RULE_OPTIONS}</select> <input type="submit" name="next" value="{L_NEXT}" class="button2" /><!-- ELSE --><em>{RULE_CURRENT}</em><input type="hidden" name="rule_option" value="{RULE_OPTION}" /><!-- ENDIF --></dd>
+			<dt><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS_STEP}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
+			<dd><!-- IF S_RULE_SELECT --><select name="rule_option" id="rule_option">{S_RULE_OPTIONS}</select> <input type="submit" name="next" value="{L_NEXT_STEP}" class="button2" /><!-- ELSE --><em>{RULE_CURRENT}</em><input type="hidden" name="rule_option" value="{RULE_OPTION}" /><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->
 
 	<!-- IF S_COND_DEFINED -->
 		<!-- IF S_COND_SELECT or COND_CURRENT -->
 			<dl>
-				<dt><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
+				<dt><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS_STEP}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
 				<dd>
 					<!-- IF S_COND_SELECT -->
 						<!-- IF S_TEXT_CONDITION -->
 							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox medium" maxlength="250" />
 						<!-- ELSEIF S_USER_CONDITION -->
-							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox small" maxlength="50" />&nbsp;<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span>
+							<input type="text" name="rule_string" value="{CURRENT_STRING}" class="inputbox tiny" />&nbsp;<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span>
 						<!-- ELSEIF S_GROUP_CONDITION -->
 							<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><!-- IF S_GROUP_OPTIONS --><select name="rule_group_id">{S_GROUP_OPTIONS}</select><!-- ELSE -->{L_NO_GROUPS}<!-- ENDIF -->
 						<!-- ENDIF -->
-						<input type="submit" name="next" value="{L_NEXT}" class="button2" />
+						<input type="submit" name="next" value="{L_NEXT_STEP}" class="button2" />
 					<!-- ELSE -->
 						<strong>{COND_CURRENT}</strong><input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><input type="hidden" name="rule_user_id" value="{CURRENT_USER_ID}" /><input type="hidden" name="rule_group_id" value="{CURRENT_GROUP_ID}" />
 					<!-- ENDIF -->
@@ -68,7 +68,7 @@
 
 	<!-- IF S_ACTION_DEFINED -->
 		<dl>
-			<dt><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
+			<dt><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS_STEP}" class="button2" /><!-- ELSE --><label>&nbsp;</label><!-- ENDIF --></dt>
 			<dd><!-- IF S_ACTION_SELECT --> <select name="action_option">{S_ACTION_OPTIONS}</select> <input type="submit" name="add_rule" value="{L_ADD_RULE}" class="button1" /><!-- ELSE -->{ACTION_CURRENT}<input type="hidden" name="action_option" value="{ACTION_OPTION}" /><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->

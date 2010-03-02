@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -52,8 +52,8 @@ class acp_styles
 # phpBB {MODE} configuration file
 #
 # @package phpBB3
-# @copyright (c) 2005 phpBB Group 
-# @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+# @copyright (c) 2005 phpBB Group
+# @license http://opensource.org/licenses/gpl-license.php GNU Public License
 #
 #
 # At the left is the name, please do not change this
@@ -670,7 +670,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$template_file	= request_var('template_file', '');
+		$template_file	= request_var('template_file', '', true);
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1023,7 +1023,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$theme_file	= request_var('template_file', '');
+		$theme_file	= request_var('template_file', '', true);
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1209,7 +1209,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imgpath	= request_var('imgpath', '');
 		$imgsize	= request_var('imgsize', false);
 		$imgwidth	= request_var('imgwidth', 0);
-
+		$imgheight	= request_var('imgheight', 0);
+		
 		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
 		$imgpath	= str_replace('..', '.', $imgpath);
 
@@ -1269,7 +1270,8 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					// If imgwidth and imgheight are non-zero grab the actual size
 					// from the image itself ... we ignore width settings for the poll center image
-					$imgwidth = $imgheight = 0;
+					$imgwidth	= request_var('imgwidth', 0);
+					$imgheight	= request_var('imgheight', 0);
 					$imglang = '';
 
 					if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
@@ -1279,10 +1281,16 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					if ($imgsize && $imgpath)
 					{
-						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+						if (!$imgwidth || !$imgheight)
+						{
+							list($imgwidth_file, $imgheight_file) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+							$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
+							$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
+						}
 						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
 						$imgheight	= (int) $imgheight;
-					}
+					} 
+
 
 					if (strpos($imgpath, '/') !== false)
 					{
@@ -1355,19 +1363,17 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$dp2 = @opendir("$dir/$imgnamelang");
 
-				if (!$dp2)
+				if ($dp2)
 				{
-					continue;
-				}
-
-				while (($file2 = readdir($dp2)) !== false)
-				{
-					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					while (($file2 = readdir($dp2)) !== false)
 					{
-						$imagesetlist['lang'][] = "$imgnamelang/$file2";
+						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+						{
+							$imagesetlist['lang'][] = "$imgnamelang/$file2";
+						}
 					}
+					closedir($dp2);
 				}
-				closedir($dp2);
 			}
 			closedir($dp);
 		}
@@ -1408,7 +1414,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		sort($imagesetlist['lang']);
 		sort($imagesetlist['nolang']);
 
-		$imagesetlist_options = '';
+		$image_found = false;
+		$img_val = '';
 		foreach ($imagesetlist as $type => $img_ary)
 		{
 			if ($type !== 'lang' || $sql_extra)
@@ -1424,7 +1431,8 @@ parse_css_file = {PARSE_CSS_FILE}
 				$selected = (!empty($imgname) && strpos($image_filename, $imgtext) !== false);
 				if ($selected)
 				{
-					$template->assign_var('IMAGE_SELECT', true);
+					$image_found = true;
+					$img_val = htmlspecialchars($img);
 				}
 				$template->assign_block_vars('imagesetlist.images', array(
 					'SELECTED'			=> $selected,
@@ -1442,13 +1450,15 @@ parse_css_file = {PARSE_CSS_FILE}
 			'L_TITLE'			=> $user->lang[$this->page_title],
 			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'IMAGE_OPTIONS'		=> $img_options,
-			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
-			'IMAGE_SIZE'		=> $imgsize_bool,
-			'IMAGE_REQUEST'		=> $image_request,
+			'IMAGE_SIZE'		=> $image_width,
+			'IMAGE_HEIGHT'		=> $image_height,
+			'IMAGE_REQUEST'		=> (empty($image_filename)) ? 'images/no_image.png' : $image_request,
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
-			'ERROR'				=> !$valid_name
+			'ERROR'				=> !$valid_name,
+			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
+			'IMAGE_SELECT'		=> $image_found
 		));
 	}
 
@@ -1461,12 +1471,14 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
+		$sql_where = '';
 
 		switch ($mode)
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
 				$sql_select = 'style_name';
+				$sql_where = 'AND style_active = 1';
 			break;
 
 			case 'template':
@@ -1501,7 +1513,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
 			FROM $sql_from
-			WHERE {$mode}_id <> $style_id
+			WHERE {$mode}_id <> $style_id 
+			$sql_where 
 			ORDER BY {$mode}_name ASC";
 		$result = $db->sql_query($sql);
 
@@ -1544,14 +1557,14 @@ parse_css_file = {PARSE_CSS_FILE}
 					set_config('default_style', $new_id);
 				}
 			}
-			else if ($mode == 'imageset')
-			{
-				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
-					WHERE imageset_id = $style_id";
-				$db->sql_query($sql);
-			}
 			else
 			{
+				if ($mode == 'imageset')
+				{
+					$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+						WHERE imageset_id = $style_id";
+					$db->sql_query($sql);
+				}
 				$sql = 'UPDATE ' . STYLES_TABLE . "
 					SET {$mode}_id = $new_id
 					WHERE {$mode}_id = $style_id";

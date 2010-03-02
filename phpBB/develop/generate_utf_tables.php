@@ -378,8 +378,12 @@ fclose($fp);
 */
 $cheats = array(
 	'00DF'	=>	'ss',		#	German sharp S
+	'00C5'	=>	'ae',		#	Capital A with diaeresis
+	'00E4'	=>	'ae',		#	Small A with diaeresis
 	'00D6'	=>	'oe',		#	Capital O with diaeresis
 	'00F6'	=>	'oe',		#	Small O with diaeresis
+	'00DC'	=>	'ue',		#	Capital U with diaeresis
+	'00FC'	=>	'ue',		#	Small U with diaeresis
 );
 
 /**

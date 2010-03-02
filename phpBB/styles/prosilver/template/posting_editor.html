@@ -30,7 +30,7 @@
 				</dl>
 			<!-- ENDIF -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list"></textarea></dt>
+				<dt><textarea id="username_list" name="username_list" class="inputbox"></textarea></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
@@ -48,7 +48,7 @@
 					</dd>
 				<!-- ENDIF -->
 
-				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" maxlength="40" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
+				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 			</dl>
 		<!-- ENDIF -->
 
@@ -86,7 +86,7 @@
 	<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
 	<dl>
 		<dt><label for="username">{L_USERNAME}:</label></dt>
-		<dd><input type="text" tabindex="1" name="username" id="username" size="25" maxlength="30" value="{USERNAME}" class="inputbox" /></dd>
+		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox" /></dd>
 	</dl>
 	<!-- ENDIF -->
 
@@ -113,7 +113,7 @@
 				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 			<!-- END smiley -->
 		<!-- ENDIF -->
-		<!-- IF S_SHOW_SMILEY_LINK -->
+		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
 
@@ -157,7 +157,7 @@
 			<dl>
 
 				<dt><label for="comment_list[{attach_row.ASSOC_INDEX}]">{L_FILE_COMMENT}:</label><br />
-				<span><br /><a href="{attach_row.U_VIEW_ATTACHMENT}" class="right">{attach_row.FILENAME}</a></span></dt>
+				<span><br /><a href="{attach_row.U_VIEW_ATTACHMENT}" class="{S_CONTENT_FLOW_END}">{attach_row.FILENAME}</a></span></dt>
 				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
 				<dd style="margin-top: 5px;">
 					<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.FILENAME}');" class="button2" />&nbsp; <!-- ENDIF -->
@@ -180,8 +180,8 @@
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
-			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->			
-			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" class="button2" />&nbsp; <!-- ENDIF -->			
+			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
+			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" class="button2" />&nbsp; <!-- ENDIF -->
 			<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
 			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 
@@ -250,7 +250,7 @@
 			<!-- IF S_EDIT_REASON -->
 			<dl>
 				<dt><label for="edit_reason">{L_EDIT_REASON}:</label></dt>
-				<dd><input type="text" name="edit_reason" id="edit_reason" maxlength="100" value="{EDIT_REASON}" class="inputbox" /></dd>
+				<dd><input type="text" name="edit_reason" id="edit_reason" value="{EDIT_REASON}" class="inputbox" /></dd>
 			</dl>
 			<!-- ENDIF -->
 		</fieldset>

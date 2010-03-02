@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * acp_board [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -102,6 +102,7 @@ $lang = array_merge($lang, array(
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
 	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
+	'ALLOW_FLASH_PM_EXPLAIN'	=> 'Note that the ability to use flash in private messages, if enabled here, also depends on the permissions.',
 	'ALLOW_FORWARD_PM'			=> 'Allow forwarding of private messages',
 	'ALLOW_IMG_PM'				=> 'Allow use of <code>[IMG]</code> BBCode tag',
 	'ALLOW_MASS_PM'				=> 'Allow sending of private messages to multiple users and groups',
@@ -126,6 +127,8 @@ $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
+	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts. ',
+	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
@@ -181,10 +184,10 @@ $lang = array_merge($lang, array(
 
 	'ACC_ACTIVATION'			=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'	=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.',
-	'ACC_ADMIN'					=> 'Admin',
+	'ACC_ADMIN'					=> 'By Admin',
 	'ACC_DISABLE'				=> 'Disable',
 	'ACC_NONE'					=> 'None',
-	'ACC_USER'					=> 'User',
+	'ACC_USER'					=> 'By User',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
 	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
 	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
@@ -193,7 +196,7 @@ $lang = array_merge($lang, array(
 	'COPPA_MAIL'				=> 'COPPA mailing address',
 	'COPPA_MAIL_EXPLAIN'		=> 'This is the mailing address where parents will send COPPA registration forms.',
 	'ENABLE_COPPA'				=> 'Enable COPPA',
-	'ENABLE_COPPA_EXPLAIN'		=> 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA Act. If this is disabled the COPPA specific groups will no longer be displayed.',
+	'ENABLE_COPPA_EXPLAIN'		=> 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA. If this is disabled the COPPA specific groups will no longer be displayed.',
 	'MAX_CHARS'					=> 'Max',
 	'MIN_CHARS'					=> 'Min',
 	'NO_AUTH_PLUGIN'			=> 'No suitable auth plugin found.',
@@ -340,10 +343,10 @@ $lang = array_merge($lang, array(
 	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
 
 	'ALL'							=> 'All',
-	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins', 
-	'ALLOW_AUTOLOGIN_EXPLAIN'		=> 'Determines whether users can autologin when they visit the board.', 
-	'AUTOLOGIN_LENGTH'				=> 'Persistent login key expiration length (in days)', 
-	'AUTOLOGIN_LENGTH_EXPLAIN'		=> 'Number of days after which persistent login keys are removed or zero to disable.', 
+	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins',
+	'ALLOW_AUTOLOGIN_EXPLAIN'		=> 'Determines whether users can autologin when they visit the board.',
+	'AUTOLOGIN_LENGTH'				=> 'Persistent login key expiration length (in days)',
+	'AUTOLOGIN_LENGTH_EXPLAIN'		=> 'Number of days after which persistent login keys are removed or zero to disable.',
 	'BROWSER_VALID'					=> 'Validate browser',
 	'BROWSER_VALID_EXPLAIN'			=> 'Enables browser validation for each session improving security.',
 	'CHECK_DNSBL'					=> 'Check IP against DNS Blackhole List',
@@ -412,32 +415,24 @@ $lang = array_merge($lang, array(
 
 // Jabber settings
 $lang = array_merge($lang, array(
-	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, so do not stop the script until it is completed!',
+	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Please be sure to enter already registered account details - phpBB will use the details you enter here as is.',
 
 	'ERR_JAB_AUTH'			=> 'Could not authorise on Jabber server.',
 	'ERR_JAB_CONNECT'		=> 'Could not connect to Jabber server.',
-	'ERR_JAB_PASSCHG'		=> 'Could not change password.',
-	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s.',
-	'ERR_JAB_REGISTER'		=> 'An error occurred trying to register this account, %s.',
-	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.',
-
-	'JAB_CHANGED'				=> 'Jabber account changed successfully.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
 	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
-	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and is not queued for later sending.',
+	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',
-	'JAB_PASS_CHANGED'			=> 'Jabber password changed successfully.',
 	'JAB_PORT'					=> 'Jabber port',
 	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222.',
-	'JAB_REGISTERED'			=> 'New account registered successfully.',
-	'JAB_RESOURCE'				=> 'Jabber resource',
-	'JAB_RESOURCE_EXPLAIN'		=> 'The resource locates this particular connection, e.g. board, home, etc.',
 	'JAB_SERVER'				=> 'Jabber server',
 	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers.',
 	'JAB_SETTINGS_CHANGED'		=> 'Jabber settings changed successfully.',
+	'JAB_USE_SSL'				=> 'Use SSL to connect',
+	'JAB_USE_SSL_EXPLAIN'		=> 'If enabled a secure connection is tried to be established. The Jabber port will be modified to 5223 if port 5222 is specified.',
 	'JAB_USERNAME'				=> 'Jabber username',
-	'JAB_USERNAME_EXPLAIN'		=> 'If this user is not registered it will be created if possible.',
+	'JAB_USERNAME_EXPLAIN'		=> 'Specify a registered username. The username will not be checked for validity.',
 ));
 
 ?>

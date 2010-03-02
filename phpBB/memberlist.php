@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -127,12 +127,16 @@ switch ($mode)
 
 		// Get group memberships for the admin id ary...
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
+		
 		$admin_user_ids = array();
-
-		// ok, we only need the user ids...
-		foreach ($admin_memberships as $row)
+		
+		if (!empty($admin_memberships))
 		{
-			$admin_user_ids[$row['user_id']] = true;
+			// ok, we only need the user ids...
+			foreach ($admin_memberships as $row)
+			{
+				$admin_user_ids[$row['user_id']] = true;
+			}
 		}
 		unset($admin_memberships);
 
@@ -163,7 +167,7 @@ switch ($mode)
 				)
 			),
 
-			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . '
+			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
 				AND u.group_id = g.group_id',
 
 			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
@@ -930,13 +934,13 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? " AND u.username_clean LIKE '" . str_replace('*', '%', $db->sql_escape(utf8_clean_string($username))) . "'" : '';
-			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) . "' " : '';
-			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) . "' " : '';
-			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) . "' " : '';
-			$sql_where .= ($yahoo) ? " AND u.user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) . "' " : '';
-			$sql_where .= ($msn) ? " AND u.user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) . "' " : '';
-			$sql_where .= ($jabber) ? " AND u.user_jabber LIKE '" . str_replace('*', '%', $db->sql_escape($jabber)) . "' " : '';
+			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', '%', utf8_clean_string($username))) : '';
+			$sql_where .= ($email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', '%', $email)) . ' ' : '';
+			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', '%', $icq)) . ' ' : '';
+			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', '%', $aim)) . ' ' : '';
+			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', '%', $yahoo)) . ' ' : '';
+			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', '%', $msn)) . ' ' : '';
+			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', '%', $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
@@ -1011,12 +1015,12 @@ switch ($mode)
 		{
 			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= " AND u.username_clean NOT LIKE '" . chr($i) . "%'";
+				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->any_char);
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= " AND u.username_clean LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->any_char);
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1430,7 +1434,7 @@ function show_profile($data)
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline'])) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	else
 	{

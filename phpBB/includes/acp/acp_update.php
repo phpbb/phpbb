@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -33,7 +33,7 @@ class acp_update
 
 		if ($info === false)
 		{
-			trigger_error($errstr . adm_back_link($this->u_action));
+			trigger_error($errstr, E_USER_WARNING);
 		}
 
 		$info = explode("\n", $info);

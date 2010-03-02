@@ -32,7 +32,7 @@ class ucp_prefs
 				$data = array(
 					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
-					'lang'			=> request_var('lang', $user->data['user_lang']),
+					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
 					'style'			=> request_var('style', (int) $user->data['user_style']),
 					'tz'			=> request_var('tz', (float) $user->data['user_timezone']),
 

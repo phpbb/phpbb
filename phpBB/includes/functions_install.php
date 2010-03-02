@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -29,6 +29,7 @@ function can_load_dll($dll)
 */
 function get_available_dbms($dbms = false, $return_unavailable = false, $only_20x_options = false)
 {
+	global $lang;
 	$available_dbms = array(
 		'firebird'	=> array(
 			'LABEL'			=> 'FireBird',
@@ -172,12 +173,14 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 */
 function dbms_select($default = '', $only_20x_options = false)
 {
+	global $lang;
+	
 	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
 	{
 		$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
-		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
+		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $lang['DLL_' . strtoupper($dbms_name)] . '</option>';
 	}
 	return $dbms_options;
 }
@@ -280,7 +283,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 	{
 		case 'mysql':
 		case 'mysqli':
-			if (strpos($table_prefix, '-') !== false)
+			if (strpos($table_prefix, '-') !== false || strpos($table_prefix, '.') !== false)
 			{
 				$error[] = $lang['INST_ERR_PREFIX_INVALID'];
 				return false;

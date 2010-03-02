@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -261,7 +261,7 @@ class ucp_profile
 					'aim'			=> request_var('aim', $user->data['user_aim']),
 					'msn'			=> request_var('msn', $user->data['user_msnm']),
 					'yim'			=> request_var('yim', $user->data['user_yim']),
-					'jabber'		=> request_var('jabber', $user->data['user_jabber']),
+					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
 					'website'		=> request_var('website', $user->data['user_website']),
 					'location'		=> utf8_normalize_nfc(request_var('location', $user->data['user_from'], true)),
 					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user->data['user_occ'], true)),
@@ -290,7 +290,7 @@ class ucp_profile
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
+							array('jabber')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),
@@ -445,8 +445,8 @@ class ucp_profile
 						if (!sizeof($error) && $submit)
 						{
 							$sql_ary = array(
-								'user_sig'					=> (string) $message_parser->message, 
-								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+								'user_sig'					=> (string) $message_parser->message,
+								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
@@ -491,7 +491,7 @@ class ucp_profile
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,

@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * acp_users [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -47,7 +47,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_FORCE_REACT_YOURSELF'	=> 'You are not allowed to force reactivation of your own account.',
 	'CANNOT_REMOVE_ANONYMOUS'		=> 'You are not able to remove the guest user account.',
 	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
-	'CANNOT_SET_FOUNDER_BOT'		=> 'You are not able to promote ignored users to be founders.',
+	'CANNOT_SET_FOUNDER_IGNORED'	=> 'You are not able to promote ignored users to be founders.',
 	'CANNOT_SET_FOUNDER_INACTIVE'	=> 'You need to activate users before you promote them to founders, only activated users are able to be promoted.',
 	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users e-mail address.',
 
@@ -111,6 +111,7 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_NORMAL'				=> 'Normal groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
 	'USER_GROUP_SPECIAL'			=> 'Special groups user is a member of',
+	'USER_NO_ATTACHMENTS'			=> 'There are no attached files to display.',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',
 	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user.',
 	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum.',

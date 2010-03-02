@@ -428,6 +428,8 @@ $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&a
 // Are we watching this topic?
 $s_watching_topic = $s_watching_topic_img = array();
 $s_watching_topic['link'] = $s_watching_topic['title'] = '';
+$s_watching_topic['is_watching'] = false;
+
 if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
@@ -574,6 +576,7 @@ $template->assign_vars(array(
 
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
+	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
 	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
 	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
@@ -1097,7 +1100,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 	$update_time = $config['load_online_time'] * 60;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline'] && $user_cache[$row['session_user_id']]['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	$db->sql_freeresult($result);
 }

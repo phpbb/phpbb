@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -35,8 +35,20 @@ class dbal_oracle extends dbal
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
-		
-		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8'));
+
+		$connect = $database;
+
+		// support for "easy connect naming"
+		if ($sqlserver !== '' && $sqlserver !== '/')
+		{
+			if (substr($sqlserver, -1, 1) == '/')
+			{
+				$sqlserver == substr($sqlserver, 0, -1);
+			}
+			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $database;
+		}
+
+		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $connect, 'UTF8') : @ocilogon($this->user, $sqlpassword, $connect, 'UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -71,6 +83,113 @@ class dbal_oracle extends dbal
 		}
 
 		return true;
+	}
+
+	/**
+	* Oracle specific code to handle the fact that it does not compare columns properly
+	* @access private
+	*/
+	function _rewrite_col_compare($args)
+	{
+		if (sizeof($args) == 4)
+		{
+			if ($args[2] == '=')
+			{
+				return '(' . $args[0] . ' OR (' . $args[1] . ' is NULL AND ' . $args[3] . ' is NULL))';
+			}
+			else if ($args[2] == '<>')
+			{
+				// really just a fancy way of saying foo <> bar or (foo is NULL XOR bar is NULL) but SQL has no XOR :P
+				return '(' . $args[0] . ' OR ((' . $args[1] . ' is NULL AND ' . $args[3] . ' is NOT NULL) OR (' . $args[1] . ' is NOT NULL AND ' . $args[3] . ' is NULL)))';
+			}
+		}
+		else
+		{
+			return $this->_rewrite_where($args[0]);
+		}
+	}
+
+	/**
+	* Oracle specific code to handle it's lack of sanity
+	* @access private
+	*/
+	function _rewrite_where($where_clause)
+	{
+		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<>)\s*((?>\'(?>[^\']++|\'\')*+\'|\d+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
+		$out = '';
+		foreach ($result as $val)
+		{
+			if (!isset($val[5]))
+			{
+				if ($val[4] !== "''")
+				{
+					$out .= $val[0];
+				}
+				else
+				{
+					$out .= ' ' . $val[1] . ' ' . $val[2];
+					if ($val[3] == '=')
+					{
+						$out .= ' is NULL';
+					}
+					else if ($val[3] == '<>')
+					{
+						$out .= ' is NOT NULL';
+					}
+				}
+			}
+			else
+			{
+				$in_clause = array();
+				$sub_exp = substr($val[5], strpos($val[5], '(') + 1, -1);
+				$extra = false;
+				preg_match_all('/\'(?>[^\']++|\'\')*+\'|\d++/', $sub_exp, $sub_vals, PREG_PATTERN_ORDER);
+				$i = 0;
+				foreach ($sub_vals[0] as $sub_val)
+				{
+					// two things:
+					// 1) This determines if an empty string was in the IN clausing, making us turn it into a NULL comparison
+					// 2) This fixes the 1000 list limit that Oracle has (ORA-01795)
+					if ($sub_val !== "''")
+					{
+						$in_clause[(int) $i++/1000][] = $sub_val;
+					}
+					else
+					{
+						$extra = true;
+					}
+				}
+				if (!$extra && $i < 1000)
+				{
+					$out .= $val[0];
+				}
+				else
+				{
+					$out .= ' ' . $val[1] . '(';
+					$in_array = array();
+
+					// constuct each IN() clause	
+					foreach ($in_clause as $in_values)
+					{
+						$in_array[] = $val[2] . ' ' . (isset($val[6]) ? $val[6] : '') . 'IN(' . implode(', ', $in_values) . ')';
+					}
+
+					// Join the IN() clauses against a few ORs (IN is just a nicer OR anyway)
+					$out .= implode(' OR ', $in_array);
+
+					// handle the empty string case
+					if ($extra)
+					{
+						$out .= ' OR ' . $val[2] . ' is ' . (isset($val[6]) ? $val[6] : '') . 'NULL';
+					}
+					$out .= ')';
+
+					unset($in_array, $in_clause);
+				}
+			}
+		}
+
+		return $out;
 	}
 
 	/**
@@ -110,12 +229,12 @@ class dbal_oracle extends dbal
 					$in_transaction = true;
 				}
 
+				$array = array();
+
 				// We overcome Oracle's 4000 char limit by binding vars
 				if (strlen($query) > 4000)
 				{
-					$array = array();
-
-					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
+					if (preg_match('/^(INSERT INTO[^(]++)\\(([^()]+)\\) VALUES[^(]++\\((.*?)\\)$/s', $query, $regs))
 					{
 						if (strlen($regs[3]) > 4000)
 						{
@@ -135,36 +254,58 @@ class dbal_oracle extends dbal
 							}
 
 							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
-							unset($art);
 						}
 					}
-					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )(\\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, \\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
 					{
 						if (strlen($data[0][2]) > 4000)
 						{
 							$update = $data[0][1];
 							$where = $data[0][3];
-							preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
+							preg_match_all('/([\\w_]++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
 							unset($data);
 
-							$art = array();
+							$cols = array();
 							foreach ($temp as $value)
 							{
 								if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 4002) // check to see if this thing is greater than the max + 'x2
 								{
-									$art[] = $value[1] . '=:' . strtoupper($value[1]);
+									$cols[] = $value[1] . '=:' . strtoupper($value[1]);
 									$array[$value[1]] = str_replace("''", "'", substr($value[2], 1, -1));
 								}
 								else
 								{
-									$art[] = $value[1] . '=' . $value[2];
+									$cols[] = $value[1] . '=' . $value[2];
 								}
 							}
 
-							$query = $update . implode(', ', $art) . ' ' . $where;
-							unset($art);
+							$query = $update . implode(', ', $cols) . ' ' . $where;
+							unset($cols);
 						}
 					}
+				}
+
+				switch (substr($query, 0, 6))
+				{
+					case 'DELETE':
+						if (preg_match('/^(DELETE FROM [\w_]++ WHERE)((?:\s*(?:AND|OR)?\s*[\w_]+\s*(?:(?:=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d+)|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))*+)$/', $query, $regs))
+						{
+							$query = $regs[1] . $this->_rewrite_where($regs[2]);
+							unset($regs);
+						}
+					break;
+
+					case 'UPDATE':
+						if (preg_match('/^(UPDATE [\\w_]++\\s+SET [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++)(?:, [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++))*+\\s+WHERE)(.*)$/s',  $query, $regs))
+						{
+							$query = $regs[1] . $this->_rewrite_where($regs[2]);
+							unset($regs);
+						}
+					break;
+
+					case 'SELECT':
+						$query = preg_replace_callback('/([\w_.]++)\s*(?:(=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d++|([\w_.]++))|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d++,? ?)*+\))/', array($this, '_rewrite_col_compare'), $query);
+					break;
 				}
 
 				$this->query_result = @ociparse($this->db_connect_id, $query);
@@ -267,12 +408,18 @@ class dbal_oracle extends dbal
 			$result_row = array();
 			foreach ($row as $key => $value)
 			{
+				// Oracle treats empty strings as null
+				if (is_null($value))
+				{
+					$value = '';
+				}
+
 				// OCI->CLOB?
 				if (is_object($value))
 				{
 					$value = $value->load();
 				}
-			
+
 				$result_row[strtolower($key)] = $value;
 			}
 
@@ -286,7 +433,7 @@ class dbal_oracle extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -386,6 +533,15 @@ class dbal_oracle extends dbal
 		return str_replace("'", "''", $msg);
 	}
 
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression . " ESCAPE '\\'";
+	}
+
 	function _sql_custom_build($stage, $data)
 	{
 		return $data;
@@ -431,6 +587,67 @@ class dbal_oracle extends dbal
 		switch ($mode)
 		{
 			case 'start':
+
+				$html_table = false;
+
+				// Grab a plan table, any will do
+				$sql = "SELECT table_name
+					FROM USER_TABLES
+					WHERE table_name LIKE '%PLAN_TABLE%'";
+				$stmt = ociparse($this->db_connect_id, $sql);
+				ociexecute($stmt);
+				$result = array();
+
+				if (ocifetchinto($stmt, $result, OCI_ASSOC + OCI_RETURN_NULLS))
+				{
+					$table = $result['TABLE_NAME'];
+
+					// This is the statement_id that will allow us to track the plan
+					$statement_id = substr(md5($query), 0, 30);
+
+					// Remove any stale plans
+					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+
+					// Explain the plan
+					$sql = "EXPLAIN PLAN
+						SET STATEMENT_ID = '$statement_id'
+						FOR $query";
+					$stmt2 = ociparse($this->db_connect_id, $sql);
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+
+					// Get the data from the plan
+					$sql = "SELECT operation, options, object_name, object_type, cardinality, cost
+						FROM plan_table
+						START WITH id = 0 AND statement_id = '$statement_id'
+						CONNECT BY PRIOR id = parent_id
+							AND statement_id = '$statement_id'";
+					$stmt2 = ociparse($this->db_connect_id, $sql);
+					ociexecute($stmt2);
+
+					$row = array();
+					while (ocifetchinto($stmt2, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+					{
+						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+					}
+
+					ocifreestatement($stmt2);
+
+					// Remove the plan we just made, we delete them on request anyway
+					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+				}
+
+				ocifreestatement($stmt);
+
+				if ($html_table)
+				{
+					$this->html_hold .= '</table>';
+				}
+
 			break;
 
 			case 'fromcache':

@@ -2,8 +2,8 @@
 /**
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -271,7 +271,8 @@ class ucp_pm
 					$sql = 'SELECT folder_id
 						FROM ' . PRIVMSGS_TO_TABLE . "
 						WHERE msg_id = $msg_id
-							AND user_id = " . $user->data['user_id'];
+							AND folder_id <> " . PRIVMSGS_NO_BOX . ' 
+							AND user_id = ' . $user->data['user_id'];
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);

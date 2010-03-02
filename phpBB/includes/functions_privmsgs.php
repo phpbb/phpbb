@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -504,6 +504,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	{
 		// It is allowed to execute actions more than once, except placing messages into folder
 		$folder_action = false;
+		$message_removed = false;
 
 		foreach ($msg_ary as $pos => $rule_ary)
 		{
@@ -517,9 +518,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				case ACTION_PLACE_INTO_FOLDER:
 					// Folder actions have precedence, so we will remove any other ones
 					$folder_action = true;
-					$_folder_id = (int) $rule_ary['folder_id'];
-					$move_into_folder = array();
-					$move_into_folder[$_folder_id][] = $msg_id;
+					$move_into_folder[(int) $rule_ary['folder_id']][] = $msg_id;
 					$num_new++;
 				break;
 
@@ -528,15 +527,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$unread_ids[] = $msg_id;
 					}
-
-					if (!$folder_action)
-					{
-						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					}
 				break;
 
 				case ACTION_DELETE_MESSAGE:
 					$delete_ids[] = $msg_id;
+					$message_removed = true;
 				break;
 
 				case ACTION_MARK_AS_IMPORTANT:
@@ -544,13 +539,15 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$important_ids[] = $msg_id;
 					}
-
-					if (!$folder_action)
-					{
-						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					}
 				break;
 			}
+		}
+
+		// We place this here because it could happen that the messages are doubled if a rule marks a message and then moves it into a specific
+		// folder. Here we simply move the message into the INBOX if it gets not removed and also not put into a custom folder.
+		if (!$folder_action && !$message_removed)
+		{
+			$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
 		}
 	}
 
@@ -875,7 +872,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 */
 function handle_mark_actions($user_id, $mark_action)
 {
-	global $db, $user, $_POST, $phpbb_root_path, $phpEx;
+	global $db, $user, $phpbb_root_path, $phpEx;
 
 	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);

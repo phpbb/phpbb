@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * mcp [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -218,11 +218,11 @@ $lang = array_merge($lang, array(
 	'NO_POST_SELECTED'				=> 'You must select at least one post to perform this action.',
 	'NO_REASON_DISAPPROVAL'			=> 'Please give an appropriate reason for disapproval.',
 	'NO_REPORT'						=> 'No report found',
-	'NO_REPORTS'					=> 'No reports',	
+	'NO_REPORTS'					=> 'No reports found',	
 	'NO_REPORT_SELECTED'			=> 'You must select at least one report to perform this action.',
 	'NO_TOPIC_ICON'					=> 'None',
 	'NO_TOPIC_SELECTED'				=> 'You must select at least one topic to perform this action.',
-	'NO_TOPICS_QUEUE'				=> 'No topics',
+	'NO_TOPICS_QUEUE'				=> 'There are no topics waiting for approval.',
 
 	'ONLY_TOPIC'			=> 'Only topic "%s"',
 	'OTHER_USERS'			=> 'Other users posting from this IP',
@@ -326,7 +326,7 @@ $lang = array_merge($lang, array(
 	'UNAPPROVED_POST_TOTAL'			=> 'In total there is <strong>1</strong> post waiting for approval.',
 	'UNLOCK'						=> 'Unlock',
 	'UNLOCK_POST'					=> 'Unlock post',
-	'UNLOCK_POST_EXPLAIN'			=> 'Allow editing.',
+	'UNLOCK_POST_EXPLAIN'			=> 'Allow editing',
 	'UNLOCK_POST_POST'				=> 'Unlock post',
 	'UNLOCK_POST_POST_CONFIRM'		=> 'Are you sure you want to allow editing this post?',
 	'UNLOCK_POST_POSTS'				=> 'Unlock selected posts',
@@ -346,7 +346,7 @@ $lang = array_merge($lang, array(
 	'WARNED_USERS_EXPLAIN'	=> 'This is a list of users with unexpired warnings issued to them.',
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board warning issued',
-	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s.',
+	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s .',
 	'WARNINGS_ZERO_TOTAL'	=> 'No warnings exist.',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s.',

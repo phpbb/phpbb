@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
-* @version $Id$ 
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @version $Id$
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -414,6 +414,7 @@ class session
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+			$bot = false;
 		}
 		else if ($user_id !== false && !sizeof($this->data))
 		{
@@ -427,8 +428,9 @@ class session
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+			$bot = false;
 		}
-
+	
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -543,7 +545,6 @@ class session
 
 				$SID = '?sid=';
 				$_SID = '';
-
 				return true;
 			}
 			else
@@ -618,8 +619,10 @@ class session
 			$this->set_login_key();
 		}
 
+		// refresh data
 		$SID = '?sid=' . $this->session_id;
 		$_SID = $this->session_id;
+		$this->data = array_merge($this->data, $sql_ary);
 
 		if (!$bot)
 		{
@@ -644,7 +647,7 @@ class session
 			$SID = '?sid=';
 			$_SID = '';
 		}
-
+		
 		return true;
 	}
 
@@ -1203,7 +1206,7 @@ class user extends session
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1212,7 +1215,7 @@ class user extends session
 		else
 		{
 			$this->lang_name = $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1506,6 +1509,33 @@ class user extends session
 				trigger_error('BOARD_UNAVAILABLE');
 			}
 		}
+		
+		// Make sure the user is able to hide his session
+		if (!$this->data['session_viewonline'])
+		{
+			// Reset online status if not allowed to hide the session...
+			if (!$auth->acl_get('u_hideonline'))
+			{
+				$sql = 'UPDATE ' . SESSIONS_TABLE . '
+					SET session_viewonline = 1
+					WHERE session_user_id = ' . $this->data['user_id'];
+				$db->sql_query($sql);
+				$this->data['session_viewonline'] = 1;
+			}
+		}
+		else if (!$this->data['user_allow_viewonline'])
+		{
+			// the user wants to hide and is allowed to  -> cloaking device on.
+			if ($auth->acl_get('u_hideonline'))
+			{
+				$sql = 'UPDATE ' . SESSIONS_TABLE . '
+					SET session_viewonline = 0
+					WHERE session_user_id = ' . $this->data['user_id'];
+				$db->sql_query($sql);
+				$this->data['session_viewonline'] = 0;
+			}
+		}
+
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
@@ -1586,7 +1616,7 @@ class user extends session
 		{
 			global $phpbb_root_path, $config;
 
-			$this->lang_path = $phpbb_root_path . 'language/' . $config['default_lang'] . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($config['default_lang']) . '/';
 		}
 
 		// $lang == $this->lang
@@ -1712,7 +1742,7 @@ class user extends session
 
 		$img_data = &$imgs[$img];
 
-		if (empty($img_data) || $width !== false)
+		if (empty($img_data))
 		{
 			if (!isset($this->img_array[$img]))
 			{
@@ -1735,7 +1765,7 @@ class user extends session
 			break;
 			
 			case 'width':
-				return $img_data['width'];
+				return ($width === false) ? $img_data['width'] : $width;
 			break;
 
 			case 'height':
@@ -1743,7 +1773,9 @@ class user extends session
 			break;
 
 			default:
-				return '<img src="' . $img_data['src'] . '"' . (($img_data['width']) ? ' width="' . $img_data['width'] . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				$use_width = ($width === false) ? $img_data['width'] : $width;
+
+				return '<img src="' . $img_data['src'] . '"' . (($use_width) ? ' width="' . $use_width . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 		}
 	}

@@ -43,8 +43,7 @@ class dbal_mssql_odbc extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		//
-		// @ini_set('odbc.defaultlrl', '32M');
+		@ini_set('odbc.defaultlrl', 65536);
 
 		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
 
@@ -226,7 +225,7 @@ class dbal_mssql_odbc extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -321,6 +320,15 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression . " ESCAPE '\\'";
+	}
+
+	/**
 	* Build db-specific query data
 	* @access private
 	*/
@@ -359,36 +367,6 @@ class dbal_mssql_odbc extends dbal
 		switch ($mode)
 		{
 			case 'start':
-				$explain_query = $query;
-				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-
-				if (preg_match('/^SELECT/', $explain_query))
-				{
-					$html_table = false;
-					@odbc_exec($this->db_connect_id, 'SET SHOWPLAN_TEXT ON;');
-					if ($result = @odbc_exec($this->db_connect_id, $explain_query))
-					{
-						@odbc_next_result($result);
-						while ($row = @odbc_fetch_array($result))
-						{
-							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
-						}
-					}
-					@odbc_exec($this->db_connect_id, 'SET SHOWPLAN_TEXT OFF;');
-					@odbc_free_result($result);
-
-					if ($html_table)
-					{
-						$this->html_hold .= '</table>';
-					}
-				}
 			break;
 
 			case 'fromcache':

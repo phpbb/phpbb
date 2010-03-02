@@ -141,7 +141,7 @@ ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [ath_opt_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [ath_op_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
 GO
 
 
@@ -1392,7 +1392,7 @@ ALTER TABLE [phpbb_styles_imageset_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [i_id] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
+CREATE  INDEX [i_d] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
 GO
 
 

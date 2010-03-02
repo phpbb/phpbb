@@ -31,7 +31,7 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '0.92',
+	'version'		=> '1.0.RC2',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
@@ -184,8 +184,14 @@ if (!$get_info)
 			'extensions',
 			'extension_groups'
 		);
+
+		$src_db->sql_freeresult($result);
 	}
-	$src_db->sql_freeresult($result);
+	else if ($result)
+	{
+		$src_db->sql_freeresult($result);
+	}
+	
 
 	/**
 	* Tests for further MODs can be included here.
@@ -540,9 +546,7 @@ if (!$get_info)
 				array('smiley_width',			'smilies.smile_url',				'get_smiley_width'),
 				array('smiley_height',			'smilies.smile_url',				'get_smiley_height'),
 				array('smiley_order',			'smilies.smilies_id',				''),
-				array('display_on_posting',		'smilies.smilies_id',				array(
-					'execute'		=> '{RESULT} = ({VALUE}[0] <= 20) ? 1 : 0;',
-				)),
+				array('display_on_posting',		'smilies.smilies_id',				'get_smiley_display'),
 
 				'order_by'		=> 'smilies.smilies_id ASC',
 			),
@@ -702,7 +706,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_INBOX,							''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND (privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 			
 			// Outbox
@@ -714,14 +719,15 @@ if (!$get_info)
 				array('user_id',				'privmsgs.privmsgs_from_userid',		'phpbb_user_id'),
 				array('author_id',				'privmsgs.privmsgs_from_userid',		'phpbb_user_id'),
 				array('pm_deleted',				0,										''),
-				array('pm_new',					'privmsgs.privmsgs_type',				'phpbb_new_pm'),
-				array('pm_unread',				'privmsgs.privmsgs_type',				'phpbb_unread_pm'),
+				array('pm_new',					0,										''),
+				array('pm_unread',				0,										''),
 				array('pm_replied',				0,										''),
 				array('pm_marked',				0,										''),
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_OUTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
+										AND (privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 
 			// Sentbox
@@ -740,7 +746,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_SENTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 2',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 2',
 			),
 
 			// Savebox (SAVED IN)
@@ -759,7 +766,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_to_userid',			'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_type = 3',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 3',
 			),
 
 			// Savebox (SAVED OUT)
@@ -778,7 +786,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_from_userid',		'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_type = 4',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 4',
 			),
 
 			array(
@@ -853,7 +862,7 @@ if (!$get_info)
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
 				array('user_timezone',			'users.user_timezone',				''),
-				array('user_dateformat',		'users.user_dateformat',			''),
+				array('user_dateformat',		'users.user_dateformat',			array('function1' => 'phpbb_set_encoding')),
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
@@ -861,10 +870,10 @@ if (!$get_info)
 				array('user_occ',				'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
 				array('user_website',			'users.user_website',				'validate_website'),
 				array('user_jabber',			'',									''),
-				array('user_msnm',				'users.user_msnm',					''),
-				array('user_yim',				'users.user_yim',					''),
-				array('user_aim',				'users.user_aim',					''),
-				array('user_icq',				'users.user_icq',					''),
+				array('user_msnm',				'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
+				array('user_yim',				'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
+				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
+				array('user_icq',				'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
 				array('user_from',				'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('user_rank',				'users.user_rank',					''),
 				array('user_permissions',		'',									''),

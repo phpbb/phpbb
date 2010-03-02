@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -118,7 +118,7 @@ class acp_bbcodes
 				// Make sure the user didn't pick a "bad" name for the BBCode tag.
 				$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'flash', 'flash=');
 
-				if (($action == 'modify' && $data['bbcode_tag'] !== $row['bbcode_tag']) || ($action == 'create'))
+				if (($action == 'modify' && strtolower($data['bbcode_tag']) !== strtolower($row['bbcode_tag'])) || ($action == 'create'))
 				{
 					$sql = 'SELECT 1 as test
 						FROM ' . BBCODES_TABLE . "
@@ -295,10 +295,10 @@ class acp_bbcodes
 		// @todo Make sure to change this too if something changed in message parsing
 		$tokens = array(
 			'URL'	 => array(
-				'!([a-z0-9]+://)?([^< "\r\n\t\]]*)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
+				'!([a-z0-9]+://)?([^< "\r\n\t\]]*?)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
 			),
 			'LOCAL_URL'	 => array(
-				'!([^:]+/[^< "\r\n\t\]]*)!'	=>	'$1'
+				'!([^:]+/[^< "\r\n\t\]]*?)!'	=>	'$1'
 			),
 			'EMAIL' => array(
 				'!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i'	=>	'$1'
@@ -383,10 +383,18 @@ class acp_bbcodes
 
 		// Lowercase tags
 		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+=?).*/i', '$1', $bbcode_match);
-		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_match);
-		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_replace);
-		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_match);
-		$sp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_replace);
+		$bbcode_search = preg_replace('/.*?\[([a-z0-9_-]+)=?.*/i', '$1', $bbcode_match);
+
+		if (!preg_match('/^[a-zA-Z0-9_-]+=?$/', $bbcode_tag))
+		{
+			global $user;
+			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		$fp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_match);
+		$fp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_replace);
+		$sp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_match);
+		$sp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_replace);
 
 		return array(
 			'bbcode_tag'				=> $bbcode_tag,

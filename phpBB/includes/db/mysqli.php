@@ -192,7 +192,7 @@ class dbal_mysqli extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
@@ -243,6 +243,15 @@ class dbal_mysqli extends dbal
 	function sql_escape($msg)
 	{
 		return @mysqli_real_escape_string($this->db_connect_id, $msg);
+	}
+
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
 	}
 
 	/**
@@ -408,7 +417,6 @@ class dbal_mysqli extends dbal
 
 			break;
 		}
-		@mysqli_query($this->db_connect_id, "SET profiling = 0;");
 	}
 }
 

@@ -231,8 +231,13 @@ class ucp_main
 					}
 				}
 
+				$forbidden_forums = array();
+
 				if ($config['allow_forum_notify'])
 				{
+					$forbidden_forums = $forbidden_forums = $auth->acl_getf('!f_read', true);
+					$forbidden_forums = array_unique(array_keys($forbidden_forums));
+					
 					$sql_array = array(
 						'SELECT'	=> 'f.*',
 
@@ -242,7 +247,8 @@ class ucp_main
 						),
 
 						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
-							AND f.forum_id = fw.forum_id',
+							AND f.forum_id = fw.forum_id
+							AND ' . $db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
 
 						'ORDER_BY'	=> 'left_id'
 					);
@@ -330,7 +336,12 @@ class ucp_main
 				// Subscribed Topics
 				if ($config['allow_topic_notify'])
 				{
-					$this->assign_topiclist('subscribed');
+					if (empty($forbidden_forums))
+					{
+						$forbidden_forums = $auth->acl_getf('!f_read', true);
+						$forbidden_forums = array_unique(array_keys($forbidden_forums));
+					}
+					$this->assign_topiclist('subscribed', $forbidden_forums);
 				}
 
 				$template->assign_vars(array(
@@ -386,8 +397,10 @@ class ucp_main
 						confirm_box(false, 'REMOVE_SELECTED_BOOKMARKS', build_hidden_fields($s_hidden_fields));
 					}
 				}
-
-				$this->assign_topiclist('bookmarks');
+				$forbidden_forums = $auth->acl_getf('!f_read', true);
+				$forbidden_forums = array_unique(array_keys($forbidden_forums));
+				
+				$this->assign_topiclist('bookmarks', $forbidden_forums);
 
 			break;
 
@@ -584,16 +597,26 @@ class ucp_main
 	/**
 	* Build and assign topiclist for bookmarks/subscribed topics
 	*/
-	function assign_topiclist($mode = 'subscribed')
+	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
 		global $user, $db, $template, $config, $auth, $phpbb_root_path, $phpEx;
 
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
 
-		$sql = 'SELECT COUNT(topic_id) as topics_count
-			FROM ' . $table . '
-			WHERE user_id = ' . $user->data['user_id'];
+		$sql_array = array(
+			'SELECT'	=> 'COUNT(t.topic_id) as topics_count',
+
+			'FROM'		=> array(
+				$table			=> 'i',
+				TOPICS_TABLE	=> 't'
+			),
+
+			'WHERE'		=>	'i.topic_id = t.topic_id
+				AND i.user_id = ' . $user->data['user_id'] . '
+				AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
 		$topics_count = (int) $db->sql_fetchfield('topics_count');
 		$db->sql_freeresult($result);
@@ -618,7 +641,9 @@ class ucp_main
 				),
 
 				'WHERE'		=> 'tw.user_id = ' . $user->data['user_id'] . '
-					AND t.topic_id = tw.topic_id',
+					AND t.topic_id = tw.topic_id
+					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
+					
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
 			);
@@ -634,7 +659,8 @@ class ucp_main
 					BOOKMARKS_TABLE		=> 'b',
 				),
 
-				'WHERE'		=> 'b.user_id = ' . $user->data['user_id'],
+				'WHERE'		=> 'b.user_id = ' . $user->data['user_id'] . '
+					AND ' . $db->sql_in_set('f.forum_id', $forbidden_forum_ary, true, true),
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
 			);

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -257,11 +257,31 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 		$result = $db->sql_query($sql, $expire_time);
 
 		$forum_rows = array();
+
+		$right = $padding = 0;
+		$padding_store = array('0' => 0);
+
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if ($row['left_id'] < $right)
+			{
+				$padding++;
+				$padding_store[$row['parent_id']] = $padding;
+			}
+			else if ($row['left_id'] > $right + 1)
+			{
+				// Ok, if the $padding_store for this parent is empty there is something wrong. For now we will skip over it.
+				// @todo digging deep to find out "how" this can happen.
+				$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : $padding;
+			}
+
+			$right = $row['right_id'];
+			$row['padding'] = $padding;
+
 			$forum_rows[] = $row;
 		}
 		$db->sql_freeresult($result);
+		unset($padding_store);
 	}
 
 	$rowset = array();
@@ -559,15 +579,33 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 	unset($table_ary);
 
-	$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+	$moved_topic_ids = array();
+
+	// update the other forums
+	$sql = 'SELECT topic_id, forum_id
+		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
-	$db->sql_query($sql);
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$forum_ids[] = $row['forum_id'];
+		$moved_topic_ids[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($moved_topic_ids))
+	{
+		$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+			WHERE ' . $db->sql_in_set('topic_id', $moved_topic_ids);
+		$db->sql_query($sql);
+	}
 
 	$db->sql_transaction('commit');
 
 	if ($auto_sync)
 	{
-		sync('forum', 'forum_id', $forum_ids, true, true);
+		sync('forum', 'forum_id', array_unique($forum_ids), true, true);
 		sync('topic_reported', $where_type, $where_ids);
 	}
 
@@ -659,8 +697,14 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		foreach ($post_counts as $poster_id => $substract)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = 0
+				WHERE user_id = ' . $poster_id . ' 
+				AND user_posts < ' . $substract;
+			$db->sql_query($sql);
+			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_posts = user_posts - ' . $substract . '
-				WHERE user_id = ' . $poster_id;
+				WHERE user_id = ' . $poster_id . ' 
+				AND user_posts >= ' . $substract;
 			$db->sql_query($sql);
 		}
 	}
@@ -2162,8 +2206,7 @@ function cache_moderators()
 				AND a.group_id = ug.group_id
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
-				AND o.auth_option LIKE 'm\_%'" . 
-				(($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
+				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
 		));
 		$result = $db->sql_query($sql);
 
@@ -2799,6 +2842,14 @@ function get_database_size()
 
 				$database_size = $row['size'];
 			}
+		break;
+
+		case 'oracle':
+			$sql = 'SELECT SUM(bytes) as dbsize
+				FROM user_segments';
+			$result = $db->sql_query($sql);
+			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+			$db->sql_freeresult($result);
 		break;
 	}
 
