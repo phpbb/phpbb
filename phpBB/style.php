@@ -20,6 +20,11 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
+if (!defined('PHPBB_INSTALLED') || empty($dbms) || !isset($dbhost) || !isset($dbpasswd) || empty($dbuser))
+{
+	exit;
+}
+
 if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
 {
 	set_magic_quotes_runtime(0);

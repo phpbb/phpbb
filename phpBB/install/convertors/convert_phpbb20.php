@@ -31,8 +31,8 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '1.0.0',
-	'phpbb_version'	=> '3.0.0',
+	'version'		=> '1.0.1',
+	'phpbb_version'	=> '3.0.1',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,

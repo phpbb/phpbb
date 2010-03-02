@@ -341,6 +341,7 @@ class acp_database
 								break;
 
 								case 'postgres':
+									$delim = ";\n";
 									while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
 									{
 										$query = trim($sql);
