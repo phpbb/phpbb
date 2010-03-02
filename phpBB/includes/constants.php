@@ -27,8 +27,11 @@ define('USER_NORMAL', 0);
 define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
-//define('USER_BOT', 2);
-//define('USER_GUEST', 4);
+
+define('INACTIVE_REGISTER', 1);
+define('INACTIVE_PROFILE', 2);
+define('INACTIVE_MANUAL', 3);
+define('INACTIVE_REMIND', 4);
 
 // ACL
 define('ACL_NEVER', 0);
@@ -60,6 +63,19 @@ define('FORUM_LINK', 2);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
+
+// Forum Flags
+define('FORUM_FLAG_LINK_TRACK', 1);
+define('FORUM_FLAG_PRUNE_POLL', 2);
+define('FORUM_FLAG_PRUNE_ANNOUNCE', 4);
+define('FORUM_FLAG_PRUNE_STICKY', 8);
+define('FORUM_FLAG_ACTIVE_TOPICS', 16);
+define('FORUM_FLAG_POST_REVIEW', 32);
+
+// Optional text flags
+define('OPTION_FLAG_BBCODE', 1);
+define('OPTION_FLAG_SMILIES', 2);
+define('OPTION_FLAG_LINKS', 4);
 
 // Topic types
 define('POST_NORMAL', 0);
@@ -114,7 +130,8 @@ define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
 define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming
 define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
-//define('SWF_CAT', 5); // Replaced by [flash]? or an additional possibility?
+define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
+define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);
@@ -129,6 +146,7 @@ define('FIELD_TEXT', 3);
 define('FIELD_BOOL', 4);
 define('FIELD_DROPDOWN', 5);
 define('FIELD_DATE', 6);
+
 
 // Additional constants
 
@@ -172,7 +190,6 @@ define('PROFILE_FIELDS_DATA_TABLE',	$table_prefix . 'profile_fields_data');
 define('PROFILE_FIELDS_LANG_TABLE',	$table_prefix . 'profile_fields_lang');
 define('PROFILE_LANG_TABLE',		$table_prefix . 'profile_lang');
 define('RANKS_TABLE',				$table_prefix . 'ranks');
-define('RATINGS_TABLE',				$table_prefix . 'ratings');
 define('REPORTS_TABLE',				$table_prefix . 'reports');
 define('REPORTS_REASONS_TABLE',		$table_prefix . 'reports_reasons');
 define('SEARCH_RESULTS_TABLE',		$table_prefix . 'search_results');
@@ -193,7 +210,6 @@ define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
 define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
 define('USERS_TABLE',				$table_prefix . 'users');
-define('USERS_NOTES_TABLE',			$table_prefix . 'users_notes');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');
 define('ZEBRA_TABLE',				$table_prefix . 'zebra');

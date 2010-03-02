@@ -244,7 +244,7 @@ if (!$user->data['is_registered'])
 $update_time = $config['load_online_time'] * 60;
 
 $sql = $db->sql_build_query('SELECT_DISTINCT', array(
-	'SELECT'	=> 'u.user_id, u.username, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+	'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -262,7 +262,7 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 		AND z.friend = 1
 		AND u.user_id = z.zebra_id',
 
-	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline',
+	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline, u.user_colour',
 
 	'ORDER_BY'	=> 'u.username ASC',
 ));
@@ -276,39 +276,12 @@ while ($row = $db->sql_fetchrow($result))
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-		'USER_ID'	=> $row['user_id'],
-		'USERNAME'	=> $row['username'])
+		'USER_ID'		=> $row['user_id'],
+		'USER_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
+		'USERNAME'		=> $row['username'])
 	);
 }
 $db->sql_freeresult($result);
-
-// Output PM_TO box if message composing
-if ($mode == 'compose' && $auth->acl_get('u_sendpm') && request_var('action', '') != 'edit')
-{
-	if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
-	{
-		$sql = 'SELECT group_id, group_name, group_type
-			FROM ' . GROUPS_TABLE . '
-			WHERE group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_CLOSED . ')
-				AND group_receive_pm = 1
-			ORDER BY group_type DESC';
-		$result = $db->sql_query($sql);
-
-		$group_options = '';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
-		}
-		$db->sql_freeresult($result);
-	}
-
-	$template->assign_vars(array(
-		'S_SHOW_PM_BOX'		=> true,
-		'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-		'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
-		'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=post&amp;field=username_list'))
-	);
-}
 
 // Instantiate module system and generate list of available modules
 $module->list_modules('ucp');

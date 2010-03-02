@@ -80,6 +80,16 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
+		else
+		{
+			// Now, this occurred how often? ... phew, just tell the user then...
+			if (!@is_writeable($this->cache_dir))
+			{
+				trigger_error($this->cache_dir . ' is NOT writeable.', E_USER_ERROR);
+			}
+
+			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx, E_USER_ERROR);
+		}
 
 		$this->is_modified = false;
 	}
@@ -132,7 +142,7 @@ class acm
 	*/
 	function get($var_name)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 
@@ -155,7 +165,7 @@ class acm
 	*/
 	function put($var_name, $var, $ttl = 31536000)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 
@@ -173,6 +183,32 @@ class acm
 			$this->var_expires[$var_name] = time() + $ttl;
 			$this->is_modified = true;
 		}
+	}
+
+	/**
+	* Purge cache data
+	*/
+	function purge()
+	{
+		// Purge all phpbb cache files
+		$dir = opendir($this->cache_dir);
+		while (($entry = readdir($dir)) !== false)
+		{
+			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			{
+				continue;
+			}
+
+			@unlink($this->cache_dir . $entry);
+		}
+		@closedir($dir);
+
+		unset($this->vars);
+		unset($this->var_expires);
+		unset($this->sql_rowset);
+		unset($this->sql_row_pointer);
+
+		$this->is_modified = false;
 	}
 
 	/**
@@ -213,7 +249,7 @@ class acm
 			return;
 		}
 
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
@@ -233,7 +269,7 @@ class acm
 	*/
 	function _exists($var_name)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");
@@ -345,7 +381,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
+			fwrite($fp, "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -375,14 +411,6 @@ class acm
 	}
 
 	/**
-	* Fetch the number of rows from cache (database)
-	*/
-	function sql_numrows($query_id)
-	{
-		return sizeof($this->sql_rowset[$query_id]);
-	}
-
-	/**
 	* Fetch a field from the current row of a cached database result (database)
 	*/
 	function sql_fetchfield($query_id, $field)
@@ -398,7 +426,7 @@ class acm
 	/**
 	* Seek a specific row in an a cached database result (database)
 	*/
-	function sql_rowseek($query_id, $rownum)
+	function sql_rowseek($rownum, $query_id)
 	{
 		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
 		{

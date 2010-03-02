@@ -1,5 +1,4 @@
 Subject: Inactive account reminder
-Charset: iso-8859-1
 
 Hello {USERNAME},
 

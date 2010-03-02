@@ -28,33 +28,38 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-// Banning
+// Database Backup/Restore
 $lang = array_merge($lang, array(
-	'DATABASE' => 'Database Utilities',
-	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your store/ folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats. If you wish to include any additional "custom" tables please list them in the additional tables field, separated by commas. ',
-	'BACKUP_OPTIONS'	=> 'Backup options',
-	'BACKUP_TYPE'		=> 'Backup type',
-	'BACKUP_INVALID'	=> 'The selected file to backup is invalid',
-	'START_BACKUP'		=> 'Start Backup',
-	'FULL_BACKUP'		=> 'Full',
-	'STRUCTURE_ONLY'	=> 'Structure Only',
-	'DATA_ONLY'			=> 'Data only',
-	'TABLE_SELECT'		=> 'Table Select',
-	'FILE_TYPE'			=> 'File Type',
-	'STORE_LOCAL'		=> 'Store file locally',
-	'SELECT_ALL'		=> 'Select all',
-	'DESELECT_ALL'		=> 'Deselect all',
-	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully',
-	'BACKUP_DELETE'		=> 'The backup file has been deleted successfully',
+	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your <samp>store/</samp> folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats.',
+	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may use a gzip or bzip2 compressed text file and it will automatically be decompressed. <strong>WARNING</strong> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
 
-	'STORE_AND_DOWNLOAD'	=> 'Store and Download',
-	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may use a gzip or bzip2 compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
-	'SELECT_FILE'			=> 'Select a file',
+	'BACKUP_DELETE'		=> 'The backup file has been deleted successfully.',
+	'BACKUP_INVALID'	=> 'The selected file to backup is invalid.',
+	'BACKUP_OPTIONS'	=> 'Backup options',
+	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully.',
+	'BACKUP_TYPE'		=> 'Backup type',
+
+	'DATABASE'			=> 'Database utilities',
+	'DATA_ONLY'			=> 'Data only',
+	'DELETE_BACKUP'		=> 'Delete backup',
+	'DESELECT_ALL'		=> 'Deselect all',
+	'DOWNLOAD_BACKUP'	=> 'Download backup',
+
+	'FILE_TYPE'			=> 'File type',
+	'FULL_BACKUP'		=> 'Full',
+
 	'RESTORE_OPTIONS'		=> 'Restore options',
-	'START_RESTORE'			=> 'Start Restore',
-	'DELETE_BACKUP'			=> 'Delete Backup',
-	'DOWNLOAD_BACKUP'		=> 'Download Backup',
-	'RESTORE_SUCCESS'		=> 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
+	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
+
+	'SELECT_ALL'			=> 'Select all',
+	'SELECT_FILE'			=> 'Select a file',
+	'START_BACKUP'			=> 'Start backup',
+	'START_RESTORE'			=> 'Start restore',
+	'STORE_AND_DOWNLOAD'	=> 'Store and download',
+	'STORE_LOCAL'			=> 'Store file locally',
+	'STRUCTURE_ONLY'		=> 'Structure only',
+
+	'TABLE_SELECT'		=> 'Table select',
 ));
 
 ?>

@@ -35,8 +35,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Grab icons
-	$icons = array();
-	$cache->obtain_icons($icons);
+	$icons = $cache->obtain_icons();
 
 	$bbcode = false;
 
@@ -54,6 +53,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	// Parse the message and subject
 	$message = $message_row['message_text'];
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Second parse bbcode here
 	if ($message_row['bbcode_bitfield'])
@@ -66,7 +66,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
-	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Editing information
 	if ($message_row['message_edit_count'] && $config['display_last_edited'])
@@ -146,6 +145,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// End signature parsing, only if needed
 	if ($signature)
 	{
+		$signature = censor_text($signature);
+		$signature = str_replace("\n", '<br />', censor_text($signature));
+
 		if ($user_info['user_sig_bbcode_bitfield'])
 		{
 			if ($bbcode === false)
@@ -158,7 +160,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 
 		$signature = smiley_text($signature);
-		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
@@ -191,16 +192,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
+		'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id) : '',
 		'U_EMAIL'			=> $user_info['email'],
-		'U_QUOTE'			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EDIT'			=> (($message_row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
 
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
+		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
@@ -295,13 +297,13 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	// Instantiate BBCode class
-	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield)
+	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield !== '')
 	{
 		if (!class_exists('bbcode'))
 		{
 			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		}
-		$bbcode = new bbcode($bbcode_bitfield);
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	$title = censor_text($title);
@@ -318,6 +320,9 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		$subject	= $row['message_subject'];
 		$message	= $row['message_text'];
 
+		$message = censor_text($message);
+		$message = str_replace("\n", '<br />', $message);
+
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
@@ -326,7 +331,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$subject = censor_text($subject);
-		$message = censor_text($message);
 
 		if ($id == $msg_id)
 		{
@@ -339,16 +343,17 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'AUTHOR_NAME'	=> $author,
 			'SUBJECT'		=> $subject,
 			'SENT_DATE'		=> $user->format_date($row['message_time']),
-			'MESSAGE'		=> str_replace("\n", '<br />', $message),
+			'MESSAGE'		=> $message,
 			'FOLDER'		=> implode(', ', $row['folder']),
 
-			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
-	
+			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
+			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
+
 			'U_MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id"),
-			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+			'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id") : '',
+			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
 		unset($rowset[$id]);
 		$prev_id = $id;
@@ -389,8 +394,7 @@ function get_user_informations($user_id, $user_row)
 	}
 
 	// Grab ranks
-	$ranks = array();
-	$cache->obtain_ranks($ranks);
+	$ranks = $cache->obtain_ranks();
 
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
@@ -429,7 +433,7 @@ function get_user_informations($user_id, $user_row)
 		}
 		$avatar_img .= $user_row['user_avatar'];
 
-		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" border="0" alt="" />';
+		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
 	}
 
 	$user_row['rank_title'] = $user_row['rank_image'] = '';
@@ -437,7 +441,7 @@ function get_user_informations($user_id, $user_row)
 	if (!empty($user_row['user_rank']))
 	{
 		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';
-		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
+		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
 	}
 	else
 	{
@@ -448,7 +452,7 @@ function get_user_informations($user_id, $user_row)
 				if ($user_row['user_posts'] >= $rank['rank_min'])
 				{
 					$user_row['rank_title'] = $rank['rank_title'];
-					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
 					break;
 				}
 			}

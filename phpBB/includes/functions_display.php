@@ -44,7 +44,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	// Display list of active topics for this category?
-	$show_active = (isset($root_data['forum_flags']) && $root_data['forum_flags'] & 16) ? true : false;
+	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 	$sql_from = FORUMS_TABLE . ' f ';
 	$lastread_select = $sql_lastread = '';
@@ -126,7 +126,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		// Display active topics from this forum?
-		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & 16))
+		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
 		{
 			if (!isset($active_forum_ary['forum_topics']))
 			{
@@ -180,9 +180,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			if ($row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
 			{
 				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
+				$forum_rows[$parent_id]['forum_last_post_subject'] = $row['forum_last_post_subject'];
 				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
 				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
+				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour'];
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 			else
@@ -235,8 +237,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'FORUM_ID'				=> $row['forum_id'],
 				'FORUM_NAME'			=> $row['forum_name'],
 				'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-				'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
-				'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
+				'FORUM_FOLDER_IMG'		=> '',
+				'FORUM_FOLDER_IMG_SRC'	=> '',
+				'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
+				'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
 			);
 
@@ -303,16 +307,18 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
 		{
+			$last_post_subject = $row['forum_last_post_subject'];
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
+			$last_poster_colour = ($row['forum_last_poster_colour']) ? '#' . $row['forum_last_poster_colour'] : '';
 			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['forum_last_poster_id']);
 
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
 		else
 		{
-			$last_post_time = $last_poster = $last_poster_url = $last_post_url = '';
+			$last_post_subject = $last_post_time = $last_poster = $last_poster_colour = $last_poster_url = $last_post_url = '';
 		}
 
 		// Output moderator listing ... if applicable
@@ -324,7 +330,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
-		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? $row['forum_posts'] : '';
+		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? $row['forum_posts'] : '';
 
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=> false,
@@ -337,18 +343,22 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 			'TOPICS'				=> $row['forum_topics'],
 			$l_post_click_count		=> $post_click_count,
-			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : $user->img($folder_image, $folder_alt),
-			'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : $user->img($folder_image, $folder_alt, false, '', 'src'),
+			'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
+			'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
+			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 			'SUBFORUMS'				=> $subforums_list,
+			'LAST_POST_SUBJECT'		=> censor_text($last_post_subject),
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> $last_poster,
+			'LAST_POSTER_COLOUR'	=> $last_poster_colour,
 			'MODERATORS'			=> $moderators_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
+			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || ($row['forum_flags'] & FORUM_FLAG_LINK_TRACK)) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
 			'U_LAST_POSTER'		=> $last_poster_url,
 			'U_LAST_POST'		=> $last_post_url)
 		);
@@ -489,20 +499,6 @@ function get_forum_parents(&$forum_data)
 	}
 
 	return $forum_parents;
-}
-
-/**
-* Get topic author
-*/
-function topic_topic_author(&$topic_row)
-{
-	global $phpEx, $phpbb_root_path, $user;
-
-	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $topic_row['topic_poster']) . '">' : '';
-	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? $topic_row['topic_first_poster_name'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
-	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
-
-	return $topic_author;
 }
 
 /**
@@ -660,7 +656,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				$folder = 'topic_read';
 				$folder_new = 'topic_unread';
 
-				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'])
+				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'] && $topic_row['topic_status'] != ITEM_LOCKED)
 				{
 					$folder .= '_hot';
 					$folder_new .= '_hot';
@@ -706,14 +702,59 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		'attachment_tpl'	=> 'attachment.html')
 	);
 
+	if (!sizeof($attachment_data))
+	{
+		return array();
+	}
+
 	if (empty($extensions) || !is_array($extensions))
 	{
-		$extensions = array();
-		$cache->obtain_attach_extensions($extensions);
+		$extensions = $cache->obtain_attach_extensions();
+	}
+
+	// Look for missing attachment informations...
+	$attach_ids = array();
+	foreach ($attachment_data as $pos => $attachment)
+	{
+		// If is_orphan is set, we need to retrieve the attachments again...
+		if (!isset($attachment['extension']) && !isset($attachment['physical_filename']))
+		{
+			$attach_ids[(int) $attachment['attach_id']] = $pos;
+		}
+	}
+
+	if (sizeof($attach_ids))
+	{
+		global $db;
+
+		$attachment_data = array();
+
+		$sql = 'SELECT *
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids));
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($attach_ids[$row['attach_id']]))
+			{
+				continue;
+			}
+
+			$attachment_data[$attach_ids[$row['attach_id']]] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		ksort($attachment_data);
 	}
 
 	foreach ($attachment_data as $attachment)
 	{
+		if (!sizeof($attachment))
+		{
+			continue;
+		}
+
 		// We need to reset/empty the _file block var, because this function might be called more than once
 		$template->destroy_block_vars('_file');
 
@@ -795,6 +836,8 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
 
+			$download_link_full = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : generate_board_url() . $filename;
+
 			switch ($display_cat)
 			{
 				// Images
@@ -823,53 +866,51 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 
-					// The download link is slightly different, because somehow phpBB is not able to get the correct results if called
-					// within the wmp object (cookies are not present).
-					// $download_link = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&f=' . $forum_id, false, $user->session_id) : $filename;
-
 					// Giving the filename directly because within the wm object all variables are in local context making it impossible
 					// to validate against a valid session (all params can differ)
 					$download_link = $filename;
 
 					$block_array += array(
+						'U_FORUM'		=> generate_board_url(),
 						'S_WM_FILE'		=> true,
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
 
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
+				case ATTACHMENT_CATEGORY_QUICKTIME:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 
 					$block_array += array(
-						'S_RM_FILE'		=> true,
-						'U_FORUM'		=> generate_board_url(),
-						'ATTACH_ID'		=> $attachment['attach_id'],
+						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
+						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
+						'U_FORUM'			=> generate_board_url(),
+						'ATTACH_ID'			=> $attachment['attach_id'],
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
 
-/*				// Macromedia Flash Files
-				case SWF_CAT:
-					list($width, $height) = swf_getdimension($filename);
+				// Macromedia Flash Files
+				case ATTACHMENT_CATEGORY_FLASH:
+					list($width, $height) = @getimagesize($filename);
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
-						'S_SWF_FILE'	=> true,
+						'S_FLASH_FILE'	=> true,
 						'WIDTH'			=> $width,
 						'HEIGHT'		=> $height,
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
-*/
+
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
 
@@ -933,7 +974,7 @@ function display_custom_bbcodes()
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
-			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'])
+			'BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', '&#039;', '&lt;', '&gt;'), array('\&', '\"', '\\\'', '<', '>'), $row['bbcode_helpline']))
 		);
 
 		$i++;
@@ -980,24 +1021,17 @@ function display_user_activity(&$userdata)
 	global $auth, $template, $db, $user;
 	global $phpbb_root_path, $phpEx;
 
-	// Init new auth class if user is different
-	if ($user->data['user_id'] != $userdata['user_id'])
+	// Do not display user activity for users having more than 5000 posts...
+	if ($userdata['user_posts'] > 5000)
 	{
-		$auth2 = new auth();
-		$auth2->acl($userdata);
-
-		$post_count_ary = $auth2->acl_getf('!f_postcount');
+		return;
 	}
-	else
-	{
-		$post_count_ary = $auth->acl_getf('!f_postcount');
-	}
-
-	$forum_read_ary = $auth->acl_getf('!f_read');
 
 	$forum_ary = array();
 
 	// Do not include those forums the user is not having read access to...
+	$forum_read_ary = $auth->acl_getf('!f_read');
+
 	foreach ($forum_read_ary as $forum_id => $not_allowed)
 	{
 		if ($not_allowed['f_read'])
@@ -1006,44 +1040,18 @@ function display_user_activity(&$userdata)
 		}
 	}
 
-	// Now do not include those forums where the posts do not count...
-	foreach ($post_count_ary as $forum_id => $not_counted)
-	{
-		if ($not_counted['f_postcount'])
-		{
-			$forum_ary[] = (int) $forum_id;
-		}
-	}
-
 	$forum_ary = array_unique($forum_ary);
-	$post_count_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('f.forum_id', $forum_ary, true) : '';
+	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
 
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY COUNT(p.post_id) DESC";
-		break;
-
-		default:
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY num_posts DESC";
-		break;
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
+	// Obtain active forum
+	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
+		FROM ' . POSTS_TABLE . '
+		WHERE poster_id = ' . $userdata['user_id'] . "
+			AND post_postcount = 1
+			$forum_sql
+		GROUP BY forum_id
+		ORDER BY num_posts DESC";
+	$result = $db->sql_query_limit($sql, 1, 0, 3600);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
@@ -1057,34 +1065,15 @@ function display_user_activity(&$userdata)
 		$db->sql_freeresult($result);
 	}
 
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY COUNT(p.post_id) DESC";
-		break;
-
-		default:
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY num_posts DESC";
-		break;
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
+	// Obtain active topic
+	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
+		FROM ' . POSTS_TABLE . '
+		WHERE poster_id = ' . $userdata['user_id'] . "
+			AND post_postcount = 1
+			$forum_sql
+		GROUP BY topic_id
+		ORDER BY num_posts DESC";
+	$result = $db->sql_query_limit($sql, 1, 0, 3600);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
@@ -1127,7 +1116,8 @@ function display_user_activity(&$userdata)
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
 		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
-		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id))
+		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id),
+		'S_SHOW_ACTIVITY'		=> true)
 	);
 }
 

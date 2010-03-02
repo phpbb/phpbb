@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -30,11 +32,11 @@ if (empty($lang) || !is_array($lang))
 
 // Forum Admin
 $lang = array_merge($lang, array(
-	'AUTO_PRUNE_DAYS'			=> 'Auto-prune Post Age',
+	'AUTO_PRUNE_DAYS'			=> 'Auto-prune post age',
 	'AUTO_PRUNE_DAYS_EXPLAIN'	=> 'Number of days since last post after which topic is removed.',
-	'AUTO_PRUNE_FREQ'			=> 'Auto-prune Frequency',
+	'AUTO_PRUNE_FREQ'			=> 'Auto-prune frequency',
 	'AUTO_PRUNE_FREQ_EXPLAIN'	=> 'Time in days between pruning events.',
-	'AUTO_PRUNE_VIEWED'			=> 'Auto-prune Post Viewed Age',
+	'AUTO_PRUNE_VIEWED'			=> 'Auto-prune post viewed age',
 	'AUTO_PRUNE_VIEWED_EXPLAIN'	=> 'Number of days since topic was viewed after which topic is removed.',
 
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
@@ -58,50 +60,50 @@ $lang = array_merge($lang, array(
 	'ENABLE_RECENT_EXPLAIN'			=> 'If set to yes topics made to this forum will be shown in the active topics list.',
 	'ENABLE_TOPIC_ICONS'			=> 'Enable Topic Icons',
 
-	'FORUM_ADMIN'						=> 'Forum Administration',
+	'FORUM_ADMIN'						=> 'Forum administration',
 	'FORUM_ADMIN_EXPLAIN'				=> 'In phpBB3 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
-	'FORUM_AUTO_PRUNE'					=> 'Enable Auto-Pruning',
+	'FORUM_AUTO_PRUNE'					=> 'Enable auto-pruning',
 	'FORUM_AUTO_PRUNE_EXPLAIN'			=> 'Prunes the forum of topics, set the frequency/age parameters below.',
 	'FORUM_CREATED'						=> 'Forum created successfully.',
 	'FORUM_DATA_NEGATIVE'				=> 'Pruning parameters cannot be negative.',
-	'FORUM_DELETE'						=> 'Delete Forum',
+	'FORUM_DELETE'						=> 'Delete forum',
 	'FORUM_DELETE_EXPLAIN'				=> 'The form below will allow you to delete a forum and decide where you want to put all topics (or forums) it contained.',
-	'FORUM_DELETED'						=> 'Forum successfully deleted',
+	'FORUM_DELETED'						=> 'Forum successfully deleted.',
 	'FORUM_DESC'						=> 'Description',
 	'FORUM_DESC_EXPLAIN'				=> 'Any markup entered here will displayed as is.',
 	'FORUM_EDIT_EXPLAIN'				=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_IMAGE'						=> 'Forum Image',
-	'FORUM_IMAGE_EXPLAIN'				=> 'Location, relative to the phpBB root directory, of an image to associate with this forum.',
-	'FORUM_LINK_EXPLAIN'				=> 'Full URL (including the protocol, for example http://) to location clicking this forum will take the user.',
-	'FORUM_LINK_TRACK'					=> 'Track Link Redirects',
+	'FORUM_IMAGE_EXPLAIN'				=> 'Location, relative to the phpBB root directory, of an additional image to associate with this forum.',
+	'FORUM_LINK_EXPLAIN'				=> 'Full URL (including the protocol, for example <samp>http://</samp>) to location clicking this forum will take the user.',
+	'FORUM_LINK_TRACK'					=> 'Track link redirects',
 	'FORUM_LINK_TRACK_EXPLAIN'			=> 'Records the number of times a forum link was clicked.',
-	'FORUM_NAME'						=> 'Forum Name',
+	'FORUM_NAME'						=> 'Forum name',
 	'FORUM_NAME_EMPTY'					=> 'You must enter a name for this forum.',
-	'FORUM_PARENT'						=> 'Parent Forum',
-	'FORUM_PASSWORD'					=> 'Forum Password',
-	'FORUM_PASSWORD_CONFIRM'			=> 'Confirm Forum Password',
+	'FORUM_PARENT'						=> 'Parent forum',
+	'FORUM_PASSWORD'					=> 'Forum password',
+	'FORUM_PASSWORD_CONFIRM'			=> 'Confirm forum password',
 	'FORUM_PASSWORD_CONFIRM_EXPLAIN'	=> 'Only needs to be set if a forum password is entered.',
 	'FORUM_PASSWORD_EXPLAIN'			=> 'Defines a password for this forum, use the permission system in preference.',
 	'FORUM_PASSWORD_MISMATCH'			=> 'The passwords you entered did not match.',
 	'FORUM_PRUNE_SETTINGS'				=> 'Forum prune settings',
 	'FORUM_RESYNCED'					=> 'Forum "%s" successfully resynced',
-	'FORUM_RULES_EXPLAIN'				=> 'Forum Rules are displayed at any page within the given forum.',
-	'FORUM_RULES_LINK'					=> 'Link to Forum Rules',
-	'FORUM_RULES_LINK_EXPLAIN'			=> 'You are able to enter the URL of the page/post containing your forum rules here. This setting will override the Forum Rules text you specified.',
-	'FORUM_RULES_PREVIEW'				=> 'Forum Rules preview',
-	'FORUM_SETTINGS'					=> 'Forum Settings',
-	'FORUM_STATUS'						=> 'Forum Status',
-	'FORUM_STYLE'						=> 'Forum Style',
-	'FORUM_TOPICS_PAGE'					=> 'Topics Per Page',
+	'FORUM_RULES_EXPLAIN'				=> 'Forum rules are displayed at any page within the given forum.',
+	'FORUM_RULES_LINK'					=> 'Link to forum rules',
+	'FORUM_RULES_LINK_EXPLAIN'			=> 'You are able to enter the URL of the page/post containing your forum rules here. This setting will override the forum rules text you specified.',
+	'FORUM_RULES_PREVIEW'				=> 'Forum rules preview',
+	'FORUM_SETTINGS'					=> 'Forum settings',
+	'FORUM_STATUS'						=> 'Forum status',
+	'FORUM_STYLE'						=> 'Forum style',
+	'FORUM_TOPICS_PAGE'					=> 'Topics per page',
 	'FORUM_TOPICS_PAGE_EXPLAIN'			=> 'If non-zero this value will override the default topics per page setting.',
-	'FORUM_TYPE'						=> 'Forum Type',
+	'FORUM_TYPE'						=> 'Forum type',
 	'FORUM_UPDATED'						=> 'Forum informations updated successfully.',
 
-	'GENERAL_FORUM_SETTINGS'	=> 'General Forum Settings',
+	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
 	'LINK'					=> 'Link',
-	'LIST_INDEX'			=> 'List Forum On Index',
-	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the root parent forum on the index.',
+	'LIST_INDEX'			=> 'List forum in subforum listings',
+	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the parent forums subforum listing if one exist.',
 	'LOCKED'				=> 'Locked',
 
 	'MOVE_POSTS_TO'		=> 'Move posts',
@@ -109,18 +111,21 @@ $lang = array_merge($lang, array(
 
 	'NO_DESTINATION_FORUM'			=> 'You have not specified a forum to move content to',
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',
-	'NO_PARENT'						=> 'No Parent',
+	'NO_PARENT'						=> 'No parent',
 	'NO_PERMISSIONS'				=> 'Do not copy permissions',
-	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the neccessary permissions to add forums',
-	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the neccessary permissions to delete forums',
+	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the necessary permissions to add forums.',
+	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the necessary permissions to delete forums.',
 
-	'PARENT_NOT_EXIST'			=> 'Parent does not exist',
-	'PRUNE_ANNOUNCEMENTS'		=> 'Prune Announcements',
-	'PRUNE_STICKY'				=> 'Prune Stickies',
-	'PRUNE_OLD_POLLS'			=> 'Prune Old Polls',
+	'PARENT_NOT_EXIST'			=> 'Parent does not exist.',
+	'PRUNE_ANNOUNCEMENTS'		=> 'Prune announcements',
+	'PRUNE_STICKY'				=> 'Prune stickies',
+	'PRUNE_OLD_POLLS'			=> 'Prune old polls',
 	'PRUNE_OLD_POLLS_EXPLAIN'	=> 'Removes topics with polls not voted in for post age days.',
 	
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
+
+	'SYNC_IN_PROGRESS'			=> 'Synchronizing forum',
+	'SYNC_IN_PROGRESS_EXPLAIN'	=> 'Currently resyncing topic range %1$d/%2$d.',
 
 	'TYPE_CAT'			=> 'Category',
 	'TYPE_FORUM'		=> 'Forum',

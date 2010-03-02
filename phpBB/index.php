@@ -46,7 +46,14 @@ $result = $db->sql_query($sql);
 $legend = '';
 while ($row = $db->sql_fetchrow($result))
 {
-	$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+	if ($row['group_name'] == 'BOTS')
+	{
+		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . $user->lang['G_BOTS'] . '</span>';
+	}
+	else
+	{
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+	}
 }
 $db->sql_freeresult($result);
 
@@ -54,7 +61,7 @@ $db->sql_freeresult($result);
 $birthday_list = '';
 if ($config['load_birthdays'])
 {
-	$now = getdate();
+	$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
 	$sql = 'SELECT user_id, username, user_colour, user_birthday
 		FROM ' . USERS_TABLE . "
 		WHERE user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%'
@@ -83,9 +90,9 @@ $template->assign_vars(array(
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> $birthday_list,
 
-	'FORUM_IMG'			=> $user->img('forum_read', 'NO_NEW_POSTS'),
-	'FORUM_NEW_IMG'		=> $user->img('forum_unread', 'NEW_POSTS'),
-	'FORUM_LOCKED_IMG'	=> $user->img('forum_read_locked', 'NO_NEW_POSTS_LOCKED'),
+	'FORUM_IMG'				=> $user->img('forum_read', 'NO_NEW_POSTS'),
+	'FORUM_NEW_IMG'			=> $user->img('forum_unread', 'NEW_POSTS'),
+	'FORUM_LOCKED_IMG'		=> $user->img('forum_read_locked', 'NO_NEW_POSTS_LOCKED'),
 	'FORUM_NEW_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'NO_NEW_POSTS_LOCKED'),
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),

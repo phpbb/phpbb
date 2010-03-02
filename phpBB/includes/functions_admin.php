@@ -207,7 +207,7 @@ function group_select_options($group_id, $exclude_ids = false)
 	global $db, $user, $config;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
-	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . "
@@ -245,6 +245,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 			ORDER BY left_id ASC';
 		$result = $db->sql_query($sql, $expire_time);
 
+		$forum_rows = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_rows[] = $row;
@@ -346,7 +347,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 				$matches[$dir][] = $fname;
 			}
 		}
-		else if ($fname{0} != '.' && is_dir("$rootdir$dir$fname"))
+		else if ($fname[0] != '.' && is_dir("$rootdir$dir$fname"))
 		{
 			$matches += filelist($rootdir, "$dir$fname", $type);
 		}
@@ -511,7 +512,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
 	}
-	$db->sql_freeresult();
+	$db->sql_freeresult($result);
 
 	$return['topics'] = sizeof($topic_ids);
 
@@ -628,7 +629,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
 
-	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+	include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
 
 	$error = false;
 	$search = new $search_type($error);
@@ -879,7 +880,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 {
 	$where = (is_array($forum_id)) ? 'AND ' . $db->sql_in_set('t.forum_id', array_map('intval', $forum_id)) : (($forum_id) ? 'AND t.forum_id = ' . (int) $forum_id : '');
 
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'mysql4':
 		case 'mysqli':
@@ -970,24 +971,7 @@ function update_posted_info(&$topic_ids)
 	}
 	unset($posted);
 
-	if (sizeof($sql_ary))
-	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
-				{
-					$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-				}
-			break;
-		}
-	}
+	$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
 }
 
 /**
@@ -1036,7 +1020,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		$where_ids = ($where_ids) ? array((int) $where_ids) : array();
 	}
 
-	if ($mode == 'forum' || $mode == 'topic')
+	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_approved')
 	{
 		if (!$where_type)
 		{
@@ -1046,7 +1030,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		else if ($where_type == 'range')
 		{
 			// Only check a range of topics/forums. For instance: 'topic_id BETWEEN 1 AND 60'
-			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
+			$where_sql = 'WHERE (' . $mode[0] . ".$where_ids)";
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 		else
@@ -1062,7 +1046,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
 			// $where_type contains the field for the where clause (forum_id, topic_id)
-			$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
+			$where_sql = 'WHERE ' . $db->sql_in_set($mode[0] . '.' . $where_type, $where_ids);
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 	}
@@ -1074,14 +1058,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		}
 
 		// $where_type contains the field for the where clause (forum_id, topic_id)
-		$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
+		$where_sql = 'WHERE ' . $db->sql_in_set($mode[0] . '.' . $where_type, $where_ids);
 		$where_sql_and = $where_sql . "\n\tAND";
 	}
 
 	switch ($mode)
 	{
 		case 'topic_moved':
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -1120,7 +1104,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		break;
 
 		case 'topic_approved':
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -1129,7 +1113,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						$where_sql_and t.topic_first_post_id = p.post_id";
 					$db->sql_query($sql);
 				break;
-			
+
 				default:
 					$sql = 'SELECT t.topic_id, p.post_approved
 						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
@@ -1142,7 +1126,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_ids[] = $row['topic_id'];
 					}
-					$db->sql_freeresult();
+					$db->sql_freeresult($result);
 
 					if (!sizeof($topic_ids))
 					{
@@ -1375,9 +1359,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_data[$forum_id]['topics'] = 0;
 				$forum_data[$forum_id]['topics_real'] = 0;
 				$forum_data[$forum_id]['last_post_id'] = 0;
+				$forum_data[$forum_id]['last_post_subject'] = '';
 				$forum_data[$forum_id]['last_post_time'] = 0;
 				$forum_data[$forum_id]['last_poster_id'] = 0;
 				$forum_data[$forum_id]['last_poster_name'] = '';
+				$forum_data[$forum_id]['last_poster_colour'] = '';
 			}
 			$db->sql_freeresult($result);
 
@@ -1385,6 +1371,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				break;
 			}
+
+			$forum_ids = array_values($forum_ids);
 
 			// 2: Get topic counts for each forum
 			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
@@ -1406,16 +1394,27 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_freeresult($result);
 
 			// 3: Get post count and last_post_id for each forum
-			$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
-				FROM ' . POSTS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-					AND post_approved = 1
-				GROUP BY forum_id';
+			if (sizeof($forum_ids) == 1)
+			{
+				$sql = 'SELECT COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+						AND post_approved = 1';
+			}
+			else
+			{
+				$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+						AND post_approved = 1
+					GROUP BY forum_id';
+			}
+
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_id = (int) $row['forum_id'];
+				$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
 				$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
 				$forum_data[$forum_id]['last_post_id'] = (int) $row['last_post_id'];
@@ -1427,7 +1426,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 4: Retrieve last_post infos
 			if (sizeof($post_ids))
 			{
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username
+				$sql = 'SELECT p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 						AND p.poster_id = u.user_id';
@@ -1445,17 +1444,21 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						if (isset($post_info[$data['last_post_id']]))
 						{
+							$forum_data[$forum_id]['last_post_subject'] = $post_info[$data['last_post_id']]['post_subject'];
 							$forum_data[$forum_id]['last_post_time'] = $post_info[$data['last_post_id']]['post_time'];
 							$forum_data[$forum_id]['last_poster_id'] = $post_info[$data['last_post_id']]['poster_id'];
 							$forum_data[$forum_id]['last_poster_name'] = ($post_info[$data['last_post_id']]['poster_id'] != ANONYMOUS) ? $post_info[$data['last_post_id']]['username'] : $post_info[$data['last_post_id']]['post_username'];
+							$forum_data[$forum_id]['last_poster_colour'] = $post_info[$data['last_post_id']]['user_colour'];
 						}
 						else
 						{
 							// For some reason we did not find the post in the db
 							$forum_data[$forum_id]['last_post_id'] = 0;
+							$forum_data[$forum_id]['last_post_subject'] = '';
 							$forum_data[$forum_id]['last_post_time'] = 0;
 							$forum_data[$forum_id]['last_poster_id'] = 0;
 							$forum_data[$forum_id]['last_poster_name'] = '';
+							$forum_data[$forum_id]['last_poster_colour'] = '';
 						}
 					}
 				}
@@ -1463,7 +1466,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 
 			// 5: Now do that thing
-			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			foreach ($forum_data as $forum_id => $row)
 			{
@@ -1473,7 +1476,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					if ($row['forum_' . $fieldname] != $row[$fieldname])
 					{
-						if (preg_match('#name$#', $fieldname))
+						if (preg_match('#(name|colour|subject)$#', $fieldname))
 						{
 							$sql_ary['forum_' . $fieldname] = (string) $row[$fieldname];
 						}
@@ -1497,7 +1500,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		case 'topic':
 			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -1513,6 +1516,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
 				$topic_data[$topic_id]['replies_real'] = -1;
+				$topic_data[$topic_id]['replies'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
@@ -1532,19 +1536,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
-				$where_sql";
-
-			switch (SQL_LAYER)
-			{
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql .= ' GROUP BY t.topic_id, t.post_approved';
-				break;
-
-				default:
-					$sql .= ' GROUP BY t.topic_id';
-				break;
-			}
+				$where_sql
+				GROUP BY t.topic_id, t.post_approved";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1638,7 +1631,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -1658,13 +1651,16 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+					$topic_data[$topic_id]['first_poster_colour'] = $row['user_colour'];
 				}
 
 				if ($row['post_id'] == $topic_data[$topic_id]['last_post_id'])
 				{
 					$topic_data[$topic_id]['last_poster_id'] = $row['poster_id'];
+					$topic_data[$topic_id]['last_post_subject'] = $row['post_subject'];
 					$topic_data[$topic_id]['last_post_time'] = $row['post_time'];
 					$topic_data[$topic_id]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+					$topic_data[$topic_id]['last_poster_colour'] = $row['user_colour'];
 				}
 			}
 			$db->sql_freeresult($result);
@@ -1680,7 +1676,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			unset($approved_unapproved_ids);
 
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name');
+			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{
@@ -1723,7 +1719,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				foreach ($fieldnames as $fieldname)
 				{
-					if ($row['topic_' . $fieldname] != $row[$fieldname])
+					if (isset($row[$fieldname]) && isset($row['topic_' . $fieldname]) && $row['topic_' . $fieldname] != $row[$fieldname])
 					{
 						$sql_ary['topic_' . $fieldname] = $row[$fieldname];
 					}
@@ -1746,7 +1742,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// batch processing.
 			if ($resync_parents && sizeof($resync_forums) && $where_type != 'range')
 			{
-				sync('forum', 'forum_id', $resync_forums, true);
+				sync('forum', 'forum_id', array_values($resync_forums), true);
 			}
 		break;
 	}
@@ -1773,12 +1769,12 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 
 	$sql_and = '';
 
-	if (!($prune_flags & 4))
+	if (!($prune_flags & FORUM_FLAG_PRUNE_ANNOUNCE))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_ANNOUNCE;
 	}
 
-	if (!($prune_flags & 8))
+	if (!($prune_flags & FORUM_FLAG_PRUNE_STICKY))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_STICKY;
 	}
@@ -1807,7 +1803,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	}
 	$db->sql_freeresult($result);
 
-	if ($prune_flags & 2)
+	if ($prune_flags & FORUM_FLAG_PRUNE_POLL)
 	{
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . '
@@ -1943,7 +1939,7 @@ function cache_moderators()
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
+	$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();
@@ -1981,7 +1977,7 @@ function cache_moderators()
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option LIKE 'm\_%'" . 
-				((SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
+				(($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
 		));
 		$result = $db->sql_query($sql);
 
@@ -2010,6 +2006,12 @@ function cache_moderators()
 
 			foreach ($hold_ary as $user_id => $forum_id_ary)
 			{
+				// Do not continue if user does not exist
+				if (!isset($usernames_ary[$user_id]))
+				{
+					continue;
+				}
+
 				foreach ($forum_id_ary as $forum_id => $auth_ary)
 				{
 					$sql_ary[] = array(
@@ -2051,6 +2053,12 @@ function cache_moderators()
 
 		foreach ($hold_ary as $group_id => $forum_id_ary)
 		{
+			// If there is no group, we do not assign it...
+			if (!isset($groupnames_ary[$group_id]))
+			{
+				continue;
+			}
+
 			foreach ($forum_id_ary as $forum_id => $auth_ary)
 			{
 				$flag = false;
@@ -2080,24 +2088,7 @@ function cache_moderators()
 		}
 	}
 
-	if (sizeof($sql_ary))
-	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
-				{
-					$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-				}
-			break;
-		}
-	}
+	$db->sql_multi_insert(MODERATOR_CACHE_TABLE, $sql_ary);
 }
 
 /**
@@ -2296,6 +2287,82 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 }
 
 /**
+* Update foes - remove moderators and administrators from foe lists...
+*/
+function update_foes()
+{
+	global $db, $auth;
+
+	$perms = array();
+	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
+	{
+		foreach ($forum_ary as $auth_option => $user_ary)
+		{
+			$perms = array_merge($perms, $user_ary);
+		}
+	}
+
+	if (sizeof($perms))
+	{
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+			WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
+				AND foe = 1';
+		$db->sql_query($sql);
+	}
+	unset($perms);
+}
+
+/**
+* Lists inactive users
+*/
+function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_inactive_time DESC')
+{
+	global $db, $user;
+
+	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
+		FROM ' . USERS_TABLE . ' 
+		WHERE user_type = ' . USER_INACTIVE . 
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . " 
+		ORDER BY $sort_by";
+	$result = $db->sql_query_limit($sql, $limit, $offset);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$row['inactive_reason'] = $user->lang['INACTIVE_REASON_UNKNOWN'];
+		switch ($row['user_inactive_reason'])
+		{
+			case INACTIVE_REGISTER:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REGISTER'];
+			break;
+
+			case INACTIVE_PROFILE:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_PROFILE'];
+			break;
+
+			case INACTIVE_MANUAL:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_MANUAL'];
+			break;
+
+			case INACTIVE_REMIND:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
+			break;
+		}
+	
+		$users[] = $row;
+	}
+	
+	$sql = 'SELECT COUNT(user_id) AS user_count
+		FROM ' . USERS_TABLE . '
+		WHERE user_type = ' . USER_INACTIVE . 
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
+	$result = $db->sql_query($sql);
+	$user_count = (int) $db->sql_fetchfield('user_count');
+	$db->sql_freeresult($result);
+
+	return;
+}
+
+/**
 * Lists warned users
 */
 function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_warnings DESC')
@@ -2333,7 +2400,7 @@ function get_database_size()
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'mysql':
 		case 'mysql4':
@@ -2363,7 +2430,7 @@ function get_database_size()
 						{
 							if ($table_prefix != '')
 							{
-								if (strstr($row['Name'], $table_prefix))
+								if (strpos($row['Name'], $table_prefix) !== false)
 								{
 									$database_size += $row['Data_length'] + $row['Index_length'];
 								}
@@ -2465,7 +2532,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 				}
 				else if (strpos($line, '404 Not Found') !== false)
 				{
-					$errstr = $user->lang['FILE_NOT_FOUND'];
+					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
 				}
 			}
@@ -2509,7 +2576,7 @@ function tidy_warnings()
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$warning_list[] = $row['warning_id'];
-		$user_list[$row['user_id']] = isset($user_list[$row['user_id']]) ? $user_list[$row['user_id']]++ : 0;
+		$user_list[$row['user_id']] = isset($user_list[$row['user_id']]) ? $user_list[$row['user_id']]++ : 1;
 	}
 	$db->sql_freeresult($result);
 
@@ -2541,9 +2608,46 @@ function tidy_database()
 {
 	global $db;
 
-
-
 	set_config('database_last_gc', time(), true);
+}
+
+/**
+* Add permission language - this will make sure custom files will be included
+*/
+function add_permission_language()
+{
+	global $user, $phpEx;
+
+	// First of all, our own file.
+	$user->add_lang('acp/permissions_phpbb');
+
+	$files_to_add = array();
+
+	// Now search in acp and mods folder for permissions_ files.
+	foreach (array('acp/', 'mods/') as $path)
+	{
+		$dh = opendir($user->lang_path . $path);
+
+		if ($dh !== false)
+		{
+			while (($file = readdir($dh)) !== false)
+			{
+				if (strpos($file, 'permissions_') === 0 && strpos($file, 'permissions_phpbb') === false && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+				{
+					$files_to_add[] = $path . substr($file, 0, -(strlen($phpEx) + 1));
+				}
+			}
+			closedir($dh);
+		}
+	}
+
+	if (!sizeof($files_to_add))
+	{
+		return false;
+	}
+
+	$user->add_lang($files_to_add);
+	return true;
 }
 
 ?>

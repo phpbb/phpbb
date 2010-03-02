@@ -39,6 +39,11 @@ class dbal
 	var $sql_error_sql = '';
 
 	/**
+	* Current sql layer
+	*/
+	var $sql_layer = '';
+
+	/**
 	* Constructor
 	*/
 	function dbal()
@@ -48,6 +53,10 @@ class dbal
 			'normal'		=> 0,
 			'total'			=> 0,
 		);
+
+		// Fill default sql layer based on the class being called.
+		// This can be changed by the specified layer itself later if needed.
+		$this->sql_layer = substr(get_class($this), 5);
 	}
 
 	/**
@@ -110,12 +119,12 @@ class dbal
 	*/
 	function sql_fetchrowset($query_id = false)
 	{
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if ($query_id)
+		if ($query_id !== false)
 		{
 			$result = array();
 			while ($row = $this->sql_fetchrow($query_id))
@@ -130,8 +139,40 @@ class dbal
 	}
 
 	/**
+	* Fetch field
+	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
+	*/
+	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	{
+		global $cache;
+
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($query_id !== false)
+		{
+			if ($rownum !== false)
+			{
+				$this->sql_rowseek($rownum, $query_id);
+			}
+
+			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
+			}
+
+			$row = $this->sql_fetchrow($query_id);
+			return (isset($row[$field])) ? $row[$field] : false;
+		}
+
+		return false;
+	}
+
+	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function sql_transaction($status = 'begin')
 	{
@@ -211,6 +252,12 @@ class dbal
 			$ary = array();
 			foreach ($assoc_ary as $id => $sql_ary)
 			{
+				// If by accident the sql array is only one-dimensional we build a normal insert statement
+				if (!is_array($sql_ary))
+				{
+					return $this->sql_build_array('INSERT', $assoc_ary);
+				}
+
 				$values = array();
 				foreach ($sql_ary as $key => $var)
 				{
@@ -234,27 +281,75 @@ class dbal
 		return $query;
 	}
 
+	/**
+	* Build IN, NOT IN, = and <> sql comparison string.
+	* @access public
+	*/
 	function sql_in_set($field, $array, $negate = false)
 	{
 		if (!sizeof($array))
 		{
-			trigger_error('No values specified for SQL IN comparison', E_USER_ERROR);
+			// Not optimal, but at least the backtrace should help in identifying where the problem lies.
+			$this->sql_error('No values specified for SQL IN comparison');
 		}
 
-		$values = array();
-		foreach ($array as $var)
+		if (!is_array($array))
 		{
-			$values[] = $this->_sql_validate_value($var);
+			$array = array($array);
 		}
 
-		if (sizeof($values) == 1)
+		if (sizeof($array) == 1)
 		{
-			return $field . ($negate ? ' <> ' : ' = ') . $values[0];
+			@reset($array);
+			$var = current($array);
+
+			return $field . ($negate ? ' <> ' : ' = ') . $this->_sql_validate_value($var);
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', $values) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
+	}
+
+	/**
+	* Run more than one insert statement.
+	*
+	* @param $sql_ary array multi-dimensional array holding the statement data.
+	* @param $table string table name to run the statements on
+	*
+	* @return bool false if no statements were executed.
+	* @access public
+	*/
+	function sql_multi_insert($table, &$sql_ary)
+	{
+		if (!sizeof($sql_ary))
+		{
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+			case 'sqlite':
+				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
+			break;
+
+			default:
+				foreach ($sql_ary as $ary)
+				{
+					if (!is_array($ary))
+					{
+						return false;
+					}
+
+					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+				}
+			break;
+		}
+
+		return true;
 	}
 
 	/**
@@ -354,7 +449,7 @@ class dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = '<u>SQL ERROR</u> [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
@@ -364,7 +459,7 @@ class dbal
 				// Print out a nice backtrace...
 				$backtrace = get_backtrace();
 
-				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '';
+				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . htmlspecialchars($sql) : '';
 				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />'  . $backtrace : '';
 				$message .= '<br />';
 			}
@@ -409,7 +504,7 @@ class dbal
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
 
-		if (empty($_GET['explain']))
+		if (empty($_REQUEST['explain']))
 		{
 			return false;
 		}
@@ -453,7 +548,7 @@ class dbal
 									<br />
 									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries['normal']} queries" . (($this->num_queries['cached']) ? " + {$this->num_queries['cached']} " . (($this->num_queries['cached'] == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
-									<p>Time spent on ' . SQL_LAYER . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
+									<p>Time spent on ' . $this->sql_layer . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
 
 									<br /><br />
 									' . $this->sql_report . '
@@ -504,7 +599,7 @@ class dbal
 				else
 				{
 					$error = $this->sql_error();
-					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . SQL_LAYER . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . $this->sql_layer . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
 				$this->sql_report .= '</p><br /><br />';

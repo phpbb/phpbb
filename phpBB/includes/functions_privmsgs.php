@@ -279,8 +279,30 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		
 		case ACTION_MARK_AS_READ:
 		case ACTION_MARK_AS_IMPORTANT:
-		case ACTION_DELETE_MESSAGE:
 			return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
+		break;
+
+		case ACTION_DELETE_MESSAGE:
+			global $db, $auth;
+
+			// Check for admins/mods - users are not allowed to remove those messages...
+			// We do the check here to make sure the data we use is consistent
+			$sql = 'SELECT user_id, user_type, user_permissions
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $message_row['author_id'];
+			$result = $db->sql_query($sql);
+			$userdata = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$auth2 = new auth();
+			$auth2->acl($userdata);
+
+			if (!$auth2->acl_get('a_') && !$auth->acl_get('m_') && !$auth2->acl_getf_global('m_'))
+			{
+				return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
+			}
+
+			return false;
 		break;
 		
 		default:
@@ -486,8 +508,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		}
 	}
 
-	$num_new += sizeof(array_unique($delete_ids));
-	$num_unread += sizeof(array_unique($delete_ids));
+//	$num_new += sizeof(array_unique($delete_ids));
+//	$num_unread += sizeof(array_unique($delete_ids));
 	$num_unread += sizeof(array_unique($unread_ids));
 
 	// Do not change the order of processing
@@ -589,13 +611,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			}
 			else if ($full_folder_action == FULL_FOLDER_DELETE)
 			{
-				// Delete some messages ;)
-				$sql = 'SELECT t.msg_id
-					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . " p
-					WHERE t.msg_id = p.msg_id
-						AND t.user_id = $user_id
-						AND t.folder_id = $dest_folder
-					ORDER BY p.message_time ASC";
+				// Delete some messages. NOTE: Ordered by msg_id here instead of message_time!
+				$sql = 'SELECT msg_id
+					FROM ' . PRIVMSGS_TO_TABLE . "
+					WHERE user_id = $user_id
+						AND folder_id = $dest_folder
+					ORDER BY msg_id ASC";
 				$result = $db->sql_query_limit($sql, (($folder[$dest_folder] + sizeof($msg_ary)) - $user->data['message_limit']));
 
 				$delete_ids = array();
@@ -668,6 +689,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		}
 		
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
+
 		$user->data['user_new_privmsg'] -= $num_new;
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
@@ -778,7 +800,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		return;
 	}
 
-	global $db;
+	global $db, $user;
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
 		SET pm_unread = 0
@@ -791,6 +813,11 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		SET user_unread_privmsg = user_unread_privmsg - 1
 		WHERE user_id = $user_id";
 	$db->sql_query($sql);
+
+	if ($user->data['user_id'] == $user_id)
+	{
+		$user->data['user_unread_privmsg']--;
+	}
 }
 
 /**
@@ -860,7 +887,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db;
+	global $db, $user;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -957,6 +984,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	if ($num_unread || $num_new)
 	{
 		$set_sql = ($num_unread) ? 'user_unread_privmsg = user_unread_privmsg - ' . $num_unread : '';
+
 		if ($num_new)
 		{
 			$set_sql .= ($set_sql != '') ? ', ' : '';
@@ -964,6 +992,9 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		}
 
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
+
+		$user->data['user_new_privmsg'] -= $num_new;
+		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 	
 	// Now we have to check which messages we can delete completely	
@@ -1141,7 +1172,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						'IS_USER'	=> ($type == 'user'),
 						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+						'U_VIEW'	=> ($type == 'user') ? (($id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : '') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
 						'TYPE'		=> $type)
 					);
 				}
@@ -1223,7 +1254,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 					$id = (int) $id;
 
 					// Do not rely on the address list being "valid"
-					if (!$id)
+					if (!$id || ($ug_type == 'u' && $id == ANONYMOUS))
 					{
 						continue;
 					}
@@ -1291,8 +1322,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
-				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1310,8 +1340,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
-				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);
@@ -1360,24 +1389,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			);
 		}
 
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(PRIVMSGS_TO_TABLE, $sql_ary);
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' 
 			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '
@@ -1416,50 +1428,72 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
 	{
 		$space_taken = $files_added = 0;
+		$orphan_rows = array();
 
 		foreach ($data['attachment_data'] as $pos => $attach_row)
 		{
-			if ($attach_row['attach_id'])
+			$orphan_rows[(int) $attach_row['attach_id']] = array();
+		}
+
+		if (sizeof($orphan_rows))
+		{
+			$sql = 'SELECT attach_id, filesize, physical_filename
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan_rows)) . '
+					AND in_message = 1
+					AND is_orphan = 1
+					AND poster_id = ' . $user->data['user_id'];
+			$result = $db->sql_query($sql);
+
+			$orphan_rows = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$orphan_rows[$row['attach_id']] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		foreach ($data['attachment_data'] as $pos => $attach_row)
+		{
+			if ($attach_row['is_orphan'] && !in_array($attach_row['attach_id'], array_keys($orphan_rows)))
+			{
+				continue;
+			}
+
+			if (!$attach_row['is_orphan'])
 			{
 				// update entry in db if attachment already stored in db and filespace
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
-					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "' 
-					WHERE attach_id = " . (int) $attach_row['attach_id'];
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
+					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
+					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
+						AND is_orphan = 0';
 				$db->sql_query($sql);
 			}
 			else
 			{
-				// insert attachment into db 
+				// insert attachment into db
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				{
+					continue;
+				}
+
+				$space_taken += $orphan_rows[$attach_row['attach_id']]['filesize'];
+				$files_added++;
+
 				$attach_sql = array(
 					'post_msg_id'		=> $data['msg_id'],
 					'topic_id'			=> 0,
-					'in_message'		=> 1,
+					'is_orphan'			=> 0,
 					'poster_id'			=> $data['from_user_id'],
-					'physical_filename'	=> basename($attach_row['physical_filename']),
-					'real_filename'		=> basename($attach_row['real_filename']),
 					'attach_comment'	=> $attach_row['attach_comment'],
-					'extension'			=> $attach_row['extension'],
-					'mimetype'			=> $attach_row['mimetype'],
-					'filesize'			=> $attach_row['filesize'],
-					'filetime'			=> $attach_row['filetime'],
-					'thumbnail'			=> $attach_row['thumbnail']
 				);
 
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . '
+					WHERE attach_id = ' . $attach_row['attach_id'] . '
+						AND is_orphan = 1
+						AND poster_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
-
-				$space_taken += $attach_row['filesize'];
-				$files_added++;
 			}
-		}
-
-		if (sizeof($data['attachment_data']))
-		{
-			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-				SET message_attachment = 1
-				WHERE msg_id = ' . $data['msg_id'];
-			$db->sql_query($sql);
 		}
 
 		if ($space_taken && $files_added)
@@ -1553,8 +1587,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 	$messenger = new messenger();
 
-	$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 	foreach ($msg_list_ary as $pos => $addr)
 	{
 		$messenger->template('privmsg_notify', $addr['lang']);
@@ -1564,11 +1596,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		$messenger->im($addr['jabber'], $addr['name']);
 
 		$messenger->assign_vars(array(
-			'EMAIL_SIG'		=> $email_sig,
-			'SITENAME'		=> $config['sitename'],
-			'SUBJECT'		=> html_entity_decode($subject),
-			'AUTHOR_NAME'	=> html_entity_decode($author),
-			'USERNAME'		=> html_entity_decode($addr['name']),
+			'SUBJECT'		=> htmlspecialchars_decode($subject),
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
+			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 
 			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
 		);

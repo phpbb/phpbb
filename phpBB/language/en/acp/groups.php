@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -29,8 +31,8 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administer all your usergroups, you can delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
-	'ADD_USERS'						=> 'Add Users',
+	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administrate all your usergroups, you can delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
+	'ADD_USERS'						=> 'Add users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a seperate line.',
 
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
@@ -40,17 +42,17 @@ $lang = array_merge($lang, array(
 	'GROUPS_NO_MEMBERS'				=> 'This group has no members',
 	'GROUPS_NO_MODS'				=> 'No group leaders defined',
 	'GROUP_APPROVE'					=> 'Approve',
-	'GROUP_APPROVED'				=> 'Approved Members',
+	'GROUP_APPROVED'				=> 'Approved members',
 	'GROUP_AVATAR'					=> 'Group avatar',
 	'GROUP_AVATAR_EXPLAIN'			=> 'This image will be displayed in the Group Control Panel.',
 	'GROUP_CLOSED'					=> 'Closed',
 	'GROUP_COLOR'					=> 'Group colour',
 	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members usernames will appear in, leave blank for user default.',
-	'GROUP_CREATED'					=> 'Group has been created successfully',
+	'GROUP_CREATED'					=> 'Group has been created successfully.',
 	'GROUP_DEFAULT'					=> 'Default',
-	'GROUP_DEFS_UPDATED'			=> 'Default group set for all selected members',
+	'GROUP_DEFS_UPDATED'			=> 'Default group set for all selected members.',
 	'GROUP_DELETE'					=> 'Delete',
-	'GROUP_DELETED'					=> 'Group deleted and user default groups set successfully',
+	'GROUP_DELETED'					=> 'Group deleted and user default groups set successfully.',
 	'GROUP_DEMOTE'					=> 'Demote',
 	'GROUP_DESC'					=> 'Group description',
 	'GROUP_DETAILS'					=> 'Group details',
@@ -69,11 +71,11 @@ $lang = array_merge($lang, array(
 	'GROUP_MESSAGE_LIMIT'			=> 'Group private message limit per folder',
 	'GROUP_MESSAGE_LIMIT_EXPLAIN'	=> 'This setting overrides the per-user folder message limit. A value of 0 means the user default limit will be used.',
 	'GROUP_MODS_ADDED'				=> 'New group moderators added successfully.',
-	'GROUP_MODS_DEMOTED'			=> 'Group leaders demoted successfully',
-	'GROUP_MODS_PROMOTED'			=> 'Group members promoted successfully',
+	'GROUP_MODS_DEMOTED'			=> 'Group leaders demoted successfully.',
+	'GROUP_MODS_PROMOTED'			=> 'Group members promoted successfully.',
 	'GROUP_NAME'					=> 'Group name',
 	'GROUP_OPEN'					=> 'Open',
-	'GROUP_PENDING'					=> 'Pending Members',
+	'GROUP_PENDING'					=> 'Pending members',
 	'GROUP_PROMOTE'					=> 'Promote',
 	'GROUP_RANK'					=> 'Group rank',
 	'GROUP_RECEIVE_PM'				=> 'Group able to receive private messages',
@@ -87,23 +89,24 @@ $lang = array_merge($lang, array(
 	'GROUP_UPDATED'					=> 'Group preferences updated successfully.',
 	'GROUP_USERS_ADDED'				=> 'New users added to group successfully.',
 	'GROUP_USERS_EXIST'				=> 'The selected users are already members.',
-	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully',
+	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully.',
 
 	'MAKE_DEFAULT_FOR_ALL'	=> 'Make default group for every member',
 	'MEMBERS'				=> 'Members',
 
-	'NO_GROUP'					=> 'No group specified',
+	'NO_GROUP'					=> 'No group specified.',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
+	'NO_USERS'					=> 'You haven’t entered any users.',
 
 	'SPECIAL_GROUPS'			=> 'Predefined groups',
-	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking "Default" you can set the relevant group to the default for all its members.',
+	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking “Default” you can set the relevant group to the default for all its members.',
 
 	'TOTAL_MEMBERS'				=> 'Members',
 
 	'USERS_APPROVED'				=> 'Users approved successfully.',
 	'USER_DEFAULT'					=> 'User default',
 	'USER_DEF_GROUPS'				=> 'User defined groups',
-	'USER_DEF_GROUPS_EXPLAIN'		=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group. By clicking "Default" you can set the relevant group to the default for all its members.',
+	'USER_DEF_GROUPS_EXPLAIN'		=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group. By clicking “Default” you can set the relevant group to the default for all its members.',
 	'USER_GROUP_DEFAULT'			=> 'Set as default group',
 	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users',
 	'USER_GROUP_LEADER'				=> 'Set as group leader',

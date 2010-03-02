@@ -396,7 +396,7 @@ class auth
 				$hold_str .= str_repeat("\n", $f - $last_f);
 			
 				// Convert bitstring for storage - we do not use binary/bytes because PHP's string functions are not fully binary safe
-				for ($i = 0; $i < strlen($bitstring); $i += 31)
+				for ($i = 0, $bit_length = strlen($bitstring); $i < $bit_length; $i += 31)
 				{
 					$hold_str .= str_pad(base_convert(str_pad(substr($bitstring, $i, 31), 31, 0, STR_PAD_RIGHT), 2, 36), 6, 0, STR_PAD_LEFT);
 				}
@@ -478,18 +478,11 @@ class auth
 		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
-		$sql_opts = '';
+		$sql_opts = $sql_escape = '';
 
 		if ($opts !== false)
 		{
-			if (!is_array($opts))
-			{
-				$sql_opts = (strpos($opts, '%') !== false) ? "AND ao.auth_option LIKE '" . $db->sql_escape($opts) . "'" : "AND ao.auth_option = '" . $db->sql_escape($opts) . "'";
-			}
-			else
-			{
-				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
-			}
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
 		}
 
 		$hold_ary = array();
@@ -519,7 +512,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql . $sql_escape);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -595,18 +588,11 @@ class auth
 		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
-		$sql_opts = '';
+		$sql_opts = $sql_escape = '';
 
 		if ($opts !== false)
 		{
-			if (!is_array($opts))
-			{
-				$sql_opts = (strpos($opts, '%') !== false) ? "AND ao.auth_option LIKE '" . $db->sql_escape($opts) . "'" : "AND ao.auth_option = '" . $db->sql_escape($opts) . "'";
-			}
-			else
-			{
-				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
-			}
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
 		}
 
 		$hold_ary = array();
@@ -634,7 +620,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql . $sql_escape);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -656,16 +642,11 @@ class auth
 		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : $db->sql_in_set('group_id', $group_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
+		$sql_opts = $sql_escape = '';
+
 		if ($opts !== false)
 		{
-			if (!is_array($opts))
-			{
-				$sql_opts = (strpos($opts, '%') !== false) ? "AND ao.auth_option LIKE '" . $db->sql_escape($opts) . "'" : "AND ao.auth_option = '" . $db->sql_escape($opts) . "'";
-			}
-			else
-			{
-				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
-			}
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
 		}
 
 		$hold_ary = array();
@@ -693,7 +674,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql . $sql_escape);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -726,14 +707,14 @@ class auth
 				// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
 				if (!function_exists('user_add'))
 				{
-					include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
 
 				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE username = '" . $db->sql_escape($username) . "'";
+					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -757,11 +738,36 @@ class auth
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)
 			{
+				$old_session_id = $user->session_id;
+
+				if ($admin)
+				{
+					global $SID, $_SID;
+
+					$cookie_expire = time() - 31536000;
+					$user->set_cookie('u', '', $cookie_expire);
+					$user->set_cookie('sid', '', $cookie_expire);
+					unset($cookie_expire);
+
+					$SID = '?sid=';
+					$user->session_id = $_SID = '';
+				}
+
 				$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
 
 				// Successful session creation
 				if ($result === true)
 				{
+					// If admin re-authentication we remove the old session entry because a new one has been created...
+					if ($admin)
+					{
+						// the login array is used because the user ids do not differ for re-authentication
+						$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+							WHERE session_id = '" . $db->sql_escape($old_session_id) . "'
+							AND session_user_id = {$login['user_row']['user_id']}";
+						$db->sql_query($sql);
+					}
+
 					return array(
 						'status'		=> LOGIN_SUCCESS,
 						'error_msg'		=> false,
@@ -780,6 +786,72 @@ class auth
 		}
 
 		trigger_error('Authentication method not found', E_USER_ERROR);
+	}
+
+	/**
+	* Fill auth_option statement for later querying based on the supplied options
+	*/
+	function build_auth_option_statement($key, $auth_options, &$sql_opts, &$sql_escape)
+	{
+		global $db;
+
+		if (!is_array($auth_options))
+		{
+			if (strpos($auth_options, '%') !== false)
+			{
+				if (strpos($auth_options, '_') !== false)
+				{
+					$sql_opts = "AND $key LIKE '" . $db->sql_escape(str_replace('_', "\_", $auth_options)) . "'";
+					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+				}
+				else
+				{
+					$sql_opts = "AND $key LIKE '" . $db->sql_escape($auth_options) . "'";
+				}
+			}
+			else
+			{
+				$sql_opts = "AND $key = '" . $db->sql_escape($auth_options) . "'";
+			}
+		}
+		else
+		{
+			$is_like_expression = $is_underline = false;
+
+			foreach ($auth_options as $option)
+			{
+				if (strpos($option, '%') !== false)
+				{
+					$is_like_expression = true;
+				}
+
+				if (strpos($option, '_') !== false)
+				{
+					$is_underline = true;
+				}
+			}
+
+			if (!$is_like_expression)
+			{
+				$sql_opts = 'AND ' . $db->sql_in_set($key, $auth_options);
+			}
+			else
+			{
+				$sql = array();
+
+				foreach ($auth_options as $option)
+				{
+					$sql[] = $key . " LIKE '" . $db->sql_escape(str_replace('_', "\_", $option)) . "'";
+				}
+
+				$sql_opts = 'AND (' . implode(' OR ', $sql) . ')';
+
+				if ($is_underline)
+				{
+					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+				}
+			}
+		}
 	}
 }
 

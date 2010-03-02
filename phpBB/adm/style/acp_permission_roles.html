@@ -96,7 +96,7 @@
 	<h1>{L_ACL_TYPE}</h1>
 
 	<fieldset class="quick">
-		<a href="javascript: mark_options('a_options', 'y');">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options', 'n');">{L_ALL_NEVER}</a> &bull; <a href="javascript: mark_options('a_options', 'u');">{L_ALL_NO}</a>
+		<a href="#" onclick="mark_options('a_options', 'y'); return false;">{L_ALL_YES}</a> &bull; <a href="#" onclick="mark_options('a_options', 'n'); return false;">{L_ALL_NEVER}</a> &bull; <a href="#" onclick="mark_options('a_options', 'u'); return false;">{L_ALL_NO}</a>
 	</fieldset>
 
 	<fieldset class="permissions">
@@ -121,7 +121,7 @@
 			<!-- ELSE -->
 				<td class="preset preset_custom">
 			<!-- ENDIF -->
-				<a href="javascript:swap_options('options{auth.S_ROW_COUNT}');"><span></span></a></td>
+				<a href="#" onclick="swap_options('options{auth.S_ROW_COUNT}'); return false;"><span></span></a></td>
 		<!-- END auth -->
 		</tr>
 		<tr class="row3">
@@ -131,9 +131,9 @@
 				<thead>
 				<tr>
 					<th scope="col" style="text-align: left; padding-left: 0;"><strong>{L_ACL_SETTING} [{auth.CAT_NAME}]</strong></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'y');">{L_ACL_YES}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'u');">{L_ACL_NO}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'n');">{L_ACL_NEVER}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'y'); return false;">{L_ACL_YES}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'u'); return false;">{L_ACL_NO}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'n'); return false;">{L_ACL_NEVER}</a></th>
 				</tr>
 				</thead>
 				<tbody>
@@ -173,10 +173,10 @@
 	<form id="acp_roles" method="post" action="{U_ACTION}">
 
 	<table cellspacing="1">
-		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
+		<col class="col2" /><col class="col2" /><col class="col1" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
-		<th style="width: 50%">{L_ROLE_NAME}</th>
+		<th>{L_ROLE_NAME}</th>
 		<th colspan="2">{L_OPTIONS}</th>
 	</tr>
 	</thead>
@@ -186,10 +186,21 @@
 		<td style="vertical-align: top;"><b>{roles.ROLE_NAME}</b>
 			<!-- IF roles.ROLE_DESCRIPTION --><br /><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
 		</td>
-		<td style="vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
-		<td style="vertical-align: top; white-space: nowrap;">
-			<!-- IF not roles.S_FIRST_ROW --><a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-			<!-- IF not roles.S_LAST_ROW --><a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+		<td style="width: 30%; text-align: center; vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
+		<td style="width: 80px; text-align: right; vertical-align: top; white-space: nowrap;">
+			<!-- IF roles.S_FIRST_ROW && not roles.S_LAST_ROW -->
+				{ICON_MOVE_UP_DISABLED}
+				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
+			<!-- ELSEIF not roles.S_FIRST_ROW && not roles.S_LAST_ROW-->
+				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+			<!-- ELSEIF roles.S_LAST_ROW && not roles.S_FIRST_ROW -->						
+				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+				{ICON_MOVE_DOWN_DISABLED}
+			<!-- ELSE -->
+				{ICON_MOVE_UP_DISABLED}
+				{ICON_MOVE_DOWN_DISABLED}
+			<!-- ENDIF -->	
 			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a> 
 			<a href="{roles.U_REMOVE}" title="{L_REMOVE_ROLE}">{ICON_DELETE}</a>
 		</td>

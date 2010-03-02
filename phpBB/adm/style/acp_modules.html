@@ -21,16 +21,20 @@
 
 		function display_modes(value)
 		{
-			// Remove select fields
+			// Find the old select tag
 			var item = document.getElementById('module_mode');
-			var j = 0;
-	
-			// empty existing items
-			for (var i = 0; i <= item.options.length; i++)
-			{
-				item.options[i] = null;
-			}
 
+			// Create the new select tag
+			var new_node = document.createElement('select');
+			new_node.setAttribute('id', 'module_mode');
+
+			// Substitute it for the old one
+			item.parentNode.replaceChild(new_node, item);
+
+			// Reset the variable
+			item = document.getElementById('module_mode');
+
+			var j = 0;
 <!-- BEGIN m_names -->
 		
 			if (value == '{m_names.NAME}')
@@ -143,11 +147,22 @@
 		<!-- BEGIN modules -->
 			<tr>
 				<td style="width: 5%;">{modules.MODULE_IMAGE}</td>
-				<td style="width: 50%;"><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
+				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
-				<td style="width: 20%; white-space: nowrap; text-align: center; vertical-align: middle;">
-					<!-- IF not modules.S_FIRST_ROW --><a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-					<!-- IF not modules.S_LAST_ROW --><a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+				<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
+					<!-- IF modules.S_FIRST_ROW && not modules.S_LAST_ROW -->
+						{ICON_MOVE_UP_DISABLED}
+						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<!-- ELSEIF not modules.S_FIRST_ROW && not modules.S_LAST_ROW-->
+						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+					<!-- ELSEIF modules.S_LAST_ROW && not modules.S_FIRST_ROW -->
+						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+						{ICON_MOVE_DOWN_DISABLED}
+					<!-- ELSE -->
+						{ICON_MOVE_UP_DISABLED}
+						{ICON_MOVE_DOWN_DISABLED}
+					<!-- ENDIF -->
 					<a href="{modules.U_EDIT}">{ICON_EDIT}</a> 
 					<a href="{modules.U_DELETE}">{ICON_DELETE}</a>
 				</td>

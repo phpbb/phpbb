@@ -70,13 +70,13 @@ class cache extends acm
 	* Obtain list of naughty words and build preg style replacement arrays for use by the
 	* calling script
 	*/
-	function obtain_word_list(&$censors)
+	function obtain_word_list()
 	{
 		global $config, $user, $db;
 
 		if (!$user->optionget('viewcensors') && $config['allow_nocensors'])
 		{
-			return false;
+			return array();
 		}
 
 		if (($censors = $this->get('word_censors')) === false)
@@ -96,13 +96,13 @@ class cache extends acm
 			$this->put('word_censors', $censors);
 		}
 
-		return true;
+		return $censors;
 	}
 
 	/**
 	* Obtain currently listed icons
 	*/
-	function obtain_icons(&$icons)
+	function obtain_icons()
 	{
 		if (($icons = $this->get('icons')) === false)
 		{
@@ -127,13 +127,13 @@ class cache extends acm
 			$this->put('icons', $icons);
 		}
 
-		return;
+		return $icons;
 	}
 
 	/**
 	* Obtain ranks
 	*/
-	function obtain_ranks(&$ranks)
+	function obtain_ranks()
 	{
 		if (($ranks = $this->get('ranks')) === false)
 		{
@@ -168,13 +168,13 @@ class cache extends acm
 			$this->put('ranks', $ranks);
 		}
 
-		return;
+		return $ranks;
 	}
 
 	/**
 	* Obtain allowed extensions
 	*/
-	function obtain_attach_extensions(&$extensions, $forum_id = false)
+	function obtain_attach_extensions($forum_id = false)
 	{
 		if (($extensions = $this->get('_extensions')) === false)
 		{
@@ -254,19 +254,19 @@ class cache extends acm
 			$extensions['_allowed_'] = array();
 		}
 
-		return;
+		return $extensions;
 	}
 
 	/**
 	* Obtain active bots
 	*/
-	function obtain_bots(&$bots)
+	function obtain_bots()
 	{
 		if (($bots = $this->get('bots')) === false)
 		{
 			global $db;
 	
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mssql':
 				case 'mssql_odbc':
@@ -280,7 +280,7 @@ class cache extends acm
 					$sql = 'SELECT user_id, bot_agent, bot_ip 
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
-					ORDER BY STRLEN(bot_agent) DESC';
+					ORDER BY CHAR_LENGTH(bot_agent) DESC';
 				break;
 
 				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
@@ -303,7 +303,7 @@ class cache extends acm
 			$this->put('bots', $bots);
 		}
 	
-		return;
+		return $bots;
 	}
 
 	/**
@@ -353,6 +353,32 @@ class cache extends acm
 		}
 
 		return $parsed_items;
+	}
+
+	/**
+	* Obtain disallowed usernames
+	*/
+	function obtain_disallowed_usernames()
+	{
+		if (($usernames = $this->get('_disallowed_usernames')) === false)
+		{
+			global $db;
+
+			$sql = 'SELECT disallow_username
+				FROM  ' . DISALLOW_TABLE;
+			$result = $db->sql_query($sql);
+
+			$usernames = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$usernames[] = utf8_clean_string(str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')));
+			}
+			$db->sql_freeresult($result);
+
+			$this->put('_disallowed_usernames', $usernames);
+		}
+
+		return $usernames;
 	}
 }
 

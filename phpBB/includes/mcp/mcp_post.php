@@ -42,7 +42,7 @@ function mcp_post_details($id, $mode, $action)
 			$whois = user_ipwhois($ip);
 			
 			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
 			
 			$template->assign_vars(array(
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
@@ -59,8 +59,8 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '');
-				$sql_where = "username = '" . $db->sql_escape($username) . "'";
+				$username = request_var('username', '', true);
+				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			}
 			else
 			{
@@ -89,12 +89,13 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	// Set some vars
-	$users_ary = array();
+	$users_ary = $usernames_ary = array();
 	$post_id = $post_info['post_id'];
 	$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
 
 	// Process message, leave it uncensored
 	$message = $post_info['post_text'];
+	$message = str_replace("\n", '<br />', $message);
 	if ($post_info['bbcode_bitfield'])
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
@@ -102,7 +103,6 @@ function mcp_post_details($id, $mode, $action)
 		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 	}
 	$message = smiley_text($message);
-	$message = str_replace("\n", '<br />', $message);
 
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters
@@ -134,6 +134,7 @@ function mcp_post_details($id, $mode, $action)
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 		'POSTER_NAME'			=> $poster,
 		'POST_PREVIEW'			=> $message,
@@ -217,75 +218,62 @@ function mcp_post_details($id, $mode, $action)
 		}
 
 		// Get other users who've posted under this IP
-
-		// Firebird does not support ORDER BY on aliased columns
-		// MySQL does not support ORDER BY on functions
-		switch (SQL_LAYER)
-		{
-			case 'firebird':
-				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
-					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
-					WHERE p.poster_id = u.user_id
-						AND p.poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
-						AND p.poster_id <> {$post_info['user_id']}
-					GROUP BY u.user_id, u.username
-					ORDER BY COUNT(*) DESC";
-			break;
-
-			default:
-				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
-					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
-					WHERE p.poster_id = u.user_id
-						AND p.poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
-						AND p.poster_id <> {$post_info['user_id']}
-					GROUP BY u.user_id, u.username
-					ORDER BY postings DESC";
-			break;
-		}
+		$sql = 'SELECT poster_id, COUNT(poster_id) as postings
+			FROM ' . POSTS_TABLE . "
+			WHERE poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
+			GROUP BY poster_id
+			ORDER BY postings DESC";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			// Fill the user select list with users who have posted
-			// under this IP
-			if ($row['user_id'] != $post_info['poster_id'])
+			// Fill the user select list with users who have posted under this IP
+			if ($row['poster_id'] != $post_info['poster_id'])
 			{
-				$users_ary[strtolower($row['username'])] = $row;
+				$users_ary[$row['poster_id']] = $row;
 			}
-
-			$template->assign_block_vars('userrow', array(
-				'USERNAME'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
-				'NUM_POSTS'		=> $row['postings'],
-				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
-
-				'U_PROFILE'		=> ($row['user_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-				'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author=' . urlencode($row['username']) . '&amp;sr=topics'))
-			);
 		}
 		$db->sql_freeresult($result);
 
+		if (sizeof($users_ary))
+		{
+			// Get the usernames
+			$sql = 'SELECT user_id, username 
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', array_keys($users_ary));
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$users_ary[$row['user_id']]['username'] = $row['username'];
+				$usernames_ary[utf8_clean_string($row['username'])] = $users_ary[$row['user_id']];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($users_ary as $user_id => $user_row)
+			{
+				$template->assign_block_vars('userrow', array(
+					'USERNAME'		=> ($user_id == ANONYMOUS) ? $user->lang['GUEST'] : $user_row['username'],
+					'NUM_POSTS'		=> $user_row['postings'],
+					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
+
+					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
+					'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user_id . '&amp;sr=topics'))
+				);
+			}
+		}
+
 		// Get other IP's this user has posted under
 
-		// Firebird does not support ORDER BY on aliased columns
-		// MySQL does not support ORDER BY on functions
-		switch (SQL_LAYER)
-		{
-			case 'firebird':
-				$sql = 'SELECT poster_ip, COUNT(*) AS postings
-					FROM ' . POSTS_TABLE . '
-					WHERE poster_id = ' . $post_info['poster_id'] . '
-					GROUP BY poster_ip
-					ORDER BY COUNT(*) DESC';
-			break;
+		// A compound index on poster_id, poster_ip (posts table) would help speed up this query a lot,
+		// but the extra size is only valuable if there are persons having more than a thousands posts.
+		// This is better left to the really really big forums.
 
-			default:
-				$sql = 'SELECT poster_ip, COUNT(*) AS postings
-					FROM ' . POSTS_TABLE . '
-					WHERE poster_id = ' . $post_info['poster_id'] . '
-					GROUP BY poster_ip
-					ORDER BY postings DESC';
-			break;
-		}
+		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $post_info['poster_id'] . '
+			GROUP BY poster_ip
+			ORDER BY postings DESC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -305,12 +293,17 @@ function mcp_post_details($id, $mode, $action)
 		$db->sql_freeresult($result);
 
 		$user_select = '';
-		ksort($users_ary);
 
-		foreach ($users_ary as $row)
+		if (sizeof($usernames_ary))
 		{
-			$user_select .= '<option value="' . $row['user_id'] . '">' . $row['username'] . "</option>\n";
+			ksort($usernames_ary);
+
+			foreach ($usernames_ary as $row)
+			{
+				$user_select .= '<option value="' . $row['poster_id'] . '">' . $row['username'] . "</option>\n";
+			}
 		}
+
 		$template->assign_var('S_USER_SELECT', $user_select);
 	}
 
@@ -379,7 +372,16 @@ function change_poster(&$post_info, $userdata)
 		}
 	}
 
-	// Do not change the poster_id within the attachments table, since they were still posted by the original user
+	// change the poster_id within the attachments table, else the data becomes out of sync and errors displayed because of wrong ownership
+	if ($post_info['post_attachment'])
+	{
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET poster_id = ' . $userdata['user_id'] . '
+			WHERE poster_id = ' . $post_info['user_id'] . '
+				AND post_msg_id = ' . $post_info['post_id'] . '
+				AND topic_id = ' . $post_info['topic_id'];
+		$db->sql_query($sql);
+	}
 
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];

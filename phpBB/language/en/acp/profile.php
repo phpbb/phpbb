@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -30,27 +32,29 @@ if (empty($lang) || !is_array($lang))
 
 // Custom profile fields
 $lang = array_merge($lang, array(
-	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field',
+	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field.',
 	'ALPHA_ONLY'			=> 'Alphanumeric only',
 	'ALPHA_SPACERS'			=> 'Alphanumeric and spacers',
 	'ALWAYS_TODAY'			=> 'Always the current date',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
-	'BOOL_TYPE_EXPLAIN'		=> 'Define the Type, either a checkbox or radio buttons',
+	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons',
 
-	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field',
+	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
 	'CHECKBOX'					=> 'Checkbox',
-	'CP_LANG_DEFAULT_VALUE'		=> 'Default Value',
-	'CP_LANG_EXPLAIN'			=> 'Field Description',
-	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The Explanation for this field presented to the user',
-	'CP_LANG_NAME'				=> 'Field Name/Title presented to the user',
-	'CP_LANG_OPTIONS'			=> 'Options',
-	'CREATE_NEW_FIELD'			=> 'Create New Field',
 	'COLUMNS'					=> 'Columns',
+	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
+	'CP_LANG_EXPLAIN'			=> 'Field Description',
+	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user',
+	'CP_LANG_NAME'				=> 'Field name/title presented to the user',
+	'CP_LANG_OPTIONS'			=> 'Options',
+	'CREATE_NEW_FIELD'			=> 'Create new field',
+	'CUSTOM_FIELDS_NOT_TRANSLATED'	=> 'At least one custom profile field has not yet been translated. Please enter the required information by clicking on the &quot;Translate&quot; link.',
 
-	'DEFAULT_ISO_LANGUAGE'			=> 'Default Language [%s]',
-	'DEFAULT_VALUE'					=> 'Default Value',
+	'DEFAULT_ISO_LANGUAGE'			=> 'Default language [%s]',
+	'DEFAULT_LANGUAGE_NOT_FILLED'	=> 'The language entries for the default language are not filled for this profile field.',
+	'DEFAULT_VALUE'					=> 'Default value',
 	'DELETE_PROFILE_FIELD'			=> 'Remove profile field',
 	'DELETE_PROFILE_FIELD_CONFIRM'	=> 'Are you sure you want to delete this profile field?',
 	'DISPLAY_AT_PROFILE'			=> 'Display in user control panel',
@@ -69,76 +73,79 @@ $lang = array_merge($lang, array(
 
 	'FIELD_BOOL'				=> 'Boolean (Yes/No)',
 	'FIELD_DATE'				=> 'Date',
-	'FIELD_DESCRIPTION'			=> 'Field Description',
-	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The Explanation for this field presented to the user',
-	'FIELD_DROPDOWN'			=> 'Dropdown Box',
-	'FIELD_IDENT'				=> 'Field Identification',
-	'FIELD_IDENT_EXPLAIN'		=> 'The field Identification is a name to identify the profile field within the database and the templates.',
+	'FIELD_DESCRIPTION'			=> 'Field description',
+	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user',
+	'FIELD_DROPDOWN'			=> 'Dropdown box',
+	'FIELD_IDENT'				=> 'Field identification',
+	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',
+	'FIELD_IDENT_EXPLAIN'		=> 'The field identification is a name to identify the profile field within the database and the templates.',
 	'FIELD_INT'					=> 'Numbers',
 	'FIELD_LENGTH'				=> 'Length of input box',
-	'FIELD_NOT_FOUND'			=> 'Profile field not found',
-	'FIELD_STRING'				=> 'Single Textfield',
+	'FIELD_NOT_FOUND'			=> 'Profile field not found.',
+	'FIELD_STRING'				=> 'Single textfield',
 	'FIELD_TEXT'				=> 'Textarea',
-	'FIELD_TYPE'				=> 'Field Type',
+	'FIELD_TYPE'				=> 'Field type',
 	'FIELD_TYPE_EXPLAIN'		=> 'You are not able to change the field type later.',
-	'FIELD_VALIDATION'			=> 'Field Validation',
-	'FIRST_OPTION'				=> 'First Option',
+	'FIELD_VALIDATION'			=> 'Field validation',
+	'FIRST_OPTION'				=> 'First option',
 
-	'HIDE_PROFILE_FIELD'			=> 'Hide Profile Field',
+	'HIDE_PROFILE_FIELD'			=> 'Hide profile field',
 	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in user profiles.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
+	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
 	'ISO_LANGUAGE'				=> 'Language [%s]',
 
-	'LANG_SPECIFIC_OPTIONS'		=> 'Language specific options [<b>%s</b>]',
+	'LANG_SPECIFIC_OPTIONS'		=> 'Language specific options [<strong>%s</strong>]',
 
 	'MAX_FIELD_CHARS'		=> 'Maximum number of characters',
 	'MAX_FIELD_NUMBER'		=> 'Highest allowed number',
 	'MIN_FIELD_CHARS'		=> 'Minimum number of characters',
 	'MIN_FIELD_NUMBER'		=> 'Lowest allowed number',
 
-	'NO_FIELD_ENTRIES'			=> 'No Entries defined',
-	'NO_FIELD_ID'				=> 'No field id specified',
-	'NO_FIELD_TYPE'				=> 'No Field type specified',
+	'NO_FIELD_ENTRIES'			=> 'No entries defined',
+	'NO_FIELD_ID'				=> 'No field id specified.',
+	'NO_FIELD_TYPE'				=> 'No Field type specified.',
 	'NO_VALUE_OPTION'			=> 'Option equal to non entered value',
 	'NO_VALUE_OPTION_EXPLAIN'	=> 'Value for a non-entry. If the field is required, the user gets an error if he choose the option selected here',
 	'NUMBERS_ONLY'				=> 'Only numbers (0-9)',
 
-	'PREVIEW_PROFILE_FIELD'		=> 'Preview Profile Field',
-	'PROFILE_BASIC_OPTIONS'		=> 'Basic Options',
-	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated',
-	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated',
+	'PREVIEW_PROFILE_FIELD'		=> 'Preview profile field',
+	'PROFILE_BASIC_OPTIONS'		=> 'Basic options',
+	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated.',
+	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated.',
 	'PROFILE_LANG_OPTIONS'		=> 'Language specific options',
 	'PROFILE_TYPE_OPTIONS'		=> 'Profile type specific options',
 
-	'RADIO_BUTTONS'				=> 'Radio Buttons',
+	'RADIO_BUTTONS'				=> 'Radio buttons',
 	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
 	'REQUIRED_FIELD'			=> 'Required Field',
 	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user. This will display the profile field at registration and within the user control panel.',
 	'ROWS'						=> 'Rows',
 
 	'SAVE'							=> 'Save',
-	'SECOND_OPTION'					=> 'Second Option',
+	'SECOND_OPTION'					=> 'Second option',
 	'STEP_1_EXPLAIN_CREATE'			=> 'Here you can enter the first basic parameters of your new profile field. These informations are needed for the second step where you are able to set remaining options and where you are able to preview and tweak your profile field further.',
 	'STEP_1_EXPLAIN_EDIT'			=> 'Here you can change the basic parameters of your profile field. The relevant options are re-calculated within the second step, where you are able to preview and test the changed settings.',
-	'STEP_1_TITLE_CREATE'			=> 'Add Profile Field',
-	'STEP_1_TITLE_EDIT'				=> 'Edit Profile Field',
+	'STEP_1_TITLE_CREATE'			=> 'Add profile field',
+	'STEP_1_TITLE_EDIT'				=> 'Edit profile field',
 	'STEP_2_EXPLAIN_CREATE'			=> 'Here you are able to define some common options. Further you are able to preview the field you generated, as the user will see it. Play around with it until you are satisfied as how the field behaves.',
-	'STEP_2_EXPLAIN_EDIT'			=> 'Here you are able to change some common options. Further you are able to preview the changed field, as the user will see it. Play around with it until you are satisfied as how the field behaves.<br /><b>Please note that changes to profile fields will not affect existing profile fields entered by your users.</b>',
+	'STEP_2_EXPLAIN_EDIT'			=> 'Here you are able to change some common options. Further you are able to preview the changed field, as the user will see it. Play around with it until you are satisfied as how the field behaves.<br /><strong>Please note that changes to profile fields will not affect existing profile fields entered by your users.</strong>',
 	'STEP_2_TITLE_CREATE'			=> 'Profile type specific options',
 	'STEP_2_TITLE_EDIT'				=> 'Profile type specific options',
 	'STEP_3_EXPLAIN_CREATE'			=> 'Since you have more than one board language installed, you have to fill out the remaining language items too. The profile field will work with the default language enabled, you are able to fill out the remaining language items later too.',
 	'STEP_3_EXPLAIN_EDIT'			=> 'Since you have more than one board language installed, you now can change or add the remaining language items too. The profile field will work with the default language enabled.',
-	'STEP_3_TITLE_CREATE'			=> 'Remaining Language Definitions',
-	'STEP_3_TITLE_EDIT'				=> 'Language Definitions',
+	'STEP_3_TITLE_CREATE'			=> 'Remaining language definitions',
+	'STEP_3_TITLE_EDIT'				=> 'Language definitions',
 	'STRING_DEFAULT_VALUE_EXPLAIN'	=> 'Enter a default phrase to be displayed, a default value. Leave empty if you want to show it empty at the first place.',
 
 	'TEXT_DEFAULT_VALUE_EXPLAIN'	=> 'Enter a default text to be displayed, a default value. Leave empty if you want to show it empty at the first place.',
+	'TRANSLATE'						=> 'Translate',
 
-	'UPDATE_PREVIEW'	=> 'Update Preview',
-	'USER_FIELD_NAME'	=> 'Field Name/Title presented to the user',
+	'UPDATE_PREVIEW'	=> 'Update preview',
+	'USER_FIELD_NAME'	=> 'Field name/title presented to the user',
 
-	'VISIBILITY_OPTION'				=> 'Visibility Option',
+	'VISIBILITY_OPTION'				=> 'Visibility option',
 ));
 
 ?>

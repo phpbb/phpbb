@@ -114,7 +114,7 @@ function mcp_front_view($id, $mode, $action)
 	}
 
 	// Latest 5 reported
-	$forum_list = get_forum_list('m_');
+	$forum_list = get_forum_list('m_report');
 
 	$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
 

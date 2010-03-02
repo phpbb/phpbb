@@ -99,7 +99,15 @@ else
 if (defined('IN_CRON'))
 {
 	chdir($phpbb_root_path);
-	$phpbb_root_path = getcwd() . '/';
+	if (@function_exists('getcwd'))
+	{
+		$phpbb_root_path = getcwd() . '/';
+	}
+	else
+	{
+		// This is a best guess
+		$phpbb_root_path = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) . '/';
+	}
 }
 
 if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
@@ -170,6 +178,7 @@ require($phpbb_root_path . 'includes/auth.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
 set_error_handler('msg_handler');
@@ -189,7 +198,6 @@ unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
-$dss_seeded = false;
 
 // Disable board if the install/ directory is still present
 if (file_exists($phpbb_root_path . 'install') && !defined('ADMIN_START'))

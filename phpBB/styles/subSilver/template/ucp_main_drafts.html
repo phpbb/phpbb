@@ -55,7 +55,7 @@
 <!-- ELSEIF S_EDIT_DRAFT -->
 	<tr>
 		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
-		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{DRAFT_SUBJECT}" /></td>
+		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="64" tabindex="2" value="{DRAFT_SUBJECT}" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}: </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
@@ -83,7 +83,7 @@
 							<option value="18">{L_FONT_LARGE}</option>
 							<option  value="24">{L_FONT_HUGE}</option>
 						</select></td>
-						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
+						<td class="gensmall" nowrap="nowrap" align="right"><a href="#" onclick="bbstyle(-1); return false;" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
 					</tr>
 					</table>
 				</td>

@@ -1,11 +1,10 @@
-Subject: Post Approved - {POST_SUBJECT}
-Charset: iso-8859-1
+Subject: Post approved - {POST_SUBJECT}
 
 Hello {USERNAME},
 
-You are receiving this email because your post "{POST_SUBJECT}" at {SITENAME} was approved by a moderator or admin.
+You are receiving this notification because your post "{POST_SUBJECT}" at {SITENAME} was approved by a moderator or administrator.
 
-If you want to view the post click the following link:
+If you want to view the post, click the following link:
 {U_VIEW_POST}
 
 If you want to view the topic, click the following link:

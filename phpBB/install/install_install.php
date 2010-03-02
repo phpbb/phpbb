@@ -19,6 +19,17 @@ if ( !defined('IN_INSTALL') )
 
 if (!empty($setmodules))
 {
+	// If phpBB is already installed we do not include this module
+	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !file_exists($phpbb_root_path . 'cache/install_lock'))
+	{
+		include_once($phpbb_root_path . 'config.' . $phpEx);
+
+		if (defined('PHPBB_INSTALLED'))
+		{
+			return;
+		}
+	}
+
 	$module[] = array(
 		'module_type'		=> 'install',
 		'module_title'		=> 'INSTALL',
@@ -43,7 +54,7 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language;
+		global $lang, $template, $language, $phpbb_root_path;
 
 		switch ($sub)
 		{
@@ -95,7 +106,10 @@ class install_install extends module
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
-			
+				
+				// Remove the lock file
+				@unlink($phpbb_root_path . 'cache/install_lock');
+
 			break;
 		}
 
@@ -390,7 +404,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		$connect_test = false;
@@ -407,7 +421,7 @@ class install_install extends module
 				}
 			}
 			
-			$dbpasswd = html_entity_decode($dbpasswd);
+			$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
@@ -532,18 +546,20 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			$this->p_master->redirect("index?mode=install");
+			$this->p_master->redirect("index.$phpEx?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$passed = false;
+
+		$default_lang = ($default_lang !== '') ? $default_lang : $language;
 
 		if (isset($_POST['check']))
 		{
@@ -561,23 +577,23 @@ class install_install extends module
 			}
 
 			// Test against the default username rules
-			if ($admin_name != '' && strlen($admin_name) < 3)
+			if ($admin_name != '' && utf8_strlen($admin_name) < 3)
 			{
 				$error[] = $lang['INST_ERR_USER_TOO_SHORT'];
 			}
 
-			if ($admin_name != '' && strlen($admin_name) > 20)
+			if ($admin_name != '' && utf8_strlen($admin_name) > 20)
 			{
 				$error[] = $lang['INST_ERR_USER_TOO_LONG'];
 			}
 
 			// Test against the default password rules
-			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
+			if ($admin_pass1 != '' && utf8_strlen($admin_pass1) < 6)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
 			}
 
-			if ($admin_pass1 != '' && strlen($admin_pass1) > 30)
+			if ($admin_pass1 != '' && utf8_strlen($admin_pass1) > 30)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}
@@ -587,7 +603,7 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
 			}
 
-			if ($board_email1 != '' && !preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $board_email1))
+			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
@@ -702,14 +718,14 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			$this->p_master->redirect("index?mode=install");
+			$this->p_master->redirect("index.$phpEx?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -732,13 +748,22 @@ class install_install extends module
 			}
 		}
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		// Create a lock file to indicate that there is an install in progress
+		$fp = @fopen($phpbb_root_path . 'cache/install_lock', 'wb');
+		if ($fp === false)
+		{
+			// We were unable to create the lock file - abort
+			$this->p_master->error($lang['UNABLE_WRITE_LOCK'], __LINE__, __FILE__);
+		}
+		@fclose($fp);
+
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
 
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-		$config_data .= "\$dbms = '$dbms';\n";
+		$config_data .= "\$dbms = '" . $this->available_dbms[$dbms]['DRIVER'] . "';\n";
 		$config_data .= "\$dbhost = '$dbhost';\n";
 		$config_data .= "\$dbport = '$dbport';\n";
 		$config_data .= "\$dbname = '$dbname';\n";
@@ -748,9 +773,9 @@ class install_install extends module
 //		$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'file') . "';\n";
 		$config_data .= "\$acm_type = 'file';\n";
 		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
-		$config_data .= "define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "define('DEBUG', true);\n"; // @todo Comment out when final
-		$config_data .= "define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
+		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
+		$config_data .= "@define('DEBUG', true);\n"; // @todo Comment out when final
+		$config_data .= "@define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
@@ -848,14 +873,14 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			$this->p_master->redirect("index?mode=install");
+			$this->p_master->redirect("index.$phpEx?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -866,7 +891,7 @@ class install_install extends module
 		$server_port = ($server_port !== '') ? $server_port : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
 		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
-		
+
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{
 			if (!is_array($vars) && strpos($config_key, 'legend') === false)
@@ -927,21 +952,28 @@ class install_install extends module
 		global $db, $lang, $template, $phpbb_root_path, $phpEx;
 
 		$this->page_title = $lang['STAGE_CREATE_TABLE'];
+		$s_hidden_fields = '';
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			$this->p_master->redirect("index?mode=install");
+			$this->p_master->redirect("index.$phpEx?mode=install");
 		}
 
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+
+		// Try to come up with the best solution for cookie domain...
+		if (strpos($cookie_domain, 'www.') === 0)
+		{
+			$cookie_domain = str_replace('www.', '.', $cookie_domain);
+		}
 
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
@@ -949,18 +981,31 @@ class install_install extends module
 			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
 		}
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;
+
+		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
+		if ($dbms == 'mysql')
+		{
+			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$this->available_dbms[$dbms]['SCHEMA'] .= '_41';
+			}
+			else
+			{
+				$this->available_dbms[$dbms]['SCHEMA'] .= '_40';
+			}
+		}
 
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
@@ -971,25 +1016,6 @@ class install_install extends module
 		$delimiter = $this->available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
-
-		switch ($dbms)
-		{
-			case 'mysql':
-			case 'mysql4':
-				// We don't want MySQL mixing up collations
-				if (version_compare(mysql_get_server_info(), '4.1.2', '>='))
-				{
-					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
-				}
-
-			break;
-
-			case 'mysqli':
-				// mysqli only works with MySQL > 4.1.3 so we'll just do a straight replace if using this DBMS
-				$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
-			
-			break;
-		}
 
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
@@ -1011,7 +1037,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments and with MySQL < 4.1.2
+		// Deal with any special comments
 		switch ($dbms)
 		{
 			case 'mssql':
@@ -1043,10 +1069,12 @@ class install_install extends module
 
 		$current_time = time();
 
+		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
-				VALUES ('board_startdate', $current_time)",
+				VALUES ('board_startdate', '$current_time')",
 
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
 				VALUES ('default_lang', '" . $db->sql_escape($default_lang) . "')",
@@ -1128,7 +1156,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($admin_name)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1148,7 +1176,7 @@ class install_install extends module
 				SET user_regdate = $current_time", 
 
 			'UPDATE ' . $table_prefix . "posts
-				SET post_time = $current_time", 
+				SET post_time = $current_time, poster_ip = '" . $db->sql_escape($user_ip) . "'", 
 
 			'UPDATE ' . $table_prefix . "topics
 				SET topic_time = $current_time, topic_last_post_time = $current_time", 
@@ -1157,12 +1185,12 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
-		// This is for people who have TTF disabled
-		if (!(@function_exists('imagettfbbox') && @function_exists('imagettftext')))
+		// This is for people who have TTF and GD
+		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
 			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
-					SET config_value = '0'
-					WHERE config_name = 'policy_shape'";
+					SET config_value = '1'
+					WHERE config_name = 'captcha_gd'";
 		}
 
 		foreach ($sql_ary as $sql)
@@ -1203,16 +1231,16 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1353,7 +1381,7 @@ class install_install extends module
 	
 				$_module->move_module_by($row, 'move_up', 4);
 
-				// Move manage users screen module 4 up...
+				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
 					WHERE module_basename = 'users'
@@ -1363,7 +1391,22 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 	
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'move_up', 5);
+			}
+
+			if ($module_class == 'ucp')
+			{
+				// Move attachment module 4 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'attachments'
+						AND module_class = 'ucp'
+						AND module_mode = 'attachments'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+	
+				$_module->move_module_by($row, 'move_down', 4);
 			}
 
 			// And now for the special ones
@@ -1457,7 +1500,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		// Fill the config array - it is needed by those functions we call
@@ -1539,7 +1582,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		// Load the basic configuration data
@@ -1581,10 +1624,8 @@ class install_install extends module
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 			$messenger->assign_vars(array(
-				'USERNAME'		=> html_entity_decode($admin_name),
-				'PASSWORD'		=> html_entity_decode($admin_pass1),
-				'U_BOARD'		=> generate_board_url(),
-				'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
+				'USERNAME'		=> htmlspecialchars_decode($admin_name),
+				'PASSWORD'		=> htmlspecialchars_decode($admin_pass1))
 			);
 
 			$messenger->send(NOTIFY_EMAIL);
@@ -1595,7 +1636,7 @@ class install_install extends module
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
-			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html">', '</a>'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx),
 		));
@@ -1620,10 +1661,10 @@ class install_install extends module
 		global $phpbb_root_path, $phpEx, $config, $lang;
 
 		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate it and set return on error true
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_return_on_error(true);
 
@@ -1641,32 +1682,35 @@ class install_install extends module
 			return false;
 		}
 
-		// Check the prefix length to ensure that index names are not too long
+		// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
 		switch ($dbms)
 		{
 			case 'mysql':
-			case 'mysql4':
 			case 'mysqli':
+				if (strpos($table_prefix, '-') !== false)
+				{
+					$error[] = $lang['INST_ERR_PREFIX_INVALID'];
+					return false;
+				}
+
+			// no break;
+
 			case 'postgres':
 				$prefix_length = 36;
-
 			break;
 
 			case 'mssql':
 			case 'mssql_odbc':
 				$prefix_length = 90;
-			
 			break;
 
-			case 'oracle':
 			case 'sqlite':
 				$prefix_length = 200;
-			
 			break;
 
 			case 'firebird':
+			case 'oracle':
 				$prefix_length = 6;
-
 			break;
 		}
 
@@ -1687,11 +1731,16 @@ class install_install extends module
 			switch ($dbms)
 			{
 				case 'mysql':
-				case 'mysql4':
 				case 'mysqli':
-				case 'sqlite':
-					$sql = "SHOW TABLES";
+					$sql = 'SHOW TABLES';
 					$field = "Tables_in_{$dbname}";
+				break;
+
+				case 'sqlite':
+					$sql = 'SELECT name
+						FROM sqlite_master
+						WHERE type = "table"';
+					$field = 'name';
 				break;
 
 				case 'mssql':
@@ -1719,7 +1768,8 @@ class install_install extends module
 				break;
 
 				case 'oracle':
-					$sql = 'SELECT table_name FROM USER_TABLES';
+					$sql = 'SELECT table_name
+						FROM USER_TABLES';
 					$field = 'table_name';
 				break;
 			}
@@ -1746,20 +1796,89 @@ class install_install extends module
 			// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 			switch ($dbms)
 			{
-				case 'mysql4':
-					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
-					}
-
-				break;
-
 				case 'mysqli':
 					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 					}
+				break;
+
+				case 'mysqli':
+					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
+					{
+						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
+					}
+				break;
+
+				case 'firebird':
+					// check the version of FB, use some hackery if we can't get access to the server info
+					if ($db->service_handle !== false && function_exists('ibase_server_info'))
+					{
+						$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
+						preg_match('#V([\d.]+)#', $val, $match);
+						if ($match[1] < 2)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						}
+					}
+					else
+					{
+						$sql = "SELECT *
+							FROM RDB$FUNCTIONS
+							WHERE RDB$SYSTEM_FLAG IS NULL
+								AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						// if its a UDF, its too old
+						if ($row)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						}
+						else
+						{
+							$sql = "SELECT FIRST 0 char_length('')
+								FROM RDB\$DATABASE";
+							$result = $db->sql_query($sql);
+							if (!$result) // This can only fail if char_length is not defined
+							{
+								$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+							}
+							$db->sql_freeresult($result);
+						}
+					}
+				break;
 				
+				case 'oracle':
+					$sql = "SELECT *
+						FROM NLS_DATABASE_PARAMETERS
+						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
+							OR PARAMETER = 'NLS_CHARACTERSET'";
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$stats[$row['parameter']] = $row['value'];
+					}
+					$db->sql_freeresult($result);
+
+					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					}
+				break;
+				
+				case 'postgres':
+					$sql = "SHOW server_encoding;";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
+					}
 				break;
 			}
 
@@ -1854,7 +1973,7 @@ class install_install extends module
 	/**
 	* Specific PHP modules we may require for certain optional or extended features
 	*/
-	var $php_dlls_other = array('zlib', 'ftp', 'xml');
+	var $php_dlls_other = array('zlib', 'ftp', 'gd', 'xml');
 
 	/**
 	* Details of the database management systems supported
@@ -1865,63 +1984,64 @@ class install_install extends module
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase', 
 			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'firebird'
 		),
 		'mysqli'	=> array(
-			'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
-			'SCHEMA'		=> 'mysql',
+			'LABEL'			=> 'MySQL with MySQLi Extension',
+			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
-		),
-		'mysql4'	=> array(
-			'LABEL'			=> 'MySQL 4.x/5.x',
-			'SCHEMA'		=> 'mysql',
-			'MODULE'		=> 'mysql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'mysqli'
 		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'mysql'
 		),
 		'mssql'		=> array(
 			'LABEL'			=> 'MS SQL Server 2000+',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql', 
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssql'
 		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc', 
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssql_odbc'
 		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8', 
 			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'oracle'
 		),
 		'postgres' => array(
 			'LABEL'			=> 'PostgreSQL 7.x/8.x',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'postgres'
 		),
 		'sqlite'		=> array(
 			'LABEL'			=> 'SQLite',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'sqlite'
 		),
 	);
 
@@ -1996,7 +2116,6 @@ class install_install extends module
 			'UCP_PREFS'			=> null,
 			'UCP_PM'			=> null,
 			'UCP_USERGROUPS'	=> null,
-			'UCP_ATTACHMENTS'	=> null,
 			'UCP_ZEBRA'			=> null,
 		),
 	);

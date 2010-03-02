@@ -68,7 +68,9 @@ class acp_database
 
 						@set_time_limit(1200);
 
-						$filename = 'backup_' . time();
+						$time = time();
+
+						$filename = 'backup_' . $time;
 
 						// We set up the info needed for our on-the-fly creation :D
 						switch ($format)
@@ -111,7 +113,7 @@ class acp_database
 
 							if (!$fp)
 							{
-								trigger_error('Unable to write temporary file to storage folder');
+								trigger_error('Unable to write temporary file to storage folder', E_USER_ERROR);
 							}
 						}
 
@@ -128,10 +130,10 @@ class acp_database
 						$sql_data .= "#\n";
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
-						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
+						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $time) . " GMT\n";
 						$sql_data .= "#\n";
 
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 								$sql_data .= "BEGIN TRANSACTION;\n";
@@ -149,12 +151,37 @@ class acp_database
 							break;
 						}
 
+						if ($structure && $db->sql_layer == 'firebird')
+						{
+							$sql = 'SELECT RDB$FUNCTION_NAME, RDB$DESCRIPTION
+								FROM RDB$FUNCTIONS
+								ORDER BY RDB$FUNCTION_NAME';
+							$result = $db->sql_query($sql);
+
+							$rows = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$sql = 'SELECT F.RDB$FUNCTION_NAME, F.RDB$MODULE_NAME, F.RDB$ENTRYPOINT, F.RDB$RETURN_ARGUMENT, F.RDB$DESCRIPTION, FA.RDB$ARGUMENT_POSITION, FA.RDB$MECHANISM, FA.RDB$FIELD_TYPE, FA.RDB$FIELD_SCALE, FA.RDB$FIELD_LENGTH, FA.RDB$FIELD_SUB_TYPE, C.RDB$BYTES_PER_CHARACTER, C.RDB$CHARACTER_SET_NAME ,FA.RDB$FIELD_PRECISION
+									FROM RDB$FUNCTIONS F
+									LEFT JOIN RDB$FUNCTION_ARGUMENTS FA ON F.RDB$FUNCTION_NAME = FA.RDB$FUNCTION_NAME
+									LEFT JOIN RDB$CHARACTER_SETS C ON FA.RDB$CHARACTER_SET_ID = C.RDB$CHARACTER_SET_ID
+									WHERE (F.RDB$FUNCTION_NAME = ' . $row['FUNCTION_NAME'] . ')
+									ORDER BY FA.RDB$ARGUMENT_POSITION';
+								$result2 = $db->sql_query($sql);
+								while ($row2 = $db->sql_fetchrow($result2))
+								{
+								}
+								$db->sql_freeresult($result2);
+							}
+							$db->sql_freeresult($result);
+						}
+
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
 							if ($structure)
 							{
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'mysqli':
 									case 'mysql4':
@@ -197,27 +224,12 @@ class acp_database
 								}
 								$sql_data .= $this->get_table_structure($table_name);
 							}
-							// We might wanna empty out all that junk :D
 							else
 							{
-								switch (SQL_LAYER)
-								{
-									case 'mysqli':
-									case 'mysql4':
-									case 'mysql':
-									case 'mssql':
-									case 'mssql_odbc':
-									case 'oracle':
-									case 'postgres':
-									case 'firebird':
-										$sql_data .= 'TRUNCATE TABLE ' . $table_name . ";\n";
-									break;
-									
-									case 'sqlite':
-										$sql_data .= 'DELETE FROM ' . $table_name . ";\n";
-									break;
-								}
+								// We might wanna empty out all that junk :D
+								$sql_data .= (($db->sql_layer == 'sqlite') ? 'DELETE FROM ' : 'TRUNCATE TABLE ') . $table_name . ";\n";
 							}
+
 							// Now write the data for the first time. :)
 							if ($store == true)
 							{
@@ -243,7 +255,7 @@ class acp_database
 							{
 								$sql_data .= "\n";
 
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'mysqli':
 
@@ -263,8 +275,8 @@ class acp_database
 												$field_set[$j] = $field[$j]->name;
 											}
 
-											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
-											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
+											$search			= array("\\", "'", "\x00", "\x0a", "\x0d", "\x1a", '"');
+											$replace		= array("\\\\", "\\'", '\0', '\n', '\r', '\Z', '\\"');
 											$fields			= implode(', ', $field_set);
 											$values			= array();
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
@@ -336,8 +348,8 @@ class acp_database
 												$field_set[$j] = $field[$j]->name;
 											}
 
-											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
-											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
+											$search			= array("\\", "'", "\x00", "\x0a", "\x0d", "\x1a", '"');
+											$replace		= array("\\\\", "\\'", '\0', '\n', '\r', '\Z', '\\"');
 											$fields			= implode(', ', $field_set);
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
@@ -406,7 +418,7 @@ class acp_database
 
 											$column_list = array();
 											$table_cols = explode(',', trim($matches[1]));
-											foreach($table_cols as $declaration)
+											foreach ($table_cols as $declaration)
 											{
 												$entities = preg_split('#\s+#', trim($declaration));
 												$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
@@ -442,7 +454,7 @@ class acp_database
 												{
 													$row_data = "''";
 												}
-												else if (strpos($col_types[$row_name], 'text') !== false || strpos($col_types[$row_name], 'char') !== false)
+												else if (strpos($col_types[$row_name], 'text') !== false || strpos($col_types[$row_name], 'char') !== false || strpos($col_types[$row_name], 'blob') !== false)
 												{
 													$row_data = "'" . $row_data . "'";
 												}
@@ -516,7 +528,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|bytea#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -637,7 +649,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -748,7 +760,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -843,7 +855,7 @@ class acp_database
 											{
 												$str_val = $row[strtolower($ary_name[$i])];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -927,7 +939,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|raw#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -989,7 +1001,7 @@ class acp_database
 							}
 						}
 
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 							case 'postgres':
@@ -1024,12 +1036,12 @@ class acp_database
 						unset($sql_data);
 
 						add_log('admin', 'LOG_DB_BACKUP');
-						trigger_error($user->lang['BACKUP_SUCCESS']);
+						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
 					default:
 						$tables = array();
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 								$sql = "SELECT name
@@ -1167,13 +1179,13 @@ class acp_database
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
 						{
-							trigger_error($user->lang['BACKUP_INVALID']);
+							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
 						{
 							unlink($file_name);
-							trigger_error($user->lang['BACKUP_DELETE']);
+							trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 						}
 
 						$data = file_get_contents($file_name);
@@ -1220,13 +1232,13 @@ class acp_database
 							remove_remarks($data);
 
 							// SQLite gets improved performance when you shove all of these disk write queries at once :D
-							if (SQL_LAYER == 'sqlite')
+							if ($db->sql_layer == 'sqlite')
 							{
 								$db->sql_query($data);
 							}
 							else
 							{
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'firebird':
 										$delim = ';;';
@@ -1263,7 +1275,7 @@ class acp_database
 							}
 						}
 						add_log('admin', 'LOG_DB_RESTORE');
-						trigger_error($user->lang['RESTORE_SUCCESS']);
+						trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -1324,7 +1336,7 @@ class acp_database
 
 		$sql_data = '';
 
-		switch (SQL_LAYER)
+		switch ($db->sql_layer)
 		{
 			case 'mysqli':
 			case 'mysql4':
@@ -1370,11 +1382,22 @@ class acp_database
 				{
 					$kname = $row['Key_name'];
 
-					if ($kname != 'PRIMARY' && $row['Non_unique'] == 0)
+					if ($kname != 'PRIMARY')
 					{
-						$kname = "UNIQUE|$kname";
+						if ($row['Index_type'] == 'FULLTEXT')
+						{
+							$kname = "FULLTEXT|$kname";
+						}
+						else if ($row['Non_unique'] == 0)
+						{
+							$kname = "UNIQUE|$kname";
+						}
 					}
 
+					if ($row['Sub_part'])
+					{
+						$row['Column_name'] .= '(' . $row['Sub_part'] . ')';
+					}
 					$index[$kname][] = $row['Column_name'];
 				}
 				$db->sql_freeresult($result);
@@ -1390,6 +1413,10 @@ class acp_database
 					else if (strpos($key, 'UNIQUE') === 0)
 					{
 						$line .= 'UNIQUE ' . substr($key, 7) . ' (' . implode(', ', $columns) . ')';
+					}
+					else if (strpos($key, 'FULLTEXT') === 0)
+					{
+						$line .= 'FULLTEXT ' . substr($key, 9) . ' (' . implode(', ', $columns) . ')';
 					}
 					else
 					{

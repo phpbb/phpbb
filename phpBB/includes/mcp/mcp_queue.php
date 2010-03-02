@@ -109,6 +109,7 @@ class mcp_queue
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
+				$message = str_replace("\n", '<br />', $message);
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
@@ -181,12 +182,14 @@ class mcp_queue
 						$forum_list[] = $row['forum_id'];
 					}
 
-					$global_id = $forum_list[0];
-
-					if (!($forum_list = implode(', ', $forum_list)))
+					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
+
+					$global_id = $forum_list[0];
+
+					$forum_list = implode(', ', $forum_list);
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . "
@@ -228,10 +231,10 @@ class mcp_queue
 				if ($mode == 'unapproved_posts')
 				{
 					$sql = 'SELECT p.post_id
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql{0} == 'u') ? ', ' . USERS_TABLE . ' u' : '') . "
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . "
 						WHERE p.forum_id IN (0, $forum_list)
 							AND p.post_approved = 0
-							" . (($sort_order_sql{0} == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
+							" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
 							AND t.topic_first_post_id <> p.post_id
@@ -283,8 +286,8 @@ class mcp_queue
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
 						FROM ' . TOPICS_TABLE . " t
-						WHERE topic_approved = 0
-							AND forum_id IN (0, $forum_list)
+						WHERE forum_id IN (0, $forum_list)
+							AND topic_approved = 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -409,6 +412,8 @@ function approve_post($post_id_list, $mode)
 		$total_topics = $total_posts = $forum_topics = $forum_posts = 0;
 		$topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = array();
 
+		$update_forum_information = false;
+
 		foreach ($post_info as $post_id => $post_data)
 		{
 			$topic_id_list[$post_data['topic_id']] = 1;
@@ -443,6 +448,12 @@ function approve_post($post_id_list, $mode)
 			}
 
 			$post_approve_sql[] = $post_id;
+
+			// If the post is newer than the last post information stored we need to update the forum information
+			if ($post_data['post_time'] >= $post_data['forum_last_post_time'])
+			{
+				$update_forum_information = true;
+			}
 		}
 
 		if (sizeof($topic_approve_sql))
@@ -496,7 +507,11 @@ function approve_post($post_id_list, $mode)
 		unset($topic_approve_sql, $topic_replies_sql, $post_approve_sql);
 
 		update_post_information('topic', array_keys($topic_id_list));
-		update_post_information('forum', $forum_id);
+
+		if ($update_forum_information)
+		{
+			update_post_information('forum', $forum_id);
+		}
 		unset($topic_id_list);
 
 		$messenger = new messenger();
@@ -504,8 +519,6 @@ function approve_post($post_id_list, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
@@ -522,11 +535,9 @@ function approve_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($post_data['username']),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])),
+					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
 
 					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
 					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
@@ -629,7 +640,7 @@ function disapprove_post($post_id_list, $mode)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$row || (!$reason && $row['reason_title'] == 'other'))
+		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
 			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
 			unset($_POST['confirm']);
@@ -637,7 +648,7 @@ function disapprove_post($post_id_list, $mode)
 		else
 		{
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			$disapprove_reason = ($row['reason_title'] != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
+			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 		}
 	}
@@ -719,8 +730,6 @@ function disapprove_post($post_id_list, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
@@ -737,12 +746,10 @@ function disapprove_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($post_data['username']),
-					'REASON'		=> html_entity_decode($disapprove_reason),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])))
+					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+					'REASON'		=> htmlspecialchars_decode($disapprove_reason),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);

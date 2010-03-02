@@ -1,4 +1,3 @@
-Charset: iso-8859-1
 
 Hello {TO_USERNAME},
 

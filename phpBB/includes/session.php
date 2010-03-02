@@ -64,7 +64,8 @@ class session
 		$query_string = trim(implode('&', $args));
 
 		// basenamed page name (for example: index.php)
-		$page_name = htmlspecialchars(basename($script_name));
+		$page_name = basename($script_name);
+		$page_name = urlencode(htmlspecialchars($page_name));
 
 		// current directory within the phpBB root (for example: adm)
 		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
@@ -112,6 +113,13 @@ class session
 			'page'				=> $page
 		);
 
+/*
+		if (!file_exists($page_name))
+		{
+			trigger_error('You are on a page that does not exist!', E_USER_ERROR);
+		}
+*/
+
 		return $page_array;
 	}
 
@@ -127,9 +135,6 @@ class session
 	*
 	* @param bool $update_session_page if true the session page gets updated.
 	*			This can be set to circumvent certain scripts to update the users last visited page.
-	*
-	* @todo Introduce further user types, bot, guest
-	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
 	function session_begin($update_session_page = true)
 	{
@@ -148,12 +153,9 @@ class session
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
-			// Switch to request_var ... can this cause issues, can a _GET/_POST param
-			// be used to poison this? Not sure that it makes any difference in terms of
-			// the end result, be it a cookie or param.
-			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0);
-			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '');
-			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '');
+			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
+			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
+			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '', false, true);
 
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
@@ -265,7 +267,6 @@ class session
 							$db->sql_query($sql);
 						}
 
-						// Ultimately to be removed
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 
@@ -275,7 +276,10 @@ class session
 				else
 				{
 					// Added logging temporarly to help debug bugs...
-					add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+					if (defined('DEBUG_EXTRA'))
+					{
+						add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+					}
 				}
 			}
 		}
@@ -320,8 +324,7 @@ class session
 		* bot, act accordingly
 		*/		
 		$bot = false;
-		$active_bots = array();
-		$cache->obtain_bots($active_bots);
+		$active_bots = $cache->obtain_bots();
 
 		foreach ($active_bots as $row)
 		{
@@ -374,7 +377,7 @@ class session
 			$sql = 'SELECT u.* 
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
-					AND u.user_type <> ' . USER_INACTIVE . "
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 					AND k.user_id = u.user_id
 					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 			$result = $db->sql_query($sql);
@@ -389,7 +392,7 @@ class session
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $this->cookie_data['u'] . '
-					AND user_type <> ' . USER_INACTIVE;
+					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -405,9 +408,21 @@ class session
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
 
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $this->cookie_data['u'];
+			if (!$bot)
+			{
+				$sql = 'SELECT *
+					FROM ' . USERS_TABLE . '
+					WHERE user_id = ' . (int) $this->cookie_data['u'];
+			}
+			else
+			{
+				// We give bots always the same session if it is not yet expired.
+				$sql = 'SELECT u.*, s.*
+					FROM ' . USERS_TABLE . ' u
+					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+					WHERE u.user_id = ' . (int) $bot;
+			}
+
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -422,26 +437,66 @@ class session
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
+		// Force user id to be integer...
+		$this->data['user_id'] = (int) $this->data['user_id'];
+
 		// At this stage we should have a filled data array, defined cookie u and k data.
 		// data array should contain recent session info if we're a real user and a recent
 		// session exists in which case session_id will also be set
 
 		// Is user banned? Are they excluded? Won't return on ban, exists within method
-		// @todo Change to !$this->data['user_type'] & USER_FOUNDER && !$this->data['user_type'] & USER_BOT in time
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
 			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
-		//
-		// Do away with ultimately?
-		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS) ? true : false;
-		$this->data['is_bot'] = ($bot) ? true : false;
-		//
-		//
 
-		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
+		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
+		$this->data['is_bot'] = ($bot) ? true : false;
+
+		// If our friend is a bot, we re-assign a previously assigned session
+		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
+		{
+			// Only assign the current session if the ip and browser match...
+			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+
+			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
+			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
+
+			if ($u_ip === $s_ip && $s_browser === $u_browser)
+			{
+				$this->session_id = $this->data['session_id'];
+
+				// Only update session DB a minute or so after last update or if page changes
+				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				{
+					$sql_ary = array('session_time' => $this->time_now, 'session_last_visit' => $this->time_now, 'session_admin' => 0);
+
+					if ($this->update_session_page)
+					{
+						$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+					}
+
+					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+					$db->sql_query($sql);
+				}
+
+				$SID = '?sid=';
+				$_SID = '';
+
+				return true;
+			}
+			else
+			{
+				// If the ip and browser does not match make sure we only have one bot assigned to one session
+				$db->sql_query('DELETE FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = ' . $this->data['user_id']);
+			}
+		}
+
 		$session_autologin = (($this->cookie_data['k'] || $persist_login) && $this->data['is_registered']) ? true : false;
+		$set_admin = ($set_admin && $this->data['is_registered']) ? true : false;
 
 		// Create or update the session
 		$sql_ary = array(
@@ -516,6 +571,11 @@ class session
 
 			unset($cookie_expire);
 		}
+		else
+		{
+			$SID = '?sid=';
+			$_SID = '';
+		}
 
 		return true;
 	}
@@ -588,6 +648,9 @@ class session
 		$SID = '?sid=';
 		$this->session_id = $_SID = '';
 
+		// To make sure a valid session is created we create one for the anonymous user
+		$this->session_create(ANONYMOUS);
+
 		return true;
 	}
 
@@ -610,88 +673,48 @@ class session
 			$this->time_now = time();
 		}
 
-		switch (SQL_LAYER)
+		// Firstly, delete guest sessions
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . ANONYMOUS . '
+				AND session_time < ' . (int) ($this->time_now - $config['session_length']);
+		$db->sql_query($sql);
+
+		// Get expired sessions, only most recent for each user
+		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
+			GROUP BY session_user_id, session_page';
+		$result = $db->sql_query_limit($sql, 10);
+
+		$del_user_id = array();
+		$del_sessions = 0;
+
+		while ($row = $db->sql_fetchrow($result))
 		{
-			case 'mysql4':
-			case 'mysqli':
-				// Firstly, delete guest sessions
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time < ' . (int) ($this->time_now - $config['session_length']);
-				$db->sql_query($sql);
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				WHERE user_id = " . (int) $row['session_user_id'];
+			$db->sql_query($sql);
 
-				// Keep only the most recent session for each user
-				// Note: if the user is currently browsing the board, his
-				// last_visit field won't be updated, which I believe should be
-				// the normal behavior anyway
-				$db->sql_return_on_error(true);
+			$del_user_id[] = (int) $row['session_user_id'];
+			$del_sessions++;
+		}
+		$db->sql_freeresult($result);
 
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					USING ' . SESSIONS_TABLE . ' s1, ' . SESSIONS_TABLE . ' s2
-					WHERE s1.session_user_id = s2.session_user_id
-						AND s1.session_time < s2.session_time';
-				$db->sql_query($sql);
+		if (sizeof($del_user_id))
+		{
+			// Delete expired sessions
+			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
+					AND session_time < ' . ($this->time_now - $config['session_length']);
+			$db->sql_query($sql);
+		}
 
-				$db->sql_return_on_error(false);
-
-				// Update last visit time
-				$sql = 'UPDATE ' . USERS_TABLE. ' u, ' . SESSIONS_TABLE . ' s
-					SET u.user_lastvisit = s.session_time, u.user_lastpage = s.session_page
-					WHERE s.session_time < ' . (int) ($this->time_now - $config['session_length']) . '
-						AND u.user_id = s.session_user_id';
-				$db->sql_query($sql);
-
-				// Delete everything else now
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . (int) ($this->time_now - $config['session_length']);
-				$db->sql_query($sql);
-
-				set_config('session_last_gc', $this->time_now, true);
-			break;
-
-			default:
-
-				// Get expired sessions, only most recent for each user
-				$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
-					GROUP BY session_user_id, session_page';
-				$result = $db->sql_query_limit($sql, 5);
-
-				$del_user_id = array();
-				$del_sessions = 0;
-
-				while ($row = $db->sql_fetchrow($result));
-				{
-					if ($row['session_user_id'] != ANONYMOUS)
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-							WHERE user_id = " . (int) $row['session_user_id'];
-						$db->sql_query($sql);
-					}
-
-					$del_user_id[] = (int) $row['session_user_id'];
-					$del_sessions++;
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($del_user_id))
-				{
-					// Delete expired sessions
-					$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-						WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
-							AND session_time < ' . ($this->time_now - $config['session_length']);
-					$db->sql_query($sql);
-				}
-
-				if ($del_sessions < 5)
-				{
-					// Less than 5 sessions, update gc timer ... else we want gc
-					// called again to delete other sessions
-					set_config('session_last_gc', $this->time_now, true);
-				}
-			break;
+		if ($del_sessions < 10)
+		{
+			// Less than 10 sessions, update gc timer ... else we want gc
+			// called again to delete other sessions
+			set_config('session_last_gc', $this->time_now, true);
 		}
 
 		if ($config['max_autologin_time'])
@@ -713,20 +736,11 @@ class session
 	{
 		global $config;
 
-		if (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
-		{
-			@setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
-		}
-		else
-		{
-			// Firefox does not allow setting cookies with a domain containing no periods.
-			if (strpos($config['cookie_domain'], '.') === false)
-			{
-				$config['cookie_domain'] = '.' . $config['cookie_domain'];
-			}
+		$name_data = rawurlencode($config['cookie_name'] . '_' . $name) . '=' . rawurlencode($cookiedata);
+		$expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $cookietime);
+		$domain = (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain'];
 
-			@setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-		}
+		header('Set-Cookie: ' . $name_data . '; expires=' . $expire . '; path=' . $config['cookie_path'] . $domain . ((!$config['cookie_secure']) ? '' : '; secure') . '; HttpOnly', false);
 	}
 
 	/**
@@ -781,6 +795,7 @@ class session
 
 		$result = $db->sql_query($sql);
 
+		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
@@ -796,6 +811,20 @@ class session
 				{
 					$banned = true;
 					$ban_row = $row;
+
+					if (!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id)
+					{
+						$ban_triggered_by = 'user';
+					}
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+					{
+						$ban_triggered_by = 'ip';
+					}
+					else
+					{
+						$ban_triggered_by = 'email';
+					}
+
 					// Don't break. Check if there is an exclude rule for this user
 				}
 			}
@@ -819,10 +848,51 @@ class session
 
 			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
+			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+
 			trigger_error($message);
 		}
 
 		return ($banned) ? true : false;
+	}
+
+	/**
+	* Check if ip is blacklisted
+	* This should be called only where absolutly necessary
+	*
+	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
+	*
+	* @author satmd (from the php manual)
+	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
+	*/
+	function check_dnsbl($ip = false)
+	{
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		$dnsbl_check = array(
+			'bl.spamcop.net'		=> 'http://spamcop.net/bl.shtml?',
+			'list.dsbl.org'			=> 'http://dsbl.org/listing?',
+			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+		);
+
+		if ($ip)
+		{
+			$quads = explode('.', $ip);
+			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+			foreach ($dnsbl_check as $dnsbl => $lookup)
+			{
+				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				{
+					return array($dnsbl, $lookup . $ip);
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -960,15 +1030,20 @@ class user extends session
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
 
-/*			Browser-specific language setting removed - might re-appear later
+			/**
+			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
+			* @todo if re-enabled we need to make sure only those languages installed are checked
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
 				$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
 				foreach ($accept_lang_ary as $accept_lang)
 				{
 					// Set correct format ... guess full xx_YY form
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+					$accept_lang = basename($accept_lang);
+
 					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 					{
 						$this->lang_name = $config['default_lang'] = $accept_lang;
@@ -979,6 +1054,8 @@ class user extends session
 					{
 						// No match on xx_YY so try xx
 						$accept_lang = substr($accept_lang, 0, 2);
+						$accept_lang = basename($accept_lang);
+
 						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 						{
 							$this->lang_name = $config['default_lang'] = $accept_lang;
@@ -988,7 +1065,7 @@ class user extends session
 					}
 				}
 			}
-*/
+			*/
 		}
 
 		// We include common language file here to not load it every time a custom language file is included
@@ -1141,7 +1218,7 @@ class user extends session
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
-		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['is_registered'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
+		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && $this->data['is_registered'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
 			{
@@ -1207,7 +1284,7 @@ class user extends session
 
 	/**
 	* Set language entry (called by add_lang)
-	* @access: private
+	* @access private
 	*/
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
@@ -1263,12 +1340,17 @@ class user extends session
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $this->timezone - $this->dst;
 		}
 
-		if (strpos($format, '|') === false || (!($gmepoch > $midnight && !$forcedate) && !($gmepoch > $midnight - 86400 && !$forcedate)))
+		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate))
 		{
 			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
 		}
 
-		if ($gmepoch > $midnight && !$forcedate)
+		if ($gmepoch > $midnight + 86400 && !$forcedate)
+		{
+			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
+			return str_replace('||', $this->lang['datetime']['TOMORROW'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
+		}
+		else if ($gmepoch > $midnight && !$forcedate)
 		{
 			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
 			return str_replace('||', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
@@ -1337,13 +1419,15 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		if (empty($imgs[$img . $suffix]) || $width !== false)
+		$img_data = &$imgs[$img . $suffix];
+
+		if (empty($img_data) || $width !== false)
 		{
 			if (!isset($this->theme[$img]) || !$this->theme[$img])
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
-				$imgs[$img . $suffix] = '';
-				return $imgs[$img . $suffix];
+				$img_data = '';
+				return $img_data;
 			}
 
 			// Do not include dimensions?
@@ -1369,9 +1453,9 @@ class user extends session
 				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
 			}
 
-			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
-			$imgs[$img . $suffix]['width'] = $width;
-			$imgs[$img . $suffix]['height'] = $height;
+			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
+			$img_data['width'] = $width;
+			$img_data['height'] = $height;
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
@@ -1379,19 +1463,19 @@ class user extends session
 		switch ($type)
 		{
 			case 'src':
-				return $imgs[$img . $suffix]['src'];
+				return $img_data['src'];
 			break;
 			
 			case 'width':
-				return $imgs[$img . $suffix]['width'];
+				return $img_data['width'];
 			break;
 
 			case 'height':
-				return $imgs[$img . $suffix]['height'];
+				return $img_data['height'];
 			break;
 
 			default:
-				return '<img src="' . $imgs[$img . $suffix]['src'] . '"' . (($imgs[$img . $suffix]['width']) ? ' width="' . $imgs[$img . $suffix]['width'] . '"' : '') . (($imgs[$img . $suffix]['height']) ? ' height="' . $imgs[$img . $suffix]['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				return '<img src="' . $img_data['src'] . '"' . (($img_data['width']) ? ' width="' . $img_data['width'] . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 		}
 	}

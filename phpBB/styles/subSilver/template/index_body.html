@@ -8,84 +8,13 @@
 	<br clear="all" /><br />
 <!-- ENDIF -->
 
-<table class="tablebg" cellspacing="1" width="100%">
-<tr>
-	<td class="cat" colspan="5" align="right"><a class="nav" href="{U_MARK_FORUMS}">{L_MARK_FORUMS_READ}</a>&nbsp;</td>
-</tr>
-<tr>
-	<th colspan="2">&nbsp;{L_FORUM}&nbsp;</th>
-	<th width="50">&nbsp;{L_TOPICS}&nbsp;</th>
-	<th width="50">&nbsp;{L_POSTS}&nbsp;</th>
-	<th>&nbsp;{L_LAST_POST}&nbsp;</th>
-</tr>
-<!-- BEGIN forumrow -->
-	<!-- IF forumrow.S_IS_CAT -->
-		<tr>
-			<td class="cat" colspan="2"><h4><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></h4></td>
-			<td class="catdiv" colspan="3">&nbsp;</td>
-		</tr>
-	<!-- ELSEIF forumrow.S_IS_LINK -->
-		<tr>
-			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
-			<!-- IF forumrow.CLICKS --><td class="row1"><!-- ELSE --><td class="row1" colspan="4"><!-- ENDIF -->
-				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
-				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
-			</td>
-			<!-- IF forumrow.CLICKS -->
-				<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
-			<!-- ENDIF -->
-		</tr>
-	<!-- ELSE -->
-		<tr>
-			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
-			<td class="row1" width="100%">
-				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
-				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
-				<!-- IF forumrow.MODERATORS -->
-					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}</p>
-				<!-- ENDIF -->
-				<!-- IF forumrow.SUBFORUMS -->
-					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}</p>
-				<!-- ENDIF -->
-			</td>
-			<td class="row2" align="center"><p class="topicdetails">{forumrow.TOPICS}</p></td>
-			<td class="row2" align="center"><p class="topicdetails">{forumrow.POSTS}</p></td>
-			<td class="row2" align="center" nowrap="nowrap">
-				<!-- IF forumrow.LAST_POST_TIME -->
-					<p class="topicdetails">{forumrow.LAST_POST_TIME}</p>
-					<p class="topicdetails">
-					<!-- IF forumrow.U_LAST_POSTER -->
-						<a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a>
-					<!-- ELSE -->
-						{forumrow.LAST_POSTER}
-					<!-- ENDIF -->
-					<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a>
-					</p>
-				<!-- ELSE -->
-					<p class="topicdetails">{L_NO_POSTS}</p>
-				<!-- ENDIF -->
-			</td>
-		</tr>
-	<!-- ENDIF -->
-<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="5" align="center"><p class="gensmall">{L_NO_FORUMS}</p></td>
-	</tr>
-<!-- END forumrow -->
-</table>
+<!-- INCLUDE forumlist_body.html -->
 
 <span class="gensmall"><a href="{U_DELETE_COOKIES}">{L_DELETE_COOKIES}</a> | <a href="{U_TEAM}">{L_THE_TEAM}</a></span><br />
 
 <br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-<tr>
-	<td class="row1">
-		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a></p>
-		<p class="datetime">{S_TIMEZONE}</p>
-	</td>
-</tr>
-</table>
+<!-- INCLUDE breadcrumbs.html -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />

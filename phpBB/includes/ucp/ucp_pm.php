@@ -96,7 +96,7 @@ class ucp_pm
 				$template->assign_vars(array(
 					'MESSAGE'			=> $l_new_message,
 					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
-					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
+					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(); return false;">', '</a>'),
 					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
 				);
@@ -246,6 +246,17 @@ class ucp_pm
 				{
 					place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
 					$num_not_moved = $user->data['user_new_privmsg'];
+
+					// Make sure num_not_moved is valid.
+					if ($num_not_moved < 0)
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET user_new_privmsg = 0, user_unread_privmsg = 0
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						$num_not_moved = $user->data['user_new_privmsg'] = $user->data['user_unread_privmsg'] = 0;
+					}
 				}
 
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)
@@ -392,7 +403,7 @@ class ucp_pm
 			break;
 
 			default:
-				trigger_error('NO_ACTION_MODE');
+				trigger_error('NO_ACTION_MODE', E_USER_ERROR);
 			break;
 		}
 

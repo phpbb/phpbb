@@ -28,7 +28,7 @@ class acp_email
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
 
-		$usernames	= request_var('usernames', '');
+		$usernames	= request_var('usernames', '', true);
 		$group_id	= request_var('g', 0);
 		$subject	= request_var('subject', '', true);
 		$message	= request_var('message', '', true);
@@ -57,7 +57,7 @@ class acp_email
 				{
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('username', explode("\n", $usernames)) . '
+						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
 							AND user_allow_massemail = 1
 						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
 				}
@@ -87,7 +87,7 @@ class acp_email
 				if (!$row)
 				{
 					$db->sql_freeresult($result);
-					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$i = $j = 0;
@@ -150,15 +150,13 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
-					$messenger->subject(html_entity_decode($subject));
+					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> $config['sitename'],
 						'CONTACT_EMAIL' => $config['board_contact'],
-						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-						'MESSAGE'		=> html_entity_decode($message))
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 	
 					if (!($messenger->send($used_method)))
@@ -185,12 +183,13 @@ class acp_email
 				if (!$errored)
 				{
 					$message = ($use_queue) ? $user->lang['EMAIL_SENT_QUEUE'] : $user->lang['EMAIL_SENT'];
+					trigger_error($message . adm_back_link($this->u_action));
 				}
 				else
 				{
 					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				trigger_error($message . adm_back_link($this->u_action));
 			}
 		}
 
@@ -216,6 +215,7 @@ class acp_email
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
 			'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
+			'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=acp_email&field=usernames', false),
 			'SUBJECT'				=> $subject,
 			'MESSAGE'				=> $message,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options)

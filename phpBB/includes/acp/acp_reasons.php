@@ -61,11 +61,11 @@ class acp_reasons
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						if ($row['reason_title'] == 'other')
+						if (strtolower($row['reason_title']) == 'other')
 						{
 							$reason_row['reason_title'] = 'other';
 						}
-						else if (strtolower($row['reason_title']) != strtolower($reason_row['reason_title']))
+						else if ($row['reason_title'] != $reason_row['reason_title'])
 						{
 							$check_double = true;
 						}
@@ -76,12 +76,12 @@ class acp_reasons
 					{
 						$sql = 'SELECT reason_id
 							FROM ' . REPORTS_REASONS_TABLE . "
-							WHERE LOWER(reason_title) = '" . strtolower($db->sql_escape($reason_row['reason_title'])) . "'";
+							WHERE reason_title = '" . $db->sql_escape($reason_row['reason_title']) . "'";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						if ($row)
+						if ($row || ($action == 'add' && strtolower($reason_row['reason_title']) == 'other'))
 						{
 							$error[] = $user->lang['REASON_ALREADY_EXIST'];
 						}
@@ -137,7 +137,7 @@ class acp_reasons
 
 					if (!$reason_row)
 					{
-						trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -159,10 +159,14 @@ class acp_reasons
 					
 					'REASON_TITLE'			=> $reason_row['reason_title'],
 					'REASON_DESCRIPTION'	=> $reason_row['reason_description'],
-					
-					'S_EDIT_REASON'		=> true,
-					'S_TRANSLATED'		=> $translated,
-					'S_ERROR'			=> (sizeof($error)) ? true : false,
+
+					'TRANSLATED_TITLE'		=> ($translated) ? $user->lang['report_reasons']['TITLE'][strtoupper($reason_row['reason_title'])] : '',
+					'TRANSLATED_DESCRIPTION'=> ($translated) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason_row['reason_title'])] : '',
+
+					'S_AVAILABLE_TITLES'	=> implode(', ', array_map('htmlspecialchars', array_keys($user->lang['report_reasons']['TITLE']))),
+					'S_EDIT_REASON'			=> true,
+					'S_TRANSLATED'			=> $translated,
+					'S_ERROR'				=> (sizeof($error)) ? true : false,
 					)
 				);
 
@@ -180,12 +184,12 @@ class acp_reasons
 
 				if (!$reason_row)
 				{
-					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($reason_row['reason_title'] == 'other')
+				if (strtolower($reason_row['reason_title']) == 'other')
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Let the deletion be confirmed...
@@ -193,12 +197,12 @@ class acp_reasons
 				{
 					$sql = 'SELECT reason_id
 						FROM ' . REPORTS_REASONS_TABLE . "
-						WHERE reason_title = 'other'";
+						WHERE LOWER(reason_title) = 'other'";
 					$result = $db->sql_query($sql);
 					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
 					$db->sql_freeresult($result);
 
-					switch (SQL_LAYER)
+					switch ($db->sql_layer)
 					{
 						// The ugly one!
 						case 'mysqli':
@@ -214,9 +218,17 @@ class acp_reasons
 						case 'mssql':
 						case 'mssql_odbc':
 							// Change the reports using this reason to 'other'
-							$sql = 'UPDATE ' . REPORTS_TABLE . '
-								SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($reason_row['reason_description']) . "\n\n' + report_text
-								WHERE reason_id = $reason_id";
+							$sql = "DECLARE @ptrval binary(16)
+
+									SELECT @ptrval = TEXTPTR(report_text)
+										FROM " . REPORTS_TABLE . "
+									WHERE reason_id = " . $reason_id . "
+
+									UPDATETEXT " . REPORTS_TABLE . ".report_text @ptrval 0 0 '" . $db->sql_escape($reason_row['reason_description']) . "\n\n'
+
+									UPDATE " . REPORTS_TABLE . '
+										SET reason_id = ' . $other_reason_id . "
+									WHERE reason_id = $reason_id";
 						break;
 
 						// Teh standard
@@ -319,7 +331,7 @@ class acp_reasons
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 			if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 			{
-				$row['reson_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+				$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
 				$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 
 				$translated = true;

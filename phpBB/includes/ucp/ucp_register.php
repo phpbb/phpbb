@@ -37,21 +37,35 @@ class ucp_register
 
 		if ($change_lang)
 		{
-			$submit = false;
-			$lang = $change_lang;
-			$user->lang_name = $lang = $change_lang;
-			$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
-			$user->lang = array();
-			$user->add_lang(array('common', 'ucp'));
+			$change_lang = basename($change_lang);
+
+			if (file_exists($phpbb_root_path . 'language/' . $change_lang . '/'))
+			{
+				$submit = false;
+
+				$user->lang_name = $lang = $change_lang;
+				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
+				$user->lang = array();
+				$user->add_lang(array('common', 'ucp'));
+
+				// Setting back agreed to let the user view the agreement in his/her language
+				$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+			}
+			else
+			{
+				$change_lang = '';
+			}
 		}
 
 		$cp = new custom_profile();
 
-		$error = $data = $cp_data = $cp_error = array();
+		$error = $cp_data = $cp_error = array();
 
 		//
 		if (!$agreed)
 		{
+			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
+
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
@@ -62,11 +76,12 @@ class ucp_register
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
-					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
+					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0' . $add_lang),
+					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
 
 					'S_SHOW_COPPA'		=> true,
-					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
 			else
@@ -76,7 +91,8 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
-					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
 
@@ -84,40 +100,38 @@ class ucp_register
 			return;
 		}
 
-		$var_ary = array(
-			'username'			=> (string) '',
-			'password_confirm'	=> (string) '',
-			'new_password'		=> (string) '',
-			'cur_password'		=> (string) '',
-			'email'				=> (string) '',
-			'email_confirm'		=> (string) '',
-			'confirm_code'		=> (string) '',
-			'lang'				=> (string) $config['default_lang'],
-			'tz'				=> (float) $config['board_timezone'],
-		);
+		// Try to manually determine the timezone
+		$timezone = date('Z') / 3600;
+		$is_dst = date('I');
+		$timezone = ($is_dst) ? $timezone - 1 : $timezone;
 
-		// If we change the language inline, we do not want to display errors, but pre-fill already filled out values
-		if ($change_lang)
+		if (!isset($user->lang['tz_zones'][(string) $timezone]))
 		{
-			foreach ($var_ary as $var => $default)
-			{
-				$$var = request_var($var, $default, true);
-			}
+			$timezone = $config['board_timezone'];
 		}
+
+		$data = array(
+			'username'			=> request_var('username', '', true),
+			'password_confirm'	=> request_var('password_confirm', '', true),
+			'new_password'		=> request_var('new_password', '', true),
+			'cur_password'		=> request_var('cur_password', '', true),
+			'email'				=> request_var('email', ''),
+			'email_confirm'		=> request_var('email_confirm', ''),
+			'confirm_code'		=> request_var('confirm_code', ''),
+			'lang'				=> request_var('lang', $user->lang_name),
+			'tz'				=> request_var('tz', (float) $timezone),
+		);
 
 		// Check and initialize some variables if needed
 		if ($submit)
 		{
-			foreach ($var_ary as $var => $default)
-			{
-				$data[$var] = request_var($var, $default, true);
-			}
-
-			$var_ary = array(
+			$error = validate_data($data, array(
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
-				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'new_password'		=> array(
+					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+					array('password')),
 				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
@@ -126,14 +140,19 @@ class ucp_register
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-			);
-
-			$error = validate_data($data, $var_ary);
-			extract($data);
-			unset($data);
+			));
 
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+
+			// DNSBL check
+			if ($config['check_dnsbl'])
+			{
+				if (($dnsbl = $user->check_dnsbl()) !== false)
+				{
+					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+				}
+			}
 
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
@@ -160,7 +179,7 @@ class ucp_register
 
 					if ($row)
 					{
-						if (strcasecmp($row['code'], $confirm_code) === 0)
+						if (strcasecmp($row['code'], $data['confirm_code']) === 0)
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
 								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
@@ -184,12 +203,12 @@ class ucp_register
 
 			if (!sizeof($error))
 			{
-				if ($new_password != $password_confirm)
+				if ($data['new_password'] != $data['password_confirm'])
 				{
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
 
-				if ($email != $email_confirm)
+				if ($data['email'] != $data['email_confirm'])
 				{
 					$error[] = $user->lang['NEW_EMAIL_ERROR'];
 				}
@@ -200,9 +219,7 @@ class ucp_register
 				$server_url = generate_board_url();
 
 				// Which group by default?
-				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
-				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
-				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable']) ? $group_reg : $group_inactive;
+				$group_name = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
@@ -227,25 +244,33 @@ class ucp_register
 					$key_len = 54 - (strlen($server_url));
 					$key_len = ($key_len < 6) ? 6 : $key_len;
 					$user_actkey = substr($user_actkey, 0, $key_len);
+
 					$user_type = USER_INACTIVE;
+					$user_inactive_reason = INACTIVE_REGISTER;
+					$user_inactive_time = time();
 				}
 				else
 				{
 					$user_type = USER_NORMAL;
 					$user_actkey = '';
+					$user_inactive_reason = 0;
+					$user_inactive_time = 0;
 				}
 
 				$user_row = array(
-					'username'		=> $username,
-					'user_password'	=> md5($new_password),
-					'user_email'	=> $email,
-					'group_id'		=> (int) $group_id,
-					'user_timezone'	=> (float) $tz,
-					'user_lang'		=> $lang,
-					'user_type'		=> $user_type,
-					'user_actkey'	=> $user_actkey,
-					'user_ip'		=> $user->ip,
-					'user_regdate'	=> time(),
+					'username'				=> $data['username'],
+					'user_password'			=> md5($data['new_password']),
+					'user_email'			=> $data['email'],
+					'group_id'				=> (int) $group_id,
+					'user_timezone'			=> (float) $data['tz'],
+					'user_dst'				=> $is_dst,
+					'user_lang'				=> $data['lang'],
+					'user_type'				=> $user_type,
+					'user_actkey'			=> $user_actkey,
+					'user_ip'				=> $user->ip,
+					'user_regdate'			=> time(),
+					'user_inactive_reason'	=> $user_inactive_reason,
+					'user_inactive_time'	=> $user_inactive_time,
 				);
 
 				// Register user...
@@ -284,10 +309,10 @@ class ucp_register
 
 					$messenger = new messenger(false);
 
-					$messenger->template($email_template, $lang);
+					$messenger->template($email_template, $data['lang']);
 
 					$messenger->replyto($config['board_contact']);
-					$messenger->to($email, $username);
+					$messenger->to($data['email'], $data['username']);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
@@ -295,12 +320,9 @@ class ucp_register
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> $config['sitename'],
-						'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-						'USERNAME'		=> html_entity_decode($username),
-						'PASSWORD'		=> html_entity_decode($password_confirm),
-						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
+						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+						'USERNAME'		=> htmlspecialchars_decode($data['username']),
+						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 					);
 
@@ -309,8 +331,7 @@ class ucp_register
 						$messenger->assign_vars(array(
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $email,
-							'SITENAME'		=> $config['sitename'])
+							'EMAIL_ADDRESS'	=> $data['email'])
 						);
 					}
 
@@ -320,10 +341,19 @@ class ucp_register
 					{
 						// Grab an array of user_id's with a_user permissions ... these users can activate a user
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+						$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
+
+						// Also include founders
+						$where_sql = ' WHERE user_type = ' . USER_FOUNDER;
+
+						if (sizeof($admin_ary))
+						{
+							$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary);
+						}
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
-							FROM ' . USERS_TABLE . '
-							WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
+							FROM ' . USERS_TABLE . ' ' .
+							$where_sql;
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -334,9 +364,7 @@ class ucp_register
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> html_entity_decode($username),
-								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
+								'USERNAME'		=> htmlspecialchars_decode($data['username']),
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
@@ -345,7 +373,6 @@ class ucp_register
 						$db->sql_freeresult($result);
 					}
 				}
-				unset($data);
 
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
@@ -379,10 +406,13 @@ class ucp_register
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-						WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
-							AND confirm_type = ' . CONFIRM_REG;
-					$db->sql_query($sql);
+					if (sizeof($sql_in))
+					{
+						$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
+							WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
+								AND confirm_type = ' . CONFIRM_REG;
+						$db->sql_query($sql);
+					}
 				}
 				$db->sql_freeresult($result);
 
@@ -433,27 +463,25 @@ class ucp_register
 		}
 
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
-
-		$lang = (isset($lang)) ? $lang : $config['default_lang'];
-		$tz = (isset($tz)) ? $tz : $config['board_timezone'];
+		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
 		//
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'USERNAME'			=> (isset($username)) ? $username : '',
-			'PASSWORD'			=> (isset($new_password)) ? $new_password : '',
-			'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '',
-			'EMAIL'				=> (isset($email)) ? $email : '',
-			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',
+			'USERNAME'			=> $data['username'],
+			'PASSWORD'			=> $data['new_password'],
+			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
+			'EMAIL'				=> $data['email'],
+			'EMAIL_CONFIRM'		=> $data['email_confirm'],
 			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
-			'S_LANG_OPTIONS'	=> language_select($lang),
-			'S_TZ_OPTIONS'		=> tz_select($tz),
+			'S_LANG_OPTIONS'	=> language_select($data['lang']),
+			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,

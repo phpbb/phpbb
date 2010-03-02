@@ -77,7 +77,7 @@ if (isset($_GET['e']) && !$user->data['is_registered'])
 }
 
 // Permissions check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!$auth->acl_gets('f_list', 'f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -89,10 +89,10 @@ if (!$auth->acl_get('f_read', $forum_id))
 
 // Is this forum a link? ... User got here either because the
 // number of clicks is being tracked or they guessed the id
-if ($forum_data['forum_link'])
+if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 {
 	// Does it have click tracking enabled?
-	if ($forum_data['forum_flags'] & 1)
+	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET forum_posts = forum_posts + 1
@@ -114,7 +114,10 @@ if ($forum_data['forum_password'])
 generate_forum_nav($forum_data);
 
 // Forum Rules
-generate_forum_rules($forum_data);
+if ($auth->acl_get('f_read', $forum_id))
+{
+	generate_forum_rules($forum_data);
+}
 
 // Do we have subforums?
 $active_forum_ary = $moderators = array();
@@ -139,7 +142,13 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 // Not postable forum or showing active topics?
-if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16) && $forum_data['forum_type'] == FORUM_CAT)))
+if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
+{
+	page_footer();
+}
+
+// Ok, if someone has only list-access, we only display the forum list
+if (!$auth->acl_get('f_read', $forum_id))
 {
 	page_footer();
 }
@@ -185,8 +194,6 @@ $limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-$sort_key = (!in_array($sort_key, array('a', 't', 'r', 's', 'v'))) ? 't' : $sort_key;
-
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
@@ -210,18 +217,13 @@ if ($sort_days)
 		$start = 0;
 	}
 	$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
+
+	// Make sure we have information about day selection ready
+	$template->assign_var('S_SORT_DAYS', true);
 }
 else
 {
-	if ($auth->acl_get('m_approve', $forum_id))
-	{
-		$topics_count = ($forum_data['forum_topics_real']) ? $forum_data['forum_topics_real'] : 1;
-	}
-	else
-	{
-		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
-	}
-
+	$topics_count = ($auth->acl_get('m_approve', $forum_id)) ? $forum_data['forum_topics_real'] : $forum_data['forum_topics'];
 	$sql_limit_time = '';
 }
 
@@ -229,7 +231,7 @@ else
 $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 
 // Display active topics?
-$s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & 16)) ? true : false;
+$s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),
@@ -277,8 +279,7 @@ $template->assign_vars(array(
 );
 
 // Grab icons
-$icons = array();
-$cache->obtain_icons($icons);
+$icons = $cache->obtain_icons();
 
 // Grab all topic data
 $rowset = $announcement_list = $topic_list = $global_announce_list = array();
@@ -365,23 +366,29 @@ else
 	$sql_start = $start;
 }
 
-// Obtain other topics
+// SQL array for obtaining topics/stickies
 $sql_array = array(
 	'SELECT'		=> $sql_array['SELECT'],
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . '
-		AND t.topic_type NOT IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
+	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . "
+		AND t.topic_type = {SQL_TOPIC_TYPE}
 		$sql_approved
 		$sql_limit_time",
 
-	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
+	'ORDER_BY'		=> $sql_sort_order,
 );
+
+// If store_reverse, then first obtain topics, then stickies, else the other way around...
+// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
+// the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
+$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $shadow_topic_list = array();
+$num_rows = 0;
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['topic_status'] == ITEM_MOVED)
@@ -391,8 +398,29 @@ while ($row = $db->sql_fetchrow($result))
 
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
+	$num_rows++;
 }
 $db->sql_freeresult($result);
+
+// If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
+if ($num_rows < $sql_limit)
+{
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
+	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['topic_status'] == ITEM_MOVED)
+		{
+			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+		}
+
+		$rowset[$row['topic_id']] = $row;
+		$topic_list[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+}
 
 // If we have some shadow topics, update the rowset to reflect their topic informations
 if (sizeof($shadow_topic_list))
@@ -509,13 +537,17 @@ if (sizeof($topic_list))
 
 		// Send vars to template
 		$template->assign_block_vars('topicrow', array(
-			'FORUM_ID'			=> $forum_id,
-			'TOPIC_ID'			=> $topic_id,
-			'TOPIC_AUTHOR'		=> topic_topic_author($row),
-			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-			'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name']) ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+			'FORUM_ID'					=> $forum_id,
+			'TOPIC_ID'					=> $topic_id,
+			'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+			'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+			'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+			'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
+			'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
+			'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+			'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name']) ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+			'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+
 			'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 			'REPLIES'			=> $replies,
 			'VIEWS'				=> $row['topic_views'],
@@ -527,7 +559,7 @@ if (sizeof($topic_list))
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],
@@ -546,6 +578,7 @@ if (sizeof($topic_list))
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 			'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 			'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+			'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
 			'U_VIEW_TOPIC'			=> $view_topic_url,
 			'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, $user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,

@@ -20,7 +20,7 @@ class ucp_attachments_info
 			'title'		=> 'UCP_ATTACHMENTS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'attachments'	=> array('title' => 'UCP_ATTACHMENTS', 'auth' => 'acl_u_attach', 'cat' => array('UCP_ATTACHMENTS')),
+				'attachments'	=> array('title' => 'UCP_MAIN_ATTACHMENTS', 'auth' => 'acl_u_attach', 'cat' => array('UCP_MAIN')),
 			),
 		);
 	}

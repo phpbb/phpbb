@@ -21,7 +21,7 @@ class custom_profile
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
 	* Called by ucp_profile and ucp_register
-	* @access: public
+	* @access public
 	*/
 	function generate_profile_fields($mode, $lang_id)
 	{
@@ -74,7 +74,7 @@ class custom_profile
 
 	/**
 	* Validate entered profile field data
-	* @access: public
+	* @access public
 	*/
 	function validate_profile_field($field_type, &$field_value, $field_data)
 	{
@@ -161,11 +161,11 @@ class custom_profile
 					return 'FIELD_REQUIRED';
 				}
 
-				if ($field_data['field_minlen'] && strlen($field_value) < $field_data['field_minlen'])
+				if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
 				{
 					return 'FIELD_TOO_SHORT';
 				}
-				else if ($field_data['field_maxlen'] && strlen($field_value) > $field_data['field_maxlen'])
+				else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
 				{
 					return 'FIELD_TOO_LONG';
 				}
@@ -186,7 +186,7 @@ class custom_profile
 
 	/**
 	* Build profile cache, used for display
-	* @access: private
+	* @access private
 	*/
 	function build_cache()
 	{
@@ -248,7 +248,7 @@ class custom_profile
 
 	/**
 	* Submit profile field
-	* @access: public
+	* @access public
 	*/
 	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
@@ -286,8 +286,8 @@ class custom_profile
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$cp_data['_' . $row['field_ident']] = $this->get_profile_field($row);
-			$check_value = $cp_data['_' . $row['field_ident']];
+			$cp_data['pf_' . $row['field_ident']] = $this->get_profile_field($row);
+			$check_value = $cp_data['pf_' . $row['field_ident']];
 
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
 			{
@@ -340,7 +340,7 @@ class custom_profile
 	/**
 	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
 	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
-	* @access: public
+	* @access public
 	*/
 	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
@@ -382,7 +382,7 @@ class custom_profile
 			{
 				foreach ($field_data as $user_id => $row)
 				{
-					$user_fields[$user_id][$used_ident]['value'] = $row['_' . $used_ident];
+					$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
 			}
@@ -535,14 +535,14 @@ class custom_profile
 
 	/**
 	* Get field value for registration/profile
-	* @access: private
+	* @access private
 	*/
 	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
@@ -576,6 +576,11 @@ class custom_profile
 		else
 		{
 			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			
+			if (gettype($value) == 'string')
+			{
+				utf8_normalize_nfc(&$value);
+			}
 		}
 
 		switch ($field_validation)
@@ -590,7 +595,7 @@ class custom_profile
 
 	/**
 	* Process int-type
-	* @access: private
+	* @access private
 	*/
 	function generate_int($profile_row, $preview = false)
 	{
@@ -602,14 +607,14 @@ class custom_profile
 
 	/**
 	* Process date-type
-	* @access: private
+	* @access private
 	*/
 	function generate_date($profile_row, $preview = false)
 	{
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		$now = getdate();
 
@@ -661,7 +666,7 @@ class custom_profile
 
 	/**
 	* Process bool-type
-	* @access: private
+	* @access private
 	*/
 	function generate_bool($profile_row, $preview = false)
 	{
@@ -692,7 +697,7 @@ class custom_profile
 
 	/**
 	* Process string-type
-	* @access: private
+	* @access private
 	*/
 	function generate_string($profile_row, $preview = false)
 	{
@@ -704,7 +709,7 @@ class custom_profile
 
 	/**
 	* Process text-type
-	* @access: private
+	* @access private
 	*/
 	function generate_text($profile_row, $preview = false)
 	{
@@ -721,7 +726,7 @@ class custom_profile
 
 	/**
 	* Process dropdown-type
-	* @access: private
+	* @access private
 	*/
 	function generate_dropdown($profile_row, $preview = false)
 	{
@@ -750,7 +755,7 @@ class custom_profile
 	/**
 	* Return Templated value/field. Possible values for $mode are:
 	* change == user is able to set/enter profile values; preview == just show the value
-	* @access: private
+	* @access private
 	*/
 	function process_field_row($mode, $profile_row)
 	{
@@ -787,7 +792,7 @@ class custom_profile
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
-			$sql_not_in[] = (strncmp($key, '_', 1) === 0) ? substr($key, 1) : $key;
+			$sql_not_in[] = (strncmp($key, 'pf_', 3) === 0) ? substr($key, 3) : $key;
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
@@ -805,7 +810,7 @@ class custom_profile
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
 
-			$cp_data['_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
+			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
 		$db->sql_freeresult($result);
 		
@@ -814,7 +819,7 @@ class custom_profile
 
 	/**
 	* Get profile field value on submit
-	* @access: private
+	* @access private
 	*/
 	function get_profile_field($profile_row)
 	{
@@ -861,6 +866,7 @@ class custom_profile
 			case FIELD_STRING:
 			case FIELD_TEXT:
 				$var = request_var($var_name, $profile_row['field_default_value'], true);
+				utf8_normalize_nfc(&$var);
 			break;
 
 			case FIELD_INT:

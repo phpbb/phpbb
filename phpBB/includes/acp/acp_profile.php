@@ -91,7 +91,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -107,7 +107,7 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					switch (SQL_LAYER)
+					switch ($db->sql_layer)
 					{
 						case 'sqlite':
 							$sql = "SELECT sql
@@ -119,6 +119,8 @@ class acp_profile
 							$row = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 
+							$db->sql_transaction('begin');
+
 							// Create a temp table and populate it, destroy the existing one
 							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
@@ -127,12 +129,13 @@ class acp_profile
 							preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 							$new_table_cols = trim($matches[1]);
-							$old_table_cols = explode(',', $new_table_cols);
+							$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
 							$column_list = array();
-							foreach($old_table_cols as $declaration)
+
+							foreach ($old_table_cols as $declaration)
 							{
 								$entities = preg_split('#\s+#', trim($declaration));
-								if ($entities[0] !== '_' . $field_ident)
+								if ($entities[0] !== 'pf_' . $field_ident)
 								{
 									$column_list[] = $entities[0];
 								}
@@ -140,16 +143,18 @@ class acp_profile
 
 							$columns = implode(',', $column_list);
 
-							$new_table_cols = preg_replace('/' . '_' . $field_ident . '[^,]+,/', '', $new_table_cols);
+							$new_table_cols = preg_replace('/' . 'pf_' . $field_ident . '[^,]+,/', '', $new_table_cols);
 
 							// create a new table and fill it up. destroy the temp one
 							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
 							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+
+							$db->sql_transaction('commit');
 						break;
 
 						default:
-							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP _$field_ident");
+							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP pf_$field_ident");
 					}
 
 					$order = 0;
@@ -192,7 +197,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$sql = 'SELECT lang_id 
@@ -204,7 +209,7 @@ class acp_profile
 
 				if (!in_array($default_lang_id, $lang_defs['entry'][$field_id]))
 				{
-					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . " 
@@ -229,7 +234,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
@@ -275,7 +280,7 @@ class acp_profile
 				{
 					if (!$field_id)
 					{
-						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT l.*, f.*
@@ -289,7 +294,7 @@ class acp_profile
 
 					if (!$field_row)
 					{
-						trigger_error($user->lang['FIELD_NOT_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['FIELD_NOT_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					$field_type = $field_row['field_type'];
 
@@ -319,7 +324,7 @@ class acp_profile
 			
 					if (!$field_type)
 					{
-						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$field_row = array_merge($default_values[$field_type], array(
@@ -359,7 +364,7 @@ class acp_profile
 				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
-				
+
 				// Field option...
 				if (isset($_REQUEST['field_option']))
 				{
@@ -525,7 +530,8 @@ class acp_profile
 					}
 				}
 
-				if ($submit && $step == 1)
+				// Check for general issues in every step
+				if ($submit) //  && $step == 1
 				{
 					// Check values for step 1
 					if ($cp->vars['field_ident'] == '')
@@ -538,16 +544,39 @@ class acp_profile
 						$error[] = $user->lang['INVALID_CHARS_FIELD_IDENT'];
 					}
 
+					if (strlen($cp->vars['field_ident']) > 17)
+					{
+						$error[] = $user->lang['INVALID_FIELD_IDENT_LEN'];
+					}
+
 					if ($cp->vars['lang_name'] == '')
 					{
 						$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
 					}
 
-					if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
+					if ($field_type == FIELD_DROPDOWN && !sizeof($cp->vars['lang_options']))
 					{
-						if (!sizeof($cp->vars['lang_options']))
+						$error[] = $user->lang['NO_FIELD_ENTRIES'];
+					}
+
+					if ($field_type == FIELD_BOOL && (empty($cp->vars['lang_options'][0]) || empty($cp->vars['lang_options'][1])))
+					{
+						$error[] = $user->lang['NO_FIELD_ENTRIES'];
+					}
+
+					// Check for already existing field ident
+					if ($action != 'edit')
+					{
+						$sql = 'SELECT field_ident 
+							FROM ' . PROFILE_FIELDS_TABLE . " 
+							WHERE field_ident = '" . $db->sql_escape($cp->vars['field_ident']) . "'";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if ($row)
 						{
-							$error[] = $user->lang['NO_FIELD_ENTRIES'];
+							$error[] = $user->lang['FIELD_IDENT_ALREADY_EXIST'];
 						}
 					}
 				}
@@ -730,11 +759,19 @@ class acp_profile
 			ORDER BY field_order';
 		$result = $db->sql_query($sql);
 
+		$s_one_need_edit = false;
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$active_lang = (!$row['field_active']) ? 'ACTIVATE' : 'DEACTIVATE';
 			$active_value = (!$row['field_active']) ? 'activate' : 'deactivate';
 			$id = $row['field_id'];
+
+			$s_need_edit = (sizeof($lang_defs['diff'][$row['field_id']])) ? true : false;
+
+			if ($s_need_edit)
+			{
+				$s_one_need_edit = true;
+			}
 
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
@@ -743,14 +780,21 @@ class acp_profile
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
+				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
 				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;order={$row['field_order']}",
 				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;order={$row['field_order']}",
 
-				'S_NEED_EDIT'		=> (sizeof($lang_defs['diff'][$row['field_id']])) ? true : false)
+				'S_NEED_EDIT'				=> $s_need_edit)
 			);
 		}
 		$db->sql_freeresult($result);
+
+		// At least one option field needs editing?
+		if ($s_one_need_edit)
+		{
+			$template->assign_var('S_NEED_EDIT', true);
+		}
 
 		$s_select_type = '';
 		foreach ($cp->profile_types as $key => $value)
@@ -831,12 +875,11 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? request_var('l_' . $field, '', true) : $cp->vars['l_' . $field];
-					 
+				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
+
 				if ($field == 'lang_options')
 				{
-
-					$var = ($action == 'create' || !is_array($cp->vars['lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
+					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
 					
 					switch ($field_type)
 					{
@@ -948,7 +991,7 @@ class acp_profile
 		
 		if ($action == 'create')
 		{
-			$field_ident = '_' . $field_ident;
+			$field_ident = 'pf_' . $field_ident;
 			$profile_sql[] = $this->add_field_ident($field_ident, $field_type);
 		}
 
@@ -1003,10 +1046,11 @@ class acp_profile
 			}
 		}
 
-		$cp->vars['l_lang_name']			= request_var('l_lang_name', '', true);
-		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', '', true);
-		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', '', true);
-		$cp->vars['l_lang_options']			= request_var('l_lang_options', '', true);
+		// These are always arrays because the key is the language id...
+		$cp->vars['l_lang_name']			= request_var('l_lang_name', array(0 => ''), true);
+		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', array(0 => ''), true);
+		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => ''), true);
+		$cp->vars['l_lang_options']			= request_var('l_lang_options', array(0 => ''), true);
 
 		if ($cp->vars['lang_options'])
 		{
@@ -1155,7 +1199,7 @@ class acp_profile
 		}
 		else
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 1) . ':' . $cp->vars['lang_name']);
+			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 3) . ':' . $cp->vars['lang_name']);
 			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 	}
@@ -1215,7 +1259,7 @@ class acp_profile
 	{
 		global $db;
 
-		switch (SQL_LAYER)
+		switch ($db->sql_layer)
 		{
 			case 'mysql':
 			case 'mysql4':

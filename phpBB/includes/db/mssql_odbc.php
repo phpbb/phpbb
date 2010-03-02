@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'mssql_odbc');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Unified ODBC functions
@@ -73,7 +67,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -120,11 +114,14 @@ class dbal_mssql_odbc extends dbal
 				$this->sql_report('start', $query);
 			}
 
+			// For now, MSSQL has no real UTF-8 support
+			$query = utf8_decode($query);
+
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				if (($this->query_result = @odbc_exec($this->db_connect_id, $query)) === false)
 				{
@@ -168,33 +165,26 @@ class dbal_mssql_odbc extends dbal
 		{
 			$this->query_result = false;
 
-			// if $total is set to 0 we do not want to limit the number of rows
-			if ($total == 0)
+			// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
+			if ($total)
 			{
-				$total = -1;
-			}
-
-			$row_offset = ($total) ? $offset : 0;
-			$num_rows = ($total) ? $total : $offset;
-
-			if (strpos($query, 'SELECT DISTINCT') === 0)
-			{
-				$query = 'SELECT DISTINCT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 15);
-			}
-			else
-			{
-				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
+				// We need to grab the total number of rows + the offset number of rows to get the correct result
+				if (strpos($query, 'SELECT DISTINCT') === 0)
+				{
+					$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
+				}
+				else
+				{
+					$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
+				}
 			}
 
 			$result = $this->sql_query($query, $cache_ttl);
 
-			// Seek by $row_offset rows
-			if ($row_offset)
+			// Seek by $offset rows
+			if ($offset)
 			{
-				for ($i = 0; $i < $row_offset; $i++)
-				{
-					$this->sql_fetchrow($result);
-				}
+				$this->sql_rowseek($offset, $result);
 			}
 
 			return $result;
@@ -203,27 +193,6 @@ class dbal_mssql_odbc extends dbal
 		{
 			return false;
 		}
-	}
-
-	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @odbc_num_rows($query_id) : false;
 	}
 
 	/**
@@ -241,7 +210,7 @@ class dbal_mssql_odbc extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -251,39 +220,7 @@ class dbal_mssql_odbc extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @odbc_fetch_array($query_id) : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
+		return ($query_id !== false) ? @odbc_fetch_array($query_id) : false;
 	}
 
 	/**
@@ -294,20 +231,25 @@ class dbal_mssql_odbc extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
 		}
 
 		$this->sql_freeresult($query_id);
 		$query_id = $this->sql_query($this->last_query_text);
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			return false;
 		}
@@ -352,7 +294,7 @@ class dbal_mssql_odbc extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -381,7 +323,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Build db-specific query data
-	* @access: private
+	* @access private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -390,7 +332,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -402,7 +344,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -411,7 +353,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{
@@ -469,9 +411,6 @@ class dbal_mssql_odbc extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

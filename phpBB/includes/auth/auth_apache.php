@@ -136,12 +136,19 @@ function autologin_apache()
 			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
 		}
 
+		if (!function_exists('user_add'))
+		{
+			global $phpbb_root_path, $phpEx;
+
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
 		// create the user if he does not exist yet
 		user_add(user_row_apache($php_auth_user, $php_auth_pw));
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
-			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
+			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -178,7 +185,7 @@ function user_row_apache($username, $password)
 	// generate user account data
 	return array(
 		'username'		=> $username,
-		'user_password'	=> $password,
+		'user_password'	=> md5($password),
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
 		'user_type'		=> USER_NORMAL,

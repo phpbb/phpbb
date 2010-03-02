@@ -22,7 +22,7 @@ class ucp_resend
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$email		= request_var('email', '');
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -31,7 +31,7 @@ class ucp_resend
 			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
+					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -46,7 +46,7 @@ class ucp_resend
 				trigger_error('ACCOUNT_ALREADY_ACTIVATED');
 			}
 
-			// Determine coppa status on group (INACTIVE(_COPPA))
+			// Determine coppa status on group (REGISTERED(_COPPA))
 			$sql = 'SELECT group_name, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_id = ' . $user_row['group_id'];
@@ -59,7 +59,7 @@ class ucp_resend
 				trigger_error('NO_GROUP');
 			}
 
-			$coppa = ($row['group_name'] == 'INACTIVE_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
+			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 			$messenger = new messenger(false);
@@ -77,11 +77,8 @@ class ucp_resend
 				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 				$messenger->assign_vars(array(
-					'SITENAME'		=> $config['sitename'],
-					'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-					'USERNAME'		=> html_entity_decode($user_row['username']),
-					'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
+					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
 
@@ -90,8 +87,7 @@ class ucp_resend
 					$messenger->assign_vars(array(
 						'FAX_INFO'		=> $config['coppa_fax'],
 						'MAIL_INFO'		=> $config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email'],
-						'SITENAME'		=> $config['sitename'])
+						'EMAIL_ADDRESS'	=> $user_row['user_email'])
 					);
 				}
 
@@ -116,9 +112,7 @@ class ucp_resend
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'USERNAME'		=> html_entity_decode($user_row['username']),
-						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
+						'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 						'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);
 

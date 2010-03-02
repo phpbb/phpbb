@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -30,24 +32,31 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
-	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status promote another user to be a founder first.',
+	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status, promote another user to be a founder first.',
 
-	'BAN_SUCCESSFUL'		=> 'Ban entered successfully',
+	'BAN_SUCCESSFUL'		=> 'Ban entered successfully.',
 
+	'CANNOT_BAN_FOUNDER'			=> 'You are not allowed to ban founder accounts.',
 	'CANNOT_BAN_YOURSELF'			=> 'You are not allowed to ban yourself.',
+	'CANNOT_DEACTIVATE_BOT'			=> 'You are not allowed to deactivate bot accounts. Please deactivate the bot instead.',
+	'CANNOT_DEACTIVATE_FOUNDER'		=> 'You are not allowed to deactivate founder accounts.',
 	'CANNOT_DEACTIVATE_YOURSELF'	=> 'You are not allowed to deactivate your own account.',
+	'CANNOT_FORCE_REACT_BOT'		=> 'You are not allowed to force reactivation on bot accounts. Please deactivate the bot instead.',
+	'CANNOT_FORCE_REACT_FOUNDER'	=> 'You are not allowed to force reactivation on founder accounts.',
 	'CANNOT_FORCE_REACT_YOURSELF'	=> 'You are not allowed to force reactivation of your own account.',
 	'CANNOT_REMOVE_ANONYMOUS'		=> 'You are not able to remove the guest user account.',
 	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
+	'CANNOT_SET_FOUNDER_BOT'		=> 'You are not able to promote ignored users to be founders.',
+	'CANNOT_SET_FOUNDER_INACTIVE'	=> 'You need to activate users before you promote them to founders, only activated users are able to be promoted.',
 	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users email address.',
-	
+
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',
 	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered',
 
-	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced re-activation',
+	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced re-activation.',
 	'FOUNDER'						=> 'Founder',
-	'FOUNDER_EXPLAIN'				=> 'Founders can never be banned, deleted or altered by non-founder members',
+	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members',
 
 	'GROUP_DEFAULT'					=> 'Default',
 	'GROUP_DELETE'					=> 'Delete',
@@ -72,10 +81,10 @@ $lang = array_merge($lang, array(
 	'SELECT_FORM'			=> 'Select form',
 	'SELECT_USER'			=> 'Select User',
 
-	'USER_ADMIN'					=> 'User Administration',
+	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
-	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully',
-	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account',
+	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully.',
+	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account.',
 	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by email',
 	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management',
 	'USER_ADMIN_BAN_IP'				=> 'Ban by IP',
@@ -83,7 +92,7 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management',
 	'USER_ADMIN_BAN_USER'			=> 'Ban by username',
 	'USER_ADMIN_DEACTIVATE'			=> 'Deactivate account',
-	'USER_ADMIN_DEACTIVED'			=> 'User deactivated successfully',
+	'USER_ADMIN_DEACTIVED'			=> 'User deactivated successfully.',
 	'USER_ADMIN_DEL_ATTACH'			=> 'Delete all attachments',
 	'USER_ADMIN_DEL_AVATAR'			=> 'Delete avatar',
 	'USER_ADMIN_DEL_POSTS'			=> 'Delete all posts',
@@ -91,24 +100,25 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_EXPLAIN'			=> 'Here you can change your users information and certain specific options. To modify the users permissions please use the user and group permissions system.',
 	'USER_ADMIN_FORCE'				=> 'Force re-activation',
 	'USER_ADMIN_MOVE_POSTS'			=> 'Move all posts',
-	'USER_ADMIN_SIG_REMOVED'		=> 'Successfully removed signature from user account',
-	'USER_ATTACHMENTS_REMOVED'		=> 'Successfully removed all attachments made by this user',
-	'USER_AVATAR_UPDATED'			=> 'Successfully updated user avatars details',
+	'USER_ADMIN_SIG_REMOVED'		=> 'Successfully removed signature from user account.',
+	'USER_ATTACHMENTS_REMOVED'		=> 'Successfully removed all attachments made by this user.',
+	'USER_AVATAR_UPDATED'			=> 'Successfully updated user avatars details.',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
-	'USER_DELETED'					=> 'User deleted successfully',
+	'USER_DELETED'					=> 'User deleted successfully.',
 	'USER_GROUP_ADD'				=> 'Add user to group',
 	'USER_GROUP_NORMAL'				=> 'Normal groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
 	'USER_GROUP_SPECIAL'			=> 'Special groups user is a member of',
-	'USER_OVERVIEW_UPDATED'			=> 'User details updated',
-	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user',
-	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum',
-	'USER_PREFS_UPDATED'			=> 'User preferences updated',
+	'USER_IS_INACTIVE'				=> 'User is inactive',
+	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',
+	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user.',
+	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum.',
+	'USER_PREFS_UPDATED'			=> 'User preferences updated.',
 	'USER_PROFILE'					=> 'User Profile',
-	'USER_PROFILE_UPDATED'			=> 'User profile updated',
+	'USER_PROFILE_UPDATED'			=> 'User profile updated.',
 	'USER_RANK'						=> 'User Rank',
-	'USER_RANK_UPDATED'				=> 'User rank updated',
-	'USER_SIG_UPDATED'				=> 'User signature successfully updated',
+	'USER_RANK_UPDATED'				=> 'User rank updated.',
+	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
 	'USER_TOOLS'					=> 'Basic tools',
 
 	'WARNINGS_EXPLAIN'		=> 'You can directly alter the warnings this users has received.',

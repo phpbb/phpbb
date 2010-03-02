@@ -36,11 +36,19 @@ class acp_forums
 		// Check additional permissions
 		switch ($action)
 		{
+			case 'progress_bar':
+				$start = request_var('start', 0);
+				$total = request_var('total', 0);
+
+				$this->display_progress_bar($start, $total);
+				exit;
+			break;
+
 			case 'delete':
 
 				if (!$auth->acl_get('a_forumdel'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 			break;
@@ -49,7 +57,7 @@ class acp_forums
 
 				if (!$auth->acl_get('a_forumadd'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 			
 			break;
@@ -94,23 +102,24 @@ class acp_forums
 						'forum_type'			=> request_var('forum_type', FORUM_POST),
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
+						'forum_parents'			=> '',
 						'forum_name'			=> request_var('forum_name', '', true),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
 						'forum_desc'			=> request_var('forum_desc', '', true),
 						'forum_desc_uid'		=> '',
-						'forum_desc_options'	=> 0,
+						'forum_desc_options'	=> 7,
 						'forum_desc_bitfield'	=> '',
 						'forum_rules'			=> request_var('forum_rules', '', true),
 						'forum_rules_uid'		=> '',
-						'forum_rules_options'	=> 0,
+						'forum_rules_options'	=> 7,
 						'forum_rules_bitfield'	=> '',
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
 						'display_on_index'		=> request_var('display_on_index', false),
 						'forum_topics_per_page'	=> request_var('topics_per_page', 0), 
-						'enable_indexing'		=> request_var('enable_indexing',true), 
+						'enable_indexing'		=> request_var('enable_indexing', true), 
 						'enable_icons'			=> request_var('enable_icons', false),
 						'enable_prune'			=> request_var('enable_prune', false),
 						'enable_post_review'	=> request_var('enable_post_review', true),
@@ -202,34 +211,8 @@ class acp_forums
 							$db->sql_freeresult($result);
 
 							// Now insert the data
-							switch (SQL_LAYER)
-							{
-								case 'mysql':
-								case 'mysql4':
-								case 'mysqli':
-									if (sizeof($users_sql_ary))
-									{
-										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $users_sql_ary));
-									}
-									
-									if (sizeof($groups_sql_ary))
-									{
-										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
-									}
-								break;
-
-								default:
-									foreach ($users_sql_ary as $ary)
-									{
-										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-									}
-
-									foreach ($groups_sql_ary as $ary)
-									{
-										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-									}
-								break;
-							}
+							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
+							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 						}
 
 						$auth->acl_clear_prefetch();
@@ -265,7 +248,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -277,7 +260,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$move_forum_name = $this->move_forum_by($row, $action, 1);
@@ -293,7 +276,7 @@ class acp_forums
 			case 'sync':
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT forum_name, forum_type
@@ -305,10 +288,76 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				sync('forum', 'forum_id', $forum_id);
+				sync('forum', 'forum_id', $forum_id, false, true);
+				$cache->destroy('sql', FORUMS_TABLE);
+
+				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic";
+				meta_refresh(0, $url);
+
+				$sql = 'SELECT forum_topics_real
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
+					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
+					'S_CONTINUE_SYNC'		=> true,
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+				);
+
+//				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
+
+				return;
+
+			break;
+
+			case 'sync_topic':
+
+				@set_time_limit(0);
+
+				$sql = 'SELECT forum_name, forum_topics_real
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row['forum_topics_real'])
+				{
+					$start = request_var('start', 0);
+
+					$batch_size = 3000;
+					$end = $start + $batch_size;
+
+					// Sync all topics in batch mode...
+					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
+					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
+
+					if ($end < $row['forum_topics_real'])
+					{
+						$start += $batch_size;
+
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;total={$row['forum_topics_real']}";
+
+						meta_refresh(0, $url);
+
+						$template->assign_vars(array(
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$start&amp;total={$row['forum_topics_real']}",
+							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$start&total={$row['forum_topics_real']}",
+							'S_CONTINUE_SYNC'		=> true,
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $row['forum_topics_real']))
+						);
+
+						return;
+					}
+				}
+
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
 				$cache->destroy('sql', FORUMS_TABLE);
 
@@ -322,12 +371,12 @@ class acp_forums
 				if ($update)
 				{
 					$forum_data['forum_flags'] = 0;
-					$forum_data['forum_flags'] += (request_var('forum_link_track', false)) ? 1 : 0;
-					$forum_data['forum_flags'] += (request_var('prune_old_polls', false)) ? 2 : 0;
-					$forum_data['forum_flags'] += (request_var('prune_announce', false)) ? 4 : 0;
-					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? 8 : 0;
-					$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
-					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? 32 : 0;
+					$forum_data['forum_flags'] += (request_var('forum_link_track', false)) ? FORUM_FLAG_LINK_TRACK : 0;
+					$forum_data['forum_flags'] += (request_var('prune_old_polls', false)) ? FORUM_FLAG_PRUNE_POLL : 0;
+					$forum_data['forum_flags'] += (request_var('prune_announce', false)) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
+					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? FORUM_FLAG_PRUNE_STICKY : 0;
+					$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
+					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
 				}
 
 				// Show form to create/modify a forum
@@ -389,7 +438,7 @@ class acp_forums
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
-							'forum_flags'			=> 0,
+							'forum_flags'			=> FORUM_FLAG_POST_REVIEW,
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
 						);
@@ -543,12 +592,12 @@ class acp_forums
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
-					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & 1) ? true : false,
-					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & 2) ? true : false,
-					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & 4) ? true : false,
-					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & 8) ? true : false,
-					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & 16) ? true : false,
-					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & 32) ? true : false,
+					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? true : false,
+					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL) ? true : false,
+					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE) ? true : false,
+					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
+					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
+					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					)
 				);
 
@@ -560,7 +609,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$forum_data = $this->get_forum_info($forum_id);
@@ -634,7 +683,7 @@ class acp_forums
 		// Jumpbox
 		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
 
-		if ($action == 'sync')
+		if ($action == 'sync' || $action == 'sync_topic')
 		{
 			$template->assign_var('S_RESYNCED', true);
 		}
@@ -677,6 +726,8 @@ class acp_forums
 
 				$template->assign_block_vars('forums', array(
 					'FOLDER_IMAGE'		=> $folder_image,
+					'FORUM_IMAGE'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="" />' : '',
+					'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 					'FORUM_NAME'		=> $row['forum_name'],
 					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 					'FORUM_TOPICS'		=> $row['forum_topics'],
@@ -716,7 +767,10 @@ class acp_forums
 			'NAVIGATION'	=> $navigation,
 			'FORUM_BOX'		=> $forum_box,
 			'U_SEL_ACTION'	=> $this->u_action,
-			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id)
+			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+
+			'U_PROGRESS_BAR'	=> $this->u_action . '&amp;action=progress_bar',
+			'UA_PROGRESS_BAR'	=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar')
 		);
 	}
 
@@ -779,12 +833,12 @@ class acp_forums
 		// 16 = show active topics
 		// 32 = enable post review
 		$forum_data['forum_flags'] = 0;
-		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? 1 : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? 2 : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_announce']) ? 4 : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? 8 : 0;
-		$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
-		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? 32 : 0;
+		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? FORUM_FLAG_LINK_TRACK : 0;
+		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? FORUM_FLAG_PRUNE_POLL : 0;
+		$forum_data['forum_flags'] += ($forum_data['prune_announce']) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
+		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? FORUM_FLAG_PRUNE_STICKY : 0;
+		$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
+		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? FORUM_FLAG_POST_REVIEW : 0;
 
 		// Unset data that are not database fields
 		$forum_data_sql = $forum_data;
@@ -821,7 +875,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id));
+					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
@@ -885,7 +939,8 @@ class acp_forums
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
 
 			if (sizeof($errors))
@@ -1018,7 +1073,7 @@ class acp_forums
 	{
 		global $db;
 
-		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1121,6 +1176,14 @@ class acp_forums
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
 			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+			$db->sql_query($sql);
 		}
 		else if ($action_subforums == 'move')
 		{
@@ -1167,6 +1230,14 @@ class acp_forums
 					$sql = 'DELETE FROM ' . FORUMS_TABLE . "
 						WHERE forum_id = $forum_id";
 					$db->sql_query($sql);
+
+					$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
+						WHERE forum_id = $forum_id";
+					$db->sql_query($sql);
+
+					$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
+						WHERE forum_id = $forum_id";
+					$db->sql_query($sql);
 				}
 			}
 
@@ -1179,6 +1250,14 @@ class acp_forums
 		{
 			$diff = 2;
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
 				WHERE forum_id = $forum_id";
 			$db->sql_query($sql);
 		}
@@ -1290,7 +1369,21 @@ class acp_forums
 
 		delete_attachments('topic', $topic_ids, false);
 
-		switch (SQL_LAYER)
+		// Before we remove anything we make sure we are able to adjust the post counts later. ;)
+		$sql = 'SELECT poster_id
+			FROM ' . POSTS_TABLE . '
+			WHERE forum_id = ' . $forum_id . '
+				AND post_postcount = 1';
+		$result = $db->sql_query($sql);
+
+		$post_counts = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
+		}
+		$db->sql_freeresult($result);
+
+		switch ($db->sql_layer)
 		{
 			case 'mysql4':
 			case 'mysqli':
@@ -1365,18 +1458,18 @@ class acp_forums
 
 							foreach ($tables as $table)
 							{
-								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $id_list));
+								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $ids));
 							}
 						}
 					}
 					while ($row);
 				}
-				unset($ids, $id_list);
+				unset($ids);
 
 			break;
 		}
 
-		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1389,6 +1482,18 @@ class acp_forums
 		foreach ($table_ary as $table)
 		{
 			$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
+		}
+
+		// Adjust users post counts
+		if (sizeof($post_counts))
+		{
+			foreach ($post_counts as $poster_id => $substract)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts - ' . $substract . '
+					WHERE user_id = ' . $poster_id;
+				$db->sql_query($sql);
+			}
 		}
 
 		$db->sql_transaction('commit');
@@ -1512,6 +1617,27 @@ class acp_forums
 		$db->sql_query($sql);
 
 		return $target['forum_name'];
+	}
+
+	/**
+	* Display progress bar for syncinc forums
+	*/
+	function display_progress_bar($start, $total)
+	{
+		global $template, $user;
+
+		adm_page_header($user->lang['SYNC_IN_PROGRESS']);
+
+		$template->set_filenames(array(
+			'body'	=> 'progress_bar.html')
+		);
+
+		$template->assign_vars(array(
+			'L_PROGRESS'			=> $user->lang['SYNC_IN_PROGRESS'],
+			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $total) : $user->lang['SYNC_IN_PROGRESS'])
+		);
+
+		adm_page_footer();
 	}
 }
 

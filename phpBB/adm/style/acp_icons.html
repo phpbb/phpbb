@@ -139,14 +139,22 @@
 			</tr>
 		<!-- ENDIF -->
 		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td style="text-align: center;"><img src="{items.IMG_SRC}" width="{items.WIDTH}" height="{items.HEIGHT}" alt="{items.ALT_TEXT}" title="{items.ALT_TEXT}" /></td>
+			<td style="width: 85%; text-align: center;"><img src="{items.IMG_SRC}" width="{items.WIDTH}" height="{items.HEIGHT}" alt="{items.ALT_TEXT}" title="{items.ALT_TEXT}" /></td>
 			<!-- IF S_SMILIES -->
 				<td style="text-align: center;">{items.CODE}</td>
 				<td style="text-align: center;">{items.EMOTION}</td>
 			<!-- ENDIF -->
-			<td style="width: 15%; text-align: right; white-space: nowrap;">
-				<!-- IF not items.S_FIRST_ROW --><a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-				<!-- IF not items.S_LAST_ROW --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+			<td style="width: 80px; text-align: right; white-space: nowrap;">
+				<!-- IF items.S_FIRST_ROW && not items.S_LAST_ROW -->
+					{ICON_MOVE_UP_DISABLED}
+					<a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
+				<!-- ELSEIF not items.S_FIRST_ROW && not items.S_LAST_ROW-->
+					<a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+					<a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+				<!-- ELSEIF items.S_LAST_ROW && not items.S_FIRST_ROW -->						
+					<a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+					{ICON_MOVE_DOWN_DISABLED}
+				<!-- ENDIF -->
 				<a href="{items.U_EDIT}">{ICON_EDIT}</a> 
 				<a href="{items.U_DELETE}">{ICON_DELETE}</a>
 			</td>

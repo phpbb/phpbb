@@ -28,7 +28,77 @@
 
 	<!-- IF S_SEND_MSNM -->
 		<tr>
-			<td class="row1" colspan="2" align="center"><object classid="clsid:FB7199AB-79BF-11d2-8D94-0000F875C541" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object><br /><a class="gen" href="javascript:objMessengerApp.LaunchAddContactUI('{IM_CONTACT}')">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="javascript:objMessengerApp.LaunchIMUI('{IM_CONTACT}')">{L_IM_SEND_MESSAGE}</a></td>
+			<td class="row1" colspan="2" align="center">
+				<object classid="clsid:B69003B3-C55E-4B48-836C-BC5946FC3B28" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object>
+				<script language="javascript" type="text/javascript">
+				<!--					
+					var app = document.getElementById('objMessengerApp');
+					
+					/**
+					 * Check whether the browser supports this and whether MSNM is connected
+					 */
+					function msn_supported() {						
+						//Does the browser support the MSNM object?
+						if (app.MyStatus) 
+						{
+							//Is MSNM connected?
+							if (app.MyStatus == 1)
+							{									
+									alert('{L_IM_MSNM_CONNECT}');										
+									return false;
+							}
+						}
+						else 
+						{	
+							alert('{L_IM_MSNM_BROWSER}');
+							return false;
+						}				
+						return true;
+					}
+					
+					/**
+					 * Add to your contact list
+					 */					
+					function add_contact(address) 
+					{
+						if (msn_supported()) 
+						{
+							//Could return an error while MSNM is connecting, don't want that
+							try
+							{
+								app.AddContact(0, address);
+							} 
+							catch (e)
+							{
+								return;
+							}
+						}
+							
+					}
+					
+					/**
+					 * Write IM to contact
+					 */							
+					function im_contact(address) 
+					{
+						if (msn_supported()) 
+						{
+							//Could return an error while MSNM is connecting, don't want that						
+							try
+							{
+								app.InstantMessage(address);
+							}
+							catch (e)
+							{
+								return;
+							}
+						}	
+					}
+				//-->
+				</script>
+	
+				<a class="gen" href="#" onclick="add_contact('{IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="#" onclick="im_contact('{IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a>
+			</td>
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="center">&nbsp;</td>

@@ -97,6 +97,14 @@
 		<!-- ENDIF -->
 	</dl>
 	<dl>
+		<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
+		<dd><input type="password" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
+		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
+	</dl>
+	<dl>
 		<dt><label for="forum_style">{L_FORUM_STYLE}:</label></dt>
 		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>
 	</dl>
@@ -148,14 +156,6 @@
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
 			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
-			<dd><input type="password" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
-			<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
 		</dl>
 		</fieldset>
 
@@ -283,7 +283,39 @@
 
 	</form>
 
+<!-- ELSEIF S_CONTINUE_SYNC -->
+
+	<script type="text/javascript">
+	<!--
+
+		var close_waitscreen = 0;
+		window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
+
+	//-->
+	</script>
+
+	<h1>{L_FORUM_ADMIN}</h1>
+
+	<p>{L_FORUM_ADMIN_EXPLAIN}</p>
+
+	<p>{L_PROGRESS_EXPLAIN}</p>
+
 <!-- ELSE -->
+
+	<script type="text/javascript">
+	<!--
+
+		/**
+		* Popup search progress bar
+		*/
+		function popup_progress_bar()
+		{
+			var close_waitscreen = 0;
+			window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
+		}
+
+	//-->
+	</script>
 
 	<h1>{L_FORUM_ADMIN}</h1>
 
@@ -297,12 +329,18 @@
 	<!-- ENDIF -->
 
 	<!-- IF S_RESYNCED -->
+		<script language="javascript" type="text/javascript">
+		<!--
+			var close_waitscreen = 1;
+		//-->
+		</script>
+
 		<div class="successbox">
 			<h3>{L_NOTIFY}</h3>
 			<p>{L_FORUM_RESYNCED}</p>
 		</div>
 	<!-- ENDIF -->
-	
+
 	<p><strong>{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF --->]<!-- ENDIF --></strong></p>
 
 	<!-- IF .forums -->
@@ -313,15 +351,31 @@
 			<tr>
 				<td style="width: 5%;">{forums.FOLDER_IMAGE}</td>
 				<td>
-					<strong><!-- IF forums.S_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
+					<!-- IF forums.FORUM_IMAGE --><div style="float: left;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
+					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
 				</td>
-				<td style="width: 15%; text-align: right; white-space: nowrap;">
-					<!-- IF not forums.S_FIRST_ROW --><a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-					<!-- IF not forums.S_LAST_ROW --><a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+				<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
+						{ICON_MOVE_UP_DISABLED}
+						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW-->
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+					<!-- ELSEIF forums.S_LAST_ROW && not forums.S_FIRST_ROW -->
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+						{ICON_MOVE_DOWN_DISABLED}
+					<!-- ELSE -->
+						{ICON_MOVE_UP_DISABLED}
+						{ICON_MOVE_DOWN_DISABLED}
+					<!-- ENDIF -->	
 					<a href="{forums.U_EDIT}">{ICON_EDIT}</a> 
-					<!-- IF not forums.S_LINK --><a href="{forums.U_SYNC}">{ICON_SYNC}</a> <!-- ENDIF -->
+					<!-- IF not forums.S_FORUM_LINK -->
+						<a href="{forums.U_SYNC}" onclick="popup_progress_bar();">{ICON_SYNC}</a> 
+					<!-- ELSE -->
+						{ICON_SYNC_DISABLED}
+					<!-- ENDIF -->
 					<a href="{forums.U_DELETE}">{ICON_DELETE}</a>
 				</td>
 			</tr>

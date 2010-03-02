@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'postgres');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * PostgreSQL Database Abstraction Layer
@@ -38,48 +32,45 @@ class dbal_postgres extends dbal
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
-		$this->connect_string = '';
+		$connect_string = '';
 
 		if ($sqluser)
 		{
-			$this->connect_string .= "user=$sqluser ";
+			$connect_string .= "user=$sqluser ";
 		}
 
 		if ($sqlpassword)
 		{
-			$this->connect_string .= "password=$sqlpassword ";
+			$connect_string .= "password=$sqlpassword ";
 		}
 
 		if ($sqlserver)
 		{
 			if (strpos($sqlserver, ':') !== false)
 			{
-				list($sqlserver, $sqlport) = explode(':', $sqlserver);
-				$this->connect_string .= "host=$sqlserver port=$sqlport ";
+				list($sqlserver, $port) = explode(':', $sqlserver);
 			}
-			else
+
+			if ($sqlserver !== 'localhost')
 			{
-				if ($sqlserver != "localhost")
-				{
-					$this->connect_string .= "host=$sqlserver ";
-				}
-			
-				if ($port)
-				{
-					$this->connect_string .= "port=$port ";
-				}
+				$connect_string .= "host=$sqlserver ";
+			}
+		
+			if ($port)
+			{
+				$connect_string .= "port=$port ";
 			}
 		}
 
 		if ($database)
 		{
 			$this->dbname = $database;
-			$this->connect_string .= "dbname=$database";
+			$connect_string .= "dbname=$database";
 		}
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($this->connect_string) : @pg_connect($this->connect_string);
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string) : @pg_connect($connect_string);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -98,6 +89,8 @@ class dbal_postgres extends dbal
 		{
 			$query_id = @pg_query($this->db_connect_id, 'select version()');
 			$row = @pg_fetch_assoc($query_id, null);
+			@pg_free_result($query_id);
+
 			$version = $row['version'];
 			return ((!empty($version)) ? ' ' . $version : '');
 		}
@@ -105,7 +98,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -152,7 +145,7 @@ class dbal_postgres extends dbal
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				if (($this->query_result = @pg_query($this->db_connect_id, $query)) === false)
 				{
@@ -189,7 +182,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Build db-specific query data
-	* @access: private
+	* @access private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -222,27 +215,6 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @pg_num_rows($query_id) : false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -257,7 +229,7 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -267,48 +239,7 @@ class dbal_postgres extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = @pg_fetch_assoc($query_id, null);
-		if ($row)
-		{
-			foreach ($row as $key => $value)
-			{
-				$row[$key] = (strpos($key, 'bitfield') === false) ? $value : pg_unescape_bytea($value);
-			}
-		}
-
-		return ($query_id) ? $row : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
+		return ($query_id !== false) ? @pg_fetch_assoc($query_id, null) : false;
 	}
 
 	/**
@@ -319,17 +250,17 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id) ? @pg_result_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @pg_result_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -339,7 +270,7 @@ class dbal_postgres extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
 			{
@@ -368,7 +299,7 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -398,7 +329,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -410,7 +341,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -419,7 +350,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{
@@ -477,9 +408,6 @@ class dbal_postgres extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... defined
 
 ?>

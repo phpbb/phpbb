@@ -54,6 +54,7 @@ if ($id && $sid)
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 	$db = new $sql_db();
 	$cache = new cache();
@@ -63,6 +64,8 @@ if ($id && $sid)
 	{
 		exit;
 	}
+
+	$config = $cache->obtain_config();
 
 	$sql = "SELECT s.session_id, u.user_lang
 		FROM {$table_prefix}sessions s, {$table_prefix}users u
@@ -89,11 +92,26 @@ if ($id && $sid)
 			exit;
 		}
 
-		/**
-		* @todo What happens if the theme_data value is older than the file?
-		* It should be re-cached as is done with templates and the template cache
-		* if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
-		*/
+		// Re-cache stylesheet data if necessary
+		if ($config['load_tplcompile'] && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+		{
+			include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+
+			$theme['theme_data'] = acp_styles::db_theme_data($theme);
+			$theme['theme_mtime'] = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+
+			// Save CSS contents
+			$sql_ary = array(
+				'theme_mtime'	=> $theme['theme_mtime'],
+				'theme_data'	=> $theme['theme_data']
+			);
+
+			$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+				WHERE theme_id = $id";
+			$db->sql_query($sql);
+
+			$cache->destroy('sql', STYLES_THEME_TABLE);
+		}
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');

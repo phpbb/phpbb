@@ -371,7 +371,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 		switch ($sql_type)
 		{
 			case 'insert':
-				switch (SQL_LAYER)
+				switch ($db->sql_layer)
 				{
 					case 'mysql':
 					case 'mysql4':

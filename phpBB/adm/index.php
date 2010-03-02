@@ -136,21 +136,27 @@ function adm_page_header($page_title)
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 
-		'ICON_MOVE_UP'		=> '<img src="' . $phpbb_admin_path . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_DOWN'	=> '<img src="' . $phpbb_admin_path . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_EDIT'			=> '<img src="' . $phpbb_admin_path . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_DELETE'		=> '<img src="' . $phpbb_admin_path . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_SYNC'			=> '<img src="' . $phpbb_admin_path . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_MOVE_UP'				=> '<img src="' . $phpbb_admin_path . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_DOWN'			=> '<img src="' . $phpbb_admin_path . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
+		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . $phpbb_admin_path . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',		
+		'ICON_EDIT'					=> '<img src="' . $phpbb_admin_path . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
+		'ICON_EDIT_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
+		'ICON_DELETE'				=> '<img src="' . $phpbb_admin_path . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
+		'ICON_DELETE_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_delete_disabled.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
+		'ICON_SYNC'					=> '<img src="' . $phpbb_admin_path . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_SYNC_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
 
+		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
+		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
 	);
 
-	if (!empty($config['send_encoding']))
+	if ($config['send_encoding'])
 	{
-		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset=UTF-8');
 	}
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
@@ -369,6 +375,104 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	}
 
 	return $tpl;
+}
+
+/**
+* Going through a config array and validate values, writing errors to $error.
+*/
+function validate_config_vars($config_vars, &$cfg_array, &$error)
+{
+	global $phpbb_root_path, $user;
+
+	foreach ($config_vars as $config_name => $config_definition)
+	{
+		if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+		{
+			continue;
+		}
+
+		if (!isset($config_definition['validate']))
+		{
+			continue;
+		}
+
+		// Validate a bit. ;) String is already checked through request_var(), therefore we do not check this again
+		switch ($config_definition['validate'])
+		{
+			case 'bool':
+				$cfg_array[$config_name] = ($cfg_array[$config_name]) ? 1 : 0;
+			break;
+
+			case 'int':
+				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
+			break;
+
+			// Relative path (appended $phpbb_root_path)
+			case 'rpath':
+			case 'rwpath':
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$destination = $cfg_array[$config_name];
+
+				// Adjust destination path (no trailing slash)
+				if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+				{
+					$destination = substr($destination, 0, sizeof($destination)-2);
+				}
+
+				$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
+				if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
+				{
+					$destination = '';
+				}
+
+				$cfg_array[$config_name] = trim($destination);
+
+			// Path being relative (still prefixed by phpbb_root_path), but with the ability to escape the root dir...
+			case 'path':
+			case 'wpath':
+
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
+
+				// Make sure no NUL byte is present...
+				if (strpos($cfg_array[$config_name], '\0') !== false || strpos($cfg_array[$config_name], '%00') !== false)
+				{
+					$cfg_array[$config_name] = '';
+					break;
+				}
+
+				if (!file_exists($phpbb_root_path . $cfg_array[$config_name]))
+				{
+					$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
+				}
+
+				if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_dir($phpbb_root_path . $cfg_array[$config_name]))
+				{
+					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
+				}
+
+				// Check if the path is writeable
+				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
+				{
+					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_writeable($phpbb_root_path . $cfg_array[$config_name]))
+					{
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $cfg_array[$config_name]);
+					}
+				}
+
+			break;
+		}
+	}
+
+	return;
 }
 
 ?>

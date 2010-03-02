@@ -172,8 +172,6 @@ class ucp_groups
 								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 								$messenger = new messenger();
 
-								$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 								$sql = 'SELECT u.username, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
 									FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
 									WHERE ug.user_id = u.user_id
@@ -190,10 +188,8 @@ class ucp_groups
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'EMAIL_SIG'		=> $email_sig,
-										'SITENAME'		=> $config['sitename'],
-										'USERNAME'		=> html_entity_decode($row['username']),
-										'GROUP_NAME'	=> html_entity_decode($group_row[$group_id]['group_name']),
+										'USERNAME'		=> htmlspecialchars_decode($row['username']),
+										'GROUP_NAME'	=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
 
 										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
@@ -496,7 +492,7 @@ class ucp_groups
 							{
 								if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 								{
-									avatar_delete($group_row['group_avatar']);
+									avatar_delete('group', $group_row);
 								}
 							}
 
@@ -723,7 +719,8 @@ class ucp_groups
 							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'))
+							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
+							'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=usernames', false))
 						);
 
 					break;
@@ -862,7 +859,7 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						$name_ary = request_var('usernames', '');
+						$name_ary = request_var('usernames', '', true);
 
 						if (!$group_id)
 						{

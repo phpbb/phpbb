@@ -30,7 +30,7 @@ class acp_groups
 		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
 		$group_id	= request_var('g', 0);
 		$mark_ary	= request_var('mark', array(0));
-		$name_ary	= request_var('usernames', '');
+		$name_ary	= request_var('usernames', '', true);
 		$leader		= request_var('leader', 0);
 		$default	= request_var('default', 0);
 		$start		= request_var('start', 0);
@@ -52,7 +52,7 @@ class acp_groups
 
 			if (!$group_row)
 			{
-				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -64,11 +64,11 @@ class acp_groups
 			case 'promote':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Approve, demote or promote
-				group_user_attributes($action, $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
+				group_user_attributes($action, $group_id, $mark_ary, false, $group_row['group_name']);
 
 				switch ($action)
 				{
@@ -85,13 +85,15 @@ class acp_groups
 					break;
 				}
 
+				group_update_listings($group_id);
+
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -134,6 +136,8 @@ class acp_groups
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
 
+					group_update_listings($group_id);
+
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
@@ -155,7 +159,7 @@ class acp_groups
 				{
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$error = '';
@@ -165,7 +169,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -180,7 +184,7 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($back_link));
+						trigger_error($user->lang[$error] . adm_back_link($back_link), E_USER_WARNING);
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
@@ -201,12 +205,12 @@ class acp_groups
 			case 'addusers':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
@@ -214,10 +218,10 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
-				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
@@ -228,12 +232,12 @@ class acp_groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$error = array();
@@ -313,7 +317,7 @@ class acp_groups
 					{
 						if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 						{
-							avatar_delete($group_row['group_avatar']);
+							avatar_delete('group', $group_row);
 						}
 					}
 
@@ -364,24 +368,7 @@ class acp_groups
 								$db->sql_freeresult($result);
 
 								// Now insert the data
-								if (sizeof($groups_sql_ary))
-								{
-									switch (SQL_LAYER)
-									{
-										case 'mysql':
-										case 'mysql4':
-										case 'mysqli':
-											$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
-										break;
-
-										default:
-											foreach ($groups_sql_ary as $ary)
-											{
-												$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-											}
-										break;
-									}
-								}
+								$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 
 								$auth->acl_clear_prefetch();
 							}
@@ -542,7 +529,7 @@ class acp_groups
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';
@@ -614,6 +601,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
+					'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=list&field=usernames', false),
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
 				);
 

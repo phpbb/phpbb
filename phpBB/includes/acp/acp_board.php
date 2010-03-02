@@ -27,6 +27,7 @@ class acp_board
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
+		// Validation types are: string, int, bool, rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
 		switch ($mode)
 		{
 			case 'settings':
@@ -34,19 +35,19 @@ class acp_board
 					'title'	=> 'ACP_BOARD_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_BOARD_SETTINGS',
-						'sitename'				=> array('lang' => 'SITE_NAME',				'type' => 'text:40:255', 'explain' => false),
-						'site_desc'				=> array('lang' => 'SITE_DESC',				'type' => 'text:40:255', 'explain' => false),
-						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
+						'sitename'				=> array('lang' => 'SITE_NAME',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
+						'site_desc'				=> array('lang' => 'SITE_DESC',				'validate' => 'string',	'type' => 'text:40:255', 'explain' => false),
+						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
-						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
-						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
-						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'type' => 'select', 'function' => 'tz_select', 'params' => array('{CONFIG_VALUE}', 1), 'explain' => false),
-						'board_dst'				=> array('lang' => 'SYSTEM_DST',			'type' => 'radio:yes_no', 'explain' => false),
-						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', 1), 'explain' => false),
-						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'type' => 'radio:yes_no', 'explain' => true),
+						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'string',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
+						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
+						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'string',	'type' => 'select', 'function' => 'tz_select', 'params' => array('{CONFIG_VALUE}', 1), 'explain' => false),
+						'board_dst'				=> array('lang' => 'SYSTEM_DST',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', 1), 'explain' => false),
+						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'WARNINGS',
-						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'type' => 'text:3:4', 'explain' => true),
+						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true),
 					)
 				);
 			break;
@@ -56,29 +57,25 @@ class acp_board
 					'title'	=> 'ACP_BOARD_FEATURES',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_BOARD_FEATURES',
-						'allow_privmsg'			=> array('lang' => 'BOARD_PM',				'type' => 'radio:yes_no', 'explain' => true),
-						'allow_topic_notify'	=> array('lang' => 'ALLOW_TOPIC_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_bbcode'		=> array('lang' => 'ALLOW_SIG_BBCODE',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
-						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true),
+						'allow_privmsg'			=> array('lang' => 'BOARD_PM',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_topic_notify'	=> array('lang' => 'ALLOW_TOPIC_NOTIFY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'ACP_LOAD_SETTINGS',
-						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',		'type' => 'radio:yes_no', 'explain' => false),
-						'load_moderators'		=> array('lang' => 'YES_MODERATORS',	'type' => 'radio:yes_no', 'explain' => false),
-						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',		'type' => 'radio:yes_no', 'explain' => false),
-						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'type' => 'radio:yes_no', 'explain' => false),
-						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'type' => 'radio:yes_no', 'explain' => false),
-						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_moderators'		=> array('lang' => 'YES_MODERATORS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 					)
 				);
 			break;
@@ -90,14 +87,14 @@ class acp_board
 						'legend1'				=> 'ACP_AVATAR_SETTINGS',
 						'avatar_min_height'		=> false, 'avatar_min_width' => false, 'avatar_max_height' => false, 'avatar_max_width' => false,
 
-						'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',	'type' => 'radio:yes_no', 'explain' => true),
-						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',	'type' => 'radio:yes_no', 'explain' => false),
-						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',	'type' => 'dimension:3:4', 'explain' => true),
-						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',	'type' => 'dimension:3:4', 'explain' => true),
-						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'type' => 'text:20:255', 'explain' => true),
-						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'type' => 'text:20:255', 'explain' => true)
+						'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
+						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
+						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
+						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
+						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true)
 					)
 				);
 			break;
@@ -108,23 +105,23 @@ class acp_board
 					'lang'	=> 'ucp',
 					'vars'	=> array(
 						'legend1'				=> 'GENERAL_SETTINGS',
-						'allow_privmsg'			=> array('lang' => 'BOARD_PM',				'type' => 'radio:yes_no', 'explain' => true),
-						'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'type' => 'text:4:4', 'explain' => true),
-						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'type' => 'text:4:4', 'explain' => true),
-						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
-						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'allow_privmsg'			=> array('lang' => 'BOARD_PM',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'validate' => 'int',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
+						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						
 						'legend2'				=> 'GENERAL_OPTIONS',
-						'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'type' => 'radio:yes_no', 'explain' => false),
-						'auth_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'type' => 'radio:yes_no', 'explain' => false),
-						'auth_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-						'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
-						'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'type' => 'radio:yes_no', 'explain' => false),
-						'auth_img_pm'			=> array('lang' => 'ALLOW_IMG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-						'auth_flash_pm'			=> array('lang' => 'ALLOW_FLASH_PM',		'type' => 'radio:yes_no', 'explain' => false),
-						'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'type' => 'radio:yes_no', 'explain' => false)
+						'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'auth_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'auth_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'auth_img_pm'			=> array('lang' => 'ALLOW_IMG_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'auth_flash_pm'			=> array('lang' => 'ALLOW_FLASH_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false)
 					)
 				);
 			break;
@@ -134,31 +131,32 @@ class acp_board
 					'title'	=> 'ACP_POST_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'GENERAL_OPTIONS',
-						'allow_topic_notify'	=> array('lang' => 'ALLOW_TOPIC_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
-						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
-						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true),
-						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_topic_notify'	=> array('lang' => 'ALLOW_TOPIC_NOTIFY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_post_links'		=> array('lang' => 'ALLOW_POST_LINKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
-						'edit_time'				=> array('lang' => 'EDIT_TIME',				'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
-						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'type' => 'radio:yes_no', 'explain' => true),
-						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'type' => 'text:3:4', 'explain' => true),
-						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
-						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'type' => 'text:3:4', 'explain' => false),
-						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'type' => 'text:3:4', 'explain' => false),
-						'hot_threshold'			=> array('lang' => 'HOT_THRESHOLD',			'type' => 'text:3:4', 'explain' => false),
-						'max_poll_options'		=> array('lang' => 'MAX_POLL_OPTIONS',		'type' => 'text:4:4', 'explain' => false),
-						'max_post_chars'		=> array('lang' => 'CHAR_LIMIT',			'type' => 'text:4:6', 'explain' => true),
-						'max_post_smilies'		=> array('lang' => 'SMILIES_LIMIT',			'type' => 'text:4:4', 'explain' => true),
-						'max_post_urls'			=> array('lang' => 'MAX_POST_URLS',			'type' => 'text:5:4', 'explain' => true),
-						'max_post_font_size'	=> array('lang' => 'MAX_POST_FONT_SIZE',	'type' => 'text:5:4', 'explain' => true),
-						'max_quote_depth'		=> array('lang' => 'QUOTE_DEPTH_LIMIT',		'type' => 'text:4:4', 'explain' => true),
-						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'type' => 'text:5:4', 'explain' => true),
-						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'type' => 'text:5:4', 'explain' => true),
+						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true),
+						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int',	'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
+						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
+						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
+						'hot_threshold'			=> array('lang' => 'HOT_THRESHOLD',			'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
+						'max_poll_options'		=> array('lang' => 'MAX_POLL_OPTIONS',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => false),
+						'max_post_chars'		=> array('lang' => 'CHAR_LIMIT',			'validate' => 'int',	'type' => 'text:4:6', 'explain' => true),
+						'max_post_smilies'		=> array('lang' => 'SMILIES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'max_post_urls'			=> array('lang' => 'MAX_POST_URLS',			'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_post_font_size'	=> array('lang' => 'MAX_POST_FONT_SIZE',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_quote_depth'		=> array('lang' => 'QUOTE_DEPTH_LIMIT',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
 					)
 				);
 			break;
@@ -168,19 +166,20 @@ class acp_board
 					'title'	=> 'ACP_SIGNATURE_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'GENERAL_OPTIONS',
-						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_bbcode'		=> array('lang' => 'ALLOW_SIG_BBCODE',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_bbcode'		=> array('lang' => 'ALLOW_SIG_BBCODE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_links'		=> array('lang' => 'ALLOW_SIG_LINKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_SETTINGS',
-						'max_sig_chars'			=> array('lang' => 'MAX_SIG_LENGTH',		'type' => 'text:5:4', 'explain' => true),
-						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'type' => 'text:5:4', 'explain' => true),
-						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'type' => 'text:5:4', 'explain' => true),
-						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'type' => 'text:5:4', 'explain' => true),
-						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'type' => 'text:5:4', 'explain' => true),
-						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_chars'			=> array('lang' => 'MAX_SIG_LENGTH',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
 					)
 				);
 			break;
@@ -193,24 +192,24 @@ class acp_board
 						'max_name_chars'		=> false,
 						'max_pass_chars'		=> false,
 
-						'require_activation'	=> array('lang' => 'ACC_ACTIVATION',	'type' => 'custom', 'method' => 'select_acc_activation', 'explain' => true),
-						'min_name_chars'		=> array('lang' => 'USERNAME_LENGTH',	'type' => 'custom', 'method' => 'username_length', 'explain' => true),
-						'min_pass_chars'		=> array('lang' => 'PASSWORD_LENGTH',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
-						'allow_name_chars'		=> array('lang' => 'USERNAME_CHARS',	'type' => 'select', 'method' => 'select_username_chars', 'explain' => true),
-						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'type' => 'text:3:3', 'explain' => true),
+						'require_activation'	=> array('lang' => 'ACC_ACTIVATION',	'validate' => 'int',	'type' => 'custom', 'method' => 'select_acc_activation', 'explain' => true),
+						'min_name_chars'		=> array('lang' => 'USERNAME_LENGTH',	'validate' => 'int',	'type' => 'custom', 'method' => 'username_length', 'explain' => true),
+						'min_pass_chars'		=> array('lang' => 'PASSWORD_LENGTH',	'validate' => 'int',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
+						'allow_name_chars'		=> array('lang' => 'USERNAME_CHARS',	'validate' => 'string',	'type' => 'select', 'method' => 'select_username_chars', 'explain' => true),
+						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
-						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_emailreuse'		=> array('lang' => 'ALLOW_EMAIL_REUSE',		'type' => 'radio:yes_no', 'explain' => true),
-						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'type' => 'radio:yes_no', 'explain' => true),
-						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'type' => 'text:3:3', 'explain' => true),
-						'max_reg_attempts'		=> array('lang' => 'REG_LIMIT',				'type' => 'text:4:4', 'explain' => true),
+						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_emailreuse'		=> array('lang' => 'ALLOW_EMAIL_REUSE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
+						'max_reg_attempts'		=> array('lang' => 'REG_LIMIT',				'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 
 						'legend3'			=> 'COPPA',
-						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'type' => 'radio:yes_no', 'explain' => true),
-						'coppa_mail'		=> array('lang' => 'COPPA_MAIL',		'type' => 'textarea:5:40', 'explain' => true),
-						'coppa_fax'			=> array('lang' => 'COPPA_FAX',			'type' => 'text:25:100', 'explain' => false),
+						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'coppa_mail'		=> array('lang' => 'COPPA_MAIL',		'validate' => 'string',	'type' => 'textarea:5:40', 'explain' => true),
+						'coppa_fax'			=> array('lang' => 'COPPA_FAX',			'validate' => 'string',	'type' => 'text:25:100', 'explain' => false),
 					)
 				);
 			break;
@@ -220,10 +219,10 @@ class acp_board
 					'title'	=> 'ACP_COOKIE_SETTINGS',
 					'vars'	=> array(
 						'legend1'		=> 'ACP_COOKIE_SETTINGS',
-						'cookie_domain'	=> array('lang' => 'COOKIE_DOMAIN',	'type' => 'text::255', 'explain' => false),
-						'cookie_name'	=> array('lang' => 'COOKIE_NAME',	'type' => 'text::16', 'explain' => false),
-						'cookie_path'	=> array('lang'	=> 'COOKIE_PATH',	'type' => 'text::255', 'explain' => false),
-						'cookie_secure'	=> array('lang' => 'COOKIE_SECURE',	'type' => 'radio:disabled_enabled', 'explain' => true)
+						'cookie_domain'	=> array('lang' => 'COOKIE_DOMAIN',	'validate' => 'string',	'type' => 'text::255', 'explain' => false),
+						'cookie_name'	=> array('lang' => 'COOKIE_NAME',	'validate' => 'string',	'type' => 'text::16', 'explain' => false),
+						'cookie_path'	=> array('lang'	=> 'COOKIE_PATH',	'validate' => 'string',	'type' => 'text::255', 'explain' => false),
+						'cookie_secure'	=> array('lang' => 'COOKIE_SECURE',	'validate' => 'bool',	'type' => 'radio:disabled_enabled', 'explain' => true)
 					)
 				);
 			break;
@@ -233,28 +232,28 @@ class acp_board
 					'title'	=> 'ACP_LOAD_SETTINGS',
 					'vars'	=> array(
 						'legend1'			=> 'GENERAL_SETTINGS',
-						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'type' => 'text:4:4', 'explain' => true),
-						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'type' => 'text:5:5', 'explain' => true),
-						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'type' => 'text:4:4', 'explain' => true),
-						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'type' => 'text:4:3', 'explain' => true),
+						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int',	'type' => 'text:4:3', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
-						'load_db_track'			=> array('lang' => 'YES_POST_MARKING',		'type' => 'radio:yes_no', 'explain' => true),
-						'load_db_lastread'		=> array('lang' => 'YES_READ_MARKING',		'type' => 'radio:yes_no', 'explain' => true),
-						'load_anon_lastread'	=> array('lang' => 'YES_ANON_READ_MARKING',	'type' => 'radio:yes_no', 'explain' => true),
-						'load_online'			=> array('lang' => 'YES_ONLINE',			'type' => 'radio:yes_no', 'explain' => true),
-						'load_online_guests'	=> array('lang' => 'YES_ONLINE_GUESTS',		'type' => 'radio:yes_no', 'explain' => true),
-						'load_onlinetrack'		=> array('lang' => 'YES_ONLINE_TRACK',		'type' => 'radio:yes_no', 'explain' => true),
-						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',			'type' => 'radio:yes_no', 'explain' => false),
-						'load_moderators'		=> array('lang' => 'YES_MODERATORS',		'type' => 'radio:yes_no', 'explain' => false),
-						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',			'type' => 'radio:yes_no', 'explain' => false),
-						'load_user_activity'	=> array('lang' => 'LOAD_USER_ACTIVITY',	'type' => 'radio:yes_no', 'explain' => true),
-						'load_tplcompile'		=> array('lang' => 'RECOMPILE_TEMPLATES',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_db_track'			=> array('lang' => 'YES_POST_MARKING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_db_lastread'		=> array('lang' => 'YES_READ_MARKING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_anon_lastread'	=> array('lang' => 'YES_ANON_READ_MARKING',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_online'			=> array('lang' => 'YES_ONLINE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_online_guests'	=> array('lang' => 'YES_ONLINE_GUESTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_onlinetrack'		=> array('lang' => 'YES_ONLINE_TRACK',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_moderators'		=> array('lang' => 'YES_MODERATORS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_user_activity'	=> array('lang' => 'LOAD_USER_ACTIVITY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'load_tplcompile'		=> array('lang' => 'RECOMPILE_TEMPLATES',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						
 						'legend3'				=> 'CUSTOM_PROFILE_FIELDS',
-						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'type' => 'radio:yes_no', 'explain' => false),
-						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'type' => 'radio:yes_no', 'explain' => false),
-						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 					)
 				);
 			break;
@@ -264,7 +263,7 @@ class acp_board
 					'title'	=> 'ACP_AUTH_SETTINGS',
 					'vars'	=> array(
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
-						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'type' => 'select', 'method' => 'select_auth_method', 'explain' => false)
+						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'validate' => 'string',	'type' => 'select', 'method' => 'select_auth_method', 'explain' => false)
 					)
 				);
 			break;
@@ -274,20 +273,20 @@ class acp_board
 					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
-						'send_encoding'			=> array('lang' => 'SEND_ENCODING',		'type' => 'radio:yes_no', 'explain' => true),
-						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'type' => 'radio:yes_no', 'explain' => false),
+						'send_encoding'			=> array('lang' => 'SEND_ENCODING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 
 						'legend2'				=> 'PATH_SETTINGS',
-						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'type' => 'text:20:255', 'explain' => true),
-						'icons_path'			=> array('lang' => 'ICONS_PATH',		'type' => 'text:20:255', 'explain' => true),
-						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'type' => 'text:20:255', 'explain' => true),
-						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'type' => 'text:20:255', 'explain' => true),
+						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+						'icons_path'			=> array('lang' => 'ICONS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 
 						'legend3'				=> 'SERVER_URL_SETTINGS',
-						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'type' => 'radio:yes_no', 'explain' => true),
-						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'type' => 'text:10:10', 'explain' => true),
-						'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
-						'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
+						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',	'type' => 'text:10:10', 'explain' => true),
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
+						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
 					)
 				);
 			break;
@@ -297,14 +296,16 @@ class acp_board
 					'title'	=> 'ACP_SECURITY_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
-						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'type' => 'radio:yes_no', 'explain' => true),
-						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'type' => 'text:5:5', 'explain' => true),
-						'ip_check'				=> array('lang' => 'IP_VALID',				'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
-						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'type' => 'radio:yes_no', 'explain' => true),
-						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',			'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'type' => 'text:3:3', 'explain' => true),
-						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'type' => 'text:3:3', 'explain' => true),
-						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'type' => 'radio:yes_no', 'explain' => true),
+						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'ip_check'				=> array('lang' => 'IP_VALID',				'validate' => 'int',	'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
+						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_dnsbl'			=> array('lang' => 'CHECK_DNSBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'email_check_mx'		=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',			'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
+						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
+						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 					)
 				);
 			break;
@@ -314,28 +315,29 @@ class acp_board
 					'title'	=> 'ACP_EMAIL_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'GENERAL_SETTINGS',
-						'email_enable'			=> array('lang' => 'ENABLE_EMAIL',			'type' => 'radio:enabled_disabled', 'explain' => true),
-						'board_email_form'		=> array('lang' => 'BOARD_EMAIL_FORM',		'type' => 'radio:enabled_disabled', 'explain' => true),
-						'email_function_name'	=> array('lang' => 'EMAIL_FUNCTION_NAME',	'type' => 'text:20:50', 'explain' => true),
-						'email_package_size'	=> array('lang' => 'EMAIL_PACKAGE_SIZE',	'type' => 'text:5:5', 'explain' => true),
-						'board_contact'			=> array('lang' => 'CONTACT_EMAIL',			'type' => 'text:25:100', 'explain' => true),
-						'board_email'			=> array('lang' => 'ADMIN_EMAIL',			'type' => 'text:25:100', 'explain' => true),
-						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'type' => 'textarea:5:30', 'explain' => true),
-						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'type' => 'radio:yes_no', 'explain' => true),
+						'email_enable'			=> array('lang' => 'ENABLE_EMAIL',			'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
+						'board_email_form'		=> array('lang' => 'BOARD_EMAIL_FORM',		'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
+						'email_function_name'	=> array('lang' => 'EMAIL_FUNCTION_NAME',	'validate' => 'string',	'type' => 'text:20:50', 'explain' => true),
+						'email_package_size'	=> array('lang' => 'EMAIL_PACKAGE_SIZE',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'board_contact'			=> array('lang' => 'CONTACT_EMAIL',			'validate' => 'string',	'type' => 'text:25:100', 'explain' => true),
+						'board_email'			=> array('lang' => 'ADMIN_EMAIL',			'validate' => 'string',	'type' => 'text:25:100', 'explain' => true),
+						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'validate' => 'string',	'type' => 'textarea:5:30', 'explain' => true),
+						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'SMTP_SETTINGS',
-						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'type' => 'radio:yes_no', 'explain' => true),
-						'smtp_host'				=> array('lang' => 'SMTP_SERVER',			'type' => 'text:25:50', 'explain' => false),
-						'smtp_port'				=> array('lang' => 'SMTP_PORT',				'type' => 'text:4:5', 'explain' => true),
-						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
-						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'type' => 'text:25:255', 'explain' => true),
-						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'type' => 'password:25:255', 'explain' => true)
+						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'smtp_host'				=> array('lang' => 'SMTP_SERVER',			'validate' => 'string',	'type' => 'text:25:50', 'explain' => false),
+						'smtp_port'				=> array('lang' => 'SMTP_PORT',				'validate' => 'int',	'type' => 'text:4:5', 'explain' => true),
+						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'validate' => 'string',	'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
+						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'validate' => 'string',	'type' => 'text:25:255', 'explain' => true),
+						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true)
 					)
 				);
 			break;
 
 			default:
-				trigger_error('NO_MODE');
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 
 		if (isset($display_vars['lang']))
@@ -345,6 +347,20 @@ class acp_board
 
 		$this->new_config = $config;
 		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : $this->new_config;
+		if (isset($_REQUEST['config']))
+		{
+			utf8_normalize_nfc(&$cfg_array);
+		}
+		$error = array();
+
+		// We validate the complete config if whished
+		validate_config_vars($display_vars['vars'], $cfg_array, $error);
+
+		// Do not write values if there is an error
+		if (sizeof($error))
+		{
+			$submit = false;
+		}
 
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
@@ -448,14 +464,14 @@ class acp_board
 							{
 								set_config($config_name, $config_value);
 							}
-							trigger_error($error . adm_back_link($this->u_action));
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					set_config('auth_method', $cfg_array['auth_method']);
 				}
 				else
 				{
-					trigger_error('NO_AUTH_PLUGIN');
+					trigger_error('NO_AUTH_PLUGIN', E_USER_ERROR);
 				}
 			}
 		}
@@ -473,6 +489,10 @@ class acp_board
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$display_vars['title']],
 			'L_TITLE_EXPLAIN'	=> $user->lang[$display_vars['title'] . '_EXPLAIN'],
+
+			'S_ERROR'			=> (sizeof($error)) ? true : false,
+			'ERROR_MSG'			=> implode('<br />', $error),
+
 			'U_ACTION'			=> $this->u_action)
 		);
 

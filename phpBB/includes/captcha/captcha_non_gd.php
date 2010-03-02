@@ -11,6 +11,7 @@
 
 /**
 * Main non-gd captcha class
+* @ignore
 * @package VC
 */
 class captcha

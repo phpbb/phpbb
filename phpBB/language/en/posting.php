@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -29,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ADD_ATTACHMENT'			=> 'Attachment uploading',
+	'ADD_ATTACHMENT'			=> 'Upload attachment',
 	'ADD_ATTACHMENT_EXPLAIN'	=> 'If you wish to attach one or more files enter the details below',
 	'ADD_FILE'					=> 'Add the file',
 	'ADD_POLL'					=> 'Poll creation',
@@ -53,7 +55,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_S_HELP'				=> 'Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000',
 	'BBCODE_U_HELP'				=> 'Underline text: [u]text[/u]  (alt+u)',
 	'BBCODE_W_HELP'				=> 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)',
-	'BBCODE_D_HELP'				=> 'Flash: [flash=height,width]http://url[/flash]  (alt+d)',
+	'BBCODE_D_HELP'				=> 'Flash: [flash=width,height]http://url[/flash]  (alt+d)',
 	'BUMP_ERROR'				=> 'You cannot bump this topic so soon after the last post.',
 
 	'CANNOT_DELETE_REPLIED'		=> 'Sorry but you may only delete posts which have not been replied to.',
@@ -76,7 +78,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_MAGIC_URL'			=> 'Do not automatically parse URLs',
 	'DISABLE_SMILIES'			=> 'Disable smilies',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed',
-	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your Draft will be deleted after submitting this post.',
+	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your draft will be deleted after submitting this post.',
 	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 	'DRAFT_TITLE'				=> 'Draft title',
 
@@ -127,8 +129,8 @@ $lang = array_merge($lang, array(
 	'NO_TOPIC_ICON'				=> 'None',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
-	'PHP_SIZE_NA'				=> 'The attachment\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
-	'PHP_SIZE_OVERRUN'			=> 'The attachment\'s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
+	'PHP_SIZE_NA'				=> 'The attachment’s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
+	'PHP_SIZE_OVERRUN'			=> 'The attachment’s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'PLACE_INLINE'				=> 'Place inline',
 	'POLL_DELETE'				=> 'Delete poll',
 	'POLL_FOR'					=> 'Run poll for',
@@ -187,13 +189,13 @@ $lang = array_merge($lang, array(
 	'UPDATE_COMMENT'			=> 'Update comment',
 	'URL_INVALID'				=> 'The URL you specified is invalid.',
 	'URL_NOT_FOUND'				=> 'The file specified could not be found.',
+	'URL_IS_OFF'				=> '[url] is <em>OFF</em>',
+	'URL_IS_ON'					=> '[url] is <em>ON</em>',
 	'USER_CANNOT_BUMP'			=> 'You cannot bump topics in this forum',
 	'USER_CANNOT_DELETE'		=> 'You cannot delete posts in this forum',
 	'USER_CANNOT_EDIT'			=> 'You cannot edit posts in this forum',
 	'USER_CANNOT_REPLY'			=> 'You cannot reply in this forum',
 	'USER_CANNOT_FORUM_POST'	=> 'You are not able to do posting operations on this forum due to the forum type not supporting it.',
-	'USERNAME_DISALLOWED'		=> 'The username you entered has been banned.',
-	'USERNAME_TAKEN'			=> 'The username you entered is already in use, please select an alternative.',
 
 	'VIEW_MESSAGE'				=> '%sView your submitted message%s',
 

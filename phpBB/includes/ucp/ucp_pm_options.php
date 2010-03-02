@@ -250,6 +250,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$rule_string	= ($cond_option != 'none') ? request_var('rule_string', '', true) : '';
 		$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
 		$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
+		
+		utf8_normalize_nfc(&$rule_string);
 
 		$action = (int) $action_option[0];
 		$folder_id = (int) $action_option[1];
@@ -433,7 +435,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 
-		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'))
+		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'),
+		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=rule_string', true))
 	);
 
 	$rule_lang = $action_lang = $check_lang = array();
@@ -478,6 +481,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Check
+	if (!isset($global_privmsgs_rules[$check_option]))
+	{
+		$check_option = 0;
+	}
+
 	define_check_option(($check_option && !isset($back['rule'])) ? true : false, $check_option, $check_lang);
 
 	if ($check_option && !isset($back['rule']))
@@ -633,6 +641,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	{
 		case 'text':
 			$rule_string = request_var('rule_string', '', true);
+			
+			utf8_normalize_nfc(&$rule_string);
 
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
@@ -647,12 +657,14 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'user':
 			$rule_user_id = request_var('rule_user_id', 0);
 			$rule_string = request_var('rule_string', '', true);
+			
+			utf8_normalize_nfc(&$rule_string);
 
 			if ($rule_string && !$rule_user_id)
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
-					WHERE LOWER(username) = '" . $db->sql_escape(strtolower($rule_string)) . "'";
+					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($rule_string)) . "'";
 				$result = $db->sql_query($sql);
 				$rule_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);
@@ -690,6 +702,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
 			$rule_string = request_var('rule_string', '', true);
+			
+			utf8_normalize_nfc(&$rule_string);
 
 			$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 			$sql = 'SELECT group_id, group_name, group_type

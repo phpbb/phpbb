@@ -51,6 +51,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	in_message number(1) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,
+	is_orphan number(1) DEFAULT '1' NOT NULL,
 	physical_filename varchar2(255) DEFAULT '' ,
 	real_filename varchar2(255) DEFAULT '' ,
 	download_count number(8) DEFAULT '0' NOT NULL,
@@ -72,7 +73,7 @@ CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments (topic_id)
 /
 CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments (poster_id)
 /
-CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize)
+CREATE INDEX phpbb_attachments_is_orphan ON phpbb_attachments (is_orphan)
 /
 
 CREATE SEQUENCE phpbb_attachments_seq
@@ -145,7 +146,7 @@ END;
 */
 CREATE TABLE phpbb_acl_roles (
 	role_id number(8) NOT NULL,
-	role_name varchar2(255) DEFAULT '' ,
+	role_name varchar2(765) DEFAULT '' ,
 	role_description clob DEFAULT '' ,
 	role_type varchar2(10) DEFAULT '' ,
 	role_order number(4) DEFAULT '0' NOT NULL,
@@ -210,7 +211,7 @@ CREATE TABLE phpbb_banlist (
 	ban_id number(8) NOT NULL,
 	ban_userid number(8) DEFAULT '0' NOT NULL,
 	ban_ip varchar2(40) DEFAULT '' ,
-	ban_email varchar2(100) DEFAULT '' ,
+	ban_email varchar2(300) DEFAULT '' ,
 	ban_start number(11) DEFAULT '0' NOT NULL,
 	ban_end number(11) DEFAULT '0' NOT NULL,
 	ban_exclude number(1) DEFAULT '0' NOT NULL,
@@ -287,7 +288,7 @@ CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks (topic_id, user_id
 CREATE TABLE phpbb_bots (
 	bot_id number(8) NOT NULL,
 	bot_active number(1) DEFAULT '1' NOT NULL,
-	bot_name varchar2(3000) DEFAULT '' ,
+	bot_name varchar2(765) DEFAULT '' ,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	bot_agent varchar2(255) DEFAULT '' ,
 	bot_ip varchar2(255) DEFAULT '' ,
@@ -318,7 +319,7 @@ END;
 	Table: 'phpbb_config'
 */
 CREATE TABLE phpbb_config (
-	config_name varchar2(252) DEFAULT '' ,
+	config_name varchar2(255) DEFAULT '' ,
 	config_value varchar2(255) DEFAULT '' ,
 	is_dynamic number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_config PRIMARY KEY (config_name)
@@ -348,7 +349,7 @@ CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm (confirm_type)
 */
 CREATE TABLE phpbb_disallow (
 	disallow_id number(8) NOT NULL,
-	disallow_username varchar2(252) DEFAULT '' ,
+	disallow_username varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_disallow PRIMARY KEY (disallow_id)
 )
 /
@@ -379,7 +380,7 @@ CREATE TABLE phpbb_drafts (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	save_time number(11) DEFAULT '0' NOT NULL,
-	draft_subject varchar2(1000) DEFAULT '' ,
+	draft_subject varchar2(300) DEFAULT '' ,
 	draft_message clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_drafts PRIMARY KEY (draft_id)
 )
@@ -437,7 +438,7 @@ END;
 */
 CREATE TABLE phpbb_extension_groups (
 	group_id number(8) NOT NULL,
-	group_name varchar2(255) DEFAULT '' ,
+	group_name varchar2(765) DEFAULT '' ,
 	cat_id number(2) DEFAULT '0' NOT NULL,
 	allow_group number(1) DEFAULT '0' NOT NULL,
 	download_mode number(1) DEFAULT '1' NOT NULL,
@@ -475,19 +476,19 @@ CREATE TABLE phpbb_forums (
 	left_id number(8) DEFAULT '0' NOT NULL,
 	right_id number(8) DEFAULT '0' NOT NULL,
 	forum_parents clob DEFAULT '' ,
-	forum_name varchar2(3000) DEFAULT '' ,
+	forum_name varchar2(765) DEFAULT '' ,
 	forum_desc clob DEFAULT '' ,
-	forum_desc_bitfield varchar2(252) DEFAULT '' ,
-	forum_desc_options number(11) DEFAULT '0' NOT NULL,
+	forum_desc_bitfield varchar2(255) DEFAULT '' ,
+	forum_desc_options number(11) DEFAULT '7' NOT NULL,
 	forum_desc_uid varchar2(5) DEFAULT '' ,
-	forum_link varchar2(255) DEFAULT '' ,
-	forum_password varchar2(40) DEFAULT '' ,
+	forum_link varchar2(765) DEFAULT '' ,
+	forum_password varchar2(120) DEFAULT '' ,
 	forum_style number(4) DEFAULT '0' NOT NULL,
 	forum_image varchar2(255) DEFAULT '' ,
 	forum_rules clob DEFAULT '' ,
-	forum_rules_link varchar2(255) DEFAULT '' ,
-	forum_rules_bitfield varchar2(252) DEFAULT '' ,
-	forum_rules_options number(11) DEFAULT '0' NOT NULL,
+	forum_rules_link varchar2(765) DEFAULT '' ,
+	forum_rules_bitfield varchar2(255) DEFAULT '' ,
+	forum_rules_options number(11) DEFAULT '7' NOT NULL,
 	forum_rules_uid varchar2(5) DEFAULT '' ,
 	forum_topics_per_page number(4) DEFAULT '0' NOT NULL,
 	forum_type number(4) DEFAULT '0' NOT NULL,
@@ -497,8 +498,10 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
+	forum_last_post_subject varchar2(300) DEFAULT '' ,
 	forum_last_post_time number(11) DEFAULT '0' NOT NULL,
-	forum_last_poster_name varchar2(255) DEFAULT '' ,
+	forum_last_poster_name varchar2(765) DEFAULT '' ,
+	forum_last_poster_colour varchar2(6) DEFAULT '' ,
 	forum_flags number(4) DEFAULT '32' NOT NULL,
 	display_on_index number(1) DEFAULT '1' NOT NULL,
 	enable_indexing number(1) DEFAULT '1' NOT NULL,
@@ -580,10 +583,10 @@ CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch (notify_status
 CREATE TABLE phpbb_groups (
 	group_id number(8) NOT NULL,
 	group_type number(4) DEFAULT '1' NOT NULL,
-	group_name varchar2(252) DEFAULT '' ,
+	group_name varchar2(255) DEFAULT '' ,
 	group_desc clob DEFAULT '' ,
-	group_desc_bitfield varchar2(252) DEFAULT '' ,
-	group_desc_options number(11) DEFAULT '0' NOT NULL,
+	group_desc_bitfield varchar2(255) DEFAULT '' ,
+	group_desc_options number(11) DEFAULT '7' NOT NULL,
 	group_desc_uid varchar2(5) DEFAULT '' ,
 	group_display number(1) DEFAULT '0' NOT NULL,
 	group_avatar varchar2(255) DEFAULT '' ,
@@ -659,9 +662,9 @@ CREATE TABLE phpbb_lang (
 	lang_id number(4) NOT NULL,
 	lang_iso varchar2(30) DEFAULT '' ,
 	lang_dir varchar2(30) DEFAULT '' ,
-	lang_english_name varchar2(100) DEFAULT '' ,
-	lang_local_name varchar2(255) DEFAULT '' ,
-	lang_author varchar2(255) DEFAULT '' ,
+	lang_english_name varchar2(300) DEFAULT '' ,
+	lang_local_name varchar2(765) DEFAULT '' ,
+	lang_author varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_lang PRIMARY KEY (lang_id)
 )
 /
@@ -736,9 +739,9 @@ END;
 CREATE TABLE phpbb_moderator_cache (
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	username varchar2(252) DEFAULT '' ,
+	username varchar2(765) DEFAULT '' ,
 	group_id number(8) DEFAULT '0' NOT NULL,
-	group_name varchar2(255) DEFAULT '' ,
+	group_name varchar2(765) DEFAULT '' ,
 	display_on_index number(1) DEFAULT '1' NOT NULL
 )
 /
@@ -841,17 +844,16 @@ CREATE TABLE phpbb_posts (
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
 	enable_magic_url number(1) DEFAULT '1' NOT NULL,
 	enable_sig number(1) DEFAULT '1' NOT NULL,
-	post_username varchar2(252) DEFAULT '' ,
-	post_subject varchar2(1000) DEFAULT '' ,
+	post_username varchar2(765) DEFAULT '' ,
+	post_subject varchar2(300) DEFAULT '' ,
 	post_text clob DEFAULT '' ,
 	post_checksum varchar2(32) DEFAULT '' ,
-	post_encoding varchar2(20) DEFAULT 'iso-8859-1' NOT NULL,
 	post_attachment number(1) DEFAULT '0' NOT NULL,
-	bbcode_bitfield varchar2(252) DEFAULT '' ,
+	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(5) DEFAULT '' ,
 	post_postcount number(1) DEFAULT '1' NOT NULL,
 	post_edit_time number(11) DEFAULT '0' NOT NULL,
-	post_edit_reason varchar2(3000) DEFAULT '' ,
+	post_edit_reason varchar2(765) DEFAULT '' ,
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
@@ -869,9 +871,7 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id)
 /
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved)
 /
-CREATE INDEX phpbb_posts_post_postcount ON phpbb_posts (post_postcount)
-/
-CREATE INDEX phpbb_posts_post_time ON phpbb_posts (post_time)
+CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time)
 /
 
 CREATE SEQUENCE phpbb_posts_seq
@@ -904,13 +904,12 @@ CREATE TABLE phpbb_privmsgs (
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
 	enable_magic_url number(1) DEFAULT '1' NOT NULL,
 	enable_sig number(1) DEFAULT '1' NOT NULL,
-	message_subject varchar2(1000) DEFAULT '' ,
+	message_subject varchar2(300) DEFAULT '' ,
 	message_text clob DEFAULT '' ,
-	message_edit_reason varchar2(3000) DEFAULT '' ,
+	message_edit_reason varchar2(765) DEFAULT '' ,
 	message_edit_user number(8) DEFAULT '0' NOT NULL,
-	message_encoding varchar2(20) DEFAULT 'iso-8859-1' NOT NULL,
 	message_attachment number(1) DEFAULT '0' NOT NULL,
-	bbcode_bitfield varchar2(252) DEFAULT '' ,
+	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(5) DEFAULT '' ,
 	message_edit_time number(11) DEFAULT '0' NOT NULL,
 	message_edit_count number(4) DEFAULT '0' NOT NULL,
@@ -951,7 +950,7 @@ END;
 CREATE TABLE phpbb_privmsgs_folder (
 	folder_id number(8) NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	folder_name varchar2(255) DEFAULT '' ,
+	folder_name varchar2(765) DEFAULT '' ,
 	pm_count number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs_folder PRIMARY KEY (folder_id)
 )
@@ -984,7 +983,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	rule_check number(8) DEFAULT '0' NOT NULL,
 	rule_connection number(8) DEFAULT '0' NOT NULL,
-	rule_string varchar2(255) DEFAULT '' ,
+	rule_string varchar2(765) DEFAULT '' ,
 	rule_user_id number(8) DEFAULT '0' NOT NULL,
 	rule_group_id number(8) DEFAULT '0' NOT NULL,
 	rule_action number(8) DEFAULT '0' NOT NULL,
@@ -1041,15 +1040,15 @@ CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folde
 */
 CREATE TABLE phpbb_profile_fields (
 	field_id number(8) NOT NULL,
-	field_name varchar2(255) DEFAULT '' ,
+	field_name varchar2(765) DEFAULT '' ,
 	field_type number(4) DEFAULT '0' NOT NULL,
 	field_ident varchar2(20) DEFAULT '' ,
 	field_length varchar2(20) DEFAULT '' ,
 	field_minlen varchar2(255) DEFAULT '' ,
 	field_maxlen varchar2(255) DEFAULT '' ,
-	field_novalue varchar2(255) DEFAULT '' ,
-	field_default_value varchar2(255) DEFAULT '' ,
-	field_validation varchar2(20) DEFAULT '' ,
+	field_novalue varchar2(765) DEFAULT '' ,
+	field_default_value varchar2(765) DEFAULT '' ,
+	field_validation varchar2(60) DEFAULT '' ,
 	field_required number(1) DEFAULT '0' NOT NULL,
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
 	field_hide number(1) DEFAULT '0' NOT NULL,
@@ -1099,7 +1098,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	lang_id number(8) DEFAULT '0' NOT NULL,
 	option_id number(8) DEFAULT '0' NOT NULL,
 	field_type number(4) DEFAULT '0' NOT NULL,
-	lang_value varchar2(255) DEFAULT '' ,
+	lang_value varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_lang PRIMARY KEY (field_id, lang_id, option_id)
 )
 /
@@ -1111,9 +1110,9 @@ CREATE TABLE phpbb_profile_fields_lang (
 CREATE TABLE phpbb_profile_lang (
 	field_id number(8) DEFAULT '0' NOT NULL,
 	lang_id number(8) DEFAULT '0' NOT NULL,
-	lang_name varchar2(255) DEFAULT '' ,
+	lang_name varchar2(765) DEFAULT '' ,
 	lang_explain clob DEFAULT '' ,
-	lang_default_value varchar2(255) DEFAULT '' ,
+	lang_default_value varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_lang PRIMARY KEY (field_id, lang_id)
 )
 /
@@ -1124,7 +1123,7 @@ CREATE TABLE phpbb_profile_lang (
 */
 CREATE TABLE phpbb_ranks (
 	rank_id number(8) NOT NULL,
-	rank_title varchar2(255) DEFAULT '' ,
+	rank_title varchar2(765) DEFAULT '' ,
 	rank_min number(8) DEFAULT '0' NOT NULL,
 	rank_special number(1) DEFAULT '0' NOT NULL,
 	rank_image varchar2(255) DEFAULT '' ,
@@ -1187,7 +1186,7 @@ END;
 */
 CREATE TABLE phpbb_reports_reasons (
 	reason_id number(4) NOT NULL,
-	reason_title varchar2(255) DEFAULT '' ,
+	reason_title varchar2(765) DEFAULT '' ,
 	reason_description clob DEFAULT '' ,
 	reason_order number(4) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_reports_reasons PRIMARY KEY (reason_id)
@@ -1229,7 +1228,7 @@ CREATE TABLE phpbb_search_results (
 */
 CREATE TABLE phpbb_search_wordlist (
 	word_id number(8) NOT NULL,
-	word_text nvarchar2(252) DEFAULT '' ,
+	word_text varchar2(765) DEFAULT '' ,
 	word_common number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_search_wordlist PRIMARY KEY (word_id),
 	CONSTRAINT u_phpbb_wrd_txt UNIQUE (word_text)
@@ -1279,7 +1278,7 @@ CREATE TABLE phpbb_sessions (
 	session_time number(11) DEFAULT '0' NOT NULL,
 	session_ip varchar2(40) DEFAULT '' ,
 	session_browser varchar2(150) DEFAULT '' ,
-	session_page varchar2(255) DEFAULT '' ,
+	session_page varchar2(765) DEFAULT '' ,
 	session_viewonline number(1) DEFAULT '1' NOT NULL,
 	session_autologin number(1) DEFAULT '0' NOT NULL,
 	session_admin number(1) DEFAULT '0' NOT NULL,
@@ -1341,8 +1340,8 @@ END;
 */
 CREATE TABLE phpbb_smilies (
 	smiley_id number(8) NOT NULL,
-	code varchar2(50) DEFAULT '' ,
-	emotion varchar2(50) DEFAULT '' ,
+	code varchar2(150) DEFAULT '' ,
+	emotion varchar2(150) DEFAULT '' ,
 	smiley_url varchar2(50) DEFAULT '' ,
 	smiley_width number(4) DEFAULT '0' NOT NULL,
 	smiley_height number(4) DEFAULT '0' NOT NULL,
@@ -1376,8 +1375,8 @@ END;
 */
 CREATE TABLE phpbb_styles (
 	style_id number(4) NOT NULL,
-	style_name varchar2(252) DEFAULT '' ,
-	style_copyright varchar2(255) DEFAULT '' ,
+	style_name varchar2(765) DEFAULT '' ,
+	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
 	template_id number(4) DEFAULT '0' NOT NULL,
 	theme_id number(4) DEFAULT '0' NOT NULL,
@@ -1415,10 +1414,10 @@ END;
 */
 CREATE TABLE phpbb_styles_template (
 	template_id number(4) NOT NULL,
-	template_name varchar2(252) DEFAULT '' ,
-	template_copyright varchar2(255) DEFAULT '' ,
+	template_name varchar2(765) DEFAULT '' ,
+	template_copyright varchar2(765) DEFAULT '' ,
 	template_path varchar2(100) DEFAULT '' ,
-	bbcode_bitfield varchar2(252) DEFAULT 'kNg=' NOT NULL,
+	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
 	template_storedb number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_styles_template PRIMARY KEY (template_id),
 	CONSTRAINT u_phpbb_tmplte_nm UNIQUE (template_name)
@@ -1480,8 +1479,8 @@ END;
 */
 CREATE TABLE phpbb_styles_theme (
 	theme_id number(4) NOT NULL,
-	theme_name varchar2(252) DEFAULT '' ,
-	theme_copyright varchar2(255) DEFAULT '' ,
+	theme_name varchar2(765) DEFAULT '' ,
+	theme_copyright varchar2(765) DEFAULT '' ,
 	theme_path varchar2(100) DEFAULT '' ,
 	theme_storedb number(1) DEFAULT '0' NOT NULL,
 	theme_mtime number(11) DEFAULT '0' NOT NULL,
@@ -1513,8 +1512,8 @@ END;
 */
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id number(4) NOT NULL,
-	imageset_name varchar2(252) DEFAULT '' ,
-	imageset_copyright varchar2(255) DEFAULT '' ,
+	imageset_name varchar2(765) DEFAULT '' ,
+	imageset_copyright varchar2(765) DEFAULT '' ,
 	imageset_path varchar2(100) DEFAULT '' ,
 	site_logo varchar2(200) DEFAULT '' ,
 	upload_bar varchar2(200) DEFAULT '' ,
@@ -1642,7 +1641,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment number(1) DEFAULT '0' NOT NULL,
 	topic_approved number(1) DEFAULT '1' NOT NULL,
 	topic_reported number(1) DEFAULT '0' NOT NULL,
-	topic_title varchar2(1000) DEFAULT '' ,
+	topic_title varchar2(300) DEFAULT '' ,
 	topic_poster number(8) DEFAULT '0' NOT NULL,
 	topic_time number(11) DEFAULT '0' NOT NULL,
 	topic_time_limit number(11) DEFAULT '0' NOT NULL,
@@ -1652,16 +1651,19 @@ CREATE TABLE phpbb_topics (
 	topic_status number(3) DEFAULT '0' NOT NULL,
 	topic_type number(3) DEFAULT '0' NOT NULL,
 	topic_first_post_id number(8) DEFAULT '0' NOT NULL,
-	topic_first_poster_name varchar2(255) DEFAULT '' ,
+	topic_first_poster_name varchar2(765) DEFAULT '' ,
+	topic_first_poster_colour varchar2(6) DEFAULT '' ,
 	topic_last_post_id number(8) DEFAULT '0' NOT NULL,
 	topic_last_poster_id number(8) DEFAULT '0' NOT NULL,
-	topic_last_poster_name varchar2(255) DEFAULT '' ,
+	topic_last_poster_name varchar2(765) DEFAULT '' ,
+	topic_last_poster_colour varchar2(6) DEFAULT '' ,
+	topic_last_post_subject varchar2(300) DEFAULT '' ,
 	topic_last_post_time number(11) DEFAULT '0' NOT NULL,
 	topic_last_view_time number(11) DEFAULT '0' NOT NULL,
 	topic_moved_id number(8) DEFAULT '0' NOT NULL,
 	topic_bumped number(1) DEFAULT '0' NOT NULL,
 	topic_bumper number(8) DEFAULT '0' NOT NULL,
-	poll_title varchar2(1000) DEFAULT '' ,
+	poll_title varchar2(300) DEFAULT '' ,
 	poll_start number(11) DEFAULT '0' NOT NULL,
 	poll_length number(11) DEFAULT '0' NOT NULL,
 	poll_max_options number(4) DEFAULT '1' NOT NULL,
@@ -1676,6 +1678,8 @@ CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id)
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type)
 /
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time)
+/
+CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved)
 /
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id)
 /
@@ -1769,26 +1773,29 @@ CREATE TABLE phpbb_users (
 	user_perm_from number(8) DEFAULT '0' NOT NULL,
 	user_ip varchar2(40) DEFAULT '' ,
 	user_regdate number(11) DEFAULT '0' NOT NULL,
-	username varchar2(252) DEFAULT '' ,
-	user_password varchar2(40) DEFAULT '' ,
+	username varchar2(255) DEFAULT '' ,
+	username_clean varchar2(255) DEFAULT '' ,
+	user_password varchar2(120) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
-	user_email varchar2(100) DEFAULT '' ,
+	user_email varchar2(300) DEFAULT '' ,
 	user_email_hash number(20) DEFAULT '0' NOT NULL,
 	user_birthday varchar2(10) DEFAULT '' ,
 	user_lastvisit number(11) DEFAULT '0' NOT NULL,
 	user_lastmark number(11) DEFAULT '0' NOT NULL,
 	user_lastpost_time number(11) DEFAULT '0' NOT NULL,
-	user_lastpage varchar2(200) DEFAULT '' ,
+	user_lastpage varchar2(600) DEFAULT '' ,
 	user_last_confirm_key varchar2(10) DEFAULT '' ,
 	user_last_search number(11) DEFAULT '0' NOT NULL,
 	user_warnings number(4) DEFAULT '0' NOT NULL,
 	user_last_warning number(11) DEFAULT '0' NOT NULL,
 	user_login_attempts number(4) DEFAULT '0' NOT NULL,
+	user_inactive_reason number(2) DEFAULT '0' NOT NULL,
+	user_inactive_time number(11) DEFAULT '0' NOT NULL,
 	user_posts number(8) DEFAULT '0' NOT NULL,
 	user_lang varchar2(30) DEFAULT '' ,
 	user_timezone number(5, 2) DEFAULT '0' NOT NULL,
 	user_dst number(1) DEFAULT '0' NOT NULL,
-	user_dateformat varchar2(30) DEFAULT 'd M Y H:i' NOT NULL,
+	user_dateformat varchar2(90) DEFAULT 'd M Y H:i' NOT NULL,
 	user_style number(4) DEFAULT '0' NOT NULL,
 	user_rank number(8) DEFAULT '0' NOT NULL,
 	user_colour varchar2(6) DEFAULT '' ,
@@ -1808,7 +1815,6 @@ CREATE TABLE phpbb_users (
 	user_notify_pm number(1) DEFAULT '1' NOT NULL,
 	user_notify_type number(4) DEFAULT '0' NOT NULL,
 	user_allow_pm number(1) DEFAULT '1' NOT NULL,
-	user_allow_email number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
@@ -1819,18 +1825,18 @@ CREATE TABLE phpbb_users (
 	user_avatar_height number(4) DEFAULT '0' NOT NULL,
 	user_sig clob DEFAULT '' ,
 	user_sig_bbcode_uid varchar2(5) DEFAULT '' ,
-	user_sig_bbcode_bitfield varchar2(252) DEFAULT '' ,
-	user_from varchar2(100) DEFAULT '' ,
+	user_sig_bbcode_bitfield varchar2(255) DEFAULT '' ,
+	user_from varchar2(300) DEFAULT '' ,
 	user_icq varchar2(15) DEFAULT '' ,
-	user_aim varchar2(255) DEFAULT '' ,
-	user_yim varchar2(255) DEFAULT '' ,
-	user_msnm varchar2(255) DEFAULT '' ,
-	user_jabber varchar2(255) DEFAULT '' ,
-	user_website varchar2(200) DEFAULT '' ,
-	user_occ varchar2(255) DEFAULT '' ,
+	user_aim varchar2(765) DEFAULT '' ,
+	user_yim varchar2(765) DEFAULT '' ,
+	user_msnm varchar2(765) DEFAULT '' ,
+	user_jabber varchar2(765) DEFAULT '' ,
+	user_website varchar2(600) DEFAULT '' ,
+	user_occ varchar2(765) DEFAULT '' ,
 	user_interests clob DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
-	user_newpasswd varchar2(32) DEFAULT '' ,
+	user_newpasswd varchar2(96) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id)
 )
 /
@@ -1841,7 +1847,7 @@ CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash)
 /
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type)
 /
-CREATE INDEX phpbb_users_username ON phpbb_users (username)
+CREATE INDEX phpbb_users_username_clean ON phpbb_users (username_clean)
 /
 
 CREATE SEQUENCE phpbb_users_seq
@@ -1895,8 +1901,8 @@ END;
 */
 CREATE TABLE phpbb_words (
 	word_id number(8) NOT NULL,
-	word varchar2(255) DEFAULT '' ,
-	replacement varchar2(255) DEFAULT '' ,
+	word varchar2(765) DEFAULT '' ,
+	replacement varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_words PRIMARY KEY (word_id)
 )
 /

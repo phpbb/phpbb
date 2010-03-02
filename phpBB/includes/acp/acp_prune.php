@@ -155,7 +155,7 @@ class acp_prune
 			if (!$row)
 			{
 				$db->sql_freeresult($result);
-				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$forum_list = $s_hidden_fields = '';
@@ -196,17 +196,18 @@ class acp_prune
 		{
 			if (confirm_box(true))
 			{
-				$users = request_var('users', '');
+				$users = request_var('users', '', true);
 				$action = request_var('action', 'deactivate');
 				$deleteposts = request_var('deleteposts', 0);
 		
 				if ($users)
 				{
-					$where_sql = ' AND ' . $db->sql_in_set('username', explode("\n", $users));
+					$users = explode("\n", $users);
+					$where_sql = ' AND ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', $users));
 				}
 				else
 				{
-					$username = request_var('username', '');
+					$username = request_var('username', '', true);
 					$email = request_var('email', '');
 
 					$joined_select = request_var('joined_select', 'lt');
@@ -224,7 +225,7 @@ class acp_prune
 					$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
 
 					$where_sql = '';
-					$where_sql .= ($username) ? " AND username LIKE '" . $db->sql_escape(str_replace('*', '%', $username)) . "'" : '';
+					$where_sql .= ($username) ? " AND username_clean LIKE '" . $db->sql_escape(str_replace('*', '%', utf8_clean_string($username))) . "'" : '';
 					$where_sql .= ($email) ? " AND user_email LIKE '" . $db->sql_escape(str_replace('*', '%', $email)) . "' " : '';
 					$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
 					$where_sql .= ($count) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
@@ -244,7 +245,8 @@ class acp_prune
 				$db->sql_freeresult($result);
 
 				// Do not prune founder members
-				$sql = 'SELECT username, user_id FROM ' . USERS_TABLE . '
+				$sql = 'SELECT user_id, username
+					FROM ' . USERS_TABLE . '
 					WHERE user_id <> ' . ANONYMOUS . '
 						AND user_type <> ' . USER_FOUNDER . "
 					$where_sql";
@@ -267,11 +269,7 @@ class acp_prune
 				{
 					if ($action == 'deactivate')
 					{
-						foreach ($user_ids as $user_id)
-						{
-							user_active_flip($user_id, USER_NORMAL, false, false, true);
-						}
-
+						user_active_flip('deactivate', $user_ids);
 						$l_log = 'LOG_PRUNE_USER_DEAC';
 					}
 					else if ($action == 'delete')
@@ -309,7 +307,7 @@ class acp_prune
 					'prune'			=> 1,
 
 					'users'			=> request_var('users', ''),
-					'username'		=> request_var('username', ''),
+					'username'		=> request_var('username', '', true),
 					'email'			=> request_var('email', ''),
 					'joined_select'	=> request_var('joined_select', ''),
 					'joined'		=> request_var('joined', ''),

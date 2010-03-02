@@ -52,7 +52,7 @@ class template_compile
 	
 	/**
 	* Load template source from file
-	* @access: private
+	* @access private
 	*/
 	function _tpl_load_file($handle)
 	{
@@ -82,78 +82,19 @@ class template_compile
 	*/
 	function remove_php_tags(&$code)
 	{
-		if (!function_exists('token_get_all'))
-		{
-			/**
-			* If the tokenizer extension is not available, try to load it and if
-			* it's still not available we fall back to some pattern replacement.
-			*
-			* Note that the pattern replacement may affect the well-formedness
-			* of the HTML if a PHP tag is found because even if we escape PHP
-			* opening tags we do NOT escape PHP closing tags and cannot do so
-			* reliably without the use of a full-blown tokenizer.
-			*
-			* The bottom line is, a template should NEVER contain PHP because it
-			* would comprise the security of the installation, that's why we
-			* prevent it from being executed. Our job is to secure the installation,
-			* not fix unsecure templates. if a template contains some PHP then it
-			* should not be used at all.
-			*/
-			@dl('tokenizer');
+		// This matches the information gathered from the internal PHP lexer
+		$match = array(
+			'#<([\?%])=?.*?\1>#s',
+			'#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s',
+			'#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'
+		);
 
-			if (!function_exists('token_get_all'))
-			{
-				$match = array(
-					'\\?php[\n\r\s\t]+',
-					'[\\?%]=',
-					'[\\?%][^\w]',
-					'script[\n\r\s\t]+language[\n\r\s\t]*=[\n\r\s\t]*[\'"]php[\'"]'
-				);
-
-				$code = preg_replace('#<(' . implode('|', $match) . ')#is', '&lt;$1', $code);
-				return;
-			}
-		}
-
-		do
-		{
-			$tokens = token_get_all('<?php ?>' . $code);
-			$code = '';
-			$php_found = false;
-
-			foreach ($tokens as $i => $token)
-			{
-				if (!is_array($token))
-				{
-					$code .= $token;
-				}
-				else if ($token[0] == T_OPEN_TAG || $token[0] == T_OPEN_TAG_WITH_ECHO || $token[0] == T_CLOSE_TAG)
-				{
-					if ($i > 1)
-					{
-						$code .= htmlspecialchars($token[1]);
-						$php_found = true;
-					}
-				}
-				else
-				{
-					$code .= $token[1];
-				}
-			}
-			unset($tokens);
-
-			// Fix for a tokenizer oddity
-			if (!strncmp($code, '<?php ?&gt;', 11))
-			{
-				$code = substr($code, 11);
-			}
-		}
-		while ($php_found);
+		$code = preg_replace($match, '', $code);
 	}
 
 	/**
 	* The all seeing all doing compile method. Parts are inspired by or directly from Smarty
-	* @access: private
+	* @access private
 	*/
 	function compile($code, $no_echo = false, $echo_var = '')
 	{
@@ -169,12 +110,6 @@ class template_compile
 		// php is a no-no. There is a potential issue here in that non-php
 		// content may be removed ... however designers should use entities
 		// if they wish to display < and >
-/*
-		$match_php_tags = array('#\<\?php.*?\?\>#is', '#<[^\w<]*(script)(((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?(language[^<>\'"]+("[^"]*php[^"]*"|\'[^\']*php[^\']*\'))((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?)?>.*?</script>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
-		$code = preg_replace($match_php_tags, '', $code);
-*/
-
-		// An alternative to the above would be calling this function which would be the ultimate solution but also has its drawbacks.
 		$this->remove_php_tags($code);
 
 		// Pull out all block/statement level elements and seperate plain text
@@ -279,14 +214,14 @@ class template_compile
 		// There will be a number of occassions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
-		$template_php = str_replace(' ?><?php ', '', $template_php);
+		$template_php = str_replace(' ?><?php ', ' ', $template_php);
 
 		return  (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
 	}
 
 	/**
 	* Compile variables
-	* @access: private
+	* @access private
 	*/
 	function compile_var_tags(&$text_blocks)
 	{
@@ -328,7 +263,7 @@ class template_compile
 
 	/**
 	* Compile blocks
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_block($tag_args)
 	{
@@ -419,7 +354,7 @@ class template_compile
 	/**
 	* Compile IF tags - much of this is from Smarty with
 	* some adaptions for our block level methods
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_if($tag_args, $elseif)
 	{
@@ -533,8 +468,10 @@ class template_compile
 					}
 					else if (preg_match('#^\.(([a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
+						// Allow checking if loops are set with .loopname
+						// It is also possible to check the loop count by doing <!-- IF .loopname > 1 --> for example
 						$_tok = $this->generate_block_data_ref($varrefs[1], false);
-						$token = "(isset($_tok) && sizeof($_tok))";
+						$token = "sizeof($_tok)";
 					}
 
 				break;
@@ -546,7 +483,7 @@ class template_compile
 
 	/**
 	* Compile DEFINE tags
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_define($tag_args, $op)
 	{
@@ -599,7 +536,7 @@ class template_compile
 
 	/**
 	* Compile INCLUDE tag
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_include($tag_args)
 	{
@@ -608,21 +545,21 @@ class template_compile
 
 	/**
 	* Compile INCLUDE_PHP tag
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_include_php($tag_args)
 	{
-		return "include('" . $this->template->root . '/' . $tag_args . "');";
+		return "include('" . $tag_args . "');";
 	}
 
 	/**
 	* parse expression
 	* This is from Smarty
-	* @access: private
+	* @access private
 	*/
 	function _parse_is_expr($is_arg, $tokens)
 	{
-		$expr_end =	0;
+		$expr_end = 0;
 		$negate_expr = false;
 
 		if (($first_token = array_shift($tokens)) == 'not')
@@ -641,12 +578,12 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"!(($is_arg	/ $expr_arg) % $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "!(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr =	"!($is_arg % 2)";
+					$expr = "!($is_arg % 2)";
 				}
 			break;
 
@@ -654,12 +591,12 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"(($is_arg / $expr_arg)	% $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr =	"($is_arg %	2)";
+					$expr = "($is_arg % 2)";
 				}
 			break;
 
@@ -667,18 +604,18 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"!($is_arg % $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "!($is_arg % $expr_arg)";
 				}
 			break;
 		}
 
 		if ($negate_expr)
 		{
-			$expr =	"!($expr)";
+			$expr = "!($expr)";
 		}
 
-		array_splice($tokens, 0, $expr_end,	$expr);
+		array_splice($tokens, 0, $expr_end, $expr);
 
 		return $tokens;
 	}
@@ -689,7 +626,7 @@ class template_compile
 	* ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
 	* It's ready to be inserted into an "echo" line in one of the templates.
 	* NOTE: expects a trailing "." on the namespace.
-	* @access: private
+	* @access private
 	*/
 	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
@@ -714,7 +651,7 @@ class template_compile
 	*
 	* If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	* NOTE: does not expect a trailing "." on the blockname.
-	* @access: private
+	* @access private
 	*/
 	function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
 	{
@@ -743,7 +680,7 @@ class template_compile
 
 	/**
 	* Write compiled file to cache directory
-	* @access: private
+	* @access private
 	*/
 	function compile_write(&$handle, $data)
 	{

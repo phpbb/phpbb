@@ -28,53 +28,74 @@
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE -->
-			<object id="wmp" classid="CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,0,0,0" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject">
-				<param name="FileName" value="{_file.U_DOWNLOAD_LINK}"> 
-				<param name="ShowControls" value="1"> 
-				<param name="ShowDisplay" value="0"> 
+			<object classid="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,7,1112" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject">
+				<param name="FileName" VALUE="{_file.U_DOWNLOAD_LINK}">
+				<param name="ShowControls" value="1">
+				<param name="ShowDisplay" value="0">
 				<param name="ShowStatusBar" value="1"> 
 				<param name="AutoSize" value="1">
 				<param name="AutoStart" value="0">
 				<param name="Visible" value="1">
 				<param name="AnimationStart" value="0">
 				<param name="Loop" value="0"> 
-				<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows95/downloads/contents/wurecommended/s_wufeatured/mediaplayer/default.asp" src="{_file.U_DOWNLOAD_LINK}" name=MediaPlayer2 showcontrols=1 showdisplay=0 showstatusbar=1 autosize=1 autostart=0 visible=1 animationatstart=0 loop=0></embed> 
+			<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows/windowsmedia/download/AllDownloads.aspx/" filename="{_file.U_DOWNLOAD_LINK}" src="{_file.U_DOWNLOAD_LINK}" name="MediaPlayer" ShowControls="1" ShowDisplay="0" ShowStatusBar="1" AutoSize="1" AutoStart="0" Visible="1" AnimationStart="0" Loop="0"></embed>
 			</object>
-			<br />
-			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
-		<!-- ENDIF -->
 
-		<!-- IF _file.S_RM_FILE -->
-			<object id=rmstream_{_file.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="200" height="50">
-				<param name="src" value="{_file.U_FORUM}/{_file.U_DOWNLOAD_LINK}">
+		<!-- ELSEIF _file.S_FLASH_FILE -->
+			<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0" width="{_file.WIDTH}" height="{_file.HEIGHT}">
+				<param name="movie" value="{_file.U_DOWNLOAD_LINK}" />
+				<param name="play" value="true" />
+				<param name="loop" value="true" />
+				<param name="quality" value="high" />
+				<param name="allowScriptAccess" value="never" />
+				<embed src="{_file.U_DOWNLOAD_LINK}" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" width="{_file.WIDTH}" height="{_file.HEIGHT}" play="true" loop="true" quality="high" allowscriptaccess="never"></embed>
+			</object>
+		<!-- ELSEIF _file.S_QUICKTIME_FILE -->
+			<object id="qtstream_{_file.ATTACH_ID}" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" width="0" height="16">
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
+				<param name="controller" value="true">
+				<param name="autoplay" value="false" />
+				<param name="type" value="video/quicktime">
+				<embed name="qtstream_{_file.ATTACH_ID}" src="{_file.U_DOWNLOAD_LINK}" pluginspage="http://www.apple.com/quicktime/download/" enablejavascript="true" controller="true" width="0" height="16" type="video/quicktime" autoplay="false"> 
+			</object>
+		<!-- ELSEIF _file.S_RM_FILE -->
+			<object id="rmstream_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="200" height="50">
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
 				<param name="autostart" value="false">
 				<param name="controls" value="ImageWindow">
-				<param name="console" value="{_file.U_DOWNLOAD_LINK}">
-				<param name="prefetch" value="true">
-				<embed name=rmstream_{_file.ATTACH_ID} type="audio/x-pn-realaudio-plugin" src="{_file.U_FORUM}/{_file.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="video" prefetch="true"></embed>
+				<param name="console" value="ctrls_{_file.ATTACH_ID}">
+				<param name="prefetch" value="false">
+				<embed name="rmstream_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" src="{_file.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="ctrls_{_file.ATTACH_ID}" prefetch="false"></embed>
 			</object>
 			<br />
-			<object id=ctrls_{_file.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
+			<object id="ctrls_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
 				<param name="controls" value="ControlPanel">
-				<param name="console" value="{_file.U_DOWNLOAD_LINK}">
-				<embed name=ctrls_{_file.ATTACH_ID} type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="video"></embed>
+				<param name="console" value="ctrls_{_file.ATTACH_ID}">
+				<embed name="ctrls_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="ctrls_{_file.ATTACH_ID}"></embed>
 			</object>
 
 			<script language="Javascript">
 			<!--
-				while (!document.rmstream_{_file.ATTACH_ID}.GetClipWidth())
+				if (document.rmstream_{_file.ATTACH_ID}.GetClipWidth)
 				{
+					while (!document.rmstream_{_file.ATTACH_ID}.GetClipWidth())
+					{
+					}
+
+					var width = document.rmstream_{_file.ATTACH_ID}.GetClipWidth();
+					var height = document.rmstream_{_file.ATTACH_ID}.GetClipHeight();
+
+					document.rmstream_{_file.ATTACH_ID}.width = width;
+					document.rmstream_{_file.ATTACH_ID}.height = height;
+					document.ctrls_{_file.ATTACH_ID}.width = width;
 				}
-
-				var width = document.rmstream_{_file.ATTACH_ID}.GetClipWidth();
-				var height = document.rmstream_{_file.ATTACH_ID}.GetClipHeight();
-
-				document.rmstream_{_file.ATTACH_ID}.width = width;
-				document.rmstream_{_file.ATTACH_ID}.height = height;
-				document.ctrls_{_file.ATTACH_ID}.width = width;
 			//-->
 			</script>
+		<!-- ENDIF -->
+
+		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
 			<br />
+			<!-- IF _file.S_QUICKTIME_FILE --><a href="javascript:play_qt_file(document.qtstream_{_file.ATTACH_ID});">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
 			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 

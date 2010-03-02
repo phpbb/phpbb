@@ -25,7 +25,7 @@ $user->setup(array('memberlist', 'groups'));
 $mode		= request_var('mode', '');
 $action		= request_var('action', '');
 $user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '');
+$username	= request_var('un', '', true);
 $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
@@ -52,13 +52,13 @@ switch ($mode)
 $start	= request_var('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
-$sort_key = request_var('sk', 'c');
+$default_key = 'c';
+$sort_key = request_var('sk', $default_key);
 $sort_dir = request_var('sd', 'a');
 
 
 // Grab rank information for later
-$ranks = array();
-$cache->obtain_ranks($ranks);
+$ranks = $cache->obtain_ranks();
 
 
 // What do you want to do today? ... oops, I think that line is taken ...
@@ -168,6 +168,7 @@ switch ($mode)
 			}
 
 			$s_forum_select = '';
+			$undisclosed_forum = false;
 
 			if (isset($forum_id_ary[$row['user_id']]))
 			{
@@ -175,12 +176,26 @@ switch ($mode)
 				{
 					foreach ($forum_id_ary[$row['user_id']] as $forum_id)
 					{
-						if (isset($forums[$forum_id]) && $auth->acl_get('f_list', $forum_id))
+						if (isset($forums[$forum_id]))
 						{
-							$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+							if ($auth->acl_get('f_list', $forum_id))
+							{
+								$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+							}
+							else
+							{
+								$undisclosed_forum = true;
+							}
 						}
 					}
 				}
+			}
+
+			// If the mod is only moderating non-viewable forums let us display this circumstance
+			// instead of saying they are moderating all forums
+			if (!$s_forum_select && $undisclosed_forum)
+			{
+				$s_forum_select = $user->lang['FORUM_UNDISCLOSED'];
 			}
 
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
@@ -282,17 +297,16 @@ switch ($mode)
 					$messenger = new messenger(false);
 
 					$messenger->template('profile_send_im', $row['user_lang']);
-					$messenger->subject(html_entity_decode($subject));
+					$messenger->subject(htmlspecialchars_decode($subject));
 
 					$messenger->replyto($user->data['user_email']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> $config['sitename'],
 						'BOARD_EMAIL'	=> $config['board_contact'],
-						'FROM_USERNAME'	=> html_entity_decode($user->data['username']),
-						'TO_USERNAME'	=> html_entity_decode($row['username']),
-						'MESSAGE'		=> html_entity_decode($message))
+						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
 					$messenger->send(NOTIFY_IM);
@@ -332,7 +346,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'
+				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'
 					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
 		else
@@ -367,6 +381,19 @@ switch ($mode)
 		{
 			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
+		$db->sql_freeresult($result);
+
+		// What colour is the zebra
+		$sql = 'SELECT friend, foe
+			FROM ' . ZEBRA_TABLE . "
+			WHERE zebra_id = $user_id
+				AND user_id = {$user->data['user_id']}";
+
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$foe = ($row['foe']) ? true : false;
+		$friend = ($row['friend']) ? true : false;
+		$db->sql_freeresult($result);
 
 		if ($config['load_onlinetrack'])
 		{
@@ -396,16 +423,20 @@ switch ($mode)
 		$posts_per_day = $member['user_posts'] / $memberdays;
 		$percentage = ($config['num_posts']) ? min(100, ($member['user_posts'] / $config['num_posts']) * 100) : 0;
 
-		if ($member['user_sig_bbcode_bitfield'] && $member['user_sig'])
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-			$bbcode = new bbcode();
-			$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-		}
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text(smiley_text($member['user_sig']));
+			$member['user_sig'] = censor_text($member['user_sig']);
+			$member['user_sig'] = str_replace("\n", '<br />', $member['user_sig']);
+
+			if ($member['user_sig_bbcode_bitfield'])
+			{
+				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				$bbcode = new bbcode();
+				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
+			}
+
+			$member['user_sig'] = smiley_text($member['user_sig']);
 		}
 
 		$poster_avatar = '';
@@ -459,7 +490,7 @@ switch ($mode)
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
-			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '',
+			'SIGNATURE'		=> $member['user_sig'],
 
 			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
@@ -475,15 +506,16 @@ switch ($mode)
 			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
-			'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])),
-			'U_ADD_FOE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])))
-		);
+			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])) : '',
+			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])) : '',
+			'U_REMOVE_FRIEND'	=> ($friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+			'U_REMOVE_FOE'		=> ($foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+		));
 
 		if (!empty($profile_fields['row']))
 		{
@@ -606,11 +638,11 @@ switch ($mode)
 
 		$error = array();
 
-		$name		= request_var('name', '');
+		$name		= request_var('name', '', true);
 		$email		= request_var('email', '');
 		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= request_var('subject', '');
-		$message	= request_var('message', '');
+		$subject	= request_var('subject', '', true);
+		$message	= request_var('message', '', true);
 		$cc			= (isset($_POST['cc_email'])) ? true : false;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -694,7 +726,7 @@ switch ($mode)
 
 					if ($user_id)
 					{
-						$messenger->subject(html_entity_decode($subject));
+						$messenger->subject(htmlspecialchars_decode($subject));
 						$messenger->im($row['user_jabber'], $row['username']);
 						$notify_type = $row['user_notify_type'];
 					}
@@ -709,17 +741,16 @@ switch ($mode)
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> $config['sitename'],
 						'BOARD_EMAIL'	=> $config['board_contact'],
-						'TO_USERNAME'	=> html_entity_decode($row['to_name']),
-						'FROM_USERNAME'	=> html_entity_decode($user->data['username']),
-						'MESSAGE'		=> html_entity_decode($message))
+						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
+						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
 					if ($topic_id)
 					{
 						$messenger->assign_vars(array(
-							'TOPIC_NAME'	=> html_entity_decode($row['topic_title']),
+							'TOPIC_NAME'	=> htmlspecialchars_decode($row['topic_title']),
 							'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
 						);
 					}
@@ -768,8 +799,8 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER'], 'l' => $user->lang['SORT_LAST_ACTIVE'], 'm' => $user->lang['SORT_RANK'], 'n' => $user->lang['LOCATION'] );
-		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber', 'l' => 'u.user_lastvisit', 'm' => 'u.user_rank DESC, u.user_posts', 'n' => 'u.user_from');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER'], 'l' => $user->lang['SORT_LAST_ACTIVE'], 'm' => $user->lang['SORT_RANK'] );
+		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber', 'l' => 'u.user_lastvisit', 'm' => 'u.user_rank DESC, u.user_posts');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -796,7 +827,7 @@ switch ($mode)
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '');
+			$username	= request_var('username', '', true);
 			$email		= request_var('email', '');
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
@@ -838,7 +869,7 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? " AND u.username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) . "'" : '';
+			$sql_where .= ($username) ? " AND u.username_clean LIKE '" . str_replace('*', '%', $db->sql_escape(utf8_clean_string($username))) . "'" : '';
 			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) . "' " : '';
 			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) . "' " : '';
 			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) . "' " : '';
@@ -917,14 +948,14 @@ switch ($mode)
 
 		if ($first_char == 'other')
 		{
-			for ($i = 65; $i < 91; $i++)
+			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= " AND u.username NOT LIKE '" . chr($i) . "%'";
+				$sql_where .= " AND u.username_clean NOT LIKE '" . chr($i) . "%'";
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= " AND u.username LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
+			$sql_where .= " AND u.username_clean LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -999,7 +1030,7 @@ switch ($mode)
 				{
 					$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
 				}
-				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
+				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
 				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
 			}
 			else
@@ -1031,6 +1062,11 @@ switch ($mode)
 		}
 		
 		// Sorting and order
+		if (!isset($sort_key_sql[$sort_key]))
+		{
+			$sort_key = $default_key;
+		}
+
 		$order_by .= $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...
@@ -1050,11 +1086,11 @@ switch ($mode)
 		}
 
 		$s_char_options = '<option value=""' . ((!$first_char) ? ' selected="selected"' : '') . '>&nbsp; &nbsp;</option>';
-		for ($i = 65; $i < 91; $i++)
+		for ($i = 97; $i < 123; $i++)
 		{
-			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i) . '</option>';
+			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i-32) . '</option>';
 		}
-		$s_char_options .= '<option value="other"' . (($first_char == 'other') ? ' selected="selected"' : '') . '>Other</option>';
+		$s_char_options .= '<option value="other"' . (($first_char == 'other') ? ' selected="selected"' : '') . '>' . $user->lang['OTHER'] . '</option>';
 
 		// Build a relevant pagination_url
 		$params = array();
@@ -1072,7 +1108,7 @@ switch ($mode)
 					continue;
 				}
 
-				$params[] = $key . '=' . urlencode(htmlspecialchars($var));
+				$params[] = urlencode($key) . '=' . urlencode(htmlspecialchars($var));
 			}
 		}
 
@@ -1329,19 +1365,19 @@ function show_profile($data)
 
 		if ($bday_year)
 		{
-			$time = time() + $user->timezone + $user->dst;
+			$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
 
-			$diff = date('n', $time) - $bday_month;
+			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)
 			{
-				$diff = (date('j', $time) - $bday_day < 0) ? 1 : 0;
+				$diff = ($now['mday'] - $bday_day < 0) ? 1 : 0;
 			}
 			else
 			{
 				$diff = ($diff < 0) ? 1 : 0;
 			}
 
-			$age = (int) (date('Y', $time) - $bday_year - $diff);
+			$age = (int) ($now['year'] - $bday_year - $diff);
 		}
 	}
 

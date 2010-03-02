@@ -20,6 +20,8 @@ if (empty($lang) || !is_array($lang))
 
 // DEVELOPERS PLEASE NOTE
 //
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
+//
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
 // translators to re-order the output of data while ensuring it remains correct
@@ -30,38 +32,38 @@ if (empty($lang) || !is_array($lang))
 
 // Privacy policy and T&C
 $lang = array_merge($lang, array(
-	'TERMS_OF_USE_CONTENT'	=> 'By accessing "%1$s" (hereinafter "we", "us", "our", "%1$s", "%2$s"), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use "%1$s". We may change these at any time and we\'ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of "%1$s" after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
+	'TERMS_OF_USE_CONTENT'	=> 'By accessing “%1$s” (hereinafter “we”, “us”, “our”, “%1$s”, “%2$s”), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use “%1$s”. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of “%1$s” after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
 	<br />
-	Our forums are powered by phpBB (hereinafter "they", "them", "their", "phpBB software", "www.phpbb.com", "phpBB Group", "phpBB Teams") which is a bulletin board solution released under the "<a href="http://www.gnu.org/licenses/gpl.html">General Public License</a>" (hereinafter "GPL") and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates Internet based discussions and the GPL strictly forbids them in what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
+	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://www.gnu.org/licenses/gpl.html">General Public License</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates Internet based discussions and the GPL strictly forbids them in what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
 	<br />
-	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where "%1$s" is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that "%1$s" have the right to remove, edit, move or close any topic at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither "%1$s" nor phpBB shall be held responsible for any hacking attempt that may lead to the data being compromised.
+	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where “%1$s” is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that “%1$s” have the right to remove, edit, move or close any topic at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither “%1$s” nor phpBB shall be held responsible for any hacking attempt that may lead to the data being compromised.
 	',
 
-	'PRIVACY_POLICY'		=> 'This policy explains in detail how "%1$s" along with its affiliated companies (hereinafter "we", "us", "our", "%1$s", "%2$s") and phpBB (hereinafter "they", "them", "their", "phpBB software", "www.phpbb.com", "phpBB Group", "phpBB Teams") use any information collected during any session of usage by you (hereinafter "your information").<br />
+	'PRIVACY_POLICY'		=> 'This policy explains in detail how “%1$s” along with its affiliated companies (hereinafter “we”, “us”, “our”, “%1$s”, “%2$s”) and phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) use any information collected during any session of usage by you (hereinafter “your information”).<br />
 	<br />
-	Your information is collected via two ways. Firstly, by browsing "%1$s" will cause the phpBB software to create a number of cookies, which are small text files that are downloaded on to your computer\'s web browser temporary files. The first two cookies just contain a user identifier (hereinafter "user-id") and an anonymous session identifier (hereinafter "session-id"), automatically assigned to you by the phpBB software. A third cookie will be created once you have browsed topics within "%1$s" and is used to store which topics have been read, thereby improving your user experience.<br />
+	Your information is collected via two ways. Firstly, by browsing “%1$s” will cause the phpBB software to create a number of cookies, which are small text files that are downloaded on to your computer’s web browser temporary files. The first two cookies just contain a user identifier (hereinafter “user-id”) and an anonymous session identifier (hereinafter “session-id”), automatically assigned to you by the phpBB software. A third cookie will be created once you have browsed topics within “%1$s” and is used to store which topics have been read, thereby improving your user experience.<br />
 	<br />
-	We may also create cookies external to the phpBB software whilst browsing "%1$s", though these are outside the scope of this document which is intended to only cover the pages created by the phpBB software. The second way in which we collect your information is by what you submit to us. This can be, and is not limited to: posting as an anonymous user (hereinafter "anonymous posts"), registering on "%1$s" (hereinafter "your account") and posts submitted by you after registration and whilst logged in (hereinafter "your posts").<br />
+	We may also create cookies external to the phpBB software whilst browsing “%1$s”, though these are outside the scope of this document which is intended to only cover the pages created by the phpBB software. The second way in which we collect your information is by what you submit to us. This can be, and is not limited to: posting as an anonymous user (hereinafter “anonymous posts”), registering on “%1$s” (hereinafter “your account”) and posts submitted by you after registration and whilst logged in (hereinafter “your posts”).<br />
 	<br />
-	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter "your user name"), a personal password used for logging into your account (hereinafter "your password") and a personal, valid email address (hereinafter "your email"). Your information for your account at "%1$s" is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password and your email required by "%1$s" during the registration process are at our digression what is mandatory and what is optional. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated emails from the phpBB software.<br />
+	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter “your user name”), a personal password used for logging into your account (hereinafter “your password”) and a personal, valid email address (hereinafter “your email”). Your information for your account at “%1$s” is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password and your email required by “%1$s” during the registration process are at our digression what is mandatory and what is optional. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated emails from the phpBB software.<br />
 	<br />
-	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at "%1$s", so please guard it carefully and under no circumstance will anyone affiliated with "%1$s", phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the "I forgot my password" feature provided by the phpBB software. This process will ask you to submit your user name and your email, then the phpBB software will generate a new password to reclaim your account.<br />
+	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at “%1$s”, so please guard it carefully and under no circumstance will anyone affiliated with “%1$s”, phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the “I forgot my password” feature provided by the phpBB software. This process will ask you to submit your user name and your email, then the phpBB software will generate a new password to reclaim your account.<br />
 	',
 ));
 
 $lang = array_merge($lang, array(
 	'CAPTCHA' =>array(
 		'cells'		=> array(
-						'Enter the code on',
-						'  the right, in  ',
-						' the order shown ',
-						'   on the left   ',
+			'Enter the code on',
+			'  the right, in  ',
+			' the order shown ',
+			'   on the left   ',
 		),
 		'shape'		=> array(
-						'Enter the code on',
-						' the right which ',
-						'matches the image',
-						'   on the left   ',
+			'Enter the code on',
+			' the right which ',
+			'matches the image',
+			'   on the left   ',
 		)
 	)
 ));
@@ -91,8 +93,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_PM_EXPLAIN'				=> 'Note that admins and moderators will always be able to send you messages.',
 	'ALREADY_ACTIVATED'				=> 'You have already activated your account',
 	'ATTACHMENTS_EXPLAIN'			=> 'This is a list of attachements you have made in posts to this forum.',
-	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted',
-	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted',
+	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
+	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
 	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width %1$d pixels, height %2$d pixels, filesize %3$dkB.',
 	'AVATAR_GALLERY'				=> 'Local gallery',
@@ -104,7 +106,7 @@ $lang = array_merge($lang, array(
 	'BIRTHDAY'					=> 'Birthday',
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
-	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date" onclick="this.target=\'_blank\';" title="Opens in a new window">date()</a> function',
+	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function',
 	'BOARD_DST'					=> 'Daylight Saving Time is in effect',
 	'BOARD_LANGUAGE'			=> 'My language',
 	'BOARD_STYLE'				=> 'My board style',
@@ -118,9 +120,9 @@ $lang = array_merge($lang, array(
 	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder you want to remove.',
 	'CANNOT_RENAME_FOLDER'		=> 'This folder can not be renamed.',
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
+	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
 	'CHANGE_PASSWORD'			=> 'Change password',
-	'CHANGE_PASSWORD_EXPLAIN'	=> 'Must be between %1$d and %2$d characters.',
-	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your "%3$s" folder%2$s',
+	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your “%3$s” folder%2$s',
 	'CONFIRMATION'				=> 'Confirmation of registration',
 	'CONFIRM_EMAIL'				=> 'Confirm email address',
 	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing your email address.',
@@ -130,12 +132,12 @@ $lang = array_merge($lang, array(
 	'COPPA_BIRTHDAY'			=> 'To continue with the registration procedure please tell us when you were born.',
 	'COPPA_COMPLIANCE'			=> 'COPPA compliance',
 	'COPPA_EXPLAIN'				=> 'Please note that clicking submit will create your account. However it cannot be activated until a parent or guardian approves your registration. You will be emailed a copy of the necessary form with details of where to send it.',
-	'CREATE_FOLDER'				=> 'Add folder...',
+	'CREATE_FOLDER'				=> 'Add folder…',
 	'CURRENT_IMAGE'				=> 'Current image',
 	'CURRENT_PASSWORD'			=> 'Current password',
 	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must confirm your current password if you wish to change it, alter your email address or username.',
 	'CUR_PASSWORD_ERROR'		=> 'The current password you entered is incorrect.',
-	'CUSTOM_DATEFORMAT'			=> 'Custom...',
+	'CUSTOM_DATEFORMAT'			=> 'Custom…',
 
 	'DEFAULT_ACTION'			=> 'Default action',
 	'DEFAULT_ACTION_EXPLAIN'	=> 'This action will be triggered if none of the above is applicable',
@@ -162,6 +164,7 @@ $lang = array_merge($lang, array(
 	'DEMOTE_SELECTED'			=> 'Demote selected',
 	'DISABLE_CENSORS'			=> 'Enable word censoring',
 	'DISPLAY_GALLERY'			=> 'Display gallery',
+	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered email domain has no valid MX record.',
 	'DOWNLOADS'					=> 'Downloads',
 	'DRAFTS_DELETED'			=> 'All selected drafts were successfully deleted.',
 	'DRAFTS_EXPLAIN'			=> 'Here you can view, edit and delete your saved drafts.',
@@ -181,15 +184,15 @@ $lang = array_merge($lang, array(
 	'EXPORT_AS_MSG'				=> 'Export as MSG',
 	'EXPORT_FOLDER'				=> 'Export Folder',
 
-	'FIELD_REQUIRED'			=> 'The field "%s" must be completed.',
-	'FIELD_TOO_SHORT'			=> 'The field "%1$s" is too short, a minimum of %2$d characters is required.',
-	'FIELD_TOO_LONG'			=> 'The field "%1$s" is too long, a maximum of %2$d characters is allowed.',
-	'FIELD_TOO_SMALL'			=> 'The value of "%1$s" is too small, a minimum value of %2$d is required.',
-	'FIELD_TOO_LARGE'			=> 'The value of "%1$s" is too large, a maximum value of %2$d is allowed.',
-	'FIELD_INVALID_CHARS_NUMBERS_ONLY'	=> 'The field "%s" has invalid characters, only numbers are allowed.',
-	'FIELD_INVALID_CHARS_ALPHA_ONLY'	=> 'The field "%s" has invalid characters, only alphanumeric characters are allowed.',
-	'FIELD_INVALID_CHARS_SPACERS_ONLY'	=> 'The field "%s" has invalid characters, only alphanumeric, space or -+_[] characters are allowed.',
-	'FIELD_INVALID_DATE'		=> 'The field "%s" has an invalid date.',
+	'FIELD_REQUIRED'					=> 'The field “%s” must be completed.',
+	'FIELD_TOO_SHORT'					=> 'The field “%1$s” is too short, a minimum of %2$d characters is required.',
+	'FIELD_TOO_LONG'					=> 'The field “%1$s” is too long, a maximum of %2$d characters is allowed.',
+	'FIELD_TOO_SMALL'					=> 'The value of “%1$s” is too small, a minimum value of %2$d is required.',
+	'FIELD_TOO_LARGE'					=> 'The value of “%1$s” is too large, a maximum value of %2$d is allowed.',
+	'FIELD_INVALID_CHARS_NUMBERS_ONLY'	=> 'The field “%s” has invalid characters, only numbers are allowed.',
+	'FIELD_INVALID_CHARS_ALPHA_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric characters are allowed.',
+	'FIELD_INVALID_CHARS_SPACERS_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric, space or -+_[] characters are allowed.',
+	'FIELD_INVALID_DATE'				=> 'The field “%s” has an invalid date.',
 
 	'FOE_MESSAGE'				=> 'Message from foe',
 	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible and personal messages will not be permitted. Please note that you cannot ignore moderators or administrators.',
@@ -224,6 +227,8 @@ $lang = array_merge($lang, array(
 
 	'IF_FOLDER_FULL'			=> 'If folder is full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
+	'INVALID_CHARS_USERNAME'	=> 'The username contains forbidden characters.',
+	'INVALID_CHARS_NEW_PASSWORD'=> 'The password does not contain the required characters.',
 	'ITEMS_REQUIRED'			=> 'The items marked with * are required profile fields and need to be filled out',
 
 	'JOIN_SELECTED'				=> 'Join selected',
@@ -237,50 +242,49 @@ $lang = array_merge($lang, array(
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
 
-	'MARK_IMPORTANT'			=> 'Mark as important',
-	'MARKED_MESSAGE'			=> 'Marked message',
-	'MAX_FOLDER_REACHED'		=> 'Maximum number of allowed user defined folder reached',
-	'MESSAGE_BY_AUTHOR'			=> 'by',
-	'MESSAGE_COLOURS'			=> 'Message colours',
-	'MESSAGE_DELETED'			=> 'Message successfully deleted',
-	'MESSAGE_HISTORY'			=> 'Message history',
-	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by it\'s author before it was delivered',
-	'MESSAGE_SENT_ON'			=> 'on',
-	'MESSAGE_STORED'			=> 'Your message has been sent successfully',
-	'MESSAGE_TO'				=> 'To',
-	'MESSAGES_DELETED'			=> 'Messages successfully deleted',
-	'MOVE_DELETED_MESSAGES_TO'	=> 'Move messages from removed folder to',
-	'MOVE_DOWN'					=> 'Move down',
-	'MOVE_MARKED_TO_FOLDER'		=> 'Move marked to %s',
-	'MOVE_PM_ERROR'				=> 'An error occurred while moving the messages to the new folder, only %1d from %2d messages were moved.',
-	'MOVE_TO_FOLDER'			=> 'Move to Folder',
-	'MOVE_UP'					=> 'Move up',
+	'MARK_IMPORTANT'				=> 'Mark as important',
+	'MARKED_MESSAGE'				=> 'Marked message',
+	'MAX_FOLDER_REACHED'			=> 'Maximum number of allowed user defined folder reached',
+	'MESSAGE_BY_AUTHOR'				=> 'by',
+	'MESSAGE_COLOURS'				=> 'Message colours',
+	'MESSAGE_DELETED'				=> 'Message successfully deleted',
+	'MESSAGE_HISTORY'				=> 'Message history',
+	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by it’s author before it was delivered',
+	'MESSAGE_SENT_ON'				=> 'on',
+	'MESSAGE_STORED'				=> 'Your message has been sent successfully',
+	'MESSAGE_TO'					=> 'To',
+	'MESSAGES_DELETED'				=> 'Messages successfully deleted',
+	'MOVE_DELETED_MESSAGES_TO'		=> 'Move messages from removed folder to',
+	'MOVE_DOWN'						=> 'Move down',
+	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
+	'MOVE_PM_ERROR'					=> 'An error occurred while moving the messages to the new folder, only %1d from %2d messages were moved.',
+	'MOVE_TO_FOLDER'				=> 'Move to Folder',
+	'MOVE_UP'						=> 'Move up',
 
-	'NEW_EMAIL_ERROR'			=> 'The email addresses you entered do not match.',
-	'NEW_FOLDER_NAME'			=> 'New folder name',
-	'NEW_PASSWORD'				=> 'Password',
-	'NEW_PASSWORD_ERROR'		=> 'The passwords you entered do not match.',
-	'NEW_PASSWORD_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
-	'NOTIFY_METHOD'				=> 'Notification method',
-	'NOTIFY_METHOD_BOTH'		=> 'Both',
-	'NOTIFY_METHOD_EMAIL'		=> 'Email only',
-	'NOTIFY_METHOD_EXPLAIN'		=> 'Method for sending messages sent via this board.',
-	'NOTIFY_METHOD_IM'			=> 'Jabber only',
-	'NOTIFY_ON_PM'				=> 'Email me on new private messages',
+	'NEW_EMAIL_ERROR'				=> 'The email addresses you entered do not match.',
+	'NEW_FOLDER_NAME'				=> 'New folder name',
+	'NEW_PASSWORD'					=> 'Password',
+	'NEW_PASSWORD_ERROR'			=> 'The passwords you entered do not match.',
+	'NOTIFY_METHOD'					=> 'Notification method',
+	'NOTIFY_METHOD_BOTH'			=> 'Both',
+	'NOTIFY_METHOD_EMAIL'			=> 'Email only',
+	'NOTIFY_METHOD_EXPLAIN'			=> 'Method for sending messages sent via this board.',
+	'NOTIFY_METHOD_IM'				=> 'Jabber only',
+	'NOTIFY_ON_PM'					=> 'Notify me on new private messages',
 	'NOT_ADDED_FRIENDS_ANONYMOUS'	=> 'You cannot add the anonymous user to your friends list.',
-	'NOT_ADDED_FRIENDS_FOES'	=> 'You cannot add users to your friends list who are on your foes list',
-	'NOT_ADDED_FRIENDS_SELF'	=> 'You cannot add yourself to the friends list',
-	'NOT_ADDED_FOES_MOD_ADMIN'	=> 'You cannot add administrators and moderators to your foes list.',
-	'NOT_ADDED_FOES_ANONYMOUS'	=> 'You cannot add the anonymous user to your foes list.',
-	'NOT_ADDED_FOES_FRIENDS'	=> 'You cannot add users to your foes list who are on your friends list.',
-	'NOT_ADDED_FOES_SELF'		=> 'You cannot add yourself to the foes list.',
-	'NOT_AGREE'					=> 'I do not agree to these terms',
-	'NOT_ENOUGH_SPACE_FOLDER'	=> 'The destination folder "%s" seems to be full. The requested action has not been taken.',
-	'NOT_MOVED_MESSAGE'			=> 'You have 1 private message currently on hold because of full folder.',
-	'NOT_MOVED_MESSAGES'		=> 'You have %d private messages currently on hold because of full folder.',
-	'NO_ACTION_MODE'			=> 'No message action specified',
-	'NO_AUTHOR'					=> 'No author defined for this message',
-	'NO_AVATAR_CATEGORY'		=> 'None',
+	'NOT_ADDED_FRIENDS_FOES'		=> 'You cannot add users to your friends list who are on your foes list',
+	'NOT_ADDED_FRIENDS_SELF'		=> 'You cannot add yourself to the friends list',
+	'NOT_ADDED_FOES_MOD_ADMIN'		=> 'You cannot add administrators and moderators to your foes list.',
+	'NOT_ADDED_FOES_ANONYMOUS'		=> 'You cannot add the anonymous user to your foes list.',
+	'NOT_ADDED_FOES_FRIENDS'		=> 'You cannot add users to your foes list who are on your friends list.',
+	'NOT_ADDED_FOES_SELF'			=> 'You cannot add yourself to the foes list.',
+	'NOT_AGREE'						=> 'I do not agree to these terms',
+	'NOT_ENOUGH_SPACE_FOLDER'		=> 'The destination folder “%s” seems to be full. The requested action has not been taken.',
+	'NOT_MOVED_MESSAGE'				=> 'You have 1 private message currently on hold because of full folder.',
+	'NOT_MOVED_MESSAGES'			=> 'You have %d private messages currently on hold because of full folder.',
+	'NO_ACTION_MODE'				=> 'No message action specified.',
+	'NO_AUTHOR'						=> 'No author defined for this message',
+	'NO_AVATAR_CATEGORY'			=> 'None',
 
 	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
@@ -312,12 +316,17 @@ $lang = array_merge($lang, array(
 	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
 
+	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must contain alphanumerics',
+	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
+	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must be mixed case',
+	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must contain symbols',
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated',
 	'PASSWORD_UPDATED'			=> 'Your password has been sent successfully to your original email address.',
 	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',
 	'PERMISSIONS_TRANSFERED'	=> 'Successfully transfered permissions from <strong>%s</strong>, you are now able to browse the forum with the users permissions.<br />Please note that admin permissions were not transfered. You are able to revert to your permission set at any time.',
 	'PM_DISABLED'				=> 'Private messaging has been disabled on this board',
 	'PM_FROM'					=> 'From',
+	'PM_FROM_REMOVED_AUTHOR'	=> 'This message was sent by a user no longer registered.',
 	'PM_ICON'					=> 'PM icon',
 	'PM_INBOX'					=> 'Inbox',
 	'PM_OUTBOX'					=> 'Outbox',
@@ -337,28 +346,29 @@ $lang = array_merge($lang, array(
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
 
-	'RECIPIENT'					=> 'Recipient',
-	'RECIPIENTS'				=> 'Recipients',
-	'REGISTRATION'				=> 'Registration',
-	'RELATIVE_DAYS'				=> 'Relative days',
-	'RELEASE_MESSAGES'			=> '%sRelease all on-hold messages%s... they will be re-sorted into the appropiate folder if enough space is made available.',
-	'REMOVE_ADDRESS'			=> 'Remove address',
-	'REMOVE_SELECTED_BOOKMARKS'	=> 'Remove selected bookmarks',
-	'REMOVE_SELECTED_BOOKMARKS_CONFIRM' => 'Are you sure you want to delete all selected bookmarks?',
-	'REMOVE_BOOKMARK_MARKED'	=> 'Remove marked bookmarks',
-	'REMOVE_FOLDER'				=> 'Remove folder',
-	'REMOVE_FOLDER_CONFIRM'		=> 'Are you sure you want to remove this folder?',
-	'RENAME'					=> 'Rename',
-	'RENAME_FOLDER'				=> 'Rename folder',
-	'REPLIED_MESSAGE'			=> 'Replied to message',
-	'RESIGN_SELECTED'			=> 'Resign selected',
-	'RETURN_FOLDER'				=> '%1$sReturn to previous folder%2$s',
-	'RETURN_UCP'				=> '%sReturn to the User Control Panel%s',
-	'RULE_ADDED'				=> 'Rule successfully added',
-	'RULE_ALREADY_DEFINED'		=> 'This rule was defined previously',
-	'RULE_DELETED'				=> 'Rule successfully removed',
-	'RULE_NOT_DEFINED'			=> 'Rule not correctly specified',
+	'RECIPIENT'							=> 'Recipient',
+	'RECIPIENTS'						=> 'Recipients',
+	'REGISTRATION'						=> 'Registration',
+	'RELATIVE_DAYS'						=> 'Relative days',
+	'RELEASE_MESSAGES'					=> '%sRelease all on-hold messages%s… they will be re-sorted into the appropiate folder if enough space is made available.',
+	'REMOVE_ADDRESS'					=> 'Remove address',
+	'REMOVE_SELECTED_BOOKMARKS'			=> 'Remove selected bookmarks',
+	'REMOVE_SELECTED_BOOKMARKS_CONFIRM'	=> 'Are you sure you want to delete all selected bookmarks?',
+	'REMOVE_BOOKMARK_MARKED'			=> 'Remove marked bookmarks',
+	'REMOVE_FOLDER'						=> 'Remove folder',
+	'REMOVE_FOLDER_CONFIRM'				=> 'Are you sure you want to remove this folder?',
+	'RENAME'							=> 'Rename',
+	'RENAME_FOLDER'						=> 'Rename folder',
+	'REPLIED_MESSAGE'					=> 'Replied to message',
+	'RESIGN_SELECTED'					=> 'Resign selected',
+	'RETURN_FOLDER'						=> '%1$sReturn to previous folder%2$s',
+	'RETURN_UCP'						=> '%sReturn to the User Control Panel%s',
+	'RULE_ADDED'						=> 'Rule successfully added',
+	'RULE_ALREADY_DEFINED'				=> 'This rule was defined previously',
+	'RULE_DELETED'						=> 'Rule successfully removed',
+	'RULE_NOT_DEFINED'					=> 'Rule not correctly specified',
 
+	'SAME_PASSWORD_ERROR'		=> 'The new password you entered is the same as your current password',
 	'SEARCH_YOUR_POSTS'			=> 'Show your posts',
 	'SEND_PASSWORD'				=> 'Send password',
 	'SENT_AT'					=> 'Sent at',
@@ -371,7 +381,7 @@ $lang = array_merge($lang, array(
 	'SORT_DOWNLOADS'			=> 'Downloads',
 	'SORT_EXTENSION'			=> 'Extension',
 	'SORT_FILENAME'				=> 'Filename',
-	'SORT_POST_TIME'			=> 'Post Time',
+	'SORT_POST_TIME'			=> 'Post time',
 	'SORT_SIZE'					=> 'Filesize',
 
 	'TIMEZONE'					=> 'Timezone',
@@ -391,36 +401,37 @@ $lang = array_merge($lang, array(
 	'UCP_JABBER'				=> 'Jabber address',
 
 	'UCP_MAIN'					=> 'Overview',
-	'UCP_MAIN_BOOKMARKS'		=> 'Bookmarks',
-	'UCP_MAIN_DRAFTS'			=> 'Saved drafts',
+	'UCP_MAIN_ATTACHMENTS'		=> 'Manage attachments',
+	'UCP_MAIN_BOOKMARKS'		=> 'Manage bookmarks',
+	'UCP_MAIN_DRAFTS'			=> 'Manage drafts',
 	'UCP_MAIN_FRONT'			=> 'Front page',
-	'UCP_MAIN_SUBSCRIBED'		=> 'Subscribed',
+	'UCP_MAIN_SUBSCRIBED'		=> 'Manage subscriptions',
 
 	'UCP_MSNM'					=> 'MSN Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files',
 
 	'UCP_PREFS'					=> 'Forum preferences',
-	'UCP_PREFS_PERSONAL'		=> 'Personal settings',
-	'UCP_PREFS_POST'			=> 'Posting messages',
-	'UCP_PREFS_VIEW'			=> 'Viewing posts',
+	'UCP_PREFS_PERSONAL'		=> 'Edit global settings',
+	'UCP_PREFS_POST'			=> 'Edit posting defaults',
+	'UCP_PREFS_VIEW'			=> 'Edit display options',
 	
 	'UCP_PM'					=> 'Private messages',
 	'UCP_PM_COMPOSE'			=> 'Compose message',
-	'UCP_PM_DRAFTS'				=> 'PM drafts',
-	'UCP_PM_OPTIONS'			=> 'Options',
+	'UCP_PM_DRAFTS'				=> 'Manage PM drafts',
+	'UCP_PM_OPTIONS'			=> 'Edit options',
 	'UCP_PM_POPUP'				=> 'Private messages',
 	'UCP_PM_POPUP_TITLE'		=> 'Private message popup',
 	'UCP_PM_UNREAD'				=> 'Unread messages',
 	'UCP_PM_VIEW'				=> 'View messages',
 
 	'UCP_PROFILE'				=> 'Profile',
-	'UCP_PROFILE_AVATAR'		=> 'Your avatar',
-	'UCP_PROFILE_PROFILE_INFO'	=> 'Your profile',
-	'UCP_PROFILE_REG_DETAILS'	=> 'Registration details',
-	'UCP_PROFILE_SIGNATURE'		=> 'Your signature',
+	'UCP_PROFILE_AVATAR'		=> 'Edit avatar',
+	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
+	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
+	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
-	'UCP_USERGROUPS_MEMBER'		=> 'Memberships',
+	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',
 	'UCP_USERGROUPS_MANAGE'		=> 'Manage groups',
 
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
@@ -428,9 +439,9 @@ $lang = array_merge($lang, array(
 	'UCP_RESEND'					=> 'Send activation email',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_YIM'						=> 'Yahoo Messenger',
-	'UCP_ZEBRA'						=> 'Friends and Foes',
-	'UCP_ZEBRA_FOES'				=> 'Foes',
-	'UCP_ZEBRA_FRIENDS'				=> 'Friends',
+	'UCP_ZEBRA'						=> 'Friends &amp; Foes',
+	'UCP_ZEBRA_FOES'				=> 'Manage foes',
+	'UCP_ZEBRA_FRIENDS'				=> 'Manage friends',
 	'UNKNOWN_FOLDER'				=> 'Unknown folder',
 	'UNWATCH_MARKED'				=> 'Unwatch marked',
 	'UPLOAD_AVATAR_FILE'			=> 'Upload from your machine',
@@ -507,7 +518,7 @@ $lang = array_merge($lang, array(
 	),
 
 
-	'GROUPS_EXPLAIN'		=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.',
+	'GROUPS_EXPLAIN'	=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.',
 	'GROUP_LEADER'		=> 'Leaderships',
 	'GROUP_MEMBER'		=> 'Memberships',
 	'GROUP_PENDING'		=> 'Pending memberships',

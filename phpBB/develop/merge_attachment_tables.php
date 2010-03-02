@@ -48,7 +48,7 @@ $sql = "CREATE TABLE {$table_prefix}attachments
 			AND a.post_id = p.post_id";
 $db->sql_query($sql);
 
-switch (SQL_LAYER)
+switch ($db->sql_layer)
 {
 	case 'mysql':
 	case 'mysql4':

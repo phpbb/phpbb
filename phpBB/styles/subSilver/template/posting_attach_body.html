@@ -39,7 +39,7 @@
 			<td valign="top">
 				<table border="0" cellspacing="4" cellpadding="0">
 				<tr>
-					<td><input class="btnlite" type="submit" style="width:150px" name="add_file" value="{L_ADD_FILE}" onclick="javascript:popup_progress_bar();" /></td>
+					<td><input class="btnlite" type="submit" style="width:150px" name="add_file" value="{L_ADD_FILE}" onclick="popup_progress_bar();" /></td>
 				</tr>
 				</table>
 			</td>
@@ -60,7 +60,7 @@
 		</tr>
 		<tr> 
 			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
-			<td class="row2">
+			<td class="row2">{attach_row.S_HIDDEN}
 				<table border="0" cellspacing="0" cellpadding="2">
 				<tr>
 					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size="40">{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
@@ -78,7 +78,6 @@
 				</table>
 			</td>
 		</tr>
-		{attach_row.S_HIDDEN}	
 	<!-- END attach_row -->
 
 <!-- ENDIF -->

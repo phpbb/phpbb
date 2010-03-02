@@ -72,7 +72,7 @@ $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
 $user_id = request_var('u', 0);
-$username = request_var('username', '');
+$username = request_var('username', '', true);
 
 if ($post_id)
 {
@@ -106,7 +106,6 @@ if (!$auth->acl_getf_global('m_'))
 	// Except he is using one of the quickmod tools for users
 	$user_quickmod_actions = array(
 		'lock'			=> 'f_user_lock',
-		'unlock'		=> 'f_user_lock',
 		'make_sticky'	=> 'f_sticky',
 		'make_announce'	=> 'f_announce',
 		'make_global'	=> 'f_announce',
@@ -421,7 +420,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 {
 	global $db, $user, $auth, $template;
 
-	$sort_days = request_var('sort_days', 0);
+	$sort_days = request_var('st', 0);
 	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
 
 	switch ($mode)
@@ -468,8 +467,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
-					AND post_approved = 0
-					AND post_time >= ' . $min_time;
+					AND post_approved = 0';
+
+			if ($min_time)
+			{
+				$sql .= ' AND post_time >= ' . $min_time;
+			}
 		break;
 
 		case 'unapproved_topics':
@@ -480,8 +483,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
-					AND topic_approved = 0
-					AND topic_time >= ' . $min_time;
+					AND topic_approved = 0';
+
+			if ($min_time)
+			{
+				$sql .= ' AND topic_time >= ' . $min_time;
+			}
 		break;
 
 		case 'reports':
@@ -567,6 +574,11 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sort_by_sql = array('u' => 'l.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
 		break;
+	}
+
+	if (!isset($sort_by_sql[$sort_key]))
+	{
+		$sort_key = $default_key;
 	}
 
 	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');

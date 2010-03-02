@@ -14,7 +14,7 @@
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $encoding;
+	var $vars, $msg, $extra_headers, $replyto, $from, $subject;
 	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
@@ -44,8 +44,8 @@ class messenger
 	*/
 	function reset()
 	{
-		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = $this->encoding = '';
+		$this->addresses = $this->extra_headers = array();
+		$this->vars = $this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -118,7 +118,7 @@ class messenger
 	*/
 	function headers($headers)
 	{
-		$this->extra_headers .= trim($headers) . "\n";
+		$this->extra_headers[] = trim($headers);
 	}
 
 	/**
@@ -189,23 +189,16 @@ class messenger
 	{
 		global $config, $user;
 
+		// We add some standard variables we always use, no need to specify them always
+		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
+		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
+		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? htmlspecialchars_decode($config['sitename']) : $this->vars['SITENAME'];
+
 		// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
-		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
-
-		// Set vars
-		foreach ($this->vars as $key => $val)
-		{
-			$$key = $val;
-		}
+		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->vars['\\1'])) ? \$this->vars['\\1'] : '') . '", $this->msg);
 
 		eval("\$this->msg = '$this->msg';");
-
-		// Clear vars
-		foreach ($this->vars as $key => $val)
-		{
-			unset($$key);
-		}
 
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
@@ -219,16 +212,6 @@ class messenger
 		else
 		{
 			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
-		}
-
-		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
-		{
-			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($user->lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
-		}
-		else
-		{
-			$this->encoding = trim($user->lang['ENCODING']);
 		}
 
 		if ($drop_header)
@@ -291,6 +274,53 @@ class messenger
 	}
 
 	/**
+	* Return email header
+	*/
+	function build_header($to, $cc, $bcc)
+	{
+		global $config;
+
+		$headers = array();
+
+		$headers[] = 'From: ' . $this->from;
+
+		if ($cc)
+		{
+			$headers[] = 'Cc: ' . $cc;
+		}
+
+		if ($bcc)
+		{
+			$headers[] = 'Bcc: ' . $bcc;
+		}
+
+		$headers[] = 'Reply-To: ' . $this->replyto;
+		$headers[] = 'Return-Path: <' . $config['board_email'] . '>';
+		$headers[] = 'Sender: <' . $config['board_email'] . '>';
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . $config['server_name'] . '>';
+		$headers[] = 'Date: ' . gmdate('D, d M Y H:i:s T', time());
+		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
+		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit
+
+		$headers[] = 'X-Priority: ' . $this->mail_priority;
+		$headers[] = 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High'));
+		$headers[] = 'X-Mailer: PhpBB3';
+		$headers[] = 'X-MimeOLE: phpBB3';
+		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
+
+		// We use \n here instead of \r\n because our smtp mailer is adjusting it to \r\n automatically, whereby the php mail function only works
+		// if using \n.
+
+		if (sizeof($this->extra_headers))
+		{
+			$headers[] = implode("\n", $this->extra_headers);
+		}
+
+		return implode("\n", $headers);
+	}
+
+	/**
 	* Send out emails
 	*/
 	function msg_email()
@@ -313,21 +343,6 @@ class messenger
 			$use_queue = true;
 		}
 
-		$to = $cc = $bcc = '';
-		// Build to, cc and bcc strings
-		foreach ($this->addresses as $type => $address_ary)
-		{
-			if ($type == 'im')
-			{
-				continue;
-			}
-
-			foreach ($address_ary as $which_ary)
-			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name'], $this->encoding) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
-			}
-		}
-
 		if (empty($this->replyto))
 		{
 			$this->replyto = '<' . $config['board_email'] . '>';
@@ -338,26 +353,25 @@ class messenger
 			$this->from = '<' . $config['board_email'] . '>';
 		}
 
-		// Build header
-		$headers = 'From: ' . $this->from . "\n";
-		$headers .= ($cc != '') ? "Cc: $cc\n" : '';
-		$headers .= ($bcc != '') ? "Bcc: $bcc\n" : ''; 
-		$headers .= 'Reply-to: ' . $this->replyto . "\n";
-		$headers .= 'Return-Path: <' . $config['board_email'] . ">\n";
-		$headers .= 'Sender: <' . $config['board_email'] . ">\n";
-		$headers .= "MIME-Version: 1.0\n";
-		$headers .= 'Message-ID: <' . md5(unique_id(time())) . "@" . $config['server_name'] . ">\n";
-		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
-		$headers .= "Content-type: text/plain; charset={$this->encoding}\n";
-		$headers .= "Content-transfer-encoding: 8bit\n";
-		$headers .= "X-Priority: {$this->mail_priority}\n";
-		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\n";
-		$headers .= "X-Mailer: PhpBB3\n";
-		$headers .= "X-MimeOLE: phpBB3\n";
-		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
-		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
+		// Build to, cc and bcc strings
+		$to = $cc = $bcc = '';
+		foreach ($this->addresses as $type => $address_ary)
+		{
+			if ($type == 'im')
+			{
+				continue;
+			}
 
-		// Send message ... removed $this->encode() from subject for time being
+			foreach ($address_ary as $which_ary)
+			{
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+			}
+		}
+
+		// Build header
+		$headers = $this->build_header($to, $cc, $bcc);
+
+		// Send message ...
 		if (!$use_queue)
 		{
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
@@ -365,11 +379,11 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers);
+				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap($this->msg), $err_msg, $headers);
 			}
 			else
 			{
-				$result = @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				$result = @$config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
 			}
 
 			if (!$result)
@@ -387,7 +401,6 @@ class messenger
 				'addresses'		=> $this->addresses,
 				'subject'		=> $this->subject,
 				'msg'			=> $this->msg,
-				'encoding'		=> $this->encoding,
 				'headers'		=> $headers)
 			);
 		}
@@ -428,14 +441,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-			$this->jabber = new jabber;
-
-			$this->jabber->server	= $config['jab_host'];
-			$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
-			$this->jabber->username = $config['jab_username'];
-			$this->jabber->password = $config['jab_password'];
-			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
-			$this->jabber->encoding = $this->encoding;
+			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 			if (!$this->jabber->connect())
 			{
@@ -548,7 +554,7 @@ class queue
 			}
 
 			$package_size = $data_ary['package_size'];
-			$num_items = (sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
+			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
 			switch ($object)
 			{
@@ -569,13 +575,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-					$this->jabber = new jabber;
-
-					$this->jabber->server	= $config['jab_host'];
-					$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
-					$this->jabber->username = $config['jab_username'];
-					$this->jabber->password = $config['jab_password'];
-					$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 					if (!$this->jabber->connect())
 					{
@@ -607,7 +607,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $encoding, $headers) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
@@ -615,14 +615,19 @@ class queue
 
 							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
 							messenger::error('EMAIL', $message);
-							continue 3;
+							continue 2;
 						}
 					break;
 
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
+							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
+							{
+								$message = 'Method: [ JABBER ]<br /><br />' . $this->jabber->get_log() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
+								messenger::error('JABBER', $message);
+								continue 3;
+							}
 						}
 					break;
 				}
@@ -706,7 +711,7 @@ class queue
 
 	/**
 	* Format array
-	* @access: private
+	* @access private
 	*/
 	function format_array($array)
 	{
@@ -739,7 +744,7 @@ class queue
 /**
 * Replacement or substitute for PHP's mail command
 */
-function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers = '')
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 {
 	global $config, $user;
 
@@ -790,10 +795,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$mail_rcpt = $mail_to = $mail_cc = array();
 
 	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
-	foreach ($addresses['to'] as $which_ary)
+	if (isset($addresses['to']) && sizeof($addresses['to']))
 	{
-		$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
-		$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
+		foreach ($addresses['to'] as $which_ary)
+		{
+			$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
+		}
 	}
 
 	if (isset($addresses['bcc']) && sizeof($addresses['bcc']))
@@ -808,15 +816,17 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	{
 		foreach ($addresses['cc'] as $which_ary)
 		{
-			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 			$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
 		}
 	}
 
-	$smtp = new smtp_class;
+	$smtp = new smtp_class();
 
 	$errno = 0;
 	$errstr = '';
+
+	$smtp->add_backtrace('Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port']);
 
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
@@ -828,14 +838,14 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	// Wait for reply
 	if ($err_msg = $smtp->server_parse('220', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
 	// Let me in. This function handles the complete authentication process
 	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], $config['smtp_password'], $config['smtp_auth_method']))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -844,7 +854,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -867,7 +877,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 					// We continue... if users are not resolved we do not care
 					if ($smtp->numeric_response_code != 550)
 					{
-						$smtp->close_session();
+						$smtp->close_session($err_msg);
 						return false;
 					}
 				}
@@ -885,7 +895,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 		$user->session_begin();
 		$err_msg .= '<br /><br />';
 		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -895,7 +905,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	// This is the last response code we look for until the end of the message.
 	if ($err_msg = $smtp->server_parse('354', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -922,13 +932,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$smtp->server_send('.');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
 	// Now tell the server we are done and close the socket...
 	$smtp->server_send('QUIT');
-	$smtp->close_session();
+	$smtp->close_session($err_msg);
 
 	return true;
 }
@@ -947,16 +957,41 @@ class smtp_class
 	var $commands = array();
 	var $numeric_response_code = 0;
 
+	var $backtrace = false;
+	var $backtrace_log = array();
+
+	function smtp_class()
+	{
+		if (defined('DEBUG_EXTRA'))
+		{
+			$this->backtrace = true;
+			$this->backtrace_log = array();
+		}
+	}
+
+	/**
+	* Add backtrace message for debugging
+	*/
+	function add_backtrace($message)
+	{
+		if ($this->backtrace)
+		{
+			$this->backtrace_log[] = $message;
+		}
+	}
+
 	/**
 	* Send command to smtp server
 	*/
-	function server_send($command)
+	function server_send($command, $private_info = false)
 	{
 		fputs($this->socket, $command . "\r\n");
 
+		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive Informations');
+
 		// We could put additional code here
 	}
-	
+
 	/**
 	* We use the line to give the support people an indication at which command the error occurred
 	*/
@@ -976,6 +1011,8 @@ class smtp_class
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
+
+			$this->add_backtrace("LINE: $line <- {$this->server_response}");
 		}
 
 		if (!(substr($this->server_response, 0, 3) == $response))
@@ -990,9 +1027,15 @@ class smtp_class
 	/**
 	* Close session
 	*/
-	function close_session()
+	function close_session(&$err_msg)
 	{
 		fclose($this->socket);
+
+		if ($this->backtrace)
+		{
+			$message = '<h1>Backtrace</h1><p>' . implode('<br />', array_map('htmlspecialchars', $this->backtrace_log)) . '</p>';
+			$err_msg .= $message;
+		}
 	}
 	
 	/**
@@ -1008,10 +1051,37 @@ class smtp_class
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
+		// NOTE: on some configurations the time between an update of the auth database takes so 
+		// long that the first email send does not work. This is not a biggie on a live board (only
+		// the install mail will most likely fail) - but on a dynamic ip connection this might produce
+		// severe problems and is not fixable!
 		if ($default_auth_method == 'POP-BEFORE-SMTP' && $username && $password)
 		{
+			global $config;
+
+			$errno = 0;
+			$errstr = '';
+
+			$this->server_send("QUIT");
+			fclose($this->socket);
+
 			$result = $this->pop_before_smtp($hostname, $username, $password);
 			$username = $password = $default_auth_method = '';
+
+			// We need to close the previous session, else the server is not
+			// able to get our ip for matching...
+			if (!$this->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 10))
+			{
+				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+				return $err_msg;
+			}
+
+			// Wait for reply
+			if ($err_msg = $this->server_parse('220', __LINE__))
+			{
+				$this->close_session($err_msg);
+				return $err_msg;
+			}
 		}
 
 		// Try EHLO first
@@ -1090,31 +1160,25 @@ class smtp_class
 	{
 		global $user;
 
-		$old_socket = $this->socket;
-
-		if (!$this->socket = fsockopen($hostname, 110, $errno, $errstr, 20))
+		if (!$this->socket = @fsockopen($hostname, 110, $errno, $errstr, 10))
 		{
-			$this->socket = $old_socket;
 			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
-		$this->server_parse('0', __LINE__);
-		if (substr($this->server_response, 0, 3) == '+OK')
+		$this->server_send("USER $username", true);
+		if ($err_msg = $this->server_parse('+OK', __LINE__))
 		{
-			fputs($this->socket, "USER $username\r\n");
-			fputs($this->socket, "PASS $password\r\n");
+			return $err_msg;
 		}
-		else
+
+		$this->server_send("PASS $password", true);
+		if ($err_msg = $this->server_parse('+OK', __LINE__))
 		{
-			$this->socket = $old_socket;
-			return $this->responses[0];
+			return $err_msg;
 		}
 
 		$this->server_send('QUIT');
-		$this->server_parse('0', __LINE__);
 		fclose($this->socket);
-
-		$this->socket = $old_socket;
 
 		return false;
 	}
@@ -1131,7 +1195,7 @@ class smtp_class
 		}
 
 		$base64_method_plain = base64_encode("\0" . $username . "\0" . $password);
-		$this->server_send($base64_method_plain);
+		$this->server_send($base64_method_plain, true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1151,13 +1215,13 @@ class smtp_class
 			return ($this->numeric_response_code == 503) ? false : $err_msg;
 		}
 
-		$this->server_send(base64_encode($username));
+		$this->server_send(base64_encode($username), true);
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;
 		}
 
-		$this->server_send(base64_encode($password));
+		$this->server_send(base64_encode($password), true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1183,7 +1247,7 @@ class smtp_class
 
 		$base64_method_cram_md5 = base64_encode($username . ' ' . $md5_digest);
 
-		$this->server_send($base64_method_cram_md5);
+		$this->server_send($base64_method_cram_md5, true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1287,7 +1351,7 @@ class smtp_class
 		}
 
 		$base64_method_digest_md5 = base64_encode($input_string);
-		$this->server_send($base64_method_digest_md5);
+		$this->server_send($base64_method_digest_md5, true);
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;
@@ -1304,25 +1368,24 @@ class smtp_class
 }
 
 /**
-* Encodes the given string for proper display for this encoding ... nabbed 
+* Encodes the given string for proper display in UTF-8 ... nabbed 
 * from php.net and modified. There is an alternative encoding method which 
 * may produce less output but it's questionable as to its worth in this 
-* scenario IMO
+* scenario.
+*
+* This version is using base64 encoded data. The downside of this
+* is if the mail client does not understand this encoding the user
+* is basically doomed with an unreadable subject.
 */
-function mail_encode($str, $encoding)
+function mail_encode($str)
 {
-	if ($encoding == '')
-	{
-		return $str;
-	}
-
 	// define start delimimter, end delimiter and spacer
-	$end = "?=";
-	$start = "=?$encoding?B?";
-	$spacer = "$end\r\n $start";
+	$end = '?=';
+	$start = '=?UTF-8?B?';
+	$spacer = "$end $start";
 
 	// determine length of encoded text within chunks and ensure length is even
-	$length = 75 - strlen($start) - strlen($end);
+	$length = 76 - strlen($start) - strlen($end);
 	$length = floor($length / 2) * 2;
 
 	// encode the string and split it into chunks with spacers after each chunk

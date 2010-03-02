@@ -10,12 +10,13 @@
 	forums may be affected.
 
 	The phpBB Group : 2006
-// -->
+//-->
 
 <div id="wrapfooter">
 	<!-- IF U_ACP --><span class="gensmall">[ <a href="{U_ACP}">{L_ACP}</a> ]</span><br /><br /><!-- ENDIF -->
 	<span class="copyright">Powered by <a href="http://www.phpbb.com/" target="_blank">phpBB</a> &copy; 2002, 2006 phpBB Group
-	{L_TRANSLATION_INFO}<!-- IF DEBUG_OUTPUT --><br />[ {DEBUG_OUTPUT} ]<!-- ENDIF --></span>
+	<!-- IF L_TRANSLATION_INFO --><br />{L_TRANSLATION_INFO}<!-- ENDIF -->
+	<!-- IF DEBUG_OUTPUT --><br />[ {DEBUG_OUTPUT} ]<!-- ENDIF --></span>
 </div>
 
 </body>

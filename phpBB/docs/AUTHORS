@@ -23,18 +23,21 @@ phpBB Developers      : Ashe (Ludovic Arnaud) - [10/2002 - 11/2003, 06/2006 - ]
                         BartVB (Bart van Bragt) - [11/2000 - 03/2006]
 
 
-Original subSilver by subBlue Design, Tom Beddard, © 2001 phpBB Group
+Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Group
 
 phpBB3 contains code from the following applications:
 
 LGPL licenced:
-Smarty © 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
-Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
+Smarty (c) 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
 
 GPL licenced:
-phpMyAdmin © 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
-Jabber class © 2003 Carlo Zottmann, http://phpjabber.g-blog.net
+phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
+Jabber Class (c) 2004 Nathan Fritz, http://cjphp.netflint.net
+Chora (c) 2000-2006, The Horde Project. http://horde.org/chora/
+Horde Project (c) 2000-2006, The Horde Project. http://horde.org/
 
 PHP License, version 3.0:
-Pear © 2001-2004 PHP Group, http://pear.php.net
+Pear (c) 2001-2004 PHP Group, http://pear.php.net
+
+Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 

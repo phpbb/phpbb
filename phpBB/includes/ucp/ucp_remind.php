@@ -22,7 +22,7 @@ class ucp_remind
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$email		= request_var('email', '');
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -31,7 +31,7 @@ class ucp_remind
 			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_type, user_lang
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
+					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -69,11 +69,8 @@ class ucp_remind
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 
 			$messenger->assign_vars(array(
-				'SITENAME'	=> $config['sitename'],
-				'USERNAME'	=> html_entity_decode($user_row['username']),
-				'PASSWORD'	=> html_entity_decode($user_password),
-				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-
+				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
+				'PASSWORD'		=> htmlspecialchars_decode($user_password),
 				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 			);
 

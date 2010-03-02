@@ -16,7 +16,7 @@
 	<!-- IF forumrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
 		<td style="padding: 4px;" width="100%"><p class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></p></td>
-		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}" <!-- IF forumrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {forumrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
 		<td style="padding: 4px;"> <input type="checkbox" class="radio" name="f[{forumrow.FORUM_ID}]" /> </td>
 	</tr>
 <!-- BEGINELSE -->
@@ -36,7 +36,7 @@
 			<tr>
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 			</tr>
 			</table>
 		</td>
@@ -55,7 +55,7 @@
 		</td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
-			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}" <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
 				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 			</p>
 		</td>
@@ -72,6 +72,6 @@
 </tr>
 </table>
 
-<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', 't', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', 't', false);">{L_UNMARK_ALL}</a></b></div>
+<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
 
 <!-- INCLUDE ucp_footer.html -->

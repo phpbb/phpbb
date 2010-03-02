@@ -23,7 +23,7 @@ var is_mac = (clientPC.indexOf('mac') != -1);
 */
 function helpline(help)
 {
-	document.forms[form_name].helpbox.value = eval(help + '_help');
+	document.forms[form_name].helpbox.value = help_line[help];
 }
 
 /**
@@ -33,7 +33,7 @@ function getarraysize(thearray)
 {
 	for (i = 0; i < thearray.length; i++)
 	{
-		if (thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
+		if (typeof thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
 		{
 			return i;
 		}
@@ -62,32 +62,6 @@ function arraypop(thearray)
 	delete thearray[thearraysize - 1];
 
 	return retval;
-}
-
-/**
-* Insert emoticon
-*/
-function smiley(text) 
-{
-	text = ' ' + text + ' ';
-
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
-	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
-		document.forms[form_name].elements[text_name].focus();
-	}
-	else
-	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
-
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].focus();
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
-	}
 }
 
 /**
@@ -145,25 +119,38 @@ function bbfontstyle(bbopen, bbclose)
 /**
 * Insert text at position
 */
-function insert_text(text)
+function insert_text(text, spaces, popup)
 {
-	if (document.forms[form_name].elements[text_name].createTextRange && !isNaN(document.forms[form_name].elements[text_name].caretPos))
+	var textarea;
+	
+	if (!popup) 
 	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+		textarea = document.forms[form_name].elements[text_name];
+	} else 
+	{
+		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	else if (!isNaN(document.forms[form_name].elements[text_name].selectionStart))
+	if (spaces) 
 	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+		text = ' ' + text + ' ';
+	}
+	if (textarea.createTextRange && !isNaN(textarea.caretPos))
+	{
+		var caret_pos = textarea.caretPos;
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+	}
+	else if (!isNaN(textarea.selectionStart))
+	{
+		var sel_start = textarea.selectionStart;
+		var sel_end = textarea.selectionEnd;
 
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+		mozWrap(textarea, text, '')
+		textarea.selectionStart = sel_start + text.length;
+		textarea.selectionEnd = sel_end + text.length;
 	}
 	else
 	{
-		document.forms[form_name].elements[text_name].value = document.forms[form_name].elements[text_name].value + text;
+		textarea.value = textarea.value + text;
 	}
 }
 
@@ -187,11 +174,11 @@ function addquote(post_id, username)
 
 	if (document.all)
 	{
-		eval('divarea = document.all.' + message_name + ';');
+		divarea = document.all[message_name];
 	}
 	else
 	{
-		eval("divarea = document.getElementById('" + message_name + "');");
+		divarea = document.getElementById(message_name);
 	}
 
 	// Get text selection - not only the post content :(
@@ -208,12 +195,15 @@ function addquote(post_id, username)
 		theSelection = document.selection.createRange().text;
 	}
 
-	if (theSelection == '')
+	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
 	{
 		if (divarea.innerHTML)
 		{
 			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
+			theSelection = theSelection.replace(/&lt\;/ig, '<');
+			theSelection = theSelection.replace(/&gt\;/ig, '>');
+			theSelection = theSelection.replace(/&amp\;/ig, '&');			
 		}
 		else if (document.all)
 		{
@@ -254,11 +244,11 @@ function bbstyle(bbnumber)
 		{
 			butnumber = arraypop(bbcode) - 1;
 			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 		
 			if (buttext != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));				
 			}
 		}
 
@@ -366,11 +356,11 @@ function bbstyle(bbnumber)
 				insert_text(bbtags[butnumber]);
 			}
 
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 
 			if (bbtags[butnumber] != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));
 			}
 			imageTag = false;
 		}
@@ -406,7 +396,7 @@ function bbstyle(bbnumber)
 		if (bbtags[bbnumber] != '[*]')
 		{
 			arraypush(bbcode, bbnumber + 1);
-			eval('document.forms[form_name].addbbcode'+bbnumber+'.value += "*"');
+			document.forms[form_name]['addbbcode' + bbnumber].value += "*";
 		}
 
 		document.forms[form_name].elements[text_name].focus();
@@ -490,7 +480,7 @@ function colorPalette(dir, width, height)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

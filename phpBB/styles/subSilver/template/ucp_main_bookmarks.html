@@ -34,7 +34,7 @@
 			</td>
 			<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
 				<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
-				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}" <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
 					<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 				</p>
 			</td>
@@ -55,7 +55,7 @@
 </table>
 
 <!-- IF not S_NO_DISPLAY_BOOKMARKS -->
-	<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', 't', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', 't', false);">{L_UNMARK_ALL}</a></b></div>
+	<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
 <!-- ENDIF -->
 
 <!-- INCLUDE ucp_footer.html -->

@@ -9,24 +9,18 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'firebird');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Firebird/Interbase Database Abstraction Layer
-* Minimum Requirement is Firebird 1.5+/Interbase 7.1+
+* Minimum Requirement is Firebird 2.0
 * @package dbal
 */
 class dbal_firebird extends dbal
@@ -66,7 +60,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -107,7 +101,7 @@ class dbal_firebird extends dbal
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
 				{
@@ -122,7 +116,8 @@ class dbal_firebird extends dbal
 					}
 					else
 					{
-						@ibase_commit();
+						// way cooler than ibase_commit_ret :D
+						@ibase_query('COMMIT RETAIN;');
 					}
 				}
 
@@ -165,27 +160,6 @@ class dbal_firebird extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -208,7 +182,7 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -216,6 +190,11 @@ class dbal_firebird extends dbal
 		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
 		}
 
 		$row = array();
@@ -228,42 +207,10 @@ class dbal_firebird extends dbal
 
 		foreach (get_object_vars($cur_row) as $key => $value)
 		{
-			$row[strtolower($key)] = trim(str_replace("\\0", "\0", str_replace("\\n", "\n", $value)));
+			$row[strtolower($key)] = trim(str_replace(array("\\0", "\\n"), array("\0", "\n"), $value));
 		}
 
 		return (sizeof($row)) ? $row : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
 	}
 
 	/**
@@ -274,14 +221,27 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
 		}
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
@@ -303,7 +263,7 @@ class dbal_firebird extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
@@ -331,7 +291,7 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -355,12 +315,12 @@ class dbal_firebird extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') || strtolower(@ini_get('magic_quotes_sybase')) == 'on') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\'', '\'\'', stripslashes($msg));
+		return (@ini_get('magic_quotes_sybase') == 1 || strtolower(@ini_get('magic_quotes_sybase')) == 'on') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\'', '\'\'', stripslashes($msg));
 	}
 
 	/**
 	* Build db-specific query data
-	* @access: private
+	* @access private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -369,7 +329,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -381,7 +341,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -395,7 +355,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{
@@ -423,9 +383,6 @@ class dbal_firebird extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

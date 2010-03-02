@@ -33,7 +33,7 @@ function getarraysize(thearray)
 {
 	for (i = 0; i < thearray.length; i++)
 	{
-		if (thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
+		if (typeof thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
 		{
 			return i;
 		}
@@ -208,7 +208,7 @@ function addquote(post_id, username)
 		theSelection = document.selection.createRange().text;
 	}
 
-	if (theSelection == '')
+	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
 	{
 		if (document.all)
 		{
@@ -485,7 +485,7 @@ function colorPalette(dir, width, height)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td style="line-height: ' + height + 'px; background-color:#' + color + '; width: ' + width + 'px; height: ' + height + 'px;">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

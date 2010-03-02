@@ -65,7 +65,7 @@ class ucp_main
 	
 				if (sizeof($forum_ary))
 				{
-					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary);
+					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
 				}
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
@@ -76,15 +76,20 @@ class ucp_main
 					WHERE t.forum_id = 0
 						AND t.topic_type = " . POST_GLOBAL . '
 					ORDER BY t.topic_last_post_time DESC';
-				$result = $db->sql_query($sql);
 
 				$topic_list = $rowset = array();
-				while ($row = $db->sql_fetchrow($result))
+				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
+				if ($g_forum_id)
 				{
-					$topic_list[] = $row['topic_id'];
-					$rowset[$row['topic_id']] = $row;
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$topic_list[] = $row['topic_id'];
+						$rowset[$row['topic_id']] = $row;
+					}
+					$db->sql_freeresult($result);
 				}
-				$db->sql_freeresult($result);
 
 				$topic_tracking_info = array();
 				if ($config['load_db_lastread'])
@@ -122,8 +127,10 @@ class ucp_main
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID'			=> $forum_id,
 						'TOPIC_ID'			=> $topic_id,
+						'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] == ANONYMOUS) ? (($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] . ' ' : $user->lang['GUEST'] . ' ') : $row['topic_last_poster_name'],
+						'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
 						'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'		=> $topic_type,
 
@@ -131,7 +138,7 @@ class ucp_main
 						'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
@@ -170,7 +177,6 @@ class ucp_main
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options, 
-					'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '')
 				);
@@ -286,6 +292,7 @@ class ucp_main
 						$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 						$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
+						$last_poster_colour = ($row['forum_last_poster_colour']) ? '#' . $row['forum_last_poster_colour'] : '';
 						$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u='  . $row['forum_last_poster_id']);
 
 						$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=" . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
@@ -299,10 +306,14 @@ class ucp_main
 						'FORUM_ID'				=> $forum_id, 
 						'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 						'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
+						'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+						'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 						'FORUM_NAME'			=> $row['forum_name'],
 						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+						'LAST_POST_SUBJECT'		=> $row['forum_last_post_subject'],
 						'LAST_POST_TIME'		=> $last_post_time,
 						'LAST_POST_AUTHOR'		=> $last_poster,
+						'LAST_POST_AUTHOR_COLOUR' => $last_poster_colour,
 
 						'U_LAST_POST_AUTHOR'	=> $last_poster_url, 
 						'U_LAST_POST'			=> $last_post_url, 
@@ -417,13 +428,17 @@ class ucp_main
 					
 					// Send vars to template
 					$template->assign_block_vars('topicrow', array(
-						'FORUM_ID'			=> $forum_id,
-						'TOPIC_ID'			=> $topic_id,
-						'TOPIC_AUTHOR'		=> topic_topic_author($row),
-						'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-						'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+						'FORUM_ID'					=> $forum_id,
+						'TOPIC_ID'					=> $topic_id,
+						'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+						'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+						'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+						'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
+						'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
+						'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+						'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+						'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+
 						'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
 						'REPLIES'			=> $replies,
 						'VIEWS'				=> $row['topic_views'],
@@ -437,7 +452,7 @@ class ucp_main
 						'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 						'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 						'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 						'S_TOPIC_TYPE'			=> $row['topic_type'],
 						'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
@@ -446,6 +461,7 @@ class ucp_main
 						'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 						'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+						'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
 						'U_VIEW_TOPIC'			=> $view_topic_url)
 					);
 				}
@@ -578,22 +594,26 @@ class ucp_main
 						'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 						'S_GLOBAL_TOPIC'	=> (!$forum_id) ? true : false,
 
-						'TOPIC_AUTHOR'		=> topic_topic_author($row),
-						'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-						'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-						'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
+						'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+						'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+						'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+						'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
+						'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
+						'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+						'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+						'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
 
+						'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
 						'POSTED_AT'			=> $user->format_date($row['topic_time']),
 
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 						'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+						'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
 						'U_VIEW_TOPIC'			=> $view_topic_url,
 						'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 						'U_MOVE_UP'				=> ($row['order_id'] != 1) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=main&amp;mode=bookmarks&amp;move_up=' . $row['order_id']) : '',
@@ -642,6 +662,8 @@ class ucp_main
 				{
 					$draft_subject = request_var('subject', '', true);
 					$draft_message = request_var('message', '', true);
+					
+					utf8_normalize_nfc(array(&$draft_subject, &$draft_message));
 
 					if ($draft_message && $draft_subject)
 					{

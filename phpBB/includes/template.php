@@ -39,11 +39,11 @@ class template
 
 	/**
 	* Set template location
-	* @access: public
+	* @access public
 	*/
 	function set_template()
 	{
-		global $phpbb_root_path, $config, $user;
+		global $phpbb_root_path, $user;
 
 		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
 		{
@@ -60,7 +60,7 @@ class template
 
 	/**
 	* Set custom template location (able to use directory outside of phpBB)
-	* @access: public
+	* @access public
 	*/
 	function set_custom_template($template_path, $template_name)
 	{
@@ -75,7 +75,7 @@ class template
 	/**
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
-	* @access: public
+	* @access public
 	*/
 	function set_filenames($filename_array)
 	{
@@ -100,7 +100,7 @@ class template
 
 	/**
 	* Destroy template data set
-	* @access: public
+	* @access public
 	*/
 	function destroy()
 	{
@@ -109,7 +109,7 @@ class template
 
 	/**
 	* Reset/empty complete block
-	* @access: public
+	* @access public
 	*/
 	function destroy_block_vars($blockname)
 	{
@@ -139,7 +139,7 @@ class template
 
 	/**
 	* Display handle
-	* @access: public
+	* @access public
 	*/
 	function display($handle, $include_once = true)
 	{
@@ -159,7 +159,7 @@ class template
 
 	/**
 	* Display the handle and assign the output to a template variable or return the compiled result.
-	* @access: public
+	* @access public
 	*/
 	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
@@ -179,7 +179,7 @@ class template
 
 	/**
 	* Load a compiled template if possible, if not, recompile it
-	* @access: private
+	* @access private
 	*/
 	function _tpl_load(&$handle)
 	{
@@ -197,7 +197,11 @@ class template
 
 		global $db, $phpbb_root_path;
 
-		include_once($phpbb_root_path . 'includes/functions_template.' . $phpEx);
+		if (!class_exists('template_compile'))
+		{
+			include($phpbb_root_path . 'includes/functions_template.' . $phpEx);
+		}
+
 		$compile = new template_compile($this);
 
 		// If the file for this handle is already loaded and compiled, do nothing.
@@ -271,7 +275,7 @@ class template
 
 	/**
 	* Assign key variable pairs from an array
-	* @access: public
+	* @access public
 	*/
 	function assign_vars($vararray)
 	{
@@ -285,7 +289,7 @@ class template
 
 	/**
 	* Assign a single variable to a single key
-	* @access: public
+	* @access public
 	*/
 	function assign_var($varname, $varval)
 	{
@@ -296,7 +300,7 @@ class template
 
 	/**
 	* Assign key variable pairs from an array to a specified block
-	* @access: public
+	* @access public
 	*/
 	function assign_block_vars($blockname, $vararray)
 	{
@@ -398,7 +402,7 @@ class template
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
 	* @return false on error, true on success
-	* @access: public
+	* @access public
 	*/
 	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
 	{
@@ -484,7 +488,7 @@ class template
 
 	/**
 	* Include a seperate template
-	* @access: private
+	* @access private
 	*/
 	function _tpl_include($filename, $include = true)
 	{
@@ -500,7 +504,7 @@ class template
 
 			if ($filename)
 			{
-				include_once($filename);
+				include($filename);
 				return;
 			}
 			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');

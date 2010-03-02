@@ -207,9 +207,18 @@ function lock_unlock($action, $ids)
 		$l_prefix = 'POST';
 	}
 
-	if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock', 'm_lock'))))
+	if (!($forum_id = check_ids($ids, $table, $sql_id, array('m_lock'))))
 	{
-		return;
+		// Make sure that for f_user_lock only the lock action is triggered.
+		if ($action != 'lock')
+		{
+			return;
+		}
+
+		if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock'))))
+		{
+			return;
+		}
 	}
 
 	$redirect = request_var('redirect', $user->data['session_page']);
@@ -474,8 +483,17 @@ function mcp_move_topic($topic_ids)
 			$forum_ids[] = $row['forum_id'];
 			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name']);
 
+			// If we have moved a global announcement, we need to correct the topic type
+			if ($row['topic_type'] == POST_GLOBAL)
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_type = ' . POST_ANNOUNCE . '
+					WHERE topic_id = ' . (int) $row['topic_id'];
+				$db->sql_query($sql);
+			}
+
 			// Leave a redirection if required and only if the topic is visible to users
-			if ($leave_shadow && $row['topic_approved'])
+			if ($leave_shadow && $row['topic_approved'] && $row['topic_type'] != POST_GLOBAL)
 			{
 				$shadow = array(
 					'forum_id'				=>	(int) $row['forum_id'],
@@ -884,7 +902,6 @@ function mcp_fork_topic($topic_ids)
 					'post_edit_reason'	=> (string) $row['post_edit_reason'],
 					'post_edit_user'	=> (int) $row['post_edit_user'],
 					'post_checksum'		=> (string) $row['post_checksum'],
-					'post_encoding'		=> (string) $row['post_encoding'],
 					'post_attachment'	=> (int) $row['post_attachment'],
 					'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 					'bbcode_uid'		=> (string) $row['bbcode_uid'],

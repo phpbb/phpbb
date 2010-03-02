@@ -263,4 +263,5 @@ $words = array(
 	'ROTFLMAO',
 	'YMMV',
 );
-	
+
+?>

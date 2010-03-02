@@ -89,20 +89,13 @@
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
 	<td class="pagination">{PAGE_NUMBER} [ {TOTAL_USERS} ]</td>
-	<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME --><b class="nav"><a href="javascript:marklist('results', 'user', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('results', 'user', false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- IF PAGINATION --><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --><!-- ENDIF --></span></td>
+	<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME --><b class="nav"><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- INCLUDE pagination.html --></span></td>
 </tr>
 </table>
 
 <br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-<tr>
-	<td class="row1">
-		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-		<p class="datetime">{S_TIMEZONE}</p>
-	</td>
-</tr>
-</table>
+<!-- INCLUDE breadcrumbs.html -->
 
 <br clear="all" />
 

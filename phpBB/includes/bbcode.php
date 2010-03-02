@@ -155,6 +155,12 @@ class bbcode
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// To circumvent replacing newlines with <br /> for the generated html,
+				// we just remove newlines here. We do not do this within the admin panel to 
+				// let the admin lay out his html code nicely
+				$row['bbcode_tpl'] = str_replace(array("\n", "\r"), '', $row['bbcode_tpl']);
+				$row['second_pass_replace'] = str_replace(array("\n", "\r"), '', $row['second_pass_replace']);
+
 				$rowset[$row['bbcode_id']] = $row;
 			}
 			$db->sql_freeresult($result);
@@ -530,7 +536,7 @@ class bbcode
 		$username = str_replace('\"', '"', $username);
 
 		// remove newline at the beginning
-		if ($quote{0} == "\n")
+		if ($quote[0] == "\n")
 		{
 			$quote = substr($quote, 1);
 		}
@@ -566,7 +572,7 @@ class bbcode
 				$code = str_replace('  ', ' &nbsp;', $code);
 
 				// remove newline at the beginning
-				if (!empty($code) && $code{0} == "\n")
+				if (!empty($code) && $code[0] == "\n")
 				{
 					$code = substr($code, 1);
 				}

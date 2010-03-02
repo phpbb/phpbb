@@ -55,8 +55,8 @@
 	<!-- END backend -->
 
 	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="Submit" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="Reset" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
 
 	</form>
@@ -82,7 +82,7 @@
 	<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
 
 	<!-- IF S_CONTINUE_INDEXING -->
-		<a href="{U_CONTINUE_INDEXING}" onclick="javascript:popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
+		<a href="{U_CONTINUE_INDEXING}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
 
 		<p>{L_CONTINUE_EXPLAIN}</p>
 	<!-- ELSE -->
@@ -121,9 +121,9 @@
 		
 			<fieldset class="quick">
 			<!-- IF backend.S_INDEXED -->
-				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="javascript:popup_progress_bar('delete')" />
+				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
 			<!-- ELSE -->
-				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="javascript:popup_progress_bar('create')" />
+				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
 			<!-- ENDIF -->
 			</fieldset>
 			

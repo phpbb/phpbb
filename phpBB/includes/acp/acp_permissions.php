@@ -27,7 +27,7 @@ class acp_permissions
 		$auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
-		$user->add_lang('acp/permissions_phpbb');
+		add_permission_language();
 
 		$this->tpl_name = 'acp_permissions';
 
@@ -47,7 +47,7 @@ class acp_permissions
 				return;
 			}
 			
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
 		// Set some vars
@@ -59,8 +59,8 @@ class acp_permissions
 		$subforum_id = request_var('subforum_id', 0);
 		$forum_id = request_var('forum_id', array(0));
 
-		$username = request_var('username', array(''));
-		$usernames = request_var('usernames', '');
+		$username = request_var('username', array(''), true);
+		$usernames = request_var('usernames', '', true);
 		$user_id = request_var('user_id', array(0));
 
 		$group_id = request_var('group_id', array(0));
@@ -70,7 +70,7 @@ class acp_permissions
 		if ($select_all_groups)
 		{
 			// Add default groups to selection
-			$sql_and = (!$config['coppa_enable']) ? " AND group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+			$sql_and = (!$config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
 
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . '
@@ -98,7 +98,7 @@ class acp_permissions
 
 			if (!sizeof($user_id))
 			{
-				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		unset($username);
@@ -190,7 +190,8 @@ class acp_permissions
 			break;
 
 			default:
-				trigger_error('INVALID_MODE');
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 
 		$template->assign_vars(array(
@@ -203,7 +204,7 @@ class acp_permissions
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
-			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 
@@ -237,14 +238,14 @@ class acp_permissions
 					}
 					else
 					{
-						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				break;
 
 				case 'apply_permissions':
 					if (!isset($_POST['setting']))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -253,7 +254,7 @@ class acp_permissions
 				case 'apply_all_permissions':
 					if (!isset($_POST['setting']))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -330,7 +331,8 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
-						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username'))
+						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username'),
+						'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_victim&field=username', false))
 					);
 
 				break;
@@ -392,17 +394,23 @@ class acp_permissions
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids']),
-						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username'))
+						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username'),
+						'UA_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=add_user&field=username', false))
 					);
 
 				break;
 			}
+
+			// The S_ALLOW_SELECT parameter below is a measure to lower memory usage.
+			// If there are more than 5 forums selected the admin is not able to select all users/groups too.
+			// We need to see if the number of forums can be increased or need to be decreased.
 
 			$template->assign_vars(array(
 				'U_ACTION'				=> $this->u_action,
 				'ANONYMOUS_USER_ID'		=> ANONYMOUS,
 
 				'S_SELECT_VICTIM'		=> true,
+				'S_ALLOW_ALL_SELECT'	=> (sizeof($forum_id) > 5) ? false : true,
 				'S_CAN_SELECT_USER'		=> ($auth->acl_get('a_authusers')) ? true : false,
 				'S_CAN_SELECT_GROUP'	=> ($auth->acl_get('a_authgroups')) ? true : false,
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
@@ -436,7 +444,7 @@ class acp_permissions
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
 		{
-			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$template->assign_vars(array(
@@ -566,7 +574,7 @@ class acp_permissions
 
 		if (!sizeof($ids))
 		{
-			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 
@@ -585,7 +593,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		
 		$ug_id = $forum_id = 0;
@@ -643,7 +651,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			$this->update_foes();
+			update_foes();
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -664,7 +672,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
@@ -710,7 +718,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			$this->update_foes();
+			update_foes();
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
@@ -769,7 +777,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : false), $permission_type);
@@ -840,32 +848,6 @@ class acp_permissions
 	}
 
 	/**
-	* Update foes - remove moderators and administrators from foe lists...
-	*/
-	function update_foes()
-	{
-		global $db, $auth;
-
-		$perms = array();
-		foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
-		{
-			foreach ($forum_ary as $auth_option => $user_ary)
-			{
-				$perms = array_merge($perms, $user_ary);
-			}
-		}
-
-		if (sizeof($perms))
-		{
-			$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-				WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
-					AND foe = 1';
-			$db->sql_query($sql);
-		}
-		unset($perms);
-	}
-
-	/**
 	* Display a complete trace tree for the selected permission to determine where settings are set/unset
 	*/
 	function permission_trace($user_id, $forum_id, $permission)
@@ -888,7 +870,7 @@ class acp_permissions
 
 		if (!$userdata)
 		{
-			trigger_error('NO_USERS');
+			trigger_error('NO_USERS', E_USER_ERROR);
 		}
 
 		$forum_name = false;

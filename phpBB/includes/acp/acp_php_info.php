@@ -22,7 +22,7 @@ class acp_php_info
 
 		if ($mode != 'info')
 		{
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
 		$this->tpl_name = 'acp_php_info';

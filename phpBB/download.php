@@ -34,7 +34,7 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-$sql = 'SELECT attach_id, in_message, post_msg_id, extension
+$sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
@@ -52,57 +52,73 @@ if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachmen
 }
 
 $row = array();
-if (!$attachment['in_message'])
+
+if ($attachment['is_orphan'])
 {
-	// 
-	$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
-		FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-		WHERE p.post_id = ' . $attachment['post_msg_id'] . '
-			AND p.forum_id = f.forum_id';
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	// We allow admins having attachment permissions to see orphan attachments...
+	$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == $user->data['user_id']) ? true : false;
 
-	// Global announcement?
-	if (!$row)
+	if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
 	{
-		$forum_id = request_var('f', 0);
-
-		$sql = 'SELECT forum_id, forum_password, parent_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $forum_id;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	$extensions = $cache->obtain_attach_extensions();
+}
+else
+{
+	if (!$attachment['in_message'])
 	{
-		if ($row['forum_password'])
+		// 
+		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
+			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
+			WHERE p.post_id = ' . $attachment['post_msg_id'] . '
+				AND p.forum_id = f.forum_id';
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Global announcement?
+		if (!$row)
 		{
-			// Do something else ... ?
-			login_forum_box($row);
+			$forum_id = request_var('f', 0);
+
+			$sql = 'SELECT forum_id, forum_password, parent_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $forum_id;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+		{
+			if ($row['forum_password'])
+			{
+				// Do something else ... ?
+				login_forum_box($row);
+			}
+		}
+		else
+		{
+			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 	}
 	else
 	{
-		trigger_error('SORRY_AUTH_VIEW_ATTACH');
+		$row['forum_id'] = 0;
+		if (!$auth->acl_get('u_pm_download'))
+		{
+			trigger_error('SORRY_AUTH_VIEW_ATTACH');
+		}
 	}
-}
-else
-{
-	$row['forum_id'] = 0;
-	if (!$auth->acl_get('u_pm_download'))
-	{
-		trigger_error('SORRY_AUTH_VIEW_ATTACH');
-	}
-}
 
-// disallowed ?
-$extensions = array();
-if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
-{
-	trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
+	// disallowed ?
+	$extensions = array();
+	if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
+	{
+		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
+	}
 }
 
 if (!download_allowed())
@@ -113,7 +129,7 @@ if (!download_allowed())
 $download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 
 // Fetching filename here to prevent sniffing of filename
-$sql = 'SELECT attach_id, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype
+$sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
@@ -125,7 +141,6 @@ if (!$attachment)
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-
 $attachment['physical_filename'] = basename($attachment['physical_filename']);
 $display_cat = $extensions[$attachment['extension']]['display_cat'];
 
@@ -133,7 +148,7 @@ if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else if ($display_cat == ATTACHMENT_CATEGORY_NONE)
+else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT_CATEGORY_IMAGE) && !$attachment['is_orphan'])
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
@@ -176,7 +191,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Correct the mime type - we force application/octetstream for all files, except images
 	// Please do not change this, it is a security precaution
-	if ($category == ATTACHMENT_CATEGORY_NONE && strpos($attachment['mimetype'], 'image') === false)
+	if (strpos($attachment['mimetype'], 'image') !== 0)
 	{
 		$attachment['mimetype'] = (strpos(strtolower($user->browser), 'msie') !== false || strpos(strtolower($user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 	}
@@ -189,15 +204,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now send the File Contents to the Browser
 	$size = @filesize($filename);
 
-	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
-	$contents = @file_get_contents($filename);
 
 	// Check if headers already sent or not able to get the file contents.
-	if (headers_sent() || $contents === false)
+	if (headers_sent() || !@file_exists($filename) || !@is_readable($filename))
 	{
-		unset($contents);
-
 		// PHP track_errors setting On?
 		if (!empty($php_errormsg))
 		{
@@ -210,19 +221,52 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
-	// Send out the Headers
-	header('Content-type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
-	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
+	/**
+	* Commented out X-Sendfile support. To not expose the physical filename within the header if xsendfile is absent we need to look into methods of checking it's status.
+	*
+	* Try X-Sendfile since it is much more server friendly - only works if the path is *not* outside of the root path...
+	* lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
+	*
+	* Not really ideal, but should work fine...
+	* <code>
+	*	if (strpos($upload_dir, '/') !== 0 && strpos($upload_dir, '../') === false)
+	*	{
+	*		header('X-Sendfile: ' . $filename);
+	*	}
+	* </code>
+	*/
+
+	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
+	header('Content-Type: ' . $attachment['mimetype']);
+	header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename($attachment['real_filename']));
 
 	if ($size)
 	{
-		header("Content-length: $size");
+		header("Content-Length: $size");
 	}
-	echo $contents;
-	unset($contents);
+
+	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
+	echo @file_get_contents($filename);
 
 	flush();
 	exit;
+}
+
+/*
+* Get a browser friendly UTF-8 encoded filename
+*/
+function header_filename($file)
+{
+	// There be dragons here...
+	// IE follows no RFC, follow the RFC for extended filename for the rest
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)
+	{
+		return "filename=" . rawurlencode($file);
+	}
+	else
+	{
+		return "filename*=UTF-8''" . rawurlencode($file);
+	}
 }
 
 /**

@@ -22,16 +22,19 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 
-$forum_id = request_var('f', 0);
-$post_id = request_var('p', 0);
-$reason_id = request_var('reason_id', 0);
-$report_text = request_var('report_text', '', true);
+$forum_id		= request_var('f', 0);
+$post_id		= request_var('p', 0);
+$reason_id		= request_var('reason_id', 0);
+$report_text	= request_var('report_text', '', true);
+
+utf8_normalize_nfc(&$report_text);
+
 $user_notify = (isset($_POST['notify']) && $user->data['is_registered']) ? true : false;
 $submit = (isset($_POST['submit'])) ? true : false;
 
 if (!$post_id)
 {
-	trigger_error('INVALID_MODE');
+	trigger_error('NO_POST_SELECTED');
 }
 
 $redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";
@@ -64,6 +67,7 @@ $sql = 'SELECT *
 	WHERE forum_id = ' . $forum_id;
 $result = $db->sql_query($sql);
 $forum_data = $db->sql_fetchrow($result);
+$db->sql_freeresult($result);
 
 if (!$forum_data)
 {
@@ -99,7 +103,7 @@ if ($submit && $reason_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || (!$report_text && $row['reason_title'] == 'other'))
+	if (!$row || (!$report_text && strtolower($row['reason_title']) == 'other'))
 	{
 		trigger_error('EMPTY_REPORT');
 	}

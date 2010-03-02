@@ -117,6 +117,7 @@ class mcp_reports
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
+				$message = str_replace("\n", '<br />', $message);
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
@@ -200,12 +201,12 @@ class mcp_reports
 						$forum_list[] = $row['forum_id'];
 					}
 
-					$global_id = $forum_list[0];
-
 					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
+
+					$global_id = $forum_list[0];
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
@@ -363,7 +364,7 @@ function close_report($post_id_list, $mode, $action)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	if (($action == 'delete') && (strpos($user->data['session_page'], 'mode=report_details') !== false))
+	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode')) . '&amp;mode=reports');
 	}
@@ -474,8 +475,6 @@ function close_report($post_id_list, $mode, $action)
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($notify_reporters as $post_id => $reporter)
 			{
 				if ($reporter['user_id'] == ANONYMOUS)
@@ -490,12 +489,10 @@ function close_report($post_id_list, $mode, $action)
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($reporter['username']),
-					'CLOSER_NAME'	=> html_entity_decode($user->data['username']),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_info[$post_id]['topic_title'])))
+					'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
+					'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
 				);
 
 				$messenger->send($reporter['user_notify_type']);

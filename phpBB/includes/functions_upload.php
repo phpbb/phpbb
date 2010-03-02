@@ -38,7 +38,7 @@ class filespec
 
 	/**
 	* File Class
-	* @access: private
+	* @access private
 	*/
 	function filespec($upload_ary, $upload_namespace)
 	{
@@ -138,7 +138,7 @@ class filespec
 	/**
 	* Check if the file got correctly uploaded
 	*
-	* @return true if it is a valid upload and the file exist, false if not
+	* @return true if it is a valid upload, false if not
 	*/
 	function is_uploaded()
 	{
@@ -147,7 +147,12 @@ class filespec
 			return false;
 		}
 
-		return (file_exists($this->filename)) ? true : false;
+		if ($this->local && !file_exists($this->filename))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -221,23 +226,26 @@ class filespec
 			return false;
 		}
 
-		// Adjust destination path (no trailing slash)
-		if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
-		{
-			$destination = substr($destination, 0, sizeof($destination)-2);
-		}
-
-		$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-		if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
-		{
-			$destination = '';
-		}
-
+		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
 		$this->destination_path = $phpbb_root_path . $destination;
+
+		// Check if the destination path exist...
+		if (!file_exists($this->destination_path))
+		{
+			@unlink($this->filename);
+			return false;
+		}
 
 		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode')) ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
 		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
+
+		// Check if the file already exist, else there is something wrong...
+		if (file_exists($this->destination_file))
+		{
+			@unlink($this->filename);
+			return false;
+		}
 
 		switch ($upload_mode)
 		{
@@ -305,6 +313,25 @@ class filespec
 				{
 					$this->mimetype = $this->image_info['mime'];
 				}
+
+				// Check image type
+				$types = $this->upload->image_types();
+
+				if (!isset($types[$this->image_info[2]]) || !in_array($this->extension, $types[$this->image_info[2]]))
+				{
+					if (!isset($types[$this->image_info[2]]))
+					{
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info[2], $this->mimetype);
+					}
+					else
+					{
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
+					}
+				}
+			}
+			else
+			{
+				$this->error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 			}
 		}
 
@@ -789,6 +816,31 @@ class fileupload
 	function is_valid($form_name)
 	{
 		return (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none') ? true : false;
+	}
+
+	/**
+	* Return image type/extension mapping 
+	*/
+	function image_types()
+	{
+		return array(
+			1 => array('gif'),
+			2 => array('jpg', 'jpeg'),
+			3 => array('png'),
+			4 => array('swf'),
+			5 => array('psd'),
+			6 => array('bmp'),
+			7 => array('tif', 'tiff'),
+			8 => array('tif', 'tiff'),
+			9 => array('jpg', 'jpeg'),
+			10 => array('jpg', 'jpeg'),
+			11 => array('jpg', 'jpeg'),
+			12 => array('jpg', 'jpeg'),
+			13 => array('swc'),
+			14 => array('iff'),
+			15 => array('wbmp'),
+			16 => array('xbm'),
+		);
 	}
 }
 

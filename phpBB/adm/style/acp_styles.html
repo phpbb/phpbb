@@ -330,7 +330,7 @@
 				</dl>
 				<dl>
 					<dt><label for="font_size">{L_FONT_SIZE}:</label></dt>
-					<dd><input id="font_size" name="font_size" type="text" value="{FONT_SIZE}" size="3" maxlength="3" /> <select id="font_size_unit" name="font_size_unit">{S_FONT_SIZE_UNITS}</select></dd>
+					<dd><input id="font_size" name="font_size" type="text" value="{FONT_SIZE}" size="5" maxlength="5" /> <select id="font_size_unit" name="font_size_unit">{S_FONT_SIZE_UNITS}</select></dd>
 				</dl>
 				<dl>
 					<dt><label for="font_weight">{L_BOLD}:</label></dt>
@@ -440,7 +440,7 @@
 	</table>
 
 	<fieldset class="quick">
-		<span class="small"><a href="javascript:marklist('acp_styles', 'delete', true);">Mark all</a> :: <a href="javascript:marklist('acp_styles', 'delete', false);">Unmark all</a></span><br />
+		<span class="small"><a href="#" onclick="marklist('acp_styles', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('acp_styles', 'delete', false); return false;">{L_UNMARK_ALL}</a></span><br />
 
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_DELETE_MARKED}" />
 	</fieldset>
@@ -537,7 +537,7 @@
 			<!-- ENDIF -->
 			{installed.S_ACTIONS}
 			<!-- IF S_STYLE -->
-				| <a href="{installed.U_PREVIEW}" onclick="this.target='_preview';">{L_PREVIEW}</a>
+				| <a href="{installed.U_PREVIEW}">{L_PREVIEW}</a>
 			<!-- ENDIF -->
 		</td>
 	<!-- END installed -->

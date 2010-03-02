@@ -30,42 +30,30 @@ class ucp_prefs
 			case 'personal':
 
 				$data = array(
-					'notifymethod'	=> $user->data['user_notify_type'],
-					'dateformat'	=> $user->data['user_dateformat'],
-					'lang'			=> $user->data['user_lang'],
-					'style'			=> $user->data['user_style'],
-					'tz'			=> $user->data['user_timezone'],
+					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
+					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat']),
+					'lang'			=> request_var('lang', $user->data['user_lang']),
+					'style'			=> request_var('style', (int) $user->data['user_style']),
+					'tz'			=> request_var('tz', (float) $user->data['user_timezone']),
+
+					'dst'			=> request_var('dst', (bool) $user->data['user_dst']),
+					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
+					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
+					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
+					'notifypm'		=> request_var('notifypm', (bool) $user->data['user_notify_pm']),
+					'popuppm'		=> request_var('popuppm', (bool) $user->optionget('popuppm')),
+					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
 				if ($submit)
 				{
-					$var_ary = array(
-						'dateformat'	=> (string) $config['default_dateformat'],
-						'lang'			=> (string) $config['default_lang'],
-						'tz'			=> (float) $config['board_timezone'],
-						'style'			=> (int) $config['default_style'],
-						'dst'			=> (bool) $config['board_dst'],
-						'viewemail'		=> false,
-						'massemail'		=> true,
-						'hideonline'	=> false,
-						'notifymethod'	=> 0,
-						'notifypm'		=> true,
-						'popuppm'		=> false,
-						'allowpm'		=> true,
-					);
+					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
 
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 3, 30),
-						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
+						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					if (!sizeof($error))
 					{
@@ -126,13 +114,13 @@ class ucp_prefs
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
 					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
 					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
-					'S_VIEW_EMAIL'		=> (isset($data['viewemail'])) ? $data['viewemail'] : $user->data['user_allow_viewemail'],
-					'S_MASS_EMAIL'		=> (isset($data['massemail'])) ? $data['massemail'] : $user->data['user_allow_massemail'],
-					'S_ALLOW_PM'		=> (isset($data['allowpm'])) ? $data['allowpm'] : $user->data['user_allow_pm'],
-					'S_HIDE_ONLINE'		=> (isset($data['hideonline'])) ? $data['hideonline'] : !$user->data['user_allow_viewonline'],
-					'S_NOTIFY_PM'		=> (isset($data['notifypm'])) ? $data['notifypm'] : $user->data['user_notify_pm'],
-					'S_POPUP_PM'		=> (isset($data['popuppm'])) ? $data['popuppm'] : $user->optionget('popuppm'),
-					'S_DST'				=> (isset($data['dst'])) ? $data['dst'] : $user->data['user_dst'],
+					'S_VIEW_EMAIL'		=> $data['viewemail'],
+					'S_MASS_EMAIL'		=> $data['massemail'],
+					'S_ALLOW_PM'		=> $data['allowpm'],
+					'S_HIDE_ONLINE'		=> $data['hideonline'],
+					'S_NOTIFY_PM'		=> $data['notifypm'],
+					'S_POPUP_PM'		=> $data['popuppm'],
+					'S_DST'				=> $data['dst'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
@@ -141,7 +129,7 @@ class ucp_prefs
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'S_STYLE_OPTIONS'	=> ($config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'		=> tz_select($data['tz']),
 					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
@@ -159,32 +147,23 @@ class ucp_prefs
 					'post_sk'		=> (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't',
 					'post_sd'		=> (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a',
 					'post_st'		=> (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0,
+
+					'images'		=> request_var('images', (bool) $user->optionget('viewimg')),
+					'flash'			=> request_var('flash', (bool) $user->optionget('viewflash')),
+					'smilies'		=> request_var('smilies', (bool) $user->optionget('viewsmilies')),
+					'sigs'			=> request_var('sigs', (bool) $user->optionget('viewsigs')),
+					'avatars'		=> request_var('avatars', (bool) $user->optionget('viewavatars')),
+					'wordcensor'	=> request_var('wordcensor', (bool) $user->optionget('viewcensors')),
 				);
 
 				if ($submit)
 				{
-					$var_ary = array_merge($data, array(
-						'images'	=> true,
-						'flash'		=> false,
-						'smilies'	=> true,
-						'sigs'		=> true,
-						'avatars'	=> true,
-						'wordcensor'=> false,
-					));
-
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'topic_sk'	=> array('string', false, 1, 1),
 						'topic_sd'	=> array('string', false, 1, 1),
 						'post_sk'	=> array('string', false, 1, 1),
 						'post_sd'	=> array('string', false, 1, 1),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					if (!sizeof($error))
 					{
@@ -269,12 +248,12 @@ class ucp_prefs
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'S_IMAGES'			=> (isset($data['images'])) ? $data['images'] : $user->optionget('viewimg'),
-					'S_FLASH'			=> (isset($data['flash'])) ? $data['flash'] : $user->optionget('viewflash'),
-					'S_SMILIES'			=> (isset($data['smilies'])) ? $data['smilies'] : $user->optionget('viewsmilies'),
-					'S_SIGS'			=> (isset($data['sigs'])) ? $data['sigs'] : $user->optionget('viewsigs'),
-					'S_AVATARS'			=> (isset($data['avatars'])) ? $data['avatars'] : $user->optionget('viewavatars'),
-					'S_DISABLE_CENSORS'	=> (isset($data['wordcensor'])) ? $data['wordcensor'] : $user->optionget('viewcensors'),
+					'S_IMAGES'			=> $data['images'],
+					'S_FLASH'			=> $data['flash'],
+					'S_SMILIES'			=> $data['smilies'],
+					'S_SIGS'			=> $data['sigs'],
+					'S_AVATARS'			=> $data['avatars'],
+					'S_DISABLE_CENSORS'	=> $data['wordcensor'],
 
 					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
 
@@ -291,21 +270,14 @@ class ucp_prefs
 			case 'post':
 
 				$data = array(
-					'bbcode'	=> $user->optionget('bbcode'),
-					'smilies'	=> $user->optionget('smilies'),
-					'sig'		=> $user->optionget('attachsig'),
-					'notify'	=> $user->data['user_notify'],
+					'bbcode'	=> request_var('bbcode', $user->optionget('bbcode')),
+					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
+					'sig'		=> request_var('sig', $user->optionget('attachsig')),
+					'notify'	=> request_var('notify', $user->data['user_notify']),
 				);
 
 				if ($submit)
 				{
-					$var_ary = $data;
-
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
 					$user->optionset('bbcode', $data['bbcode']);
 					$user->optionset('smilies', $data['smilies']);
 					$user->optionset('attachsig', $data['sig']);

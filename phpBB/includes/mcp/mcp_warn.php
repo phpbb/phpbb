@@ -247,6 +247,7 @@ function mcp_warn_post_view($id, $mode, $action)
 	// We want to make the message available here as a reminder
 	// Parse the message and subject
 	$message = $userrow['post_text'];
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Second parse bbcode here
 	if ($userrow['bbcode_bitfield'])
@@ -259,9 +260,6 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
-
-	// Replace naughty words such as farty pants
-	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Generate the appropriate user information for the user we are looking at
 	$rank_title = $rank_img = '';
@@ -312,11 +310,11 @@ function mcp_warn_user_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
-	$username = request_var('username', '');
+	$username = request_var('username', '', true);
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 
-	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
+	$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
@@ -405,7 +403,7 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 		$message_parser = new parse_message();
 
 		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
-		$message_parser->parse(true, true, true, false, false, true);
+		$message_parser->parse(true, true, true, false, false, true, true);
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],

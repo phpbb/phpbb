@@ -47,11 +47,6 @@ $sort_dir		= request_var('sd', 'd');
 $return_chars	= request_var('ch', ($topic_id) ? -1 : 200);
 $search_forum	= request_var('fid', array(0));
 
-if ($search_forum == array(0))
-{
-	$search_forum = array();
-}
-
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
@@ -103,7 +98,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$reset_search_forum = true;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['forum_password'] && ($row['user_id'] != $user->data['user_id']))
+		if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
 		{
 			$ex_fid_ary[] = (int) $row['forum_id'];
 			continue;
@@ -259,24 +254,23 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_key = 't';
 				$sort_dir = 'd';
 				$sort_by_sql['t'] = 't.topic_last_post_time';
-				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				if (!$sort_days)
 				{
-					$sort_days = 1;
+					$sort_days = 3;
 				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
-				$s_sort_key = $s_sort_dir = $u_sort_param = '';
+				$s_sort_key = $s_sort_dir = '';
+				$u_sort_param = 'st=' . $sort_days;
 
 				$last_post_time = (time() - ($sort_days * 24 * 3600));
 
-				$sql = 'SELECT DISTINCT t.topic_last_post_time, t.topic_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-					WHERE p.post_time > $last_post_time
+				$sql = 'SELECT t.topic_last_post_time, t.topic_id
+					FROM ' . TOPICS_TABLE . " t
+					WHERE t.topic_last_post_time > $last_post_time
 						AND t.topic_moved_id = 0
-						AND p.topic_id = t.topic_id
-						$m_approve_fid_sql
-						" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . '
+						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
 			break;
@@ -291,6 +285,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
 
+				if ($sort_days)
+				{
+					$last_post_time = 'AND p.post_time > ' . (time() - ($sort_days * 24 * 3600));
+				}
+				else
+				{
+					$last_post_time = '';
+				}
+
 				if ($show_results == 'posts')
 				{
 					if ($sort_key == 'a')
@@ -303,6 +306,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
+							$last_post_time
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
@@ -315,6 +319,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
+							$last_post_time
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
@@ -330,10 +335,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
-				if (!$sort_days)
-				{
-					$sort_days = 1;
-				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 
@@ -420,8 +421,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Grab icons
-	$icons = array();
-	$cache->obtain_icons($icons);
+	$icons = $cache->obtain_icons();
 
 	// Output header
 	if ($search_id && ($total_match_count > 1000))
@@ -494,7 +494,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_sig, u.user_sig_bbcode_uid
+			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
 				FROM ' . POSTS_TABLE . ' p
 					LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
 					LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
@@ -609,11 +609,62 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		else
 		{
+			$bbcode_bitfield = '';
+			$attach_list = array();
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$rowset[] = $row;
+				if (($return_chars == -1) || (utf8_strlen($row['post_text']) < $return_chars + 3))
+				{
+					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
+
+					// Does this post have an attachment? If so, add it to the list
+					if ($row['post_attachment'] && $config['allow_attachments'])
+					{
+						$attach_list[$row['forum_id']][] = $row['post_id'];
+					}
+				}
 			}
 			$db->sql_freeresult($result);
+
+			// Instantiate BBCode if needed
+			if ($bbcode_bitfield !== '')
+			{
+				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				$bbcode = new bbcode(base64_encode($bbcode_bitfield));
+			}
+
+			// Pull attachment data
+			if (sizeof($attach_list))
+			{
+				$use_attach_list = $attach_list;
+				$attach_list = array();
+
+				foreach ($use_attach_list as $forum_id => $_list)
+				{
+					if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+					{
+						$attach_list = array_merge($attach_list, $_list);
+					}
+				}
+			}
+
+			if (sizeof($attach_list))
+			{
+				$sql = 'SELECT *
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+						AND in_message = 0
+					ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+				$result = $db->sql_query($sql);
+		
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$attachments[$row['post_msg_id']][] = $row;
+				}
+				$db->sql_freeresult($result);
+			}
 		}
 
 		if ($hilit)
@@ -672,16 +723,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
 
-				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
-				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
+				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$tpl_ary = array(
-					'TOPIC_AUTHOR'		=> topic_topic_author($row),
-					'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-					'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-					'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-					'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+					'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+					'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+					'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+					'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
+					'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
+					'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+					'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+					'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+
 					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
 
@@ -691,7 +746,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
@@ -699,12 +754,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
 					'S_UNREAD_TOPIC'		=> $unread_topic,
 
-					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_report', $forum_id)) ? true : false,
+					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 
 					'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 					'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+					'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
 					'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
 					'U_MCP_QUEUE'			=> $u_mcp_queue,
@@ -723,28 +779,61 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					continue;
 				}
 
-				decode_message($row['post_text'], $row['bbcode_uid']);
-
-				if ($return_chars != -1)
-				{
-					$row['post_text'] = (strlen($row['post_text']) < $return_chars + 3) ? $row['post_text'] : substr($row['post_text'], 0, $return_chars) . '...';
-				}
-
 				// Replace naughty words such as farty pants
 				$row['post_subject'] = censor_text($row['post_subject']);
-				$row['post_text'] = str_replace("\n", '<br />', censor_text($row['post_text']));
+				$message = $row['post_text'];
 
-				// post highlighting
-				$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
+				if ($return_chars != -1 && utf8_strlen($message) >= ($return_chars + 3))
+				{
+					$message = censor_text($message);
 
-				$row['post_text'] = smiley_text($row['post_text']);
+					// make list items visible as such
+					$message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $message);
+
+					// do not display raw bbcode
+					strip_bbcode($message, $row['bbcode_uid']);
+
+					// now find context for the searched words
+					$message = get_context($message, array_filter(explode('|', $hilit), 'strlen'), $return_chars);
+
+					$message = str_replace("\n", '<br />', $message);
+				}
+				else
+				{
+					$message = censor_text($message);
+					$message = str_replace("\n", '<br />', $message);
+
+					// Second parse bbcode here
+					if ($row['bbcode_bitfield'])
+					{
+						$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+					}
+
+					if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+					{
+						parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
+				
+						// we only display inline attachments
+						unset($attachments[$row['post_id']]);
+					}
+
+					// Always process smilies after parsing bbcodes
+					$message = smiley_text($message);
+				}
+
+				if ($hilit)
+				{
+					// post highlighting
+					$message = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $message);
+				}
 
 				$tpl_ary = array(
 					'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
+					'POSTER_COLOUR'		=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
 					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
-					'MESSAGE'			=> $row['post_text']
+					'MESSAGE'			=> $message
 				);
 			}
 
@@ -859,6 +948,11 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 unset($pad_store);
 
+if (!$s_forums)
+{
+	trigger_error($user->lang['NO_SEARCH']);
+}
+
 // Number of chars returned
 $s_characters = '<option value="-1">' . $user->lang['ALL_AVAILABLE'] . '</option>';
 $s_characters .= '<option value="0">0</option>';
@@ -881,10 +975,24 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 );
 
-$sql = 'SELECT search_time, search_keywords
-	FROM ' . SEARCH_RESULTS_TABLE . '
-	WHERE search_keywords <> \'\'
-	ORDER BY search_time DESC';
+// Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
+switch ($db->sql_layer)
+{
+	case 'mssql':
+	case 'mssql_odbc':
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE CAST(search_keywords AS varchar) <> \'\'
+			ORDER BY search_time DESC';
+	break;
+
+	default:
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE search_keywords <> \'\'
+			ORDER BY search_time DESC';
+	break;
+}
 $result = $db->sql_query_limit($sql, 5);
 
 while ($row = $db->sql_fetchrow($result))

@@ -47,13 +47,13 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error('BBCODE_NOT_EXIST');
+					trigger_error($user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
 				$display_on_posting = $row['display_on_posting'];
-				$bbcode_helpline = html_entity_decode($row['bbcode_helpline']);
+				$bbcode_helpline = $row['bbcode_helpline'];
 			break;
 
 			case 'modify':
@@ -66,7 +66,7 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error('BBCODE_NOT_EXIST');
+					trigger_error($user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			// No break here
@@ -75,8 +75,8 @@ class acp_bbcodes
 				$display_on_posting = request_var('display_on_posting', 0);
 
 				$bbcode_match = request_var('bbcode_match', '');
-				$bbcode_tpl = html_entity_decode(request_var('bbcode_tpl', ''));
-				$bbcode_helpline = htmlspecialchars(request_var('bbcode_helpline', ''));
+				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', ''));
+				$bbcode_helpline = request_var('bbcode_helpline', '');
 			break;
 		}
 
@@ -127,9 +127,11 @@ class acp_bbcodes
 					$info = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
-					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded))
+					// Grab the end, interrogate the last closing tag
+					preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs);
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || in_array(strtolower($regs[1]), $hard_coded))
 					{
-						trigger_error('BBCODE_INVALID_TAG_NAME');
+						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -170,12 +172,13 @@ class acp_bbcodes
 
 					if ($bbcode_id > 1511)
 					{
-						trigger_error('TOO_MANY_BBCODES');
+						trigger_error($user->lang['TOO_MANY_BBCODES'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
 					$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
+					$cache->destroy('sql', BBCODES_TABLE);
 
 					$lang = 'BBCODE_ADDED';
 					$log_action = 'LOG_BBCODE_ADD';
@@ -186,6 +189,7 @@ class acp_bbcodes
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 						WHERE bbcode_id = ' . $bbcode_id;
 					$db->sql_query($sql);
+					$cache->destroy('sql', BBCODES_TABLE);
 
 					$lang = 'BBCODE_EDITED';
 					$log_action = 'LOG_BBCODE_EDIT';
@@ -208,8 +212,21 @@ class acp_bbcodes
 
 				if ($row)
 				{
-					$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
-					add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+					if (confirm_box(true))
+					{
+						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
+						$cache->destroy('sql', BBCODES_TABLE);
+						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+					}
+					else
+					{
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'bbcode'	=> $bbcode_id,
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'action'	=> $action))
+						);
+					}
 				}
 
 			break;
@@ -290,7 +307,7 @@ class acp_bbcodes
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
 					$repad = $pad + sizeof(array_unique($repad[0]));
-					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\$' . (\$1 + \$pad)", $replace);
+					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\${' . (\$1 + \$pad) . '}'", $replace);
 					$pad = $repad;
 				}
 
@@ -320,7 +337,7 @@ class acp_bbcodes
 				$fp_replace = str_replace($token, $replace, $fp_replace);
 
 				$sp_match = str_replace(preg_quote($token, '!'), '(.*?)', $sp_match);
-				$sp_replace = str_replace($token, '$' . ($n + 1), $sp_replace);
+				$sp_replace = str_replace($token, '${' . ($n + 1) . '}', $sp_replace);
 			}
 
 			$fp_match = '!' . $fp_match . '!' . $modifiers;

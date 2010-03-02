@@ -152,7 +152,7 @@ class acp_search
 						}
 						else
 						{
-							trigger_error($error);
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					else
@@ -168,7 +168,7 @@ class acp_search
 				}
 				else
 				{
-					trigger_error($error);
+					trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 
@@ -228,7 +228,8 @@ class acp_search
 				break;
 	
 				default:
-					trigger_error('NO_ACTION');
+					trigger_error('NO_ACTION', E_USER_ERROR);
+				break;
 			}
 
 			if (empty($this->state[0]))
@@ -240,7 +241,7 @@ class acp_search
 			$error = false;
 			if ($this->init_search($this->state[0], $this->search, $error))
 			{
-				trigger_error($error);
+				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 	
 			$action = &$this->state[1];
@@ -262,7 +263,7 @@ class acp_search
 					{
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 				}
 				else
@@ -294,7 +295,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($this->u_action . '&amp;action=delete', 3);
+						redirect($this->u_action . '&amp;action=delete');
 					}
 				}
 	
@@ -314,12 +315,12 @@ class acp_search
 					{
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 				}
 				else
 				{
-					$sql = 'SELECT post_id, post_subject, post_text, post_encoding, poster_id, forum_id
+					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
@@ -327,7 +328,7 @@ class acp_search
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['post_encoding'], $row['poster_id'], $row['forum_id']);
+						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 					}
 					$db->sql_freeresult($result);
 
@@ -338,7 +339,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($this->u_action . '&amp;action=create', 3);
+						redirect($this->u_action . '&amp;action=create');
 					}
 				}
 	
@@ -440,7 +441,7 @@ class acp_search
 		adm_page_header($user->lang[$l_type]);
 
 		$template->set_filenames(array(
-			'body'	=> 'search_index_progress_bar.html')
+			'body'	=> 'progress_bar.html')
 		);
 
 		$template->assign_vars(array(

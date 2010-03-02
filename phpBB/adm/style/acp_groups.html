@@ -217,14 +217,14 @@
 
 	<div class="pagination" style="float: left;">
 		<!-- IF PAGINATION -->
-			<a href="javascript:jumpto();" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
 		<!-- ELSE -->
 			{S_ON_PAGE}
 		<!-- ENDIF -->
 	</div>
 
 	<fieldset class="quick">
-		<span class="small"><a href="javascript:marklist('list', 'mark', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></span><br />
+		<span class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></span><br />
 
 		<select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
 		<input class="button2" type="submit" name="update" value="{L_SUBMIT}" />
@@ -247,7 +247,7 @@
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" target="usersearch">{L_FIND_USERNAME}</a> ]</dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
 	</dl>
 	</fieldset>
 

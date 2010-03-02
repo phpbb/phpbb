@@ -24,6 +24,7 @@
 class acp_modules
 {
 	var $module_class = '';
+	var $parent_id;
 	var $u_action;
 
 	function main($id, $mode)
@@ -51,7 +52,7 @@ class acp_modules
 
 		$this->page_title = strtoupper($this->module_class);
 
-		$parent_id = request_var('parent_id', 0);
+		$this->parent_id = request_var('parent_id', 0);
 		$module_id = request_var('m', 0);
 		$action = request_var('action', '');
 		$errors = array();
@@ -61,9 +62,9 @@ class acp_modules
 			case 'delete':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-				
+
 				if (confirm_box(true))
 				{
 					$errors = $this->delete_module($module_id);
@@ -71,7 +72,7 @@ class acp_modules
 					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
-						trigger_error($user->lang['MODULE_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+						trigger_error($user->lang['MODULE_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 				else
@@ -79,7 +80,7 @@ class acp_modules
 					confirm_box(false, 'DELETE_MODULE', build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
-						'parent_id'	=> $parent_id,
+						'parent_id'	=> $this->parent_id,
 						'module_id'	=> $module_id,
 						'action'	=> $action,
 					)));
@@ -91,9 +92,9 @@ class acp_modules
 			case 'disable':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-			
+
 				$sql = 'UPDATE ' . MODULES_TABLE . ' 
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
 					WHERE module_id = $module_id";
@@ -108,7 +109,7 @@ class acp_modules
 			case 'move_down':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -121,7 +122,7 @@ class acp_modules
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$move_module_name = $this->move_module_by($row, $action, 1);
@@ -156,7 +157,7 @@ class acp_modules
 							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 0,
 							'module_display'	=> (isset($fileinfo['modes'][$module_mode]['display'])) ? $fileinfo['modes'][$module_mode]['display'] : 1,
-							'parent_id'			=> $parent_id,
+							'parent_id'			=> $this->parent_id,
 							'module_class'		=> $this->module_class,
 							'module_langname'	=> $fileinfo['modes'][$module_mode]['title'],
 							'module_mode'		=> $module_mode,
@@ -169,7 +170,7 @@ class acp_modules
 						{
 							$this->remove_cache_file();
 	
-							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 						}
 					}
 				}
@@ -178,7 +179,7 @@ class acp_modules
 					confirm_box(false, 'ADD_MODULE', build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
-						'parent_id'	=> $parent_id,
+						'parent_id'	=> $this->parent_id,
 						'action'	=> 'quickadd',
 						'quick_install'	=> $quick_install,
 					)));
@@ -190,7 +191,7 @@ class acp_modules
 
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 				
 				$module_row = $this->get_module_row($module_id);
@@ -228,7 +229,7 @@ class acp_modules
 				{
 					if (!$module_data['module_langname'])
 					{
-						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
 					$module_type = request_var('module_type', 'category');
@@ -257,7 +258,7 @@ class acp_modules
 					{
 						$this->remove_cache_file();
 	
-						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 
@@ -306,8 +307,8 @@ class acp_modules
 					'S_CAT_OPTIONS'		=> $s_cat_option . $this->make_module_select($module_data['parent_id'], ($action == 'edit') ? $module_row['module_id'] : false, false, false, false, true),
 					'S_MODULE_NAMES'	=> $s_name_options,
 					'S_MODULE_MODES'	=> $s_mode_options,
-					'U_BACK'			=> $this->u_action . '&amp;parent_id=' . $parent_id,
-					'U_EDIT_ACTION'		=> $this->u_action . '&amp;parent_id=' . $parent_id,
+					'U_BACK'			=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+					'U_EDIT_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 
 					'L_TITLE'			=> $user->lang[strtoupper($action) . '_MODULE'],
 					
@@ -341,7 +342,7 @@ class acp_modules
 			);
 		}
 
-		if (!$parent_id)
+		if (!$this->parent_id)
 		{
 			$navigation = strtoupper($this->module_class);
 		}
@@ -349,12 +350,13 @@ class acp_modules
 		{
 			$navigation = '<a href="' . $this->u_action . '">' . strtoupper($this->module_class) . '</a>';
 
-			$modules_nav = $this->get_module_branch($parent_id, 'parents', 'descending');
+			$modules_nav = $this->get_module_branch($this->parent_id, 'parents', 'descending');
+
 			foreach ($modules_nav as $row)
 			{
 				$langname = $this->lang_name($row['module_langname']);
 
-				if ($row['module_id'] == $parent_id)
+				if ($row['module_id'] == $this->parent_id)
 				{
 					$navigation .= ' -&gt; ' . $langname;
 				}
@@ -366,11 +368,11 @@ class acp_modules
 		}
 
 		// Jumpbox
-		$module_box = $this->make_module_select($parent_id, false, false, false, false);
+		$module_box = $this->make_module_select($this->parent_id, false, false, false, false);
 
 		$sql = 'SELECT *
 			FROM ' . MODULES_TABLE . "
-			WHERE parent_id = $parent_id
+			WHERE parent_id = {$this->parent_id}
 				AND module_class = '" . $db->sql_escape($this->module_class) . "'
 			ORDER BY left_id";
 		$result = $db->sql_query($sql);
@@ -390,13 +392,16 @@ class acp_modules
 					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['MODULE'] . '" />';
 				}
 
-				$url = $this->u_action . '&amp;parent_id=' . $parent_id . '&amp;m=' . $row['module_id'];
-	
+				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
+
 				$template->assign_block_vars('modules', array(
 					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
 					'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
+
+					'S_ACP_CAT_SYSTEM'			=> ($this->module_class == 'acp' && $row['module_langname'] == 'ACP_CAT_SYSTEM') ? true : false,
+					'S_ACP_MODULE_MANAGEMENT'	=> ($this->module_class == 'acp' && ($row['module_basename'] == 'modules' || $row['module_langname'] == 'ACP_MODULE_MANAGEMENT')) ? true : false,
 
 					'U_MODULE'			=> $this->u_action . '&amp;parent_id=' . $row['module_id'],
 					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
@@ -409,11 +414,11 @@ class acp_modules
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
-		else if ($parent_id)
+		else if ($this->parent_id)
 		{
-			$row = $this->get_module_row($parent_id);
+			$row = $this->get_module_row($this->parent_id);
 
-			$url = $this->u_action . '&amp;parent_id=' . $parent_id . '&amp;m=' . $row['module_id'];
+			$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
 
 			$template->assign_vars(array(
 				'S_NO_MODULES'		=> true,
@@ -449,11 +454,11 @@ class acp_modules
 		}
 
 		$template->assign_vars(array(
-			'U_SEL_ACTION'	=> $this->u_action,
-			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $parent_id,
-			'NAVIGATION'	=> $navigation,
-			'MODULE_BOX'	=> $module_box,
-			'PARENT_ID'		=> $parent_id,
+			'U_SEL_ACTION'		=> $this->u_action,
+			'U_ACTION'			=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+			'NAVIGATION'		=> $navigation,
+			'MODULE_BOX'		=> $module_box,
+			'PARENT_ID'			=> $this->parent_id,
 			'S_INSTALL_OPTIONS'	=> $s_install_options,
 			)
 		);
@@ -476,7 +481,7 @@ class acp_modules
 		
 		if (!$row)
 		{
-			trigger_error($user->lang['NO_MODULE']);
+			trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 		}
 
 		return $row;
@@ -721,7 +726,7 @@ class acp_modules
 						return 'PARENT_NO_EXIST';
 					}
 
-					trigger_error($user->lang['PARENT_NO_EXIST']);
+					trigger_error($user->lang['PARENT_NO_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
@@ -1006,6 +1011,14 @@ class acp_modules
 		$this->remove_cache_file();
 
 		return $this->lang_name($target['module_langname']);
+	}
+
+	/**
+	* Check if the module or her childs hold the management module(s)
+	*/
+	function is_management_module($module_id)
+	{
+		
 	}
 }
 

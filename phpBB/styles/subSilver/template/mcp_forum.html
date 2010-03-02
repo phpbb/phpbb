@@ -1,6 +1,10 @@
 <!-- INCLUDE mcp_header.html -->
 
+<!-- IF S_MERGE_SELECT --><div style="float: right;"><!-- INCLUDE jumpbox.html --></div><!-- ENDIF -->
+
 <!-- IF U_VIEW_FORUM_LOGS --><a href="{U_VIEW_FORUM_LOGS}">{L_VIEW_FORUM_LOGS}</a><!-- ENDIF -->
+
+<!-- IF S_MERGE_SELECT --><br clear="right" /><!-- ENDIF -->
 
 <form method="post" id="mcp" action="{S_MCP_ACTION}">
 
@@ -46,6 +50,7 @@
 <tr>
 	<td class="cat" colspan="6" align="right">
 		<select name="action">
+			<option value="" checked="checked">{L_SELECT_ACTION}</option>
 			<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
@@ -61,7 +66,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 <tr>
-	<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', 'topic_id_list', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', 'topic_id_list', false);">{L_UNMARK_ALL}</a></b></td>
+	<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></b></td>
 </tr>
 </table>
 

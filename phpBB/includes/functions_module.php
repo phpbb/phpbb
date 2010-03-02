@@ -256,9 +256,9 @@ class p_master
 			// If no category or module selected, go active for first module in first category
 			if (
 				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
-				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat) ||
+				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat && $item_ary['display']) ||
 				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
-				(!$id && !$mode && !$item_ary['cat'])
+				(!$id && !$mode && !$item_ary['cat'] && $item_ary['display'])
 				)
 			{
 				if ($item_ary['cat'])
@@ -309,14 +309,14 @@ class p_master
 		{
 			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
 			{
-				trigger_error('Cannot find module', E_USER_ERROR);
+				trigger_error("Cannot find module $module_path/{$this->p_class}_$this->p_name.$phpEx", E_USER_ERROR);
 			}
 
 			include("$module_path/{$this->p_class}_$this->p_name.$phpEx");
 
 			if (!class_exists("{$this->p_class}_$this->p_name"))
 			{
-				trigger_error('Module does not contain correct class', E_USER_ERROR);
+				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
 			}
 
 			if (!empty($mode))

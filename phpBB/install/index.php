@@ -8,10 +8,12 @@
 *
 */
 
-/**
+/**#@+
+* @ignore
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
+/**#@-*/
 
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -110,17 +112,18 @@ include($phpbb_root_path . 'includes/template.' . $phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
 include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');
 
 if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 {
-	$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 	foreach ($accept_lang_ary as $accept_lang)
 	{
-		// Set correct format ... guess full xx_YY form
-		$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+		// Set correct format ... guess full xx_yy form
+		$accept_lang = substr($accept_lang, 0, 2) . '_' . substr($accept_lang, 3, 2);
 
 		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 		{
@@ -129,7 +132,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		}
 		else
 		{
-			// No match on xx_YY so try xx
+			// No match on xx_yy so try xx
 			$accept_lang = substr($accept_lang, 0, 2);
 			if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 			{
@@ -173,7 +176,7 @@ set_error_handler('msg_handler');
 $user = new user();
 $auth = new auth();
 $cache = new cache();
-$template = new Template();
+$template = new template();
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
@@ -212,7 +215,7 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db, $config, $phpEx;
+		global $db, $config, $phpEx, $phpbb_root_path;
 
 		$module = array();
 
@@ -285,10 +288,13 @@ class module
 				$this->mode = $mode;
 			}
 
-			/**
-			* @todo this could be written as $this->module = new $this->filename($this); ... no? (eval statement in install/index.php)
-			*/
-			eval("\$this->module = new $this->filename(\$this);");
+			$module = $this->filename;
+			if (!class_exists($module))
+			{
+				$this->error('Module not accessible', __LINE__, __FILE__);
+			}
+			$this->module = new $module($this);
+
 			if (method_exists($this->module, 'main'))
 			{
 				$this->module->main($this->mode, $this->sub);
@@ -307,25 +313,24 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage;
+		global $template, $lang, $stage, $phpbb_root_path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
+			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
-			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],
+			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
 			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
+			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);
 
-		if (!empty($lang['ENCODING']))
-		{
-			header('Content-type: text/html; charset: ' . $lang['ENCODING']);
-		}
+		header('Content-type: text/html; charset=UTF-8');
 		header('Cache-Control: private, no-cache="set-cookie"');
 		header('Expires: 0');
 		header('Pragma: no-cache');
@@ -343,7 +348,7 @@ class module
 		$template->display('body');
 	
 		// Close our DB connection.
-		if (isset($db))
+		if (!empty($db) && is_object($db))
 		{
 			$db->sql_close();
 		}
@@ -532,7 +537,7 @@ class module
 		echo '</body>';
 		echo '</html>';
 
-		if (isset($db))
+		if (!empty($db) && is_object($db))
 		{
 			$db->sql_close();
 		}
@@ -658,8 +663,8 @@ class module
 
 			if (file_exists($path . '/iso.txt'))
 			{
-				list($displayname) = @file($path . '/iso.txt');
-				$lang[$displayname] = $file;
+				list($displayname, $localname) = @file($path . '/iso.txt');
+				$lang[$localname] = $file;
 			}
 		}
 		@closedir($dir);

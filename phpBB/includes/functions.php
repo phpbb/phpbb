@@ -15,7 +15,7 @@
 *
 * Set variable, used by {@link request_var the request_var function}
 *
-* @access: private
+* @access private
 */
 function set_var(&$result, $var, $type, $multibyte = false)
 {
@@ -24,14 +24,26 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 	if ($type == 'string')
 	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result)));
-		$result = (STRIP) ? stripslashes($result) : $result;
+		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result), ENT_COMPAT, 'UTF-8'));
 
-		// Check for possible multibyte characters to save a preg_replace call if nothing is in there...
-		if ($multibyte && strpos($result, '&amp;#') !== false)
+		if (!empty($result))
 		{
-			$result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
+			// Make sure multibyte characters are wellformed
+			if ($multibyte)
+			{
+				if (!preg_match('/^./u', $result))
+				{
+					$result = '';
+				}
+			}
+			else
+			{
+				// no multibyte, allow only ASCII (0-127)
+				$result = preg_replace('/[\x80-\xFF]/', '?', $result);
+			}
 		}
+
+		$result = (STRIP) ? stripslashes($result) : $result;
 	}
 }
 
@@ -40,8 +52,17 @@ function set_var(&$result, $var, $type, $multibyte = false)
 *
 * Used to get passed variable
 */
-function request_var($var_name, $default, $multibyte = false)
+function request_var($var_name, $default, $multibyte = false, $cookie = false)
 {
+	if (!$cookie && isset($_COOKIE[$var_name]))
+	{
+		if (!isset($_GET[$var_name]) && !isset($_POST[$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$_REQUEST[$var_name] = isset($_POST[$var_name]) ? $_POST[$var_name] : $_GET[$var_name];
+	}
+
 	if (!isset($_REQUEST[$var_name]) || (is_array($_REQUEST[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($_REQUEST[$var_name])))
 	{
 		return (is_array($default)) ? array() : $default;
@@ -136,16 +157,17 @@ function gen_rand_string($num_chars = 8)
 */
 function unique_id($extra = 'c')
 {
+	static $dss_seeded = false;
 	global $config;
-	static $dss_seeded;
 
 	$val = $config['rand_seed'] . microtime();
 	$val = md5($val);
 	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
 
-	if ($dss_seeded !== true)
+	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
 	{
 		set_config('rand_seed', $config['rand_seed'], true);
+		set_config('rand_seed_last_update', time(), true);
 		$dss_seeded = true;
 	}
 
@@ -160,6 +182,26 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	global $user;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+	// Check if the key is selectable. If not, we reset to the first key found.
+	// This ensures the values are always valid.
+	if (!isset($limit_days[$sort_days]))
+	{
+		@reset($limit_days);
+		$sort_days = key($limit_days);
+	}
+
+	if (!isset($sort_by_text[$sort_key]))
+	{
+		@reset($sort_by_text);
+		$sort_key = key($sort_by_text);
+	}
+
+	if (!isset($sort_dir_text[$sort_dir]))
+	{
+		@reset($sort_dir_text);
+		$sort_dir = key($sort_dir_text);
+	}
 
 	$s_limit_days = '<select name="st">';
 	foreach ($limit_days as $day => $text)
@@ -378,66 +420,203 @@ if (!function_exists('stripos'))
 
 if (!function_exists('realpath'))
 {
-	/**
-	* Replacement for realpath if it is disabled
-	* This function is from the php manual by nospam at savvior dot com
-	*/
-	function phpbb_realpath($path)
+	if (substr(PHP_OS, 0, 3) != 'WIN' && !(bool) ini_get('safe_mode') && function_exists('shell_exec') && trim(`realpath .`))
 	{
-		$translated_path = getenv('PATH_TRANSLATED');
-
-		$translated_path = str_replace('\\', '/', $translated_path);
-		$translated_path = str_replace(basename(getenv('PATH_INFO')), '', $translated_path);
-
-		$translated_path .= '/';
-
-		if ($path == '.' || $path == './')
+		/**
+		* @author Chris Smith <chris@project-minerva.org>
+		* @copyright 2006 Project Minerva Team
+		* @param string $path The path which we should attempt to resolve.
+		* @return mixed
+		* @ignore
+		*/
+		function phpbb_realpath($path)
 		{
-			return $translated_path;
+			$arg = escapeshellarg($path);
+			return trim(`realpath '$arg'`);
+		}
+	}
+	else
+	{
+		/**
+		* Checks if a path ($path) is absolute or relative
+		*
+		* @param string $path Path to check absoluteness of
+		* @return boolean
+		*/
+		function is_absolute($path)
+		{
+			return ($path[0] == '/' || (substr(PHP_OS, 0, 3) == 'WIN' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
 		}
 
-		// now check for back directory
-		$translated_path .= $path;
-
-		$dirs = explode('/', $translated_path);
-
-		foreach ($dirs as $key => $value)
+		/**
+		* @author Chris Smith <chris@project-minerva.org>
+		* @copyright 2006 Project Minerva Team
+		* @param string $path The path which we should attempt to resolve.
+		* @return mixed
+		*/
+		function phpbb_realpath($path)
 		{
-			if ($value == '..')
+			// Now to perform funky shizzle
+
+			// Switch to use UNIX slashes
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+			$path_prefix = '';
+
+			// Determine what sort of path we have
+			if (is_absolute($path))
 			{
-				$dirs[$key] = '';
-				$dirs[$key - 2] = '';
+				$absolute = true;
+
+				if ($path[0] == '/')
+				{
+					// Absolute path, *NIX style
+					$path_prefix = '';
+				}
+				else
+				{
+					// Absolute path, Windows style
+					// Remove the drive letter and colon
+					$path_prefix = $path[0] . ':';
+					$path = substr($path, 2);
+				}
 			}
-		}
-
-		$translated_path = '';
-
-		foreach ($dirs as $key => $value)
-		{
-			if (strlen($value) > 0)
+			else
 			{
-				$translated_path .= $value . '/';
+				// Relative Path
+				// Prepend the current working directory
+				if (function_exists('getcwd'))
+				{
+					// This is the best method, hopefully it is enabled!
+					$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
+					$absolute = true;
+					if (preg_match('#^[a-z]:#i', $path))
+					{
+						$path_prefix = $path[0] . ':';
+						$path = substr($path, 2);
+					}
+					else
+					{
+						$path_prefix = '';
+					}
+				}
+				else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+				{
+					// Warning: If chdir() has been used this will lie!
+					// @todo This has some problems sometime (CLI can create them easily)
+					$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+					$absolute = true;
+					$path_prefix = '';
+				}
+				else
+				{
+					// We have no way of getting the absolute path, just run on using relative ones.
+					$absolute = false;
+					$path_prefix = '.';
+				}
 			}
+
+			// Remove any repeated slashes
+			$path = preg_replace('#/{2,}#', '/', $path);
+
+			// Remove the slashes from the start and end of the path
+			$path = trim($path, '/');
+
+			// Break the string into little bits for us to nibble on
+			$bits = explode('/', $path);
+
+			// Remove any . in the path
+			$bits = array_diff($bits, array('.'));
+
+			// Lets get looping, run over and resolve any .. (up directory)
+			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
+			{
+				// @todo Optimise
+				if ($bits[$i] == '..' )
+				{
+					if (isset($bits[$i - 1]))
+					{
+						if ($bits[$i - 1] != '..')
+						{
+							// We found a .. and we are able to traverse upwards, lets do it!
+							unset($bits[$i]);
+							unset($bits[$i - 1]);
+							$i -= 2;
+							$max -= 2;
+							$bits = array_values($bits);
+						}
+					}
+					else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
+					{
+						// We have an absolute path trying to descend above the root of the filesystem
+						// ... Error!
+						return false;
+					}
+				}
+			}
+
+			// Prepend the path prefix
+			array_unshift($bits, $path_prefix); 
+
+			$resolved = '';
+
+			$max = sizeof($bits) - 1;
+
+			// Check if we are able to resolve symlinks, Windows cannot.
+			$symlink_resolve = (function_exists('readlink')) ? true : false;
+
+			foreach ($bits as $i => $bit)
+			{
+				if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
+				{
+					// Path Exists
+					if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
+					{
+						// Resolved a symlink.
+						$resolved = $link . (($i == $max) ? '' : '/');
+						continue;
+					}
+				}
+				else
+				{
+					// Something doesn't exist here!
+					// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
+					// return false;
+				}
+				$resolved .= $bit . (($i == $max) ? '' : '/');
+			}
+
+			// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
+			// because we must be inside that basedir, the question is where...
+			// @internal The slash in is_dir() gets around an open_basedir restriction
+			if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
+			{
+				return false;
+			}
+
+			// Put the slashes back to the native operating systems slashes
+			$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
+
+			return $resolved; // We got here, in the end!
 		}
-
-		$translated_path = substr($translated_path, 0, strlen($translated_path) - 1);
-
-		if (is_dir($translated_path) || is_file($translated_path))
-		{
-			return $translated_path;
-		}
-
-		return false;
 	}
 }
 else
 {
 	/**
 	* A wrapper for realpath
+	* @ignore
 	*/
 	function phpbb_realpath($path)
 	{
 		return realpath($path);
+	}
+}
+
+if (!function_exists('htmlspecialchars_decode'))
+{
+	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
+	{
+		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
 	}
 }
 
@@ -503,7 +682,7 @@ function tz_select($default = '', $truncate = false)
 	{
 		if ($truncate)
 		{
-			$zone = (strlen($zone) > 70) ? substr($zone, 0, 70) . '...' : $zone;
+			$zone = (utf8_strlen($zone) > 70) ? utf8_substr($zone, 0, 70) . '...' : $zone;
 		}
 
 		if (is_numeric($offset))
@@ -613,24 +792,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					);
 				}
 
-				if (sizeof($sql_ary))
-				{
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-						case 'mysqli':
-							$db->sql_query('INSERT INTO ' . FORUMS_TRACK_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-						break;
-
-						default:
-							foreach ($sql_ary as $ary)
-							{
-								$db->sql_query('INSERT INTO ' . FORUMS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-							}
-						break;
-					}
-				}
+				$db->sql_multi_insert(FORUMS_TRACK_TABLE, $sql_ary);
 			}
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
@@ -1004,6 +1166,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param int $f_mark_time the forums last mark time if user is registered and load_db_lastread enabled
 * @param int $mark_time_forum false if the mark time needs to be obtained, else the last users forum mark time
 *
+* @return true if complete forum got marked read, else false.
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
@@ -1098,7 +1261,10 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	if (!$row)
 	{
 		markread('topics', $forum_id);
+		return true;
 	}
+
+	return false;
 }
 
 // Pagination functions
@@ -1304,16 +1470,19 @@ function generate_board_url($without_script_path = false)
 /**
 * Redirects the user to another page then exits the script nicely
 */
-function redirect($url)
+function redirect($url, $return = false)
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $config, $user, $phpbb_root_path;
 
 	if (empty($user->lang))
 	{
 		$user->add_lang('common');
 	}
 
-	garbage_collection();
+	if (!$return)
+	{
+		garbage_collection();
+	}
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
@@ -1336,7 +1505,7 @@ function redirect($url)
 	{
 		// Full URL
 	}
-	else if ($url{0} == '/')
+	else if ($url[0] == '/')
 	{
 		// Absolute uri, prepend direct url...
 		$url = generate_board_url(true) . $url;
@@ -1360,8 +1529,8 @@ function redirect($url)
 		}
 		else
 		{
-			// Get the realpath of dirname
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
 			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
 			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
@@ -1378,6 +1547,17 @@ function redirect($url)
 			$url = $dir . '/' . str_replace($pathinfo['dirname'] . '/', '', $url);
 			$url = generate_board_url() . '/' . $url;
 		}
+	}
+
+	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
+	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
+	{
+		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
+	if ($return)
+	{
+		return $url;
 	}
 
 	// Redirect via an HTML form for PITA webservers
@@ -1453,8 +1633,19 @@ function build_url($strip_vars = false)
 		}
 
 		$query = $_query = array();
-		parse_str(substr($redirect, strpos($redirect, '?') + 1), $query);
+
+		$args = substr($redirect, strpos($redirect, '?') + 1);
+		$args = ($args) ? explode('&', $args) : array();
 		$redirect = substr($redirect, 0, strpos($redirect, '?'));
+
+		foreach ($args as $argument)
+		{
+			$arguments = explode('=', $argument);
+			$key = $arguments[0];
+			unset($arguments[0]);
+
+			$query[$key] = implode('=', $arguments);
+		}
 
 		// Strip the vars off
 		foreach ($strip_vars as $strip)
@@ -1465,7 +1656,7 @@ function build_url($strip_vars = false)
 			}
 		}
 	
-		// 
+		// Glue the remaining parts together... already urlencoded
 		foreach ($query as $key => $value)
 		{
 			$_query[] = $key . '=' . $value;
@@ -1484,6 +1675,8 @@ function build_url($strip_vars = false)
 function meta_refresh($time, $url)
 {
 	global $template;
+
+	$url = redirect($url, true);
 
 	$template->assign_vars(array(
 		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
@@ -1632,14 +1825,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (isset($_POST['login']))
 	{
-		$username	= request_var('username', '');
-		$password	= request_var('password', '');
+		$username	= request_var('username', '', true);
+		$password	= request_var('password', '', true);
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && strtolower($username) != strtolower($user->data['username']))
+		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
 		{
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
@@ -1715,7 +1908,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'S_CONFIRM_CODE'			=> true,
 					'CONFIRM_ID'				=> $confirm_id,
 					'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN) . '" alt="" title="" />',
-					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				));
 
 				$err = $user->lang[$result['error_msg']];
@@ -1729,7 +1922,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>');
+					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
 			break;
 		}
@@ -1738,7 +1931,15 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		// We just use what the session code determined...
-		$redirect = $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
+		// If we are not within the admin directory we use the page dir...
+		$redirect = '';
+
+		if (!$admin)
+		{
+			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
+		}
+
+		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
@@ -1753,7 +1954,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx"), // Needs to stay index.$phpEx because we are within the admin directory
+		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
+		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
@@ -1777,7 +1979,7 @@ function login_forum_box($forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
-	$password = request_var('password', '');
+	$password = request_var('password', '', true);
 
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '
@@ -1832,7 +2034,11 @@ function login_forum_box($forum_data)
 		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
 	}
 
-	page_header();
+	page_header($user->lang['LOGIN']);
+
+	$template->assign_vars(array(
+		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
+	);
 
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
@@ -1876,6 +2082,117 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 }
 
 /**
+* Generates a text with approx. the specified length which contains the specified words and their context
+*
+* @param	string	$text	The full text from which context shall be extracted
+* @param	string	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
+* @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
+*
+* @return	string			Context of the specified words seperated by "..."
+*/
+function get_context($text, $words, $length = 400)
+{
+	// first replace all whitespaces with single spaces
+	$text = preg_replace('/\s+/', ' ', $text);
+
+	$word_indizes = array();
+	if (sizeof($words))
+	{
+		$match = '';
+		// find the starting indizes of all words
+		foreach ($words as $word)
+		{
+			if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
+			{
+				$pos = strpos($text, $match[1]);
+				if ($pos !== false)
+				{
+					$word_indizes[] = $pos;
+				}
+			}
+		}
+		unset($match);
+
+		if (sizeof($word_indizes))
+		{
+			$word_indizes = array_unique($word_indizes);
+			sort($word_indizes);
+
+			$wordnum = sizeof($word_indizes);
+			// number of characters on the right and left side of each word
+			$sequence_length = (int) ($length / (2 * $wordnum)) - 2;
+			$final_text = '';
+			$word = $j = 0;
+			$final_text_index = -1;
+
+			// cycle through every character in the original text
+			for ($i = $word_indizes[$word], $n = strlen($text); $i < $n; $i++)
+			{
+				// if the current position is the start of one of the words then append $sequence_length characters to the final text
+				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
+				{
+					if ($final_text_index < $i - $sequence_length - 1)
+					{
+						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', substr($text, $i - $sequence_length, $sequence_length));
+					}
+					else
+					{
+						// if the final text is already nearer to the current word than $sequence_length we only append the text
+						// from its current index on and distribute the unused length to all other sequenes
+						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
+						$final_text .= substr($text, $final_text_index + 1, $i - $final_text_index - 1);
+					}
+					$final_text_index = $i - 1;
+
+					// add the following characters to the final text (see below)
+					$word++;
+					$j = 1;
+				}
+
+				if ($j > 0)
+				{
+					// add the character to the final text and increment the sequence counter
+					$final_text .= $text[$i];
+					$final_text_index++;
+					$j++;
+
+					// if this is a whitespace then check whether we are done with this sequence
+					if ($text[$i] == ' ')
+					{
+						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
+						if ($i + 4 < $n)
+						{
+							if (($j > $sequence_length && $word >= $wordnum) || strlen($final_text) > $length)
+							{
+								$final_text .= ' ...';
+								break;
+							}
+						}
+						else
+						{
+							// make sure the text really reaches the end
+							$j -= 4;
+						}
+
+						// stop context generation and wait for the next word
+						if ($j > $sequence_length)
+						{
+							$j = 0;
+						}
+					}
+				}
+			}
+			return $final_text;
+		}
+	}
+
+	if (!sizeof($words) || !sizeof($word_indizes))
+	{
+		return (strlen($text) >= $length + 3) ? substr($text, 0, $length) . '...' : $text;
+	}
+}
+
+/**
 * Decode text whereby text is coming from the db and expected to be pre-parsed content
 * We are placing this outside of the message parser because we are often in need of it...
 */
@@ -1896,21 +2213,28 @@ function decode_message(&$message, $bbcode_uid = '')
 
 	$message = str_replace($match, $replace, $message);
 
-	$match = array(
-		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-		'#<!\-\- .*? \-\->#s',
-		'#<.*?>#s'
-	);
-	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '', '');
-	
-	$message = preg_replace($match, $replace, $message);
+	$match = get_preg_expression('bbcode_htm');
+	$replace = array('\1', '\2', '\1', '', '');
 
-	return;
+	$message = preg_replace($match, $replace, $message);
+}
+
+/**
+* Strips all bbcode from a text and returns the plain content
+*/
+function strip_bbcode(&$text, $uid = '')
+{
+	if (!$uid)
+	{
+		$uid = '[0-9a-z]{5,}';
+	}
+
+	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
+
+	$match = get_preg_expression('bbcode_htm');
+	$replace = array('\1', '\2', '\1', '', '');
+	
+	$text = preg_replace($match, $replace, $text);
 }
 
 /**
@@ -1919,36 +2243,37 @@ function decode_message(&$message, $bbcode_uid = '')
 */
 function generate_text_for_display($text, $uid, $bitfield, $flags)
 {
-	global $__bbcode;
+	static $bbcode;
 
 	if (!$text)
 	{
 		return '';
 	}
 
+	$text = str_replace("\n", '<br />', censor_text($text));
+
 	// Parse bbcode if bbcode uid stored and bbcode enabled
-	if ($uid && ($flags & 1))
+	if ($uid && ($flags & OPTION_FLAG_BBCODE))
 	{
 		if (!class_exists('bbcode'))
 		{
 			global $phpbb_root_path, $phpEx;
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		}
 
-		if (empty($__bbcode))
+		if (empty($bbcode))
 		{
-			$__bbcode = new bbcode($bitfield);
+			$bbcode = new bbcode($bitfield);
 		}
 		else
 		{
-			$__bbcode->bbcode($bitfield);
+			$bbcode->bbcode($bitfield);
 		}
 		
-		$__bbcode->bbcode_second_pass($text, $uid);
+		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
-	$text = smiley_text($text, !($flags & 2));
-	$text = str_replace("\n", '<br />', censor_text($text));
+	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	return $text;
 }
@@ -1962,8 +2287,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 {
 	global $phpbb_root_path, $phpEx;
 
-	$uid = '';
-	$bitfield = '';
+	$uid = $bitfield = '';
 
 	if (!$text)
 	{
@@ -1972,7 +2296,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 
 	if (!class_exists('parse_message'))
 	{
-		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 	}
 
 	$message_parser = new parse_message($text);
@@ -2004,9 +2328,9 @@ function generate_text_for_edit($text, $uid, $flags)
 	decode_message($text, $uid);
 
 	return array(
-		'allow_bbcode'	=> ($flags & 1) ? 1 : 0,
-		'allow_smilies'	=> ($flags & 2) ? 1 : 0,
-		'allow_urls'	=> ($flags & 4) ? 1 : 0,
+		'allow_bbcode'	=> ($flags & OPTION_FLAG_BBCODE) ? 1 : 0,
+		'allow_smilies'	=> ($flags & OPTION_FLAG_SMILIES) ? 1 : 0,
+		'allow_urls'	=> ($flags & OPTION_FLAG_LINKS) ? 1 : 0,
 		'text'			=> $text
 	);
 }
@@ -2039,11 +2363,11 @@ function make_clickable($text, $server_url = false)
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
+		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
+		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match[] = '/(^|[\n ]|\()(' . get_preg_expression('email') . ')/ie';
@@ -2058,19 +2382,16 @@ function make_clickable($text, $server_url = false)
 */
 function censor_text($text)
 {
-	global $censors, $user, $cache;
+	static $censors;
+	global $cache;
 
-	if (!isset($censors))
+	if (!isset($censors) || !is_array($censors))
 	{
-		$censors = array();
-
-		if ($user->optionget('viewcensors'))
-		{
-			$cache->obtain_word_list($censors);
-		}
+		// obtain_word_list is taking care of the users censor option and the board-wide option
+		$censors = $cache->obtain_word_list();
 	}
 
-	if (sizeof($censors) && $user->optionget('viewcensors'))
+	if (sizeof($censors))
 	{
 		return preg_replace($censors['match'], $censors['replace'], $text);
 	}
@@ -2101,6 +2422,12 @@ function smiley_text($text, $force_option = false)
 function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
 {
 	global $config, $user;
+
+	if (!function_exists('display_attachments'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include("{$phpbb_root_path}includes/functions_display.$phpEx");
+	}
 
 	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
 	$tpl_size = sizeof($attachments);
@@ -2137,9 +2464,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	if (!sizeof($extensions))
 	{
 		global $cache;
-	
-		$extensions = array();
-		$cache->obtain_attach_extensions($extensions);
+		$extensions = $cache->obtain_attach_extensions();
 	}
 
 	if (!isset($extensions['_allowed_'][$extension]))
@@ -2221,7 +2546,7 @@ function parse_cfg_file($filename, $lines = false)
 	{
 		$line = trim($line);
 
-		if (!$line || $line{0} == '#' || ($delim_pos = strpos($line, '=')) === false)
+		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
 		{
 			continue;
 		}
@@ -2242,7 +2567,7 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = '';
 		}
-		else if (($value{0} == "'" && $value{sizeof($value)-1} == "'") || ($value{0} == '"' && $value{sizeof($value)-1} == '"'))
+		else if (($value[0] == "'" && $value[sizeof($value) - 1] == "'") || ($value[0] == '"' && $value[sizeof($value) - 1] == '"'))
 		{
 			$value = substr($value, 1, sizeof($value)-2);
 		}
@@ -2367,15 +2692,25 @@ function get_backtrace()
 
 /**
 * This function returns a regular expression pattern for commonly used expressions
-* Use with / as delimiter
-* mode can be: email|
+* Use with / as delimiter for email mode
+* mode can be: email|bbcode_htm
 */
 function get_preg_expression($mode)
 {
 	switch ($mode)
 	{
 		case 'email':
-			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+';
+			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*[a-z]+';
+		break;
+
+		case 'bbcode_htm':
+			return array(
+				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+				'#<!\-\- (l|m|w) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+				'#<!\-\- .*? \-\->#s',
+				'#<.*?>#s',
+			);
 		break;
 	}
 
@@ -2386,35 +2721,80 @@ function get_preg_expression($mode)
 * Truncates string while retaining special characters if going over the max length
 * The default max length is 60 at the moment
 */
-function truncate_string($string, $max_length = 60)
+function truncate_string($string, $max_length = 60, $allow_reply = true)
 {
 	$chars = array();
 
-	// split the multibyte characters first
-	$string_ary = preg_split('#(&\#[0-9]+;)#', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
-
-	// Now go through the array and split the other characters
-	foreach ($string_ary as $key => $value)
+	$strip_reply = false;
+	if ($allow_reply && strpos($string, 'Re: ') === 0)
 	{
-		if (strpos($value, '&#') === 0)
-		{
-			$chars[] = $value;
-			continue;
-		}
-
-		// decode html entities and put them back later
-		$_chars = str_split(html_entity_decode($value));
-		$chars = array_merge($chars, array_map('htmlspecialchars', $_chars));
+		$strip_reply = true;
+		$string = substr($string, 4);
 	}
+
+	$_chars = utf8_str_split(htmlspecialchars_decode($string));
+	$chars = array_map('htmlspecialchars', $_chars);
 
 	// Now check the length ;)
-	if (sizeof($chars) <= $max_length)
+	if (sizeof($chars) > $max_length)
 	{
-		return $string;
+		// Cut off the last elements from the array
+		$string = implode('', array_slice($chars, 0, $max_length));
 	}
 
-	// Cut off the last elements from the array
-	return implode('', array_slice($chars, 0, $max_length));
+	if ($strip_reply)
+	{
+		$string = 'Re: ' . $string;
+	}
+
+	return $string;
+}
+
+
+/**
+* Wrapper for php's checkdnsrr function.
+*
+* The windows failover is from the php manual
+* Please make sure to check the return value for === true and === false, since NULL could
+* be returned too.
+* 
+* @return true if entry found, false if not, NULL if this function is not supported by this environment
+*/
+function phpbb_checkdnsrr($host, $type = '')
+{
+	$type = (!$type) ? 'MX' : $type;
+
+	if (strpos(PHP_OS, 'WIN') !== false)
+	{
+		if (!function_exists('exec'))
+		{
+			return NULL;
+		}
+
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+
+		foreach ($output as $line)
+		{
+			if (!trim($line))
+			{
+				continue;
+			}
+
+			// Valid records begin with host name:
+			if (strpos($line, $host) === 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	else if (function_exists('checkdnsrr'))
+	{
+		return (checkdnsrr($host, $type)) ? true : false;
+	}
+
+	return NULL;
 }
 
 // Handler, header and footer
@@ -2489,7 +2869,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			
 			if (!empty($config['board_contact']))
 			{
-				echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+				echo '				<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
 			}
 			
 			echo '			</div>';
@@ -2510,7 +2890,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_USER_NOTICE:
 
 			define('IN_ERROR_HANDLER', true);
-		
+
 			if (empty($user->data))
 			{
 				$user->session_begin();
@@ -2544,8 +2924,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'	=> $msg_title,
-				'MESSAGE_TEXT'	=> $msg_text)
+				'MESSAGE_TITLE'		=> $msg_title,
+				'MESSAGE_TEXT'		=> $msg_text,
+				'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
+				'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false)
 			);
 
 			// We do not want the cron script to be called on error messages
@@ -2620,7 +3002,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
 
 			// Specify escape character for MSSQL
-			if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 			{
 				$reading_sql .= " ESCAPE '\\'";
 			}
@@ -2629,11 +3011,25 @@ function page_header($page_title = '', $display_online_list = true)
 		// Get number of online guests
 		if (!$config['load_online_guests'])
 		{
-			$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-				FROM ' . SESSIONS_TABLE . ' s
-				WHERE s.session_user_id = ' . ANONYMOUS . '
-					AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
-				$reading_sql;
+			if ($db->sql_layer === 'sqlite')
+			{
+				$sql = 'SELECT COUNT(session_ip) as num_guests
+					FROM (
+						SELECT DISTINCT s.session_ip
+							FROM ' . SESSIONS_TABLE . ' s
+							WHERE s.session_user_id = ' . ANONYMOUS . '
+								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+								$reading_sql .
+					')';
+			}
+			else
+			{
+				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
+					FROM ' . SESSIONS_TABLE . ' s
+					WHERE s.session_user_id = ' . ANONYMOUS . '
+						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+					$reading_sql;
+			}
 			$result = $db->sql_query($sql);
 			$guests_online = (int) $db->sql_fetchfield('num_guests');
 			$db->sql_freeresult($result);
@@ -2658,7 +3054,12 @@ function page_header($page_title = '', $display_online_list = true)
 				{
 					if ($row['user_colour'])
 					{
-						$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
+						$user_colour = ' style="color:#' . $row['user_colour'] . '"';
+						$row['username'] = '<strong>' . $row['username'] . '</strong>';
+					}
+					else
+					{
+						$user_colour = '';
 					}
 
 					if ($row['user_allow_viewonline'] && $row['session_viewonline'])
@@ -2668,13 +3069,21 @@ function page_header($page_title = '', $display_online_list = true)
 					}
 					else
 					{
-						$user_online_link = '<i>' . $row['username'] . '</i>';
+						$user_online_link = '<em>' . $row['username'] . '</em>';
 						$logged_hidden_online++;
 					}
 
 					if (($row['user_allow_viewonline'] && $row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = ($row['user_type'] <> USER_IGNORE) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $user_online_link . '</a>' : $user_online_link;
+						if ($row['user_type'] <> USER_IGNORE)
+						{
+							$user_online_link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '"' . $user_colour . '>' . $user_online_link . '</a>';
+						}
+						else
+						{
+							$user_online_link = ($user_colour) ? '<span' . $user_colour . '>' . $user_online_link . '</span>' : $user_online_link;
+						}
+
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}
@@ -2849,18 +3258,19 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && $auth->acl_gets('a_', 'm_')) ? true : false,
+		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_')) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
-		'S_USER_LANG'			=> $user->data['user_lang'],
+		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
+		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
+		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
-		'S_DISPLAY_ONLINE_LIST'	=> ($config['load_online']) ? 1 : 0,
+		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered']) ? 1 : 0,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
@@ -2877,7 +3287,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'],
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'],
 
@@ -2886,7 +3296,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['send_encoding'])
 	{
-		header('Content-type: text/html; charset=' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset=UTF-8');
 	}
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
@@ -2898,7 +3308,7 @@ function page_header($page_title = '', $display_online_list = true)
 /**
 * Generate page footer
 */
-function page_footer()
+function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;
 
@@ -2936,11 +3346,11 @@ function page_footer()
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "{$phpbb_root_path}adm/index.$phpEx?sid=" . $user->session_id : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", '', true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
-	if (!defined('IN_CRON'))
+	if (!defined('IN_CRON') && $run_cron)
 	{
 		$cron_type = '';
 	
@@ -2975,7 +3385,7 @@ function page_footer()
 
 		if ($cron_type)
 		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=' . $cron_type . '" width="1" height="1" />');
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=' . $cron_type . '" width="1" height="1" alt="cron" />');
 		}
 	}
 
@@ -3001,10 +3411,14 @@ function garbage_collection()
 	}
 
 	// Close our DB connection.
-	$db->sql_close();
+	if (!empty($db))
+	{
+		$db->sql_close();
+	}
 }
 
 /**
+* @package phpBB3
 */
 class bitfield
 {

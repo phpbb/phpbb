@@ -20,131 +20,43 @@ class acp_main
 		global $config, $db, $user, $auth, $template;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
-		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
-
-		if (sizeof($mark))
+		// Show restore permissions notice
+		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
 		{
-			switch ($action)
-			{
-				case 'activate':
-				case 'delete':
+			$this->tpl_name = 'acp_main';
+			$this->page_title = 'ACP_MAIN';
 
-					if (!$auth->acl_get('a_user'))
-					{
-						trigger_error($user->lang['NO_ADMIN']);
-					}
+			$sql = 'SELECT user_id, username, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user->data['user_perm_from'];
+			$result = $db->sql_query($sql);
+			$user_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-					$sql = 'SELECT username 
-						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
-				
-					$user_affected = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$user_affected[] = $row['username'];
-					}
-					$db->sql_freeresult($result);
+			$perm_from = '<strong' . (($user_row['user_colour']) ? ' style="color: #' . $user_row['user_colour'] . '">' : '>');
+			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_row['user_id']) . '">' : '';
+			$perm_from .= $user_row['username'];
+			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '</a>' : '';
+			$perm_from .= '</strong>';
 
-					if ($action == 'activate')
-					{
-						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			$template->assign_vars(array(
+				'S_RESTORE_PERMISSIONS'		=> true,
+				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
+				'PERM_FROM'					=> $perm_from,
+				'L_PERMISSIONS_TRANSFERED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+			));
 
-						foreach ($mark as $user_id)
-						{
-							user_active_flip($user_id, USER_INACTIVE);
-						}
-
-						set_config('num_users', $config['num_users'] + sizeof($mark), true);
-
-						// Update latest username
-						update_last_username();
-					}
-					else if ($action == 'delete')
-					{
-						if (!$auth->acl_get('a_userdel'))
-						{
-							trigger_error($user->lang['NO_ADMIN']);
-						}
-
-						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-						$sql = 'DELETE FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-	
-						add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
-					}
-
-				break;
-
-				case 'remind':
-					if (!$auth->acl_get('a_user'))
-					{
-						trigger_error($user->lang['NO_ADMIN']);
-					}
-
-					if (empty($config['email_enable']))
-					{
-						trigger_error($user->lang['EMAIL_DISABLED']);
-					}
-
-					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
-						FROM ' . USERS_TABLE . ' 
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
-
-					if ($row = $db->sql_fetchrow($result))
-					{
-						// Send the messages
-						include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-
-						$messenger = new messenger();
-
-						$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-						$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-						$usernames = array();
-						do
-						{
-							$messenger->template('user_remind_inactive', $row['user_lang']);
-
-							$messenger->replyto($config['board_email']);
-							$messenger->to($row['user_email'], $row['username']);
-							$messenger->im($row['user_jabber'], $row['username']);
-
-							$messenger->assign_vars(array(
-								'EMAIL_SIG'		=> $sig,
-								'USERNAME'		=> html_entity_decode($row['username']),
-								'SITENAME'		=> $config['sitename'],
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-							
-								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
-							);
-
-							$messenger->send($row['user_notify_type']);
-
-							$usernames[] = $row['username'];
-						}
-						while ($row = $db->sql_fetchrow($result));
-
-						$messenger->save_queue();
-
-						add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
-						unset($usernames);
-					}
-					$db->sql_freeresult($result);
-		
-				break;
-			}
+			return;
 		}
+
+		$action = request_var('action', '');
 
 		switch ($action)
 		{
 			case 'online':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				set_config('record_online_users', 1, true);
@@ -155,47 +67,47 @@ class acp_main
 			case 'stats':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS stat 
 					FROM ' . POSTS_TABLE . '
 					WHERE post_approved = 1';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_posts', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(topic_id) AS stat
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_approved = 1';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_topics', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(user_id) AS stat
 					FROM ' . USERS_TABLE . '
 					WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_users', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(attach_id) as stat
-					FROM ' . ATTACHMENTS_TABLE;
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
-
 				set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT SUM(filesize) as stat
-					FROM ' . ATTACHMENTS_TABLE;
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
-
 				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
@@ -205,7 +117,7 @@ class acp_main
 			case 'user':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
@@ -227,7 +139,7 @@ class acp_main
 			case 'date':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				set_config('board_startdate', time() - 1);
@@ -235,7 +147,7 @@ class acp_main
 			break;
 		
 			case 'db_track':
-				$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
+				$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
 
 				// This can get really nasty... therefore we only do the last six months
 				$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -290,24 +202,7 @@ class acp_main
 					}
 					unset($posted);
 
-					if (sizeof($sql_ary))
-					{
-						switch (SQL_LAYER)
-						{
-							case 'mysql':
-							case 'mysql4':
-							case 'mysqli':
-								$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-							break;
-
-							default:
-								foreach ($sql_ary as $ary)
-								{
-									$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-								}
-							break;
-						}
-					}
+					$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
 				}
 	
 				add_log('admin', 'LOG_RESYNC_POST_MARKING');
@@ -337,7 +232,7 @@ class acp_main
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
-				if ($file{0} != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
+				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
 					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 				}
@@ -375,6 +270,21 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
+		if ($config['allow_attachments'] || $config['allow_pm_attach'])
+		{
+			$sql = 'SELECT COUNT(attach_id) AS total_orphan
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE is_orphan = 1
+					AND filetime < ' . (time() - 3*60*60);
+			$result = $db->sql_query($sql);
+			$total_orphan = (int) $db->sql_fetchfield('total_orphan');
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$total_orphan = false;
+		}
+
 		$dbsize = get_database_size();
 		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS', 'db_track' => 'RESYNC_POST_MARKING'));
 
@@ -391,11 +301,14 @@ class acp_main
 			'AVATAR_DIR_SIZE'	=> $avatar_dir_size,
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
+			'TOTAL_ORPHAN'		=> $total_orphan,
+			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 
 			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
+			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)
@@ -421,17 +334,18 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
-			$sql = 'SELECT user_id, username, user_regdate, user_lastvisit
-				FROM ' . USERS_TABLE . ' 
-				WHERE user_type = ' . USER_INACTIVE . ' 
-				ORDER BY user_regdate ASC';
-			$result = $db->sql_query($sql);
+			$inactive = array();
+			$inactive_count = 0;
 
-			while ($row = $db->sql_fetchrow($result))
+			view_inactive_users($inactive, $inactive_count, 10);
+
+			foreach ($inactive as $row)
 			{
 				$template->assign_block_vars('inactive', array(
-					'DATE'			=> $user->format_date($row['user_regdate']),
+					'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
+					'JOINED'		=> $user->format_date($row['user_regdate']),
 					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+					'REASON'		=> $row['inactive_reason'],
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
 					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
@@ -448,12 +362,6 @@ class acp_main
 				'S_INACTIVE_USERS'		=> true,
 				'S_INACTIVE_OPTIONS'	=> build_select($option_ary))
 			);
-		}
-
-		// Display debug_extra notice
-		if (defined('DEBUG_EXTRA'))
-		{
-			$template->assign_var('S_DEBUG_EXTRA', true);
 		}
 
 		// Warn if install is still present

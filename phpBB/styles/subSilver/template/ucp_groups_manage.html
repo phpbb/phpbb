@@ -187,13 +187,13 @@
 		</tr>
 	<!-- END member -->
 	<tr>
-		<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="javascript:marklist('ucp', 'mark', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', 'mark', false);">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
+		<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
 	</tr>
 	</table>
 
 	<div class="pagination" style="float: left;">
 		<!-- IF PAGINATION -->
-			<a href="javascript:jumpto();" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->
 			{S_ON_PAGE}
 		<!-- ENDIF -->
@@ -216,7 +216,7 @@
 	</tr>
 	<tr>
 		<td class="row1"><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></td>
-		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" target="usersearch">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" /></td>

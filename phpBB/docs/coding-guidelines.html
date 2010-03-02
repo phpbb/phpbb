@@ -12,7 +12,6 @@
 <meta name="author" content="phpBB Group" />
 <meta name="copyright" content="phpBB Group" />
 <meta name="MSSmartTagsPreventParsing" content="true" />
-<link rel="shortcut icon" href="" />
 
 <style type="text/css">
 <!--
@@ -151,6 +150,10 @@ p a {
 .menu li a {
 	font-size: 100%;
 }
+
+.comment {
+	color: green;
+}
 //-->
 </style>
 
@@ -179,7 +182,7 @@ body {
 
 <a name="top"></a><div id="main">
 
-<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow it as closely as possible. This document is (c) 2006 phpBB Group, copying or redistribution is not allowed without permission.</p>
+<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow it as closely as possible.<br />This document is (c) 2006 phpBB Group, copying or redistribution is not allowed without permission.</p>
 
 <h1>Coding Guidelines</h1>
 
@@ -214,12 +217,12 @@ body {
 	<div class="paragraph">
 
 	<h3>Tabs vs Spaces:</h3>
-	<p>In order to make this as simple as possible, we will be using tabs, not spaces. Feel free to set how many spaces your editor uses when it <b>displays</b> tabs, but make sure that when you <b>save</b> the file, it's saving tabs and not spaces. This way, we can each have the code be displayed the way we like it, without breaking the layout of the actual files.</p>
-	<p>Additionally please check your editor for the indent size. If tabs are set to 4 spaces for example, the indent size needs to be 4 too:</p>
-	
+	<p>In order to make this as simple as possible, we will be using tabs, not spaces. We enforce 4 (four) spaces for one tab - therefore you need to set your tab width within your editor to 4 spaces. Make sure that when you <b>save</b> the file, it's saving tabs and not spaces. This way, we can each have the code be displayed the way we like it, without breaking the layout of the actual files.</p>
+	<p>Tabs in front of lines are no problem, but having them within the text can be a problem if you do not set it to the amount of spaces every one of us uses. Here is a short example of how it should look like:</p>
+
 	<blockquote><pre>
-$mode{TAB}{TAB}= request_var('mode', '');
-$search_id{TAB}= request_var('search_id', '');
+{TAB}$mode{TAB}{TAB}= request_var('mode', '');
+{TAB}$search_id{TAB}= request_var('search_id', '');
 	</pre></blockquote>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
@@ -280,9 +283,7 @@ $search_id{TAB}= request_var('search_id', '');
 
 	<blockquote><pre>
 /** 
-*
 * {HEADER}
-*
 */
 
 /**
@@ -304,31 +305,26 @@ class ...
 	<br /><br />
 	<div class="paragraph">
 
-	<p>Functions used by more than one page should be placed in functions.php, functions specific to one page should be placed on that page (at the bottom) or within the relevant sections functions file.</p>
+	<p>Functions used by more than one page should be placed in functions.php, functions specific to one page should be placed on that page (at the bottom) or within the relevant sections functions file. Some files in <code>/includes</code> are holding functions responsible for special sections, for example uploading files, displaying &quot;things&quot;, user related functions and so forth.</p>
 
 	<p>The following packages are defined, and related new features/functions should be placed within the mentioned files/locations, as well as specifying the correct package name. The package names are bold within this list:</p>
 
 	<ul class="menu">
 		<li><b>phpBB3</b><br />Core files and all files not assigned to a seperate package</li>
-		<li><b>acm</b><br /><code>/includes/acm</code><br />Cache System, seperated because of equal class names
-			<ul>
-				<li><b>acm_main</b><br /><code>/includes/acm/acm_main.php</code><br />Base caching class. All functions obtaining cached data should be placed into this file</li>
-				<li><b>acm_db</b><br /><code>/includes/acm/acm_db.php</code><br />Database based caching</li>
-				<li><b>acm_file</b><br /><code>/includes/acm/acm_file.php</code><br />File based caching</li>
-			</ul>
-		</li>
+		<li><b>acm</b><br /><code>/includes/acm</code>, <code>/includes/cache.php</code><br />Cache System</li>
 		<li><b>acp</b><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
 		<li><b>dbal</b><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
 			<ul>
-				<li><b>dbal_firebird</b><br /><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer<br />Minimum Requirement is Firebird 1.5+/Interbase 7.1+</li>
-				<li><b>dbal_mssql</b><br /><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer<br />Minimum Requirement is MSSQL 2000+</li>
-				<li><b>dbal_mssql_odbc</b><br /><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL<br />Minimum Requirement is Version 2000+</li>
-				<li><b>dbal_mysql</b><br /><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer<br />Minimum Requirement is 3.23+/4.0+/4.1+</li>
-				<li><b>dbal_mysql4</b><br /><code>/includes/db/mysql4.php</code><br />MySQL4 Database Abstraction Layer<br />Minimum Requirement is 4.0+/4.1+/5.0+</li>
-				<li><b>dbal_mysqli</b><br /><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer<br />Minimum Requirement is MySQLi extension with MySQL 4.1+/5.0+</li>
-				<li><b>dbal_oracle</b><br /><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
-				<li><b>dbal_postgres</b><br /><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer<br />Minimum Requirement is Version 7.3+</li>
-				<li><b>dbal_sqlite</b><br /><code>/includes/db/sqlite.php</code><br />Sqlite Database Abstraction Layer</li>
+				<li><code>/includes/db/dbal.php</code><br />Base DBAL class, defining the overall framework as well as common detominators</li>
+				<li><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer</li>
+				<li><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer</li>
+				<li><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL</li>
+				<li><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer for MySQL 3.x/4.0.x</li>
+				<li><code>/includes/db/mysql4.php</code><br />MySQL4 Database Abstraction Layer for MySQL 4.1.x/5.x</li>
+				<li><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer</li>
+				<li><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
+				<li><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer</li>
+				<li><code>/includes/db/sqlite.php</code><br />Sqlite Database Abstraction Layer</li>
 			</ul>
 		</li>
 		<li><b>docs</b><br /><code>/docs</code><br />phpBB Documentation</li>
@@ -336,6 +332,7 @@ class ...
 		<li><b>install</b><br /><code>/install</code><br />Installation System</li>
 		<li><b>language</b><br /><code>/language</code><br />All language files</li>
 		<li><b>login</b><br /><code>/includes/auth</code><br />Login Authentication Plugins</li>
+		<li><b>VC</b><br /><code>/includes/captcha</code><br />CAPTCHA</li>
 		<li><b>mcp</b><br /><code>mcp.php</code>, <code>/includes/mcp</code>, <code>report.php</code><br />Moderator Control Panel</li>
 		<li><b>ucp</b><br /><code>ucp.php</code>, <code>/includes/ucp</code><br />User Control Panel</li>
 		<li><b>search</b><br /><code>/includes/search</code>, <code>search.php</code><br />Search System</li>
@@ -350,7 +347,7 @@ class ...
 
 <a name="code"></a><h1>2. Code Layout/Guidelines</h1>
 
-	<p>Please note that these Guidelines also applies to javascript code.</p>
+	<p>Please note that these Guidelines applies to all php, html, javascript and css files.</p>
 
 	<a name="namingvars"></a><b>2.i. Variable/Function Naming</b>
 	<br /><br />
@@ -369,6 +366,7 @@ class ...
 
 	<h3>Loop Indices:</h3>
 	<p>The <em>only</em> situation where a one-character variable name is allowed is when it's the index for some looping construct. In this case, the index of the outer loop should always be $i. If there's a loop inside that loop, its index should be $j, followed by $k, and so on. If the loop is being indexed by some already-existing variable with a meaningful name, this guideline does not apply, example:</p>
+
 	<blockquote><pre>
 for ($i = 0; $i &lt; $outer_size; $i++)
 {
@@ -404,6 +402,7 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	<p>This is another case of being too lazy to type 2 extra characters causing problems with code clarity. Even if the body of some construct is only one line long, do <em>not</em> drop the braces. Just don't, examples:</p>
 
 	<p class="bad">// These are all wrong. </p>
+
 	<blockquote><pre>
 if (condition) do_stuff();
 
@@ -471,6 +470,7 @@ function do_stuff()
 	<p>This is another simple, easy step that helps keep code readable without much effort. Whenever you write an assignment, expression, etc.. Always leave <em>one</em> space between the tokens. Basically, write code as if it was English. Put spaces between variable names and operators. Don't put spaces just after an opening bracket or before a closing bracket. Don't put spaces just before a comma or a semicolon. This is best shown with a few examples, examples:</p>
 
 	<p>// Each pair shows the wrong way followed by the right way. </p>
+
 	<blockquote><pre>
 $i=0;
 $i = 0;
@@ -481,8 +481,8 @@ if ($i &lt; 7) ...
 if ( ($i &lt; 7)&amp;&amp;($j &gt; 8) ) ...
 if ($i &lt; 7 &amp;&amp; $j &gt; 8) ...
 		
-do_stuff( $i, "foo", $b );
-do_stuff($i, "foo", $b);
+do_stuff( $i, 'foo', $b );
+do_stuff($i, 'foo', $b);
 		
 for($i=0; $i&lt;$size; $i++) ...
 for ($i = 0; $i &lt; $size; $i++) ... 
@@ -552,8 +552,18 @@ $foo = $assoc_array[blah];
 $foo = $assoc_array['blah'];
 	</pre></blockquote>
 
+	<p class="bad">// wrong</p>
+	<blockquote><pre>
+$foo = $assoc_array["$var"];
+	</pre></blockquote>
+
+	<p class="good">// right </p>
+	<blockquote><pre>
+$foo = $assoc_array[$var];
+	</pre></blockquote>
+
 	<h3>Comments:</h3>
-	<p>Each complex function should be preceded by a comment that tells a programmer everything they need to know to use that function. The meaning of every parameter, the expected input, and the output are required as a minimal comment. The function's behaviour in error conditions (and what those error conditions are) should also be present.<br /><br />Especially important to document are any assumptions the code makes, or preconditions for its proper operation. Any one of the developers should be able to look at any part of the application and figure out what's going on in a reasonable amount of time. Avoid using <code>/* */</code> comment blocks for one-line comments, <code>//</code> should be used for one/two-liners.</p>
+	<p>Each complex function should be preceded by a comment that tells a programmer everything they need to know to use that function. The meaning of every parameter, the expected input, and the output are required as a minimal comment. The function's behaviour in error conditions (and what those error conditions are) should also be present - but mostly included within the comment about the output.<br /><br />Especially important to document are any assumptions the code makes, or preconditions for its proper operation. Any one of the developers should be able to look at any part of the application and figure out what's going on in a reasonable amount of time.<br /><br />Avoid using <code>/* */</code> comment blocks for one-line comments, <code>//</code> should be used for one/two-liners.</p>
 
 	<h3>Magic numbers:</h3>
 	<p>Don't use them. Use named constants for any literal value other than obvious special cases. Basically, it's ok to check if an array has 0 elements by using the literal 0. It's not ok to assign some special meaning to a number and then use it everywhere as a literal. This hurts readability AND maintainability. The constants <code>true</code> and <code>false</code> should be used in place of the literals 1 and 0 -- even though they have the same values (but not type!), it's more obvious what the actual logic is when you use the named constants. Typecast variables where it is needed, do not rely on the correct variable type (PHP is currently very loose on typecasting which can lead to security problems if a developer does not have a very close eye to it).</p>
@@ -590,7 +600,7 @@ $min = ($i &lt; $j) ? $i : $j;
 	</pre></blockquote>
 
 	<h3>Don't use uninitialized variables.</h3>
-	<p>For phpBB3, we intend to use a higher level of run-time error reporting. This will mean that the use of an uninitialized variable will be reported as a warning. These warnings can be avoided by using the built-in isset() function to check whether a variable has been set, examples:</p>
+	<p>For phpBB3, we intend to use a higher level of run-time error reporting. This will mean that the use of an uninitialized variable will be reported as a warning. These warnings can be avoided by using the built-in isset() function to check whether a variable has been set - but preferably the variable is always existing. For checking if an array has a key set this can come in handy though, examples:</p>
 
 	<p class="bad">// Wrong </p>
 	<blockquote><pre>
@@ -606,6 +616,8 @@ if (isset($forum)) ...
 	<blockquote><pre>
 if (isset($forum) &amp;&amp; $forum == 5)
 	</pre></blockquote>
+
+	<p>The <code>empty()</code> function is useful if you want to check if a variable is not set or being empty (an empty string, 0 as an integer or string, NULL, false, an empty array or a variable declared, but without a value in a class). Therefore empty should be used in favor of <code>isset($array) &amp;&amp; sizeof($array) > 0</code> - this can be written in a shorter way as <code>!empty($array)</code>.</p>
 
 	<h3>Switch statements:</h3>
 	<p>Switch/case code blocks can get a bit long sometimes. To have some level of notice and being in-line with the opening/closing brace requirement (where they are on the same line for better readability), this also applies to switch/case code blocks and the breaks. An example:</p>
@@ -704,7 +716,7 @@ switch ($mode)
 	<div class="paragraph">
 
 	<h3>Common SQL Guidelines: </h3>
-	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL3/4/5, MSSQL (7.0 and 2000), PostgreSQL (7.0+), Firebird, SQLite, Oracle8, ODBC (generalised if possible, otherwise DB2)).</p>
+	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL3/4/5, MSSQL (7.0 and 2000), PostgreSQL (7.0+), Firebird, SQLite, Oracle8, ODBC (generalised if possible)).</p>
 	<p>All SQL commands should utilise the DataBase Abstraction Layer (DBAL)</p>
 
 	<h3>SQL code layout:</h3>
@@ -731,7 +743,7 @@ $sql = 'SELECT *
 	</pre></blockquote>
 
 	<h3>SQL Quotes: </h3>
-	<p>Double quotes where applicable ... examples: </p>
+	<p>Double quotes where applicable (The variables in these examples are typecasted to integers before) ... examples: </p>
 
 	<p class="bad">// These are wrong.</p>
 	<blockquote><pre>
@@ -752,6 +764,8 @@ $sql = 'SELECT *
 
 	<h3>Common DBAL methods: </h3>
 
+	<h3>sql_escape():</h3>
+
 	<p>Always use <code>$db-&gt;sql_escape()</code> if you need to check for a string within an SQL statement (even if you are sure the variable can not contain single quotes - never trust your input), for example:</p>
 
 	<blockquote><pre>
@@ -760,7 +774,9 @@ $sql = 'SELECT *
 	WHERE username = '" . $db-&gt;sql_escape($username) . "'";
 	</pre></blockquote>
 
-	<p>If you need to UPDATE or INSERT data, make use of the <code>$db-&gt;sql_build_array()</code> function. This function already escapes strings and checkes other types, so there is no need to do this here. The data to be inserted should go into an array - <code>$sql_ary</code> - or directly within the statement if one one or two variables needs to be inserted/updated. An example of an insert statement would be:</p>
+	<h3>sql_build_array():</h3>
+
+	<p>If you need to UPDATE or INSERT data, make use of the <code>$db-&gt;sql_build_array()</code> function. This function already escapes strings and checks other types, so there is no need to do this here. The data to be inserted should go into an array - <code>$sql_ary</code> - or directly within the statement if one one or two variables needs to be inserted/updated. An example of an insert statement would be:</p>
 
 	<blockquote><pre>
 $sql_ary = array(
@@ -782,12 +798,126 @@ $sql_ary = array(
 );
 
 $sql = 'UPDATE ' . SOME_TABLE . ' 
-	SET ' . $db-&gt;sql_build_array('UPDATE', $sql_ary) . "
-	WHERE user_id = $user_id";
+	SET ' . $db-&gt;sql_build_array('UPDATE', $sql_ary) . '
+	WHERE user_id = ' . (int) $user_id;
 $db-&gt;sql_query($sql);
 	</pre></blockquote>
 
 	<p>The <code>$db-&gt;sql_build_array()</code> function supports the following modes: <code>INSERT</code> (example above), <code>INSERT_SELECT</code> (building query for <code>INSERT INTO table (...) SELECT value, column ...</code> statements), <code>MULTI_INSERT</code> (for returning extended inserts), <code>UPDATE</code> (example above) and <code>SELECT</code> (for building WHERE statement [AND logic]).</p>
+
+	<h3>sql_in_set():</h3>
+
+	<p>The <code>$db-&gt;sql_in_set()</code> function should be used for building <code>IN ()</code> and <code>NOT IN ()</code> constructs. Since (specifically) MySQL tend to be faster if for one value to be compared the <code>=</code> and <code>&lt;&gt;</code> operator is used, we let the DBAL decide what to do. A typical example of doing a positive match against a number of values would be:</p>
+
+	<blockquote><pre>
+$sql = 'SELECT *
+	FROM ' . FORUMS_TABLE . '
+	WHERE ' . $db-&gt;sql_in_set('forum_id', $forum_ids);
+$db-&gt;sql_query($sql);
+	</pre></blockquote>
+
+	<p>Based on the number of values in $forum_ids, the query can look differently.</p>
+
+	<p class="good">// SQL Statement if $forum_ids = array(1, 2, 3);</p>
+
+	<blockquote><pre>
+SELECT FROM phpbb_forums WHERE forum_id IN (1, 2, 3)
+	</pre></blockquote>
+
+	<p class="good">// SQL Statement if $forum_ids = array(1) or $forum_ids = 1</p>
+
+	<blockquote><pre>
+SELECT FROM phpbb_forums WHERE forum_id = 1
+	</pre></blockquote>
+
+	<p>Of course the same is possible for doing a negative match against a number of values:</p>
+
+	<blockquote><pre>
+$sql = 'SELECT *
+	FROM ' . FORUMS_TABLE . '
+	WHERE ' . $db-&gt;sql_in_set('forum_id', $forum_ids, <strong>true</strong>);
+$db-&gt;sql_query($sql);
+	</pre></blockquote>
+
+	<p>Based on the number of values in $forum_ids, the query can look differently here too.</p>
+
+	<p class="good">// SQL Statement if $forum_ids = array(1, 2, 3);</p>
+
+	<blockquote><pre>
+SELECT FROM phpbb_forums WHERE forum_id <strong>NOT</strong> IN (1, 2, 3)
+	</pre></blockquote>
+
+	<p class="good">// SQL Statement if $forum_ids = array(1) or $forum_ids = 1</p>
+
+	<blockquote><pre>
+SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1
+	</pre></blockquote>
+
+	<p>If the given array is empty, an error will be produced.</p>
+
+	<h3>sql_build_query():</h3>
+	<p>The <code>$db-&gt;sql_build_query()</code> function is responsible for building sql statements for select and select distinct queries if you need to JOIN on more than one table or retrieving data from more than one table while doing a JOIN. This needs to be used to make sure the resulting statement is working on all supported db's. Instead of explaining every possible combination, i will give a short example:</p>
+
+	<blockquote><pre>
+$sql_array = array(
+	'SELECT'	=> 'f.*, ft.mark_time',
+
+	'FROM'		=> array(
+		FORUMS_WATCH_TABLE	=> 'fw',
+		FORUMS_TABLE		=> 'f'
+	),
+
+	'LEFT_JOIN'	=> array(
+		array(
+			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+		)
+	);
+
+	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+		AND f.forum_id = fw.forum_id',
+
+	'ORDER_BY'	=> 'left_id'
+);
+
+$sql = $db-&gt;sql_build_query('SELECT', $sql_array);
+	</pre></blockquote>
+
+	<p>The possible first parameter for sql_build_query() is SELECT or SELECT_DISTINCT. As you can see, the logic is pretty self-explaining. For the LEFT_JOIN key, just add another array if you want to join on to tables for example. The added benefit of using this construct is that you are able to easily build the query statement based on conditions - for example the above LEFT_JOIN is only necessary if server side topic tracking is enabled; a slight adjustement would be:</p>
+
+	<blockquote><pre>
+$sql_array = array(
+	'SELECT'	=> 'f.*',
+
+	'FROM'		=> array(
+		FORUMS_WATCH_TABLE	=> 'fw',
+		FORUMS_TABLE		=> 'f'
+	),
+
+	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+		AND f.forum_id = fw.forum_id',
+
+	'ORDER_BY'	=> 'left_id'
+);
+
+if ($config['load_db_lastread'])
+{
+	$sql_array['LEFT_JOIN'] = array(
+		array(
+			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+		)
+	);
+
+	$sql_array['SELECT'] .= ', ft.mark_time ';
+}
+else
+{
+	// Here we read the cookie data
+}
+
+$sql = $db-&gt;sql_build_query('SELECT', $sql_array);
+	</pre></blockquote>
 
 	</div>
 	<a href="#top">Top</a>
@@ -818,7 +948,7 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	</pre></blockquote>
 
 	<h3>Use of in_array(): </h3>
-	<p>Try to avoid using in_array() on huge arrays, and try to not place them into loops if the array to check consist of more than 20 entries. in_array() can be very time consuming and uses a lot of cpu processing time. For little checks it is not noticable, but if checked against a huge array within a loop those checks alone can be a bunch of seconds.</p>
+	<p>Try to avoid using in_array() on huge arrays, and try to not place them into loops if the array to check consist of more than 20 entries. in_array() can be very time consuming and uses a lot of cpu processing time. For little checks it is not noticable, but if checked against a huge array within a loop those checks alone can be a bunch of seconds. If you need this functionality, try using isset() on the arrays keys instead, actually shifting the values into keys and vice versa. A call to <code>isset($array[$var])</code> is a lot faster than <code>in_array($var, array_keys($array))</code> for example.</p>
 
 	</div>
 	<a href="#top">Top</a>
@@ -830,9 +960,11 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<div class="paragraph">
 
 	<h3>General things:</h3>
-	<p>Never trust user input.</p>
-	<p>The auth class should be used for all authorisation checking</p>
-	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to)</p>
+	<p>Never trust user input (this also applies to server variables as well as cookies).</p>
+	<p>Try to sanitize values returned from a function.</p>
+	<p>Try to sanitize given function variables within your function.</p>
+	<p>The auth class should be used for all authorisation checking.</p>
+	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to).</p>
 
 	<h3>Variables: </h3>
 	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params. </p>
@@ -868,7 +1000,7 @@ $action_ary = request_var('action', array('' => 0));
 	<h3>Login checks/redirection: </h3>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
 
-	<p>The <code>login_box()</code> function could have a redirect as the first parameter. As a thumb of rule, specify an empty string if you want to redirect to the users current location, else do not add the <code>$SID</code> to the redirect string (for example within the ucp/login we redirect to the board index because else the user would be redirected to the login screen).</p>
+	<p>The <code>login_box()</code> function can have a redirect as the first parameter. As a thumb of rule, specify an empty string if you want to redirect to the users current location, else do not add the <code>$SID</code> to the redirect string (for example within the ucp/login we redirect to the board index because else the user would be redirected to the login screen).</p>
 
 	<h3>Sensitive Operations: </h3>
 	<p>For sensitive operations always let the user confirm the action. For the confirmation screens, make use of the <code>confirm_box()</code> function.</p>
@@ -882,22 +1014,36 @@ $auth->acl($user->data);
 $user->setup();
 	</pre></blockquote>
 
-	<p>The <code>$user->setup()</code> call can be used to pass on additional language definitions and a custom style (used in viewforum).</p>
+	<p>The <code>$user->setup()</code> call can be used to pass on additional language definition and a custom style (used in viewforum).</p>
 
 	<h3>Errors and messages: </h3>
-	<p>All messages/errors should be output by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
+	<p>All messages/errors should be outputed by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
 
 	<blockquote><pre>
 trigger_error('NO_FORUM');
 	</pre></blockquote>
 
+	<blockquote><pre>
+trigger_error($user-&gt;lang['NO_FORUM']);
+	</pre></blockquote>
+
+	<blockquote><pre>
+trigger_error('NO_APPROPIATE_MODE', E_USER_ERROR);
+	</pre></blockquote>
+
 	<h3>Url formatting</h3>
 
-	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended.</p>
-	
+	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended (though some links will fail and the code need to be slightly adjusted).</p>
+
+	<p>The <code>append_sid()</code> function from 2.0.x is available too, though does not handle url alterations automatically. Please have a look at the code documentation if you want to get more details on how to use append_sid(). A sample call to append_sid() can look like this:</p>
+
+	<blockquote><pre>
+append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])
+	</pre></blockquote>
+
 	<h3>General function usage: </h3>
 
-	<p>Some of these functions are only chosen over others because of a personal preference and are having no other benefit than to be consistant over the code.</p>
+	<p>Some of these functions are only chosen over others because of personal preference and having no other benefit than to be consistant over the code.</p>
 
 	<ul>
 		<li>
@@ -908,6 +1054,12 @@ trigger_error('NO_FORUM');
 		</li>
 		<li>
 			<p>Use <code>else if</code> instead of <code>elseif</code></p>
+		</li>
+		<li>
+			<p>Use <code>false</code> (lowercase) instead of <code>FALSE</code></p>
+		</li>
+		<li>
+			<p>Use <code>true</code> (lowercase) instead of <code>TRUE</code></p>
 		</li>
 	</ul>
 
@@ -921,7 +1073,7 @@ trigger_error('NO_FORUM');
 <div class="paragraph">
 
 <h3>General things</h3>
-<p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms).</p>
+<p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the intendation and coding guidelines also apply to templates where possible.</p>
 
 <p>The outer table class <code>forumline</code> has gone and is replaced with <code>tablebg</code>.</p>
 <p>When writing <code>&lt;table&gt;</code> the order <code>&lt;table class="" cellspacing="" cellpadding="" border="" align=""&gt;</code> creates consistency and allows everyone to easily see which table produces which "look". The same applies to most other tags for which additional parameters can be set, consistency is the major aim here.</p>
@@ -945,33 +1097,33 @@ trigger_error('NO_FORUM');
 
 <p>Use a standard cellpadding of 2 and cellspacing of 0 on outer tables. Inner tables can vary from 0 to 3 or even 4 depending on the need.</p>
 
-<p>Use div container for styling and table for data representation</p>
+<p><strong>Use div container/css for styling and table for data representation.</strong></p>
 
 <p>The seperate catXXXX and thXXX classes are gone. When defining a header cell just use <code>&lt;th&gt;</code> rather than <code>&lt;th class="thHead"&gt;</code> etc. Similarly for cat, don't use <code>&lt;td class="catLeft"&gt;</code> use <code>&lt;td class="cat"&gt;</code> etc.</p>
 
-<p>Try to retain consistency of basic layout and class useage, i.e. _EXPLAIN text should generally be placed below the title it explains, e.g. <code>{L_POST_USERNAME}&lt;br /&gt;&lt;span class="gensmall"&gt;{L_POST_USERNAME_EXPLAIN}&lt;/span&gt;</code> is the typical way of handling this ... there may be exceptions and this isn't a hard and fast rule</p>
+<p>Try to retain consistency of basic layout and class useage, i.e. _EXPLAIN text should generally be placed below the title it explains, e.g. <code>{L_POST_USERNAME}&lt;br /&gt;&lt;span class="gensmall"&gt;{L_POST_USERNAME_EXPLAIN}&lt;/span&gt;</code> is the typical way of handling this ... there may be exceptions and this isn't a hard and fast rule.</p>
 
 <p>Try to keep template conditional and other statements tabbed in line with the block to which they refer.</p>
 
-<p class="bad">this is incorrect</p>
+<p class="good">this is correct</p>
 <blockquote><pre>
-&lt;!-- BEGIN test --&gt;
+<span class="comment">&lt;!-- BEGIN test --&gt;</span>
 	&lt;tr&gt;
 		&lt;td&gt;&#123;test.TEXT&#125;&lt;/td&gt;
 	&lt;/tr&gt;
-&lt;!-- END test --&gt;
+<span class="comment">&lt;!-- END test --&gt;</span>
 </pre></blockquote>
 
-<p class="good">this is correct:</p>
+<p class="good">this is also correct:</p>
 <blockquote><pre>
-&lt;!-- BEGIN test --&gt;
+<span class="comment">&lt;!-- BEGIN test --&gt;</span>
 &lt;tr&gt;
 	&lt;td&gt;&#123;test.TEXT&#125;&lt;/td&gt;
 &lt;/tr&gt;
-&lt;!-- END test --&gt;
+<span class="comment">&lt;!-- END test --&gt;</span>
 </pre></blockquote>
 
-<p>it gives immediate feedback on exactly what is looping.</p>
+<p>it gives immediate feedback on exactly what is looping - decide which way to use based on the readability.</p>
 
 </div>
 <a href="#top">Top</a>
@@ -986,50 +1138,26 @@ trigger_error('NO_FORUM');
 <p>Firstly templates now take the suffix &quot;.html&quot; rather than &quot;.tpl&quot;. This was done simply to make the lifes of some people easier wrt syntax highlighting, etc.</p>
 
 <h3>Variables</h3>
-<p>All template variables should be named appropriately (using underscores for spaces), language entries should be prefixed with L_, system data with S_, urls with U_, all other variables should be presented 'as is'.</p>
+<p>All template variables should be named appropriately (using underscores for spaces), language entries should be prefixed with L_, system data with S_, urls with U_, javascript urls with UA_, language to be put in javascript statements with LA_, all other variables should be presented 'as is'.</p>
 
-<p>Note that unlike 2.0.x most language strings are not assigned from the source. When a language variable is found {L_YYYYYY} phpBB first looks if an assigned variable exists with that name. If it does, it uses that. If not it looks if an exsting string defined in the language file exists. This should reduce the need to assign loads of new lang vars in Mods.</p>
+<p>L_* template variables are automatically tried to be mapped to the corresponding language entry if the code does not set (and therefore overwrite) this variable specifically. For example <code>{L_USERNAME}</code> maps to <code>$user-&gt;lang['USERNAME']</code>. The LA_* template variables are handled within the same way, but properly escaped to be put in javascript code. This should reduce the need to assign loads of new lang vars in Mods.
+</p>
 
-<h3>Blocks</h3>
+<h3>Blocks/Loops</h3>
 <p>The basic block level loop remains and takes the form:</p>
 <blockquote><pre>
-&lt;!-- BEGIN loopname --&gt;
-markup, {loopname&#46;X_YYYYY}, etc&#46;
-&lt;!-- END loopname --&gt;
+<span class="comment">&lt;!-- BEGIN loopname --&gt;</span>
+	markup, {loopname&#46;X_YYYYY}, etc&#46;
+<span class="comment">&lt;!-- END loopname --&gt;</span>
 </pre></blockquote>
 
-<p>However this has now been extended with the following additions. Firstly you can set the start and end points of the loop. For example:</p>
-
-<blockquote><pre>
-&lt;!-- BEGIN loopname(2) --&gt;
-markup
-&lt;!-- END loopname --&gt;
-</pre></blockquote>
-
-<p>Will start the loop on the third entry (note that indexes start at zero). Extensions of this are:
-<br /><br />
-<code>loopname(2,4)</code>: Starts loop on third values, ends on fourth<br />
-<code>loopname(-4)</code>: Starts loop fourth from last value<br />
-<code>loopname(2, -4)</code>: Starts loop on third value, ends four from end<br />
-<br />Note that the indexing method may change since it's not really consistent at this time :)</p>
-
-<p>A further extension to begin is BEGINELSE:</p>
-
-<blockquote><pre>
-&lt;!-- BEGIN loop --&gt;
-markup
-&lt;!-- BEGINELSE --&gt;
-markup
-&lt;!-- END loop --&gt;
-</pre></blockquote>
-
-<p>This will cause the markup between <code>BEGINELSE</code> and <code>END</code> to be output if the loop contains no values. This is useful for forums with no topics (for example) ... in some ways it replaces &quot;bits of&quot; the existing &quot;switch_&quot; type control (the rest being replaced by conditionals, see below).</p>
+<p>A bit later loops will be explained further. To not irretate you we will explain conditionals as well as other statements first.</p>
 
 <h3>Including files</h3>
 <p>Something that existed in 2.0.x which no longer exists in 3.0.x is the ability to assign a template to a variable. This was used (for example) to output the jumpbox. Instead (perhaps better, perhaps not but certainly more flexible) we now have INCLUDE. This takes the simple form:</p>
 
 <blockquote><pre>
-&lt;!-- INCLUDE filename --&gt;
+<span class="comment">&lt;!-- INCLUDE filename --&gt;</span>
 </pre></blockquote>
 
 <p>You will note in the 3.0 templates the major sources start with <code>&lt;!-- INCLUDE overall_header.html --&gt;</code> or <code>&lt;!-- INCLUDE simple_header.html --&gt;</code>, etc. In 2.0.x control of &quot;which&quot; header to use was defined entirely within the code. In 3.0.x the template designer can output what they like. Note that you can introduce new templates (i.e. other than those in the default set) using this system and include them as you wish ... perhaps useful for a common &quot;menu&quot; bar or some such. No need to modify loads of files as with 2.0.x.</p>
@@ -1038,15 +1166,15 @@ markup
 <p>A contentious decision has seen the ability to include PHP within the template introduced. This is achieved by enclosing the PHP within relevant tags:</p>
 
 <blockquote><pre>
-&lt;!-- PHP --&gt;
-echo &quot;hello!&quot;;
-&lt;!-- ENDPHP --&gt;
+<span class="comment">&lt;!-- PHP --&gt;</span>
+	echo &quot;hello!&quot;;
+<span class="comment">&lt;!-- ENDPHP --&gt;</span>
 </pre></blockquote>
 
 <p>You may also include PHP from an external file using:</p>
 
 <blockquote><pre>
-&lt;!-- INCLUDEPHP somefile&#46;php --&gt;
+<span class="comment">&lt;!-- INCLUDEPHP somefile&#46;php --&gt;</span>
 </pre></blockquote>
 
 <p>it will be included and executed inline.<br /><br />A note, it is very much encouraged that template designers do not include PHP. The ability to include raw PHP was introduced primarily to allow end users to include banner code, etc. without modifying multiple files (as with 2.0.x). It was not intended for general use ... hence <!-- w --><a href="http://www.phpbb.com">www.phpbb.com</a><!-- w --> will <strong>not</strong> make available template sets which include PHP. And by default templates will have PHP disabled (the admin will need to specifically activate PHP for a template).</p>
@@ -1055,18 +1183,20 @@ echo &quot;hello!&quot;;
 <p>The most significant addition to 3.0.x are conditions or control structures, &quot;if something then do this else do that&quot;. The system deployed is very similar to Smarty. This may confuse some people at first but it offers great potential and great flexibility with a little imagination. In their most simple form these constructs take the form:</p>
 
 <blockquote><pre>
-&lt;!-- IF expr --&gt;<br />markup<br />&lt;!-- ENDIF --&gt;
+<span class="comment">&lt;!-- IF expr --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
 </pre></blockquote>
 
 <p>expr can take many forms, for example:</p>
 
 <blockquote><pre>
-&lt;!-- IF loop&#46;S_ROW_COUNT is even --&gt;
-markup
-&lt;!-- ENDIF --&gt;
+<span class="comment">&lt;!-- IF loop&#46;S_ROW_COUNT is even --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
 </pre></blockquote>
 
-<p>This will output the markup if the S_ROW_COUNT variable in the current iteration of loop is an even value (i.e. the expr is TRUE). You can use various comparison methods (standard as well as equivalent textual versions noted in square brackets) including:</p>
+<p>This will output the markup if the S_ROW_COUNT variable in the current iteration of loop is an even value (i.e. the expr is TRUE). You can use various comparison methods (standard as well as equivalent textual versions noted in square brackets) including (<code>not, or, and, eq, neq, is</code> should be used if possible for better readability):</p>
 
 <blockquote><pre>
 == [eq]
@@ -1086,6 +1216,7 @@ markup
 -
 *
 /
+,
 &lt;&lt; (bitwise shift left)
 &gt;&gt; (bitwise shift right)
 | (bitwise or)
@@ -1106,29 +1237,29 @@ div
 <p>Beyond the simple use of IF you can also do a sequence of comparisons using the following:</p>
 
 <blockquote><pre>
-&lt;!-- IF expr1 --&gt;
-markup
-&lt;!-- ELSEIF expr2 --&gt;
-markup
-&#46;
-&#46;
-&#46;
-&lt;!-- ELSEIF exprN --&gt;
-markup
-&lt;!-- ELSE --&gt;
-markup
-&lt;!-- ENDIF --&gt;
+<span class="comment">&lt;!-- IF expr1 --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ELSEIF expr2 --&gt;</span>
+	markup
+	&#46;
+	&#46;
+	&#46;
+<span class="comment">&lt;!-- ELSEIF exprN --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ELSE --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
 </pre></blockquote>
 
 <p>Each statement will be tested in turn and the relevant output generated when a match (if a match) is found. It is not necessary to always use ELSEIF, ELSE can be used alone to match &quot;everything else&quot;.<br /><br />So what can you do with all this? Well take for example the colouration of rows in viewforum. In 2.0.x row colours were predefined within the source as either row color1, row color2 or row class1, row class2. In 3.0.x this is moved to the template, it may look a little daunting at first but remember control flows from top to bottom and it's not too difficult:</p>
 
 <blockquote><pre>
 &lt;table&gt;
-	&lt;!-- IF loop&#46;S_ROW_COUNT is even --&gt;
-	&lt;tr class=&quot;row1&quot;&gt;
-	&lt;!-- ELSE --&gt;
-	&lt;tr class=&quot;row2&quot;&gt;
-	&lt;!-- ENDIF --&gt;
+	<span class="comment">&lt;!-- IF loop&#46;S_ROW_COUNT is even --&gt;</span>
+		&lt;tr class=&quot;row1&quot;&gt;
+	<span class="comment">&lt;!-- ELSE --&gt;</span>
+		&lt;tr class=&quot;row2&quot;&gt;
+	<span class="comment">&lt;!-- ENDIF --&gt;</span>
 	&lt;td&gt;HELLO!&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
@@ -1138,15 +1269,15 @@ markup
 
 <blockquote><pre>
 &lt;table&gt;
-	&lt;!-- IF loop&#46;S_ROW_COUNT &gt; 10 --&gt;
-	&lt;tr bgcolor=&quot;#FF0000&quot;&gt;
-	&lt;!-- ELSEIF loop&#46;S_ROW_COUNT &gt; 5 --&gt;
-	&lt;tr bgcolor=&quot;#00FF00&quot;&gt;
-	&lt;!-- ELSEIF loop&#46;S_ROW_COUNT &gt; 2 --&gt;
-	&lt;tr bgcolor=&quot;#0000FF&quot;&gt;
-	&lt;!-- ELSE --&gt;
-	&lt;tr bgcolor=&quot;#FF00FF&quot;&gt;
-	&lt;!-- ENDIF --&gt;
+	<span class="comment">&lt;!-- IF loop&#46;S_ROW_COUNT &gt; 10 --&gt;</span>
+		&lt;tr bgcolor=&quot;#FF0000&quot;&gt;
+	<span class="comment">&lt;!-- ELSEIF loop&#46;S_ROW_COUNT &gt; 5 --&gt;</span>
+		&lt;tr bgcolor=&quot;#00FF00&quot;&gt;
+	<span class="comment">&lt;!-- ELSEIF loop&#46;S_ROW_COUNT &gt; 2 --&gt;</span>
+		&lt;tr bgcolor=&quot;#0000FF&quot;&gt;
+	<span class="comment">&lt;!-- ELSE --&gt;</span>
+		&lt;tr bgcolor=&quot;#FF00FF&quot;&gt;
+	<span class="comment">&lt;!-- ENDIF --&gt;</span>
 	&lt;td&gt;hello!&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
@@ -1155,12 +1286,228 @@ markup
 <p>This will output the row cell in purple for the first two rows, blue for rows 2 to 5, green for rows 5 to 10 and red for remainder. So, you could produce a &quot;nice&quot; gradient effect, for example.<br /><br />What else can you do? Well, you could use IF to do common checks on for example the login state of a user:</p>
 
 <blockquote><pre>
-&lt;!-- IF S_USER_LOGGED_IN --&gt;
-markup
-&lt;!-- ENDIF --&gt;
+<span class="comment">&lt;!-- IF S_USER_LOGGED_IN --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
 </pre></blockquote>
 
 <p>This replaces the existing (fudged) method in 2.0.x using a zero length array and BEGIN/END.</p>
+
+<h3>Extended syntax for Blocks/Loops</h3>
+
+<p>Back to our loops - they had been extended with the following additions. Firstly you can set the start and end points of the loop. For example:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN loopname(2) --&gt;</span>
+	markup
+<span class="comment">&lt;!-- END loopname --&gt;</span>
+</pre></blockquote>
+
+<p>Will start the loop on the third entry (note that indexes start at zero). Extensions of this are:
+<br /><br />
+<code>loopname(2)</code>: Will start the loop on the 3rd entry<br />
+<code>loopname(-2)</code>: Will start the loop two entries from the end<br />
+<code>loopname(3,4)</code>: Will start the loop on the fourth entry and end it on the fifth<br />
+<code>loopname(3,-4)</code>: Will start the loop on the fourth entry and end it four from last<br />
+</p>
+
+<p>A further extension to begin is BEGINELSE:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN loop --&gt;</span>
+	markup
+<span class="comment">&lt;!-- BEGINELSE --&gt;</span>
+	markup
+<span class="comment">&lt;!-- END loop --&gt;</span>
+</pre></blockquote>
+
+<p>This will cause the markup between <code>BEGINELSE</code> and <code>END</code> to be output if the loop contains no values. This is useful for forums with no topics (for example) ... in some ways it replaces &quot;bits of&quot; the existing &quot;switch_&quot; type control (the rest being replaced by conditionals).</p>
+
+<p>Another way of checking if a loop contains values is by prefixing the loops name with a dot:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- IF .loop --&gt;</span>
+	<span class="comment">&lt;!-- BEGIN loop --&gt;</span>
+		markup
+	<span class="comment">&lt;!-- END loop --&gt;</span>
+<span class="comment">&lt;!-- ELSE --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
+</pre></blockquote>
+
+<p>You are even able to check the number of items within a loop by comparing it with values within the IF condition:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- IF .loop > 2 --&gt;</span>
+	<span class="comment">&lt;!-- BEGIN loop --&gt;</span>
+		markup
+	<span class="comment">&lt;!-- END loop --&gt;</span>
+<span class="comment">&lt;!-- ELSE --&gt;</span>
+	markup
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
+</pre></blockquote>
+
+<p>Nesting loops cause the conditionals needing prefixed with all loops from the outer one to the inner most. An illustration of this:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN firstloop --&gt;</span>
+	{firstloop.MY_VARIABLE_FROM_FIRSTLOOP}
+
+	<span class="comment">&lt;!-- BEGIN secondloop --&gt;</span>
+		{firstloop.secondloop.MY_VARIABLE_FROM_SECONDLOOP}
+	<span class="comment">&lt;!-- END secondloop --&gt;</span>
+<span class="comment">&lt;!-- END firstloop --&gt;</span>
+</pre></blockquote>
+
+<p>Sometimes it is necessary to break out of nested loops to be able to call another loop within the current iteration. This sounds a little bit confusing and it is not used very often. The following (rather complex) example shows this quite good - it also shows how you test for the first and last row in a loop (i will explain the example in detail further down):</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN l_block1 --&gt;</span>
+	<span class="comment">&lt;!-- IF l_block1.S_SELECTED --&gt;</span>
+		&lt;strong&gt;{l_block1.L_TITLE}&lt;/strong&gt;
+		<span class="comment">&lt;!-- IF S_PRIVMSGS --&gt;</span>
+
+			<span class="comment">&lt;!-- the ! at the beginning of the loop name forces the loop to be not a nested one of l_block1 --&gt;</span>
+			<span class="comment">&lt;!-- BEGIN !folder --&gt;</span>
+				<span class="comment">&lt;!-- IF folder.S_FIRST_ROW --&gt;</span>
+					&lt;ul class=&quot;nav&quot;&gt;
+				<span class="comment">&lt;!-- ENDIF --&gt;</span>
+
+				&lt;li&gt;&lt;a href=&quot;{folder.U_FOLDER}&quot;&gt;{folder.FOLDER_NAME}&lt;/a&gt;&lt;/li&gt;
+
+				<span class="comment">&lt;!-- IF folder.S_LAST_ROW --&gt;</span>
+					&lt;/ul&gt;
+				<span class="comment">&lt;!-- ENDIF --&gt;</span>
+			<span class="comment">&lt;!-- END !folder --&gt;</span>
+
+		<span class="comment">&lt;!-- ENDIF --&gt;</span>
+
+		&lt;ul class=&quot;nav&quot;&gt;
+		<span class="comment">&lt;!-- BEGIN l_block2 --&gt;</span>
+			&lt;li&gt;
+				<span class="comment">&lt;!-- IF l_block1.l_block2.S_SELECTED --&gt;</span>
+					&lt;strong&gt;{l_block1.l_block2.L_TITLE}&lt;/strong&gt;
+				<span class="comment">&lt;!-- ELSE --&gt;</span>
+					&lt;a href=&quot;{l_block1.l_block2.U_TITLE}&quot;&gt;{l_block1.l_block2.L_TITLE}&lt;/a&gt;
+				<span class="comment">&lt;!-- ENDIF --&gt;</span>
+			&lt;/li&gt;
+		<span class="comment">&lt;!-- END l_block2 --&gt;</span>
+		&lt;/ul&gt;
+	<span class="comment">&lt;!-- ELSE --&gt;</span>
+		&lt;a class=&quot;nav&quot; href=&quot;{l_block1.U_TITLE}&quot;&gt;{l_block1.L_TITLE}&lt;/a&gt;
+	<span class="comment">&lt;!-- ENDIF --&gt;</span>
+<span class="comment">&lt;!-- END l_block1 --&gt;</span>
+</pre></blockquote>
+
+<p>Let us first concentrate on this part of the example:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN l_block1 --&gt;</span>
+	<span class="comment">&lt;!-- IF l_block1.S_SELECTED --&gt;</span>
+		markup
+	<span class="comment">&lt;!-- ELSE --&gt;</span>
+		&lt;a class=&quot;nav&quot; href=&quot;{l_block1.U_TITLE}&quot;&gt;{l_block1.L_TITLE}&lt;/a&gt;
+	<span class="comment">&lt;!-- ENDIF --&gt;</span>
+<span class="comment">&lt;!-- END l_block1 --&gt;</span>
+</pre></blockquote>
+
+<p>Here we open the loop l_block1 and doing some things if the value S_SELECTED within the current loop iteration is true, else we write the blocks link and title. Here, you see <code>{l_block1.L_TITLE}</code> referenced - you remember that L_* variables get automatically assigned the corresponding language entry? This is true, but not within loops. The L_TITLE variable within the loop l_block1 is assigned within the code itself.</p>
+
+<p>Let's have a closer look to the markup:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN l_block1 --&gt;</span>
+.
+.
+	<span class="comment">&lt;!-- IF S_PRIVMSGS --&gt;</span>
+
+		<span class="comment">&lt;!-- BEGIN !folder --&gt;</span>
+			<span class="comment">&lt;!-- IF folder.S_FIRST_ROW --&gt;</span>
+				&lt;ul class=&quot;nav&quot;&gt;
+			<span class="comment">&lt;!-- ENDIF --&gt;</span>
+
+			&lt;li&gt;&lt;a href=&quot;{folder.U_FOLDER}&quot;&gt;{folder.FOLDER_NAME}&lt;/a&gt;&lt;/li&gt;
+
+			<span class="comment">&lt;!-- IF folder.S_LAST_ROW --&gt;</span>
+				&lt;/ul&gt;
+			<span class="comment">&lt;!-- ENDIF --&gt;</span>
+		<span class="comment">&lt;!-- END !folder --&gt;</span>
+
+	<span class="comment">&lt;!-- ENDIF --&gt;</span>
+.
+.
+<span class="comment">&lt;!-- END l_block1 --&gt;</span>
+</pre></blockquote>
+
+<p>The <code>&lt;!-- IF S_PRIVMSGS --&gt;</code> statement clearly checks a global variable and not one within the loop, since the loop is not given here. So, if S_PRIVMSGS is true we execute the shown markup. Now, you see the <code>&lt;!-- BEGIN !folder --&gt;</code> statement. The exclamation mark is responsible for instructing the template engine to iterate through the main loop folder. So, we are now within the loop folder - with <code>&lt;!-- BEGIN folder --&gt;</code> we would have been within the loop <code>l_block1.folder</code> automatically as is the case with l_block2:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- BEGIN l_block1 --&gt;</span>
+.
+.
+	&lt;ul class=&quot;nav&quot;&gt;
+	<span class="comment">&lt;!-- BEGIN l_block2 --&gt;</span>
+		&lt;li&gt;
+			<span class="comment">&lt;!-- IF l_block1.l_block2.S_SELECTED --&gt;</span>
+				&lt;strong&gt;{l_block1.l_block2.L_TITLE}&lt;/strong&gt;
+			<span class="comment">&lt;!-- ELSE --&gt;</span>
+				&lt;a href=&quot;{l_block1.l_block2.U_TITLE}&quot;&gt;{l_block1.l_block2.L_TITLE}&lt;/a&gt;
+			<span class="comment">&lt;!-- ENDIF --&gt;</span>
+		&lt;/li&gt;
+	<span class="comment">&lt;!-- END l_block2 --&gt;</span>
+	&lt;/ul&gt;
+.
+.
+<span class="comment">&lt;!-- END l_block1 --&gt;</span>
+</pre></blockquote>
+
+<p>You see the difference? The loop l_block2 is a member of the loop l_block1 but the loop folder is a main loop.</p>
+
+<p>Now back to our folder loop:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- IF folder.S_FIRST_ROW --&gt;</span>
+	&lt;ul class=&quot;nav&quot;&gt;
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
+
+&lt;li&gt;&lt;a href=&quot;{folder.U_FOLDER}&quot;&gt;{folder.FOLDER_NAME}&lt;/a&gt;&lt;/li&gt;
+
+<span class="comment">&lt;!-- IF folder.S_LAST_ROW --&gt;</span>
+	&lt;/ul&gt;
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
+</pre></blockquote>
+
+<p>You may have wondered what the comparison to S_FIRST_ROW and S_LAST_ROW is about. If you haven't guessed already - it is checking for the first iteration of the loop with <code>S_FIRST_ROW</code> and the last iteration with <code>S_LAST_ROW</code>. This can come in handy quite often if you want to open or close design elements, like the above list. Let us imagine a folder loop build with three iterations, it would go this way:</p>
+
+<blockquote><pre>
+&lt;ul class=&quot;nav&quot;&gt; <span class="comment">&lt;!-- written on first iteration --&gt;</span>
+	&lt;li&gt;first element&lt;/li&gt; <span class="comment">&lt;!-- written on first iteration --&gt;</span>
+	&lt;li&gt;second element&lt;/li&gt; <span class="comment">&lt;!-- written on second iteration --&gt;</span>
+	&lt;li&gt;third element&lt;/li&gt; <span class="comment">&lt;!-- written on third iteration --&gt;</span>
+&lt;/ul&gt; <span class="comment">&lt;!-- written on third iteration --&gt;</span>
+</pre></blockquote>
+
+<p>As you can see, all three elements are written down as well as the markup for the first iteration and the last one. Sometimes you want to omit writing the general markup - for example:</p>
+
+<blockquote><pre>
+<span class="comment">&lt;!-- IF folder.S_FIRST_ROW --&gt;</span>
+	&lt;ul class=&quot;nav&quot;&gt;
+<span class="comment">&lt;!-- ELSEIF folder.S_LAST_ROW --&gt;</span>
+	&lt;/ul&gt;
+<span class="comment">&lt;!-- ELSE --&gt;</span>
+	&lt;li&gt;&lt;a href=&quot;{folder.U_FOLDER}&quot;&gt;{folder.FOLDER_NAME}&lt;/a&gt;&lt;/li&gt;
+<span class="comment">&lt;!-- ENDIF --&gt;</span>
+</pre></blockquote>
+
+<p>would result in the following markup:</p>
+
+<blockquote><pre>
+&lt;ul class=&quot;nav&quot;&gt; <span class="comment">&lt;!-- written on first iteration --&gt;</span>
+	&lt;li&gt;second element&lt;/li&gt; <span class="comment">&lt;!-- written on second iteration --&gt;</span>
+&lt;/ul&gt; <span class="comment">&lt;!-- written on third iteration --&gt;</span>
+</pre></blockquote>
+
+<p>Just always remember that processing is taking place from up to down.</p>
 
 </div>
 <a href="#top">Top</a>
@@ -1170,6 +1517,17 @@ markup
 
 <a name="changes"></a><h1>5. Guidelines Changelog</h1>
 <div class="paragraph">
+
+<h2>Revision 1.8</h2>
+
+<ul class="menu">
+	<li>Some adjustements to wordings</li>
+	<li>Updated paragraph <a href="#locations">1.iii. File Locations</a> to reflect recent changes</li>
+	<li>Extended paragraph <a href="#codelayout">2.ii. Code Layout</a>.</li>
+	<li>Added sql_in_set and sql_build_query explanation to <a href="#sql">2.iii. SQL/SQL Layout</a>.</li>
+	<li>Updated paragraph <a href="#styling">3. Styling</a>.</li>
+	<li>Updated paragraph <a href="#templating">4. Templating</a> to explain loop checking, loop breaking and other changes we recently made.</li>
+</ul>
 
 <h2>Revision 1.5</h2>
 

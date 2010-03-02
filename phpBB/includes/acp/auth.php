@@ -724,24 +724,7 @@ class auth_admin extends auth
 			}
 		}
 
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . ACL_OPTIONS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . ACL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
 
 		$cache->destroy('acl_options');
 		$this->acl_clear_prefetch();
@@ -874,24 +857,7 @@ class auth_admin extends auth
 			}
 		}
 
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query("INSERT INTO $table " . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert($table, $sql_ary);
 
 		if ($clear_prefetch)
 		{
@@ -956,21 +922,8 @@ class auth_admin extends auth
 			WHERE role_id = ' . $role_id;
 		$db->sql_query($sql);
 
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . ACL_ROLES_DATA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
-				{
-					$db->sql_query('INSERT INTO ' . ACL_ROLES_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-				}
-			break;
-		}
+		// Now insert the new values
+		$db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
 
 		$this->acl_clear_prefetch();
 	}
@@ -1009,7 +962,9 @@ class auth_admin extends auth
 			// Get permission type
 			$sql = 'SELECT auth_option, auth_option_id
 				FROM ' . ACL_OPTIONS_TABLE . "
-				WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+				WHERE auth_option LIKE '" . $db->sql_escape(str_replace('_', "\_", $permission_type)) . "%'";
+			$sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+
 			$result = $db->sql_query($sql);
 
 			$auth_id_ary = array();

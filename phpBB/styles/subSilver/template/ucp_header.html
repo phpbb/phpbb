@@ -101,7 +101,7 @@
 	<!-- BEGIN pm_colour_info -->
 		<tr>
 			<!-- IF not pm_colour_info.IMG -->
-				<td class="row1 {pm_colour_info.CLASS}" width="5"><img src="images/spacer.gif" width="5" alt="{pm_colour_info.LANG}" border="0" /></td>
+				<td class="row1 {pm_colour_info.CLASS}" width="5"><img src="images/spacer.gif" width="5" alt="{pm_colour_info.LANG}" /></td>
 			<!-- ELSE -->
 				<td class="row1" width="25" align="center">{pm_colour_info.IMG}</td>
 			<!-- ENDIF -->
@@ -125,7 +125,7 @@
 
 			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_online -->
-				<li><a href="{friends_online.U_PROFILE}">{friends_online.USERNAME}</a>
+				<li><a href="{friends_online.U_PROFILE}"<!-- IF friends_online.USER_COLOUR --> style="color: {friends_online.USER_COLOUR}"<!-- ENDIF -->>{friends_online.USERNAME}</a>
 				<!-- IF S_SHOW_PM_BOX -->
 					&nbsp;[ <input class="post" style="font-size: 90%;" type="submit" name="add_to[{friends_online.USER_ID}]" value="{L_ADD}" /> ]
 				<!-- ENDIF -->
@@ -141,7 +141,7 @@
 
 			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_offline -->
-				<li><a href="{friends_offline.U_PROFILE}">{friends_offline.USERNAME}</a>
+				<li><a href="{friends_offline.U_PROFILE}"<!-- IF friends_offline.USER_COLOUR --> style="color: {friends_offline.USER_COLOUR}"<!-- ENDIF -->>{friends_offline.USERNAME}</a>
 				<!-- IF S_SHOW_PM_BOX -->
 					&nbsp;[ <input class="post" style="font-size: 90%;" type="submit" name="add_to[{friends_offline.USER_ID}]" value="{L_ADD}" /> ]
 				<!-- ENDIF -->

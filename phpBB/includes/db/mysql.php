@@ -9,31 +9,31 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'mysql');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* MySQL Database Abstraction Layer
-* Minimum Requirement is 3.23+/4.0+/4.1+
+* MySQL4 Database Abstraction Layer
+* Compatible with:
+* MySQL 3.23+
+* MySQL 4.0+
+* MySQL 4.1+
+* MySQL 5.0+
 * @package dbal
 */
 class dbal_mysql extends dbal
 {
+	var $mysql_version;
+
 	/**
 	* Connect to server
-	* @access: public
+	* @access public
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
@@ -42,12 +42,26 @@ class dbal_mysql extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
+		$this->sql_layer = 'mysql4';
+
 		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword) : @mysql_connect($this->server, $this->user, $sqlpassword);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
 			if (@mysql_select_db($this->dbname))
 			{
+				// Determine what version we are using and if it natively supports UNICODE
+				$this->mysql_version = mysql_get_server_info($this->db_connect_id);
+
+				if (version_compare($this->mysql_version, '4.1.3', '>='))
+				{
+					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+				}
+				else if (version_compare($this->mysql_version, '4.0.0', '<'))
+				{
+					$this->sql_layer = 'mysql';
+				}
+
 				return $this->db_connect_id;
 			}
 		}
@@ -60,12 +74,12 @@ class dbal_mysql extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'MySQL ' . @mysql_get_server_info($this->db_connect_id);
+		return 'MySQL ' . $this->mysql_version;
 	}
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -111,7 +125,7 @@ class dbal_mysql extends dbal
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				if (($this->query_result = @mysql_query($query, $this->db_connect_id)) === false)
 				{
@@ -158,7 +172,8 @@ class dbal_mysql extends dbal
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
 			{
-				$total = -1;
+				// Having a value of -1 was always a bug
+				$total = '18446744073709551615';
 			}
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
@@ -169,27 +184,6 @@ class dbal_mysql extends dbal
 		{
 			return false;
 		}
-	}
-
-	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @mysql_num_rows($query_id) : false;
 	}
 
 	/**
@@ -207,7 +201,7 @@ class dbal_mysql extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -217,47 +211,7 @@ class dbal_mysql extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @mysql_fetch_assoc($query_id) : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum === false)
-			{
-				if (isset($cache->sql_rowset[$query_id]))
-				{
-					return $cache->sql_fetchfield($query_id, $field);
-				}
-
-				$row = $this->sql_fetchrow($query_id);
-				return isset($row[$field]) ? $row[$field] : false;
-			}
-			else
-			{
-				if (isset($cache->sql_rowset[$query_id]))
-				{
-					$cache->sql_rowseek($query_id, $rownum);
-					return $cache->sql_fetchfield($query_id, $field);
-				}
-
-				return @mysql_result($query_id, $rownum, $field);
-			}
-		}
-
-		return false;
+		return ($query_id !== false) ? @mysql_fetch_assoc($query_id) : false;
 	}
 
 	/**
@@ -268,17 +222,17 @@ class dbal_mysql extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id) ? @mysql_data_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @mysql_data_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -296,7 +250,7 @@ class dbal_mysql extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -324,13 +278,13 @@ class dbal_mysql extends dbal
 		{
 			return @mysql_real_escape_string($msg);
 		}
-	
+
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
 	}
 
 	/**
 	* Build db-specific query data
-	* @access: private
+	* @access private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -343,10 +297,10 @@ class dbal_mysql extends dbal
 
 		return $data;
 	}
-
+	
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -366,7 +320,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -375,7 +329,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{
@@ -433,9 +387,6 @@ class dbal_mysql extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

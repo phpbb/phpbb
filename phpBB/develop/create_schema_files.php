@@ -25,7 +25,7 @@ if (!is_writeable($schema_path))
 
 $schema_data = get_schema_struct();
 $dbms_type_map = array(
-	'mysql'		=> array(
+	'mysql_41'	=> array(
 		'INT:'		=> 'int(%d)',
 		'BINT'		=> 'bigint(20)',
 		'UINT'		=> 'mediumint(8) UNSIGNED',
@@ -37,13 +37,45 @@ $dbms_type_map = array(
 		'VCHAR:'	=> 'varchar(%d)',
 		'CHAR:'		=> 'char(%d)',
 		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'varchar(100)',
 		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'varchar(255)',
 		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
 		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
 		'TIMESTAMP'	=> 'int(11) UNSIGNED',
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_BIN'	=> 'varchar(252) /*!40101 CHARACTER SET utf8 */ BINARY',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar(255)',
+		'VARBINARY'	=> 'varbinary(255)',
+	),
+
+	'mysql_40'	=> array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'smallint(4) UNSIGNED',
+		'BOOL'		=> 'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'text',
+		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'text',
+		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
+		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
+		'TIMESTAMP'	=> 'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'VCHAR_UNI'	=> 'text',
+		'VCHAR_UNI:'=> array('varchar(%d)', 'limit' => array('mult', 3, 255, 'text')),
+		'VCHAR_CI'	=> 'text',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -55,18 +87,23 @@ $dbms_type_map = array(
 		'TINT:'		=> 'INTEGER',
 		'USINT'		=> 'INTEGER',
 		'BOOL'		=> 'INTEGER',
-		'VCHAR'		=> 'VARCHAR(255)',
-		'VCHAR:'	=> 'VARCHAR(%d)',
-		'CHAR:'		=> 'CHAR(%d)',
-		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT',
-		'STEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'TEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'MTEXT'		=> 'BLOB SUB_TYPE TEXT',
+		'VCHAR'		=> 'VARCHAR(255) CHARACTER SET NONE',
+		'VCHAR:'	=> 'VARCHAR(%d) CHARACTER SET NONE',
+		'CHAR:'		=> 'CHAR(%d) CHARACTER SET NONE',
+		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'STEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'TEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'MTEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'XSTEXT_UNI'=> 'VARCHAR(100) CHARACTER SET UTF8',
+		'STEXT_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
+		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
 		'TIMESTAMP'	=> 'INTEGER',
 		'DECIMAL'	=> 'DOUBLE PRECISION',
-		'VCHAR_BIN'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
-		'VCHAR_CI'	=> 'VARCHAR(252)',
-		'VARBINARY'	=> 'CHAR(255)',
+		'VCHAR_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VCHAR_UNI:'=> 'VARCHAR(%d) CHARACTER SET UTF8',
+		'VCHAR_CI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VARBINARY'	=> 'CHAR(255) CHARACTER SET NONE',
 	),
 
 	'mssql'		=> array(
@@ -84,11 +121,16 @@ $dbms_type_map = array(
 		'STEXT'		=> '[varchar] (3000)',
 		'TEXT'		=> '[varchar] (8000)',
 		'MTEXT'		=> '[text]',
+		'XSTEXT_UNI'=> '[varchar] (100)',
+		'STEXT_UNI'	=> '[varchar] (255)',
+		'TEXT_UNI'	=> '[varchar] (4000)',
+		'MTEXT_UNI'	=> '[text]',
 		'TIMESTAMP'	=> '[int]',
 		'DECIMAL'	=> '[float]',
-		'VCHAR_BIN'	=> '[nvarchar] (252)',
-		'VCHAR_CI'	=> '[varchar] (252)',
-		'VARBINARY'	=> '[varbinary] (255)',
+		'VCHAR_UNI'	=> '[varchar] (255)',
+		'VCHAR_UNI:'=> '[varchar] (%d)',
+		'VCHAR_CI'	=> '[varchar] (255)',
+		'VARBINARY'	=> '[varchar] (255)',
 	),
 
 	'oracle'	=> array(
@@ -106,10 +148,15 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar2(3000)',
 		'TEXT'		=> 'clob',
 		'MTEXT'		=> 'clob',
+		'XSTEXT_UNI'=> 'varchar2(300)',
+		'STEXT_UNI'	=> 'varchar2(765)',
+		'TEXT_UNI'	=> 'clob',
+		'MTEXT_UNI'	=> 'clob',
 		'TIMESTAMP'	=> 'number(11)',
 		'DECIMAL'	=> 'number(5, 2)',
-		'VCHAR_BIN'	=> 'nvarchar2(252)',
-		'VCHAR_CI'	=> 'varchar2(252)',
+		'VCHAR_UNI'	=> 'varchar2(765)',
+		'VCHAR_UNI:'=> array('varchar2(%d)', 'limit' => array('mult', 3, 765, 'clob')),
+		'VCHAR_CI'	=> 'varchar2(255)',
 		'VARBINARY'	=> 'raw(255)',
 	),
 
@@ -128,10 +175,15 @@ $dbms_type_map = array(
 		'STEXT'		=> 'text(65535)',
 		'TEXT'		=> 'text(65535)',
 		'MTEXT'		=> 'mediumtext(16777215)',
+		'XSTEXT_UNI'=> 'text(65535)',
+		'STEXT_UNI'	=> 'text(65535)',
+		'TEXT_UNI'	=> 'text(65535)',
+		'MTEXT_UNI'	=> 'mediumtext(16777215)',
 		'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_BIN'	=> 'nvarchar(252)',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'blob',
 	),
 
@@ -150,9 +202,14 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar(3000)',
 		'TEXT'		=> 'varchar(8000)',
 		'MTEXT'		=> 'TEXT',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT_UNI'	=> 'varchar(4000)',
+		'MTEXT_UNI'	=> 'TEXT',
 		'TIMESTAMP'	=> 'INT4', // unsigned
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_BIN'	=> 'varchar(252)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
 		'VCHAR_CI'	=> 'varchar_ci',
 		'VARBINARY'	=> 'bytea',
 	),
@@ -160,7 +217,7 @@ $dbms_type_map = array(
 
 // A list of types being unsigned for better reference in some db's
 $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-$supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
+$supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
 
 foreach ($supported_dbms as $dbms)
 {
@@ -171,7 +228,8 @@ foreach ($supported_dbms as $dbms)
 	// Write Header
 	switch ($dbms)
 	{
-		case 'mysql':
+		case 'mysql_40':
+		case 'mysql_41':
 			$line = "#\n# MySQL Schema for phpBB 3.x - (c) phpBB Group, 2005\n#\n# \$I" . "d: $\n#\n\n";
 		break;
 
@@ -209,7 +267,8 @@ foreach ($supported_dbms as $dbms)
 		// Write comment about table
 		switch ($dbms)
 		{
-			case 'mysql':
+			case 'mysql_40':
+			case 'mysql_41':
 			case 'firebird':
 			case 'sqlite':
 				fwrite($fp, "# Table: '{$table_name}'\n");
@@ -228,7 +287,8 @@ foreach ($supported_dbms as $dbms)
 
 		switch ($dbms)
 		{
-			case 'mysql':
+			case 'mysql_40':
+			case 'mysql_41':
 			case 'firebird':
 			case 'oracle':
 			case 'sqlite':
@@ -241,6 +301,9 @@ foreach ($supported_dbms as $dbms)
 			break;
 		}
 
+		// Table specific so we don't get overlap
+		$modded_array = array(); 
+
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -248,14 +311,53 @@ foreach ($supported_dbms as $dbms)
 			if (strpos($column_data[0], ':') !== false)
 			{
 				list($orig_column_type, $column_length) = explode(':', $column_data[0]);
+				if (!is_array($dbms_type_map[$dbms][$orig_column_type . ':']))
+				{
+					$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'], $column_length);
+				}
+				else
+				{
+					if (isset($dbms_type_map[$dbms][$orig_column_type . ':']['rule']))
+					{
+						switch ($dbms_type_map[$dbms][$orig_column_type . ':']['rule'][0])
+						{
+							case 'div':
+								$column_length /= $dbms_type_map[$dbms][$orig_column_type . ':']['rule'][1];
+								$column_length = ceil($column_length);
+								$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'][0], $column_length);
+							break;
+						}
+					}
 
-				$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'], $column_length);
+					if (isset($dbms_type_map[$dbms][$orig_column_type . ':']['limit']))
+					{
+						switch ($dbms_type_map[$dbms][$orig_column_type . ':']['limit'][0])
+						{
+							case 'mult':
+								$column_length *= $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][1];
+								if ($column_length > $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][2])
+								{
+									$column_type = $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][3];
+									$modded_array[$column_name] = $column_type;
+								}
+								else
+								{
+									$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'][0], $column_length);
+								}
+							break;
+						}
+					}
+				}
 				$orig_column_type .= ':';
 			}
 			else
 			{
 				$orig_column_type = $column_data[0];
 				$column_type = $dbms_type_map[$dbms][$column_data[0]];
+				if ($column_type == 'text')
+				{
+					$modded_array[$column_name] = $column_type;
+				}
 			}
 
 			// Adjust default value if db-dependant specified
@@ -266,11 +368,12 @@ foreach ($supported_dbms as $dbms)
 
 			switch ($dbms)
 			{
-				case 'mysql':
+				case 'mysql_40':
+				case 'mysql_41':
 					$line .= "\t{$column_name} {$column_type} ";
 
 					// For hexadecimal values do not use single quotes
-					if (!is_null($column_data[1]))
+					if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text')
 					{
 						$line .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 					}
@@ -308,7 +411,15 @@ foreach ($supported_dbms as $dbms)
 						$line .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 					}
 
-					$line .= "NOT NULL,\n";
+					$line .= 'NOT NULL';
+
+					// This is a UNICODE column and thus should be given it's fair share
+					if (preg_match('/^X?STEXT_UNI|VCHAR_(CI|UNI:?)/', $column_data[0]))
+					{
+						$line .= ' COLLATE UNICODE';
+					}
+
+					$line .= ",\n";
 
 					if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 					{
@@ -412,7 +523,8 @@ foreach ($supported_dbms as $dbms)
 
 			switch ($dbms)
 			{
-				case 'mysql':
+				case 'mysql_40':
+				case 'mysql_41':
 				case 'postgres':
 					$line .= "\tPRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . "),\n";
 				break;
@@ -493,9 +605,22 @@ foreach ($supported_dbms as $dbms)
 
 				switch ($dbms)
 				{
-					case 'mysql':
+					case 'mysql_40':
+					case 'mysql_41':
 						$line .= ($key_data[0] == 'INDEX') ? "\tKEY" : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? "\tUNIQUE" : '';
+						foreach ($key_data[1] as $key => $col_name)
+						{
+							if (isset($modded_array[$col_name]))
+							{
+								switch ($modded_array[$col_name])
+								{
+									case 'text':
+										$key_data[1][$key] = $col_name . '(255)';
+									break;
+								}
+							}
+						}
 						$line .= ' ' . $key_name . ' (' . implode(', ', $key_data[1]) . "),\n";
 					break;
 
@@ -544,10 +669,16 @@ foreach ($supported_dbms as $dbms)
 
 		switch ($dbms)
 		{
-			case 'mysql':
+			case 'mysql_40':
 				// Remove last line delimiter...
 				$line = substr($line, 0, -2);
 				$line .= "\n);\n\n";
+			break;
+
+			case 'mysql_41':
+				// Remove last line delimiter...
+				$line = substr($line, 0, -2);
+				$line .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;\n\n";
 			break;
 
 			// Create Generator
@@ -632,7 +763,7 @@ foreach ($supported_dbms as $dbms)
 *	VCHAR:x		=> varchar(x)
 *	TIMESTAMP	=> int(11) UNSIGNED
 *	DECIMAL		=> decimal number (5,2)
-*	VCHAR_BIN	=> varchar(252) BINARY
+*	VCHAR_UNI	=> varchar(255) BINARY
 *	VCHAR_CI	=> varchar_ci for postgresql, others VCHAR
 */
 function get_schema_struct()
@@ -646,10 +777,11 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'in_message'		=> array('BOOL', 0),
 			'poster_id'			=> array('UINT', 0),
+			'is_orphan'			=> array('BOOL', 1),
 			'physical_filename'	=> array('VCHAR', ''),
 			'real_filename'		=> array('VCHAR', ''),
 			'download_count'	=> array('UINT', 0),
-			'attach_comment'	=> array('TEXT', ''),
+			'attach_comment'	=> array('TEXT_UNI', ''),
 			'extension'			=> array('VCHAR:100', ''),
 			'mimetype'			=> array('VCHAR:100', ''),
 			'filesize'			=> array('UINT:20', 0),
@@ -662,7 +794,7 @@ function get_schema_struct()
 			'post_msg_id'		=> array('INDEX', 'post_msg_id'),
 			'topic_id'			=> array('INDEX', 'topic_id'),
 			'poster_id'			=> array('INDEX', 'poster_id'),
-			'filesize'			=> array('INDEX', 'filesize'),
+			'is_orphan'			=> array('INDEX', 'is_orphan'),
 		),
 	);
 
@@ -697,8 +829,8 @@ function get_schema_struct()
 	$schema_data['phpbb_acl_roles'] = array(
 		'COLUMNS'		=> array(
 			'role_id'			=> array('UINT', NULL, 'auto_increment'),
-			'role_name'			=> array('VCHAR', ''),
-			'role_description'	=> array('TEXT', ''),
+			'role_name'			=> array('VCHAR_UNI', ''),
+			'role_description'	=> array('TEXT_UNI', ''),
 			'role_type'			=> array('VCHAR:10', ''),
 			'role_order'		=> array('USINT', 0),
 		),
@@ -737,7 +869,7 @@ function get_schema_struct()
 			'ban_id'			=> array('UINT', NULL, 'auto_increment'),
 			'ban_userid'		=> array('UINT', 0),
 			'ban_ip'			=> array('VCHAR:40', ''),
-			'ban_email'			=> array('VCHAR:100', ''),
+			'ban_email'			=> array('VCHAR_UNI:100', ''),
 			'ban_start'			=> array('TIMESTAMP', 0),
 			'ban_end'			=> array('TIMESTAMP', 0),
 			'ban_exclude'		=> array('BOOL', 0),
@@ -759,12 +891,12 @@ function get_schema_struct()
 			'bbcode_tag'			=> array('VCHAR:16', ''),
 			'bbcode_helpline'		=> array('VCHAR', ''),
 			'display_on_posting'	=> array('BOOL', 0),
-			'bbcode_match'			=> array('TEXT', ''),
-			'bbcode_tpl'			=> array('MTEXT', ''),
-			'first_pass_match'		=> array('MTEXT', ''),
-			'first_pass_replace'	=> array('MTEXT', ''),
-			'second_pass_match'		=> array('MTEXT', ''),
-			'second_pass_replace'	=> array('MTEXT', ''),
+			'bbcode_match'			=> array('TEXT_UNI', ''),
+			'bbcode_tpl'			=> array('MTEXT_UNI', ''),
+			'first_pass_match'		=> array('MTEXT_UNI', ''),
+			'first_pass_replace'	=> array('MTEXT_UNI', ''),
+			'second_pass_match'		=> array('MTEXT_UNI', ''),
+			'second_pass_replace'	=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'bbcode_id',
 		'KEYS'			=> array(
@@ -788,7 +920,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'bot_id'			=> array('UINT', NULL, 'auto_increment'),
 			'bot_active'		=> array('BOOL', 1),
-			'bot_name'			=> array('STEXT', ''),
+			'bot_name'			=> array('STEXT_UNI', ''),
 			'user_id'			=> array('UINT', 0),
 			'bot_agent'			=> array('VCHAR', ''),
 			'bot_ip'			=> array('VCHAR', ''),
@@ -801,7 +933,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_config'] = array(
 		'COLUMNS'		=> array(
-			'config_name'		=> array('VCHAR:252', ''),
+			'config_name'		=> array('VCHAR:255', ''),
 			'config_value'		=> array('VCHAR', ''),
 			'is_dynamic'		=> array('BOOL', 0),
 		),
@@ -827,7 +959,7 @@ function get_schema_struct()
 	$schema_data['phpbb_disallow'] = array(
 		'COLUMNS'		=> array(
 			'disallow_id'		=> array('UINT', NULL, 'auto_increment'),
-			'disallow_username'	=> array('VCHAR:252', ''),
+			'disallow_username'	=> array('VCHAR_UNI:255', ''),
 		),
 		'PRIMARY_KEY'	=> 'disallow_id',
 	);
@@ -839,8 +971,8 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'forum_id'			=> array('UINT', 0),
 			'save_time'			=> array('TIMESTAMP', 0),
-			'draft_subject'		=> array('XSTEXT', ''),
-			'draft_message'		=> array('MTEXT', ''),
+			'draft_subject'		=> array('XSTEXT_UNI', ''),
+			'draft_message'		=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'draft_id',
 		'KEYS'			=> array(
@@ -860,7 +992,7 @@ function get_schema_struct()
 	$schema_data['phpbb_extension_groups'] = array(
 		'COLUMNS'		=> array(
 			'group_id'			=> array('UINT', NULL, 'auto_increment'),
-			'group_name'		=> array('VCHAR', ''),
+			'group_name'		=> array('VCHAR_UNI', ''),
 			'cat_id'			=> array('TINT:2', 0),
 			'allow_group'		=> array('BOOL', 0),
 			'download_mode'		=> array('BOOL', 1),
@@ -879,19 +1011,19 @@ function get_schema_struct()
 			'left_id'				=> array('UINT', 0),
 			'right_id'				=> array('UINT', 0),
 			'forum_parents'			=> array('MTEXT', ''),
-			'forum_name'			=> array('STEXT', ''),
-			'forum_desc'			=> array('TEXT', ''),
-			'forum_desc_bitfield'	=> array('VCHAR:252', ''),
-			'forum_desc_options'	=> array('UINT:11', 0),
+			'forum_name'			=> array('STEXT_UNI', ''),
+			'forum_desc'			=> array('TEXT_UNI', ''),
+			'forum_desc_bitfield'	=> array('VCHAR:255', ''),
+			'forum_desc_options'	=> array('UINT:11', 7),
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
-			'forum_link'			=> array('VCHAR', ''),
-			'forum_password'		=> array('VCHAR:40', ''),
+			'forum_link'			=> array('VCHAR_UNI', ''),
+			'forum_password'		=> array('VCHAR_UNI:40', ''),
 			'forum_style'			=> array('TINT:4', 0),
 			'forum_image'			=> array('VCHAR', ''),
-			'forum_rules'			=> array('TEXT', ''),
-			'forum_rules_link'		=> array('VCHAR', ''),
-			'forum_rules_bitfield'	=> array('VCHAR:252', ''),
-			'forum_rules_options'	=> array('UINT:11', 0),
+			'forum_rules'			=> array('TEXT_UNI', ''),
+			'forum_rules_link'		=> array('VCHAR_UNI', ''),
+			'forum_rules_bitfield'	=> array('VCHAR:255', ''),
+			'forum_rules_options'	=> array('UINT:11', 7),
 			'forum_rules_uid'		=> array('VCHAR:5', ''),
 			'forum_topics_per_page'	=> array('TINT:4', 0),
 			'forum_type'			=> array('TINT:4', 0),
@@ -901,8 +1033,10 @@ function get_schema_struct()
 			'forum_topics_real'		=> array('UINT', 0),
 			'forum_last_post_id'	=> array('UINT', 0),
 			'forum_last_poster_id'	=> array('UINT', 0),
+			'forum_last_post_subject' => array('XSTEXT_UNI', ''),
 			'forum_last_post_time'	=> array('TIMESTAMP', 0),
-			'forum_last_poster_name'=> array('VCHAR', ''),
+			'forum_last_poster_name'=> array('VCHAR_UNI', ''),
+			'forum_last_poster_colour'=> array('VCHAR:6', ''),
 			'forum_flags'			=> array('TINT:4', 32),
 			'display_on_index'		=> array('BOOL', 1),
 			'enable_indexing'		=> array('BOOL', 1),
@@ -956,9 +1090,9 @@ function get_schema_struct()
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
 			'group_name'			=> array('VCHAR_CI', ''),
-			'group_desc'			=> array('TEXT', ''),
-			'group_desc_bitfield'	=> array('VCHAR:252', ''),
-			'group_desc_options'	=> array('UINT:11', 0),
+			'group_desc'			=> array('TEXT_UNI', ''),
+			'group_desc_bitfield'	=> array('VCHAR:255', ''),
+			'group_desc_options'	=> array('UINT:11', 7),
 			'group_desc_uid'		=> array('VCHAR:5', ''),
 			'group_display'			=> array('BOOL', 0),
 			'group_avatar'			=> array('VCHAR', ''),
@@ -998,9 +1132,9 @@ function get_schema_struct()
 			'lang_id'				=> array('TINT:4', NULL, 'auto_increment'),
 			'lang_iso'				=> array('VCHAR:30', ''),
 			'lang_dir'				=> array('VCHAR:30', ''),
-			'lang_english_name'		=> array('VCHAR:100', ''),
-			'lang_local_name'		=> array('VCHAR:255', ''),
-			'lang_author'			=> array('VCHAR:255', ''),
+			'lang_english_name'		=> array('VCHAR_UNI:100', ''),
+			'lang_local_name'		=> array('VCHAR_UNI:255', ''),
+			'lang_author'			=> array('VCHAR_UNI:255', ''),
 		),
 		'PRIMARY_KEY'	=> 'lang_id',
 		'KEYS'			=> array(
@@ -1018,8 +1152,8 @@ function get_schema_struct()
 			'reportee_id'			=> array('UINT', 0),
 			'log_ip'				=> array('VCHAR:40', ''),
 			'log_time'				=> array('TIMESTAMP', 0),
-			'log_operation'			=> array('TEXT', ''),
-			'log_data'				=> array('MTEXT', ''),
+			'log_operation'			=> array('TEXT_UNI', ''),
+			'log_data'				=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'log_id',
 		'KEYS'			=> array(
@@ -1035,9 +1169,9 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'forum_id'				=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
-			'username'				=> array('VCHAR:252', ''),
+			'username'				=> array('VCHAR_UNI:255', ''),
 			'group_id'				=> array('UINT', 0),
-			'group_name'			=> array('VCHAR', ''),
+			'group_name'			=> array('VCHAR_UNI', ''),
 			'display_on_index'		=> array('BOOL', 1),
 		),
 		'KEYS'			=> array(
@@ -1072,7 +1206,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'poll_option_id'		=> array('TINT:4', 0),
 			'topic_id'				=> array('UINT', 0),
-			'poll_option_text'		=> array('TEXT', ''),
+			'poll_option_text'		=> array('TEXT_UNI', ''),
 			'poll_option_total'		=> array('UINT', 0),
 		),
 		'KEYS'			=> array(
@@ -1110,17 +1244,16 @@ function get_schema_struct()
 			'enable_smilies'		=> array('BOOL', 1),
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
-			'post_username'			=> array('VCHAR:252', ''),
-			'post_subject'			=> array('XSTEXT', ''),
-			'post_text'				=> array('MTEXT', ''),
+			'post_username'			=> array('VCHAR_UNI:255', ''),
+			'post_subject'			=> array('XSTEXT_UNI', ''),
+			'post_text'				=> array('MTEXT_UNI', ''),
 			'post_checksum'			=> array('VCHAR:32', ''),
-			'post_encoding'			=> array('VCHAR:20', 'iso-8859-1'),
 			'post_attachment'		=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VCHAR:252', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
-			'post_edit_reason'		=> array('STEXT', ''),
+			'post_edit_reason'		=> array('STEXT_UNI', ''),
 			'post_edit_user'		=> array('UINT', 0),
 			'post_edit_count'		=> array('USINT', 0),
 			'post_edit_locked'		=> array('BOOL', 0),
@@ -1132,8 +1265,7 @@ function get_schema_struct()
 			'poster_ip'				=> array('INDEX', 'poster_ip'),
 			'poster_id'				=> array('INDEX', 'poster_id'),
 			'post_approved'			=> array('INDEX', 'post_approved'),
-			'post_postcount'		=> array('INDEX', 'post_postcount'),
-			'post_time'				=> array('INDEX', 'post_time'),
+			'tid_post_time'			=> array('INDEX', array('topic_id', 'post_time')),
 		),
 	);
 
@@ -1149,18 +1281,17 @@ function get_schema_struct()
 			'enable_smilies'		=> array('BOOL', 1),
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
-			'message_subject'		=> array('XSTEXT', ''),
-			'message_text'			=> array('MTEXT', ''),
-			'message_edit_reason'	=> array('STEXT', ''),
+			'message_subject'		=> array('XSTEXT_UNI', ''),
+			'message_text'			=> array('MTEXT_UNI', ''),
+			'message_edit_reason'	=> array('STEXT_UNI', ''),
 			'message_edit_user'		=> array('UINT', 0),
-			'message_encoding'		=> array('VCHAR:20', 'iso-8859-1'),
 			'message_attachment'	=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VCHAR:252', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'message_edit_time'		=> array('TIMESTAMP', 0),
 			'message_edit_count'	=> array('USINT', 0),
-			'to_address'			=> array('TEXT', ''),
-			'bcc_address'			=> array('TEXT', ''),
+			'to_address'			=> array('TEXT_UNI', ''),
+			'bcc_address'			=> array('TEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'msg_id',
 		'KEYS'			=> array(
@@ -1175,7 +1306,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'folder_id'				=> array('UINT', NULL, 'auto_increment'),
 			'user_id'				=> array('UINT', 0),
-			'folder_name'			=> array('VCHAR', ''),
+			'folder_name'			=> array('VCHAR_UNI', ''),
 			'pm_count'				=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'folder_id',
@@ -1190,7 +1321,7 @@ function get_schema_struct()
 			'user_id'				=> array('UINT', 0),
 			'rule_check'			=> array('UINT', 0),
 			'rule_connection'		=> array('UINT', 0),
-			'rule_string'			=> array('VCHAR', ''),
+			'rule_string'			=> array('VCHAR_UNI', ''),
 			'rule_user_id'			=> array('UINT', 0),
 			'rule_group_id'			=> array('UINT', 0),
 			'rule_action'			=> array('UINT', 0),
@@ -1225,15 +1356,15 @@ function get_schema_struct()
 	$schema_data['phpbb_profile_fields'] = array(
 		'COLUMNS'		=> array(
 			'field_id'				=> array('UINT', NULL, 'auto_increment'),
-			'field_name'			=> array('VCHAR', ''),
+			'field_name'			=> array('VCHAR_UNI', ''),
 			'field_type'			=> array('TINT:4', 0),
 			'field_ident'			=> array('VCHAR:20', ''),
 			'field_length'			=> array('VCHAR:20', ''),
 			'field_minlen'			=> array('VCHAR', ''),
 			'field_maxlen'			=> array('VCHAR', ''),
-			'field_novalue'			=> array('VCHAR', ''),
-			'field_default_value'	=> array('VCHAR', ''),
-			'field_validation'		=> array('VCHAR:20', ''),
+			'field_novalue'			=> array('VCHAR_UNI', ''),
+			'field_default_value'	=> array('VCHAR_UNI', ''),
+			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
 			'field_hide'			=> array('BOOL', 0),
@@ -1261,7 +1392,7 @@ function get_schema_struct()
 			'lang_id'				=> array('UINT', 0),
 			'option_id'				=> array('UINT', 0),
 			'field_type'			=> array('TINT:4', 0),
-			'lang_value'			=> array('VCHAR', ''),
+			'lang_value'			=> array('VCHAR_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> array('field_id', 'lang_id', 'option_id'),
 	);
@@ -1270,9 +1401,9 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'field_id'				=> array('UINT', 0),
 			'lang_id'				=> array('UINT', 0),
-			'lang_name'				=> array('VCHAR', ''),
-			'lang_explain'			=> array('TEXT', ''),
-			'lang_default_value'	=> array('VCHAR', ''),
+			'lang_name'				=> array('VCHAR_UNI', ''),
+			'lang_explain'			=> array('TEXT_UNI', ''),
+			'lang_default_value'	=> array('VCHAR_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> array('field_id', 'lang_id'),
 	);
@@ -1280,7 +1411,7 @@ function get_schema_struct()
 	$schema_data['phpbb_ranks'] = array(
 		'COLUMNS'		=> array(
 			'rank_id'				=> array('UINT', NULL, 'auto_increment'),
-			'rank_title'			=> array('VCHAR', ''),
+			'rank_title'			=> array('VCHAR_UNI', ''),
 			'rank_min'				=> array('UINT', 0),
 			'rank_special'			=> array('BOOL', 0),
 			'rank_image'			=> array('VCHAR', ''),
@@ -1297,7 +1428,7 @@ function get_schema_struct()
 			'user_notify'			=> array('BOOL', 0),
 			'report_closed'			=> array('BOOL', 0),
 			'report_time'			=> array('TIMESTAMP', 0),
-			'report_text'			=> array('MTEXT', ''),
+			'report_text'			=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
 	);
@@ -1305,8 +1436,8 @@ function get_schema_struct()
 	$schema_data['phpbb_reports_reasons'] = array(
 		'COLUMNS'		=> array(
 			'reason_id'				=> array('USINT', NULL, 'auto_increment'),
-			'reason_title'			=> array('VCHAR', ''),
-			'reason_description'	=> array('MTEXT', ''),
+			'reason_title'			=> array('VCHAR_UNI', ''),
+			'reason_description'	=> array('MTEXT_UNI', ''),
 			'reason_order'			=> array('USINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'reason_id',
@@ -1316,7 +1447,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'search_key'			=> array('VCHAR:32', ''),
 			'search_time'			=> array('TIMESTAMP', 0),
-			'search_keywords'		=> array('MTEXT', ''),
+			'search_keywords'		=> array('MTEXT_UNI', ''),
 			'search_authors'		=> array('MTEXT', ''),
 		),
 		'PRIMARY_KEY'	=> 'search_key',
@@ -1325,7 +1456,7 @@ function get_schema_struct()
 	$schema_data['phpbb_search_wordlist'] = array(
 		'COLUMNS'		=> array(
 			'word_id'			=> array('UINT', NULL, 'auto_increment'),
-			'word_text'			=> array('VCHAR_BIN', ''),
+			'word_text'			=> array('VCHAR_UNI', ''),
 			'word_common'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'word_id',
@@ -1355,7 +1486,7 @@ function get_schema_struct()
 			'session_time'			=> array('TIMESTAMP', 0),
 			'session_ip'			=> array('VCHAR:40', ''),
 			'session_browser'		=> array('VCHAR:150', ''),
-			'session_page'			=> array('VCHAR', ''),
+			'session_page'			=> array('VCHAR_UNI', ''),
 			'session_viewonline'	=> array('BOOL', 1),
 			'session_autologin'		=> array('BOOL', 0),
 			'session_admin'			=> array('BOOL', 0),
@@ -1393,11 +1524,11 @@ function get_schema_struct()
 	$schema_data['phpbb_smilies'] = array(
 		'COLUMNS'		=> array(
 			'smiley_id'			=> array('UINT', NULL, 'auto_increment'),
-			'code'				=> array('VCHAR:50', ''),
-			'emotion'			=> array('VCHAR:50', ''),
+			'code'				=> array('VCHAR_UNI:50', ''),
+			'emotion'			=> array('VCHAR_UNI:50', ''),
 			'smiley_url'		=> array('VCHAR:50', ''),
-			'smiley_width'		=> array('TINT:4', 0),
-			'smiley_height'		=> array('TINT:4', 0),
+			'smiley_width'		=> array('USINT', 0),
+			'smiley_height'		=> array('USINT', 0),
 			'smiley_order'		=> array('UINT', 0),
 			'display_on_posting'=> array('BOOL', 1),
 		),
@@ -1410,8 +1541,8 @@ function get_schema_struct()
 	$schema_data['phpbb_styles'] = array(
 		'COLUMNS'		=> array(
 			'style_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'style_name'			=> array('VCHAR:252', ''),
-			'style_copyright'		=> array('VCHAR', ''),
+			'style_name'			=> array('VCHAR_UNI:255', ''),
+			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
 			'template_id'			=> array('TINT:4', 0),
 			'theme_id'				=> array('TINT:4', 0),
@@ -1429,10 +1560,10 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_template'] = array(
 		'COLUMNS'		=> array(
 			'template_id'			=> array('TINT:4', NULL, 'auto_increment'),
-			'template_name'			=> array('VCHAR:252', ''),
-			'template_copyright'	=> array('VCHAR', ''),
+			'template_name'			=> array('VCHAR_UNI:255', ''),
+			'template_copyright'	=> array('VCHAR_UNI', ''),
 			'template_path'			=> array('VCHAR:100', ''),
-			'bbcode_bitfield'		=> array('VCHAR:252', 'kNg='),
+			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
@@ -1447,7 +1578,7 @@ function get_schema_struct()
 			'template_filename'		=> array('VCHAR:100', ''),
 			'template_included'		=> array('TEXT', ''),
 			'template_mtime'		=> array('TIMESTAMP', 0),
-			'template_data'			=> array('MTEXT', ''),
+			'template_data'			=> array('MTEXT_UNI', ''),
 		),
 		'KEYS'			=> array(
 			'tid'					=> array('INDEX', 'template_id'),
@@ -1458,12 +1589,12 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_theme'] = array(
 		'COLUMNS'		=> array(
 			'theme_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'theme_name'			=> array('VCHAR:252', ''),
-			'theme_copyright'		=> array('VCHAR', ''),
+			'theme_name'			=> array('VCHAR_UNI:255', ''),
+			'theme_copyright'		=> array('VCHAR_UNI', ''),
 			'theme_path'			=> array('VCHAR:100', ''),
 			'theme_storedb'			=> array('BOOL', 0),
 			'theme_mtime'			=> array('TIMESTAMP', 0),
-			'theme_data'			=> array('MTEXT', ''),
+			'theme_data'			=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'theme_id',
 		'KEYS'			=> array(
@@ -1474,8 +1605,8 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_imageset'] = array(
 		'COLUMNS'		=> array(
 			'imageset_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'imageset_name'				=> array('VCHAR:252', ''),
-			'imageset_copyright'		=> array('VCHAR', ''),
+			'imageset_name'				=> array('VCHAR_UNI:255', ''),
+			'imageset_copyright'		=> array('VCHAR_UNI', ''),
 			'imageset_path'				=> array('VCHAR:100', ''),
 
 			'site_logo'					=> array('VCHAR:200', ''),
@@ -1601,7 +1732,7 @@ function get_schema_struct()
 			'topic_attachment'			=> array('BOOL', 0),
 			'topic_approved'			=> array('BOOL', 1),
 			'topic_reported'			=> array('BOOL', 0),
-			'topic_title'				=> array('XSTEXT', ''),
+			'topic_title'				=> array('XSTEXT_UNI', ''),
 			'topic_poster'				=> array('UINT', 0),
 			'topic_time'				=> array('TIMESTAMP', 0),
 			'topic_time_limit'			=> array('TIMESTAMP', 0),
@@ -1611,16 +1742,19 @@ function get_schema_struct()
 			'topic_status'				=> array('TINT:3', 0),
 			'topic_type'				=> array('TINT:3', 0),
 			'topic_first_post_id'		=> array('UINT', 0),
-			'topic_first_poster_name'	=> array('VCHAR', ''),
+			'topic_first_poster_name'	=> array('VCHAR_UNI', ''),
+			'topic_first_poster_colour'	=> array('VCHAR:6', ''),
 			'topic_last_post_id'		=> array('UINT', 0),
 			'topic_last_poster_id'		=> array('UINT', 0),
-			'topic_last_poster_name'	=> array('VCHAR', ''),
+			'topic_last_poster_name'	=> array('VCHAR_UNI', ''),
+			'topic_last_poster_colour'	=> array('VCHAR:6', ''),
+			'topic_last_post_subject'	=> array('XSTEXT_UNI', ''),
 			'topic_last_post_time'		=> array('TIMESTAMP', 0),
 			'topic_last_view_time'		=> array('TIMESTAMP', 0),
 			'topic_moved_id'			=> array('UINT', 0),
 			'topic_bumped'				=> array('BOOL', 0),
 			'topic_bumper'				=> array('UINT', 0),
-			'poll_title'				=> array('XSTEXT', ''),
+			'poll_title'				=> array('XSTEXT_UNI', ''),
 			'poll_start'				=> array('TIMESTAMP', 0),
 			'poll_length'				=> array('TIMESTAMP', 0),
 			'poll_max_options'			=> array('TINT:4', 1),
@@ -1632,6 +1766,7 @@ function get_schema_struct()
 			'forum_id'			=> array('INDEX', 'forum_id'),
 			'forum_id_type'		=> array('INDEX', array('forum_id', 'topic_type')),
 			'last_post_time'	=> array('INDEX', 'topic_last_post_time'),
+			'topic_approved'	=> array('INDEX', 'topic_approved'),
 			'fid_time_moved'	=> array('INDEX', array('forum_id', 'topic_last_post_time', 'topic_moved_id')),
 		),
 	);
@@ -1695,25 +1830,28 @@ function get_schema_struct()
 			'user_ip'					=> array('VCHAR:40', ''),
 			'user_regdate'				=> array('TIMESTAMP', 0),
 			'username'					=> array('VCHAR_CI', ''),
-			'user_password'				=> array('VCHAR:40', ''),
+			'username_clean'			=> array('VCHAR_CI', ''),
+			'user_password'				=> array('VCHAR_UNI:40', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
-			'user_email'				=> array('VCHAR:100', ''),
+			'user_email'				=> array('VCHAR_UNI:100', ''),
 			'user_email_hash'			=> array('BINT', 0),
 			'user_birthday'				=> array('VCHAR:10', ''),
 			'user_lastvisit'			=> array('TIMESTAMP', 0),
 			'user_lastmark'				=> array('TIMESTAMP', 0),
 			'user_lastpost_time'		=> array('TIMESTAMP', 0),
-			'user_lastpage'				=> array('VCHAR:200', ''),
+			'user_lastpage'				=> array('VCHAR_UNI:200', ''),
 			'user_last_confirm_key'		=> array('VCHAR:10', ''),
 			'user_last_search'			=> array('TIMESTAMP', 0),
 			'user_warnings'				=> array('TINT:4', 0),
 			'user_last_warning'			=> array('TIMESTAMP', 0),
 			'user_login_attempts'		=> array('TINT:4', 0),
+			'user_inactive_reason'		=> array('TINT:2', 0),
+			'user_inactive_time'		=> array('TIMESTAMP', 0),
 			'user_posts'				=> array('UINT', 0),
 			'user_lang'					=> array('VCHAR:30', ''),
 			'user_timezone'				=> array('DECIMAL', 0),
 			'user_dst'					=> array('BOOL', 0),
-			'user_dateformat'			=> array('VCHAR:30', 'd M Y H:i'),
+			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
 			'user_style'				=> array('TINT:4', 0),
 			'user_rank'					=> array('UINT', 0),
 			'user_colour'				=> array('VCHAR:6', ''),
@@ -1733,36 +1871,35 @@ function get_schema_struct()
 			'user_notify_pm'			=> array('BOOL', 1),
 			'user_notify_type'			=> array('TINT:4', 0),
 			'user_allow_pm'				=> array('BOOL', 1),
-			'user_allow_email'			=> array('BOOL', 1),
 			'user_allow_viewonline'		=> array('BOOL', 1),
 			'user_allow_viewemail'		=> array('BOOL', 1),
 			'user_allow_massemail'		=> array('BOOL', 1),
 			'user_options'				=> array('UINT:11', 893),
 			'user_avatar'				=> array('VCHAR', ''),
 			'user_avatar_type'			=> array('TINT:2', 0),
-			'user_avatar_width'			=> array('TINT:4', 0),
-			'user_avatar_height'		=> array('TINT:4', 0),
-			'user_sig'					=> array('MTEXT', ''),
+			'user_avatar_width'			=> array('USINT', 0),
+			'user_avatar_height'		=> array('USINT', 0),
+			'user_sig'					=> array('MTEXT_UNI', ''),
 			'user_sig_bbcode_uid'		=> array('VCHAR:5', ''),
-			'user_sig_bbcode_bitfield'	=> array('VCHAR:252', ''),
-			'user_from'					=> array('VCHAR:100', ''),
+			'user_sig_bbcode_bitfield'	=> array('VCHAR:255', ''),
+			'user_from'					=> array('VCHAR_UNI:100', ''),
 			'user_icq'					=> array('VCHAR:15', ''),
-			'user_aim'					=> array('VCHAR', ''),
-			'user_yim'					=> array('VCHAR', ''),
-			'user_msnm'					=> array('VCHAR', ''),
-			'user_jabber'				=> array('VCHAR', ''),
-			'user_website'				=> array('VCHAR:200', ''),
-			'user_occ'					=> array('VCHAR', ''),
-			'user_interests'			=> array('TEXT', ''),
+			'user_aim'					=> array('VCHAR_UNI', ''),
+			'user_yim'					=> array('VCHAR_UNI', ''),
+			'user_msnm'					=> array('VCHAR_UNI', ''),
+			'user_jabber'				=> array('VCHAR_UNI', ''),
+			'user_website'				=> array('VCHAR_UNI:200', ''),
+			'user_occ'					=> array('VCHAR_UNI', ''),
+			'user_interests'			=> array('TEXT_UNI', ''),
 			'user_actkey'				=> array('VCHAR:32', ''),
-			'user_newpasswd'			=> array('VCHAR:32', ''),
+			'user_newpasswd'			=> array('VCHAR_UNI:32', ''),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(
 			'user_birthday'				=> array('INDEX', 'user_birthday'),
 			'user_email_hash'			=> array('INDEX', 'user_email_hash'),
 			'user_type'					=> array('INDEX', 'user_type'),
-			'username'					=> array('INDEX', 'username'),
+			'username_clean'			=> array('INDEX', 'username_clean'),
 		),
 	);
 
@@ -1780,8 +1917,8 @@ function get_schema_struct()
 	$schema_data['phpbb_words'] = array(
 		'COLUMNS'		=> array(
 			'word_id'				=> array('UINT', NULL, 'auto_increment'),
-			'word'					=> array('VCHAR', ''),
-			'replacement'			=> array('VCHAR', ''),
+			'word'					=> array('VCHAR_UNI', ''),
+			'replacement'			=> array('VCHAR_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'word_id',
 	);
@@ -1858,7 +1995,7 @@ EOF;
 /*
 	Domain definition
 */
-CREATE DOMAIN varchar_ci AS varchar(252) NOT NULL DEFAULT ''::character varying;
+CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
 
 /*
 	Operation Functions
@@ -1929,27 +2066,6 @@ CREATE OPERATOR =(
   HASHES,
   MERGES,
   SORT1= <);
-
-EOF;
-		break;
-
-		case 'firebird':
-			return <<<EOF
-
-# Emulation of STRLEN, might need to be checked out for FB 2.0
-DECLARE EXTERNAL FUNCTION STRLEN CSTRING(32767)
-RETURNS INTEGER BY VALUE
-ENTRY_POINT 'IB_UDF_strlen' MODULE_NAME 'ib_udf';;
-
-# Emulation of LOWER, might need to be checked out for FB 2.0
-DECLARE EXTERNAL FUNCTION LOWER CSTRING(80)
-RETURNS CSTRING(80) FREE_IT 
-ENTRY_POINT 'IB_UDF_lower' MODULE_NAME 'ib_udf';;
-
-# Only used for insertion of binary strings as defaults
-DECLARE EXTERNAL FUNCTION ASCII_CHAR INTEGER
-RETURNS CSTRING(1) FREE_IT
-ENTRY_POINT 'IB_UDF_ascii_char' MODULE_NAME 'ib_udf';;
 
 EOF;
 		break;

@@ -44,15 +44,8 @@ class acp_jabber
 		$jab_resource		= request_var('jab_resource', $config['jab_resource']);
 		$jab_package_size	= request_var('jab_package_size', $config['jab_package_size']);
 
-		$jabber = new jabber();
+		$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_resource);
 		$error = array();
-
-		// Setup the basis vars for jabber connection
-		$jabber->server		= $jab_host;
-		$jabber->port		= ($jab_port) ? $jab_port : 5222;
-		$jabber->username	= $jab_username;
-		$jabber->password	= $jab_password;
-		$jabber->resource	= $jab_resource;
 
 		$message = $user->lang['JAB_SETTINGS_CHANGED'];
 		$log = 'JAB_SETTINGS_CHANGED';
@@ -65,7 +58,7 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// First we'll try to authorise using this account, if that fails we'll try to create it.
@@ -94,12 +87,12 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$jabber->send_auth())
 				{
-					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$jabber->send_presence(NULL, NULL, 'online');
 

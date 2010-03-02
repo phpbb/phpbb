@@ -189,7 +189,7 @@ class acp_ban
 				$template->assign_block_vars('ban_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes(html_entity_decode($reason)))
+					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)))
 				);
 			}
 		}
@@ -201,7 +201,7 @@ class acp_ban
 				$template->assign_block_vars('ban_give_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes(html_entity_decode($reason)))
+					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)))
 				);
 			}
 		}

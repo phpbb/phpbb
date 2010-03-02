@@ -22,7 +22,7 @@
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 			<p class="topicdetails">
 			<!-- IF topicrow.U_LAST_POST_AUTHOR -->
-				<a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
+				<a href="{topicrow.U_LAST_POST_AUTHOR}" <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a>
 			<!-- ELSE -->
 				{topicrow.LAST_POST_AUTHOR}
 			<!-- ENDIF -->

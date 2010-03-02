@@ -48,14 +48,14 @@ class acp_ranks
 
 				if (!$rank_title)
 				{
-					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
 					'rank_title'		=> $rank_title,
 					'rank_special'		=> $special_rank,
 					'rank_min'			=> $min_posts,
-					'rank_image'		=> html_entity_decode($rank_image)
+					'rank_image'		=> htmlspecialchars_decode($rank_image)
 				);
 				
 				if ($rank_id)
@@ -96,7 +96,7 @@ class acp_ranks
 				}
 				else
 				{
-					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			break;

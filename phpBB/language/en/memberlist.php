@@ -18,7 +18,9 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
+//
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -34,8 +36,7 @@ $lang = array_merge($lang, array(
 	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
 	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
-	'AFTER'					=> 'After',
-	'AIM'					=> 'AIM',
+	'AFTER'					=> 'After',	
 
 	'BEFORE'				=> 'Before',
 
@@ -55,14 +56,13 @@ $lang = array_merge($lang, array(
 	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the email.',
 	'EQUAL_TO'				=> 'Equal to',
 
-	'FIND_USERNAME_EXPLAIN'	=> 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format yyyy-mm-dd, e.g. 2002-01-01. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself) and click the Select Marked button to return to the previous form.',
+	'FIND_USERNAME_EXPLAIN'	=> 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format <kbd>YYYY-MM-DD</kbd>, e.g. <samp>2004-02-29</samp>. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself) and click the Select Marked button to return to the previous form.',
 	'FLOOD_EMAIL_LIMIT'		=> 'You cannot send another email at this time. Please try again later.',
 
 	'GROUP_LEADER'			=> 'Group leader',
 
 	'HIDE_MEMBER_SEARCH'	=> 'Hide member search',
 
-	'ICQ'					=> 'ICQ',
 	'IM_ADD_CONTACT'		=> 'Add Contact',
 	'IM_AIM'				=> 'Please note that you need AOL Instant Messenger installed to use this.',
 	'IM_AIM_EXPRESS'		=> 'AIM Express',
@@ -72,6 +72,8 @@ $lang = array_merge($lang, array(
 	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s',
 	'IM_MESSAGE'			=> 'Your message',
 	'IM_MSNM'				=> 'Please note that you need Windows Messenger installed to use this.',
+	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
+	'IM_MSNM_CONNECT'		=> 'MSNM is not connected.\nYou have to connect to MSNM to continue.',		
 	'IM_NAME'				=> 'Your Name',
 	'IM_NO_JABBER'			=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.',
 	'IM_RECIPIENT'			=> 'Recipient',
@@ -80,8 +82,6 @@ $lang = array_merge($lang, array(
 	'IM_SENT_JABBER'		=> 'Your message to %1$s has been sent successfully.',
 	'IM_USER'				=> 'Send an instant message',
 	
-	'JABBER'				=> 'Jabber',
-
 	'LAST_ACTIVE'				=> 'Last active',
 	'LESS_THAN'					=> 'Less than',
 	'LIST_USER'					=> '1 user',
@@ -98,14 +98,17 @@ $lang = array_merge($lang, array(
 	'NO_VIEW_USERS'			=> 'You are not authorised to view the member list or profiles.',
 
 	'ORDER'					=> 'Order',
+	'OTHER'					=> 'Other',
 
 	'POST_IP'				=> 'Posted from IP/domain',
 
 	'RANK'					=> 'Rank',
 	'REAL_NAME'				=> 'Recipient name',
 	'RECIPIENT'				=> 'Recipient',
+	'REMOVE_FOE'			=> 'Remove foe',
+	'REMOVE_FRIEND'			=> 'Remove friend',
 
-	'SEARCH_USER_POSTS'		=> 'Search user\'s posts',
+	'SEARCH_USER_POSTS'		=> 'Search user’s posts',
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
 	'SEND_IM'				=> 'Instant messaging',
@@ -124,8 +127,6 @@ $lang = array_merge($lang, array(
 	'VISITED'				=> 'Last visited',
 
 	'WWW'					=> 'Website',
-
-	'YIM'					=> 'YIM',
 ));
 
 ?>

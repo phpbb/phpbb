@@ -26,7 +26,7 @@ class acp_permission_roles
 		$auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
-		$user->add_lang('acp/permissions_phpbb');
+		add_permission_language();
 
 		$this->tpl_name = 'acp_permission_roles';
 
@@ -58,7 +58,8 @@ class acp_permission_roles
 			break;
 
 			default:
-				trigger_error('INVALID_MODE');
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 
 		$template->assign_vars(array(
@@ -75,7 +76,7 @@ class acp_permission_roles
 
 					if (!$role_id)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT *
@@ -87,7 +88,7 @@ class acp_permission_roles
 
 					if (!$role_row)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if (confirm_box(true))
@@ -112,7 +113,7 @@ class acp_permission_roles
 				case 'edit':
 					if (!$role_id)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					// Get role we edit
@@ -125,7 +126,7 @@ class acp_permission_roles
 
 					if (!$role_row)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 				// no break;
@@ -138,22 +139,22 @@ class acp_permission_roles
 
 					if (!$role_name)
 					{
-						trigger_error($user->lang['NO_ROLE_NAME_SPECIFIED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_NAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
 						WHERE role_type = '" . $db->sql_escape($permission_type) . "'
-							AND LOWER(role_name) = '" . $db->sql_escape(strtolower($role_name)) . "'";
+							AND role_name = '" . $db->sql_escape($role_name) . "'";
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
 					// Make sure we only print out the error if we add the role or change it's name
-					if ($row && ($mode == 'add' || ($mode == 'edit' && strtolower($role_row['role_name']) != strtolower($role_name))))
+					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name'] != $role_name)))
 					{
-						trigger_error(sprintf($user->lang['ROLE_NAME_ALREADY_EXIST'], $role_name) . adm_back_link($this->u_action));
+						trigger_error(sprintf($user->lang['ROLE_NAME_ALREADY_EXIST'], $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql_ary = array(
@@ -252,7 +253,7 @@ class acp_permission_roles
 				{
 					if (!$role_id)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					
 					$sql = 'SELECT *
@@ -279,7 +280,7 @@ class acp_permission_roles
 
 				if (!$role_row)
 				{
-					trigger_error($user->lang['NO_PRESET_SELECTED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$template->assign_vars(array(

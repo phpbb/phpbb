@@ -37,6 +37,8 @@ function mcp_topic_view($id, $mode, $action)
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
+	
+	utf8_normalize_nfc(&$subject);
 
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
@@ -96,10 +98,10 @@ function mcp_topic_view($id, $mode, $action)
 	}
 	$db->sql_freeresult($result);
 
-	if ($bbcode_bitfield)
+	if ($bbcode_bitfield !== '')
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($bbcode_bitfield);
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	foreach ($rowset as $i => $row)
@@ -110,6 +112,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
+		$message = str_replace("\n", '<br />', $message);
 
 		if ($row['bbcode_bitfield'])
 		{
@@ -117,7 +120,6 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		$message = smiley_text($message);
-		$message = str_replace("\n", '<br />', $message);
 
 		if (!$row['post_approved'])
 		{
@@ -180,7 +182,7 @@ function mcp_topic_view($id, $mode, $action)
 		'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
-		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '" target="_new">' . $to_topic_info['topic_title'] . '</a>') : '',
+		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,
@@ -197,6 +199,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
+		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 
 		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 		'S_TOPIC_ICON'			=> $icon_id,
@@ -302,7 +305,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 			$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-			if ($sort_order_sql{0} == 'u')
+			if ($sort_order_sql[0] == 'u')
 			{
 				$sql = 'SELECT p.post_id, p.forum_id, p.post_approved
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u

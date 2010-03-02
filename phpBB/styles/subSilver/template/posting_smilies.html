@@ -2,26 +2,12 @@
 
 <script language="javascript" type="text/javascript">
 <!--
-/**
-* Apply clicked smiley to message body
-*/
-function smiley(text) {
-	text = ' ' + text + ' ';
 
-	if (opener.document.forms['post'].message.createTextRange && opener.document.forms['post'].message.caretPos)
-	{
-		var caretPos = opener.document.forms['post'].message.caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
-		opener.document.forms['post'].message.focus();
-	}
-	else
-	{
-		opener.document.forms['post'].message.value  += text;
-		opener.document.forms['post'].message.focus();
-	}
-}
+var form_name = 'post';
+var text_name = 'message';
 //-->
 </script>
+<script language="javascript" type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
 <table width="100%" cellspacing="1" cellpadding="4" border="0">
 <tr>
@@ -31,7 +17,7 @@ function smiley(text) {
 			<th>{L_SMILIES}</th>
 		</tr>
 		<tr>
-			<td class="row1" align="center" valign="middle"><!-- BEGIN smiley --> <a href="javascript:smiley('{smiley.A_SMILEY_CODE}')"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" onclick="smiley('{smiley.A_SMILEY_CODE}');return false" /></a> <!-- END smiley --><br /><a class="nav" href="javascript:window.close();">{L_CLOSE_WINDOW}</a></td>
+			<td class="row1" align="center" valign="middle"><!-- BEGIN smiley --> <a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a> <!-- END smiley --><br /><a class="nav" href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a></td>
 		</tr>
 		</table>
 	</td>

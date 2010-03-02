@@ -46,7 +46,7 @@
 			<!-- ENDIF -->
 			<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 				<tr>
-					<td class="genmed" align="center">[ <a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> | <a href="{U_ADD_FOE}">{L_ADD_FOE}</a> ]</td>
+					<td class="genmed" align="center">[ <!-- IF U_ADD_FRIEND and U_ADD_FOE--><a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> | <a href="{U_ADD_FOE}">{L_ADD_FOE}</a><!-- ENDIF --><!-- IF U_REMOVE_FRIEND --><a href="{U_REMOVE_FRIEND}">{L_REMOVE_FRIEND}</a><!-- ENDIF --><!-- IF U_REMOVE_FOE --><a href="{U_REMOVE_FOE}">{L_REMOVE_FOE}</a><!-- ENDIF --> ]</td>
 				</tr>
 			<!-- ENDIF -->
 			</table>
@@ -124,30 +124,30 @@
 			</table>
 		</td>
 		<td class="row1">
-			<table cellspacing="1" cellpadding="2" border="0">
+			<table cellspacing="1" cellpadding="2" border="0">			
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
 				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_LOCATION}: </td>
-				<td><b class="genmed">{LOCATION}</b></td>
+				<td><!-- IF LOCATION --><b class="genmed">{LOCATION}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_AGE}: </td>
-				<td><b class="genmed">{AGE}</b></td>
+				<td><!-- IF AGE --><b class="genmed">{AGE}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
-				<td><b class="genmed">{OCCUPATION}</b></td>
+				<td><!-- IF OCCUPATION --><b class="genmed">{OCCUPATION}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
-				<td><b class="genmed">{INTERESTS}</b></td>
+				<td><!-- IF INTERESTS --><b class="genmed">{INTERESTS}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
-				<td><b><!-- IF U_WWW --><a class="genmed" href="{U_WWW}" target="_userwww">{U_WWW}</a><!-- ENDIF --></b></td>
+				<td><!-- IF U_WWW --><b><a class="genmed" href="{U_WWW}" target="_userwww">{U_WWW}</a></b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF S_PROFILE_FIELD1 -->
 				<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
@@ -181,14 +181,7 @@
 
 <br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-<tr>
-	<td class="row1">
-		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-		<p class="datetime">{S_TIMEZONE}</p>
-	</td>
-</tr>
-</table>
+<!-- INCLUDE breadcrumbs.html -->
 
 <br clear="all" />
 

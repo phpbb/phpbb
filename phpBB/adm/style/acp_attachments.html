@@ -295,10 +295,9 @@
 		</tr>
 		<!-- ENDIF -->
 		<tr> 
-			<input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" />
 			<td><b>{extensions.EXTENSION}</b></td>
 			<td>{extensions.GROUP_OPTIONS}</td>
-			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /></td>
+			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /><input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" /></td>
 		</tr>
 	<!-- END extensions -->
 	</tbody>
@@ -319,6 +318,7 @@
 	<thead>
 	<tr>
 		<th>{L_FILENAME}</th>
+		<th>{L_FILEDATE}</th>
 		<th>{L_FILESIZE}</th>
 		<th>{L_ATTACH_POST_ID}</th>
 		<th>{L_ATTACH_TO_POST}</th>
@@ -328,20 +328,23 @@
 	<tbody>
 	<!-- BEGIN orphan -->
 		<!-- IF orphan.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{orphan.U_FILE}" rel="file">{orphan.FILE}</a></td>
+			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
+			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><b>ID: </b><input type="text" name="post_id[{orphan.FILE}]" size="7" maxlength="10" value="{orphan.POST_IDS}" /></td>
-			<td><input type="checkbox" class="radio" name="add[{orphan.FILE}]" /></td>
-			<td><input type="checkbox" class="radio" name="delete[{orphan.FILE}]" /></td>
+			<td><b>ID: </b><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
+			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>
 	<!-- END orphan -->
-	<tr>
-		<td colspan="3">&nbsp;</td>
-		<td class="small"><a href="javascript:marklist('orphan', 'add', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('orphan', 'add', false);">{L_UNMARK_ALL}</a></td>
-		<td class="small"><a href="javascript:marklist('orphan', 'delete', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('orphan', 'delete', false);">{L_UNMARK_ALL}</a></td>
+	<tr class="row4">
+		<td colspan="4">&nbsp;</td>
+		<td class="small"><a href="#" onclick="marklist('orphan', 'add', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'add', false); return false;">{L_UNMARK_ALL}</a></td>
+		<td class="small"><a href="#" onclick="marklist('orphan', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
 	</tr>
 	</tbody>
 	</table>
+
+	<br />
 
 	<fieldset class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;

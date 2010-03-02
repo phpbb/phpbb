@@ -12,7 +12,7 @@
 * Obtain user_ids from usernames or vice versa. Returns false on
 * success else the error string
 */
-function user_get_id_name(&$user_id_ary, &$username_ary)
+function user_get_id_name(&$user_id_ary, &$username_ary, $only_active = false)
 {
 	global $db;
 
@@ -34,16 +34,22 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 		$$which_ary = array($$which_ary);
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : $$which_ary;
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : array_map('utf8_clean_string', $$which_ary);
 	unset($$which_ary);
 
 	$user_id_ary = $username_ary = array();
 
 	// Grab the user id/username records
-	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username';
+	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username_clean';
 	$sql = 'SELECT user_id, username
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_where, $sql_in);
+
+	if ($only_active)
+	{
+		$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+	}
+
 	$result = $db->sql_query($sql);
 
 	if (!($row = $db->sql_fetchrow($result)))
@@ -134,16 +140,13 @@ function user_add($user_row, $cp_data = false)
 
 	$sql_ary = array(
 		'username'			=> $user_row['username'],
+		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
 		'user_email'		=> $user_row['user_email'],
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
 		'user_type'			=> $user_row['user_type'],
 	);
-
-	/**
-	* @todo user_allow_email is not used anywhere. Think about removing it.
-	*/
 
 	// These are the additional vars able to be specified
 	$additional_vars = array(
@@ -156,7 +159,10 @@ function user_add($user_row, $cp_data = false)
 		'user_actkey'		=> '',
 		'user_ip'			=> '',
 		'user_regdate'		=> time(),
+		'user_passchg'		=> time(),
 
+		'user_inactive_reason'	=> 0,
+		'user_inactive_time'	=> 0,
 		'user_lastmark'			=> time(),
 		'user_lastvisit'		=> 0,
 		'user_lastpost_time'	=> 0,
@@ -164,6 +170,7 @@ function user_add($user_row, $cp_data = false)
 		'user_posts'			=> 0,
 		'user_dst'				=> 0,
 		'user_colour'			=> '',
+		'user_interests'		=> '',
 		'user_avatar'			=> '',
 		'user_avatar_type'		=> 0,
 		'user_avatar_width'		=> 0,
@@ -179,7 +186,6 @@ function user_add($user_row, $cp_data = false)
 		'user_notify_pm'		=> 1,
 		'user_notify_type'		=> NOTIFY_EMAIL,
 		'user_allow_pm'			=> 1,
-		'user_allow_email'		=> 1,
 		'user_allow_viewonline'	=> 1,
 		'user_allow_viewemail'	=> 1,
 		'user_allow_massemail'	=> 1,
@@ -254,39 +260,67 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth;
+	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
 
 	switch ($mode)
 	{
 		case 'retain':
+
+			if ($post_username === false)
+			{
+				$post_username = $user->lang['GUEST'];
+			}
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
 				WHERE forum_last_poster_id = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", post_username = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
 				WHERE poster_id = $user_id";
 			$db->sql_query($sql);
 
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_edit_user = ' . ANONYMOUS . "
+				WHERE post_edit_user = $user_id";
+			$db->sql_query($sql);
+
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_poster = ' . ANONYMOUS . "
+				SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
 				WHERE topic_poster = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
 				WHERE topic_last_poster_id = $user_id";
 			$db->sql_query($sql);
+
+			// Since we change every post by this author, we need to count this amount towards the anonymous user
+			$sql = 'SELECT user_posts
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_posts = (int) $db->sql_fetchfield('user_posts');
+			$db->sql_freeresult($result);
+
+			// Update the post count for the anonymous user
+			if ($num_posts)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts + ' . $num_posts . '
+					WHERE user_id = ' . ANONYMOUS;
+				$db->sql_query($sql);
+			}
 		break;
 
 		case 'remove':
 
 			if (!function_exists('delete_posts'))
 			{
-				global $phpbb_root_path, $phpEx;
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
@@ -334,12 +368,73 @@ function user_delete($mode, $user_id, $post_username = false)
 		break;
 	}
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE);
 
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
 			WHERE user_id = $user_id";
+		$db->sql_query($sql);
+	}
+
+	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+
+	include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+
+	// Remove any undelivered mails...
+	$sql = 'SELECT msg_id, user_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE author_id = ' . $user_id . '
+			AND folder_id = ' . PRIVMSGS_NO_BOX;
+	$result = $db->sql_query($sql);
+
+	$undelivered_msg = $undelivered_user = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$undelivered_msg[] = $row['msg_id'];
+		$undelivered_user[$row['user_id']][] = true;
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($undelivered_msg))
+	{
+		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
+		$db->sql_query($sql);
+	}
+
+	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE author_id = ' . $user_id . '
+			AND folder_id = ' . PRIVMSGS_NO_BOX;
+	$db->sql_query($sql);
+
+	// Delete all to-informations
+	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE user_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
+	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+		SET author_id = ' . ANONYMOUS . '
+		WHERE author_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET author_id = ' . ANONYMOUS . '
+		WHERE author_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	foreach ($undelivered_user as $_user_id => $ary)
+	{
+		if ($_user_id == $user_id)
+		{
+			continue;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . ' 
+			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
+				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
+			WHERE user_id = ' . $_user_id;
 		$db->sql_query($sql);
 	}
 
@@ -351,98 +446,96 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	set_config('num_users', $config['num_users'] - 1, true);
 
-	// Adjust last post info...
-
-
 	$db->sql_transaction('commit');
 
 	return false;
 }
 
 /**
-* Flips user_type from active to inactive and vice versa, handles
-* group membership updates
+* Flips user_type from active to inactive and vice versa, handles group membership updates
+* 
+* @param string $mode can be flip for flipping from active/inactive, activate or deactivate
 */
-function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $no_log = false)
+function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $db, $user, $auth;
+	global $config, $db, $user, $auth;
 
-	$sql = 'SELECT group_id, group_name
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name IN ('REGISTERED', 'REGISTERED_COPPA', 'INACTIVE', 'INACTIVE_COPPA')";
+	$deactivated = $activated = 0;
+	$sql_statements = array();
+
+	if (!is_array($user_id_ary))
+	{
+		$user_id_ary = array($user_id_ary);
+	}
+
+	if (!sizeof($user_id_ary))
+	{
+		return;
+	}
+
+	$sql = 'SELECT user_id, group_id, user_type, user_inactive_reason
+		FROM ' . USERS_TABLE . '
+		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 	$result = $db->sql_query($sql);
 
-	$group_id_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$group_id_ary[$row['group_name']] = $row['group_id'];
+		$sql_ary = array();
+
+		if ($row['user_type'] == USER_IGNORE || $row['user_type'] == USER_FOUNDER || 
+			($mode == 'activate' && $row['user_type'] != USER_INACTIVE) || 
+			($mode == 'deactivate' && $row['user_type'] == USER_INACTIVE))
+		{
+			continue;
+		}
+
+		if ($row['user_type'] == USER_INACTIVE)
+		{
+			$activated++;
+		}
+		else
+		{
+			$deactivated++;
+
+			// Remove the users session key...
+			$user->reset_login_keys($row['user_id']);
+		}
+
+		$sql_ary += array(
+			'user_type'				=> ($row['user_type'] == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL,
+			'user_inactive_time'	=> ($row['user_type'] == USER_NORMAL) ? time() : 0,
+			'user_inactive_reason'	=> ($row['user_type'] == USER_NORMAL) ? $reason : 0,
+		);
+
+		$sql_statements[$row['user_id']] = $sql_ary;
 	}
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT group_id
-		FROM ' . USER_GROUP_TABLE . "
-		WHERE user_id = $user_id";
-	$result = $db->sql_query($sql);
-
-	$group_name = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
-	while ($row = $db->sql_fetchrow($result))
+	if (sizeof($sql_statements))
 	{
-		if ($name = array_search($row['group_id'], $group_id_ary))
+		foreach ($sql_statements as $user_id => $sql_ary)
 		{
-			$group_name = $name;
-			break;
-		}
-	}
-	$db->sql_freeresult($result);
-
-	$current_group = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
-	$switch_group = ($user_type == USER_NORMAL) ? 'INACTIVE' : 'REGISTERED';
-
-	$new_group_id = $group_id_ary[str_replace($current_group, $switch_group, $group_name)];
-
-	$sql = 'UPDATE ' . USER_GROUP_TABLE . "
-		SET group_id = $new_group_id
-		WHERE user_id = $user_id
-			AND group_id = " . $group_id_ary[$group_name];
-	$db->sql_query($sql);
-
-	$sql_ary = array(
-		'user_type'		=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL
-	);
-
-	if ($new_group_id == $group_id_ary[$group_name])
-	{
-		$sql_ary['group_id'] = $new_group_id;
-	}
-
-	if ($user_actkey !== false)
-	{
-		$sql_ary['user_actkey'] = $user_actkey;
-	}
-
-	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-		WHERE user_id = $user_id";
-	$db->sql_query($sql);
-
-	$auth->acl_clear_prefetch($user_id);
-
-	if (!$no_log)
-	{
-		if ($username === false)
-		{
-			$sql = 'SELECT username
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$username = (string) $db->sql_fetchfield('username');
-			$db->sql_freeresult($result);
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . $user_id;
+			$db->sql_query($sql);
 		}
 
-		$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
-		add_log('admin', $log, $username);
+		$auth->acl_clear_prefetch(array_keys($sql_statements));
 	}
 
-	return false;
+	if ($deactivated)
+	{
+		set_config('num_users', $config['num_users'] - $deactivated, true);
+	}
+
+	if ($activated)
+	{
+		set_config('num_users', $config['num_users'] + $activated, true);
+	}
+
+	// Update latest username
+	update_last_username();
 }
 
 /**
@@ -528,7 +621,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = strtolower($username);
+						$sql_usernames[] = utf8_clean_string($username);
 					}
 				}
 
@@ -540,11 +633,16 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('LOWER(username)', $sql_usernames);
+					WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
 
+				// Do not allow banning yourself
 				if (sizeof($founder))
 				{
-					$sql .= ' AND ' . $db->sql_in_set('user_id', array_keys($founder), true);
+					$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
+				}
+				else
+				{
+					$sql .= ' AND user_id <> ' . $user->data['user_id'];
 				}
 
 				$result = $db->sql_query($sql);
@@ -736,24 +834,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			);
 		}
 		
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(BANLIST_TABLE, $sql_ary);
 
 		// If we are banning we want to logout anyone matching the ban
 		if (!$ban_exclude)
@@ -973,11 +1054,11 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 		return false;
 	}
 
-	if ($min && strlen($string) < $min)
+	if ($min && utf8_strlen(htmlspecialchars_decode($string)) < $min)
 	{
 		return 'TOO_SHORT';
 	}
-	else if ($max && strlen($string) > $max)
+	else if ($max && utf8_strlen(htmlspecialchars_decode($string)) > $max)
 	{
 		return 'TOO_LONG';
 	}
@@ -1034,25 +1115,28 @@ function validate_match($string, $optional = false, $match)
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
 *
+* @todo do we really check and disallow the " character in usernames as written above. Has it only be forgotten to include the check?
 * @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_username($username)
 {
-	global $config, $db, $user;
+	global $config, $db, $user, $cache;
 
-	if (strtolower($user->data['username']) == strtolower($username))
+	$clean_username = utf8_clean_string($username);
+
+	if (utf8_clean_string($user->data['username']) == $clean_username)
 	{
 		return false;
 	}
 
-	if (!preg_match('#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#i', $username))
+	if (!preg_match('#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#i', $username) || strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
 	{
 		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
-		WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'";
+		WHERE username_clean = '" . $db->sql_escape($clean_username) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1064,7 +1148,7 @@ function validate_username($username)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . strtolower($db->sql_escape($username)) . "'";
+		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1074,19 +1158,16 @@ function validate_username($username)
 		return 'USERNAME_TAKEN';
 	}
 
-	$sql = 'SELECT disallow_username
-		FROM ' . DISALLOW_TABLE;
-	$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	$bad_usernames = $cache->obtain_disallowed_usernames();
+
+	foreach ($bad_usernames as $bad_username)
 	{
-		if (preg_match('#^' . str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
+		if (preg_match('#^' . $bad_username . '#', $clean_username))
 		{
-			$db->sql_freeresult($result);
 			return 'USERNAME_DISALLOWED';
 		}
 	}
-	$db->sql_freeresult($result);
 
 	$sql = 'SELECT word
 		FROM  ' . WORDS_TABLE;
@@ -1101,6 +1182,29 @@ function validate_username($username)
 		}
 	}
 	$db->sql_freeresult($result);
+
+	return false;
+}
+
+/**
+* Check to see if the password meets the complexity settings
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+*/
+function validate_password($password)
+{
+	global $config, $db, $user;
+
+	if (!$password)
+	{
+		return false;
+	}
+
+	// We only check for existance of characters
+	if (!preg_match('#' . str_replace('\\\\', '\\', $config['pass_complex']) . '#i', $password))
+	{
+		return 'INVALID_CHARS';
+	}
 
 	return false;
 }
@@ -1122,6 +1226,18 @@ function validate_email($email)
 	if (!preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 	{
 		return 'EMAIL_INVALID';
+	}
+
+	// Check MX record.
+	// The idea for this is from reading the UseBB blog/announcement. :)
+	if ($config['email_check_mx'])
+	{
+		list(, $domain) = explode('@', $email);
+
+		if (phpbb_checkdnsrr($domain, 'MX') === false)
+		{
+			return 'DOMAIN_NO_MX_RECORD';
+		}
 	}
 
 	if ($user->check_ban(false, false, $email, true) == true)
@@ -1150,13 +1266,23 @@ function validate_email($email)
 /**
 * Remove avatar
 */
-function avatar_delete($id)
+function avatar_delete($mode, $row)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($id)))
+	// Check if the users avatar is actually *not* a group avatar
+	if ($mode == 'user')
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($id));
+		if (strpos($row['user_avatar'], 'g' . $row['group_id'] . '_') === 0 || strpos($row['user_avatar'], $row['user_id'] . '_') !== 0)
+		{
+			return false;
+		}
+	}
+
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar'])))
+	{
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar']));
+		return true;
 	}
 
 	return false;
@@ -1167,7 +1293,7 @@ function avatar_delete($id)
 */
 function avatar_remote($data, &$error)
 {
-	global $config, $db, $user, $phpbb_root_path;
+	global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
 	{
@@ -1193,6 +1319,24 @@ function avatar_remote($data, &$error)
 	if (!$width || !$height)
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		return false;
+	}
+
+	// Check image type
+	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+	$types = fileupload::image_types();
+	$extension = strtolower(filespec::get_extension($data['remotelink']));
+
+	if (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]]))
+	{
+		if (!isset($types[$image_data[2]]))
+		{
+			$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+		}
+		else
+		{
+			$error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
+		}
 		return false;
 	}
 
@@ -1238,7 +1382,21 @@ function avatar_upload($data, &$error)
 	}
 
 	$file->clean_filename('real', $data['user_id'] . '_');
-	$file->move_file($config['avatar_path']);
+
+	$destination = $config['avatar_path'];
+
+	if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+	{
+		$destination = substr($destination, 0, sizeof($destination)-2);
+	}
+
+	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
+	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
+	{
+		$destination = '';
+	}
+
+	$file->move_file($destination);
 
 	if (sizeof($file->error))
 	{
@@ -1272,7 +1430,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 		while (($file = readdir($dp)) !== false)
 		{
-			if ($file{0} != '.' && is_dir("$path/$file"))
+			if ($file[0] != '.' && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	
@@ -1376,12 +1534,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit');
 
 	// Check data
-	if (!strlen($name) || strlen($name) > 40)
+	if (!utf8_strlen($name) || utf8_strlen($name) > 40)
 	{
-		$error[] = (!strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
+		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
 	}
 
-	if (strlen($desc) > 255)
+	if (utf8_strlen($desc) > 255)
 	{
 		$error[] = $user->lang['GROUP_ERR_DESC_LONG'];
 	}
@@ -1455,33 +1613,30 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 						continue;
 					}
 
-					$sql_ary[str_replace('group', 'user', $attribute)] = $group_attributes[$attribute];
+					$sql_ary[$attribute] = $group_attributes[$attribute];
 				}
 			}
 		}
 
 		if (sizeof($sql_ary))
 		{
-			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
-			if (in_array('user_avatar', array_keys($sql_ary)))
-			{
-				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-				$sql = 'SELECT user_id, user_avatar
-					FROM ' . USERS_TABLE . '
-					WHERE group_id = ' . $group_id . '
-						AND user_avatar_type = ' . AVATAR_UPLOAD;
-				$result = $db->sql_query($sql);
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE group_id = ' . $group_id;
+			$result = $db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
-				{
-					avatar_delete($row['user_avatar']);
-				}
-				$db->sql_freeresult($result);
+			$user_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_ary[] = $row['user_id'];
 			}
 
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE group_id = $group_id";
-			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
+			if (sizeof($user_ary))
+			{
+				group_set_user_default($group_id, $user_ary, $sql_ary);
+			}
 		}
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
@@ -1496,7 +1651,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db;
+	global $db, $phpbb_root_path, $phpEx;
 
 	if (!$group_name)
 	{
@@ -1548,6 +1703,11 @@ function group_delete($group_id, $group_name = false)
 	$db->sql_query($sql);
 
 	// Re-cache moderators
+	if (!function_exists('cache_moderators'))
+	{
+		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+	}
+
 	cache_moderators();
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
@@ -1557,6 +1717,8 @@ function group_delete($group_id, $group_name = false)
 
 /**
 * Add user(s) to group
+*
+* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
@@ -1580,11 +1742,11 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	$add_id_ary = $update_id_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$add_id_ary[] = $row['user_id'];
+		$add_id_ary[] = (int) $row['user_id'];
 
 		if ($leader && !$row['group_leader'])
 		{
-			$update_id_ary[] = $row['user_id'];
+			$update_id_ary[] = (int) $row['user_id'];
 		}
 	}
 	$db->sql_freeresult($result);
@@ -1598,31 +1760,24 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		return 'GROUP_USERS_EXIST';
 	}
 
+	$db->sql_transaction('begin');
+
+	// Insert the new users
 	if (sizeof($add_id_ary))
 	{
-		// Insert the new users
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'sqlite':
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
-					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));
-				$db->sql_query($sql);
-			break;
+		$sql_ary = array();
 
-			default:
-				foreach ($add_id_ary as $user_id)
-				{
-					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
-						VALUES ($user_id, $group_id, $leader, $pending)";
-					$db->sql_query($sql);
-				}
-			break;
+		foreach ($add_id_ary as $user_id)
+		{
+			$sql_ary[] = array(
+				'user_id'		=> $user_id,
+				'group_id'		=> $group_id,
+				'group_leader'	=> $leader,
+				'user_pending'	=> $pending,
+			);
 		}
+
+		$db->sql_multi_insert(USER_GROUP_TABLE, $sql_ary);
 	}
 
 	if (sizeof($update_id_ary))
@@ -1639,6 +1794,8 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		group_set_user_default($group_id, $user_id_ary, $group_attributes);
 	}
 
+	$db->sql_transaction('commit');
+
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
@@ -1651,13 +1808,18 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return ($leader) ? 'GROUP_LEADERS_ADDED' : 'GROUP_USERS_ADDED';
+	group_update_listings($group_id);
+
+	// Return false - no error
+	return false;
 }
 
 /**
 * Remove a user/s from a given group. When we remove users we update their
 * default group_id. We do this by examining which "special" groups they belong
 * to. The selection is made based on a reasonable priority system
+*
+* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
@@ -1684,18 +1846,18 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		$group_order_id[$row['group_name']] = $row['group_id'];
 
 		$special_group_data[$row['group_id']] = array(
-			'user_colour'			=> $row['group_colour'],
-			'user_rank'				=> $row['group_rank'],
+			'group_colour'			=> $row['group_colour'],
+			'group_rank'				=> $row['group_rank'],
 		);
 
 		// Only set the group avatar if one is defined...
 		if ($row['group_avatar'])
 		{
 			$special_group_data[$row['group_id']] = array_merge($special_group_data[$row['group_id']], array(
-				'user_avatar'			=> $row['group_avatar'],
-				'user_avatar_type'		=> $row['group_avatar_type'],
-				'user_avatar_width'		=> $row['group_avatar_width'],
-				'user_avatar_height'	=> $row['group_avatar_height'])
+				'group_avatar'			=> $row['group_avatar'],
+				'group_avatar_type'		=> $row['group_avatar_type'],
+				'group_avatar_width'		=> $row['group_avatar_width'],
+				'group_avatar_height'	=> $row['group_avatar_height'])
 			);
 		}
 	}
@@ -1745,28 +1907,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			$special_group_data[$gid]['group_id'] = $gid;
-
-			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
-			if (in_array('user_avatar', array_keys($special_group_data[$gid])))
-			{
-				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-				$sql = 'SELECT user_id, user_avatar
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $sql_where_ary[$gid]) . '
-						AND user_avatar_type = ' . AVATAR_UPLOAD;
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					avatar_delete($row['user_avatar']);
-				}
-				$db->sql_freeresult($result);
-			}
-
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $special_group_data[$gid]) . '
-				WHERE ' . $db->sql_in_set('user_id', $sql_where_ary[$gid]);
-			$db->sql_query($sql);
+			group_set_user_default($gid, $sql_where_ary[$gid], $special_group_data[$gid]);
 		}
 	}
 	unset($special_group_data);
@@ -1788,7 +1929,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return 'GROUP_USERS_REMOVE';
+	// Return false - no error
+	return false;
 }
 
 /**
@@ -1857,8 +1999,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 			$messenger = new messenger();
 
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($email_users as $row)
 			{
 				$messenger->template('group_approved', $row['user_lang']);
@@ -1868,11 +2008,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				$messenger->im($row['user_jabber'], $row['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($row['username']),
-					'GROUP_NAME'	=> html_entity_decode($group_name),
-
+					'USERNAME'		=> htmlspecialchars_decode($row['username']),
+					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
 					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
 				);
 
@@ -1954,7 +2091,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	if (in_array('user_avatar', array_keys($sql_ary)))
 	{
 		// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-		$sql = 'SELECT user_id, user_avatar
+		$sql = 'SELECT user_id, group_id, user_avatar
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
 				AND user_avatar_type = ' . AVATAR_UPLOAD;
@@ -1962,7 +2099,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			avatar_delete($row['user_avatar']);
+			avatar_delete('user', $row);
 		}
 		$db->sql_freeresult($result);
 	}
@@ -1970,6 +2107,22 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 	$db->sql_query($sql);
+
+	if (in_array('user_colour', array_keys($sql_ary)))
+	{
+		// Update any cached colour information for these users
+		$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
+		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
+		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
+		$db->sql_query($sql);
+	}
 }
 
 /**
@@ -2060,6 +2213,66 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 	$db->sql_freeresult($result);
 
 	return $return;
+}
+
+/**
+* Re-cache moderators and foes if group has a_ or m_ permissions
+*/
+function group_update_listings($group_id)
+{
+	global $auth;
+
+	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
+
+	if (!sizeof($hold_ary))
+	{
+		return;
+	}
+
+	$mod_permissions = $admin_permissions = false;
+
+	foreach ($hold_ary as $g_id => $forum_ary)
+	{
+		foreach ($forum_ary as $forum_id => $auth_ary)
+		{
+			foreach ($auth_ary as $auth_option => $setting)
+			{
+				if ($mod_permissions && $admin_permissions)
+				{
+					break 3;
+				}
+
+				if ($setting != ACL_YES)
+				{
+					continue;
+				}
+
+				if ($auth_option == 'm_')
+				{
+					$mod_permissions = true;
+				}
+
+				if ($auth_option == 'a_')
+				{
+					$admin_permissions = true;
+				}
+			}
+		}
+	}
+
+	if ($mod_permissions)
+	{
+		if (!function_exists('cache_moderators'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+		cache_moderators();
+	}
+
+	if ($mod_permissions || $admin_permissions)
+	{
+		update_foes();
+	}
 }
 
 ?>

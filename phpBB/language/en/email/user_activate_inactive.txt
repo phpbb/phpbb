@@ -1,5 +1,4 @@
 Subject: Your account has been deactivated
-Charset: iso-8859-1
 
 Hello {USERNAME},
 

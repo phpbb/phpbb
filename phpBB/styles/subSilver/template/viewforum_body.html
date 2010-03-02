@@ -52,12 +52,17 @@
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 				<!-- ENDIF -->
 			</td>
-			<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
+			<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 			<td class="row1" width="140" align="center">
 				<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
-				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<p class="topicdetails">
+					<!-- IF topicrow.U_LAST_POST_AUTHOR -->
+						<a href="{topicrow.U_LAST_POST_AUTHOR}"  <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR -->style="color: {topicrow.LAST_POST_AUTHOR_COLOUR}; font-weight: bold;"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a>
+					<!-- ELSE -->
+						{topicrow.LAST_POST_AUTHOR}
+					<!-- ENDIF -->
 					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 				</p>
 			</td>
@@ -67,9 +72,9 @@
 
 		<tr>
 			<!-- IF S_TOPIC_ICONS -->
-				<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+				<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 			<!-- ELSE -->
-				<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+				<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 			<!-- ENDIF -->
 		</tr>
 	<!-- END topicrow -->
@@ -83,7 +88,8 @@
 <!-- ENDIF -->
 
 <!-- IF S_HAS_SUBFORUM -->
-	<!-- INCLUDE viewforum_subforum.html -->
+	<!-- INCLUDE forumlist_body.html -->
+	<br clear="all" />
 <!-- ENDIF -->
 
 <!-- IF S_IS_POSTABLE -->
@@ -112,7 +118,7 @@
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 			<!-- ENDIF -->
 		</tr>
 		</table>
@@ -173,12 +179,12 @@
 						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 					<!-- ENDIF -->
 				</td>
-				<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td>
+				<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
 				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 				<td class="row1" width="140" align="center">
 					<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
-					<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+					<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}"<!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
 						<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 					</p>
 				</td>
@@ -188,9 +194,9 @@
 
 			<tr>
 				<!-- IF S_TOPIC_ICONS -->
-					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 				<!-- ELSE -->
-					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 				<!-- ENDIF -->
 			</tr>
 		<!-- END topicrow -->
@@ -201,7 +207,7 @@
 			<!-- ELSE -->
 				<td class="cat" colspan="7">
 			<!-- ENDIF -->
-					<form method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></form>
+					<form method="post" action="{S_FORUM_ACTION}"><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></form>
 				</td>
 		</tr>
 		</table>
@@ -211,7 +217,7 @@
 			<td align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 			<td class="nav" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]</td>
-			<td class="nav" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			<td class="nav" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		</tr>
 		</table>
 
@@ -220,14 +226,7 @@
 
 </div>
 
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-<tr>
-	<td class="row1">
-		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-		<p class="datetime">{S_TIMEZONE}</p>
-	</td>
-</tr>
-</table>
+<!-- INCLUDE breadcrumbs.html -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />
@@ -267,7 +266,7 @@
 				<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
 				<td>&nbsp;&nbsp;</td>
 				<td width="20" align="center">{FOLDER_STICKY_IMG}</td>
-				<td class="gensmall">{L_ICON_STICKY}</td>
+				<td class="gensmall">{L_ICON_STICKY}</td>			
 			</tr>
 			<tr>
 				<td class="gensmall">{FOLDER_LOCKED_NEW_IMG}</td>

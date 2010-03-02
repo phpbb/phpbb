@@ -89,7 +89,7 @@
 		<dl>
 			<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 			<dd><input class="medium" type="text" id="username" name="username[]" /></dd>
-			<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+			<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
 			<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 		</dl>
 		</fieldset>
@@ -134,7 +134,7 @@
 				<legend>{L_MANAGE_USERS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="user_id[]" multiple="multiple" size="5">{S_DEFINED_USER_OPTIONS}</select></dd>
-				<dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_users" value="1" />&nbsp; {L_ALL_USERS}</dd>
+				<!-- IF S_ALLOW_ALL_SELECT --><dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_users" value="1" />&nbsp; {L_ALL_USERS}</dd><!-- ENDIF -->
 			</dl>
 			</fieldset>
 			
@@ -152,7 +152,7 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</div><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</div><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
 
@@ -179,7 +179,7 @@
 				<legend>{L_MANAGE_GROUPS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="group_id[]" multiple="multiple" size="5">{S_DEFINED_GROUP_OPTIONS}</select></dd>
-				<dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_groups" value="1" />&nbsp; {L_ALL_GROUPS}</dd>
+				<!-- IF S_ALLOW_ALL_SELECT --><dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_groups" value="1" />&nbsp; {L_ALL_GROUPS}</dd><!-- ENDIF -->
 			</dl>
 			</fieldset>
 			
@@ -239,7 +239,7 @@
 			<dl>
 				<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 				<dd><input type="text" id="username" name="username[]" /></dd>
-				<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+				<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
 				<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
@@ -356,7 +356,7 @@
 
 	<fieldset class="quick" style="float: left; text-align: left;">
 		{L_PERMISSION_APPLIED_TO_ALL}<br />
-		<a href="javascript:marklist('set_permissions', 'inherit', true);">{L_MARK_ALL}</a> &bull; <a href="javascript:marklist('set_permissions', 'inherit', false);">{L_UNMARK_ALL}</a>
+		<a href="#" onclick="marklist('set_permissions', 'inherit', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('set_permissions', 'inherit', false); return false;">{L_UNMARK_ALL}</a>
 	</fieldset>
 
 	<fieldset class="quick" style="float: right;">

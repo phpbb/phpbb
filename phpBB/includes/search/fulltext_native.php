@@ -56,10 +56,6 @@ class fulltext_native extends search_backend
 		{
 			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 		}
-		if (!function_exists('utf8_strlen'))
-		{
-			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-		}
 
 
 		$error = false;
@@ -86,38 +82,89 @@ class fulltext_native extends search_backend
 	{
 		global $db, $config, $user;
 
-		// Clean up the query search
+		$keywords = trim($this->cleanup($keywords, '+-|()*'));
+
+		// allow word|word|word without brackets
+		if ((strpos($keywords, ' ') === false) && (strpos($keywords, '|') !== false) && (strpos($keywords, '(') === false))
+		{
+			$keywords = '(' . $keywords . ')';
+		}
+
+		$open_bracket = $space = false;
+		for ($i = 0, $n = strlen($keywords); $i < $n; $i++)
+		{
+			if ($open_bracket !== false)
+			{
+				switch ($keywords[$i])
+				{
+					case ')':
+						if ($open_bracket + 1 == $i)
+						{
+							$keywords[$i - 1] = '|';
+							$keywords[$i] = '|';
+						}
+						$open_bracket = false;
+					break;
+					case '(':
+						$keywords[$i] = '|';
+					break;
+					case '+':
+					case '-':
+					case ' ':
+						$keywords[$i] = '|';
+					break;
+				}
+			}
+			else
+			{
+				switch ($keywords[$i])
+				{
+					case ')':
+						$keywords[$i] = ' ';
+					break;
+					case '(':
+						$open_bracket = $i;
+					break;
+					case '|':
+						$keywords[$i] = ' ';
+					break;
+					case '-':
+					case '+':
+						$space = $keywords[$i];
+					break;
+					case ' ':
+						if ($space !== false)
+						{
+							$keywords[$i] = $space;
+						}
+					break;
+					default:
+						$space = false;
+				}
+			}
+		}
+
+		if ($open_bracket)
+		{
+			$keywords .= ')';
+		}
+
 		$match = array(
-			// Replace multiple spaces with a single space
 			'#  +#',
-
-			// Strip spaces after: +-|(
-			'#([+\\-|(]) #',
-
-			// Strip spaces before: |*)
-			'# ([|*)])#',
-
-			// Make word|word|word work without brackets
-			'#^[^()]*\\|[^()]*$#',
-
-			// Remove nested brackets
-			'#(\\([^()]*)(?=\\()#',
-			'#\\)([^()]*)(?=\\))#',
+			'#\|\|+#',
+			'#(\+|\-)(?:\+|\-)+#',
+			'#\(\|#',
+			'#\|\)#',
 		);
-
 		$replace = array(
 			' ',
+			'|',
 			'$1',
-			'$1',
-			'($0)',
-			'$1)',
-			'$1',
+			'(',
+			')',
 		);
 
-		$keywords = trim(preg_replace($match, $replace, $this->cleanup($keywords, '+-|()*', $user->lang['ENCODING'])));
-
-		// remove some useless bracket combinations which might be created by the previous regexps
-		$keywords = str_replace(array('()', ')|('), array('', '|'), $keywords);
+		$keywords = preg_replace($match, $replace, $keywords);
 
 		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
 
@@ -134,7 +181,7 @@ class fulltext_native extends search_backend
 		}
 
 		// set the search_query which is shown to the user
-		$this->search_query = utf8_encode_ncr($keywords, ENT_QUOTES);
+		$this->search_query = $keywords;
 
 		$exact_words = array();
 		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#', $keywords, $exact_words);
@@ -152,7 +199,7 @@ class fulltext_native extends search_backend
 			{
 				if ($row['word_common'])
 				{
-					$this->common_words[] = $row['wort_text'];
+					$this->common_words[] = $row['word_text'];
 					continue;
 				}
 
@@ -187,7 +234,7 @@ class fulltext_native extends search_backend
 				// a group of which at least one may not be in the resulting posts
 				if ($word[0] == '(')
 				{
-					$word = explode('|', substr($word, 1, -1));
+					$word = array_unique(explode('|', substr($word, 1, -1)));
 					$mode = 'must_exclude_one';
 				}
 				// one word which should not be in the resulting posts
@@ -209,10 +256,15 @@ class fulltext_native extends search_backend
 				// a group of words of which at least one word should be in every resulting post
 				if ($word[0] == '(')
 				{
-					$word = explode('|', substr($word, 1, -1));
+					$word = array_unique(explode('|', substr($word, 1, -1)));
 				}
 				$ignore_no_id = false;
 				$mode = 'must_contain';
+			}
+
+			if (empty($word))
+			{
+				continue;
 			}
 
 			// if this is an array of words then retrieve an id for each
@@ -246,7 +298,7 @@ class fulltext_native extends search_backend
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id)
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], utf8_encode_ncr(implode(', ', $word))));
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $word)));
 				}
 			}
 			// else we only need one id
@@ -264,7 +316,7 @@ class fulltext_native extends search_backend
 			// throw an error if we shall not ignore unexistant words
 			else if (!$ignore_no_id)
 			{
-				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], utf8_encode_ncr($word)));
+				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
 			}
 		}
 
@@ -357,12 +409,6 @@ class fulltext_native extends search_backend
 		);
 		$sql_where[] = 'm0.post_id = p.post_id';
 
-		if ($type == 'topics')
-		{
-			$sql_array['FROM'][TOPICS_TABLE] = 't';
-			$group_by = true;
-		}
-
 		$title_match = '';
 		$group_by = true;
 		// Build some display specific sql strings
@@ -381,6 +427,16 @@ class fulltext_native extends search_backend
 				$title_match = 'title_match = 0';
 				$group_by = false;
 			break;
+		}
+
+		if ($type == 'topics')
+		{
+			if (!isset($sql_array['FROM'][TOPICS_TABLE]))
+			{
+				$sql_array['FROM'][TOPICS_TABLE] = 't';
+				$sql_where[] = 'p.topic_id = t.topic_id';
+			}
+			$group_by = true;
 		}
 
 		/**
@@ -540,20 +596,24 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
-				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
+
+					// 3.x does not support SQL_CALC_FOUND_ROWS
 					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
 					$is_mysql = true;
+
 				break;
 
 				case 'sqlite':
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
 							FROM (' . $db->sql_build_query('SELECT', $sql_array_count) . ')';
+
 				// no break
+
 				default:
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
 					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
@@ -735,9 +795,8 @@ class fulltext_native extends search_backend
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
-				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
 					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
@@ -757,7 +816,7 @@ class fulltext_native extends search_backend
 					}
 					else
 					{
-						if (SQL_LAYER == 'sqlite')
+						if ($db->sql_layer == 'sqlite')
 						{
 							$sql = 'SELECT COUNT(topic_id) as total_results
 								FROM (SELECT DISTINCT t.topic_id';
@@ -773,7 +832,7 @@ class fulltext_native extends search_backend
 								$m_approve_fid_sql
 								$sql_fora
 								AND t.topic_id = p.topic_id
-								$sql_time" . ((SQL_LAYER == 'sqlite') ? ')' : '');
+								$sql_time" . (($db->sql_layer == 'sqlite') ? ')' : '');
 					}
 					$result = $db->sql_query($sql);
 		
@@ -858,7 +917,7 @@ class fulltext_native extends search_backend
 	*
 	* NOTE: duplicates are NOT removed from the return array
 	*
-	* @param	string	$text	Text to split, encoded in user's encoding
+	* @param	string	$text	Text to split, encoded in UTF-8
 	* @return	array			Array of UTF-8 words
 	*
 	* @access	private
@@ -876,7 +935,7 @@ class fulltext_native extends search_backend
 		// Do not index code
 		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
 		// BBcode
-		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
+		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
 		$min = $config['fulltext_native_min_chars'];
 		$max = $config['fulltext_native_max_chars'];
@@ -886,15 +945,15 @@ class fulltext_native extends search_backend
 		/**
 		* Clean up the string, remove HTML tags, remove BBCodes
 		*/
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '', $user->lang['ENCODING']), ' ');
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
 
 		while (isset($word[0]))
 		{
-			if (isset($word[252])
+			if (isset($word[255])
 			 || !isset($word[$isset_min]))
 			{
 				/**
-				* Words longer than 252 bytes are ignored. This will have to be
+				* Words longer than 255 bytes are ignored. This will have to be
 				* changed whenever we change the length of search_wordlist.word_text
 				*
 				* Words shorter than $isset_min bytes are ignored, too
@@ -939,13 +998,12 @@ class fulltext_native extends search_backend
 	* @param	int		$post_id	The id of the post which is modified/created
 	* @param	string	$message	New or updated post content
 	* @param	string	$subject	New or updated post subject
-	* @param	string	$encoding	The post content's encoding
 	* @param	int		$poster_id	Post author's user id
 	* @param	int		$forum_id	The id of the forum in which the post is located
 	*
 	* @access	public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $encoding, $poster_id, $forum_id)
+	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		global $config, $db, $user;
 
@@ -1024,26 +1082,16 @@ class fulltext_native extends search_backend
 
 			if (sizeof($new_words))
 			{
-				switch (SQL_LAYER)
-				{
-					case 'mysql':
-					case 'mysql4':
-					case 'mysqli':
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-							VALUES ('" . implode("'),('", array_map(array(&$db, 'sql_escape'), $new_words)) . "')";
-						$db->sql_query($sql);
-					break;
+				$sql_ary = array();
 
-					default:
-						foreach ($new_words as $word)
-						{
-							$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-								VALUES ('" . $db->sql_escape($word) . "')";
-							$db->sql_query($sql);
-						}
+				foreach ($new_words as $word)
+				{
+					$sql_ary[] = array('word_text' => $word);
 				}
+
+				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
 			}
-			unset($new_words);
+			unset($new_words, $sql_ary);
 		}
 
 		// now update the search match table, remove links to removed words and add links to new words
@@ -1091,22 +1139,6 @@ class fulltext_native extends search_backend
 	}
 
 	/**
-	* Used by index() to sort strings by string length, longest first
-	*/
-	function strlencmp($a, $b)
-	{
-		$len_a = strlen($a);
-		$len_b = strlen($b);
-
-		if ($len_a == $len_b)
-		{
-			return 0;
-		}
-
-		return ($len_a > $len_b) ? -1 : 1;
-	}
-
-	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
@@ -1142,14 +1174,14 @@ class fulltext_native extends search_backend
 
 		$destroy_cache_words = array();
 
-		// Remove common (> 60% of posts ) words
+		// Remove common (> 20% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
+				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.2);
 			$result = $db->sql_query($sql);
 
 			$sql_in = array();
@@ -1200,9 +1232,9 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
 	}
 
 	/**
@@ -1265,7 +1297,7 @@ class fulltext_native extends search_backend
 	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
 	*/
-	function cleanup($text, $allowed_chars = null, $encoding = 'iso-8859-1')
+	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
 		global $phpbb_root_path, $phpEx;
 		static $conv = array(), $conv_loaded = array();
@@ -1290,7 +1322,7 @@ class fulltext_native extends search_backend
 		/**
 		* Replace HTML entities and NCRs
 		*/
-		$text = html_entity_decode(utf8_decode_ncr($text), ENT_QUOTES);
+		$text = htmlspecialchars_decode(utf8_decode_ncr($text), ENT_QUOTES);
 
 		/**
 		* Load the UTF-8 normalizer
@@ -1524,7 +1556,7 @@ class fulltext_native extends search_backend
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:252', 'fulltext_native_max_chars' => 'integer:0:252')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255')
 		);
 	}
 }

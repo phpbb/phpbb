@@ -33,6 +33,11 @@ $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['
 $sort_key_sql = array('a' => 'u.username', 'b' => 's.session_time', 'c' => 's.session_page');
 
 // Sorting and order
+if (!isset($sort_key_text[$sort_key]))
+{
+	$sort_key = 'b';
+}
+
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Whois requested
@@ -51,7 +56,7 @@ if ($mode == 'whois')
 		$whois = user_ipwhois($row['session_ip']);
 
 		$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
 
 		$template->assign_vars(array(
 			'WHOIS'	=> trim($whois))
@@ -87,7 +92,7 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'sqlite':
 			$sql = 'SELECT COUNT(session_ip) as num_guests
@@ -104,6 +109,7 @@ if (!$show_guests)
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . ANONYMOUS . '
 					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
+		break;
 	}
 	$result = $db->sql_query($sql);
 	$guest_counter = (int) $db->sql_fetchfield('num_guests');
@@ -339,13 +345,21 @@ $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpE
 $sql = 'SELECT group_id, group_name, group_colour, group_type
 	FROM ' . GROUPS_TABLE . '
 	WHERE group_legend = 1
+		AND group_type <> ' . GROUP_HIDDEN . '
 	ORDER BY group_name ASC';
 $result = $db->sql_query($sql);
 
 $legend = '';
 while ($row = $db->sql_fetchrow($result))
 {
-	$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+	if ($row['group_name'] == 'BOTS')
+	{
+		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . $user->lang['G_BOTS'] . '</span>';
+	}
+	else
+	{
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+	}
 }
 $db->sql_freeresult($result);
 

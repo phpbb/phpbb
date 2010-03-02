@@ -16,6 +16,7 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -69,27 +70,32 @@ if ($view && !$post_id)
 
 		$topic_last_read = (isset($topic_tracking_info[$topic_id])) ? $topic_tracking_info[$topic_id] : 0;
 
-		$sql = 'SELECT p.post_id, p.topic_id, p.forum_id
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-			WHERE t.topic_id = $topic_id
-				AND p.topic_id = t.topic_id
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
-				AND (p.post_time > $topic_last_read
-					OR p.post_id = t.topic_last_post_id)
-			ORDER BY p.post_time ASC";
+		$sql = 'SELECT post_id, topic_id, forum_id
+			FROM ' . POSTS_TABLE . "
+			WHERE topic_id = $topic_id
+				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
+				AND post_time > $topic_last_read
+			ORDER BY post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		if (!$row)
 		{
+			$sql = 'SELECT topic_last_post_id as post_id, topic_id, forum_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $topic_id;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		if (!$row)
+		{
 			// Setup user environment so we can process lang string
 			$user->setup('viewtopic');
 
-			$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-			meta_refresh(3, $redirect);
-			trigger_error($user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error('NO_TOPIC');
 		}
 
 		$post_id = $row['post_id'];
@@ -238,19 +244,34 @@ if (!$topic_data)
 // This is for determining where we are (page)
 if ($post_id)
 {
-	/**
-	* @todo adjust for using post_time? Generally adjust query... it is not called very often though
-	*/
-	$sql = 'SELECT COUNT(post_id) AS prev_posts
-		FROM ' . POSTS_TABLE . "
-		WHERE topic_id = {$topic_data['topic_id']}
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . "
-			AND " . (($sort_dir == 'd') ?  "post_id >= $post_id" : "post_id <= $post_id");
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	if ($post_id == $topic_data['topic_first_post_id'] || $post_id == $topic_data['topic_last_post_id'])
+	{
+		$check_sort = ($post_id == $topic_data['topic_first_post_id']) ? 'd' : 'a';
 
-	$topic_data['prev_posts'] = $row['prev_posts'];
+		if ($sort_dir == $check_sort)
+		{
+			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] + 1 : $topic_data['topic_replies'] + 1;
+		}
+		else
+		{
+			$topic_data['prev_posts'] = 1;
+		}
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(p1.post_id) AS prev_posts
+			FROM ' . POSTS_TABLE . ' p1, ' . POSTS_TABLE . " p2
+			WHERE p1.topic_id = {$topic_data['topic_id']}
+				AND p2.post_id = {$post_id}
+				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
+				AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
+
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$topic_data['prev_posts'] = $row['prev_posts'];
+	}
 }
 
 $forum_id = (int) $topic_data['forum_id'];
@@ -450,18 +471,16 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 }
 
 // Grab ranks
-$ranks = array();
-$cache->obtain_ranks($ranks);
+$ranks = $cache->obtain_ranks();
 
 // Grab icons
-$icons = array();
-$cache->obtain_icons($icons);
+$icons = $cache->obtain_icons();
 
 // Grab extensions
 $extensions = array();
 if ($topic_data['topic_attachment'])
 {
-	$cache->obtain_attach_extensions($extensions);
+	$extensions = $cache->obtain_attach_extensions();
 }
 
 // Forum rules listing
@@ -472,13 +491,13 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED)) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="fork">' . $user->lang['FORK_TOPIC'] . '</option>' : '';
-$topic_mod .= ($allow_change_type && $auth->acl_gets(array('f_sticky', 'f_announce'), $forum_id) && $topic_data['topic_type'] != POST_NORMAL) ? '<option value="make_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
+$topic_mod .= ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL) ? '<option value="make_normal">' . $user->lang['MAKE_NORMAL'] . '</option>' : '';
 $topic_mod .= ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY) ? '<option value="make_sticky">' . $user->lang['MAKE_STICKY'] . '</option>' : '';
 $topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE) ? '<option value="make_announce">' . $user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
 $topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL) ? '<option value="make_global">' . $user->lang['MAKE_GLOBAL'] . '</option>' : '';
@@ -550,7 +569,6 @@ $template->assign_vars(array(
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
-	'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 	'U_VIEW_TOPIC' 			=> $viewtopic_url,
 	'U_VIEW_FORUM' 			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 	'U_VIEW_OLDER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
@@ -707,7 +725,6 @@ if (!empty($topic_data['poll_start']))
 
 	if ($poll_info[0]['bbcode_bitfield'])
 	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$poll_bbcode = new bbcode();
 	}
 	else
@@ -718,6 +735,7 @@ if (!empty($topic_data['poll_start']))
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
 		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 
 		if ($poll_bbcode !== false)
 		{
@@ -725,17 +743,16 @@ if (!empty($topic_data['poll_start']))
 		}
 
 		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 	}
 
 	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
+	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	if ($poll_bbcode !== false)
 	{
 		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
 	}
 	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	unset($poll_bbcode);
 
@@ -755,6 +772,8 @@ if (!empty($topic_data['poll_start']))
 		);
 	}
 
+	$poll_end = $topic_data['poll_length'] + $topic_data['poll_start'];
+
 	$template->assign_vars(array(
 		'POLL_QUESTION'		=> $topic_data['poll_title'],
 		'TOTAL_VOTES' 		=> $poll_total,
@@ -762,7 +781,7 @@ if (!empty($topic_data['poll_start']))
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
 		'L_MAX_VOTES'		=> ($topic_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $topic_data['poll_max_options']),
-		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($topic_data['poll_length'] + $topic_data['poll_start'])) : '',
+		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang[($poll_end > time()) ? 'POLL_RUN_TILL' : 'POLL_ENDED_AT'], $user->format_date($poll_end)) : '',
 
 		'S_HAS_POLL'		=> true,
 		'S_CAN_VOTE'		=> $s_can_vote,
@@ -773,7 +792,7 @@ if (!empty($topic_data['poll_start']))
 		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
 	);
 
-	unset($poll_info, $voted_id);
+	unset($poll_end, $poll_info, $voted_id);
 }
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
@@ -803,15 +822,15 @@ else
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
 $has_attachments = $display_notice = false;
-$bbcode_bitfield = $force_encoding = '';
+$bbcode_bitfield = '';
 $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
 $sql = 'SELECT p.post_id
-	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql[$sort_key]{0} == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
+	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql[$sort_key][0] == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
 		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
-		" . (($sort_by_sql[$sort_key]{0} == 'u') ? 'AND u.user_id = p.poster_id': '') . "
+		" . (($sort_by_sql[$sort_key][0] == 'u') ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
@@ -826,7 +845,14 @@ $db->sql_freeresult($result);
 
 if (!sizeof($post_list))
 {
-	trigger_error('NO_TOPIC');
+	if ($sort_days)
+	{
+		trigger_error('NO_POSTS_TIME_FRAME');
+	}
+	else
+	{
+		trigger_error('NO_TOPIC');
+	}
 }
 
 // Holding maximum post time for marking topic read
@@ -854,8 +880,7 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
-$today = explode('-', date('j-n-Y', time() + $user->timezone + $user->dst));
-$today = array('day' => (int) $today[0], 'month' => (int) $today[1], 'year' => (int) $today[2]);
+$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
@@ -915,7 +940,6 @@ while ($row = $db->sql_fetchrow($result))
 		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
 		'post_text'			=> $row['post_text'],
-		'post_encoding'		=> $row['post_encoding'],
 		'bbcode_uid'		=> $row['bbcode_uid'],
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 		'enable_smilies'	=> $row['enable_smilies'],
@@ -1079,17 +1103,17 @@ while ($row = $db->sql_fetchrow($result))
 
 				if ($bday_year)
 				{
-					$diff = $today['month'] - $bday_month;
+					$diff = $now['mon'] - $bday_month;
 					if ($diff == 0)
 					{
-						$diff = ($today['day'] - $bday_day < 0) ? 1 : 0;
+						$diff = ($now['mday'] - $bday_day < 0) ? 1 : 0;
 					}
 					else
 					{
 						$diff = ($diff < 0) ? 1 : 0;
 					}
 
-					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - $diff);
+					$user_cache[$poster_id]['age'] = (int) ($now['year'] - $bday_year - $diff);
 				}
 			}
 		}
@@ -1129,7 +1153,7 @@ unset($id_cache);
 // Pull attachment data
 if (sizeof($attach_list))
 {
-	if ($auth->acl_gets('f_download', 'u_download', $forum_id))
+	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1201,7 +1225,6 @@ if (sizeof($attach_list))
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
 {
-	include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 	$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 }
 
@@ -1213,7 +1236,7 @@ $template->assign_vars(array(
 );
 
 // Output the posts
-$first_unread = false;
+$first_unread = $post_unread = false;
 for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 {
 	$row =& $rowset[$post_list[$i]];
@@ -1231,15 +1254,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		continue;
 	}
-	else if ($row['post_encoding'] != $user->lang['ENCODING'] && $view == 'encoding' && $post_id == $row['post_id'])
-	{
-		$force_encoding = $row['post_encoding'];
-	}
 
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
+		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
@@ -1247,12 +1267,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		}
 
 		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
 	$message = censor_text($row['post_text']);
+	$message = str_replace("\n", '<br />', $message);
 
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
@@ -1277,12 +1297,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
-		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">\1</span>', $message);
+		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
 	}
 
 	// Replace naughty words such as farty pants
 	$row['post_subject'] = censor_text($row['post_subject']);
-	$message = str_replace("\n", '<br />', $message);
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
@@ -1391,8 +1410,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'FORCE_ENCODING'	=> ($row['post_encoding'] != $user->lang['ENCODING']) ? sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=encoding#p{$row['post_id']}" . '">', '</a>') : '',
-
 		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
@@ -1488,13 +1505,45 @@ if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'
 	markread('topic', $forum_id, $topic_id, $max_post_time);
 
 	// Update forum info
-	update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+	$all_marked_read = update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+}
+else
+{
+	$all_marked_read = true;
 }
 
-// Change encoding if appropriate
-if ($force_encoding != '')
+// If there are absolutely no more unread posts in this forum and unread posts shown, we can savely show the #unread link
+if ($all_marked_read && $post_unread)
 {
-	$user->lang['ENCODING'] = $force_encoding;
+	$template->assign_vars(array(
+		'U_VIEW_UNREAD_POST'	=> '#unread',
+	));
+}
+else if (!$all_marked_read)
+{
+	$last_page = ((floor($start / $config['posts_per_page']) + 1) == max(ceil($total_posts / $config['posts_per_page']), 1)) ? true : false;
+
+	// What can happen is that we are at the last displayed page. If so, we also display the #unread link based in $post_unread
+	if ($last_page && $post_unread)
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> '#unread',
+		));
+	}
+	else if (!$last_page)
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
+		));
+	}
+}
+
+// We overwrite $_REQUEST['f'] if there is no forum specified
+// to be able to display the correct online list.
+// One downside is that the user currently viewing this topic/post is not taken into account.
+if (empty($_REQUEST['f']))
+{
+	$_REQUEST['f'] = $forum_id;
 }
 
 // Output the page

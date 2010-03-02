@@ -20,7 +20,7 @@ class ucp_zebra
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
-		$submit	= (isset($_POST['submit']) || isset($_GET['add'])) ? true : false;
+		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
 
 		$l_mode = strtoupper($mode);
@@ -32,17 +32,17 @@ class ucp_zebra
 
 			$var_ary = array(
 				'usernames'	=> array(0),
-				'add'		=> '', 
+				'add'		=> '',
 			);
 
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = request_var($var, $default);
+				$data[$var] = request_var($var, $default, true);
 			}
 
 			if ($data['add'])
 			{
-				$data['add'] = array_map('trim', array_map('strtolower', explode("\n", $data['add'])));
+				$data['add'] = array_map('trim', array_map('utf8_clean_string', explode("\n", $data['add'])));
 
 				// Do these name/s exist on a list already? If so, ignore ... we could be
 				// 'nice' and automatically handle names added to one list present on 
@@ -59,11 +59,11 @@ class ucp_zebra
 				{
 					if ($row['friend'])
 					{
-						$friends[] = strtolower($row['username']);
+						$friends[] = utf8_clean_string($row['username']);
 					}
 					else
 					{
-						$foes[] = strtolower($row['username']);
+						$foes[] = utf8_clean_string($row['username']);
 					}
 				}
 				$db->sql_freeresult($result);
@@ -88,7 +88,7 @@ class ucp_zebra
 
 				// remove the user himself from the username array
 				$n = sizeof($data['add']);
-				$data['add'] = array_diff($data['add'], array(strtolower($user->data['username'])));
+				$data['add'] = array_diff($data['add'], array(utf8_clean_string($user->data['username'])));
 
 				if (sizeof($data['add']) < $n)
 				{
@@ -101,7 +101,7 @@ class ucp_zebra
 				{
 					$sql = 'SELECT user_id, user_type
 						FROM ' . USERS_TABLE . ' 
-						WHERE ' . $db->sql_in_set('LOWER(username)', $data['add']) . '
+						WHERE ' . $db->sql_in_set('username_clean', $data['add']) . '
 							AND user_type <> ' . USER_INACTIVE;
 					$result = $db->sql_query($sql);
 
@@ -159,24 +159,7 @@ class ucp_zebra
 								);
 							}
 
-							if (sizeof($sql_ary))
-							{
-								switch (SQL_LAYER)
-								{
-									case 'mysql':
-									case 'mysql4':
-									case 'mysqli':
-										$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-									break;
-
-									default:
-										foreach ($sql_ary as $ary)
-										{
-											$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-										}
-									break;
-								}
-							}
+							$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 
 							$updated = true;
 						}
@@ -197,6 +180,8 @@ class ucp_zebra
 					WHERE user_id = ' . $user->data['user_id'] . ' 
 						AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 				$db->sql_query($sql);
+
+				$updated = true;
 			}
 
 			if ($updated)

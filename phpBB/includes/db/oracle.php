@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if(!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'oracle');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Oracle Database Abstraction Layer
@@ -42,7 +36,7 @@ class dbal_oracle extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 		
-		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server) : @ocinlogon($this->user, $sqlpassword, $this->server);
+		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8');
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -57,7 +51,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -104,7 +98,7 @@ class dbal_oracle extends dbal
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				$in_transaction = false;
 				if (!$this->transaction)
@@ -116,7 +110,63 @@ class dbal_oracle extends dbal
 					$in_transaction = true;
 				}
 
+				$array = array();
+
+				// We overcome Oracle's 4000 char limit by binding vars
+				if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\(([^()]+)\\)$/', $query, $regs))
+				{
+					if (strlen($regs[3]) > 4000)
+					{
+						$cols = explode(', ', $regs[2]);
+						$vals = explode(', ', $regs[3]);
+						foreach ($vals as $key => $value)
+						{
+							if (strlen($value) > 4002) // check to see if this thing is greater than the max + 'x2
+							{
+								$vals[$key] = ':' . strtoupper($cols[$key]);
+								$array[$vals[$key]] = substr($value, 1, -1);
+							}
+						}
+						$query = $regs[1] . '(' . implode(', ', $cols) . ') VALUES (' . implode(', ', $vals) . ')';
+					}
+				}
+				else if (preg_match('/^(UPDATE.*?)SET (.*)(\\sWHERE.*)$/s', $query, $regs))
+				{
+					if (strlen($regs[2]) > 4000)
+					{
+						$args = explode(', ', $regs[2]);
+						$cols = array();
+						foreach ($args as $value)
+						{
+							$temp_array = explode('=', $value);
+							$cols[$temp_array[0]] = $temp_array[1];
+						}
+
+						foreach ($cols as $col => $val)
+						{
+							if (strlen($val) > 4003) // check to see if this thing is greater than the max + 'x2 + a space
+							{
+								$cols[$col] = ' :' . strtoupper(rtrim($col));
+								$array[ltrim($cols[$col])] = substr(trim($val), 2, -1);
+							}
+						}
+
+						$art = array();
+						foreach ($cols as $col => $val)
+						{
+							$art[] = $col . '=' . $val; 
+						}
+						$query = $regs[1] . 'SET ' . implode(', ', $art) . $regs[3];
+					}
+				}
+
 				$this->query_result = @ociparse($this->db_connect_id, $query);
+
+				foreach ($array as $key => $value)
+				{
+					@ocibindbyname($this->query_result, $key, $array[$key], -1);
+				}
+
 				$success = @ociexecute($this->query_result, OCI_DEFAULT);
 
 				if (!$success)
@@ -226,33 +276,6 @@ class dbal_oracle extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		$result = @ocifetchstatement($query_id, $this->rowset);
-
-		// OCIFetchStatment kills our query result so we have to execute the statment again
-		// if we ever want to use the query_id again.
-		@ociexecute($query_id, OCI_DEFAULT);
-
-		return $result;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -267,7 +290,7 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -277,56 +300,29 @@ class dbal_oracle extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = array();
-		$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
-
-		if (!$result || !$row)
+		if ($query_id !== false)
 		{
-			return false;
-		}
+			$row = array();
+			$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
 
-		$result_row = array();
-		foreach ($row as $key => $value)
-		{
-			// OCI->CLOB?
-			if (is_object($value))
+			if (!$result || !$row)
 			{
-				$value = $value->load();
+				return false;
 			}
+
+			$result_row = array();
+			foreach ($row as $key => $value)
+			{
+				// OCI->CLOB?
+				if (is_object($value))
+				{
+					$value = $value->load();
+				}
 			
-			$result_row[strtolower($key)] = $value;
-		}
-
-		return ($query_id) ? $result_row : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
+				$result_row[strtolower($key)] = $value;
 			}
 
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
+			return $result_row;
 		}
 
 		return false;
@@ -340,17 +336,17 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			return false;
 		}
@@ -377,13 +373,13 @@ class dbal_oracle extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if (preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
 				$query = 'SELECT ' . $tablename[1] . '_seq.currval FROM DUAL';
 				$stmt = @ociparse($this->db_connect_id, $query);
-				@ociexecute($stmt, OCI_DEFAULT );
+				@ociexecute($stmt, OCI_DEFAULT);
 
 				$temp_result = @ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
 				@ocifreestatement($stmt);
@@ -409,7 +405,7 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -443,7 +439,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -465,7 +461,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -474,7 +470,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{
@@ -505,10 +501,6 @@ class dbal_oracle extends dbal
 			break;
 		}
 	}
-
-
 }
-
-} // if ... define
 
 ?>
