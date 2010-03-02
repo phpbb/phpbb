@@ -90,114 +90,114 @@
 	<ul>
 		<li>[Fix] Allow whitespaces in avatar gallery names. (Bug #44955)</li>
 		<li>[Fix] Sorting by author or subject on viewtopic now preserves the order. (Bug #44875)</li>
-		<li>[Fix] Correctly determine writable status of files on Windows operating system. (Bug #39035)</li>
-		<li>[Fix] Show report button in prosilver for guests who are allowed to report posts. (Bug #45695 - Patch by bantu)</li>
-		<li>[Fix] Correctly show private message history (Bug #46065 - Patch by bantu)</li>
-		<li>[Fix] Various XHTML mistakes in prosilver, subsilver2 and the ACP. (Bugs #25545 - Patch by bantu, #26315, #38555, #45505 - Patch by Raimon, #45785, #45865, #47085 - Patch by Raimon)</li>
-		<li>[Fix] Fix some ACP style issues (Bug #16109 - Patch by prototech)</li>
-		<li>[Fix] Move post bump information markup to the template. (Bug #34295 - Patch by bantu)</li>
-		<li>[Fix] Show error in the ACP when template folder is not readable. (Bug #45705 - Patch by bantu)</li>
-		<li>[Fix] Adjust viewonline filename regular expression to be less strict. (Bug #46215 - Patch by bantu)</li>
-		<li>[Fix] Correctly apply the can change vote permission again. Regression introduced in r9470. (Bug #45895)</li>
-		<li>[Fix] Also remove data from friend/foe table when deleting user. (Bug #45345 - Patch by nickvergessen)</li>
+		<li>[Fix] Correctly determine writable status of files on Windows operating systems. (Bug #39035)</li>
+		<li>[Fix] Show report button in prosilver for guests who are allowed to report posts. (Bug #45695)</li>
+		<li>[Fix] Correctly show private message history. (Bug #46065)</li>
+		<li>[Fix] Various XHTML mistakes in prosilver, subsilver2 and the ACP. (Bugs #25545, #26315, #38555, #45505 - Patch by Raimon, #45785, #45865, #47085 - Patch by Raimon)</li>
+		<li>[Fix] Fix some ACP style issues. (Bug #16109 - Patch by prototech)</li>
+		<li>[Fix] Move post bump information markup to the template. (Bug #34295)</li>
+		<li>[Fix] Show error in the ACP when template folder is not readable. (Bug #45705)</li>
+		<li>[Fix] Adjust viewonline filename regular expression to be less strict. (Bug #46215)</li>
+		<li>[Fix] Correctly apply the &quot;can change vote&quot; permission again. Regression introduced in r9470. (Bug #45895)</li>
+		<li>[Fix] Remove data from friend/foe table when deleting user. (Bug #45345)</li>
 		<li>[Fix] Correctly hide skiplink in prosilver right-to-left mode. (Bug #45765 - Patch by prototech and bantu)</li>
-		<li>[Fix] Fix dynamic config update routine error if firebird is used (Bug #46315)</li>
-		<li>[Fix] Allow friends/foes to be added and removed at the same time. (Bug #46255 - Patch by bantu)</li>
-		<li>[Fix] Only change topic/post icon if icons are enabled and user is allowed to. (Bug #46355 - Patch by bantu)</li>
+		<li>[Fix] Fix dynamic config update routine error if firebird is used. (Bug #46315)</li>
+		<li>[Fix] Allow friends/foes to be added and removed at the same time. (Bug #46255)</li>
+		<li>[Fix] Only change topic/post icon on edit if icons are enabled and user is allowed to use icons. (Bug #46355)</li>
 		<li>[Fix] Fix saving custom profile fields in ACP if Oracle is used. (Bug #46015)</li>
 		<li>[Fix] Make view_log() more resilient to corrupt serialized data. (Bug #46545)</li>
-		<li>[Fix] Show error if hostname lookup doesn't return a valid IP address when banning. (Bug #45585 - Patch by bantu)</li>
+		<li>[Fix] Show error if hostname lookup doesn't return a valid IP address when banning. (Bug #45585)</li>
 		<li>[Fix] Fix incorrect layout when loading private message draft. (Bug #38435 - Patch by nickvergessen)</li>
-		<li>[Fix] Show proper error message when trying to add bots to friends/foes list. (Bug #40205 - Patch by nickvergessen)</li>
-		<li>[Fix] Fix Oracle database backup (Bug #46715)</li>
-		<li>[Fix] Update attachments table when deleting user and retaining his posts. (Bug #40245 - Patch by rxu)</li>
-		<li>[Fix] Correctly detect files in subfolders when viewing cached template files. (Bug #46145 - Patch by nickvergessen)</li>
-		<li>[Fix] Display user's Jabber address in popup when Jabber functionality is disabled (Bug #20775 - Patch by nickvergessen)</li>
-		<li>[Fix] Correctly exclude forums from active topics list. (Bug #19135 - Patch by nickvergessen)</li>
-		<li>[Fix] Do not display birthdays of banned users (Bug #20625 - Patch by nickvergessen)</li>
-		<li>[Fix] Fix function to recalculate Nested Sets (Bug #41555 - Patch by EXreaction)</li>
-		<li>[Fix] Display but also highlight already used rank images when creating new ranks. (Bug #22665 - Patch by nickvergessen)</li>
-		<li>[Fix] Correctly orientate quoted text image on RTL languages (Bug #33745 - Patch by nickvergessen)</li>
-		<li>[Fix] Do not display &quot;View user notes&quot; and &quot;Warn user&quot; links in user profile if corresponding MCP modules are disabled. (Bug #10519 - Patch by rxu)</li>
-		<li>[Fix] Show proper error message when trying to create a private messages folder with an empty name. (Bug #39875 - Patch by nickvergessen)</li>
-		<li>[Fix] No longer state that it is possible to manage group leaders from the UCP. (Bug #19945 - Patch by nickvergessen)</li>
+		<li>[Fix] Show proper error message when trying to add bots to friends/foes list. (Bug #40205)</li>
+		<li>[Fix] Fixed database backup and restore with Oracle DBMS. (Bug #46715)</li>
+		<li>[Fix] Update attachments table when deleting user and retaining his posts. (Bug #40245)</li>
+		<li>[Fix] Correctly detect files in subfolders when viewing cached template files. (Bug #46145)</li>
+		<li>[Fix] Display user's jabber address in popup if jabber functionality is disabled. (Bug #20775)</li>
+		<li>[Fix] Correctly exclude forums from active topics list. (Bug #19135)</li>
+		<li>[Fix] Do not display banned users in birthday list. (Bug #20625)</li>
+		<li>[Fix] Fix function to recalculate nested sets. (Bug #41555 - Patch by EXreaction)</li>
+		<li>[Fix] Display but also highlight already used rank images while assigning new ranks. (Bug #22665)</li>
+		<li>[Fix] Correctly orientate quoted text image on RTL languages. (Bug #33745)</li>
+		<li>[Fix] Do not display &quot;View user notes&quot; and &quot;Warn user&quot; links in user profile if corresponding MCP modules are disabled. (Bug #10519)</li>
+		<li>[Fix] Show proper error message when trying to create a private messages folder with an empty name. (Bug #39875)</li>
+		<li>[Fix] No longer state that it is possible to manage group leaders from the UCP. (Bug #19945)</li>
 		<li>[Fix] Do not throw an error when PDO is a shared module and not loaded preventing SQLite from being loaded.</li>
-		<li>[Fix] Fix censoring of unicode words. (Bug #16555 - Patches by rxu)</li>
-		<li>[Fix] Display coloured usernames in ACP groups management screens</li>
-		<li>[Fix] Correctly describe founder permissions on trace-information (Bug #37235 - Patch by nickvergessen)</li>
-		<li>[Fix] Correct the width value for poll_center.gif omitted in imageset.cfg for subsilver2. (Bug #43005 - Patch by rxu)</li>
-		<li>[Fix] Correctly load complex language variable using acp_language (Bug #45735 - Patch by leviatan21)</li>
-		<li>[Fix] Fix reapply_sid() to correctly strip session id in certain circumstances (Bug #43125 - Patch by leviatan21)</li>
-		<li>[Fix] Correctly state why one language pack is marked with an asterisk in the ACP. (Bug #37565 - Patch by bantu)</li>
-		<li>[Fix] Correctly check if install directory is still present. (Bug #46965 - Patch by rxu)</li>
-		<li>[Fix] Correct banned user behaviour when &quot;force password change&quot; is enabled (Bug #47145 - Patch by nickvergessen and leviatan21)</li>
+		<li>[Fix] Fix censoring of unicode words. (Bug #16555)</li>
+		<li>[Fix] Display coloured usernames in ACP groups management screens.</li>
+		<li>[Fix] Correctly describe founder permissions on trace-information. (Bug #37235)</li>
+		<li>[Fix] Correct the width value for poll_center.gif omitted in imageset.cfg for subsilver2. (Bug #43005)</li>
+		<li>[Fix] Correctly load complex language variable using acp_language. (Bug #45735 - Patch by leviatan21)</li>
+		<li>[Fix] Fix reapply_sid() to correctly strip session id in certain circumstances. (Bug #43125 - Patch by leviatan21)</li>
+		<li>[Fix] Correctly state why one language pack is marked with an asterisk in the ACP. (Bug #37565)</li>
+		<li>[Fix] Correctly check if install directory is still present. (Bug #46965)</li>
+		<li>[Fix] Correct banned user behaviour when &quot;force password change&quot; is enabled. (Bug #47145 - Patch by nickvergessen and leviatan21)</li>
 		<li>[Fix] Correctly display ACP logs options, without permission to clear logs. (Bug #24155 - Patch by leviatan21)</li>
 		<li>[Fix] Display topic icons in MCP forum view again (only prosilver).</li>
 		<li>[Fix] Properly display post status messages in topic when post is reported and unapproved (Bug #44455 - Patch by leviatan21)</li>
-		<li>[Fix] Do not remove recipients when loading private message draft. (Bug #38395 - Patch by nickvergessen)</li>
-		<li>[Fix] Add author name to moderator log when deleting post/topic. (Bug #46225 - Patch by nickvergessen)</li>
-		<li>[Fix] Fix broken &quot;Report details&quot; link in the MCP. (Bug #46975 - Patch by nickvergessen)</li>
-		<li>[Fix] Resolve accesskey conflicts in prosilver. (Bug #44685 - Patch by bantu)</li>
-		<li>[Fix] Check if template file is empty before trying to read from it. (Bug #47345 - Patch by bantu)</li>
-		<li>[Fix] Correct descriptions of the permissions to use BBCode, smilies, images and flash to be more relevant. (Bug #36065 - Patch by rxu)</li>
+		<li>[Fix] Do not remove recipients when loading private message draft. (Bug #38395)</li>
+		<li>[Fix] Add author name to moderator log when deleting post/topic. (Bug #46225)</li>
+		<li>[Fix] Fix broken &quot;Report details&quot; link in the MCP. (Bug #46975)</li>
+		<li>[Fix] Resolve accesskey conflicts in prosilver. (Bug #44685)</li>
+		<li>[Fix] Check if template file is empty before trying to read from it. (Bug #47345)</li>
+		<li>[Fix] More descriptive descriptions for permissions to use BBCode, smilies, images and flash. (Bug #36065)</li>
 		<li>[Fix] Fix style issues in print mode. (Bug #26375 - Patch by leviatan21)</li>
-		<li>[Fix] Fix minor issue with L_QUOTE language string missing in several PM composing modes. (Bug #39625 - Patch by rxu)</li>
-		<li>[Fix] Also fetch posts of guests and deleted or deactivated users when searching for author names. (Bug #36565, #47765 - Patch by nickvergessen)</li>
+		<li>[Fix] Fix minor issue with L_QUOTE language string missing in several PM composing modes. (Bug #39625)</li>
+		<li>[Fix] Also fetch posts of guests and deleted or deactivated users while searching for author names. (Bug #36565, #47765)</li>
 		<li>[Fix] Show end of ban in MCP and ACP when user is banned by duration. (Bug #47815 - Patch by Pyramide)</li>
-		<li>[Fix] Correctly count posts awaiting approval in the MCP. (Bug #47685 - Patch by nickvergessen)</li>
-		<li>[Fix] Display user's posts count in private message when it is equal to 0 (prosilver). (Bug #40155 - Patch by rxu)</li>
+		<li>[Fix] Correctly count posts awaiting approval in the MCP. (Bug #47685)</li>
+		<li>[Fix] Display user's posts count in private message when it is equal to 0 (prosilver). (Bug #40155)</li>
 		<li>[Fix] Only allow users to disable word censor if globally allowed. (Bug #47575 - Patch by 00mohgta7)</li>
-		<li>[Fix] Fix database updater and db tools to support multiple column changes/additions/removals with SQLite</li>
-		<li>[Fix] Correctly detect GZIP status in debug mode. (Bug #24075 - Patch by rxu)</li>
-		<li>[Fix] Posting smilies in view more smilies now work again in IE (Bug #46025 - Patch by leviatan21)</li>
-		<li>[Fix] Properly convert and show filesize information. (Bug #47775 - Patch by bantu)</li>
-		<li>[Fix] Add ability to prune users who never logged in. (Bug #44295 - Patch by rxu)</li>
-		<li>[Fix] Show smilies and images in topic print view. (Bug #47265 - Patch by nickvergessen)</li>
-		<li>[Fix] Force full date in private message print view. (Patch by nickvergessen)</li>
-		<li>[Fix] Fix &quot;Always show a scrollbar for short pages&quot; for IE8 and Firefox 3.5 (Bug #47865 - Patch by stokerpiller)</li>
-		<li>[Fix] Do not allow setting group as default group for pending users. (Bug #45675 - Patch by nickvergessen)</li>
+		<li>[Fix] Fix database updater and db tools to support multiple column changes/additions/removals with SQLite.</li>
+		<li>[Fix] Correctly detect GZIP status in debug mode. (Bug #24075)</li>
+		<li>[Fix] Posting smilies in view more smilies screen now works again in IE. (Bug #46025 - Patch by leviatan21)</li>
+		<li>[Fix] Properly convert and show filesize information. (Bug #47775)</li>
+		<li>[Fix] Add ability to prune users who never logged in. (Bug #44295)</li>
+		<li>[Fix] Show smilies and images in topic print view. (Bug #47265)</li>
+		<li>[Fix] Force full date in private message print view.</li>
+		<li>[Fix] Fix &quot;Always show a scrollbar for short pages&quot; for IE8 and Firefox 3.5. (Bug #47865 - Patch by stokerpiller)</li>
+		<li>[Fix] Do not allow setting group as default group for pending users. (Bug #45675)</li>
 		<li>[Fix] Fail gracefully if store folder is not writable during update. (Bugs #46615, #46945)</li>
-		<li>[Fix] Hide profile-icon from viewtopic-page if user has no permissions (subsilver2 only) (Bug #37635 - Patch by leviatan21)</li>
+		<li>[Fix] Hide profile-icon from viewtopic page if user has no permissions (subsilver2 only). (Bug #37635 - Patch by leviatan21)</li>
 		<li>[Fix] Correct escaping/unescaping in the LDAP authentication plugin. (Bug #48175)</li>
 		<li>[Fix] Add hard limit for smilies.</li>
 		<li>[Fix] Remove redundant SQL query from ucp.php. (Bug #40305)</li>
-		<li>[Fix] Reorder frame order of animated subsilver2 topic icons to be useful when animation is disabled. (Bug #29385 - Patch by prototech)</li>
+		<li>[Fix] Reorder frame order of animated subsilver2 topic icons to be useful when animations are disabled. (Bug #29385 - Patch by prototech)</li>
 		<li>[Fix] Ensure user errors are displayed regardless of PHP settings. (Bug #47505)</li>
 		<li>[Fix] Permit null values for non-required integer custom profile fields and ensure zero complies with the range limits. (Bug #40925)</li>
 		<li>[Fix] Allow changing forum from select box under certain circumstances. (Bug #37525)</li>
 		<li>[Fix] Display required fields notice on registration above the custom profile fields. (Bug #39665)</li>
 		<li>[Fix] Copy poll options properly when copying topic. (Bug #39065)</li>
-		<li>[Fix] Fix error with disapproval of topics having several queued posts only. (Bug #47705 - Patch by rxu)</li>
-		<li>[Fix] Preserve newlines in template files (one newline had been always dropped after a template variable due to PHP's handling of closing tags)</li>
-		<li>[Fix] Be less strict with FTP daemons when getting directory filelists. (Bug #46295)</li>
-		<li>[Fix] Fix set_custom_template for database-stored styles (Bug #40515 - Patch by nickvergessen)</li>
-		<li>[Fix] Banning an already banned user states to be successful, but has no effect (Bug #47825 - Patch by Pyramide)</li>
-		<li>[Fix] Do not add style-parameter to URL again, after admin re-authentification (Bug #18005 - Patch by leviatan21)</li>
-		<li>[Fix] Do not cut post-message in between HTML-Entities on search.php (Bug #31505 - Patch by leviatan21)</li>
-		<li>[Fix] Correctly set attachment flag for topics, posts and pms after deleting attachments (Bug #48265 - Patch by MarcoDM and nickvergessen)</li>
+		<li>[Fix] Fix error with disapproval of topics having several queued posts only. (Bug #47705)</li>
+		<li>[Fix] Preserve newlines in template files (one newline had been always dropped after a template variable due to PHP's handling of closing tags).</li>
+		<li>[Fix] Be less strict with FTP daemons for getting directory filelists. (Bug #46295)</li>
+		<li>[Fix] Fix set_custom_template for database-stored styles. (Bug #40515)</li>
+		<li>[Fix] Banning an already banned user states to be successful, but has no effect. (Bug #47825 - Patch by Pyramide)</li>
+		<li>[Fix] Do not add style parameter again to URL after admin re-authentification. (Bug #18005 - Patch by leviatan21)</li>
+		<li>[Fix] Do not cut post-message in between HTML-Entities on search.php. (Bug #31505 - Patch by leviatan21)</li>
+		<li>[Fix] Correctly set attachment flag for topics, posts and pms after deleting attachments. (Bug #48265 - Patch by MarcoDM and nickvergessen)</li>
 		<li>[Fix] Display &quot;Locked&quot; button instead of &quot;Reply&quot; one for locked forum in viewtopic (prosilver). (Bug #38055 - Patch by Raimon)</li>
-		<li>[Fix] Correctly propagate umlauts over search result pages (Bug #33755)</li>
+		<li>[Fix] Correctly propagate umlauts over search result pages. (Bug #33755)</li>
 		<li>[Fix] Preserve post options when refusing to save the post as a draft. (Bug #39115)</li>
 		<li>[Fix] Do not send private message back to sender if sender is in the same group the private message was sent to.</li>
-		<li>[Fix] Correctly add user to a group making it a default one. (Bug #48345 - Patch by rxu)</li>
+		<li>[Fix] Correctly add user to a group making it a default one. (Bug #48345)</li>
 		<li>[Fix] Add log entry when copying forum permissions.</li>
-		<li>[Fix] Min/max characters per posts no longer affects poll options (Bug #47295 - Patch by nickvergessen)</li>
-		<li>[Fix] Correctly log action when users request to join a group (Bug #37585 - Patch by nickvergessen)</li>
+		<li>[Fix] Min/max characters per posts no longer affects poll options. (Bug #47295)</li>
+		<li>[Fix] Correctly log action when users request to join a group. (Bug #37585)</li>
 		<li>[Fix] Do not try to create thumbnails for images we cannot open properly. (Bug #48695)</li>
 		<li>[Fix] Apply locale-independent basename() to attachment filenames. New function added: utf8_basename(). (Bug #43335 - Patch by ocean=Yohsuke)</li>
 		<li>[Fix] Adjust build_url() to not prepend $phpbb_root_path if path returned from redirect() is an URL. This fixes redirect issues with some installations and bridges. (Bug #47535)</li>
 		<li>[Fix] Do not mark global announcements as read if all topics in a forum become read (Bug #15729).</li>
-		<li>[Fix] Fix general error while registration, through undefined variable $config in validate_referer (Bug #49035 - Patch by wjvriend)</li>
+		<li>[Fix] Fix general error in registration, caused by an undefined $config variable in validate_referer(). (Bug #49035 - Patch by wjvriend)</li>
 		<li>[Fix] Correctly extract column default value when exporting PostgreSQL tables. (Bug #48955)</li>
 		<li>[Fix] Allow updater to work correctly with PHP filename extensions other than &quot;.php&quot;. (Bugs #15809, #49215)</li>
 		<li>[Fix] Update search index if only post subject changed. (Bug #49435)</li>
 		<li>[Fix] Fix who is online displaying incorrect data. (Bug #49485, thanks Brainy)</li>
-		<li>[Fix] Fixed incorrect &quot;topic does not exist&quot; when unapproved posts were visited without global moderator permissions. (Bug #47795)</li>
+		<li>[Fix] Fixed incorrect &quot;topic does not exist&quot; if unapproved posts were visited without global moderator permissions. (Bug #47795)</li>
 		<li>[Fix] Prevent style switcher from blocking the tab key. (Bug #49335)</li>
-		<li>[Fix] Correctly redirect on MCP main page after posts approval/disapproval from it. (Bug #49625)</li>
+		<li>[Fix] Correctly redirect back to MCP main page after posts approval/disapproval from it. (Bug #49625)</li>
 		<li>[Fix] Do not display topic approval status image for shadow topic if a user is not a moderator in the forum the topic has been moved to. (Bug #43295)</li>
-		<li>[Fix] Fix email problems on servers with PHP installations not accepting RFC-compliant subject string passed to the the mail()-function. (Bug #46725)</li>
-		<li>[Fix] Correctly orientate Control-Panel-Navigation background-image on RTL languages. (Bug #49945)</li>
+		<li>[Fix] Fix email problems on servers with PHP installations not accepting RFC-compliant subject string passed to the mail()-function. (Bug #46725)</li>
+		<li>[Fix] Correctly orientate control panel navigation background-image on RTL languages. (Bug #49945)</li>
 		<li>[Fix] Sort private messages by message time and not message id. (Bug #50015)</li>
 		<li>[Fix] Make sure only logs for existing users are displayed and user-specific logs removed on user deletion. (Bug #49855)</li>
 		<li>[Fix] Only show &quot;Add friend&quot; and &quot;Add foe&quot; links if the specific module is enabled. (Bug #50475)</li>
@@ -210,45 +210,44 @@
 		<li>[Fix] Fix icon alignment for forums with large descriptions in subsilver2. (Bug #50445)</li>
 		<li>[Fix] Correctly display underlined links placed in last line in viewtopic. (Bug #14811 - Patch by primehalo)</li>
 		<li>[Fix] Only check whether forum image exists if forum image is specified. (Bug #51905)</li>
-		<li>[Fix] Fixed database backup and restore with Oracle DBMS.</li>
-		<li>[Fix] Fixed database updater for changes to columns having default value in MSSQL (adding/dropping constraints)</li>
+		<li>[Fix] Fixed database updater for changes to columns having default value in MSSQL (adding/dropping constraints).</li>
+		<li>[Fix] Jabber SASL PLAIN authentication failures. (Bug #52995)</li>
 		<li>[Change] Database updater now supports checking for existing/missing indexes.</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
-		<li>[Change] Template engine now permits to a limited extent variable includes.</li>
+		<li>[Change] Template engine now permits variable includes to a limited extent.</li>
 		<li>[Change] Quote BBCode no longer requires the f_reply permission. (Bug #16079)</li>
-		<li>[Change] Banning/unbanning users now generates an entry in their user notes (Bug #21825 - Patch by nickvergessen)</li>
+		<li>[Change] Banning/unbanning users now generates an entry in their user notes. (Bug #21825)</li>
 		<li>[Change] Smilies no longer require the f_bbcode permission. (Bug #26545)</li>
-		<li>[Change] Ability to define column split in FAQ/BBCode help (Bug #31405)</li>
-		<li>[Change] Changed behaviour of group_create() function to support specifying additional group columns</li>
-		<li>[Change] Hide avatar when avatar-type is not allowed (Bug #46785 - Patch by cYbercOsmOnauT and nickvergessen)</li>
-		<li>[Change] INCLUDEPHP not depending on phpbb_root_path (Bug #45805 - Patch by nickvergessen)</li>
+		<li>[Change] Ability to define column split in FAQ/BBCode help. (Bug #31405)</li>
+		<li>[Change] Changed behaviour of group_create() function to support specifying additional group columns.</li>
+		<li>[Change] Hide avatar when avatar-type is not allowed. (Bug #46785 - Patch by cYbercOsmOnauT and nickvergessen)</li>
+		<li>[Change] INCLUDEPHP paths are now relative to $phpbb_root_path. (Bug #45805)</li>
 		<li>[Change] Ability to fetch moderators with get_moderators() even if load_moderators setting is off. (Bug #35955)</li>
 		<li>[Change] &quot;Post details&quot; links with image in MCP. (Bug #39845 - Patch by leviatan21)</li>
-		<li>[Change] PM history now only shows PMs of users you currently reply to. (Bug #39505 - Patch by nickvergessen)</li>
-		<li>[Change] Show quote button for own PMs in PM history. (Bug #37285 - Patch by nickvergessen)</li>
+		<li>[Change] PM history now only shows PMs of users you currently reply to. (Bug #39505)</li>
+		<li>[Change] Show quote button for own PMs in PM history. (Bug #37285)</li>
 		<li>[Change] Fetch requested cookie variables directly from cookie super global. (Bug #47785)</li>
-		<li>[Change] Add confirmation for deactivating styles (Bug #14304 - Patch by leviatan21)</li>
-		<li>[Change] Add confirmation for deactivating language packs (Patch by leviatan21)</li>
-		<li>[Change] Add confirm-box when deleting permissions (Bug #13673 - Patch by nickvergessen)</li>
-		<li>[Change] Add pagination for icons and smilies in the ACP and smilies in the smiley popup</li>
+		<li>[Change] Add confirmation for deactivating styles. (Bug #14304 - Patch by leviatan21)</li>
+		<li>[Change] Add confirmation for deactivating language packs. (Patch by leviatan21)</li>
+		<li>[Change] Add confirmation for deleting permissions. (Bug #13673)</li>
+		<li>[Change] Add pagination for icons and smilies in the ACP and smilies in the smiley popup.</li>
 		<li>[Change] Cache get_username_string() function calls on viewtopic.</li>
 		<li>[Change] Cache version check.</li>
 		<li>[Change] When creating a new forum without copying permissions, ask again.</li>
-		<li>[Change] Parse multiline url title for [url] BBCode tag. (Bug #1309)</li>
 		<li>[Change] Introduce new parameter to page_header() for forum specific who is online listings.</li>
-		<li>[Change] Lifted minimum requirement for Firebird DBMS from 2.0+ to 2.1+.</li>
-		<li>[Change] Unapproved topics can no longer be replied to (Bug #44005, #47675, #23605)</li>
-		<li>[Change] Require user to be registered and logged in to search for unread posts if topic read tracking is disabled for guests (Bug #49525)</li>
-		<li>[Change] Allow three-digit hex notation in Color BBcode. (Bug #39965 - Patch by m0rpha)</li>
+		<li>[Change] Changed minimum requirement for Firebird DBMS from 2.0+ to 2.1+.</li>
+		<li>[Change] Unapproved topics can no longer be replied to. (Bug #44005, #47675, #23605)</li>
+		<li>[Change] Require user to be registered and logged in to search for unread posts if topic read tracking is disabled for guests. (Bug #49525)</li>
+		<li>[Change] Allow three-digit hex notation in color BBcode. (Bug #39965 - Patch by m0rpha)</li>
 		<li>[Change] Simplified login_box() and redirection after login. S_LOGIN_ACTION can now be used on every page. (Bug #50285)</li>
 		<li>[Change] Do not take edit post time into account for determining permission to delete last post in topic. (Bug #48615)</li>
-		<li>[Change] Resize oversized Topic icons (Bug #44415)</li>
-		<li>[Change] Banned IPs are now sorted (Bug #43045 - Patch by DavidIQ)</li>
+		<li>[Change] Resize oversized topic icons. (Bug #44415)</li>
+		<li>[Change] Banned IPs are now sorted. (Bug #43045 - Patch by DavidIQ)</li>
 		<li>[Change] phpBB updater now skips sole whitespace/tab changes while computing differences. This reduces the chance of conflicts tremendously.</li>
-		<li>[Change] phpBB updater now solves common conflicts on it's own. This further reduces the chance of conflicts.</li>
-		<li>[Feature] Add language selection on the registration terms page (Bug #15085 - Patch by leviatan21)</li>
-		<li>[Feature] Backported 3.2 captcha plugins.
+		<li>[Change] phpBB updater now solves common conflicts on its own. This further reduces the chance of conflicts.</li>
+		<li>[Feature] Add language selection to the registration terms page. (Bug #15085 - Patch by leviatan21)</li>
+		<li>[Feature] Backported 3.2 captcha plugins:
 			<ul>
 				<li>Classic and GD CAPTCHA</li>
 				<li>reCaptcha (based on API from recaptcha.net by Mike Crawford and Ben Maurer)</li>
@@ -256,32 +255,32 @@
 				<li>3D Wave (by Robert &quot;Xore&quot; Hetzler)</li>
 			</ul>
 		</li>
-		<li>[Feature] Introduced new ACM plugins:
+		<li>[Feature] Introduced new ACM (Cache) plugins:
 			<ul>
-				<li>null</li>
+				<li>null (to disable caching completely)</li>
 				<li><a href="http://pecl.php.net/package/memcache">memcache</a></li>
 				<li><a href="http://pecl.php.net/package/APC">APC</a></li>
 				<li><a href="http://xcache.lighttpd.net/">XCache</a></li>
 				<li><a href="http://eaccelerator.net/">eAccelerator</a></li>
 			</ul>
 		</li>
-		<li>[Feature] ATOM Feeds (Idea and diversed from RSS Feed 2.0 MOD (Version 1.0.8/9) by leviatan21)</li>
-		<li>[Feature] New groups option to excempt group leaders from group permissions</li>
+		<li>[Feature] ATOM Feeds (Idea from RSS Feed 2.0 MOD (Version 1.0.8/9) by leviatan21)</li>
+		<li>[Feature] New groups option to excempt group leaders from group permissions.</li>
 		<li>[Feature] New &quot;Newly Registered Users&quot; group for assigning permissions to newly registered users. They will be removed from this group once they reach a defineable amount of posts.</li>
 		<li>[Feature] Ability to define if the &quot;Newly Registered Users&quot; group will be assigned as the default group to newly registered users.</li>
-		<li>[Feature] Add new option to disable avatars board-wide (Bug #46785 - Patch by cYbercOsmOnauT and nickvergessen)</li>
-		<li>[Feature] Enhance obtain_users_online_string to be able to return user-lists for other session-items (Bug #31975 - Patch by nickvergessen)</li>
-		<li>[Feature] Add unapproved topic icon for moderators on forum list (Bug #46865 - Patch by nickvergessen)</li>
-		<li>[Feature] Ability to define minimum number of characters for posts/pms</li>
-		<li>[Feature] Store signature configuration options in database (Bug #45115 - Patch by rxu)</li>
+		<li>[Feature] Add new option to disable avatars board-wide. (Bug #46785 - Patch by cYbercOsmOnauT and nickvergessen)</li>
+		<li>[Feature] Enhance obtain_users_online_string to be able to return user-lists for other session items. (Bug #31975)</li>
+		<li>[Feature] Add unapproved topic icon for moderators on forum list. (Bug #46865)</li>
+		<li>[Feature] Ability to define minimum number of characters for posts/pms.</li>
+		<li>[Feature] Store signature configuration options in database. (Bug #45115)</li>
 		<li>[Feature] Add bare-bones quick-reply editor to viewtopic.</li>
-		<li>[Feature] Detect when a post has been altered by someone else while editing. (Patch by bantu)</li>
-		<li>[Feature] Add unread posts quick search option (Bug #46765 - Patch by rxu)</li>
-		<li>[Feature] Add option to disable avatar uploads from remote locations. (Bug #45375 - Patch by nickvergessen)</li>
-		<li>[Feature] Ability to delete warnings and keep warnings permanently (Bug #43375 - Patch by nickvergessen)</li>
+		<li>[Feature] Detect if a post has been altered by someone else while editing.</li>
+		<li>[Feature] Add unread posts quick search option. (Bug #46765)</li>
+		<li>[Feature] Add option to disable avatar uploads from remote locations. (Bug #45375)</li>
+		<li>[Feature] Ability to delete warnings and keep warnings permanently. (Bug #43375)</li>
 		<li>[Feature] Ability to empty a user's outbox from the user ACP quick tools.</li>
-		<li>[Feature] Ability to search ACP / MCP logs</li>
-		<li>[Feature] Users can report PMs to moderators which are then visible in a new MCP module</li>
+		<li>[Feature] Ability to search ACP/MCP logs.</li>
+		<li>[Feature] Users can report PMs to moderators which are then visible in a new MCP module.</li>
 		<li>[Feature] Parse email text files with the template engine.</li>
 		<li>[Feature] Use email-style quoting when bbcodes are disabled.</li>
 		<li>[Feature] Added new functionality to inactive users module:
@@ -295,16 +294,17 @@
 		</li>
 		<li>[Feature] Display version check on ACP main page.</li>
 		<li>[Feature] Ability to copy permissions from one forum to several other forums.</li>
-		<li>[Feature] Ability to control the display of custom profile fields on viewtopic (Bug #48985).</li>
+		<li>[Feature] Ability to control the display of custom profile fields on viewtopic. (Bug #48985)</li>
 		<li>[Feature] Fallback options for missing language files. (Bug #38575 - Patch by EXreaction)</li>
-		<li>[Feature] Separate PM Reply and PM Reply to all in prosilver.</li>
+		<li>[Feature] Separate &quot;PM Reply&quot; and &quot;PM Reply to all&quot; in prosilver.</li>
 		<li>[Feature] Place debug notices during captcha rendering in the error log - useful for debugging output already started errors.</li>
-		<li>[Feature] Ability to define constant PHPBB_USE_BOARD_URL_PATH to use board url for images/avatars/ranks/imageset...</li>
-		<li>[Feature] Added function to generate Email hash. (Bug #49195)</li>
-		<li>[Feature] Style authors are now able to define the default submit button used for form submission on ENTER keypress on forms using more than one. Prosilver uses this for the posting page(s) and registration screen.</li>
+		<li>[Feature] Ability to define constant PHPBB_USE_BOARD_URL_PATH to use board url for images/avatars/ranks/imageset (useful for bridges and applications using phpBB).</li>
+		<li>[Feature] Added function to generate email hash. (Bug #49195)</li>
+		<li>[Feature] Style authors are now able to define the default submit button used for form submission on ENTER keypress on forms using more than one submit button. Prosilver uses this for the posting page(s) and registration screen.</li>
 		<li>[Feature] Ability to specify amount of time user is able to delete his last post in topic.</li>
 		<li>[Feature] Send anonymous statistical information to phpBB on installation and update (optional).</li>
 	</ul>
+
 	<a name="v304"></a><h3>1.ii. Changes since 3.0.4</h3>
 
 	<ul>

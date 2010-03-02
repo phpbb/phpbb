@@ -125,7 +125,6 @@ class acp_forums
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
 						'forum_parents'			=> '',
-						'forum_options'			=> 0,
 						'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
@@ -158,6 +157,12 @@ class acp_forums
 						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
+
+					// On add, add empty forum_options... else do not consider it (not updating it)
+					if ($action == 'add')
+					{
+						$forum_data['forum_options'] = 0;
+					}
 
 					// Use link_display_on_index setting if forum type is link
 					if ($forum_data['forum_type'] == FORUM_LINK)

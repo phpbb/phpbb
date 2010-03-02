@@ -53,7 +53,7 @@ class phpbb_captcha_qa
 
 		// read input
 		$this->confirm_id = request_var('qa_confirm_id', '');
-		$this->answer = request_var('qa_answer', '', true);
+		$this->answer = utf8_normalize_nfc(request_var('qa_answer', '', true));
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->lang_name;
@@ -502,7 +502,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 
-		$answer = ($this->question_strict) ? request_var('qa_answer', '', true) : utf8_clean_string(request_var('qa_answer', '', true));
+		$answer = ($this->question_strict) ? utf8_normalize_nfc(request_var('qa_answer', '', true)) : utf8_clean_string(utf8_normalize_nfc(request_var('qa_answer', '', true)));
 
 		$sql = 'SELECT answer_text
 			FROM ' . CAPTCHA_ANSWERS_TABLE . '
@@ -789,11 +789,12 @@ class phpbb_captcha_qa
 	*/
 	function acp_get_question_input()
 	{
+		$answers = utf8_normalize_nfc(request_var('answers', '', true));
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> explode("\n", request_var('answers', '', true)),
+			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
 		);
 
 		return $question;
@@ -908,8 +909,9 @@ class phpbb_captcha_qa
 		}
 
 		if (!isset($langs[$question_data['lang_iso']]) ||
-			!$question_data['question_text'] ||
-			!sizeof($question_data['answers']))
+			!strlen($question_data['question_text']) ||
+			!sizeof($question_data['answers']) ||
+			!is_array($question_data['answers']))
 		{
 			return false;
 		}

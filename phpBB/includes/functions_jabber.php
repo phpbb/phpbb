@@ -476,8 +476,9 @@ class jabber
 					}
 					else if (in_array('PLAIN', $methods) && ($this->session['ssl'] || !empty($this->session['tls'])))
 					{
+						// http://www.ietf.org/rfc/rfc4616.txt (PLAIN SASL Mechanism)
 						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
-							. base64_encode(chr(0) . $this->username . '@' . $this->server . chr(0) . $this->password) .
+							. base64_encode($this->username . '@' . $this->server . chr(0) . $this->username . chr(0) . $this->password) .
 							'</auth>');
 					}
 					else if (in_array('ANONYMOUS', $methods))

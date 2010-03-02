@@ -89,16 +89,19 @@ class acp_icons
 						continue;
 					}
 
-					// adjust the width and height to be lower than 128px while perserving the aspect ratio
-					if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+					// adjust the width and height to be lower than 128px while perserving the aspect ratio (for icons)
+					if ($mode == 'icons')
 					{
-						$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
-						$img_size[0] = 127;
-					}
-					else if ($img_size[1] > 127)
-					{
-						$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
-						$img_size[1] = 127;
+						if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+						{
+							$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
+							$img_size[0] = 127;
+						}
+						else if ($img_size[1] > 127)
+						{
+							$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
+							$img_size[1] = 127;
+						}
 					}
 
 					$_images[$path . $img]['file'] = $path . $img;
@@ -363,7 +366,7 @@ class acp_icons
 				if ($mode == 'smilies' && $action == 'create')
 				{
 					$smiley_count = $this->item_count($table);
-					
+
 					$addable_smileys_count = sizeof($images);
 					foreach ($images as $image)
 					{
@@ -372,7 +375,7 @@ class acp_icons
 							--$addable_smileys_count;
 						}
 					}
-					
+
 					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
 					{
 						trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
@@ -400,15 +403,19 @@ class acp_icons
 							$image_height[$image] = $img_size[1];
 						}
 
-						if ($image_width[$image] > 127 && $image_width[$image] > $image_height[$image])
+						// Adjust image width/height for icons
+						if ($mode == 'icons')
 						{
-							$image_height[$image] = (int) ($image_height[$image] * (127 / $image_width[$image]));
-							$image_width[$image] = 127;
-						}
-						else if ($image_height[$image] > 127)
-						{
-							$image_width[$image] = (int) ($image_width[$image] * (127 / $image_height[$image]));
-							$image_height[$image] = 127;
+							if ($image_width[$image] > 127 && $image_width[$image] > $image_height[$image])
+							{
+								$image_height[$image] = (int) ($image_height[$image] * (127 / $image_width[$image]));
+								$image_width[$image] = 127;
+							}
+							else if ($image_height[$image] > 127)
+							{
+								$image_width[$image] = (int) ($image_width[$image] * (127 / $image_height[$image]));
+								$image_height[$image] = 127;
+							}
 						}
 
 						$img_sql = array(
@@ -923,7 +930,7 @@ class acp_icons
 			generate_pagination($this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true)
 		);
 	}
-	
+
 	/**
 	 * Returns the count of smilies or icons in the database
 	 *
