@@ -1175,6 +1175,10 @@ input.disabled {
 	font-weight: bold;
 }
 
+.notice {
+	background-color: #62A5CC;
+}
+
 /* Special cases for the error page */
 #errorpage #page-header a {
 	font-weight: bold;

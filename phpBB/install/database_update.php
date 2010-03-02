@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.3-RC1';
+$updates_to_version = '3.0.3';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -78,7 +78,7 @@ if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 }
 else
 {
-	set_magic_quotes_runtime(0);
+	@set_magic_quotes_runtime(0);
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
@@ -545,6 +545,9 @@ $database_update_info = array(
 			),
 		),
 	),
+
+	// No changes from 3.0.3-RC1 to 3.0.3
+	'3.0.3-RC1'		=> array(),
 );
 
 // Determine mapping database type
@@ -1931,6 +1934,16 @@ function change_database_data(&$no_updates, $version)
 				SET module_auth = \'acl_a_email && cfg_email_enable\'
 				WHERE module_class = \'acp\'
 					AND module_basename = \'email\'';
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
+		break;
+
+		// Changes from 3.0.3-RC1 to 3.0.3
+		case '3.0.3-RC1':
+			$sql = 'UPDATE ' . LOG_TABLE . "
+				SET log_operation = 'LOG_DELETE_TOPIC'
+				WHERE log_operation = 'LOG_TOPIC_DELETED'";
 			_sql($sql, $errored, $error_ary);
 
 			$no_updates = false;

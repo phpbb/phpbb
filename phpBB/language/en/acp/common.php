@@ -688,9 +688,4 @@ $lang = array_merge($lang, array(
 	'LOG_WORD_EDIT'			=> '<strong>Edited word censor</strong><br />» %s',
 ));
 
-// Two language keys with the same text were used in different locations
-// LOG_DELETE_TOPIC is the correct one, this line is here so that existing
-// log entries are not broken. Ensure it is included in your language file.
-$lang['LOG_TOPIC_DELETED'] = $lang['LOG_DELETE_TOPIC'];
-
 ?>

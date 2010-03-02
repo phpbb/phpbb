@@ -485,9 +485,10 @@ class acp_main
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
-		if (file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
-			$template->assign_var('S_WRITABLE_CONFIG', true);
+			// World-Writable? (000x)
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
 		}
 
 		$this->tpl_name = 'acp_main';
