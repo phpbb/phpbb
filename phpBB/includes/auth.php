@@ -478,11 +478,11 @@ class auth
 		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
-		$sql_opts = $sql_escape = '';
+		$sql_opts = '';
 
 		if ($opts !== false)
 		{
-			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
 		$hold_ary = array();
@@ -512,7 +512,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql . $sql_escape);
+		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -588,11 +588,11 @@ class auth
 		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
-		$sql_opts = $sql_escape = '';
+		$sql_opts = '';
 
 		if ($opts !== false)
 		{
-			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
 		$hold_ary = array();
@@ -620,7 +620,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql . $sql_escape);
+		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -642,11 +642,11 @@ class auth
 		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : $db->sql_in_set('group_id', $group_id)) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
-		$sql_opts = $sql_escape = '';
+		$sql_opts = '';
 
 		if ($opts !== false)
 		{
-			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts, $sql_escape);
+			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
 		$hold_ary = array();
@@ -674,7 +674,7 @@ class auth
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
-		$result = $db->sql_query($sql . $sql_escape);
+		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -791,7 +791,7 @@ class auth
 	/**
 	* Fill auth_option statement for later querying based on the supplied options
 	*/
-	function build_auth_option_statement($key, $auth_options, &$sql_opts, &$sql_escape)
+	function build_auth_option_statement($key, $auth_options, &$sql_opts)
 	{
 		global $db;
 
@@ -802,7 +802,7 @@ class auth
 				if (strpos($auth_options, '_') !== false)
 				{
 					$sql_opts = "AND $key LIKE '" . $db->sql_escape(str_replace('_', "\_", $auth_options)) . "'";
-					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+					$sql_opts .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\' " : '';
 				}
 				else
 				{
@@ -816,18 +816,13 @@ class auth
 		}
 		else
 		{
-			$is_like_expression = $is_underline = false;
+			$is_like_expression = false;
 
 			foreach ($auth_options as $option)
 			{
 				if (strpos($option, '%') !== false)
 				{
 					$is_like_expression = true;
-				}
-
-				if (strpos($option, '_') !== false)
-				{
-					$is_underline = true;
 				}
 			}
 
@@ -841,15 +836,26 @@ class auth
 
 				foreach ($auth_options as $option)
 				{
-					$sql[] = $key . " LIKE '" . $db->sql_escape(str_replace('_', "\_", $option)) . "'";
+					if (strpos($option, '%') !== false)
+					{
+						if (strpos($option, '_') !== false)
+						{
+							$_sql = $key . " LIKE '" . $db->sql_escape(str_replace('_', "\_", $option)) . "'";
+							$_sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+							$sql[] = $_sql;
+						}
+						else
+						{
+							$sql[] = $key . " LIKE '" . $db->sql_escape($option) . "'";
+						}
+					}
+					else
+					{
+						$sql[] = $key . " = '" . $db->sql_escape($option) . "'";
+					}
 				}
 
 				$sql_opts = 'AND (' . implode(' OR ', $sql) . ')';
-
-				if ($is_underline)
-				{
-					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
-				}
 			}
 		}
 	}

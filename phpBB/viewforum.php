@@ -147,9 +147,16 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 	page_footer();
 }
 
-// Ok, if someone has only list-access, we only display the forum list
+// Ok, if someone has only list-access, we only display the forum list.
+// We also make this circumstance available to the template in case we want to display a notice. ;)
 if (!$auth->acl_get('f_read', $forum_id))
 {
+	$template->assign_vars(array(
+		'S_NO_READ_ACCESS'		=> true,
+		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
+		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . urlencode(build_url(array('_f_'))))
+	));
+
 	page_footer();
 }
 
@@ -173,7 +180,7 @@ if ($forum_data['forum_topics_per_page'])
 // Do the forum Prune thang - cron type job ...
 if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 {
-	$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=prune_forum&amp;f=' . $forum_id . '" width="1" height="1" />');
+	$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=prune_forum&amp;f=' . $forum_id) . '" alt="cron" width="1" height="1" />');
 }
 
 // Forum rules and subscription info
@@ -422,7 +429,7 @@ if ($num_rows < $sql_limit)
 	$db->sql_freeresult($result);
 }
 
-// If we have some shadow topics, update the rowset to reflect their topic informations
+// If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
 	$sql = 'SELECT *
@@ -462,7 +469,7 @@ if (sizeof($topic_list))
 		$topic_forum_list = array();
 		foreach ($rowset as $t_id => $row)
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered']) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
 		}
 
@@ -524,7 +531,7 @@ if (sizeof($topic_list))
 			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 		}
 
-		// Get folder img, topic status/type related informations
+		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
 		topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 
@@ -539,14 +546,16 @@ if (sizeof($topic_list))
 		$template->assign_block_vars('topicrow', array(
 			'FORUM_ID'					=> $forum_id,
 			'TOPIC_ID'					=> $topic_id,
-			'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
-			'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
 			'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
 			'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
-			'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name']) ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-			'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+			'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
 			'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 			'REPLIES'			=> $replies,
@@ -577,8 +586,8 @@ if (sizeof($topic_list))
 
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 			'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-			'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
-			'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
+			'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'U_VIEW_TOPIC'			=> $view_topic_url,
 			'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, $user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,

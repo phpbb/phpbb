@@ -59,6 +59,7 @@
 	</fieldset>
 
 	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
@@ -80,10 +81,10 @@
 		<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
 		<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" id="securesubmit" name="securesubmit" value="{L_SUBMIT}" />
+	</p>
 	</fieldset>
 
 	<fieldset>
@@ -94,10 +95,10 @@
 			<dt><label for="remove_ip_hostname">{L_IP_HOSTNAME}:</label></dt>
 			<dd><select name="unip[]" id="remove_ip_hostname" multiple="multiple" size="10">{DEFINED_IPS}</select></dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			<input class="button1" type="submit" id="unsecuresubmit" name="unsecuresubmit" value="{L_SUBMIT}" />
+		</p>
 		</fieldset>
 
 	<!-- ELSE -->
@@ -207,15 +208,20 @@
 			<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
 			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="submit-buttons">
+		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+
 		</fieldset>
 
 		</form>
 	<!-- ELSE -->
+
+		<form id="extgroups" method="post" action="{U_ACTION}">
+		<fieldset class="tabulated">
+		<legend>{L_TITLE}</legend>
 
 		<table cellspacing="1">
 			<col class="row1" /><col class="row1" /><col class="row2" />
@@ -243,12 +249,11 @@
 		<!-- END groups -->
 		</tbody>
 		</table>
-
-		<form id="extgroups" method="post" action="{U_ACTION}">
-			<fieldset class="quick">
+		<p class="quick">
 				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" /> 
 				<input class="button2" name="add" type="submit" value="{L_SUBMIT}" />
-			</fieldset>
+		</p>
+		</fieldset>
 		</form>
 
 	<!-- ENDIF -->
@@ -266,10 +271,10 @@
 		<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
 		<dd>{GROUP_SELECT_OPTIONS}</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input type="submit" id="add_extension_check" name="add_extension_check" class="button2" value="{L_SUBMIT}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -277,6 +282,9 @@
 	<br />
 
 	<form id="change_ext" method="post" action="{U_ACTION}">
+
+	<fieldset class="tabulated">
+	<legend>{L_TITLE}</legend>
 
 	<table cellspacing="1">
 		<col class="row1" /><col class="row1" /><col class="row2" />
@@ -303,9 +311,10 @@
 	</tbody>
 	</table>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 	
 	</form>
@@ -313,6 +322,9 @@
 <!-- ELSEIF S_ORPHAN -->
 
 	<form id="orphan" method="post" action="{U_ACTION}">
+
+	<fieldset>
+	<legend>{L_TITLE}</legend>
 
 	<table cellspacing="1">
 	<thead>
@@ -346,9 +358,11 @@
 
 	<br />
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
+
 	</fieldset>
 
 	</form>

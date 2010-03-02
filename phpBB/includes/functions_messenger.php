@@ -962,7 +962,7 @@ class smtp_class
 
 	function smtp_class()
 	{
-		if (defined('DEBUG_EXTRA'))
+		if (defined('DEBUG'))
 		{
 			$this->backtrace = true;
 			$this->backtrace_log = array();
@@ -987,7 +987,7 @@ class smtp_class
 	{
 		fputs($this->socket, $command . "\r\n");
 
-		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive Informations');
+		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive information');
 
 		// We could put additional code here
 	}
@@ -1368,33 +1368,53 @@ class smtp_class
 }
 
 /**
-* Encodes the given string for proper display in UTF-8 ... nabbed 
-* from php.net and modified. There is an alternative encoding method which 
-* may produce less output but it's questionable as to its worth in this 
-* scenario.
+* Encodes the given string for proper display in UTF-8.
 *
 * This version is using base64 encoded data. The downside of this
 * is if the mail client does not understand this encoding the user
 * is basically doomed with an unreadable subject.
+*
+* Please note that this version fully supports RFC 2045 section 6.8.
 */
 function mail_encode($str)
 {
 	// define start delimimter, end delimiter and spacer
-	$end = '?=';
-	$start = '=?UTF-8?B?';
-	$spacer = "$end $start";
+	$start = "=?UTF-8?B?";
+	$end = "?=";
+	$spacer = $end . ' ' . $start;
+	$split_length = 64;
 
-	// determine length of encoded text within chunks and ensure length is even
-	$length = 76 - strlen($start) - strlen($end);
-	$length = floor($length / 2) * 2;
+	$encoded_str = base64_encode($str);
 
-	// encode the string and split it into chunks with spacers after each chunk
-	$str = chunk_split(base64_encode($str), $length, $spacer);
+	// If encoded string meets the limits, we just return with the correct data.
+	if (strlen($encoded_str) <= $split_length)
+	{
+		return $start . $encoded_str . $end;
+	}
 
-	// remove trailing spacer and add start and end delimiters
-	$str = preg_replace('#' . preg_quote($spacer, '#') . '$#', '', $str);
+	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
+	if (strlen($str) === utf8_strlen($str))
+	{
+		return $start . implode($spacer, str_split($encoded_str, $split_length)) . $end;
+	}
 
-	return $start . $str . $end;
+	// UTF-8 data, compose encoded lines
+	$array = utf8_str_split($str);
+	$str = '';
+
+	while (sizeof($array))
+	{
+		$text = '';
+
+		while (sizeof($array) && strlen(base64_encode($text . $array[0])) <= $split_length)
+		{
+			$text .= array_shift($array);
+		}
+
+		$str .= $start . base64_encode($text) . $end . ' ';
+	}
+
+	return substr($str, 0, -1);
 }
 
 ?>

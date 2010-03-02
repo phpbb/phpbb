@@ -54,6 +54,12 @@
 
 	<fieldset>
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
+	<!-- IF S_USER_FOUNDER -->
+	<dl>
+		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}:</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
+		<dd><input name="group_founder_manage" type="checkbox" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
+	</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
 		<dd><input name="group_legend" type="checkbox" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>
@@ -143,6 +149,7 @@
 	</fieldset>
 
 	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
@@ -247,12 +254,12 @@
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -289,6 +296,11 @@
 	<tbody>
 	<!-- BEGIN groups -->
 		<!-- IF groups.S_SPECIAL -->
+		<!-- IF groups.S_FIRST_ROW -->
+			<tr>
+				<td colspan="5" class="row3">{L_NO_GROUPS_CREATED}</td>
+			</tr>
+		<!-- ENDIF -->
 	</tbody>
 	</table>
 

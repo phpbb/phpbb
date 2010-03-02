@@ -1,5 +1,15 @@
 <!-- INCLUDE install_header.html -->
 
+<script type="text/javascript">
+<!--
+function popup(url, width, height)
+{
+	window.open(url.replace(/&amp;/g, '&'), '_popup', 'height=' + height + ',resizable=yes,scrollbars=yes,width=' + width);
+	return false;
+}
+//-->
+</script>
+
 <!-- IF S_ERROR -->
 	<h1>{L_NOTICE}</h1>
 	<p style="color: red;">{ERROR_MSG}</p>
@@ -82,9 +92,9 @@
 
 <!-- ELSEIF S_FILE_CHECK -->
 
-	<h1>{L_COLLECTED_INFORMATIONS}</h1>
+	<h1>{L_COLLECTED_INFORMATION}</h1>
 
-	<p>{L_COLLECTED_INFORMATIONS_EXPLAIN}</p>
+	<p>{L_COLLECTED_INFORMATION_EXPLAIN}</p>
 
 	<!-- IF S_NO_UPDATE_FILES -->
 		<div class="errorbox">
@@ -110,9 +120,6 @@
 
 				<p>{files.EXPLAIN}</p>
 
-				<!--table cellspacing="1">
-					<col class="row1" /><col class="row2" /><col class="row2" />
-				<tbody -->
 				<fieldset>
 					<legend><img src="{T_IMAGE_PATH}file_{files.STATUS}.gif" alt="{files.L_STATUS}" /></legend>
 			<!-- ELSE -->
@@ -129,7 +136,7 @@
 							<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
 							<!-- ENDIF -->
 						</dt>
-						<dd>[ <a href="{files.U_SHOW_DIFF}" onclick="popup({files.UA_SHOW_DIFF}, 700, 500);">{files.L_SHOW_DIFF}</a> ]</dd>
+						<dd>[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]</dd>
 						<!-- IF files.S_CUSTOM -->
 							<dd><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
 						<!-- ENDIF -->
@@ -185,6 +192,25 @@
 
 	<p>{L_DOWNLOAD_UPDATE_METHOD_EXPLAIN}</p>
 
+	<form id="install_update" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_DOWNLOAD_AS}</legend>
+	<dl>
+		<dt><label for="use_method">{L_DOWNLOAD_AS}:</label></dt>
+		<dd>{RADIO_BUTTONS}</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}
+		<input type="submit" class="button2" value="{L_CHECK_FILES_AGAIN}" name="check_again" />&nbsp; &nbsp;<input type="submit" class="button1" value="{L_DOWNLOAD}" name="download" />
+	</fieldset>
+
+	</form>
+
+	<br /><br />
+
 	<p>{L_MAPPING_FILE_STRUCTURE}</p>
 
 	<table cellspacing="1">
@@ -206,23 +232,6 @@
 	<!-- END location -->
 	</tbody>
 	</table>
-
-	<form id="install_update" method="post" action="{U_ACTION}">
-
-	<fieldset>
-		<legend>{L_DOWNLOAD_AS}</legend>
-	<dl>
-		<dt><label for="use_method">{L_DOWNLOAD_AS}:</label></dt>
-		<dd>{RADIO_BUTTONS}</dd>
-	</dl>
-	</fieldset>
-
-	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}
-		<input type="submit" class="button2" value="{L_CHECK_FILES_AGAIN}" name="check_again" />&nbsp; &nbsp;<input type="submit" class="button1" value="{L_DOWNLOAD}" name="download" />
-	</fieldset>
-
-	</form>
 
 <!-- ELSEIF S_FTP_UPLOAD -->
 

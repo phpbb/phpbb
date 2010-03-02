@@ -111,7 +111,7 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id tinyint(3) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar(16) DEFAULT '' NOT NULL,
-	bbcode_helpline varchar(255) DEFAULT '' NOT NULL,
+	bbcode_helpline text NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_match text NOT NULL,
 	bbcode_tpl mediumtext NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE phpbb_bots (
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
 	config_name varchar(255) DEFAULT '' NOT NULL,
-	config_value varchar(255) DEFAULT '' NOT NULL,
+	config_value text NOT NULL,
 	is_dynamic tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (config_name),
 	KEY is_dynamic (is_dynamic)
@@ -295,6 +295,7 @@ CREATE TABLE phpbb_forums_watch (
 CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
+	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name text NOT NULL,
 	group_desc text NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
@@ -968,6 +969,7 @@ CREATE TABLE phpbb_users (
 	username_clean text NOT NULL,
 	user_password varchar(120) DEFAULT '' NOT NULL,
 	user_passchg int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	user_pass_convert tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_email text NOT NULL,
 	user_email_hash bigint(20) DEFAULT '0' NOT NULL,
 	user_birthday varchar(10) DEFAULT '' NOT NULL,

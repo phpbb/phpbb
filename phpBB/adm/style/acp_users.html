@@ -15,13 +15,13 @@
 	<dl>
 		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 		<dd><input class="medium" type="text" id="username" name="username" /></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
 		<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input type="submit" name="submituser" value="{L_SUBMIT}" class="button1" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -83,9 +83,15 @@
 		<legend>{L_ACP_USER_OVERVIEW}</legend>
 	<dl>
 		<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
-		<dd><input type="text" id="user" name="user" value="{USER}" /><!-- IF S_USER_INACTIVE --> [{L_USER_IS_INACTIVE}]<!-- ENDIF --></dd>
+		<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
 		<!-- IF U_SWITCH_PERMISSIONS --><dd>[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</dd><!-- ENDIF -->
 	</dl>
+	<!-- IF S_USER_INACTIVE -->
+	<dl>
+		<dt><label>{L_USER_IS_INACTIVE}:</label></dt>
+		<dd><strong>{USER_INACTIVE_REASON}</strong></dd>
+	</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label>{L_REGISTERED}:</label></dt>
 		<dd><strong>{USER_REGISTERED}</strong></dd>
@@ -94,7 +100,7 @@
 	<dl>
 		<dt><label>{L_REGISTERED_IP}:</label></dt>
 		<dd><a href="{U_SHOW_IP}">{REGISTERED_IP}</a></dd>
-		<dd>[ <a href="#" onclick="window.open('{U_WHOIS}', '_whois', 'height=500, resizable=yes, scrollbars=yes, width=700'); return false;">{L_WHOIS}</a> ]</strong></dd>
+		<dd>[ <a href="#" onclick="window.open('{U_WHOIS}', '_whois', 'height=500, resizable=yes, scrollbars=yes, width=700'); return false;">{L_WHOIS}</a> ]</dd>
 	</dl>
 	<!-- ENDIF -->
 	<dl>
@@ -542,9 +548,9 @@
 	var text_name = 'signature';
 
 	// Define the bbCode tags
-	bbcode = new Array();
-	bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
-	imageTag = false;
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
+imageTag = false;
 
 // Helpline messages
 var help_line = {
@@ -557,11 +563,12 @@ var help_line = {
 	o: '{LA_BBCODE_O_HELP}',
 	p: '{LA_BBCODE_P_HELP}',
 	w: '{LA_BBCODE_W_HELP}',
-	a: '{LA_BBCODE_A_HELP}',
 	s: '{LA_BBCODE_S_HELP}',
 	f: '{LA_BBCODE_F_HELP}',
 	e: '{LA_BBCODE_E_HELP}',
-	d: '{LA_BBCODE_D_HELP}'
+	d: '{LA_BBCODE_D_HELP}',
+	t: '{LA_BBCODE_T_HELP}',
+	tip: '{L_STYLES_TIP}'
 	<!-- BEGIN custom_tags -->
 		,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
 	<!-- END custom_tags -->
@@ -584,31 +591,31 @@ var help_line = {
 		<legend>{L_SIGNATURE}</legend>
 		<p>{L_SIGNATURE_EXPLAIN}</p>
 		<div id="format-buttons">
-			<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
-			<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" />
-			<input type="button" class="button2" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" />
-			<input type="button" class="button2" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" />
-			<input type="button" class="button2" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" />
-			<input type="button" class="button2" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" />
-			<input type="button" class="button2" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
+			<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" onmouseout="helpline('tip')" />
+			<input type="button" class="button2" accesskey="t" name="addlitsitem" value="[*]" style="width: 40px" onclick="bbstyle(-1)" onmouseover="helpline('e')" onmouseout="helpline('tip')" />
 			<!-- IF S_BBCODE_IMG -->
-				<input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" />
+				<input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 			<!-- IF S_LINKS_ALLOWED -->
-				<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" onmouseover="helpline('d')" />
+				<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 			<!-- IF S_BBCODE_FLASH -->
-				<input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" />
+				<input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 
-			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')"  onmouseout="helpline('tip')">
 				<option value="7">{L_FONT_TINY}</option>
 				<option value="9">{L_FONT_SMALL}</option>
 				<option value="12" selected="selected">{L_FONT_NORMAL}</option>
 				<option value="18">{L_FONT_LARGE}</option>
 				<option  value="24">{L_FONT_HUGE}</option>
 			</select>
-			<a href="#" onclick="bbstyle(-1); return false;" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a>
 		<!-- IF .custom_tags -->
 			<br /><br />
 			<!-- BEGIN custom_tags -->
@@ -618,14 +625,8 @@ var help_line = {
 
 		</div>
 		<p><input type="text" name="helpbox" value="{L_STYLES_TIP}" class="full" style="border: 0; background: none;" /></p>
-	<dl>
-		<dt style="width: 95px;"><script type="text/javascript"><!-- 
-			colorPalette('v', 17, 13); 
-			//--></script>
-		</dt>
-		<dd style="text-align: left; margin-left: 95px;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
-		<dd style="text-align: left; margin-left: 95px;">
-			<!-- IF S_BBCODE_ALLOWED -->
+	<div style="text-align: left;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></div>
+	<div><!-- IF S_BBCODE_ALLOWED -->
 				<input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
@@ -635,8 +636,7 @@ var help_line = {
 				<input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
 			<!-- ENDIF -->
 			<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}
-		</dd>
-	</dl>
+	</div>
 	</fieldset>
 
 	<fieldset class="quick">

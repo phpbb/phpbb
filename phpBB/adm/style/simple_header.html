@@ -73,16 +73,27 @@ function marklist(id, name, state)
 	}
 }
 
-<!-- IF S_INCLUDE_SWATCH -->
-	/**
-	* Color swatch
-	*/
-	function swatch()
-	{
-		window.open('{UA_SWATCH}', '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
-		return false;
-	}
-<!-- ENDIF -->
+/**
+* Find a member
+*/
+function find_username()
+{
+	<!-- IF UA_FIND_USERNAME -->
+	window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740');
+	<!-- ENDIF -->
+	return false;
+}
+
+/**
+* Color swatch
+*/
+function swatch(field)
+{
+	<!-- IF UA_SWATCH -->
+	window.open('{UA_SWATCH}' + field, '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
+	<!-- ENDIF -->
+	return false;
+}
 
 //-->
 </script>

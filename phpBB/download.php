@@ -245,8 +245,19 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		header("Content-Length: $size");
 	}
 
-	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
-	echo @file_get_contents($filename);
+	// Try to deliver in chunks
+	@set_time_limit(0);
+
+	$fp = @fopen($filename, 'rb');
+
+	if ($fp !== false)
+	{
+		while (!feof($fp))
+		{
+			echo fread($fp, 8192);
+		}
+		fclose($fp);
+	}
 
 	flush();
 	exit;

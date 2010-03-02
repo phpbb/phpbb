@@ -81,8 +81,68 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// clear arrays
 	$id_ary = array();
 
-	// Which forums should not be searched?
-	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
+	// egosearch is an author search
+	if ($search_id == 'egosearch')
+	{
+		$author = $user->data['username'];
+	}
+
+	// If we are looking for authors get their ids
+	$author_id_ary = array();
+	if ($author_id)
+	{
+		$author_id_ary[] = $author_id;
+	}
+	else if ($author)
+	{
+		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
+		{
+			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
+		}
+
+		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . "
+			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
+				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		$result = $db->sql_query_limit($sql, 100);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$author_id_ary[] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($author_id_ary))
+		{
+			trigger_error($user->lang['NO_SEARCH_RESULTS']);
+		}
+	}
+
+	// if we search in an existing search result just add the additional keywords. But we need to use "all search terms"-mode
+	// so we can keep the old keywords in their old mode, but add the new ones as required words
+	if ($add_keywords)
+	{
+		if ($search_terms == 'all')
+		{
+			$keywords .= ' ' . $add_keywords;
+		}
+		else
+		{
+			$search_terms = 'all';
+			$keywords = implode(' |', explode(' ', preg_replace('#\s+#u', ' ', $keywords))) . ' ' .$add_keywords;
+		}
+	}
+
+	// Which forums should not be searched? Author searches are also carried out in unindexed forums
+	if (empty($search->search_query) && sizeof($author_id_ary))
+	{
+		$ex_fid_ary = array_keys($auth->acl_getf('!f_read', true));
+	}
+	else
+	{
+		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
+	}
 
 	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
@@ -149,59 +209,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$search_forum = array();
 	}
 
-	// egosearch is an author search
-	if ($search_id == 'egosearch')
-	{
-		$author = $user->data['username'];
-	}
-
-	// If we are looking for authors get their ids
-	$author_id_ary = array();
-	if ($author_id)
-	{
-		$author_id_ary[] = $author_id;
-	}
-	else if ($author)
-	{
-		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
-		{
-			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
-		}
-
-		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
-		$sql = 'SELECT user_id
-			FROM ' . USERS_TABLE . "
-			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-		$result = $db->sql_query_limit($sql, 100);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$author_id_ary[] = (int) $row['user_id'];
-		}
-		$db->sql_freeresult($result);
-
-		if (!sizeof($author_id_ary))
-		{
-			trigger_error($user->lang['NO_SEARCH_RESULTS']);
-		}
-	}
-
-	// if we search in an existing search result just add the additional keywords. But we need to use "all search terms"-mode
-	// so we can keep the old keywords in their old mode, but add the new ones as required words
-	if ($add_keywords)
-	{
-		if ($search_terms == 'all')
-		{
-			$keywords .= ' ' . $add_keywords;
-		}
-		else
-		{
-			$search_terms = 'all';
-			$keywords = implode(' |', explode(' ', preg_replace('#\s+#', ' ', $keywords))) . ' ' .$add_keywords;
-		}
-	}
-
 	// Select which method we'll use to obtain the post_id or topic_id information
 	$search_type = basename($config['search_type']);
 
@@ -224,10 +231,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// let the search module split up the keywords
 	if ($keywords)
 	{
-		$search->split_keywords($keywords, $search_terms);
-		if (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id)
+		$correct_query = $search->split_keywords($keywords, $search_terms);
+		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
 		{
-			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words))) . '<br />' : '';
+			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words), ENT_COMPAT, 'UTF-8')) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
 		}
 	}
@@ -240,7 +247,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
-	$sort_by_sql = array('a' => 'u.username', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
+	$sort_by_sql = array('a' => 'u.username_clean', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
 	// pre-made searches
 	$sql = $field = '';
@@ -253,22 +260,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
+				$sort_days = request_var('st', 7);
 				$sort_by_sql['t'] = 't.topic_last_post_time';
 
-				if (!$sort_days)
-				{
-					$sort_days = 3;
-				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = '';
-				$u_sort_param = 'st=' . $sort_days;
 
-				$last_post_time = (time() - ($sort_days * 24 * 3600));
+				$last_post_time_sql = ($sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($sort_days * 24 * 3600)) : '';
 
 				$sql = 'SELECT t.topic_last_post_time, t.topic_id
 					FROM ' . TOPICS_TABLE . " t
-					WHERE t.topic_last_post_time > $last_post_time
-						AND t.topic_moved_id = 0
+					WHERE t.topic_moved_id = 0
+						$last_post_time_sql
 						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
 						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
@@ -365,6 +368,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// show_results should not change after this
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
+	$total_match_count = 0;
 
 	if ($search_id)
 	{
@@ -402,14 +406,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
-	if (!sizeof($id_ary))
+	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
+	if (!sizeof($id_ary) && !$search_id)
 	{
 		trigger_error($user->lang['NO_SEARCH_RESULTS']);
 	}
 
-	$sql_where = $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
-	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
-	$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+	$sql_where = '';
+
+	if (sizeof($id_ary))
+	{
+		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
+		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
+		$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+	}
 
 	if ($show_results == 'posts')
 	{
@@ -436,7 +446,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	$hilit = preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))))));
+	// @todo preg_replace still needed?
+	$hilit = htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords)))));
 	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
@@ -564,7 +575,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
  
-			// If we have some shadow topics, update the rowset to reflect their topic informations
+			// If we have some shadow topics, update the rowset to reflect their topic information
 			if (sizeof($shadow_topic_list))
 			{
 				$sql = 'SELECT *
@@ -656,7 +667,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 						AND in_message = 0
-					ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+					ORDER BY filetime DESC, post_msg_id ASC';
 				$result = $db->sql_query($sql);
 		
 				while ($row = $db->sql_fetchrow($result))
@@ -728,14 +739,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$tpl_ary = array(
-					'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
-					'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+					'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+					'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+					'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 					'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
 					'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
 					'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
 					'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
-					'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-					'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+					'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+					'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+					'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
 					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
@@ -759,8 +772,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 
 					'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-					'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
-					'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
+					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+					'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 					'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
 					'U_MCP_QUEUE'			=> $u_mcp_queue,
@@ -828,9 +841,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 
 				$tpl_ary = array(
-					'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
-					'POSTER_COLOUR'		=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
-					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
+					'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+					'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+					'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+				
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
 					'MESSAGE'			=> $message
@@ -997,7 +1012,7 @@ $result = $db->sql_query_limit($sql, 5);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$keywords = htmlspecialchars($row['search_keywords']);
+	$keywords = htmlspecialchars($row['search_keywords'], ENT_COMPAT, 'UTF-8');
 
 	$template->assign_block_vars('recentsearch', array(
 		'KEYWORDS'	=> $keywords,

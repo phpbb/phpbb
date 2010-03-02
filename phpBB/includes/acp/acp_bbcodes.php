@@ -76,7 +76,7 @@ class acp_bbcodes
 
 				$bbcode_match = request_var('bbcode_match', '');
 				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', ''));
-				$bbcode_helpline = request_var('bbcode_helpline', '');
+				$bbcode_helpline = request_var('bbcode_helpline', '', true);
 			break;
 		}
 
@@ -128,11 +128,15 @@ class acp_bbcodes
 					$db->sql_freeresult($result);
 
 					// Grab the end, interrogate the last closing tag
-					preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs);
-					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || in_array(strtolower($regs[1]), $hard_coded))
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
 					{
 						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
+				}
+
+				if (!preg_match('#\[' . $data['bbcode_tag'] .'].*?\[/' . $data['bbcode_tag'] . ']#s', $bbcode_match))
+				{
+					trigger_error($user->lang['BBCODE_OPEN_ENDED_TAG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
@@ -238,7 +242,7 @@ class acp_bbcodes
 
 		$sql = 'SELECT *
 			FROM ' . BBCODES_TABLE . '
-			ORDER BY bbcode_id';
+			ORDER BY bbcode_tag';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

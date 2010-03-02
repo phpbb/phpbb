@@ -10,9 +10,8 @@
 /** 
 * Private Message Class
 *
-* @param int $folder display folder with the id used
-* @param inbox|outbox|sentbox display folder with the associated name
-*
+* $_REQUEST['folder'] display folder with the id used
+* $_REQUEST['folder'] inbox|outbox|sentbox display folder with the associated name
 *
 *	Display Messages (default to inbox) - mode=view
 *	Display single message - mode=view&p=[msg_id] or &p=[msg_id] (short linkage)
@@ -241,10 +240,11 @@ class ucp_pm
 				}
 
 				// If new messages arrived, place them into the appropiate folder
-				$num_not_moved = 0;
+				$num_not_moved = $num_removed = 0;
+
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
 				{
-					place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
+					$return = place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
 					$num_not_moved = $user->data['user_new_privmsg'];
 
 					// Make sure num_not_moved is valid.
@@ -257,6 +257,9 @@ class ucp_pm
 
 						$num_not_moved = $user->data['user_new_privmsg'] = $user->data['user_unread_privmsg'] = 0;
 					}
+
+					// Assign the number of private messages being removed due to rules.
+					$num_removed = $return['deleted'];
 				}
 
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)
@@ -351,8 +354,10 @@ class ucp_pm
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
 					'NUM_NOT_MOVED'			=> $num_not_moved,
+					'NUM_REMOVED'			=> $num_removed,
 					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
 					'NOT_MOVED_MESSAGES'	=> ($num_not_moved == 1) ? $user->lang['NOT_MOVED_MESSAGE'] : sprintf($user->lang['NOT_MOVED_MESSAGES'], $num_not_moved),
+					'RULE_REMOVED_MESSAGES'	=> ($num_removed == 1) ? $user->lang['RULE_REMOVED_MESSAGE'] : sprintf($user->lang['RULE_REMOVED_MESSAGES'], $num_removed),
 
 					'S_FOLDER_OPTIONS'		=> $s_folder_options,
 					'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,

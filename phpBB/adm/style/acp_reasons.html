@@ -48,11 +48,11 @@
 		<dd>{TRANSLATED_DESCRIPTION}</dd>
 	</dl>
 	<!-- ENDIF -->
-	</fieldset>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -62,6 +62,10 @@
 	<h1>{L_ACP_REASONS}</h1>
 
 	<p>{L_ACP_REASONS_EXPLAIN}</p>
+
+	<form id="reasons" method="post" action="{U_ACTION}">
+	<fieldset class="tabuled">
+	<legend>{L_ACP_REASONS}</legend>
 
 	<!-- IF .reasons -->
 		<table cellspacing="1">
@@ -107,13 +111,12 @@
 
 	<!-- ENDIF -->
 
-	<form id="reasons" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick">
+	<p class="quick">
 		<input type="hidden" name="action" value="add" />
 
 		<input type="text" name="reason_title" /> 
 		<input class="button2" name="addreason" type="submit" value="{L_ADD_NEW_REASON}" />
+	</p>
 	</fieldset>
 
 	</form>

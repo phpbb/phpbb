@@ -49,7 +49,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Assign TO/BCC Addresses to template
 	write_pm_addresses(array('to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']), $author_id);
 
-	$user_info = get_user_informations($author_id, $message_row);
+	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
 	$message = $message_row['message_text'];
@@ -92,7 +92,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
 					AND in_message = 1
-				ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+				ORDER BY filetime DESC, post_msg_id ASC";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -165,7 +165,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 
 	$template->assign_vars(array(
-		'AUTHOR_NAME'		=> ($user_info['user_colour']) ? '<span style="color:#' . $user_info['user_colour'] . '">' . $user_info['username'] . '</span>' : $user_info['username'],
+		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
+		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
+		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
+		'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
+
 		'AUTHOR_RANK'		=> $user_info['rank_title'],
 		'RANK_IMAGE'		=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
@@ -192,7 +196,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id) : '',
 		'U_EMAIL'			=> $user_info['email'],
 		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EDIT'			=> (($message_row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -314,7 +317,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	foreach ($rowset as $id => $row)
 	{
 		$author_id	= $row['author_id'];
-		$author		= $row['username'];
 		$folder_id	= (int) $row['folder_id'];
 
 		$subject	= $row['message_subject'];
@@ -340,7 +342,11 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		}
 
 		$template->assign_block_vars('history_row', array(
-			'AUTHOR_NAME'	=> $author,
+			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $row['username'], $row['user_colour'], $row['username']),
+
 			'SUBJECT'		=> $subject,
 			'SENT_DATE'		=> $user->format_date($row['message_time']),
 			'MESSAGE'		=> $message,
@@ -351,7 +357,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 
 			'U_MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id") : '',
 			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
@@ -371,9 +376,9 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 }
 
 /**
-* Get User Informations (only for message display)
+* Get user information (only for message display)
 */
-function get_user_informations($user_id, $user_row)
+function get_user_information($user_id, $user_row)
 {
 	global $db, $auth, $user, $cache;
 	global $phpbb_root_path, $phpEx, $config;
@@ -421,6 +426,7 @@ function get_user_informations($user_id, $user_row)
 	if ($user_row['user_avatar'] && $user->optionget('viewavatars'))
 	{
 		$avatar_img = '';
+
 		switch ($user_row['user_avatar_type'])
 		{
 			case AVATAR_UPLOAD:
@@ -431,8 +437,8 @@ function get_user_informations($user_id, $user_row)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $user_row['user_avatar'];
 
+		$avatar_img .= $user_row['user_avatar'];
 		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
 	}
 

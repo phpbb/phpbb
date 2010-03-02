@@ -134,7 +134,7 @@ function mcp_front_view($id, $mode, $action)
 			$global_id = $forum_list[0];
 
 			$sql = $db->sql_build_query('SELECT', array(
-				'SELECT'	=> 'r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+				'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, u.username, u.user_colour, u.user_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 				'FROM'		=> array(
 					REPORTS_TABLE			=> 'r',
@@ -176,11 +176,14 @@ function mcp_front_view($id, $mode, $action)
 					'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
 					'U_FORUM'			=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 					'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-					'U_REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+
+					'REPORTER_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+					'REPORTER'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+					'REPORTER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+					'U_REPORTER'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 
 					'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
-					'REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 					'REPORT_TIME'	=> $user->format_date($row['report_time']))
 				);
@@ -218,11 +221,11 @@ function mcp_front_view($id, $mode, $action)
 		foreach ($log as $row)
 		{
 			$template->assign_block_vars('log', array(
-				'USERNAME'		=> $row['username'],
+				'USERNAME'		=> $row['username_full'],
 				'IP'			=> $row['ip'],
 				'TIME'			=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'U_VIEWTOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
+				'U_VIEW_TOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
 				'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '')
 			);
 		}

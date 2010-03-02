@@ -58,6 +58,9 @@ class install_update extends module
 	var $latest_version;
 	var $current_version;
 
+	// Set to false
+	var $test_update = false;
+
 	function install_update(&$p_master)
 	{
 		$this->p_master = &$p_master;
@@ -93,7 +96,9 @@ class install_update extends module
 
 		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
 
-		// Check for user session
+		/**
+		* Check for user session
+		* - commented out for beta3 with "broken" install check routine
 		if (!$user->data['is_registered'])
 		{
 			login_box('', $user->lang['LOGIN_UPDATE_EXPLAIN']);
@@ -103,6 +108,7 @@ class install_update extends module
 		{
 			trigger_error($user->lang['NO_AUTH_UPDATE']);
 		}
+		*/
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
@@ -162,6 +168,20 @@ class install_update extends module
 			);
 
 			return;
+		}
+
+		// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
+		if (in_array('adm/style/install_update.html', $this->update_info['files']))
+		{
+			$this->tpl_name = '../../install/update/new/adm/style/install_update';
+		}
+
+		// What about the language file? Got it updated?
+		if (in_array('language/en/install.php', $this->update_info['files']))
+		{
+			$lang = array();
+			include('./update/new/language/en/install.php');
+			$user->lang = array_merge($user->lang, $lang);
 		}
 
 		// Make sure we stay at the file check if checking the files again
@@ -670,7 +690,7 @@ class install_update extends module
 
 		$status = request_var('status', '');
 		$file = request_var('file', '');
-		$diff_mode = request_var('diff_mode', 'side_by_side');
+		$diff_mode = request_var('diff_mode', 'inline');
 
 		// First of all make sure the file is within our file update list with the correct status
 		$found_entry = array();
@@ -684,7 +704,7 @@ class install_update extends module
 
 		if (empty($found_entry))
 		{
-			trigger_error('File not allowed to be diffed', E_USER_ERROR);
+			trigger_error($user->lang['FILE_DIFF_NOT_ALLOWED'], E_USER_ERROR);
 		}
 
 		// If the status is 'up_to_date' then we do not need to show a diff
@@ -802,7 +822,7 @@ class install_update extends module
 			return $update_list;
 		}
 
-		// Now diff the remaining files to get informations about their status (not modified/modified/up-to-date)
+		// Now diff the remaining files to get information about their status (not modified/modified/up-to-date)
 
 		// not modified?
 		foreach ($this->update_info['files'] as $index => $file)
@@ -871,6 +891,16 @@ class install_update extends module
 		// If the file is not modified we are finished here...
 		if ($diff->is_empty())
 		{
+			// Further check if it is already up to date - it could happen that non-modified files
+			// slip through
+			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
+
+			if ($diff->is_empty())
+			{
+				$update_list['up_to_date'][] = $update_ary;
+				return;
+			}
+
 			$update_list['not_modified'][] = $update_ary;
 			return;
 		}
@@ -947,6 +977,11 @@ class install_update extends module
 					$info = explode("\n", $info);
 					$info = trim($info[0]);
 				}
+
+				if ($this->test_update !== false)
+				{
+					$info = $this->test_update;
+				}
 			break;
 
 			case 'update_info':
@@ -960,10 +995,10 @@ class install_update extends module
 
 				if ($info !== false)
 				{
-					// Adjust the update info file to hold some specific style-related informations
+					// Adjust the update info file to hold some specific style-related information
 					$info['custom'] = array();
 
-					// Get custom installed styles...
+					/* Get custom installed styles...
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
 						WHERE template_name NOT IN ('subSilver', 'BLABLA')";
@@ -990,6 +1025,7 @@ class install_update extends module
 							}
 						}
 					}
+					*/
 				}
 			break;
 

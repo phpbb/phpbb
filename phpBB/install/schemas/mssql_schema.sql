@@ -518,6 +518,7 @@ GO
 CREATE TABLE [phpbb_groups] (
 	[group_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_type] [int] DEFAULT (1) NOT NULL ,
+	[group_founder_manage] [int] DEFAULT (0) NOT NULL ,
 	[group_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_desc] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[group_desc_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -1608,6 +1609,7 @@ CREATE TABLE [phpbb_users] (
 	[username_clean] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_password] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
+	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_email_hash] [float] DEFAULT (0) NOT NULL ,
 	[user_birthday] [varchar] (10) DEFAULT ('') NOT NULL ,
@@ -1664,7 +1666,7 @@ CREATE TABLE [phpbb_users] (
 	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_website] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_occ] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_newpasswd] [varchar] (32) DEFAULT ('') NOT NULL 

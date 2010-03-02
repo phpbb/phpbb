@@ -52,7 +52,7 @@ $phpbb_admin_path = './';
 
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
-$file_uploads 	= (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
+$file_uploads	= (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
 $module_id		= request_var('i', '');
 $mode			= request_var('mode', '');
 
@@ -206,6 +206,7 @@ function adm_page_footer($copyright_html = true)
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
+		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'VERSION'			=> $config['version'])
 	);

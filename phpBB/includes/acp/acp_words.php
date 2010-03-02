@@ -68,12 +68,10 @@ class acp_words
 			break;
 
 			case 'save':
-				$word_id = request_var('id', 0);
-				$word = request_var('word', '', true);
-				$replacement = request_var('replacement', '', true);
+				$word_id		= request_var('id', 0);
+				$word			= utf8_normalize_nfc(request_var('word', '', true));
+				$replacement	= utf8_normalize_nfc(request_var('replacement', '', true));
 				
-				utf8_normalize_nfc(array(&$word, &$replacement));
-
 				if (!$word || !$replacement)
 				{
 					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);

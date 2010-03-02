@@ -16,7 +16,7 @@
 	<!-- IF forumrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
 		<td style="padding: 4px;" width="100%"><p class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></p></td>
-		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}" <!-- IF forumrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {forumrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
+		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br />{forumrow.LAST_POST_AUTHOR_FULL} <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
 		<td style="padding: 4px;"> <input type="checkbox" class="radio" name="f[{forumrow.FORUM_ID}]" /> </td>
 	</tr>
 <!-- BEGINELSE -->
@@ -55,7 +55,7 @@
 		</td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
-			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}" <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+			<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
 				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 			</p>
 		</td>

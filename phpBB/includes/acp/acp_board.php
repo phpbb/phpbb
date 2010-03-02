@@ -47,7 +47,7 @@ class acp_board
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'WARNINGS',
-						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true),
+						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 					)
 				);
 			break;
@@ -91,8 +91,8 @@ class acp_board
 						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
-						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
+						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
 						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true)
 					)
@@ -144,7 +144,7 @@ class acp_board
 						'bump_type'				=> false,
 						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true),
+						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int',	'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
 						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
 						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
@@ -153,10 +153,10 @@ class acp_board
 						'max_post_chars'		=> array('lang' => 'CHAR_LIMIT',			'validate' => 'int',	'type' => 'text:4:6', 'explain' => true),
 						'max_post_smilies'		=> array('lang' => 'SMILIES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'max_post_urls'			=> array('lang' => 'MAX_POST_URLS',			'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
-						'max_post_font_size'	=> array('lang' => 'MAX_POST_FONT_SIZE',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_post_font_size'	=> array('lang' => 'MAX_POST_FONT_SIZE',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_quote_depth'		=> array('lang' => 'QUOTE_DEPTH_LIMIT',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
-						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
-						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
 				);
 			break;
@@ -176,10 +176,10 @@ class acp_board
 						'legend2'				=> 'GENERAL_SETTINGS',
 						'max_sig_chars'			=> array('lang' => 'MAX_SIG_LENGTH',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
 						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
-						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
-						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
-						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true),
+						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
 				);
 			break;
@@ -197,7 +197,7 @@ class acp_board
 						'min_pass_chars'		=> array('lang' => 'PASSWORD_LENGTH',	'validate' => 'int',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
 						'allow_name_chars'		=> array('lang' => 'USERNAME_CHARS',	'validate' => 'string',	'type' => 'select', 'method' => 'select_username_chars', 'explain' => true),
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -346,11 +346,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : $this->new_config;
-		if (isset($_REQUEST['config']))
-		{
-			utf8_normalize_nfc(&$cfg_array);
-		}
+		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if whished

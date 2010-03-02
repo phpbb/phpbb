@@ -23,11 +23,11 @@
 			<dd><input id="replacement" type="text" name="replacement" value="{REPLACEMENT}" /></dd>
 		</dl>
 		{S_HIDDEN_FIELDS}
-	</fieldset>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="save" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -40,12 +40,12 @@
 
 	<form id="acp_words" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick">
+	<fieldset class="tabulated">
+	<legend>{L_ACP_WORDS}</legend>
+	<p class="quick">
 		{S_HIDDEN_FIELDS}
 		<input class="button2" name="add" type="submit" value="{L_ADD_WORD}" />
-	</fieldset>
-
-	</form>
+	</p>
 
 	<table cellspacing="1">
 	<thead>
@@ -67,6 +67,9 @@
 	</tbody>
 	</table>
 
+	</fieldset>
+
+	</form>
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

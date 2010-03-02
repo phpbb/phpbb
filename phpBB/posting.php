@@ -163,7 +163,7 @@ if ($post_data['forum_password'])
 // Is the user able to read within this forum?
 if (!$auth->acl_get('f_read', $forum_id))
 {
-	if ($user->data['is_registered'])
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
@@ -370,7 +370,7 @@ if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
 			AND is_orphan = 0
-		ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
+		ORDER BY filetime DESC";
 	$result = $db->sql_query($sql);
 	$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 	$db->sql_freeresult($result);
@@ -445,12 +445,10 @@ $quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
-	$subject = request_var('subject', '', true);
+	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
-	$message = request_var('message', '', true);
+	$message = utf8_normalize_nfc(request_var('message', '', true));
 	
-	utf8_normalize_nfc(array(&$subject, &$message));
-
 	if ($subject && $message)
 	{
 		if (confirm_box(true))
@@ -528,15 +526,13 @@ $solved_captcha = false;
 
 if ($submit || $preview || $refresh)
 {
-	$post_data['topic_cur_post_id'] = request_var('topic_cur_post_id', 0);
-	$post_data['post_subject'] = request_var('subject', '', true);
-	$message_parser->message = request_var('message', '', true);
+	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
+	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
+	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
-	$post_data['username']			= request_var('username', $post_data['username'], true);
-	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
+	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
+	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 	
-	utf8_normalize_nfc(array(&$post_data['post_subject'], &$message_parser->message, &$post_data['username'], &$post_data['post_edit_reason']));
-
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 	$post_data['icon_id']			= request_var('icon', 0);
@@ -603,13 +599,11 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$post_data['poll_title']		= request_var('poll_title', '', true);
+		$post_data['poll_title']		= utf8_normalize_nfc(request_var('poll_title', '', true));
 		$post_data['poll_length']		= request_var('poll_length', 0);
-		$post_data['poll_option_text']	= request_var('poll_option_text', '', true);
+		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
 		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
 		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
-		
-		utf8_normalize_nfc(array(&$post_data['poll_title'], &$post_data['poll_option_text']));
 	}
 
 	// If replying/quoting and last post id has changed
@@ -1123,7 +1117,7 @@ generate_forum_nav($post_data);
 // Build Forum Rules
 generate_forum_rules($post_data);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_captcha === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 	// Show confirm image
 	$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
@@ -1132,31 +1126,37 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 	$db->sql_query($sql);
 
 	// Generate code
-	if ($solved_captcha === false)
-	{
-		$code = gen_rand_string(mt_rand(5, 8));
-		$confirm_id = md5(unique_id($user->ip));
+	$code = gen_rand_string(mt_rand(5, 8));
+	$confirm_id = md5(unique_id($user->ip));
 
-		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'confirm_id'	=> (string) $confirm_id,
-			'session_id'	=> (string) $user->session_id,
-			'confirm_type'	=> (int) CONFIRM_POST,
-			'code'			=> (string) $code)
-		);
-		$db->sql_query($sql);
+	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		'confirm_id'	=> (string) $confirm_id,
+		'session_id'	=> (string) $user->session_id,
+		'confirm_type'	=> (int) CONFIRM_POST,
+		'code'			=> (string) $code)
+	);
+	$db->sql_query($sql);
 
-		$template->assign_vars(array(
-			'S_CONFIRM_CODE'			=> true,
-			'CONFIRM_ID'				=> $confirm_id,
-			'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
-			'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
-		));
-	}
+	$template->assign_vars(array(
+		'S_CONFIRM_CODE'			=> true,
+		'CONFIRM_ID'				=> $confirm_id,
+		'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
+		'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+	));
 }
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
+
+// Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
+if ($solved_captcha !== false)
+{
+	$s_hidden_fields .= build_hidden_fields(array(
+		'confirm_id'		=> request_var('confirm_id', ''),
+		'confirm_code'		=> request_var('confirm_code', ''))
+	);
+}
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 
@@ -1184,7 +1184,7 @@ $template->assign_vars(array(
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
 	'EDIT_REASON'			=> $post_data['post_edit_reason'],
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
-	'U_VIEWTOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
+	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
 	'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&mode=popup", false),
 

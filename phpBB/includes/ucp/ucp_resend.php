@@ -23,7 +23,7 @@ class ucp_resend
 		global $db, $user, $auth, $template;
 
 		$username	= request_var('username', '', true);
-		$email		= request_var('email', '');
+		$email		= strtolower(request_var('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		if ($submit)
@@ -112,8 +112,9 @@ class ucp_resend
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
-						'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
+						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
+						'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u={$user->data['user_id']}",
+						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);
 
 					$messenger->send($row['user_notify_type']);

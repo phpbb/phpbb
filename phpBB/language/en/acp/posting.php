@@ -38,11 +38,12 @@ $lang = array_merge($lang, array(
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully.',
 	'BBCODE_EDITED'				=> 'BBCode edited successfully.',
-	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist.',
 	'BBCODE_HELPLINE'			=> 'Helpline',
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouseover text of the BBCode',
 	'BBCODE_HELPLINE_TEXT'		=> 'Helpline text',
+	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
+	'BBCODE_OPEN_ENDED_TAG'		=> 'Your custom BBCode must contain both an opening and a closing tag.',
 	'BBCODE_TAG'				=> 'Tag',
 	'BBCODE_TAG_TOO_LONG'		=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
@@ -95,7 +96,7 @@ $lang = array_merge($lang, array(
 	'EXPORT_ICONS'				=> 'Export and download icons.pak',
 	'EXPORT_ICONS_EXPLAIN'		=> '%sOn clicking this link, the configuration for your installed icons will be packaged into <samp>icons.pak</samp> which once downloaded can be used to create a <samp>.zip</samp> or <samp>.tgz</samp> file containing all of your icons plus this <samp>icons.pak</samp> configuration file%s.',
 	'EXPORT_SMILIES'			=> 'Export and download smilies.pak',
-	'EXPORT_SMILIES_EXPLAIN'	=> '%sOn clicking this link, the configuration for your installed smilies will be packaged into <samp>smilies.pak</samp> which once downloaded can be used to create a <samp>.zip</samp> or <samp>.tgz</samp> file containing all of your smilies plus this <samp>icons.pak</samp> configuration file%s.',
+	'EXPORT_SMILIES_EXPLAIN'	=> '%sOn clicking this link, the configuration for your installed smilies will be packaged into <samp>smilies.pak</samp> which once downloaded can be used to create a <samp>.zip</samp> or <samp>.tgz</samp> file containing all of your smilies plus this <samp>smilies.pak</samp> configuration file%s.',
 
 	'FIRST'			=> 'First',
 
@@ -126,7 +127,7 @@ $lang = array_merge($lang, array(
 	'NO_SMILIES_EXPORT'	=> 'You have no smilies with which to create a package.',
 	'NO_SMILIES_PAK'	=> 'No smiley packages found.',
 
-	'PAK_FILE_NOT_READABLE'		=> 'Could not read pak file.',
+	'PAK_FILE_NOT_READABLE'		=> 'Could not read <samp>.pak</samp> file.',
 
 	'REPLACE_MATCHES'	=> 'Replace matches',
 
@@ -215,8 +216,8 @@ $lang = array_merge($lang, array(
 	'ADD_NEW_REASON'		=> 'Add new reason',
 	'AVAILABLE_TITLES'		=> 'Available localized reason titles',
 	
-	'IS_NOT_TRANSLATED'			=> 'Reason has <samp>not</samp> been localised.',
-	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <samp>not</samp> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
+	'IS_NOT_TRANSLATED'			=> 'Reason has <strong>not</strong> been localised.',
+	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <strong>not</strong> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
 	'IS_TRANSLATED'				=> 'Reason has been localised.',
 	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localized form of the title and description will be used.',
 	

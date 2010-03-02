@@ -39,8 +39,8 @@
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}:</label></td>
-		<td class="row2"><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
-			<br /><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+		<td class="row2"><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea>
+			<br /><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}
 		</td>
 	</tr>
 	<!-- IF not S_SPECIAL_GROUP -->
@@ -54,7 +54,7 @@
 			</td>
 		</tr>
 	<!-- ELSE -->
-		<input name="group_type" type="hidden" value="{GROUP_TYPE_SPECIAL}" />
+		<tr style="display:none;"><td><input name="group_type" type="hidden" value="{GROUP_TYPE_SPECIAL}" /></td></tr>
 	<!-- ENDIF -->
 
 	<tr>
@@ -70,7 +70,7 @@
 	</tr>
 	<tr>
 		<th colspan="2">{L_GROUP_AVATAR}</th>
-	<tr>
+	</tr>
 	<tr>
 		<td class="row1" width="35%"><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></td>
 		<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
@@ -95,7 +95,7 @@
 			<td class="row2"><input name="width" type="text" id="width" size="3" value="{GROUP_AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{GROUP_AVATAR_HEIGHT}" /> <span>px</span></td>
 		</tr>
 		<!-- IF S_DISPLAY_GALLERY -->
-			<tr> 
+			<tr>
 				<td class="row1" width="35%"><label>{L_AVATAR_GALLERY}:</label></td>
 				<td class="row2"><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
 			</tr>
@@ -113,7 +113,7 @@
 			<td class="row1" width="35%">
 				<table cellspacing="1">
 				<!-- BEGIN avatar_row -->
-				<tr> 
+				<tr>
 					<!-- BEGIN avatar_column -->
 						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
 					<!-- END avatar_column -->
@@ -128,7 +128,7 @@
 			</td>
 			<td class="row2"><input class="button2" type="submit" name="cancel" value="{L_CANCEL}" /></td>
 		</tr>
-		
+
 	<!-- ENDIF -->
 
 	<tr>
@@ -216,7 +216,7 @@
 	</tr>
 	<tr>
 		<td class="row1"><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></td>
-		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" /></td>

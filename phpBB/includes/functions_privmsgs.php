@@ -120,7 +120,7 @@ function get_folder($user_id, $folder_id = false)
 
 	$folder = array();
 
-	// Get folder informations
+	// Get folder information
 	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(pm_unread) as num_unread
 		FROM ' . PRIVMSGS_TO_TABLE . "
 		WHERE user_id = $user_id
@@ -242,7 +242,7 @@ function clean_sentbox($num_sentbox_messages)
 }
 
 /**
-* Check Rule against Message Informations
+* Check Rule against Message Information
 */
 function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
@@ -297,7 +297,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 			$auth2 = new auth();
 			$auth2->acl($userdata);
 
-			if (!$auth2->acl_get('a_') && !$auth->acl_get('m_') && !$auth2->acl_getf_global('m_'))
+			if (!$auth2->acl_get('a_') && !$auth2->acl_get('m_') && !$auth2->acl_getf_global('m_'))
 			{
 				return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
 			}
@@ -429,7 +429,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				$row['author_in_group'] = $memberships[$row['user_id']];
 			}
 
-			// Check Rule - this should be very quick since we have all informations we need
+			// Check Rule - this should be very quick since we have all information we need
 			$is_match = false;
 			foreach ($user_rules as $rule_row)
 			{
@@ -515,11 +515,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	// Do not change the order of processing
 	// The number of queries needed to be executed here highly depends on the defined rules and are
 	// only gone through if new messages arrive.
-	$num_not_moved = 0;
+	$num_not_moved = $num_removed = 0;
 
 	// Delete messages
 	if (sizeof($delete_ids))
 	{
+		$num_removed = sizeof($delete_ids);
 		delete_pm($user_id, $delete_ids, PRIVMSGS_NO_BOX);
 	}
 
@@ -694,7 +695,10 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
-	return $num_not_moved;
+	return array(
+		'not_moved'		=> $num_not_moved,
+		'deleted'		=> $num_removed,
+	);
 }
 
 /**
@@ -911,7 +915,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		return false;
 	}
 
-	// Get PM Informations for later deleting
+	// Get PM Information for later deleting
 	$sql = 'SELECT msg_id, pm_unread, pm_new
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE ' . $db->sql_in_set('msg_id', array_map('intval', $msg_ids)) . "
@@ -952,7 +956,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$db->sql_query($sql);
 
 		// Set delete flag for those intended to receive the PM
-		// We do not remove the message actually, to retain some basic informations (sent time for example)
+		// We do not remove the message actually, to retain some basic information (sent time for example)
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 			SET pm_deleted = 1
 			WHERE ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
@@ -962,7 +966,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 	else
 	{
-		// Delete Private Message Informations
+		// Delete private message data
 		$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
 			WHERE user_id = $user_id
 				AND folder_id = $folder_id
@@ -1058,7 +1062,7 @@ function rebuild_header($check_ary)
 }
 
 /**
-* Print out/assign recipient informations
+* Print out/assign recipient information
 */
 function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
@@ -1166,15 +1170,30 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			{
 				foreach ($adr_ary as $id => $row)
 				{
-					$template->assign_block_vars($check_type . '_recipient', array(
-						'NAME'		=> $row['name'],
-						'IS_GROUP'	=> ($type == 'group'),
-						'IS_USER'	=> ($type == 'user'),
-						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
+					$tpl_ary = array(
+						'IS_GROUP'	=> ($type == 'group') ? true : false,
+						'IS_USER'	=> ($type == 'user') ? true : false,
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? (($id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : '') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
-						'TYPE'		=> $type)
+						'NAME'		=> $row['name'],
+						'COLOUR'	=> ($row['colour']) ? '#' . $row['colour'] : '',
+						'TYPE'		=> $type,
 					);
+
+					if ($type == 'user')
+					{
+						$tpl_ary = array_merge($tpl_ary, array(
+							'U_VIEW'		=> get_username_string('profile', $id, $row['name'], $row['colour']),
+							'NAME_FULL'		=> get_username_string('full', $id, $row['name'], $row['colour']),
+						));
+					}
+					else
+					{
+						$tpl_ary = array_merge($tpl_ary, array(
+							'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+						));
+					}
+
+					$template->assign_block_vars($check_type . '_recipient', $tpl_ary);
 				}
 			}
 		}
@@ -1233,11 +1252,11 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 	$current_time = time();
 
-	// Collect some basic informations about which tables and which rows to update/insert
+	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
 	$root_level = 0;
 
-	// Recipient Informations
+	// Recipient Information
 	$recipients = $to = $bcc = array();
 
 	if ($mode != 'edit')
@@ -1604,7 +1623,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		);
 
 		$messenger->send($addr['method']);
-		$messenger->reset();
 	}
 	unset($msg_list_ary);
 

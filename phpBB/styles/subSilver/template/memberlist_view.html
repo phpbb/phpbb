@@ -3,19 +3,24 @@
 <div id="pagecontent">
 
 	<form method="post" action="{S_PROFILE_ACTION}">
-	
+
 	<table class="tablebg" width="100%" cellspacing="1">
-	<tr> 
+	<tr>
 		<th colspan="2" nowrap="nowrap">{L_VIEWING_PROFILE}</th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" width="40%" align="center"><h4>{L_USER_PRESENCE}</h4></td>
 		<td class="cat" width="60%" align="center"><h4>{L_USER_FORUM}</h4></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" align="center">
-		
+
 			<table cellspacing="1" cellpadding="2" border="0">
+			<!-- IF S_USER_INACTIVE -->
+			<tr>
+				<td align="center" style="color: red;"><b class="gen">{L_USER_IS_INACTIVE}</b><br />{L_INACTIVE_REASON}: {USER_INACTIVE_REASON}<br /><br /></td>
+			</tr>
+			<!-- ENDIF -->
 			<tr>
 				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: #{USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 			</tr>
@@ -53,23 +58,23 @@
 		</td>
 		<td class="row1">
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_JOINED}: </td>
 				<td width="100%"><b class="gen">{JOINED}</b></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_VISITED}: </td>
 				<td width="100%"><b class="gen">{VISITED}</b></td>
 			</tr>
 			<!-- IF U_NOTES or U_WARN -->
 				<tr>
 					<td class="gen" align="right" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
-					<td width="100%"><b class="gen">{WARNINGS}</b><br /><span class="genmed">[ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</td>
+					<td width="100%"><b class="gen">{WARNINGS}</b><br /><span class="genmed">[ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</span></td>
 				</tr>
 			<!-- ENDIF -->
-			<tr> 
+			<tr>
 				<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-				<td><b class="gen">{POSTS}</b><!-- IF POSTS_PCT neq 0 --><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
+				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT neq 0 --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
@@ -84,14 +89,14 @@
 			</table>
 		</td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" align="center"><h4>{L_CONTACT_USER}</h4></td>
 		<td class="cat" align="center"><h4>{L_ABOUT_USER}</h4></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1">
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
 				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
@@ -124,7 +129,7 @@
 			</table>
 		</td>
 		<td class="row1">
-			<table cellspacing="1" cellpadding="2" border="0">			
+			<table cellspacing="1" cellpadding="2" border="0">
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
 				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
@@ -174,7 +179,7 @@
 		</tr>
 	<!-- ENDIF -->
 	</table>
-	
+
 	</form>
 
 </div>

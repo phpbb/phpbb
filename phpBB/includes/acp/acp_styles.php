@@ -978,7 +978,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		foreach ($classes as $class)
 		{
 			$selected = ($class == $edit_class) ? ' selected="selected"' : '';
-			$s_classes .= '<option value="' . $class . '"' . $selected . '>' . $class . '</option>';
+			$s_classes .= '<option value="' . $class . '" title="' . $class . '"' . $selected . '>' . truncate_string($class, 40, false, '...') . '</option>';
 		}
 
 		$template->assign_vars(array(

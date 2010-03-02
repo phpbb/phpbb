@@ -17,6 +17,8 @@
 class captcha
 {
 	var $filtered_pngs;
+	var $width = 320;
+	var $height = 50;
 
 	/**
 	* Define filtered pngs on init
@@ -32,9 +34,7 @@ class captcha
 	*/
 	function execute($code)
 	{
-		$total_width = 320;
-		$total_height = 50;
-		$img_height = 40;
+		$img_height = $this->height - 10;
 		$img_width = 0;
 
 		list($usec, $sec) = explode(' ', microtime()); 
@@ -45,7 +45,7 @@ class captcha
 
 		for ($i = 0; $i < $code_len; $i++)
 		{
-			$char = $code{$i};
+			$char = $code[$i];
 
 			$width = mt_rand(0, 4);
 			$raw_width = $this->filtered_pngs[$char]['width'];
@@ -59,11 +59,11 @@ class captcha
 			}
 		}
 
-		$offset_x = mt_rand(0, $total_width - $img_width);
-		$offset_y = mt_rand(0, $total_height - $img_height);
+		$offset_x = mt_rand(0, $this->width - $img_width);
+		$offset_y = mt_rand(0, $this->height - $img_height);
 
 		$image = '';
-		for ($i = 0; $i < $total_height; $i++)
+		for ($i = 0; $i < $this->height; $i++)
 		{
 			$image .= chr(0);
 
@@ -79,14 +79,14 @@ class captcha
 					$image .= $this->randomise(substr($hold_chars[$code{$j}][$i - $offset_y - 1], 1), $char_widths[$j]);
 				}
 
-				for ($j = $offset_x + $img_width; $j < $total_width; $j++)
+				for ($j = $offset_x + $img_width; $j < $this->width; $j++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
 			}
 			else
 			{
-				for ($j = 0; $j < $total_width; $j++)
+				for ($j = 0; $j < $this->width; $j++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
@@ -94,7 +94,7 @@ class captcha
 		}
 		unset($hold_chars);
 
-		$image = $this->create_png($image, $total_width, $total_height);
+		$image = $this->create_png($image, $this->width, $this->height);
 
 		// Output image
 		header('Content-Type: image/png');

@@ -61,23 +61,6 @@
 
 			</form>
 			
-			<form id="select_single_forum" method="post" action="{U_ACTION}">
-
-			<fieldset>
-				<legend>{L_LOOK_UP_FORUM}</legend>
-			<dl>
-				<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
-				<dd><select id="forum" name="forum_id[]">{S_FORUM_OPTIONS}</select></dd>
-			</dl>
-			</fieldset>
-
-			<fieldset class="quick">
-				{S_HIDDEN_FIELDS}
-				<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
-			</fieldset>
-
-			</form>
-
 		<!-- ENDIF -->
 
 	<!-- ELSEIF S_SELECT_USER and S_CAN_SELECT_USER -->
@@ -89,7 +72,7 @@
 		<dl>
 			<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 			<dd><input class="medium" type="text" id="username" name="username[]" /></dd>
-			<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+			<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
 			<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 		</dl>
 		</fieldset>
@@ -152,7 +135,7 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</div><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</div><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
 
@@ -239,7 +222,7 @@
 			<dl>
 				<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 				<dd><input type="text" id="username" name="username[]" /></dd>
-				<dd>[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+				<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
 				<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>

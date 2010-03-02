@@ -100,13 +100,22 @@ class ucp_register
 			return;
 		}
 
-		// Try to manually determine the timezone
+		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;
 		$is_dst = date('I');
-		$timezone = ($is_dst) ? $timezone - 1 : $timezone;
 
-		if (!isset($user->lang['tz_zones'][(string) $timezone]))
+		if ($config['board_timezone'] == $timezone || $config['board_timezone'] == ($timezone - 1))
 		{
+			$timezone = ($is_dst) ? $timezone - 1 : $timezone;
+
+			if (!isset($user->lang['tz_zones'][(string) $timezone]))
+			{
+				$timezone = $config['board_timezone'];
+			}
+		}
+		else
+		{
+			$is_dst = $config['board_dst'];
 			$timezone = $config['board_timezone'];
 		}
 
@@ -115,8 +124,8 @@ class ucp_register
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'new_password'		=> request_var('new_password', '', true),
 			'cur_password'		=> request_var('cur_password', '', true),
-			'email'				=> request_var('email', ''),
-			'email_confirm'		=> request_var('email_confirm', ''),
+			'email'				=> strtolower(request_var('email', '')),
+			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 			'confirm_code'		=> request_var('confirm_code', ''),
 			'lang'				=> request_var('lang', $user->lang_name),
 			'tz'				=> request_var('tz', (float) $timezone),
@@ -364,8 +373,9 @@ class ucp_register
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> htmlspecialchars_decode($data['username']),
-								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+								'USERNAME'			=> htmlspecialchars_decode($data['username']),
+								'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u=$user_id",
+								'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
 							$messenger->send($row['user_notify_type']);

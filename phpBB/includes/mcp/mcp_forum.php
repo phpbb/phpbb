@@ -67,7 +67,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+		'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+		'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 
+		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
 		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
 		'S_CAN_FORK'			=> $auth->acl_get('m_', $forum_id),
@@ -79,7 +82,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
-		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
+		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($action == 'merge_select') ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
@@ -111,7 +114,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
-		// Get folder img, topic status/type related informations
+		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
 		topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
 
@@ -127,7 +130,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
 			'U_MCP_QUEUE'		=> $u_mcp_queue,
-			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports'),
+			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
 
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
@@ -137,12 +140,25 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
+			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'U_TOPIC_AUTHOR'			=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+
+			'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
 			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 			'TOPIC_ID'			=> $row['topic_id'],
 			'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? 'checked="checked" ' : '',
+			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
+			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
+			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
@@ -159,14 +175,13 @@ function mcp_resync_topics($topic_ids)
 {
 	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
-	{
-		return;
-	}
-
 	if (!sizeof($topic_ids))
 	{
 		trigger_error($user->lang['NO_TOPIC_SELECTED']);
+	}
+
+	if (check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	{
 		return;
 	}
 

@@ -153,7 +153,7 @@ function gen_rand_string($num_chars = 8)
 
 /**
 * Return unique id
-* @param $extra additional entropy
+* @param string $extra additional entropy
 */
 function unique_id($extra = 'c')
 {
@@ -237,7 +237,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false)
 {
-	global $config, $auth, $template, $user, $db, $phpEx;
+	global $config, $auth, $template, $user, $db;
 
 	if (!$config['load_jumpbox'])
 	{
@@ -401,9 +401,9 @@ if (!function_exists('stripos'))
 	* Find position of first occurrence of a case-insensitive string
 	*
 	* @param string $haystack is the string to search in
-	* @param string needle is the string to search for
+	* @param string $needle is the string to search for
 	*
-	* @return Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
+	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
 	* Note that the needle may be a string of one or more characters.
 	* If needle is not found, stripos() will return boolean FALSE. 
 	*/
@@ -502,7 +502,7 @@ if (!function_exists('realpath'))
 				else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
 				{
 					// Warning: If chdir() has been used this will lie!
-					// @todo This has some problems sometime (CLI can create them easily)
+					// Warning: This has some problems sometime (CLI can create them easily)
 					$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
 					$absolute = true;
 					$path_prefix = '';
@@ -614,6 +614,10 @@ else
 
 if (!function_exists('htmlspecialchars_decode'))
 {
+	/**
+	* A wrapper for htmlspecialchars_decode
+	* @ignore
+	*/
 	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
 	{
 		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
@@ -675,20 +679,24 @@ function style_select($default = '', $all = false)
 */
 function tz_select($default = '', $truncate = false)
 {
-	global $sys_timezone, $user;
+	global $user;
 
 	$tz_select = '';
 	foreach ($user->lang['tz_zones'] as $offset => $zone)
 	{
 		if ($truncate)
 		{
-			$zone = (utf8_strlen($zone) > 70) ? utf8_substr($zone, 0, 70) . '...' : $zone;
+			$zone_trunc = truncate_string($zone, 50, false, '...');
+		}
+		else
+		{
+			$zone_trunc = $zone;
 		}
 
 		if (is_numeric($offset))
 		{
 			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
+			$tz_select .= '<option title="'.$zone.'" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
 		}
 	}
 
@@ -1861,7 +1869,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		// The result parameter is always an array, holding the relevant informations...
+		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
@@ -2093,7 +2101,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 function get_context($text, $words, $length = 400)
 {
 	// first replace all whitespaces with single spaces
-	$text = preg_replace('/\s+/', ' ', $text);
+	$text = preg_replace('/\s+/u', ' ', $text);
 
 	$word_indizes = array();
 	if (sizeof($words))
@@ -2358,19 +2366,19 @@ function make_clickable($text, $server_url = false)
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/(([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
 		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n ]|\()(' . get_preg_expression('email') . ')/ie';
+		$magic_url_match[] = '/(^|[\n\t )])(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 	}
 
@@ -2493,14 +2501,14 @@ function extension_allowed($forum_id, $extension, &$extensions)
 /**
 * Little helper for the build_hidden_fields function
 */
-function _build_hidden_fields($key, $value, $specialchar)
+function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 {
 	$hidden_fields = '';
 
 	if (!is_array($value))
 	{
-		$key = ($specialchar) ? htmlspecialchars($key) : $key;
-		$value = ($specialchar) ? htmlspecialchars($value) : $value;
+		$value = ($stripslashes) ? stripslashes($value) : $value;
+		$value = ($specialchar) ? htmlspecialchars($value, ENT_COMPAT, 'UTF-8') : $value;
 
 		$hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
 	}
@@ -2508,7 +2516,10 @@ function _build_hidden_fields($key, $value, $specialchar)
 	{
 		foreach ($value as $_key => $_value)
 		{
-			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar);
+			$_key = ($stripslashes) ? stripslashes($_key) : $_key;
+			$_key = ($specialchar) ? htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') : $_key;
+
+			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar, $stripslashes);
 		}
 	}
 
@@ -2517,14 +2528,23 @@ function _build_hidden_fields($key, $value, $specialchar)
 
 /**
 * Build simple hidden fields from array
+*
+* @param array $field_ary an array of values to build the hidden field from
+* @param bool $specialchar if true, keys and values get specialchared
+* @param bool $stripslashes if true, keys and values get stripslashed
+*
+* @return string the hidden fields
 */
-function build_hidden_fields($field_ary, $specialchar = false)
+function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = false)
 {
 	$s_hidden_fields = '';
 
 	foreach ($field_ary as $name => $vars)
 	{
-		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar);
+		$name = ($stripslashes) ? stripslashes($name) : $name;
+		$name = ($specialchar) ? htmlspecialchars($name, ENT_COMPAT, 'UTF-8') : $name;
+
+		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar, $stripslashes);
 	}
 
 	return $s_hidden_fields;
@@ -2660,7 +2680,7 @@ function get_backtrace()
 		$trace['file'] = substr($trace['file'], 1);
 		$args = array();
 
-		// If include/require/include_once is not called, do not show arguments - they may contain sensible informations
+		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
 		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
 		{
 			unset($trace['args']);
@@ -2721,11 +2741,12 @@ function get_preg_expression($mode)
 * Truncates string while retaining special characters if going over the max length
 * The default max length is 60 at the moment
 */
-function truncate_string($string, $max_length = 60, $allow_reply = true)
+function truncate_string($string, $max_length = 60, $allow_reply = true, $append = '')
 {
 	$chars = array();
 
 	$strip_reply = false;
+	$stripped = false;
 	if ($allow_reply && strpos($string, 'Re: ') === 0)
 	{
 		$strip_reply = true;
@@ -2740,16 +2761,100 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 	{
 		// Cut off the last elements from the array
 		$string = implode('', array_slice($chars, 0, $max_length));
+		$stripped = true;		
 	}
 
 	if ($strip_reply)
 	{
 		$string = 'Re: ' . $string;
 	}
+	
+	if ($append != '' && $stripped)
+	{
+		$string = $string . $append;
+	}
 
 	return $string;
 }
 
+/**
+* Get username details for placing into templates.
+*
+* @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour) or full (for obtaining a html string representing a coloured link to the users profile).
+* @param int $user_id The users id
+* @param string $username The users name
+* @param string $username_colour The users colour
+* @param string $guest_username optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
+* @param string $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
+*
+* @return string A string consisting of what is wanted based on $mode.
+*/
+function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
+{
+	global $phpbb_root_path, $phpEx, $user;
+
+	$full_string = $profile_url = '';
+	$username_colour = ($username_colour) ? '#' . $username_colour : '';
+
+	if ($guest_username === false)
+	{
+		$username = ($username) ? $username : $user->lang['GUEST'];
+	}
+	else
+	{
+		$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+	}
+
+	// Only show the link if not anonymous
+	if ($user_id && $user_id != ANONYMOUS)
+	{
+		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+		$profile_url .= '&amp;u=' . (int) $user_id;
+	}
+	else
+	{
+		$profile_url = '';
+	}
+
+	switch ($mode)
+	{
+		case 'profile':
+			return $profile_url;
+		break;
+
+		case 'username':
+			return $username;
+		break;
+
+		case 'colour':
+			return $username_colour;
+		break;
+
+		case 'full':
+		default:
+
+			$tpl = '';
+			if (!$profile_url && !$username_colour)
+			{
+				$tpl = '{USERNAME}';
+			}
+			else if (!$profile_url &&  $username_colour)
+			{
+				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
+			}
+			else if ($profile_url && !$username_colour)
+			{
+				$tpl = '<a href="{PROFILE_URL}">{USERNAME}</a>';
+			}
+			else if ($profile_url && $username_colour)
+			{
+				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</a>';
+			}
+
+			return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
+		break;
+	}
+}
 
 /**
 * Wrapper for php's checkdnsrr function.
@@ -2772,6 +2877,12 @@ function phpbb_checkdnsrr($host, $type = '')
 		}
 
 		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+
+		// If output is empty, the nslookup failed
+		if (empty($output))
+		{
+			return NULL;
+		}
 
 		foreach ($output as $line)
 		{
@@ -2820,27 +2931,21 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// Additionally do not display notices if we suppress them via @
-			// If DEBUG_EXTRA is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG_EXTRA') && error_reporting()) ? E_ALL : error_reporting())) == 0)
+			// If DEBUG is defined the default level is E_ALL
+			if (($errno & ((defined('DEBUG') && error_reporting()) ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
 
-			/**
-			* @todo Think about removing the if-condition within the final product, since we no longer enable DEBUG by default and we will maybe adjust the error reporting level
-			*/			
-			if (defined('DEBUG'))
+			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
-				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
-				{
-					// remove complete path to installation, with the risk of changing backslashes meant to be there
-					$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-					$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+				// remove complete path to installation, with the risk of changing backslashes meant to be there
+				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
+				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
-					echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
-				}
+				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 			}
-		
+
 		break;
 
 		case E_USER_ERROR:
@@ -3004,7 +3109,7 @@ function page_header($page_title = '', $display_online_list = true)
 			// Specify escape character for MSSQL
 			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 			{
-				$reading_sql .= " ESCAPE '\\'";
+				$reading_sql .= " ESCAPE '\\' ";
 			}
 		}
 
@@ -3041,7 +3146,7 @@ function page_header($page_title = '', $display_online_list = true)
 				$reading_sql .
 				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
 				AND u.user_id = s.session_user_id 
-			ORDER BY u.username ASC, s.session_ip ASC';
+			ORDER BY u.username_clean ASC, s.session_ip ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -3344,7 +3449,8 @@ function page_footer($run_cron = true)
 	}
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
+		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
 		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", '', true, $user->session_id) : '')
 	);
@@ -3385,7 +3491,7 @@ function page_footer($run_cron = true)
 
 		if ($cron_type)
 		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=' . $cron_type . '" width="1" height="1" alt="cron" />');
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
 		}
 	}
 

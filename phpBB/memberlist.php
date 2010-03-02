@@ -122,7 +122,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
 
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -139,7 +139,7 @@ switch ($mode)
 			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . '
 				AND u.group_id = g.group_id',
 
-			'ORDER_BY'	=> 'g.group_name ASC, u.username ASC'
+			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
 		));
 
 		$result = $db->sql_query($sql);
@@ -195,7 +195,7 @@ switch ($mode)
 			// instead of saying they are moderating all forums
 			if (!$s_forum_select && $undisclosed_forum)
 			{
-				$s_forum_select = $user->lang['FORUM_UNDISCLOSED'];
+				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
 			}
 
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
@@ -215,8 +215,6 @@ switch ($mode)
 			$template->assign_block_vars($which_row, array(
 				'USER_ID'		=> $row['user_id'],
 				'FORUMS'		=> $s_forum_select,
-				'USERNAME'		=> $row['username'],
-				'USER_COLOR'	=> $row['user_colour'],
 				'RANK_TITLE'	=> $rank_title,
 				'GROUP_NAME'	=> $group_name,
 				'GROUP_COLOR'	=> $row['group_colour'],
@@ -224,10 +222,14 @@ switch ($mode)
 				'RANK_IMG'		=> $rank_img,
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
-				'U_GROUP'		=> $u_group,
-				'U_VIEWPROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-				'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '')
-			);
+				'U_GROUP'			=> $u_group,
+				'U_PM'				=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+
+				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+				'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+			));
 		}
 		$db->sql_freeresult($result);
 
@@ -346,15 +348,20 @@ switch ($mode)
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 		}
 		else
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE user_id = $user_id";
+		}
+
+		// a_user admins and founder are able to view inactive users and bots to be able to
+		// manage them more easily
+		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
+		{
+			$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
 
 		$result = $db->sql_query($sql);
@@ -528,6 +535,38 @@ switch ($mode)
 			{
 				$template->assign_block_vars('custom_fields', $field_data);
 			}
+		}
+
+		// Inactive reason/account?
+		if ($member['user_type'] == USER_INACTIVE)
+		{
+			$user->add_lang('acp/common');
+
+			$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+
+			switch ($member['user_inactive_reason'])
+			{
+				case INACTIVE_REGISTER:
+					$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+				break;
+
+				case INACTIVE_PROFILE:
+					$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+				break;
+
+				case INACTIVE_MANUAL:
+					$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+				break;
+
+				case INACTIVE_REMIND:
+					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+				break;
+			}
+	
+			$template->assign_vars(array(
+				'S_USER_INACTIVE'		=> true,
+				'USER_INACTIVE_REASON'	=> $inactive_reason)
+			);
 		}
 
 		// Now generate page tilte
@@ -799,8 +838,21 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER'], 'l' => $user->lang['SORT_LAST_ACTIVE'], 'm' => $user->lang['SORT_RANK'] );
-		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber', 'l' => 'u.user_lastvisit', 'm' => 'u.user_rank DESC, u.user_posts');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
+
+		if ($auth->acl_get('u_viewonline'))
+		{
+			$sort_key_text['l'] = $user->lang['SORT_LAST_ACTIVE'];
+		}
+		$sort_key_text['m'] = $user->lang['SORT_RANK'];
+
+		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+
+		if ($auth->acl_get('u_viewonline'))
+		{
+			$sort_key_sql['l'] = 'u.user_lastvisit';
+		}
+		$sort_key_sql['m'] = 'u.user_rank DESC, u.user_posts';
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -828,7 +880,7 @@ switch ($mode)
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
-			$email		= request_var('email', '');
+			$email		= strtolower(request_var('email', ''));
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
 			$yahoo		= request_var('yahoo', '');
@@ -1006,6 +1058,7 @@ switch ($mode)
 			}
 
 			$avatar_img = '';
+
 			if ($group_row['group_avatar'])
 			{
 				switch ($group_row['group_avatar_type'])
@@ -1018,8 +1071,8 @@ switch ($mode)
 						$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 					break;
 				}
-				$avatar_img .= $group_row['group_avatar'];
 
+				$avatar_img .= $group_row['group_avatar'];
 				$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
 			}
 
@@ -1218,7 +1271,7 @@ switch ($mode)
 				'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 				'S_GROUP_LEADER'	=> (isset($row['group_leader']) && $row['group_leader']) ? true : false,
 
-				'U_VIEWPROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
+				'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
 			);
 
 			if (isset($cp_row['row']) && sizeof($cp_row['row']))
@@ -1345,8 +1398,6 @@ function show_profile($data)
 		$email = '';
 	}
 
-	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
-
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
@@ -1355,6 +1406,15 @@ function show_profile($data)
 	else
 	{
 		$online = false;
+	}
+
+	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
+	{
+		$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+	}
+	else
+	{
+		$last_visit = '';
 	}
 
 	$age = '';
@@ -1390,7 +1450,7 @@ function show_profile($data)
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
-  		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
+		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
@@ -1403,7 +1463,7 @@ function show_profile($data)
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> $auth->acl_getf_global('m_warn') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
+		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . $data['user_icq'] : '',

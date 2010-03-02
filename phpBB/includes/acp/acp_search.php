@@ -457,7 +457,7 @@ class acp_search
 		/**
 		* @todo remove Javascript
 		*/
-		return '<script language="javascript" type="text/javascript">
+		return '<script type="text/javascript">
 	<!--
 		close_waitscreen = 1;
 	//-->

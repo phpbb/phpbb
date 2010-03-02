@@ -64,7 +64,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
+				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
@@ -107,14 +107,6 @@ class mcp_reports
 					);
 				}
 
-				// Set some vars
-				if ($post_info['user_id'] == ANONYMOUS)
-				{
-					$poster = ($post_info['post_username']) ? $post_info['post_username'] : $user->lang['GUEST'];
-				}
-
-				$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
-
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
 				$message = str_replace("\n", '<br />', $message);
@@ -129,7 +121,7 @@ class mcp_reports
 
 				$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
-					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;p=$post_id&amp;f=$forum_id"),
+					'S_CLOSE_ACTION'		=> $this->u_action . '&amp;p=' . $post_id . 'f=' . $forum_id,
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
@@ -144,22 +136,28 @@ class mcp_reports
 					'U_MCP_WARN_REPORTER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
 					'U_MCP_WARN_USER'			=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_POST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-					'U_VIEW_PROFILE'			=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
-					'U_VIEW_REPORTER_PROFILE'	=> ($report['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']) : '',
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
+					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
 					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
-					'REPORTER_NAME'				=> ($report['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $report['username'],
 					'REPORT_DATE'				=> $user->format_date($report['report_time']),
 					'REPORT_TEXT'				=> $report['report_text'],
 
-					'POSTER_NAME'			=> $poster,
+					'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+					'POST_AUTHOR'			=> get_username_string('username', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+					'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+
+					'REPORTER_FULL'				=> get_username_string('full', $report['user_id'], $report['username'], $report['user_colour']),
+					'REPORTER_COLOUR'			=> get_username_string('colour', $report['user_id'], $report['username'], $report['user_colour']),
+					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
+					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
+
 					'POST_PREVIEW'			=> $message,
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
@@ -281,7 +279,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -293,15 +291,6 @@ class mcp_reports
 					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						if ($row['poster_id'] == ANONYMOUS)
-						{
-							$poster = (!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST'];
-						}
-						else
-						{
-							$poster = $row['username'];
-						}
-
 						$global_topic = ($row['forum_id']) ? false : true;
 						if ($global_topic)
 						{
@@ -312,15 +301,21 @@ class mcp_reports
 							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
 							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
-							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
-							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
+
+							'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+							'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+							'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+							'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+
+							'REPORTER_FULL'			=> get_username_string('full', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
+							'REPORTER_COLOUR'		=> get_username_string('colour', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
+							'REPORTER'				=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
+							'U_REPORTER'			=> get_username_string('profile', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 
 							'FORUM_NAME'	=> (!$global_topic) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
-							'POSTER'		=> $poster,
 							'POST_ID'		=> $row['post_id'],
 							'POST_SUBJECT'	=> $row['post_subject'],
 							'POST_TIME'		=> $user->format_date($row['post_time']),
-							'REPORTER'		=> ($row['reporter_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['reporter_name'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
 							'TOPIC_TITLE'	=> $row['topic_title'])
 						);
@@ -335,7 +330,7 @@ class mcp_reports
 					'L_TITLE'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN'] : $user->lang['MCP_REPORTS_CLOSED'],
 					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
-					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
+					'S_MCP_ACTION'			=> $this->u_action,
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
@@ -359,18 +354,22 @@ function close_report($post_id_list, $mode, $action)
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_report')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
 	{
 		trigger_error('NOT_AUTHORIZED');
 	}
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r')) . '&amp;mode=reports');
+	}
+	else if ($action == 'close' && !request_var('r', 0))
+	{
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p')) . '&amp;mode=reports');
 	}
 	else
 	{
-		$redirect = request_var('redirect', $user->data['session_page']);
+		$redirect = request_var('redirect', build_url(array('_f_')));
 	}
 	$success_msg = '';
 
@@ -378,7 +377,6 @@ function close_report($post_id_list, $mode, $action)
 		'i'				=> 'reports',
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
-		'f'				=> $forum_id,
 		'action'		=> $action,
 		'redirect'		=> $redirect)
 	);
@@ -496,12 +494,11 @@ function close_report($post_id_list, $mode, $action)
 				);
 
 				$messenger->send($reporter['user_notify_type']);
-				$messenger->reset();
 			}
-
-			$messenger->save_queue();
 		}
 		unset($notify_reporters, $post_info);
+
+		$messenger->save_queue();
 
 		$success_msg = (sizeof($post_id_list) == 1) ? 'REPORT_' . strtoupper($action) . 'D_SUCCESS' : 'REPORTS_' . strtoupper($action) . 'D_SUCCESS';
 	}

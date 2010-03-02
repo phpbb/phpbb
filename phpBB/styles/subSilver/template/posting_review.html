@@ -20,10 +20,10 @@
 
 			<!-- IF post_review_row.S_ROW_COUNT is even -->	<tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-				<td rowspan="2" align="left" valign="top"><a name="{post_review_row.U_POST_ID}"></a>
+				<td rowspan="2" align="left" valign="top"><a id="pr{post_review_row.U_POST_ID}"></a>
 					<table width="150" cellspacing="0" cellpadding="4" border="0">
 					<tr>
-						<td align="center"><b class="postauthor">{post_review_row.POSTER_NAME}</b></td>
+						<td align="center"><b class="postauthor">{post_review_row.POST_AUTHOR_FULL}</b></td>
 					</tr>
 					</table>
 				</td>

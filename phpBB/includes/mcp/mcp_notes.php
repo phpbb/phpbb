@@ -142,6 +142,7 @@ class mcp_notes
 //		get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 		$avatar_img = '';
+
 		if (!empty($userrow['user_avatar']))
 		{
 			switch ($userrow['user_avatar_type'])
@@ -154,14 +155,14 @@ class mcp_notes
 					$avatar_img = $config['avatar_gallery_path'] . '/';
 				break;
 			}
-			$avatar_img .= $userrow['user_avatar'];
 
+			$avatar_img .= $userrow['user_avatar'];
 			$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 		}
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
-		$sort_by_sql = array('a' => 'u.username', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
+		$sort_by_sql = array('a' => 'u.username_clean', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -181,7 +182,7 @@ class mcp_notes
 			foreach ($log_data as $row)
 			{
 				$template->assign_block_vars('usernotes', array(
-					'REPORT_BY'		=> $row['username'],
+					'REPORT_BY'		=> $row['username_full'],
 					'REPORT_AT'		=> $user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
 					'IP'			=> $row['ip'],

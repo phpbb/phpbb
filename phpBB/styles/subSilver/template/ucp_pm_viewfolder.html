@@ -38,9 +38,17 @@
 <!-- ELSE -->
 	
 	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
-	<!-- IF NUM_NOT_MOVED -->
+	<!-- IF NUM_NOT_MOVED or NUM_REMOVED -->
 		<tr>
-			<td class="row3" colspan="{$COLSPAN}" align="center"><span class="gen">{NOT_MOVED_MESSAGES}<br />{RELEASE_MESSAGE_INFO}</span></td>
+			<td class="row3" colspan="{$COLSPAN}" align="center"><span class="gen">
+				<!-- IF NUM_REMOVED -->
+				{RULE_REMOVED_MESSAGES}
+					<!-- IF NUM_NOT_MOVED --><br /><!-- ENDIF -->
+				<!-- ENDIF -->
+				<!-- IF NUM_NOT_MOVED -->
+				{NOT_MOVED_MESSAGES}<br />{RELEASE_MESSAGE_INFO}
+				<!-- ENDIF -->
+			</span></td>
 		</tr>
 	<!-- ENDIF -->
 	<tr>
@@ -77,7 +85,7 @@
 				<!-- ENDIF -->
 			</span></td>
 
-			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR}<!-- ENDIF --></p></td>
+			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR_FULL}<!-- ENDIF --></p></td>
 			<td class="row1" width="120" align="center"><p class="topicdetails">{messagerow.SENT_TIME}</p></td>
 			<td class="row1" width="20" align="center"><p class="topicdetails"><input type="checkbox" class="radio" name="marked_msg_id[]" value="{messagerow.MESSAGE_ID}" /></p></td>
 		</tr>

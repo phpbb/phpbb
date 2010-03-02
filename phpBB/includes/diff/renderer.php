@@ -19,11 +19,9 @@ if (!defined('IN_PHPBB'))
 * Code from pear.php.net, Text_Diff-0.2.1 (beta) package
 * http://pear.php.net/package/Text_Diff/
 *
-* Modified by Acyd Burn to meet our coding standards
+* Modified by phpBB Group to meet our coding standards
 * and being able to integrate into phpBB
-*/
-
-/**
+*
 * A class to render Diffs in different formats.
 *
 * This class renders the diff in classic diff format. It is intended that
@@ -86,7 +84,7 @@ class diff_renderer
 	/**
 	* Renders a diff.
 	*
-	* @param diff $diff A diff object.
+	* @param diff &$diff A diff object.
 	*
 	* @return string  The formatted output.
 	*/

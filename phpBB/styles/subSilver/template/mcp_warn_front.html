@@ -2,7 +2,7 @@
 
 <form method="post" name="mcp" action="{U_POST_ACTION}">
 
-<table class="bg" width="75%" cellspacing="1" cellpadding="4" border="0" align="center">
+<table class="tablebg" width="100%" cellspacing="1" border="0" align="center">
 <tr>
 	<th colspan="2"align="center">{L_SELECT_USER}</th>
 </tr>
@@ -31,7 +31,7 @@
 </tr>
 <!-- BEGIN highest -->
 	<tr>
-		<td class="row1" width="15%" valign="top"><span class="gen"><a href="{highest.U_USER}">{highest.USERNAME}</a></span></td>
+		<td class="row1" width="15%" valign="top"><span class="gen">{highest.USERNAME_FULL}</span></td>
 		<td class="row2" width="15%" valign="top"><span class="gen">{highest.WARNINGS}</span></td>
 		<td class="row1" width="15%" valign="top"><span class="gen">{highest.WARNING_TIME}</span></td>
 		<td class="row2" width="15%" valign="top"><span class="gen"><a href="{highest.U_NOTES}">{L_VIEW_NOTES}</a></span></td>
@@ -57,7 +57,7 @@
 </tr>
 <!-- BEGIN latest -->
 	<tr>
-		<td class="row1" width="15%" valign="top"><span class="gen"><a href="{latest.U_USER}">{latest.USERNAME}</a></span></td>
+		<td class="row1" width="15%" valign="top"><span class="gen">{latest.USERNAME_FULL}</span></td>
 		<td class="row2" width="15%" valign="top"><span class="gen">{latest.WARNING_TIME}</span></td>
 		<td class="row1" width="15%" valign="top"><span class="gen">{latest.WARNINGS}</span></td>
 		<td class="row2" width="15%" valign="top"><span class="gen"><a href="{latest.U_NOTES}">{L_VIEW_NOTES}</a></span></td>

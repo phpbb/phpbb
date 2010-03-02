@@ -524,6 +524,39 @@ class acp_forums
 				}
 				$db->sql_freeresult($result);
 
+				// Subforum move options
+				if ($action == 'edit' && $forum_data['forum_type'] == FORUM_CAT)
+				{
+					$subforums_id = array();
+					$subforums = get_forum_branch($forum_id, 'children');
+
+					foreach ($subforums as $row)
+					{
+						$subforums_id[] = $row['forum_id'];
+					}
+
+					$forums_list = make_forum_select($forum_data['parent_id'], $subforums_id);
+
+					$sql = 'SELECT forum_id
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_type = ' . FORUM_POST . "
+							AND forum_id <> $forum_id";
+					$result = $db->sql_query($sql);
+
+					if ($db->sql_fetchrow($result))
+					{
+						$template->assign_vars(array(
+							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
+						);
+					}
+					$db->sql_freeresult($result);
+
+					$template->assign_vars(array(
+						'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
+						'S_FORUMS_LIST'			=> $forums_list)
+					);
+				}
+
 				$s_show_display_on_index = false;
 
 				if ($forum_data['parent_id'] > 0)
@@ -586,6 +619,8 @@ class acp_forums
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
+					'S_FORUM_ORIG_CAT'			=> (isset($old_forum_type) && $old_forum_type == FORUM_CAT) ? true : false,
+					'S_FORUM_ORIG_LINK'			=> (isset($old_forum_type) && $old_forum_type == FORUM_LINK) ? true : false,
 					'S_FORUM_LINK'				=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_FORUM_CAT'				=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
@@ -615,8 +650,8 @@ class acp_forums
 				$forum_data = $this->get_forum_info($forum_id);
 
 				$subforums_id = array();
-
 				$subforums = get_forum_branch($forum_id, 'children');
+
 				foreach ($subforums as $row)
 				{
 					$subforums_id[] = $row['forum_id'];
@@ -647,6 +682,7 @@ class acp_forums
 
 					'FORUM_NAME'			=> $forum_data['forum_name'],
 					'S_FORUM_POST'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+					'S_FORUM_LINK'			=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
 					'S_FORUMS_LIST'			=> $forums_list,
 					'S_ERROR'				=> (sizeof($errors)) ? true : false,
@@ -801,7 +837,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user;
+		global $db, $user, $cache;
 
 		$errors = array();
 
@@ -941,6 +977,123 @@ class acp_forums
 
 				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
+			}
+			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_LINK)
+			{
+				// Has subforums?
+				if ($row['right_id'] - $row['left_id'] > 1)
+				{
+					// We are turning a category into a link - but need to decide what to do with the subforums.
+					$action_subforums = request_var('action_subforums', '');
+					$subforums_to_id = request_var('subforums_to_id', 0);
+
+					if ($action_subforums == 'delete')
+					{
+						$log_action_forums = 'FORUMS';
+						$rows = get_forum_branch($row['forum_id'], 'children', 'descending', false);
+
+						foreach ($rows as $_row)
+						{
+							// Do not remove the forum id we are about to change. ;)
+							if ($_row['forum_id'] == $row['forum_id'])
+							{
+								continue;
+							}
+
+							$forum_ids[] = $_row['forum_id'];
+							$errors = array_merge($errors, $this->delete_forum_content($_row['forum_id']));
+						}
+
+						if (sizeof($errors))
+						{
+							return $errors;
+						}
+
+						if (sizeof($forum_ids))
+						{
+							$sql = 'DELETE FROM ' . FORUMS_TABLE . '
+								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+							$db->sql_query($sql);
+
+							$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+							$db->sql_query($sql);
+
+							$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+							$db->sql_query($sql);
+
+							// Delete forum ids from extension groups table
+							$sql = 'SELECT group_id, allowed_forums 
+								FROM ' . EXTENSION_GROUPS_TABLE;
+							$result = $db->sql_query($sql);
+
+							while ($_row = $db->sql_fetchrow($result))
+							{
+								if (!$_row['allowed_forums'])
+								{
+									continue;
+								}
+
+								$allowed_forums = unserialize(trim($_row['allowed_forums']));
+								$allowed_forums = array_diff($allowed_forums, $forum_ids);
+
+								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . " 
+									SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
+									WHERE group_id = {$_row['group_id']}";
+								$db->sql_query($sql);
+							}
+							$db->sql_freeresult($result);
+
+							$cache->destroy('_extensions');
+						}
+					}
+					else if ($action_subforums == 'move')
+					{
+						if (!$subforums_to_id)
+						{
+							return array($user->lang['NO_DESTINATION_FORUM']);
+						}
+
+						$log_action_forums = 'MOVE_FORUMS';
+
+						$sql = 'SELECT forum_name 
+							FROM ' . FORUMS_TABLE . '
+							WHERE forum_id = ' . $subforums_to_id;
+						$result = $db->sql_query($sql);
+						$_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if (!$_row)
+						{
+							return array($user->lang['NO_FORUM']);
+						}
+
+						$subforums_to_name = $_row['forum_name'];
+
+						$sql = 'SELECT forum_id
+							FROM ' . FORUMS_TABLE . "
+							WHERE parent_id = {$row['forum_id']}";
+						$result = $db->sql_query($sql);
+
+						while ($_row = $db->sql_fetchrow($result))
+						{
+							$this->move_forum($_row['forum_id'], $subforums_to_id);
+						}
+						$db->sql_freeresult($result);
+
+						$sql = 'UPDATE ' . FORUMS_TABLE . "
+							SET parent_id = $subforums_to_id
+							WHERE parent_id = {$row['forum_id']}";
+						$db->sql_query($sql);
+					}
+
+					// Adjust the left/right id
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET right_id = left_id + 1
+						WHERE forum_id = ' . $row['forum_id'];
+					$db->sql_query($sql);
+				}
 			}
 
 			if (sizeof($errors))
@@ -1532,8 +1685,6 @@ class acp_forums
 		$db->sql_freeresult($result);
 
 		set_config('upload_dir_size', (int) $row['stat'], true);
-
-		add_log('admin', 'LOG_RESYNC_STATS');
 
 		return array();
 	}

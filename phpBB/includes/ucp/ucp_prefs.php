@@ -31,7 +31,7 @@ class ucp_prefs
 
 				$data = array(
 					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
-					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat']),
+					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> request_var('lang', $user->data['user_lang']),
 					'style'			=> request_var('style', (int) $user->data['user_style']),
 					'tz'			=> request_var('tz', (float) $user->data['user_timezone']),
@@ -128,11 +128,11 @@ class ucp_prefs
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'	=> ($config['override_user_style']) ? '' : style_select($data['style']),
-					'S_TZ_OPTIONS'		=> tz_select($data['tz']),
-					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
+					'S_LANG_OPTIONS'		=> language_select($data['lang']),
+					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),
+					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
+					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
+					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 
 			break;
@@ -140,13 +140,13 @@ class ucp_prefs
 			case 'view':
 
 				$data = array(
-					'topic_sk'		=> (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't',
-					'topic_sd'		=> (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd',
-					'topic_st'		=> (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0,
+					'topic_sk'		=> request_var('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
+					'topic_sd'		=> request_var('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
+					'topic_st'		=> request_var('topic_st', (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0),
 
-					'post_sk'		=> (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't',
-					'post_sd'		=> (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a',
-					'post_st'		=> (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0,
+					'post_sk'		=> request_var('post_sk', (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'),
+					'post_sd'		=> request_var('post_sd', (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'),
+					'post_st'		=> request_var('post_st', (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0),
 
 					'images'		=> request_var('images', (bool) $user->optionget('viewimg')),
 					'flash'			=> request_var('flash', (bool) $user->optionget('viewflash')),

@@ -889,7 +889,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'bbcode_id'				=> array('TINT:3', 0),
 			'bbcode_tag'			=> array('VCHAR:16', ''),
-			'bbcode_helpline'		=> array('VCHAR', ''),
+			'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			'display_on_posting'	=> array('BOOL', 0),
 			'bbcode_match'			=> array('TEXT_UNI', ''),
 			'bbcode_tpl'			=> array('MTEXT_UNI', ''),
@@ -933,8 +933,8 @@ function get_schema_struct()
 
 	$schema_data['phpbb_config'] = array(
 		'COLUMNS'		=> array(
-			'config_name'		=> array('VCHAR:255', ''),
-			'config_value'		=> array('VCHAR', ''),
+			'config_name'		=> array('VCHAR', ''),
+			'config_value'		=> array('VCHAR_UNI', ''),
 			'is_dynamic'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'config_name',
@@ -1089,6 +1089,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
+			'group_founder_manage'	=> array('BOOL', 0),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
 			'group_desc_bitfield'	=> array('VCHAR:255', ''),
@@ -1833,6 +1834,7 @@ function get_schema_struct()
 			'username_clean'			=> array('VCHAR_CI', ''),
 			'user_password'				=> array('VCHAR_UNI:40', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
+			'user_pass_convert'			=> array('BOOL', 0),
 			'user_email'				=> array('VCHAR_UNI:100', ''),
 			'user_email_hash'			=> array('BINT', 0),
 			'user_birthday'				=> array('VCHAR:10', ''),
@@ -1889,7 +1891,7 @@ function get_schema_struct()
 			'user_msnm'					=> array('VCHAR_UNI', ''),
 			'user_jabber'				=> array('VCHAR_UNI', ''),
 			'user_website'				=> array('VCHAR_UNI:200', ''),
-			'user_occ'					=> array('VCHAR_UNI', ''),
+			'user_occ'					=> array('TEXT_UNI', ''),
 			'user_interests'			=> array('TEXT_UNI', ''),
 			'user_actkey'				=> array('VCHAR:32', ''),
 			'user_newpasswd'			=> array('VCHAR_UNI:32', ''),

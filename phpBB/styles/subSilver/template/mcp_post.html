@@ -13,7 +13,7 @@
 	</tr>
 	<tr>
 		<td class="row1" width="20%"><b class="gen">{L_REPORTER}: </b></td>
-		<td class="row2" width="80%"><span class="gen">{REPORTER_NAME} &nbsp; [ <!-- IF U_VIEW_REPORTER_PROFILE --><a href="{U_VIEW_REPORTER_PROFILE}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_VIEW_REPORTER_PROFILE --> | <!-- ENDIF --><a href="{U_MCP_REPORTER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_REPORTER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
+		<td class="row2" width="80%"><span class="gen"<!-- IF REPORTER_COLOUR --> style="font-weight: bold; color: {REPORTER_COLOUR};"<!-- ENDIF -->>{REPORTER_NAME}</span> &nbsp; <span class="gen">[ <!-- IF U_VIEW_REPORTER_PROFILE --><a href="{U_VIEW_REPORTER_PROFILE}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_VIEW_REPORTER_PROFILE --> | <!-- ENDIF --><a href="{U_MCP_REPORTER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_REPORTER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><b class="gen">{L_REPORTED}: </b></td>
@@ -38,7 +38,7 @@
 	<br clear="all"/>
 <!-- ENDIF -->
 
-<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><!-- ENDIF -->
+<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report_details" action="{U_CLOSE_ACTION}"><!-- ENDIF -->
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 <tr>
@@ -53,7 +53,7 @@
 </tr>
 <tr>
 	<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
-	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <!-- IF U_VIEW_PROFILE --><a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_VIEW_PROFILE --> | <!-- ENDIF --><a href="{U_MCP_USER_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_MCP_WARN_USER -->| <a href="{U_MCP_WARN_USER}">{L_WARN_USER}</a><!-- ENDIF --><!-- ENDIF --> ]</span></td>
+	<td class="row2" width="80%"><span class="gen"<!-- IF POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{POST_AUTHOR}</span><span class="gen"> &nbsp; [ <!-- IF U_POST_AUTHOR --><a href="{U_POST_AUTHOR}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_POST_AUTHOR --> | <!-- ENDIF --><a href="{U_MCP_USER_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_MCP_WARN_USER -->| <a href="{U_MCP_WARN_USER}">{L_WARN_USER}</a><!-- ENDIF --><!-- ENDIF --> ]</span></td>
 </tr>
 <!-- IF S_CAN_VIEWIP -->
 	<tr>

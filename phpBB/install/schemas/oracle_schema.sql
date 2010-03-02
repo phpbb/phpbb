@@ -252,7 +252,7 @@ END;
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id number(3) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar2(16) DEFAULT '' ,
-	bbcode_helpline varchar2(255) DEFAULT '' ,
+	bbcode_helpline varchar2(765) DEFAULT '' ,
 	display_on_posting number(1) DEFAULT '0' NOT NULL,
 	bbcode_match clob DEFAULT '' ,
 	bbcode_tpl clob DEFAULT '' ,
@@ -320,7 +320,7 @@ END;
 */
 CREATE TABLE phpbb_config (
 	config_name varchar2(255) DEFAULT '' ,
-	config_value varchar2(255) DEFAULT '' ,
+	config_value varchar2(765) DEFAULT '' ,
 	is_dynamic number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_config PRIMARY KEY (config_name)
 )
@@ -583,6 +583,7 @@ CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch (notify_status
 CREATE TABLE phpbb_groups (
 	group_id number(8) NOT NULL,
 	group_type number(4) DEFAULT '1' NOT NULL,
+	group_founder_manage number(1) DEFAULT '0' NOT NULL,
 	group_name varchar2(255) DEFAULT '' ,
 	group_desc clob DEFAULT '' ,
 	group_desc_bitfield varchar2(255) DEFAULT '' ,
@@ -1777,6 +1778,7 @@ CREATE TABLE phpbb_users (
 	username_clean varchar2(255) DEFAULT '' ,
 	user_password varchar2(120) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
+	user_pass_convert number(1) DEFAULT '0' NOT NULL,
 	user_email varchar2(300) DEFAULT '' ,
 	user_email_hash number(20) DEFAULT '0' NOT NULL,
 	user_birthday varchar2(10) DEFAULT '' ,
@@ -1833,7 +1835,7 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
 	user_website varchar2(600) DEFAULT '' ,
-	user_occ varchar2(765) DEFAULT '' ,
+	user_occ clob DEFAULT '' ,
 	user_interests clob DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
 	user_newpasswd varchar2(96) DEFAULT '' ,

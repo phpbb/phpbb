@@ -309,16 +309,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			$last_post_subject = $row['forum_last_post_subject'];
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
-
-			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
-			$last_poster_colour = ($row['forum_last_poster_colour']) ? '#' . $row['forum_last_poster_colour'] : '';
-			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['forum_last_poster_id']);
-
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
 		else
 		{
-			$last_post_subject = $last_post_time = $last_poster = $last_poster_colour = $last_poster_url = $last_post_url = '';
+			$last_post_subject = $last_post_time = $last_post_url = '';
 		}
 
 		// Output moderator listing ... if applicable
@@ -350,8 +345,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'SUBFORUMS'				=> $subforums_list,
 			'LAST_POST_SUBJECT'		=> censor_text($last_post_subject),
 			'LAST_POST_TIME'		=> $last_post_time,
-			'LAST_POSTER'			=> $last_poster,
-			'LAST_POSTER_COLOUR'	=> $last_poster_colour,
+			'LAST_POSTER'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
+			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
+			'LAST_POSTER_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'MODERATORS'			=> $moderators_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
@@ -359,7 +355,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_MODERATOR_STR'		=> $l_moderator,
 
 			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || ($row['forum_flags'] & FORUM_FLAG_LINK_TRACK)) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
-			'U_LAST_POSTER'		=> $last_poster_url,
+			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);
 	}
@@ -587,6 +583,10 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 /**
 * User authorisation levels output
+*
+* @param	string	$mode			Can be forum or topic. Not in use at the moment.
+* @param	int		$forum_id		The current forum the user is in.
+* @param	int		$forum_status	The forums status bit.
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
@@ -597,8 +597,8 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 	$rules = array(
 		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
 		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
+		($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
 	);
 
 	if ($config['allow_attachments'])
@@ -712,7 +712,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		$extensions = $cache->obtain_attach_extensions();
 	}
 
-	// Look for missing attachment informations...
+	// Look for missing attachment information...
 	$attach_ids = array();
 	foreach ($attachment_data as $pos => $attachment)
 	{
@@ -744,7 +744,17 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$attachment_data[$attach_ids[$row['attach_id']]] = $row;
 		}
 		$db->sql_freeresult($result);
+	}
 
+	// Sort correctly (please note that the attachment_data array itself get changed by this
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachment_data);
+	}
+	else
+	{
+		// Descending sort
 		ksort($attachment_data);
 	}
 
@@ -959,12 +969,10 @@ function display_custom_bbcodes()
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
 
-	/*
-	* @todo while adjusting custom bbcodes, think about caching this query as well as correct ordering
-	*/
 	$sql = 'SELECT bbcode_id, bbcode_tag, bbcode_helpline
 		FROM ' . BBCODES_TABLE . '
-		WHERE display_on_posting = 1';
+		WHERE display_on_posting = 1
+		ORDER BY bbcode_tag';
 	$result = $db->sql_query($sql);
 
 	$i = 0;
@@ -974,7 +982,7 @@ function display_custom_bbcodes()
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
-			'BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', '&#039;', '&lt;', '&gt;'), array('\&', '\"', '\\\'', '<', '>'), $row['bbcode_helpline']))
+			'BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('\&', '\"', '\\\'', '<', '>'), $row['bbcode_helpline']))
 		);
 
 		$i++;
@@ -1051,7 +1059,7 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY forum_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1, 0, 3600);
+	$result = $db->sql_query_limit($sql, 1);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
@@ -1073,7 +1081,7 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1, 0, 3600);
+	$result = $db->sql_query_limit($sql, 1);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 

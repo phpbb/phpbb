@@ -140,7 +140,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		switch ($mode)
@@ -620,8 +620,8 @@ class acp_users
 					$data = array(
 						'username'			=> request_var('user', $user_row['username'], true),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
-						'email'				=> request_var('user_email', $user_row['user_email']),
-						'email_confirm'		=> request_var('email_confirm', ''),
+						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
+						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 						'user_password'		=> request_var('user_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 						'warnings'			=> request_var('warnings', $user_row['user_warnings']),
@@ -841,6 +841,31 @@ class acp_users
 
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
 
+				$inactive_reason = '';
+				if ($user_row['user_type'] == USER_INACTIVE)
+				{
+					$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+
+					switch ($user_row['user_inactive_reason'])
+					{
+						case INACTIVE_REGISTER:
+							$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+						break;
+
+						case INACTIVE_PROFILE:
+							$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+						break;
+
+						case INACTIVE_MANUAL:
+							$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+						break;
+
+						case INACTIVE_REMIND:
+							$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+						break;
+					}
+				}
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
@@ -865,6 +890,7 @@ class acp_users
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
+					'USER_INACTIVE_REASON'	=> $inactive_reason,
 					)
 				);
 
@@ -923,7 +949,7 @@ class acp_users
 				// Sorting
 				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 				$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
-				$sort_by_sql = array('u' => 'l.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+				$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -951,7 +977,7 @@ class acp_users
 				foreach ($log_data as $row)
 				{
 					$template->assign_block_vars('log', array(
-						'USERNAME'		=> $row['username'],
+						'USERNAME'		=> $row['username_full'],
 						'IP'			=> $row['ip'],
 						'DATE'			=> $user->format_date($row['time']),
 						'ACTION'		=> nl2br($row['action']),
@@ -983,15 +1009,13 @@ class acp_users
 					'yim'			=> request_var('yim', $user_row['user_yim']),
 					'jabber'		=> request_var('jabber', $user_row['user_jabber']),
 					'website'		=> request_var('website', $user_row['user_website']),
-					'location'		=> request_var('location', $user_row['user_from'], true),
-					'occupation'	=> request_var('occupation', $user_row['user_occ'], true),
-					'interests'		=> request_var('interests', $user_row['user_interests'], true),
+					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
+					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
+					'interests'		=> utf8_normalize_nfc(request_var('interests', $user_row['user_interests'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
 				);
-				
-				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']));
 
 				if ($user_row['user_birthday'])
 				{
@@ -1161,7 +1185,7 @@ class acp_users
 			case 'prefs':
 
 				$data = array(
-					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat']),
+					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat'], true),
 					'lang'				=> request_var('lang', $user_row['user_lang']),
 					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
@@ -1551,10 +1575,8 @@ class acp_users
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
-				$signature		= request_var('signature', $user_row['user_sig'], true);
-				
-				utf8_normalize_nfc(&$signature);
-				
+				$signature		= utf8_normalize_nfc(request_var('signature', $user_row['user_sig'], true));
+
 				$preview		= (isset($_POST['preview'])) ? true : false;
 
 				if ($submit || $preview)
@@ -1821,6 +1843,19 @@ class acp_users
 						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
+					// Check the founder only entry for this group to make sure everything is well
+					$sql = 'SELECT group_founder_manage
+						FROM ' . GROUPS_TABLE . '
+						WHERE group_id = ' . $group_id;
+					$result = $db->sql_query($sql);
+					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
+					$db->sql_freeresult($result);
+
+					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
@@ -1855,7 +1890,7 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				// Select box for other groups
-				$sql = 'SELECT group_id, group_name, group_type
+				$sql = 'SELECT group_id, group_name, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
 					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
@@ -1865,6 +1900,12 @@ class acp_users
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if (!$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
+					{
+						continue;
+					}
+
+					// Do not display those groups not allowed to be managed
+					if ($user->data['user_type'] != USER_FOUNDER && $row['group_founder_manage'])
 					{
 						continue;
 					}
@@ -1925,7 +1966,7 @@ class acp_users
 
 				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
-					$sql .= " ESCAPE '\\'";
+					$sql .= " ESCAPE '\\' ";
 				}
 
 				$sql .= 'AND is_global = 1
@@ -1945,7 +1986,7 @@ class acp_users
 
 				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
-					$sql .= " ESCAPE '\\'";
+					$sql .= " ESCAPE '\\' ";
 				}
 
 				$sql .= 'AND is_local = 1

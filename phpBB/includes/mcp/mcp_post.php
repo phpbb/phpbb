@@ -91,7 +91,6 @@ function mcp_post_details($id, $mode, $action)
 	// Set some vars
 	$users_ary = $usernames_ary = array();
 	$post_id = $post_info['post_id'];
-	$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
 
 	// Process message, leave it uncensored
 	$message = $post_info['post_text'];
@@ -126,7 +125,6 @@ function mcp_post_details($id, $mode, $action)
 		'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 		'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 		'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-		'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
 		'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 		
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
@@ -136,7 +134,11 @@ function mcp_post_details($id, $mode, $action)
 		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
-		'POSTER_NAME'			=> $poster,
+		'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+		'POST_AUTHOR'			=> get_username_string('username', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+		'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+
 		'POST_PREVIEW'			=> $message,
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
@@ -157,7 +159,7 @@ function mcp_post_details($id, $mode, $action)
 		foreach ($log_data as $row)
 		{
 			$template->assign_block_vars('usernotes', array(
-				'REPORT_BY'		=> $row['username'],
+				'REPORT_BY'		=> $row['username_full'],
 				'REPORT_AT'		=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
 				'ID'			=> $row['id'])
@@ -381,6 +383,23 @@ function change_poster(&$post_info, $userdata)
 				AND post_msg_id = ' . $post_info['post_id'] . '
 				AND topic_id = ' . $post_info['topic_id'];
 		$db->sql_query($sql);
+	}
+
+	// refresh search cache of this post
+	$search_type = basename($config['search_type']);
+
+	if (file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	{
+		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+	
+		// We do some additional checks in the module to ensure it can actually be utilised
+		$error = false;
+		$search = new $search_type($error);
+	
+		if (!$error && method_exists($search, 'destroy_cache'))
+		{
+			$search->destroy_cache(array(), array($post_info['user_id'], $userdata['user_id']));
+		}
 	}
 
 	$from_username = $post_info['username'];

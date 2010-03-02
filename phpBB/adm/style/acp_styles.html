@@ -22,10 +22,10 @@
 		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
 		<dd><select name="new_id">{S_REPLACE_OPTIONS}</select></dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -37,90 +37,83 @@
 	<h1>{L_TITLE}</h1>
 
 	<p>{L_EXPLAIN}</p>
-	<script language="javascript" type="text/javascript" defer="defer">
+
+	<!-- IF SUCCESS -->
+		<div class="successbox">
+			<p>{L_IMAGESET_UPDATED}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF ERROR -->
+		<div class="errorbox">
+			<p>{L_NO_IMAGE}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<script type="text/javascript" defer="defer">
 	<!--
 		function update_image(newimage)
 		{
-			document.newimg.src = (newimage) ? "../styles/{NAME}/imageset/" + newimage : "images/no_image.png";
+			document.getElementById('newimg').src = (newimage) ? "../styles/{NAME}/imageset/" + newimage : "images/no_image.png";
 		}
 	//-->
 	</script>
+
 	<form method="post" action="{U_ACTION}">
-	
-	<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
-	<tr>
-		<td align="right">{L_SELECT_IMAGE}: <select name="imgname" onchange="this.form.submit(); ">
+
+	<fieldset class="quick" style="text-align: left;">
+		<legend>{L_SELECT_IMAGE}</legend>
+		{L_SELECT_IMAGE}: <select name="imgname" onchange="this.form.submit();">
 		<!-- BEGIN category -->
 			<option class="sep" value="">{category.NAME}</option>
 				<!-- BEGIN images --><option value="{category.images.VALUE}"<!-- IF category.images.SELECTED--> selected="selected"<!-- ENDIF -->>{category.images.TEXT}</option>
 				<!-- END images -->
 			<!-- END category -->
-			</select>&nbsp; <input class="btnlite" type="submit" value="{L_SELECT}" tabindex="100" />
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
-			<tr>
-				<th colspan="2">{L_EDIT_IMAGESET}</th>
-			</tr>
-			<!-- IF SUCCESS -->
-			<tr>
-				<td class="row1" colspan="2" align="center"><span style="color: green">{L_IMAGESET_UPDATED}</span><br /></td>
-			</tr>
-			<!-- ENDIF -->
-			<!-- IF ERROR -->
-			<tr>
-				<td class="row1" colspan="2" align="center"><span style="color: red">{L_NO_IMAGE}</span><br /></td>
-			</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td class="row1" colspan="2" align="center">
-					<table width="100%" cellspacing="2" cellpadding="2" border="0">
-					<tr>
-						<td width="50%" align="center"><img src="<!-- IF IMAGE_REQUEST -->{IMAGE_REQUEST}<!-- ELSE -->images/no_image.png<!-- ENDIF -->"/></td>
-						<td width="50%" align="center"><img src="images/no_image.png" name="newimg" /></td>
-					</tr>
-					<tr>
-						<td class="gensmall" align="center">{L_CURRENT_IMAGE}</td>
-						<td class="gensmall" align="center">{L_SELECTED_IMAGE}</td>
-					</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<th width="40%">{L_IMAGE_PARAMETER}</th>
-				<th>{L_IMAGE_VALUE}</th>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>{L_IMAGE}: </b></td>
-				<td class="row2"><select name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>
-					<!-- BEGIN imagesetlist -->
-					<option class="sep" value=""><!-- IF imagesetlist.TYPE -->{L_LOCALISED_IMAGES}<!-- ELSE -->{L_GLOBAL_IMAGES}<!-- ENDIF --></option>
-						<!-- BEGIN images -->
-						<option value="{imagesetlist.images.VALUE}"<!-- IF imagesetlist.images.SELECTED--> selected="selected"<!-- ENDIF -->>{imagesetlist.images.TEXT}</option>
-						<!-- END images -->
-					<!-- END imagesetlist -->
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td class="row1" width="40%"><b>{L_INCLUDE_DIMENSIONS}: </b><br /><span class="gensmall">{L_DIMENSIONS_EXPLAIN}</span></td>
-				<td class="row2"><input type="radio" class="radio" name="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</td>
-			</tr>
-			<tr>
-				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnmain" type="reset" value="{L_RESET}" /></td>
-			</tr>
-			</table>
-		</td>
-	</tr>
-	</table>
-	
+		</select>&nbsp; <input class="button1" type="submit" value="{L_SELECT}" tabindex="100" />
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_EDIT_IMAGESET}</legend>
+	<dl>
+		<dt><label>{L_CURRENT_IMAGE}:</label></dt>
+		<dd><img src="<!-- IF IMAGE_REQUEST -->{IMAGE_REQUEST}<!-- ELSE -->images/no_image.png<!-- ENDIF -->" alt="" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_SELECTED_IMAGE}:</label></dt>
+		<dd><img src="images/no_image.png" id="newimg" alt="" /></dd>
+	</dl>
+	</fieldset>
+
+	<fieldset>
+	<legend>{L_IMAGE}</legend>
+	<dl>
+		<dt><label for="imgpath">{L_IMAGE}:</label></dt>
+		<dd><select id="imgpath" name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>
+			<!-- BEGIN imagesetlist -->
+			<option class="sep" value=""><!-- IF imagesetlist.TYPE -->{L_LOCALISED_IMAGES}<!-- ELSE -->{L_GLOBAL_IMAGES}<!-- ENDIF --></option>
+				<!-- BEGIN images -->
+				<option value="{imagesetlist.images.VALUE}"<!-- IF imagesetlist.images.SELECTED--> selected="selected"<!-- ENDIF -->>{imagesetlist.images.TEXT}</option>
+				<!-- END images -->
+			<!-- END imagesetlist -->
+			</select>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label for="imgsize">{L_INCLUDE_DIMENSIONS}:</label><br /><span>{L_DIMENSIONS_EXPLAIN}</span></dt>
+		<dd><input type="radio" class="radio" name="imgsize" id="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
+	</fieldset>
+
 	</form>
 
 <!-- ELSEIF S_EDIT_TEMPLATE or S_EDIT_THEME -->
 
-	<script language="javascript" type="text/javascript" defer="defer">
+	<script type="text/javascript" defer="defer">
 	<!--
 		function append_text_rows(form_name, value)
 		{
@@ -163,14 +156,14 @@
 			<legend>{L_SELECT_TEMPLATE}</legend>
 		<dl>
 			<dt><label for="template_file">{L_TEMPLATE_FILE}:</label></dt>
-			<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select> <input class="btnlite" type="submit" value="{L_SELECT}" /></dd>
+			<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select> <input class="button2" type="submit" value="{L_SELECT}" /></dd>
 		</dl>
 		</fieldset>
 
 		</form>
 
 		<!-- IF TEMPLATE_FILE -->
-			<script language="javascript" type="text/javascript" defer="defer">
+			<script type="text/javascript" defer="defer">
 			<!--
 
 				function change_editor_height(height)
@@ -217,12 +210,13 @@
 			</dl>
 			<dl>
 				<dt><label for="text_rows">{L_TEMPLATE_EDITOR_HEIGHT}:</label></dt>
-				<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="btnlite" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+				<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button2" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
 			</dl>
 			<textarea id="template_data" name="template_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{TEMPLATE_DATA}</textarea>
 			</fieldset>
 
 			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
 				{S_HIDDEN_FIELDS}
 				<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 			</fieldset>
@@ -232,14 +226,8 @@
 
 	<!-- ELSEIF S_EDIT_THEME -->
 
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		<!--
-
-			function swatch(field)
-			{
-				window.open('{UA_SWATCH}' + field, '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
-				return false;
-			}
 
 			function change_editor_height(height)
 			{
@@ -260,20 +248,20 @@
 
 		<p>{L_EDIT_THEME_EXPLAIN}</p>
 
-		<p>{L_SELECTED_THEME}: <b>{SELECTED_THEME}</b></p>
+		<p>{L_SELECTED_THEME}: <strong>{SELECTED_THEME}</strong></p>
 
 		<!-- IF S_SHOWCSS -->
 			<h3>{L_SHOW_CSS_NOTE}</h3>
 			<p>{L_SHOW_CSS_EXPLAIN}</p>
 		<!-- ENDIF -->
-
 		<form id="acp_styles" method="post" action="{U_ACTION}">
 
 		<fieldset>
 			<legend>{L_SELECT_CLASS}</legend>
 		<dl>
 			<dt><label for="css_class">{L_SELECT_CLASS}:</label></dt>
-			<dd><select id="css_class" name="css_class" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_CLASSES}</select> <input class="btnlite" type="submit" id="select_class" name="select_class" value="{L_SELECT}" /></dd>
+			<dd><select id="css_class" name="css_class" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_CLASSES}</select></dd>
+			<dd><input class="button1" type="submit" id="select_class" name="select_class" value="{L_SELECT}" /></dd>
 		</dl>
 		<!-- IF S_CLASS -->
 			<dl>
@@ -295,7 +283,7 @@
 					<legend>{L_THEME_EDITOR}</legend>
 				<dl>
 					<dt><label for="text_rows">{L_THEME_EDITOR_HEIGHT}:</label></dt>
-					<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="btnlite" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+					<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button1" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
 				</dl>
 				<textarea id="css_data" name="css_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{CSS_DATA}</textarea>
 				</fieldset>
@@ -309,7 +297,7 @@
 					<dd><input id="background_color" name="background_color" type="text" value="{BACKGROUND_COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 				</dl>
 				<dl>
-					<dt><label for="backround_image">{L_BACKGROUND_IMAGE}:</label></td>
+					<dt><label for="backround_image">{L_BACKGROUND_IMAGE}:</label></dt>
 					<dd><select id="background_image" name="background_image">{S_BACKGROUND_IMAGE}</select></dd>
 				</dl>
 				<dl>
@@ -353,6 +341,7 @@
 			<!-- ENDIF -->
 
 			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
 				{S_HIDDEN_FIELDS}
 				<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 				<!-- IF S_SHOWCSS -->
@@ -377,13 +366,13 @@
 		<fieldset>
 			<legend>{L_CUSTOM_CLASS}</legend>
 		<dl>
-			<dt><label for="custom_class">{L_CSS_CLASS_NAME}:</label></dt></dt>
+			<dt><label for="custom_class">{L_CSS_CLASS_NAME}:</label></dt>
 			<dd><input id="custom_class" name="custom_class" type="text" value="" maxlength="40" size="40" /></dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			<input class="button1" type="submit" id="add_custom" name="add_custom" value="{L_SUBMIT}" />
+		</p>
 		</fieldset>
 
 		</form>
@@ -392,7 +381,7 @@
 
 <!-- ELSEIF S_CACHE -->
 
-	<script language="Javascript" type="text/javascript">
+	<script type="text/javascript">
 	<!--
 
 		function viewsource(url)
@@ -411,6 +400,8 @@
 	<p>{L_TEMPLATE_CACHE_EXPLAIN}</p>
 	
 	<form name="acp_styles" method="post" action="{U_ACTION}">
+	<fieldset class="tabulated">
+	<legend>{L_TEMPLATE_CACHE}</legend>
 
 	<table cellspacing="1">
 	<thead>
@@ -439,10 +430,11 @@
 	</tbody>
 	</table>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<span class="small"><a href="#" onclick="marklist('acp_styles', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('acp_styles', 'delete', false); return false;">{L_UNMARK_ALL}</a></span><br />
 
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_DELETE_MARKED}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -492,10 +484,10 @@
 		<dt><label for="format">{L_ARCHIVE_FORMAT}:</label></dt>
 		<dd>{FORMAT_BUTTONS}</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -562,6 +554,7 @@
 		<form id="acp_styles" method="post" action="{U_ACTION}">
 
 		<fieldset class="quick">
+			<legend>{L_CREATE}</legend>
 			{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
 		</fieldset>
 
@@ -633,7 +626,8 @@
 	<!-- ENDIF -->
 	</fieldset>
 
-	<fieldset class="quick">
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</fieldset>
 

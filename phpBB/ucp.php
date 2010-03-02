@@ -264,7 +264,7 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 
 	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline, u.user_colour',
 
-	'ORDER_BY'	=> 'u.username ASC',
+	'ORDER_BY'	=> 'u.username_clean ASC',
 ));
 
 $result = $db->sql_query($sql);
@@ -274,11 +274,12 @@ while ($row = $db->sql_fetchrow($result))
 	$which = (time() - $update_time < $row['online_time'] && $row['viewonline'] && $row['user_allow_viewonline']) ? 'online' : 'offline';
 
 	$template->assign_block_vars("friends_{$which}", array(
-		'U_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-
 		'USER_ID'		=> $row['user_id'],
-		'USER_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
-		'USERNAME'		=> $row['username'])
+
+		'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+		'USER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+		'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+		'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']))
 	);
 }
 $db->sql_freeresult($result);

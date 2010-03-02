@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.B2';
+$updates_to_version = '3.0.B4';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -58,6 +58,7 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 $cache = new cache();
 $db = new $sql_db();
@@ -284,23 +285,30 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 $database_update_info = array(
 	// Changes within this version
 	'3.0.b3'		=> array(
-/*
 		// Change the following columns...
 		'change_columns'	=> array(
-			{table}			=> array(
-				{column_name}			=> array('USINT', 0), -> column type
+			BBCODES_TABLE		=> array(
+				'bbcode_helpline'		=> array('VCHAR_UNI', ''),
+			),
+			USERS_TABLE			=> array(
+				'user_occ'				=> array('TEXT_UNI', ''),
+			),
+			CONFIG_TABLE		=> array(
+				'config_value'			=> array('VCHAR_UNI', ''),
 			),
 		),
 		// Add the following columns
 		'add_columns'		=> array(
-			{table}			=> array(
-				{column_name}			=> array('USINT', 0), -> column type
+			GROUPS_TABLE		=> array(
+				'group_founder_manage'	=> array('BOOL', 0),
+			),
+			USERS_TABLE			=> array(
+				'user_pass_convert'		=> array('BOOL', 0),
 			),
 		),
-*/
 	),
 	// Latest version
-	'3.0.0'			=> array(),
+	'3.0.b4'			=> array(),
 );
 
 // Determine mapping database type
@@ -450,19 +458,29 @@ $errored = $no_updates = false;
 
 flush();
 
-switch ($current_version)
-{
-	case '3.0.b3':
-/*
-	some code magic
-*/
-	// No need to change here, before no break should appear
-	break;
+$no_updates = true;
 
-	case '3.0.0':
-	default:
-		$no_updates = true;
-	break;
+// some code magic
+if (version_compare($current_version, '3.0.b3', '<'))
+{
+	// Set group_founder_manage for administrators group
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = 'ADMINISTRATORS'
+			AND group_type = " . GROUP_SPECIAL;
+	$result = $db->sql_query($sql);
+	$group_id = (int) $db->sql_fetchfield('group_id');
+	$db->sql_freeresult($result);
+
+	if ($group_id)
+	{
+		$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_founder_manage = 1 WHERE group_id = ' . $group_id;
+		_sql($sql, $errored, $error_ary);
+	}
+
+	add_bots();
+
+	$no_updates = false;
 }
 
 _write_result($no_updates, $errored, $error_ary);
@@ -481,15 +499,14 @@ $errored = $no_updates = false;
 
 flush();
 
-
-/* update the version
-
+// update the version
 $sql = "UPDATE " . CONFIG_TABLE . "
 	SET config_value = '$updates_to_version'
 	WHERE config_name = 'version'";
 _sql($sql, $errored, $error_ary);
 
-// Optimize/vacuum analyze the tables where appropriate 
+
+/* Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
 // the version number update
 switch ($db->sql_layer)
@@ -534,7 +551,7 @@ $cache->purge();
 	</div>
 	
 	<div id="page-footer">
-		Powered by phpBB &copy; 2006 <a href="http://www.phpbb.com/">phpBB Group</a>
+		Powered by phpBB &copy; <?php echo date('Y'); ?> <a href="http://www.phpbb.com/">phpBB Group</a>
 	</div>
 </div>
 
@@ -549,6 +566,11 @@ $cache->purge();
 function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
+
+	if (defined('DEBUG_EXTRA'))
+	{
+		echo "<br />\n{$sql}\n<br />";
+	}
 
 	$db->sql_return_on_error(true);
 
@@ -625,7 +647,7 @@ function column_exists($dbms, $table, $column_name)
 }
 
 /**
-* Function to prepare some column informations for better usage
+* Function to prepare some column information for better usage
 */
 function prepare_column_data($dbms, $column_data)
 {
@@ -732,7 +754,7 @@ function prepare_column_data($dbms, $column_data)
 			$sql .= " {$column_type} ";
 
 			// For hexadecimal values do not use single quotes
-			if (!is_null($column_data[1]))
+			if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text')
 			{
 				$sql .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 			}
@@ -800,7 +822,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'oracle':
-			$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $coumn_data['column_type_sql'];
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;
 
@@ -863,7 +885,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			}
 			else
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $colum_data['column_type_sql'] . ']';
+				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
 				_sql($sql, $errored, $error_ary);
 			}
 		break;
@@ -876,6 +898,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 function sql_column_change($dbms, $table_name, $column_name, $column_data)
 {
 	global $dbms_type_map, $db;
+	global $errored, $error_ary;
 
 	$column_data = prepare_column_data($dbms, $column_data);
 
@@ -958,6 +981,173 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			$db->sql_transaction('commit');
 
 		break;
+	}
+}
+
+/**
+* Add search robots to the database
+*/
+function add_bots()
+{
+	global $db, $config, $phpbb_root_path, $phpEx;
+
+	$sql = 'SELECT *
+		FROM ' . CONFIG_TABLE;
+	$result = $db->sql_query($sql);
+
+	$config = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$config[$row['config_name']] = $row['config_value'];
+	}
+	$db->sql_freeresult($result);
+
+	// Obtain any submitted data
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = 'BOTS'";
+	$result = $db->sql_query($sql);
+	$group_id = (int) $db->sql_fetchfield('group_id');
+	$db->sql_freeresult($result);
+
+	if (!$group_id)
+	{
+		return;
+	}
+
+	// First of all, remove the old bots...
+	$sql = 'SELECT bot_id
+		FROM ' . BOTS_TABLE . "
+		WHERE bot_name IN ('Alexa', 'Fastcrawler', 'Googlebot', 'Inktomi')";
+	$result = $db->sql_query($sql);
+
+	$bot_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$bot_ids[] = $row['bot_id'];
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($bot_ids))
+	{
+		// We need to delete the relevant user, usergroup and bot entries ...
+		$sql_id = ' IN (' . implode(', ', $bot_ids) . ')';
+
+		$sql = 'SELECT bot_name, user_id 
+			FROM ' . BOTS_TABLE . " 
+			WHERE bot_id $sql_id";
+		$result = $db->sql_query($sql);
+
+		$user_id_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_id_ary[] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'DELETE FROM ' . BOTS_TABLE . " 
+			WHERE bot_id $sql_id";
+		$db->sql_query($sql);
+
+		$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+		foreach ($_tables as $table)
+		{
+			$sql = "DELETE FROM $table
+				WHERE " . $db->sql_in_set('user_id', $user_id_ary);
+			$db->sql_query($sql);
+		}
+	}
+
+	if (!function_exists('user_add'))
+	{
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	}
+
+	global $errored, $error_ary;
+
+	$bot_list = array(
+		'AdsBot [Google]'			=> array('AdsBot-Google', ''),
+		'Alexa [Bot]'				=> array('ia_archiver', ''),
+		'Alta Vista [Bot]'			=> array('Scooter/', ''),
+		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
+		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Exabot [Bot]'				=> array('Exabot/', ''),
+		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
+		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
+		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
+		'Gigabot [Bot]'				=> array('Gigabot/', ''),
+		'Google Adsense [Bot]'		=> array('Mediapartners-Google/', ''),
+		'Google Desktop'			=> array('Google Desktop', ''),
+		'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
+		'Google [Bot]'				=> array('Googlebot', ''),
+		'Heise IT-Markt [Crawler]'	=> array('heise-IT-Markt-Crawler', ''),
+		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
+		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
+		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
+		'ichiro [Crawler]'			=> array('ichiro/2', ''),
+		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
+		'Metager [Bot]'				=> array('MetagerBot/', ''),
+		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
+		'MSN [Bot]'					=> array('msnbot/', ''),
+		'MSNbot Media'				=> array('msnbot-media/', ''),
+		'NG-Search [Bot]'			=> array('NG-Search/', ''),
+		'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
+		'Nutch/CVS [Bot]'			=> array('NutchCVS/', ''),
+		'OmniExplorer [Bot]'		=> array('OmniExplorer_Bot/', ''),
+		'Online link [Validator]'	=> array('online link validator', ''),
+		'psbot [Picsearch]'			=> array('psbot/0', ''),
+		'Seekport [Bot]'			=> array('Seekbot/', ''),
+		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
+		'SEO Crawler'				=> array('SEO search Crawler/', ''),
+		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
+		'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
+		'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
+		'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
+		'Synoo [Bot]'				=> array('SynooBot/', ''),
+		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
+		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
+		'Voyager [Bot]'				=> array('voyager/1.0', ''),
+		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
+		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
+		'W3C [Validator]'			=> array('W3C_*Validator', ''),
+		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
+		'Yacy [Bot]'				=> array('yacybot', ''),
+		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
+		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
+		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
+		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
+	);
+
+	foreach ($bot_list as $bot_name => $bot_ary)
+	{
+		$user_row = array(
+			'user_type'			=> USER_IGNORE,
+			'group_id'			=> $group_id,
+			'username'			=> $bot_name,
+			'user_regdate'		=> time(),
+			'user_password'		=> '',
+			'user_colour'		=> '9E8DA7',
+			'user_email'		=> '',
+			'user_lang'			=> $config['default_lang'],
+			'user_style'		=> 1,
+			'user_timezone'		=> 0,
+			'user_dateformat'	=> $config['default_dateformat'],
+		);
+
+		$user_id = user_add($user_row);
+
+		if ($user_id)
+		{
+			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'bot_active'	=> 1,
+				'bot_name'		=> $bot_name,
+				'user_id'		=> $user_id,
+				'bot_agent'		=> $bot_ary[0],
+				'bot_ip'		=> $bot_ary[1],
+			));
+
+			_sql($sql, $errored, $error_ary);
+		}
 	}
 }
 

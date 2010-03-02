@@ -1427,7 +1427,12 @@ class acp_database
 				}
 
 				$sql_data .= implode(",\n", $rows);
-				$sql_data .= "\n);\n\n";
+				$sql_data .= "\n)";
+				if ($db->sql_layer == 'mysql4' || $db->sql_layer == 'mysqli')
+				{
+					$sql_data .= ' CHARACTER SET `utf8` COLLATE `utf8_bin`';
+				}
+				$sql_data .= ";\n\n";
 
 			break;
 

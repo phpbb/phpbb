@@ -163,7 +163,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					{
 						foreach ($id_ary as $ug_id => $_id)
 						{
-							$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
+							$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
 
 							if ($type == 'u')
 							{
@@ -191,7 +191,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
-				$message_author = ($row['author_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['author_id']) . '">' . $row['username'] . '</a>' : $row['username'];
 				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
 				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
 
@@ -211,9 +210,13 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$template->assign_block_vars('messagerow', array(
 					'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
 
+					'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+					'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+					'MESSAGE_AUTHOR'			=> get_username_string('username', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+					'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+
 					'FOLDER_ID'			=> $folder_id,
 					'MESSAGE_ID'		=> $message_id,
-					'MESSAGE_AUTHOR'	=> $message_author,
 					'SENT_TIME'			=> $user->format_date($row['message_time']),
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
@@ -437,7 +440,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 	$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-	$sort_by_sql = array('a' => 'u.username', 't' => 'p.message_time', 's' => 'p.message_subject');
+	$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.message_time', 's' => 'p.message_subject');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -516,7 +519,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_start = $start;
 	}
 
-	$sql = 'SELECT t.*, p.author_id, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username
+	$sql = 'SELECT t.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.user_colour
 		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE t.user_id = $user_id
 			AND p.author_id = u.user_id

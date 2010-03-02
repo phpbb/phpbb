@@ -10,7 +10,7 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
-	<td class="cat" colspan="6" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+	<td class="cat" colspan="6" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr>
 	<th width="4%" nowrap="nowrap">&nbsp;</th>
@@ -33,7 +33,7 @@
 			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 				<a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
-			<!-- IF topicrow.S_TOPIC_REPORTED -->
+			<!-- IF topicrow.S_TOPIC_REPORTED and topicrow.U_MCP_REPORT -->
 				<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
 			</p>
@@ -50,7 +50,7 @@
 <tr>
 	<td class="cat" colspan="6" align="right">
 		<select name="action">
-			<option value="" checked="checked">{L_SELECT_ACTION}</option>
+			<option value="" selected="selected">{L_SELECT_ACTION}</option>
 			<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->

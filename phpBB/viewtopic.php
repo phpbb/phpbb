@@ -365,7 +365,7 @@ if (!isset($topic_tracking_info))
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_time', 's' => 'p.post_subject');
+$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.post_time', 's' => 'p.post_subject');
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -893,22 +893,6 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$poster_id = $row['poster_id'];
-	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
-
-	if ($view != 'show' || $post_id != $row['post_id'])
-	{
-		if ($row['foe'])
-		{
-			$rowset[$row['post_id']] = array(
-				'foe'		=> true,
-				'user_id'	=> $row['user_id'],
-				'post_id'	=> $row['post_id'],
-				'poster'	=> $poster,
-			);
-
-			continue;
-		}
-	}
 
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
@@ -922,10 +906,13 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$rowset[$row['post_id']] = array(
+		'hide_post'			=> ($row['foe'] && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
+
 		'post_id'			=> $row['post_id'],
 		'post_time'			=> $row['post_time'],
-		'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 		'user_id'			=> $row['user_id'],
+		'username'			=> $row['username'],
+		'user_colour'		=> $row['user_colour'],
 		'topic_id'			=> $row['topic_id'],
 		'forum_id'			=> $row['forum_id'],
 		'post_subject'		=> $row['post_subject'],
@@ -939,12 +926,14 @@ while ($row = $db->sql_fetchrow($result))
 		'post_attachment'	=> $row['post_attachment'],
 		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
+		'post_username'		=> $row['post_username'],
 		'post_text'			=> $row['post_text'],
 		'bbcode_uid'		=> $row['bbcode_uid'],
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 		'enable_smilies'	=> $row['enable_smilies'],
 		'enable_sig'		=> $row['enable_sig'],
 		'friend'			=> $row['friend'],
+		'foe'				=> $row['foe'],
 	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
@@ -989,10 +978,13 @@ while ($row = $db->sql_fetchrow($result))
 				'yim'				=> '',
 				'jabber'			=> '',
 				'search'			=> '',
-				'username'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 				'age'				=> '',
 
+				'username'			=> $row['username'],
+				'user_colour'		=> $row['user_colour'],
+
 				'warnings'			=> 0,
+				'allow_pm'			=> 0,
 			);
 		}
 		else
@@ -1017,6 +1009,7 @@ while ($row = $db->sql_fetchrow($result))
 				'sig_bbcode_bitfield'	=> (!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield']  : '',
 
 				'viewonline'	=> $row['user_allow_viewonline'],
+				'allow_pm'		=> $row['user_allow_pm'],
 
 				'avatar'		=> '',
 				'age'			=> '',
@@ -1024,6 +1017,9 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_title'		=> '',
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
+
+				'username'			=> $row['username'],
+				'user_colour'		=> $row['user_colour'],
 
 				'online'		=> false,
 				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
@@ -1033,12 +1029,12 @@ while ($row = $db->sql_fetchrow($result))
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg' : '',
 				'jabber'		=> ($row['user_jabber']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;showresults=posts') : '',
-				'username'		=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster
 			);
 
 			if ($row['user_avatar'] && $user->optionget('viewavatars'))
 			{
 				$avatar_img = '';
+
 				switch ($row['user_avatar_type'])
 				{
 					case AVATAR_UPLOAD:
@@ -1049,8 +1045,8 @@ while ($row = $db->sql_fetchrow($result))
 						$avatar_img = $config['avatar_gallery_path'] . '/';
 					break;
 				}
-				$avatar_img .= $row['user_avatar'];
 
+				$avatar_img .= $row['user_avatar'];
 				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" alt="" />';
 			}
 
@@ -1159,7 +1155,7 @@ if (sizeof($attach_list))
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 				AND in_message = 0
-			ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+			ORDER BY filetime DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1242,19 +1238,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$row =& $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
 
-	// Two situations can prevent a post being display:
-	// i)  The poster is on the users ignore list
-	// ii) The post was made in a codepage different from the users
-	if (!empty($row['foe']))
-	{
-		$template->assign_block_vars('postrow', array(
-			'S_IGNORE_POST' => true,
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>'))
-		);
-
-		continue;
-	}
-
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
@@ -1321,7 +1304,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$result2 = $db->sql_query($sql);
 			while ($user_edit_row = $db->sql_fetchrow($result2))
 			{
-				$user_edit_row['username'] = ($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username'];
 				$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
 			}
 			$db->sql_freeresult($result2);
@@ -1333,9 +1315,17 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		if ($row['post_edit_reason'])
 		{
-			$user_edit_row = $post_edit_list[$row['post_edit_user']];
+			// User having edited the post also being the post author?
+			if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
+			{
+				$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_edit_user'], $post_edit_list[$row['post_edit_user']]['username'], $post_edit_list[$row['post_edit_user']]['user_colour']);
+			}
 
-			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_edit_row['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 		else
 		{
@@ -1344,7 +1334,17 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				$user_cache[$row['post_edit_user']] = $post_edit_list[$row['post_edit_user']];
 			}
 
-			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_cache[$row['post_edit_user']]['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+			// User having edited the post also being the post author?
+			if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
+			{
+				$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
+			}
+
+			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 	}
 	else
@@ -1383,7 +1383,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	//
 	$postrow = array(
-		'POSTER_NAME'		=> $row['poster'],
+		'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+
 		'POSTER_RANK'		=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMAGE'		=> $user_cache[$poster_id]['rank_image'],
 		'RANK_IMAGE_SRC'	=> $user_cache[$poster_id]['rank_image_src'],
@@ -1410,14 +1414,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_EDIT'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
-		'U_DELETE'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_DELETE'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
+		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_WWW'			=> $user_cache[$poster_id]['www'],
 		'U_ICQ'			=> $user_cache[$poster_id]['icq'],
@@ -1433,7 +1437,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
-		'U_WARN'			=> ($auth->acl_getf_global('m_warn') && $poster_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+		'U_WARN'			=> ($auth->acl_getf_global('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
 
@@ -1444,7 +1448,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD_POST'		=> $post_unread,
 		'S_FIRST_UNREAD'	=> $s_first_unread,
-		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false
+		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
+
+		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
+		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 	);
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))

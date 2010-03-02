@@ -196,7 +196,6 @@ class ucp_groups
 									);
 
 									$messenger->send($row['user_notify_type']);
-									$messenger->reset();
 								}
 								$db->sql_freeresult($result);
 
@@ -312,10 +311,11 @@ class ucp_groups
 
 				// Hide hidden groups unless user is an admin with group privileges
 				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
+
 				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type
 					FROM ' . GROUPS_TABLE . '
-					WHERE ' . $db->sql_in_set('group_id', $group_id_ary, true) . "
-						AND group_type $sql_and
+					WHERE ' . ((sizeof($group_id_ary)) ? $db->sql_in_set('group_id', $group_id_ary, true) . ' AND ' : '') . "
+						group_type $sql_and
 					ORDER BY group_type DESC, group_name";
 				$result = $db->sql_query($sql);
 
@@ -574,6 +574,8 @@ class ucp_groups
 
 						if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 						{
+							$avatar_img = '';
+
 							switch ($group_row['group_avatar_type'])
 							{
 								case AVATAR_UPLOAD:
@@ -584,8 +586,8 @@ class ucp_groups
 									$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 								break;
 							}
-							$avatar_img .= $group_row['group_avatar'];
 
+							$avatar_img .= $group_row['group_avatar'];
 							$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
 						}
 						else
@@ -877,11 +879,12 @@ class ucp_groups
 						}
 
 						$name_ary = array_unique(explode("\n", $name_ary));
+						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						$default = request_var('default', 0);
 
 						// Add user/s to group
-						if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, 0, 0, $group_row))
+						if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
 						{
 							trigger_error($user->lang[$error] . $return_page);
 						}

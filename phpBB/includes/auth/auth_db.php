@@ -20,7 +20,7 @@ function login_db(&$username, &$password)
 {
 	global $db, $config;
 
-	$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type, user_login_attempts
+	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
 		FROM ' . USERS_TABLE . "
 		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 	$result = $db->sql_query($sql);
@@ -95,8 +95,32 @@ function login_db(&$username, &$password)
 		}
 	}
 
-	// Password correct...
-	if (md5($password) == $row['user_password'])
+	// If the password convert flag is set we need to convert it
+	if ($row['user_pass_convert'])
+	{
+		// in phpBB2 passwords were used exactly as they were sent
+		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
+		$password_old_format = (STRIP) ? stripslashes($password_old_format) : $password_old_format;
+		$password_new_format = '';
+
+		set_var($password_new_format, $password_old_format, 'string');
+
+		if ($password == $password_new_format && md5($password_old_format) == $row['user_password'])
+		{
+			// Update the password in the users table to the new format and remove user_pass_convert flag
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
+					user_pass_convert = 0
+				WHERE user_id = ' . $row['user_id'];
+			$db->sql_query($sql);
+
+			$row['user_pass_convert'] = 0;
+			$row['user_password'] = md5($password_new_format);
+		}
+	}
+
+	// Check password ...
+	if (!$row['user_pass_convert'] && md5($password) == $row['user_password'])
 	{
 		// Successful, reset login attempts (the user passed all stages)
 		$sql = 'UPDATE ' . USERS_TABLE . '

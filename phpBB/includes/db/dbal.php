@@ -307,15 +307,15 @@ class dbal
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ') . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
 	}
 
 	/**
 	* Run more than one insert statement.
 	*
-	* @param $sql_ary array multi-dimensional array holding the statement data.
-	* @param $table string table name to run the statements on
+	* @param string $table table name to run the statements on
+	* @param array &$sql_ary multi-dimensional array holding the statement data.
 	*
 	* @return bool false if no statements were executed.
 	* @access public
@@ -332,7 +332,6 @@ class dbal
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
-			case 'sqlite':
 				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
 			break;
 

@@ -140,7 +140,7 @@ class session
 	{
 		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
-		// Give us some basic informations
+		// Give us some basic information
 		$this->time_now				= time();
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
@@ -450,7 +450,6 @@ class session
 			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
-
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 		$this->data['is_bot'] = ($bot) ? true : false;
 
@@ -471,6 +470,8 @@ class session
 				// Only update session DB a minute or so after last update or if page changes
 				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
+					$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+
 					$sql_ary = array('session_time' => $this->time_now, 'session_last_visit' => $this->time_now, 'session_admin' => 0);
 
 					if ($this->update_session_page)
@@ -480,6 +481,12 @@ class session
 
 					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+					$db->sql_query($sql);
+
+					// Update the last visit time
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+						WHERE user_id = ' . (int) $this->data['user_id'];
 					$db->sql_query($sql);
 				}
 
@@ -1032,7 +1039,8 @@ class user extends session
 
 			/**
 			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
-			* @todo if re-enabled we need to make sure only those languages installed are checked
+			* If re-enabled we need to make sure only those languages installed are checked
+			* Commented out so we do not loose the code.
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
@@ -1199,6 +1207,23 @@ class user extends session
 		$template->set_template();
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+
+		// Disable board if the install/ directory is still present
+		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
+		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
+		{
+			// Adjust the message slightly according to the permissions
+			if ($auth->acl_gets('a_', 'm_'))
+			{
+				$message = 'REMOVE_INSTALL';
+			}
+			else
+			{
+				$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
+			}
+
+			trigger_error($message);
+		}
 
 		// Is board disabled and user not an admin or moderator?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))

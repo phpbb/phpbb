@@ -19,11 +19,9 @@ if (!defined('IN_PHPBB'))
 * Code from pear.php.net, Text_Diff-0.2.1 (beta) package
 * http://pear.php.net/package/Text_Diff/
 *
-* Modified by Acyd Burn to meet our coding standards
+* Modified by phpBB Group to meet our coding standards
 * and being able to integrate into phpBB
-*/
-
-/**
+*
 * Class used internally by Diff to actually compute the diffs.  This class is
 * implemented using native PHP code.
 *

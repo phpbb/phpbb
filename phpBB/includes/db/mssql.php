@@ -116,9 +116,6 @@ class dbal_mssql extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			// For now, MSSQL has no real UTF-8 support
-			$query = utf8_decode($query);
-
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 

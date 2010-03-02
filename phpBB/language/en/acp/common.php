@@ -250,6 +250,7 @@ $lang = array_merge($lang, array(
 	'PARSE_URLS'						=> 'Parse links',
 	'PERMISSIONS_TRANSFERED'			=> 'Permissions transfered',
 	'PERMISSIONS_TRANSFERED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transfered. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
+	'PIXEL'							=> 'px',	
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',
@@ -354,6 +355,8 @@ $lang = array_merge($lang, array(
 	'SORT_LAST_VISIT'	=> 'Last visit',
 	'SORT_REASON'		=> 'Reason',
 	'SORT_REG_DATE'		=> 'Registration date',
+
+	'USER_IS_INACTIVE'		=> 'User is inactive',
 ));
 
 // Log Entries

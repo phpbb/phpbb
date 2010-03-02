@@ -1,26 +1,28 @@
-<script type="text/javascript">
-<!--
-	/**
-	* Show upload progress bar
-	*/
-	function popup_progress_bar()
-	{
-		close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}', '_upload', 'HEIGHT=200,resizable=yes,scrollbars=no,WIDTH=400');
-	}
-//-->
-</script>
-
-<!-- IF S_CLOSE_PROGRESS_WINDOW -->
-	<script language="javascript" type="text/javascript">
-	<!--
-		close_waitscreen = 1;
-	//-->
-	</script>
-<!-- ENDIF -->
-
 <tr>
-	<th colspan="2">{L_ADD_ATTACHMENT}</th>
+	<th colspan="2">
+		<script type="text/javascript">
+		<!--
+			/**
+			* Show upload progress bar
+			*/
+			function popup_progress_bar()
+			{
+				close_waitscreen = 0;
+				window.open('{UA_PROGRESS_BAR}', '_upload', 'HEIGHT=200,resizable=yes,scrollbars=no,WIDTH=400');
+			}
+		//-->
+		</script>
+
+		<!-- IF S_CLOSE_PROGRESS_WINDOW -->
+			<script type="text/javascript">
+			<!--
+				close_waitscreen = 1;
+			//-->
+			</script>
+		<!-- ENDIF -->
+
+		{L_ADD_ATTACHMENT}
+	</th>
 </tr>
 <tr>
 	<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
@@ -35,7 +37,7 @@
 	<td class="row2">
 		<table border="0" cellspacing="0" cellpadding="2">
 		<tr>
-			<td><textarea class="post" name="filecomment" rows="3" cols="35" size="40">{FILE_COMMENT}</textarea>&nbsp;</td>
+			<td><textarea class="post" name="filecomment" rows="3" cols="35">{FILE_COMMENT}</textarea>&nbsp;</td>
 			<td valign="top">
 				<table border="0" cellspacing="4" cellpadding="0">
 				<tr>
@@ -63,7 +65,7 @@
 			<td class="row2">{attach_row.S_HIDDEN}
 				<table border="0" cellspacing="0" cellpadding="2">
 				<tr>
-					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size="40">{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
+					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual">{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
 					<td valign="top">
 						<table border="0" cellspacing="4" cellpadding="0">
 						<tr>

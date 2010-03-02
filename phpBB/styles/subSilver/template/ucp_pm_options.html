@@ -42,7 +42,7 @@
 					<!-- IF S_TEXT_CONDITION -->
 						<input type="text" name="rule_string" value="{CURRENT_STRING}" size="30" maxlength="250" class="post" />
 					<!-- ELSEIF S_USER_CONDITION -->
-						<input type="text" class="post" name="rule_string" value="{CURRENT_STRING}" maxlength="50" size="20" />&nbsp;<span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</span>
+						<input type="text" class="post" name="rule_string" value="{CURRENT_STRING}" maxlength="50" size="20" />&nbsp;<span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span>
 					<!-- ELSEIF S_GROUP_CONDITION -->
 						<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><!-- IF S_GROUP_OPTIONS --><select name="rule_group_id">{S_GROUP_OPTIONS}</select><!-- ELSE -->{L_NO_GROUPS}<!-- ENDIF -->
 					<!-- ENDIF -->
@@ -166,7 +166,7 @@
 	<th colspan="2">{L_FOLDER_OPTIONS}</th>
 </tr>
 <tr>
-	<td class="row1" width="200"><b class="genmed">{L_IF_FOLDER_FULL}: </b></span></td>
+	<td class="row1" width="200"><span><b class="genmed">{L_IF_FOLDER_FULL}: </b></span></td>
 	<td class="row1"><input type="radio" class="radio" name="full_action" value="1"{S_DELETE_CHECKED} />&nbsp;<span class="genmed">{L_DELETE_OLDEST_MESSAGES}</span></td>
 </tr>
 <tr>
@@ -185,5 +185,5 @@
 	<td class="row1" colspan="2" align="right"><input class="btnlite" style="width:150px" type="submit" name="fullfolder" value="{L_CHANGE}" /></td>
 </tr>
 </table>
-
+</form>
 <!-- INCLUDE ucp_footer.html -->

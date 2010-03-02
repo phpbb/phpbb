@@ -23,7 +23,7 @@ var is_mac = (clientPC.indexOf('mac') != -1);
 */
 function helpline(help)
 {
-	document.forms[form_name].helpbox.value = eval(help + '_help');
+	document.forms[form_name].helpbox.value = help_line[help];
 }
 
 /**
@@ -64,29 +64,18 @@ function arraypop(thearray)
 	return retval;
 }
 
+
 /**
-* Insert emoticon
+* bbstyle
 */
-function smiley(text) 
-{
-	text = ' ' + text + ' ';
-
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
+function bbstyle(bbnumber)
+{	
+	if (bbnumber != -1)
 	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
-		document.forms[form_name].elements[text_name].focus();
-	}
-	else
-	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
-
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].focus();
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
+	} else {
+		insert_text('[*]');
+		document.forms[form_name].elements[text_name].focus();		
 	}
 }
 
@@ -96,7 +85,9 @@ function smiley(text)
 function bbfontstyle(bbopen, bbclose)
 {
 	theSelection = false;
-	document.forms[form_name].elements[text_name].focus();
+		
+	var textarea = document.forms[form_name].elements[text_name];
+	textarea.focus();
 
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
@@ -120,59 +111,81 @@ function bbfontstyle(bbopen, bbclose)
 		return;
 	}
 
-	// Close image tag before adding
-	if (imageTag)
-	{
-		insert_text(bbtags[15]);
-
-		// Remove the close image tag from the list
-		lastValue = arraypop(bbcode) - 1;
-
-		// Return button back to normal state
-		document.forms[form_name].addbbcode14.value = 'Img';
-		imageTag = false;
-	}
+	//The new position for the cursor after adding the bbcode
+	var new_pos = getCaretPosition(textarea).start + bbopen.length;
 
 	// Open tag
 	insert_text(bbopen + bbclose);
 
-	document.forms[form_name].elements[text_name].focus();
+	// Center the cursor when we don't have a selection
+	// Gecko and proper browsers
+	if (!isNaN(textarea.selectionStart))
+	{
+		textarea.selectionStart = new_pos;
+		textarea.selectionEnd = new_pos;
+	}	
+	// IE
+	else if (document.selection)
+	{
+		var range = textarea.createTextRange(); 
+        range.move("character", new_pos); 
+		range.select();
+		storeCaret(document.forms[form_name].elements[text_name]);		
+	}
 
-	storeCaret(document.forms[form_name].elements[text_name]);
+	document.forms[form_name].elements[text_name].focus();
 	return;
 }
 
 /**
 * Insert text at position
 */
-function insert_text(text)
+function insert_text(text, spaces, popup)
 {
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
+	var textarea;
+	
+	if (!popup) 
 	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+		textarea = document.forms[form_name].elements[text_name];
+	} else 
+	{
+		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	else if (document.forms[form_name].elements[text_name].selectionStart)
+	if (spaces) 
 	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+		text = ' ' + text + ' ';
+	}
+	
+	if (!isNaN(textarea.selectionStart))
+	{
+		var sel_start = textarea.selectionStart;
+		var sel_end = textarea.selectionEnd;
 
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+		mozWrap(textarea, text, '')
+		textarea.selectionStart = sel_start + text.length;
+		textarea.selectionEnd = sel_end + text.length;
+	}	
+	
+	else if (textarea.createTextRange && textarea.caretPos)
+	{
+		var caret_pos = textarea.caretPos;
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+		
 	}
+
 	else
 	{
-		document.forms[form_name].elements[text_name].value = document.forms[form_name].elements[text_name].value + text;
+		textarea.value = textarea.value + text;
 	}
+	document.forms[form_name].elements[text_name].focus();
 }
 
 /**
 * Add inline attachment at position
 */
-function attach_inline()
+function attach_inline(index, filename)
 {
-	insert_text('[attachment=' + document.forms[form_name].elements['attachments'].value + ']' + document.forms[form_name].elements['attachments'].options[document.forms[form_name].elements['attachments'].selectedIndex].text + '[/attachment]');
+	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
 	document.forms[form_name].elements[text_name].focus();
 }
 
@@ -187,11 +200,11 @@ function addquote(post_id, username)
 
 	if (document.all)
 	{
-		eval('divarea = document.all.' + message_name + ';');
+		divarea = document.all[message_name];
 	}
 	else
 	{
-		eval("divarea = document.getElementById('" + message_name + "');");
+		divarea = document.getElementById(message_name);
 	}
 
 	// Get text selection - not only the post content :(
@@ -210,7 +223,15 @@ function addquote(post_id, username)
 
 	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
 	{
-		if (document.all)
+		if (divarea.innerHTML)
+		{
+			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
+			theSelection = theSelection.replace(/<br\/>/ig, '\n');
+			theSelection = theSelection.replace(/&lt\;/ig, '<');
+			theSelection = theSelection.replace(/&gt\;/ig, '>');
+			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+		}
+		else if (document.all)
 		{
 			theSelection = divarea.innerText;
 		}
@@ -230,185 +251,6 @@ function addquote(post_id, username)
 	}
 
 	return;
-}
-
-/**
-* bbstyle
-*/
-function bbstyle(bbnumber)
-{
-	donotinsert = false;
-	theSelection = false;
-	bblast = 0;
-	document.forms[form_name].elements[text_name].focus();
-
-	// Close all open tags & default button names
-	if (bbnumber == -1)
-	{
-		while (bbcode[0])
-		{
-			butnumber = arraypop(bbcode) - 1;
-			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
-		
-			if (buttext != '[*]')
-			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
-			}
-		}
-
-		document.forms[form_name].addbbcode10.value = 'List';
-		bbtags[10] = '[list]';
-
-		document.forms[form_name].addbbcode12.value = 'List=';
-		bbtags[12] = '[list=]';
-		
-		// All tags are closed including image tags :D
-		imageTag = false;
-		document.forms[form_name].elements[text_name].focus();
-
-		return;
-	}
-
-	// [*] doesn't have an end tag
-	noEndTag = (bbtags[bbnumber] == '[*]')
-
-	if ((clientVer >= 4) && is_ie && is_win)
-	{
-		// Get text selection
-		theSelection = document.selection.createRange().text;
-
-		if (theSelection) 
-		{
-			// Add tags around selection
-			document.selection.createRange().text = bbtags[bbnumber] + theSelection + ((!noEndTag) ? bbtags[bbnumber+1] : '');
-			document.forms[form_name].elements[text_name].focus();
-			theSelection = '';
-			return;
-		}
-	}
-	else if (document.forms[form_name].elements[text_name].selectionEnd && (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0))
-	{
-		mozWrap(document.forms[form_name].elements[text_name], bbtags[bbnumber], ((!noEndTag) ? bbtags[bbnumber+1] : ''));
-		document.forms[form_name].elements[text_name].focus();
-		theSelection = '';
-		return;
-	}
-
-	// Find last occurance of an open tag the same as the one just clicked
-	for (i = 0; i < bbcode.length; i++)
-	{
-		if (bbcode[i] == bbnumber+1)
-		{
-			bblast = i;
-			donotinsert = true;
-		}
-	}
-
-	if (bbnumber == 10 && bbtags[10] != '[*]')
-	{
-		if (donotinsert)
-		{
-			document.forms[form_name].addbbcode12.value = 'List=';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
-			bbtags[12] = '[list=]';
-		}
-		else
-		{
-			document.forms[form_name].addbbcode12.value = '[*]';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
-			bbtags[12] = '[*]';
-		}
-	}
-
-	if (bbnumber == 12 && bbtags[12] != '[*]')
-	{
-		if (donotinsert)
-		{
-			document.forms[form_name].addbbcode10.value = 'List';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
-			bbtags[10] = '[list]';
-		}
-		else
-		{
-			document.forms[form_name].addbbcode10.value = '[*]';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
-			bbtags[10] = '[*]';
-		}
-	}
-
-	// Close all open tags up to the one just clicked & default button names
-	if (donotinsert)
-	{
-		while (bbcode[bblast])
-		{
-			butnumber = arraypop(bbcode) - 1;
-
-			if (bbtags[butnumber] != '[*]')
-			{
-				insert_text(bbtags[butnumber + 1]);
-			}
-			else
-			{
-				insert_text(bbtags[butnumber]);
-			}
-
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
-
-			if (bbtags[butnumber] != '[*]')
-			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
-			}
-			imageTag = false;
-		}
-		document.forms[form_name].elements[text_name].focus();
-		return;
-	}
-	else
-	{
-		// Open tags
-
-		// Close image tag before adding another
-		if (imageTag && (bbnumber != 14))
-		{
-			insert_text(bbtags[15]);
-
-			// Remove the close image tag from the list
-			lastValue = arraypop(bbcode) - 1;
-
-			// Return button back to normal state
-			document.forms[form_name].addbbcode14.value = 'Img';
-			imageTag = false;
-		}
-
-		// Open tag
-		insert_text(bbtags[bbnumber]);
-
-		// Check to stop additional tags after an unclosed image tag
-		if (bbnumber == 14 && imageTag == false)
-		{
-			imageTag = 1; 
-		}
-
-		if (bbtags[bbnumber] != '[*]')
-		{
-			arraypush(bbcode, bbnumber + 1);
-			eval('document.forms[form_name].addbbcode'+bbnumber+'.value += "*"');
-		}
-
-		document.forms[form_name].elements[text_name].focus();
-		return;
-	}
-
-	storeCaret(document.forms[form_name].elements[text_name]);
 }
 
 /**
@@ -440,7 +282,7 @@ function mozWrap(txtarea, open, close)
 }
 
 /**
-* Insert at Claret position. Code from
+* Insert at Caret position. Code from
 * http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
 */
 function storeCaret(textEl)
@@ -465,7 +307,7 @@ function colorPalette(dir, width, height)
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.write('<table cellspacing="1" cellpadding="0" border="0" class="type2">');
+	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
 
 	for (r = 0; r < 5; r++)
 	{
@@ -484,8 +326,8 @@ function colorPalette(dir, width, height)
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				document.write('<td style="line-height: ' + height + 'px; background-color:#' + color + '; width: ' + width + 'px; height: ' + height + 'px;">');
-				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<td bgcolor="#' + color + '">');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"  onmouseout="helpline(\'tip\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 
@@ -501,4 +343,55 @@ function colorPalette(dir, width, height)
 		}
 	}
 	document.writeln('</table>');
+}
+
+
+/**
+* Caret Position object
+*/
+function caretPosition()
+{
+	var start = null;
+	var end = null;
+}
+
+
+/**
+* Get the caret position in an textarea
+*/
+function getCaretPosition(txtarea)
+{
+	var caretPos = new caretPosition();
+	
+	// simple Gecko/Opera way
+	if(txtarea.selectionStart || txtarea.selectionStart == 0)
+	{
+		caretPos.start = txtarea.selectionStart;
+		caretPos.end = txtarea.selectionEnd;
+	}
+	// dirty and slow IE way
+	else if(document.selection)
+	{
+		// get current selection
+		var range = document.selection.createRange();
+
+		// a new selection of the whole textarea
+		var range_all = document.body.createTextRange();
+		range_all.moveToElementText(txtarea);
+		
+		// calculate selection start point by moving beginning of range_all to beginning of range
+		var sel_start;
+		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
+		{		
+			range_all.moveStart('character', 1);
+		}
+		
+		txtarea.sel_start = sel_start;
+				
+		// we ignore the end value for IE, this is already dirty enough and we don't need it
+		caretPos.start = txtarea.sel_start;
+		caretPos.end = txtarea.sel_start;		
+	}
+
+	return caretPos;
 }

@@ -15,16 +15,16 @@
 		<dt><label for="user">{L_SELECT_FILE}:</label></dt>
 		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
-	</fieldset>
 
 	<!-- IF EXISTS -->
-		<fieldset class="submit-buttons">
+		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
 			<input class="button2" type="submit" id="delete" name="delete" value="{L_DELETE_BACKUP}" />&nbsp;
 			<input class="button2" type="submit" id="download" name="download" value="{L_DOWNLOAD_BACKUP}" />
-		</fieldset>
+		</p>
 	<!-- ENDIF -->
 
+	</fieldset>
 	</form>
 
 <!-- ELSE -->
@@ -74,11 +74,11 @@
 		<!-- END tables -->
 		</select><br /><br /><div align="right"><a href="#" onclick="selector(true)">{L_SELECT_ALL}</a><br /><a href="#" onclick="selector(false)">{L_DESELECT_ALL}</a></div></dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 
 	</form>

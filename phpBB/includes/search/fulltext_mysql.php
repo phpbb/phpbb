@@ -103,9 +103,9 @@ class fulltext_mysql extends search_backend
 	* Splits keywords entered by a user into an array of words stored in $this->split_words
 	* Stores the tidied search query in $this->search_query
 	*
-	* @param string $keywords Contains the keyword as entered by the user
+	* @param string &$keywords Contains the keyword as entered by the user
 	* @param string $terms is either 'all' or 'any'
-	* @return false if no valid keywords were found and otherwise true
+	* @return bool false if no valid keywords were found and otherwise true
 	*/
 	function split_keywords(&$keywords, $terms)
 	{
@@ -116,7 +116,7 @@ class fulltext_mysql extends search_backend
 
 		if ($terms == 'all')
 		{
-			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#');
+			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
 			$replace	= array(' +', ' |', ' -', ' +', ' -', ' |');
 
 			$keywords = preg_replace($match, $replace, $keywords);
@@ -215,7 +215,7 @@ class fulltext_mysql extends search_backend
 	/**
 	* Performs a search on keywords depending on display specific params.
 	*
-	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param array &$id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param int $start indicates the first index of the page
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
@@ -412,7 +412,7 @@ class fulltext_mysql extends search_backend
 	/**
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
-	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param array &$id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param int $start indicates the first index of the page
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results

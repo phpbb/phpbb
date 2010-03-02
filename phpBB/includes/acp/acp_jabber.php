@@ -148,7 +148,7 @@ class acp_jabber
 		$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'JAB_ENABLE'			=> $new['jab_enable'],
-			'L_JAB_SERVER_EXPLAIN'	=> sprintf($user->lang['JAB_SERVER_EXPLAIN'], '<a href="http://www.xmpp.net/" rel="external">', '</a>'),
+			'L_JAB_SERVER_EXPLAIN'	=> sprintf($user->lang['JAB_SERVER_EXPLAIN'], '<a href="http://www.jabber.org/">', '</a>'),
 			'JAB_HOST'				=> $new['jab_host'],
 			'JAB_PORT'				=> $new['jab_port'],
 			'JAB_USERNAME'			=> $new['jab_username'],

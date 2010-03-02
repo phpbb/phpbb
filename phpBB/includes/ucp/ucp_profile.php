@@ -35,8 +35,8 @@ class ucp_profile
 
 				$data = array(
 					'username'			=> request_var('username', $user->data['username'], true),
-					'email'				=> request_var('email', $user->data['user_email']),
-					'email_confirm'		=> request_var('email_confirm', ''),
+					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
+					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'new_password'		=> request_var('new_password', '', true),
 					'cur_password'		=> request_var('cur_password', '', true),
 					'password_confirm'	=> request_var('password_confirm', '', true),
@@ -93,7 +93,7 @@ class ucp_profile
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
-							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32(strtolower($data['email'])) . strlen($data['email']) : $user->data['user_email_hash'],
+							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32($data['email']) . strlen($data['email']) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? md5($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
@@ -125,7 +125,7 @@ class ucp_profile
 							$key_len = ($key_len > 6) ? $key_len : 6;
 							$user_actkey = substr($user_actkey, 0, $key_len);
 
-							$messenger = new messenger();
+							$messenger = new messenger(false);
 
 							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
 							$messenger->template($template_file, $user->data['user_lang']);
@@ -139,7 +139,7 @@ class ucp_profile
 							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> htmlspecialchars_decode($username),
+								'USERNAME'		=> htmlspecialchars_decode($data['username']),
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
 
@@ -172,16 +172,15 @@ class ucp_profile
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> htmlspecialchars_decode($username),
-										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
+										'USERNAME'			=> htmlspecialchars_decode($data['username']),
+										'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u={$user->data['user_id']}",
+										'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 
 									$messenger->send($row['user_notify_type']);
 								}
 								$db->sql_freeresult($result);
 							}
-
-							$messenger->save_queue();
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
@@ -250,15 +249,13 @@ class ucp_profile
 					'yim'			=> request_var('yim', $user->data['user_yim']),
 					'jabber'		=> request_var('jabber', $user->data['user_jabber']),
 					'website'		=> request_var('website', $user->data['user_website']),
-					'location'		=> request_var('location', $user->data['user_from'], true),
-					'occupation'	=> request_var('occupation', $user->data['user_occ'], true),
-					'interests'		=> request_var('interests', $user->data['user_interests'], true),
+					'location'		=> utf8_normalize_nfc(request_var('location', $user->data['user_from'], true)),
+					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user->data['user_occ'], true)),
+					'interests'		=> utf8_normalize_nfc(request_var('interests', $user->data['user_interests'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
 				);
-
-				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']));
 
 				if ($user->data['user_birthday'])
 				{
@@ -412,9 +409,7 @@ class ucp_profile
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
-				$signature		= request_var('signature', (string) $user->data['user_sig'], true);
-
-				utf8_normalize_nfc(&$signature);
+				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
 				if ($submit || $preview)
 				{
@@ -608,8 +603,8 @@ class ucp_profile
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 					}
-					$avatar_img .= $user->data['user_avatar'];
 
+					$avatar_img .= $user->data['user_avatar'];
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" alt="" />';
 				}
 

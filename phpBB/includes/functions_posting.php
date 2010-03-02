@@ -96,8 +96,8 @@ function generate_smilies($mode, $forum_id)
 }
 
 /**
-* Update Post Informations (First/Last Post in topic/forum)
-* Should be used instead of sync() if only the last post informations are out of sync... faster
+* Update Post Information (First/Last Post in topic/forum)
+* Should be used instead of sync() if only the last post information are out of sync... faster
 *
 * @param string $type Can be forum|topic
 * @param mixed $ids topic/forum ids
@@ -367,7 +367,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	// Check Image Size, if it is an image
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
-		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);		
+		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
 	}
 
 	// Admins and mods are allowed to exceed the allowed filesize
@@ -561,6 +561,12 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	list($new_width, $new_height) = get_img_size_format($width, $height);
 
+	// Do not create a thumbnail if the resulting width/height is bigger than the original one
+	if ($new_width > $width && $new_height > $height)
+	{
+		return false;
+	}
+
 	$used_imagick = false;
 
 	// Only use imagemagick if defined and the passthru function not disabled
@@ -686,7 +692,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 /**
 * Generate inline attachment entry
 */
-function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
+function posting_gen_attachment_entry($attachment_data, &$filename_data)
 {
 	global $template, $config, $phpbb_root_path, $phpEx, $user;
 
@@ -700,8 +706,10 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 			'S_HAS_ATTACHMENTS'	=> true)
 		);
 
-		$count = 0;
-		foreach ($attachment_data as $attach_row)
+		// We display the posted attachments within the desired order.
+		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
+
+		foreach ($attachment_data as $count => $attach_row)
 		{
 			$hidden = '';
 			$attach_row['real_filename'] = basename($attach_row['real_filename']);
@@ -723,8 +731,6 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 				'U_VIEW_ATTACHMENT'	=> $download_link,
 				'S_HIDDEN'			=> $hidden)
 			);
-
-			$count++;
 		}
 	}
 
@@ -857,7 +863,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $config, $phpbb_root_path, $phpEx;
 
 	// Go ahead and pull all data for this topic
-	$sql = 'SELECT u.username, u.user_id, p.*
+	$sql = 'SELECT u.username, u.user_id, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE p.topic_id = $topic_id
 			AND p.poster_id = u.user_id
@@ -890,20 +896,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	foreach ($rowset as $i => $row)
 	{
-		$poster_id = $row['user_id'];
-		$poster = $row['username'];
+		$poster_id		= $row['user_id'];
+		$post_subject	= $row['post_subject'];
+		$message		= censor_text($row['post_text']);
+		$message		= str_replace("\n", '<br />', $message);
 
-		// Handle anon users posting with usernames
-		if ($poster_id == ANONYMOUS)
-		{
-			$poster = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
-			$poster_rank = ($row['post_username']) ? $user->lang['GUEST'] : '';
-		}
-
-		$post_subject = $row['post_subject'];
-		$message = $row['post_text'];
-		$message = censor_text($message);
-		$message = str_replace("\n", '<br />', $message);
 		$decoded_message = false;
 
 		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
@@ -925,7 +922,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_subject = censor_text($post_subject);
 
 		$template->assign_block_vars($mode . '_row', array(
-			'POSTER_NAME'		=> $poster,
+			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
@@ -934,7 +935,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'U_POST_ID'			=> $row['post_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes($poster) : '')
+			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '')
 		);
 		unset($rowset[$i]);
 	}
@@ -1123,7 +1124,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				));
 
 				$messenger->send($addr['method']);
-				$messenger->reset();
 			}
 		}
 		unset($msg_list_ary);
@@ -1241,7 +1241,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
@@ -1387,11 +1387,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$subject = truncate_string($subject);
 	$data['topic_title'] = truncate_string($data['topic_title']);
 
-	// Collect some basic informations about which tables and which rows to update/insert
+	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
 
-	// Collect Informations
+	// Collect Information
 	switch ($post_mode)
 	{
 		case 'post':

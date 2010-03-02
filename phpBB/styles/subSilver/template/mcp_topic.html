@@ -12,7 +12,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
-		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="100" name="subject" value="{SPLIT_SUBJECT}" /></span></td>
+		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="100" name="subject" value="{SPLIT_SUBJECT}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
@@ -55,10 +55,10 @@
 </tr>
 <tr>
 	<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span</td>
-	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"></td>
+	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></td>
 </tr>
 <tr>
-	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr>
 	<th nowrap="nowrap">{L_AUTHOR}</th>
@@ -72,7 +72,7 @@
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
+		<td align="center"><b class="postauthor">{postrow.POST_AUTHOR_FULL}</b></td>
 		<td width="100%">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr valign="top">
@@ -103,8 +103,8 @@
 					<table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr valign="middle">
 						<td width="100%">
-							<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <span class="postapprove"><a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><!-- ENDIF -->
-							<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG}<span class="postreported"><a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
+							<!-- IF postrow.S_POST_UNAPPROVED and postrow.U_MCP_APPROVE -->{UNAPPROVED_IMG} <span class="postapprove"><a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><!-- ENDIF -->
+							<!-- IF postrow.S_POST_REPORTED and postrow.U_MCP_REPORT -->{REPORTED_IMG}<span class="postreported"><a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
 						</td>
 						<td width="10" nowrap="nowrap">{postrow.MINI_POST_IMG}</td>
 						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
@@ -126,9 +126,10 @@
 		<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF ACTION eq 'merge' --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF ACTION eq 'split' --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
-	</select>&nbsp;<input class="btnmain" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}"></form></td>
+	</select>&nbsp;<input class="btnmain" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" /></td>
 </tr>
 </table>
+
 </form>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">

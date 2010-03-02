@@ -40,7 +40,6 @@ $lang = array_merge($lang, array(
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
-	'BBCODE_A_HELP'				=> 'Close all open BBCode tags',
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]  (alt+b)',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]  (alt+c)',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
@@ -107,8 +106,11 @@ $lang = array_merge($lang, array(
 	'LOAD'						=> 'Load',
 	'LOAD_DRAFT'				=> 'Load draft',
 	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be canceled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
-	'LOGIN_EXPLAIN_POST'		=> 'You need to login in order to post within this forum',
-	'LOGIN_EXPLAIN_REPLY'		=> 'You need to login in order to reply to topics within this forum',
+	'LOGIN_EXPLAIN_BUMP'		=> 'You need to login in order to bump topics within this forum.',
+	'LOGIN_EXPLAIN_DELETE'		=> 'You need to login in order to delete posts within this forum.',
+	'LOGIN_EXPLAIN_POST'		=> 'You need to login in order to post within this forum.',
+	'LOGIN_EXPLAIN_QUOTE'		=> 'You need to login in order to quote posts within this forum.',
+	'LOGIN_EXPLAIN_REPLY'		=> 'You need to login in order to reply to topics within this forum.',
 
 	'MAX_FONT_SIZE_EXCEEDED'	=> 'You may only use fonts up to size %1$d.',
 	'MAX_FLASH_HEIGHT_EXCEEDED'	=> 'Your flash files may only be up to %1$d pixels high.',

@@ -579,7 +579,7 @@ class custom_profile
 			
 			if (gettype($value) == 'string')
 			{
-				utf8_normalize_nfc(&$value);
+				$value = utf8_normalize_nfc($value);
 			}
 		}
 
@@ -865,8 +865,7 @@ class custom_profile
 
 			case FIELD_STRING:
 			case FIELD_TEXT:
-				$var = request_var($var_name, $profile_row['field_default_value'], true);
-				utf8_normalize_nfc(&$var);
+				$var = utf8_normalize_nfc(request_var($var_name, $profile_row['field_default_value'], true));
 			break;
 
 			case FIELD_INT:

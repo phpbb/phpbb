@@ -213,12 +213,11 @@ class p_master
 
 	/**
 	* Check module authorisation
-	* @todo Have a look at the eval statement and replace with other code...
 	*/
-	function module_auth($module_auth)
+	function module_auth($module_auth, $forum_id = false)
 	{
 		global $auth, $config;
-		
+
 		$module_auth = trim($module_auth);
 
 		// Generally allowed to access module if module_auth is empty
@@ -227,8 +226,45 @@ class p_master
 			return true;
 		}
 
+		// With the code below we make sure only those elements get eval'd we really want to be checked
+		preg_match_all('/(?:
+			"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
+			\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
+			[(),]                                  |
+			[^\s(),]+)/x', $module_auth, $match);
+
+		$tokens = $match[0];
+		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
+		{
+			$token = &$tokens[$i];
+
+			switch ($token)
+			{
+				case ')':
+				case '(':
+				case '&&':
+				case '||':
+				case ',':
+				break;
+
+				default:
+					if (!preg_match('#(?:acl_([a-z_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z_]+))|(?:cfg_([a-z_]+))#', $token))
+					{
+						$token = '';
+					}
+				break;
+			}
+		}
+
+		$module_auth = implode(' ', $tokens);
+
+		// Make sure $id seperation is working fine
+		$module_auth = str_replace(' , ', ',', $module_auth);
+
+		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
+
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', '(int) $this->acl_forum_id', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth) . ');');
 
 		return $is_auth;
 	}

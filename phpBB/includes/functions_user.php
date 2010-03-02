@@ -142,7 +142,8 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		'user_email'		=> $user_row['user_email'],
+		'user_pass_convert'	=> 0,
+		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
 		'user_type'			=> $user_row['user_type'],
@@ -170,6 +171,7 @@ function user_add($user_row, $cp_data = false)
 		'user_posts'			=> 0,
 		'user_dst'				=> 0,
 		'user_colour'			=> '',
+		'user_occ'				=> '',
 		'user_interests'		=> '',
 		'user_avatar'			=> '',
 		'user_avatar_type'		=> 0,
@@ -408,7 +410,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$db->sql_query($sql);
 
-	// Delete all to-informations
+	// Delete all to-information
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE user_id = ' . $user_id;
 	$db->sql_query($sql);
@@ -1115,8 +1117,7 @@ function validate_match($string, $optional = false, $match)
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
 *
-* @todo do we really check and disallow the " character in usernames as written above. Has it only be forgotten to include the check?
-* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+* @return	mixed	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_username($username)
 {
@@ -1218,7 +1219,9 @@ function validate_email($email)
 {
 	global $config, $db, $user;
 
-	if (strtolower($user->data['user_email']) == strtolower($email))
+	$email = strtolower($email);
+
+	if (strtolower($user->data['user_email']) == $email)
 	{
 		return false;
 	}
@@ -1249,7 +1252,7 @@ function validate_email($email)
 	{
 		$sql = 'SELECT user_email_hash
 			FROM ' . USERS_TABLE . "
-			WHERE user_email_hash = " . crc32(strtolower($email)) . strlen($email);
+			WHERE user_email_hash = " . crc32($email) . strlen($email);
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1528,10 +1531,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		'group_receive_pm'		=> 'int',
 		'group_legend'			=> 'int',
 		'group_message_limit'	=> 'int',
+
+		'group_founder_manage'	=> 'int',
 	);
 
 	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit');
+	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_founder_manage');
 
 	// Check data
 	if (!utf8_strlen($name) || utf8_strlen($name) > 40)
@@ -1718,7 +1723,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 *
-* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
+* @return mixed false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
@@ -2014,7 +2019,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				);
 
 				$messenger->send($row['user_notify_type']);
-				$messenger->reset();
 			}
 
 			$messenger->save_queue();
@@ -2264,6 +2268,7 @@ function group_update_listings($group_id)
 	{
 		if (!function_exists('cache_moderators'))
 		{
+			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 		cache_moderators();

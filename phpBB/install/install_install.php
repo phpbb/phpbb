@@ -10,8 +10,7 @@
 
 /**
 */
-
-if ( !defined('IN_INSTALL') )
+if (!defined('IN_INSTALL'))
 {
 	// Someone has tried to access the file direct. This is not a good idea, so exit
 	exit;
@@ -130,7 +129,7 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false);
+		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false);
 
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
@@ -181,6 +180,26 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
 			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+
+		// Check for PCRE UTF-8 support
+		if (@preg_match('//u', ''))
+		{
+			$passed['pcre'] = true;
+			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+		}
+		else
+		{
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PCRE_UTF_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PCRE_UTF_SUPPORT_EXPLAIN'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> true,
@@ -314,18 +333,33 @@ class install_install extends module
 		$passed['files'] = true;
 		foreach ($directories as $dir)
 		{
-			$write = $exists = true;
+			$exists = $write = false;
+
+			// Try to create the directory if it does not exist
+			if (!file_exists($phpbb_root_path . $dir))
+			{
+				@mkdir($phpbb_root_path . $dir, 0777);
+				@chmod($phpbb_root_path . $dir, 0777);
+			}
+
+			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
 				if (!is_writeable($phpbb_root_path . $dir))
 				{
-					$write = (@chmod($phpbb_root_path . $dir, 0777)) ? true : false;
+					@chmod($phpbb_root_path . $dir, 0777);
 				}
+				$exists = true;
 			}
-			else
+
+			// Now check if it is writeable by storing a simple file
+			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
+			if ($fp !== false)
 			{
-				$write = $exists = (@mkdir($phpbb_root_path . $dir, 0777)) ? true : false;
+				@unlink($phpbb_root_path . $dir . 'test_lock');
+				$write = true;
 			}
+			@fclose($fp);
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
@@ -381,8 +415,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
@@ -561,12 +595,15 @@ class install_install extends module
 
 		$default_lang = ($default_lang !== '') ? $default_lang : $language;
 
+		$board_email1 = strtolower($board_email1);
+		$board_email2 = strtolower($board_email2);
+
 		if (isset($_POST['check']))
 		{
 			$error = array();
 
 			// Check the entered email address and password
-			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
+			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 == '')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -775,7 +812,7 @@ class install_install extends module
 		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
 		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
 		$config_data .= "@define('DEBUG', true);\n"; // @todo Comment out when final
-		$config_data .= "@define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
+		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
@@ -1471,12 +1508,13 @@ class install_install extends module
 			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
 			{
 				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+
 				$sql_ary = array(
 					'lang_iso'			=> basename($path),
 					'lang_dir'			=> basename($path),
 					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
-					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1])),
-					'lang_author'		=> trim(htmlspecialchars($lang_pack[2])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1], ENT_COMPAT, 'UTF-8')),
+					'lang_author'		=> trim(htmlspecialchars($lang_pack[2], ENT_COMPAT, 'UTF-8')),
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -1803,7 +1841,7 @@ class install_install extends module
 					}
 				break;
 
-				case 'mysqli':
+				case 'sqlite':
 					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
@@ -2047,12 +2085,92 @@ class install_install extends module
 
 	/**
 	* A list of the web-crawlers/bots we recognise by default
+	*
+	* Candidates but not included:
+	* 'Accoona [Bot]'				'Accoona-AI-Agent/'
+	* 'ASPseek [Crawler]'			'ASPseek/'
+	* 'Boitho [Crawler]'			'boitho.com-dc/'
+	* 'Bunnybot [Bot]'				'powered by www.buncat.de'
+	* 'Cosmix [Bot]'				'cfetch/'
+	* 'Crawler Search [Crawler]'	'.Crawler-Search.de'
+	* 'Findexa [Crawler]'			'Findexa Crawler ('
+	* 'GBSpider [Spider]'			'GBSpider v'
+	* 'genie [Bot]'					'genieBot ('
+	* 'Hogsearch [Bot]'				'oegp v. 1.3.0'
+	* 'Insuranco [Bot]'				'InsurancoBot'
+	* 'IRLbot [Bot]'				'http://irl.cs.tamu.edu/crawler'
+	* 'ISC Systems [Bot]'			'ISC Systems iRc Search'
+	* 'Jyxobot [Bot]'				'Jyxobot/'
+	* 'Kraehe [Metasuche]'			'-DIE-KRAEHE- META-SEARCH-ENGINE/'
+	* 'LinkWalker'					'LinkWalker'
+	* 'MMSBot [Bot]'				'http://www.mmsweb.at/bot.html'
+	* 'Naver [Bot]'					'nhnbot@naver.com)'
+	* 'NetResearchServer'			'NetResearchServer/'
+	* 'Nimble [Crawler]'			'NimbleCrawler'
+	* 'Ocelli [Bot]'				'Ocelli/'
+	* 'Onsearch [Bot]'				'onCHECK-Robot'
+	* 'Orange [Spider]'				'OrangeSpider'
+	* 'Sproose [Bot]'				'http://www.sproose.com/bot'
+	* 'Susie [Sync]'				'!Susie (http://www.sync2it.com/susie)'
+	* 'Tbot [Bot]'					'Tbot/'
+	* 'Thumbshots [Capture]'		'thumbshots-de-Bot'
+	* 'Vagabondo [Crawler]'			'http://webagent.wise-guys.nl/'
+	* 'Walhello [Bot]'				'appie 1.1 (www.walhello.com)'
+	* 'WissenOnline [Bot]'			'WissenOnline-Bot'
+	* 'WWWeasel [Bot]'				'WWWeasel Robot v'
+	* 'Xaldon [Spider]'				'Xaldon WebSpider'
 	*/
 	var $bot_list = array(
-		'Alexa'			=> array('ia_archiver', '66.28.250.,209.237.238.'),
-		'Fastcrawler'	=> array('FAST MetaWeb Crawler', '66.151.181.'),
-		'Googlebot'		=> array('Googlebot/', ''),
-		'Inktomi'		=> array('Slurp/', '216.35.116.,66.196.'),
+		'AdsBot [Google]'			=> array('AdsBot-Google', ''),
+		'Alexa [Bot]'				=> array('ia_archiver', ''),
+		'Alta Vista [Bot]'			=> array('Scooter/', ''),
+		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
+		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Exabot [Bot]'				=> array('Exabot/', ''),
+		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
+		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
+		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
+		'Gigabot [Bot]'				=> array('Gigabot/', ''),
+		'Google Adsense [Bot]'		=> array('Mediapartners-Google/', ''),
+		'Google Desktop'			=> array('Google Desktop', ''),
+		'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
+		'Google [Bot]'				=> array('Googlebot', ''),
+		'Heise IT-Markt [Crawler]'	=> array('heise-IT-Markt-Crawler', ''),
+		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
+		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
+		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
+		'ichiro [Crawler]'			=> array('ichiro/2', ''),
+		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
+		'Metager [Bot]'				=> array('MetagerBot/', ''),
+		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
+		'MSN [Bot]'					=> array('msnbot/', ''),
+		'MSNbot Media'				=> array('msnbot-media/', ''),
+		'NG-Search [Bot]'			=> array('NG-Search/', ''),
+		'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
+		'Nutch/CVS [Bot]'			=> array('NutchCVS/', ''),
+		'OmniExplorer [Bot]'		=> array('OmniExplorer_Bot/', ''),
+		'Online link [Validator]'	=> array('online link validator', ''),
+		'psbot [Picsearch]'			=> array('psbot/0', ''),
+		'Seekport [Bot]'			=> array('Seekbot/', ''),
+		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
+		'SEO Crawler'				=> array('SEO search Crawler/', ''),
+		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
+		'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
+		'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
+		'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
+		'Synoo [Bot]'				=> array('SynooBot/', ''),
+		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
+		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
+		'Voyager [Bot]'				=> array('voyager/1.0', ''),
+		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
+		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
+		'W3C [Validator]'			=> array('W3C_*Validator', ''),
+		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
+		'Yacy [Bot]'				=> array('yacybot', ''),
+		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
+		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
+		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
+		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 	);
 
 	/**

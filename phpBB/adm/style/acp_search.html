@@ -13,7 +13,7 @@
 		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
 	<dl>
 		<dt><label for="load_search">{L_YES_SEARCH}:</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
-		<dd><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_NO}</dd>
+		<dd><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
 	</dl>
 	<dl>
 		<dt><label for="search_interval">{L_SEARCH_INTERVAL}:</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
@@ -55,6 +55,7 @@
 	<!-- END backend -->
 
 	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
@@ -91,8 +92,13 @@
 
 			<!-- IF backend.S_STATS -->
 			
+			<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
+				{backend.S_HIDDEN_FIELDS}
+				<fieldset class="tabular">
+				<legend>{L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></legend>
+
 				<table cellspacing="1">
-					<caption>&raquo; {L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
+					<caption>{backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
 					<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
 				<thead>
 				<tr>
@@ -116,15 +122,13 @@
 			
 			<!-- ENDIF -->
 			
-			<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
-				{backend.S_HIDDEN_FIELDS}
-		
-			<fieldset class="quick">
+			<p class="quick">
 			<!-- IF backend.S_INDEXED -->
 				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
 			<!-- ELSE -->
 				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
 			<!-- ENDIF -->
+			</p>
 			</fieldset>
 			
 			</form>

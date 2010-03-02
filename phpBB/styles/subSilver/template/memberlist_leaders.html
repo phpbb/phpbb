@@ -16,7 +16,7 @@
 <!-- BEGIN admin -->
 	<!-- IF admin.S_ROW_COUNT is even -->	<tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
-	<td class="gen" align="center"><strong><a<!-- IF admin.USER_COLOR --> style="color:#{admin.USER_COLOR}"<!-- ENDIF --> href="{admin.U_VIEWPROFILE}">{admin.USERNAME}</a></strong></td>
+	<td class="gen" align="center"><strong>{admin.USERNAME_FULL}</strong></td>
 	<td class="gensmall" align="center">&nbsp;</td>
 	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
 		<!-- IF admin.U_GROUP -->
@@ -39,7 +39,7 @@
 <!-- BEGIN mod -->
 	<!-- IF mod.S_ROW_COUNT is even -->	<tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
-	<td class="gen" align="center"><strong><a<!-- IF mod.USER_COLOR --> style="color:#{mod.USER_COLOR}"<!-- ENDIF --> href="{mod.U_VIEWPROFILE}">{mod.USERNAME}</a></strong></td>
+	<td class="gen" align="center"><strong>{mod.USERNAME_FULL}</strong></td>
 	<td align="center"><!-- IF not mod.FORUMS -->{L_ALL_FORUMS}<!-- ELSE --><select style="width: 200px;">{mod.FORUMS}</select><!-- ENDIF -->&nbsp;</td>
 	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
 		<!-- IF mod.U_GROUP -->

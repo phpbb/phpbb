@@ -45,6 +45,7 @@ $lang = array_merge($lang, array(
 	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',
+	'DECIDE_MOVE_DELETE_SUBFORUMS'		=> 'Delete subforums or move to forum',
 	'DEFAULT_STYLE'						=> 'Default Style',
 	'DELETE_ALL_POSTS'					=> 'Delete posts',
 	'DELETE_SUBFORUMS'					=> 'Delete subforums and posts',
@@ -67,7 +68,7 @@ $lang = array_merge($lang, array(
 	'FORUM_CREATED'						=> 'Forum created successfully.',
 	'FORUM_DATA_NEGATIVE'				=> 'Pruning parameters cannot be negative.',
 	'FORUM_DELETE'						=> 'Delete forum',
-	'FORUM_DELETE_EXPLAIN'				=> 'The form below will allow you to delete a forum and decide where you want to put all topics (or forums) it contained.',
+	'FORUM_DELETE_EXPLAIN'				=> 'The form below will allow you to delete a forum. If the forum is postable you are able to decide where you want to put all topics (or forums) it contained.',
 	'FORUM_DELETED'						=> 'Forum successfully deleted.',
 	'FORUM_DESC'						=> 'Description',
 	'FORUM_DESC_EXPLAIN'				=> 'Any markup entered here will displayed as is.',
@@ -97,7 +98,7 @@ $lang = array_merge($lang, array(
 	'FORUM_TOPICS_PAGE'					=> 'Topics per page',
 	'FORUM_TOPICS_PAGE_EXPLAIN'			=> 'If non-zero this value will override the default topics per page setting.',
 	'FORUM_TYPE'						=> 'Forum type',
-	'FORUM_UPDATED'						=> 'Forum informations updated successfully.',
+	'FORUM_UPDATED'						=> 'Forum information updated successfully.',
 
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
@@ -106,8 +107,8 @@ $lang = array_merge($lang, array(
 	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the parent forums subforum listing if one exist.',
 	'LOCKED'				=> 'Locked',
 
-	'MOVE_POSTS_TO'		=> 'Move posts',
-	'MOVE_SUBFORUMS_TO'	=> 'Move subforums',
+	'MOVE_POSTS_TO'		=> 'Move posts to',
+	'MOVE_SUBFORUMS_TO'	=> 'Move subforums to',
 
 	'NO_DESTINATION_FORUM'			=> 'You have not specified a forum to move content to',
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',

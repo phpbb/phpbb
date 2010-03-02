@@ -88,9 +88,12 @@ function mcp_warn_front_view($id, $mode)
 	{
 		$template->assign_block_vars('highest', array(
 			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
-			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-			'USERNAME'		=> $row['username'],
+			'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+			'USERNAME'			=> $row['username'],
+			'USERNAME_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
+			'U_USER'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+
 			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
 			'WARNINGS'		=> $row['user_warnings'],
 			)
@@ -99,7 +102,7 @@ function mcp_warn_front_view($id, $mode)
 
 	// And now the 5 most recent users to get in trouble
 
-	$sql = 'SELECT u.user_id, u.username, u.user_warnings, w.warning_time
+	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_warnings, w.warning_time
 		FROM ' . USERS_TABLE . ' u, ' . WARNINGS_TABLE . ' w
 		WHERE u.user_id = w.user_id
 		ORDER BY w.warning_time DESC';
@@ -109,9 +112,12 @@ function mcp_warn_front_view($id, $mode)
 	{
 		$template->assign_block_vars('latest', array(
 			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
-			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-			'USERNAME'		=> $row['username'],
+			'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+			'USERNAME'			=> $row['username'],
+			'USERNAME_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
+			'U_USER'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+
 			'WARNING_TIME'	=> $user->format_date($row['warning_time']),
 			'WARNINGS'		=> $row['user_warnings'],
 			)
@@ -137,7 +143,7 @@ function mcp_warn_list_view($id, $mode, $action)
 
 	$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 	$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
-	$sort_by_sql = array('a' => 'username', 'b' => 'user_last_warning', 'c' => 'user_warnings');
+	$sort_by_sql = array('a' => 'username_clean', 'b' => 'user_last_warning', 'c' => 'user_warnings');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -155,9 +161,12 @@ function mcp_warn_list_view($id, $mode, $action)
 	{
 		$template->assign_block_vars('user', array(
 			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
-			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-			'USERNAME'		=> $row['username'],
+			'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+			'USERNAME'			=> $row['username'],
+			'USERNAME_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
+			'U_USER'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+			
 			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
 			'WARNINGS'		=> $row['user_warnings'],
 			)
@@ -266,6 +275,7 @@ function mcp_warn_post_view($id, $mode, $action)
 //	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
+
 	if (!empty($userrow['user_avatar']))
 	{
 		switch ($userrow['user_avatar_type'])
@@ -278,8 +288,8 @@ function mcp_warn_post_view($id, $mode, $action)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $userrow['user_avatar'];
 
+		$avatar_img .= $userrow['user_avatar'];
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 
@@ -350,6 +360,7 @@ function mcp_warn_user_view($id, $mode, $action)
 //	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
+
 	if (!empty($userrow['user_avatar']))
 	{
 		switch ($userrow['user_avatar_type'])
@@ -362,8 +373,8 @@ function mcp_warn_user_view($id, $mode, $action)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $userrow['user_avatar'];
 
+		$avatar_img .= $userrow['user_avatar'];
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 

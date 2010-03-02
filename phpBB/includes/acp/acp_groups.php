@@ -54,6 +54,12 @@ class acp_groups
 			{
 				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
+
+			// Check if the user is allowed to manage this group if set to founder only.
+			if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
+			{
+				trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 		}
 
 		// Which page?
@@ -214,9 +220,10 @@ class acp_groups
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 				// Add user/s to group
-				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, 0, $group_row))
+				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
 					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
@@ -262,12 +269,21 @@ class acp_groups
 					$delete				= request_var('delete', '');
 
 					$submit_ary = array(
-						'colour'		=> request_var('group_colour', ''),
-						'rank'			=> request_var('group_rank', 0),
-						'receive_pm'	=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
-						'legend'		=> isset($_REQUEST['group_legend']) ? 1 : 0,
-						'message_limit'	=> request_var('group_message_limit', 0)
+						'colour'			=> request_var('group_colour', ''),
+						'rank'				=> request_var('group_rank', 0),
+						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
+						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
+						'message_limit'		=> request_var('group_message_limit', 0),
 					);
+
+					if ($user->data['user_type'] == USER_FOUNDER)
+					{
+						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
+					}
+					else
+					{
+						$submit_ary['founder_manage'] = 0;
+					}
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
@@ -328,7 +344,7 @@ class acp_groups
 						// were made.
 
 						$group_attributes = array();
-						$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit');
+						$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit', 'founder_manage');
 						foreach ($test_variables as $test)
 						{
 							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
@@ -434,6 +450,8 @@ class acp_groups
 
 				if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 				{
+					$avatar_img = '';
+
 					switch ($group_row['group_avatar_type'])
 					{
 						case AVATAR_UPLOAD:
@@ -444,8 +462,8 @@ class acp_groups
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 					}
-					$avatar_img .= $group_row['group_avatar'];
 
+					$avatar_img .= $group_row['group_avatar'];
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
 				}
 				else
@@ -482,15 +500,18 @@ class acp_groups
 					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
 					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+					'S_USER_FOUNDER'	=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
+					'GROUP_FOUNDER_MANAGE'	=> (isset($group_row['group_founder_manage']) && $group_row['group_founder_manage']) ? ' checked="checked"' : '',
 					'GROUP_LEGEND'			=> (isset($group_row['group_legend']) && $group_row['group_legend']) ? ' checked="checked"' : '',
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
+
 
 					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],

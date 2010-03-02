@@ -207,7 +207,9 @@ function lock_unlock($action, $ids)
 		$l_prefix = 'POST';
 	}
 
-	if (!($forum_id = check_ids($ids, $table, $sql_id, array('m_lock'))))
+	$orig_ids = $ids;
+
+	if (!check_ids($ids, $table, $sql_id, array('m_lock')))
 	{
 		// Make sure that for f_user_lock only the lock action is triggered.
 		if ($action != 'lock')
@@ -215,13 +217,16 @@ function lock_unlock($action, $ids)
 			return;
 		}
 
-		if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock'))))
+		$ids = $orig_ids;
+
+		if (!check_ids($ids, $table, $sql_id, array('f_user_lock')))
 		{
 			return;
 		}
 	}
+	unset($orig_ids);
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		$sql_id . '_list'	=> $ids,
@@ -241,7 +246,7 @@ function lock_unlock($action, $ids)
 
 		foreach ($data as $id => $row)
 		{
-			add_log('mod', $forum_id, $row['topic_id'], 'LOG_' . strtoupper($action), $row['topic_title']);
+			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_' . strtoupper($action), $row['topic_title']);
 		}
 
 		$success_msg = $l_prefix . ((sizeof($ids) == 1) ? '' : 'S') . '_' . (($action == 'lock' || $action == 'lock_post') ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
@@ -272,7 +277,10 @@ function change_topic_type($action, $topic_ids)
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'))))
+	// For changing topic types, we only allow operations in one forum.
+	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'), true);
+
+	if ($forum_id === false)
 	{
 		return;
 	}
@@ -420,7 +428,10 @@ function mcp_move_topic($topic_ids)
 	global $auth, $user, $db, $template;
 	global $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_move')))
+	// Here we limit the operation to one forum only
+	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
+
+	if ($forum_id === false)
 	{
 		return;
 	}
@@ -575,12 +586,13 @@ function mcp_delete_topic($topic_ids)
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_delete')))
+	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action')));
+	$forum_id = request_var('f', 0);
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'topic_id_list'	=> $topic_ids,
@@ -598,7 +610,7 @@ function mcp_delete_topic($topic_ids)
 
 		foreach ($data as $topic_id => $row)
 		{
-			add_log('mod', $forum_id, 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
+			add_log('mod', $row['forum_id'], 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
 		}
 
 		$return = delete_topics('topic_id', $topic_ids);
@@ -630,12 +642,13 @@ function mcp_delete_post($post_ids)
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($post_ids, POSTS_TABLE, 'post_id', 'm_delete')))
+	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_delete')))
 	{
 		return;
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action')));
+	$forum_id = request_var('f', 0);
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'post_id_list'	=> $post_ids,
@@ -649,7 +662,7 @@ function mcp_delete_post($post_ids)
 	{
 		if (!function_exists('delete_posts'))
 		{
-			include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
 		// Count the number of topics that are affected
@@ -750,13 +763,14 @@ function mcp_fork_topic($topic_ids)
 	global $auth, $user, $db, $template, $config;
 	global $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
+	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}
 
 	$to_forum_id = request_var('to_forum_id', 0);
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$forum_id = request_var('forum_id', 0);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action')));
 	$additional_msg = $success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -834,11 +848,6 @@ function mcp_fork_topic($topic_ids)
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 			$new_topic_id = $db->sql_nextid();
 			$new_topic_id_list[$topic_id] = $new_topic_id;
-
-			/**
-			* @todo enable? (is this still needed?)
-			* markread('topic', $to_forum_id, $new_topic_id);
-			*/
 
 			if ($topic_row['poll_start'])
 			{

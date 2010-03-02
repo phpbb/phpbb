@@ -31,8 +31,14 @@ $template->set_filenames(array(
 $template->assign_vars(array(
 	'OPENER'		=> addslashes(request_var('form', '')),
 	'NAME'			=> request_var('name', ''),
-	'T_IMAGES_PATH'	=> "{$phpbb_root_path}images/",)
-);
+	'T_IMAGES_PATH'	=> "{$phpbb_root_path}images/",
+
+	'S_USER_LANG'			=> $user->lang['USER_LANG'],
+	'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+	'S_CONTENT_ENCODING'	=> 'UTF-8',
+	'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
+	'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
+));
 
 $template->display('body');
 

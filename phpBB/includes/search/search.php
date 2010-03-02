@@ -89,8 +89,8 @@ class search_backend
 	/**
 	* Retrieves cached search results
 	*
-	* @param int result_count will contain the number of all results for the search (not only for the current page)
-	* @param array id_ary is filled with the ids belonging to the requested page that are stored in the cache
+	* @param int &$result_count will contain the number of all results for the search (not only for the current page)
+	* @param array &$id_ary is filled with the ids belonging to the requested page that are stored in the cache
 	*
 	* @return int SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
 	*/
@@ -151,7 +151,7 @@ class search_backend
 	/**
 	* Caches post/topic ids
 	*
-	* @param array id_ary contains a list of post or topic ids that shall be cached, the first element
+	* @param array &$id_ary contains a list of post or topic ids that shall be cached, the first element
 	* 	must have the absolute index $start in the result set.
 	*/
 	function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)

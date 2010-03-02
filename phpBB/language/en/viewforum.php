@@ -33,7 +33,9 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACTIVE_TOPICS'			=> 'Active topics',
 	'ANNOUNCEMENTS'			=> 'Announcements',
-	
+
+	'FORUM_PERMISSIONS'		=> 'Forum permissions',
+
 	'ICON_ANNOUNCEMENT'		=> 'Announcement',
 	'ICON_STICKY'			=> 'Sticky',
 
@@ -46,6 +48,7 @@ $lang = array_merge($lang, array(
 	'NEW_POSTS_LOCKED'		=> 'New posts [ Locked ]',
 	'NO_NEW_POSTS_HOT'		=> 'No new posts [ Popular ]',
 	'NO_NEW_POSTS_LOCKED'	=> 'No new posts [ Locked ]',
+	'NO_READ_ACCESS'		=> 'You do not have the required permissions to read topics within this forum.',
 
 	'POST_FORUM_LOCKED'		=> 'Forum is locked',
 

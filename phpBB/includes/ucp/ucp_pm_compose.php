@@ -131,7 +131,7 @@ function compose_pm($id, $mode, $action)
 			}
 			else
 			{
-				$sql = 'SELECT t.*, p.*, u.username as quote_username
+				$sql = 'SELECT t.folder_id, p.*, u.username as quote_username
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE t.user_id = ' . $user->data['user_id'] . "
 						AND p.author_id = u.user_id
@@ -147,7 +147,7 @@ function compose_pm($id, $mode, $action)
 			}
 
 			// check for outbox (not read) status, we do not allow editing if one user already having the message
-			$sql = 'SELECT p.*, t.*
+			$sql = 'SELECT p.*, t.folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
 				WHERE t.user_id = ' . $user->data['user_id'] . '
 					AND t.folder_id = ' . PRIVMSGS_OUTBOX . "
@@ -302,9 +302,7 @@ function compose_pm($id, $mode, $action)
 		{
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
-			/**
-			* @todo jump to next message in "history"?
-			*/
+			// jump to next message in "history"? nope, not for the moment. But able to be included later.
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 			$message = $user->lang['MESSAGE_DELETED'];
 
@@ -347,7 +345,7 @@ function compose_pm($id, $mode, $action)
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
 				AND is_orphan = 0
-			ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
+			ORDER BY filetime DESC";
 		$result = $db->sql_query($sql);
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
@@ -396,12 +394,10 @@ function compose_pm($id, $mode, $action)
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
-		$subject = request_var('subject', '', true);
+		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
-		$message = request_var('message', '', true);
+		$message = utf8_normalize_nfc(request_var('message', '', true));
 		
-		utf8_normalize_nfc(array(&$subject, &$message));
-
 		if ($subject && $message)
 		{
 			if (confirm_box(true))
@@ -476,11 +472,9 @@ function compose_pm($id, $mode, $action)
 
 	if ($submit || $preview || $refresh)
 	{
-		$subject = request_var('subject', '', true);
-		$message_parser->message = request_var('message', '', true);
+		$subject = utf8_normalize_nfc(request_var('subject', '', true));
+		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
 		
-		utf8_normalize_nfc(array(&$subject, &$message_parser->message));
-
 		$icon_id			= request_var('icon', 0);
 
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
@@ -756,15 +750,30 @@ function compose_pm($id, $mode, $action)
 				$type = ($type == 'u') ? 'u' : 'g';
 				$id = (int) $id;
 
-				$template->assign_block_vars($field . '_recipient', array(
-					'NAME'		=> ${$type}[$id]['name'],
-					'IS_GROUP'	=> ($type == 'g'),
-					'IS_USER'	=> ($type == 'u'),
-					'COLOUR'	=> (${$type}[$id]['colour']) ? ${$type}[$id]['colour'] : '',
+				$tpl_ary = array(
+					'IS_GROUP'	=> ($type == 'g') ? true : false,
+					'IS_USER'	=> ($type == 'u') ? true : false,
 					'UG_ID'		=> $id,
-					'U_VIEW'	=> ($type == 'u') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
-					'TYPE'		=> $type)
+					'NAME'		=> ${$type}[$id]['name'],
+					'COLOUR'	=> (${$type}[$id]['colour']) ? '#' . ${$type}[$id]['colour'] : '',
+					'TYPE'		=> $type,
 				);
+
+				if ($type == 'u')
+				{
+					$tpl_ary = array_merge($tpl_ary, array(
+						'U_VIEW'		=> get_username_string('profile', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
+						'NAME_FULL'		=> get_username_string('full', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
+					));
+				}
+				else
+				{
+					$tpl_ary = array_merge($tpl_ary, array(
+						'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+					));
+				}
+
+				$template->assign_block_vars($field . '_recipient', $tpl_ary);
 			}
 		}
 	}
@@ -934,41 +943,35 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
-		if (sizeof($user_id_ary))
+		foreach ($user_id_ary as $user_id)
 		{
-			// We need to check their PM status (do they want to receive PM's?)
-			// Only check if not a moderator or admin, since they are allowed to override this user setting
-			if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+			if ($user_id == ANONYMOUS)
 			{
-				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
-						AND user_allow_pm = 1';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if ($row['user_id'] == ANONYMOUS)
-					{
-						continue;
-					}
-
-					$address_list['u'][$row['user_id']] = $type;
-				}
-				$db->sql_freeresult($result);
+				continue;
 			}
-			else
+
+			$address_list['u'][$user_id] = $type;
+		}
+	}
+
+	// Check for disallowed recipients
+	if (!empty($address_list['u']))
+	{
+		// We need to check their PM status (do they want to receive PM's?)
+		// Only check if not a moderator or admin, since they are allowed to override this user setting
+		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		{
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+					AND user_allow_pm = 0';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				foreach ($user_id_ary as $user_id)
-				{
-					if ($user_id == ANONYMOUS)
-					{
-						continue;
-					}
-
-					$address_list['u'][$user_id] = $type;
-				}
+				unset($address_list['u'][$row['user_id']]);
 			}
+			$db->sql_freeresult($result);
 		}
 	}
 }

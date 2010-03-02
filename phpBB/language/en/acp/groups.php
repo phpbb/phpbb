@@ -59,6 +59,8 @@ $lang = array_merge($lang, array(
 	'GROUP_DST'						=> 'Group daylight savings',
 	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.',
 	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group',
+	'GROUP_FOUNDER_MANAGE'			=> 'Founder manage only',
+	'GROUP_FOUNDER_MANAGE_EXPLAIN'	=> 'Restrict group management for this group for founders only for the administration control panel.',
 	'GROUP_HIDDEN'					=> 'Hidden',
 	'GROUP_LANG'					=> 'Group language',
 	'GROUP_LEAD'					=> 'Group leaders',
@@ -95,6 +97,7 @@ $lang = array_merge($lang, array(
 	'MEMBERS'				=> 'Members',
 
 	'NO_GROUP'					=> 'No group specified.',
+	'NO_GROUPS_CREATED'			=> 'No groups created yet.',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 	'NO_USERS'					=> 'You haven’t entered any users.',
 

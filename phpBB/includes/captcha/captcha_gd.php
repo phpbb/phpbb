@@ -16,33 +16,18 @@
 */
 class captcha
 {
+	var $width = 360;
+	var $height = 96;
+
 	function execute($code)
 	{
 		global $config;
 		$stats = gd_info();
 
-		if (substr($stats['GD Version'], 0, 7) === 'bundled')
-		{
-			$bundled = true;
-		}
-		else
-		{
-			$bundled = false;
-		}
+		$bundled = (substr($stats['GD Version'], 0, 7) === 'bundled') ? true : false;
 
 		preg_match('/[\\d.]+/', $stats['GD Version'], $version);
-		if (version_compare($version[0], '2.0.1', '>='))
-		{
-			$gd_version = 2;
-		}
-		else
-		{
-			$gd_version = 1;
-		}
-
-		// set dimension of image
-		$lx = 360;
-		$ly = 96;
+		$gd_version = (version_compare($version[0], '2.0.1', '>=')) ? 2 : 1;
 
 		// create the image, stay compat with older versions of GD
 		if ($gd_version === 2)
@@ -56,7 +41,7 @@ class captcha
 			$func2 = 'imagecolorclosest';
 		}
 
-		$image = $func1($lx, $ly);
+		$image = $func1($this->width, $this->height);
 
 		if ($bundled)
 		{
@@ -65,7 +50,7 @@ class captcha
 
 		// set background color
 		$back =  imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
-		imagefilledrectangle($image, 0, 0, $lx, $ly, $back);
+		imagefilledrectangle($image, 0, 0, $this->width, $this->height, $back);
 
 		// allocates the 216 websafe color palette to the image
 		if ($gd_version === 1)
@@ -82,7 +67,6 @@ class captcha
 			}
 		}
 
-
 		// fill with noise or grid
 		if ($config['captcha_gd_noise'])
 		{
@@ -92,7 +76,7 @@ class captcha
 				$size	= mt_rand(8, 23);
 				$angle	= mt_rand(0, 360);
 				$x		= mt_rand(0, 360);
-				$y		= mt_rand(0, (int)($ly - ($size / 5)));
+				$y		= mt_rand(0, (int)($this->height - ($size / 5)));
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
 				$text	= chr(mt_rand(45, 250));
 				imagettftext($image, $size, $angle, $x, $y, $color, $this->get_font(), $text);
@@ -101,15 +85,16 @@ class captcha
 		else
 		{
 			// generate grid
-			for ($i = 0; $i < $lx; $i += 13)
+			for ($i = 0; $i < $this->width; $i += 13)
 			{
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
-				imageline($image, $i, 0, $i, $ly, $color);
+				imageline($image, $i, 0, $i, $this->height, $color);
 			}
-			for ($i = 0; $i < $ly; $i += 11)
+
+			for ($i = 0; $i < $this->height; $i += 11)
 			{
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
-				imageline($image, 0, $i, $lx, $i, $color);
+				imageline($image, 0, $i, $this->width, $i, $color);
 			}
 		}
 
@@ -120,7 +105,7 @@ class captcha
 			$text	= strtoupper($code[$i]);
 			$angle	= mt_rand(-30, 30);
 			$size	= mt_rand(20, 40);
-			$y		= mt_rand((int)($size * 1.5), (int)($ly - ($size / 7)));
+			$y		= mt_rand((int)($size * 1.5), (int)($this->height - ($size / 7)));
 
 			$color	= $func2($image, mt_rand(0, 127), mt_rand(0, 127), mt_rand(0, 127));
 			$shadow = $func2($image, mt_rand(127, 254), mt_rand(127, 254), mt_rand(127, 254));

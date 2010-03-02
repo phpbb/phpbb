@@ -774,6 +774,14 @@ $sql = 'SELECT *
 	WHERE username = '" . $db-&gt;sql_escape($username) . "'";
 	</pre></blockquote>
 
+	<h3>sql_query_limit():</h3>
+
+	<p>We do not add limit statements to the sql query, but instead use <code>$db-&gt;sql_query_limit()</code>. You basically pass the query, the total number of lines to retrieve and the offset.</p>
+
+	<p><strong>Note: </strong> Since Oracle handles limits differently and because of how we implemented this handling you need to take special care if you use <code>sql_query_limit</code> with an sql query retrieving data from more than one table.</p>
+
+	<p>Make sure when using something like "SELECT x.*, y.jars" that there is not a column named jars in x; make sure that there is no overlap between an implicit column and the explicit columns.</p>
+
 	<h3>sql_build_array():</h3>
 
 	<p>If you need to UPDATE or INSERT data, make use of the <code>$db-&gt;sql_build_array()</code> function. This function already escapes strings and checks other types, so there is no need to do this here. The data to be inserted should go into an array - <code>$sql_ary</code> - or directly within the statement if one one or two variables needs to be inserted/updated. An example of an insert statement would be:</p>
@@ -856,6 +864,7 @@ SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1
 	<p>If the given array is empty, an error will be produced.</p>
 
 	<h3>sql_build_query():</h3>
+
 	<p>The <code>$db-&gt;sql_build_query()</code> function is responsible for building sql statements for select and select distinct queries if you need to JOIN on more than one table or retrieving data from more than one table while doing a JOIN. This needs to be used to make sure the resulting statement is working on all supported db's. Instead of explaining every possible combination, i will give a short example:</p>
 
 	<blockquote><pre>
@@ -1517,6 +1526,12 @@ div
 
 <a name="changes"></a><h1>5. Guidelines Changelog</h1>
 <div class="paragraph">
+
+<h2>Revision 1.9-1.10</h2>
+
+<ul class="menu">
+	<li>Added sql_query_limit to <a href="#sql">2.iii. SQL/SQL Layout</a>.</li>
+</ul>
 
 <h2>Revision 1.8</h2>
 

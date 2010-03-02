@@ -7,9 +7,8 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 * @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr
-* remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset)
-*				strspn, chr, ord
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
+* remaining:	strspn, chr, ord
 */
 
 /**
@@ -63,7 +62,7 @@ if (!extension_loaded('xml'))
 	/**
 	* Implementation of PHP's native utf8_decode for people without XML support
 	*
-	* @param string $string UTF-8 encoded data
+	* @param string $str UTF-8 encoded data
 	* @return string ISO-8859-1 encoded data
 	*/
 	function utf8_decode($str)
@@ -126,7 +125,14 @@ if (extension_loaded('mbstring'))
 				return false;
 			}
 
-			return mb_strrpos($str, $search);
+			if (is_null($offset))
+			{
+				return mb_strrpos($str, $needle);
+			}
+			else
+			{
+				return mb_strrpos($str, $needle, $offset);
+			}
 		}
 	}
 	else
@@ -138,7 +144,7 @@ if (extension_loaded('mbstring'))
 		function utf8_strrpos($str,	$needle, $offset = null)
 		{
 			// offset for mb_strrpos was added in 5.2.0
-			if ($offset === false)
+			if (is_null($offset))
 			{
 				// Emulate behaviour of strrpos rather than raising warning
 				if (empty($str))
@@ -146,7 +152,7 @@ if (extension_loaded('mbstring'))
 					return false;
 				}
 
-				return mb_strrpos($str, $search);
+				return mb_strrpos($str, $needle);
 			}
 			else
 			{
@@ -158,7 +164,7 @@ if (extension_loaded('mbstring'))
 
 				$str = mb_substr($str, $offset);
 
-				if (false !== ($pos = mb_strrpos($str, $search)))
+				if (false !== ($pos = mb_strrpos($str, $needle)))
 				{
 					return $pos + $offset;
 				}
@@ -174,7 +180,7 @@ if (extension_loaded('mbstring'))
 	*/
 	function utf8_strpos($str, $needle, $offset = null)
 	{
-		if ($offset === false)
+		if (is_null($offset))
 		{
 			return mb_strpos($str, $needle);
 		}
@@ -206,9 +212,9 @@ if (extension_loaded('mbstring'))
 	* UTF-8 aware alternative to substr
 	* @ignore
 	*/
-	function utf8_substr($str, $offset,	$length	= null)
+	function utf8_substr($str, $offset, $length = null)
 	{
-		if ($length === false)
+		if (is_null($length))
 		{
 			return mb_substr($str, $offset);
 		}
@@ -234,9 +240,9 @@ else
 	* Find position of last occurrence of a char in a string
 	* 
 	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer (optional) offset (from left)
+	* @param string $str haystack
+	* @param string $needle needle
+	* @param integer $offset (optional) offset (from left)
 	* @return mixed integer position or FALSE on failure
 	*/
 	function utf8_strrpos($str,	$needle, $offset = null)
@@ -279,9 +285,9 @@ else
 	* Find position of first occurrence of a string
 	*
 	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer offset in characters (from left)
+	* @param string $str haystack
+	* @param string $needle needle
+	* @param integer $offset offset in characters (from left)
 	* @return mixed integer position or FALSE on failure
 	*/
 	function utf8_strpos($str, $needle, $offset = null)
@@ -482,9 +488,9 @@ else
 	* necessary. It isn't necessary for +ve offsets and no specified length
 	*
 	* @author Chris Smith<chris@jalakai.co.uk>
-	* @param string
-	* @param integer number of UTF-8 characters offset (from left)
-	* @param integer (optional) length in UTF-8 characters from offset
+	* @param string $str
+	* @param integer $offset number of UTF-8 characters offset (from left)
+	* @param integer $length (optional) length in UTF-8 characters from offset
 	* @return mixed string or FALSE if failure
 	*/
 	function utf8_substr($str, $offset, $length = NULL)
@@ -624,8 +630,8 @@ else
 * Convert a string to an array
 * 
 * @author Harry Fuecks
-* @param string UTF-8 encoded
-* @param int number to characters to split string by
+* @param string $str UTF-8 encoded
+* @param int $split_len number to characters to split string by
 * @return string characters in string reverses
 */
 function utf8_str_split($str, $split_len = 1)
@@ -650,8 +656,6 @@ function utf8_str_split($str, $split_len = 1)
 * Find length of initial segment not matching mask
 * 
 * @author Harry Fuecks
-* @param string
-* @return int
 */
 function utf8_strspn($str, $mask, $start = null, $length = null)
 {
@@ -831,8 +835,8 @@ function utf8_ord($chr)
 /**
 * Converts an NCR to a UTF-8 char
 *
-* @param integer $cp UNICODE code point
-* @return string UTF-8 char
+* @param	int		$cp	UNICODE code point
+* @return	string		UTF-8 char
 */
 function utf8_chr($cp)
 {
@@ -858,9 +862,8 @@ function utf8_chr($cp)
 * Convert Numeric Character References to UTF-8 chars
 *
 * Notes:
-*  - we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
-*  - we DO NOT check for the existence of the Unicode characters, therefore an entity
-*    may be converted to an inexistent codepoint
+*	- we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
+*	- we DO NOT check for the existence of the Unicode characters, therefore an entity may be converted to an inexistent codepoint
 *
 * @param	string	$text		String to convert, encoded in UTF-8 (no normal form required)
 * @return	string				UTF-8 string where NCRs have been replaced with the actual chars
@@ -890,9 +893,9 @@ function utf8_decode_ncr_callback($m)
 * Takes an array of ints representing the Unicode characters and returns
 * a UTF-8 string.
 *
-* @param string $text text to be case folded
-* @param string $option determines how we will fold the cases
-* @return string case folded text
+* @param	string	$text	text to be case folded
+* @param	string	$option	determines how we will fold the cases
+* @return	string			case folded text
 */
 function utf8_case_fold($text, $option = 'full')
 {
@@ -933,30 +936,35 @@ function utf8_case_fold($text, $option = 'full')
 * A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
 * to be in NFC (Normalization Form Composition).
 *
-* @param	mixed	$strings Either an array of references to strings, a reference to an array of strings or a reference to a single string
+* @param	mixed	$strings	a string or an array of strings to normalize
+* @return	mixed				the normalized content, preserving array keys if array given.
 */
 function utf8_normalize_nfc($strings)
 {
-	if (!is_array($strings) || (sizeof($strings) > 0))
-    {	
-		if (!class_exists('utf_normalizer'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-		}
+	if (empty($strings))
+	{
+		return $strings;
+	}
 
-		if (is_array($strings))
+	if (!class_exists('utf_normalizer'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+	}
+
+	if (!is_array($strings))
+	{
+		utf_normalizer::nfc($strings);
+	}
+	else if (is_array($strings))
+	{
+		foreach ($strings as $key => $string)
 		{
-			foreach ($strings as $key => $string)
-			{
-				$strings[$key] = utf_normalizer::nfc($strings[$key]);
-			}
-		}
-		else
-		{
-			$strings = utf_normalizer::nfc($strings);
+			utf_normalizer::nfc($strings[$key]);
 		}
 	}
+
+	return $strings;
 }
 
 /**
@@ -969,8 +977,8 @@ function utf8_normalize_nfc($strings)
 * functions used here you need to rebuild/update the username_clean column in the users table. And all other
 * columns that store a clean string otherwise you will break this functionality.
 *
-* @param	$text	An unclean string, mabye user input (has to be valid UTF-8!)
-* @return			Cleaned up version of the input string
+* @param	string	$text	An unclean string, mabye user input (has to be valid UTF-8!)
+* @return	string			Cleaned up version of the input string
 */
 function utf8_clean_string($text)
 {
@@ -982,7 +990,7 @@ function utf8_clean_string($text)
 		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 	}
 
-	$text = utf_normalizer::nfc($text);
+	utf_normalizer::nfc($text);
 
 	static $homographs = array(
 		// cyrllic

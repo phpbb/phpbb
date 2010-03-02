@@ -135,11 +135,11 @@ $help = array(
 		1 => 'Only registered users can vote in polls (so as to prevent spoofing of results). If you have registered and still cannot vote then you probably do not have appropriate access rights.'
 	),
 	array(
-		0 => 'Why can’t I add attachements?',
+		0 => 'Why can’t I add attachments?',
 		1 => 'The ability to add attachments can be done on a per forum, per group, or per user basis. The board administrator may not have allowed attachments to be added for the specific forum you are posting in, or perhaps only the administrator group can post attachments. Contact the board administrator if you are unsure about why you are unable to add attachments.'
 	),
 	array(
-		0 => 'Why did I receieve a warning?',
+		0 => 'Why did I receive a warning?',
 		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of your rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
 	),
 	array(

@@ -52,17 +52,12 @@
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 				<!-- ENDIF -->
 			</td>
-			<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
+			<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_FULL}</p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 			<td class="row1" width="140" align="center">
 				<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
-				<p class="topicdetails">
-					<!-- IF topicrow.U_LAST_POST_AUTHOR -->
-						<a href="{topicrow.U_LAST_POST_AUTHOR}"  <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR -->style="color: {topicrow.LAST_POST_AUTHOR_COLOUR}; font-weight: bold;"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a>
-					<!-- ELSE -->
-						{topicrow.LAST_POST_AUTHOR}
-					<!-- ENDIF -->
+				<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 				</p>
 			</td>
@@ -92,7 +87,7 @@
 	<br clear="all" />
 <!-- ENDIF -->
 
-<!-- IF S_IS_POSTABLE -->
+<!-- IF S_IS_POSTABLE or S_NO_READ_ACCESS -->
 	<div id="pageheader">
 		<h2><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
 
@@ -108,6 +103,35 @@
 <!-- ENDIF -->
 
 <div id="pagecontent">
+
+<!-- IF S_NO_READ_ACCESS -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="row1" height="30" align="center" valign="middle"><span class="gen">{L_NO_READ_ACCESS}</span></td>
+	</tr>
+	</table>
+
+	<!-- IF not S_USER_LOGGED_IN -->
+
+		<br /><br />
+
+		<form method="post" action="{S_LOGIN_ACTION}">
+		
+		<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="cat"><h4><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></h4></td>
+		</tr>
+		<tr>
+			<td class="row1" align="center"><span class="genmed">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" />&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
+		</tr>
+		</table>
+		
+		</form>
+
+	<!-- ENDIF -->
+
+	<br clear="all" />
+<!-- ENDIF -->
 
 	<!-- IF S_IS_POSTABLE or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
@@ -179,12 +203,12 @@
 						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 					<!-- ENDIF -->
 				</td>
-				<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
+				<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_FULL}</p></td>
 				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 				<td class="row1" width="140" align="center">
 					<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
-					<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}"<!-- IF topicrow.LAST_POST_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+					<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
 						<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 					</p>
 				</td>
