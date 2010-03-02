@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_attachments
@@ -31,6 +39,24 @@ class ucp_attachments
 
 		if ($delete && sizeof($delete_ids))
 		{
+			// Validate $delete_ids...
+			$sql = 'SELECT attach_id
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE poster_id = ' . $user->data['user_id'] . '
+					AND is_orphan = 0
+					AND ' . $db->sql_in_set('attach_id', $delete_ids);
+			$result = $db->sql_query($sql);
+
+			$delete_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$delete_ids[] = $row['attach_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		if ($delete && sizeof($delete_ids))
+		{
 			$s_hidden_fields = array(
 				'delete'	=> 1
 			);
@@ -46,6 +72,7 @@ class ucp_attachments
 				{
 					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 				}
+
 				delete_attachments('attach', $delete_ids);
 
 				meta_refresh(3, $this->u_action);
@@ -94,7 +121,7 @@ class ucp_attachments
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
-			FROM ' . ATTACHMENTS_TABLE . ' a 
+			FROM ' . ATTACHMENTS_TABLE . ' a
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
 				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
@@ -134,30 +161,30 @@ class ucp_attachments
 
 					'S_IN_MESSAGE'		=> $row['in_message'],
 
-					'U_VIEW_ATTACHMENT'	=> append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $row['attach_id']),
+					'U_VIEW_ATTACHMENT'	=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $row['attach_id']),
 					'U_VIEW_TOPIC'		=> $view_topic)
 				);
 
 				$row_count++;
-			} 
+			}
 			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
 			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
 
-			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_FILESIZE'		=> $this->u_action . "&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_DOWNLOADS'		=> $this->u_action . "&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_POST_TIME'		=> $this->u_action . "&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_TOPIC_TITLE'	=> $this->u_action . "&amp;sk=g&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'), 
+			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_FILESIZE'		=> $this->u_action . "&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_DOWNLOADS'		=> $this->u_action . "&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_POST_TIME'		=> $this->u_action . "&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_TOPIC_TITLE'	=> $this->u_action . "&amp;sk=g&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
 
 			'S_DISPLAY_MARK_ALL'	=> ($num_attachments) ? true : false,
 			'S_DISPLAY_PAGINATION'	=> ($num_attachments) ? true : false,

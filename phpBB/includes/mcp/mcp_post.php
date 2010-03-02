@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Handling actions in post details screen
 */
 function mcp_post_details($id, $mode, $action)
@@ -24,6 +32,8 @@ function mcp_post_details($id, $mode, $action)
 	// Get post data
 	$post_info = get_post_data(array($post_id), false, true);
 
+	add_form_key('mcp_post_details');
+
 	if (!sizeof($post_info))
 	{
 		trigger_error('POST_NOT_EXIST');
@@ -36,20 +46,18 @@ function mcp_post_details($id, $mode, $action)
 	{
 		case 'whois':
 
-			$ip = request_var('ip', '');
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			if ($auth->acl_get('m_info', $post_info['forum_id']))
+			{
+				$ip = request_var('ip', '');
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-			$whois = user_ipwhois($ip);
-
-			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(ht{2}p:/{2}\S*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-
-			$template->assign_vars(array(
-				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
-				'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
-				'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
-				'WHOIS'			=> trim($whois))
-			);
+				$template->assign_vars(array(
+					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+					'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
+					'WHOIS'			=> user_ipwhois($ip),
+				));
+			}
 
 			// We're done with the whois page so return
 			return;
@@ -84,7 +92,14 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($auth->acl_get('m_chgposter', $post_info['forum_id']))
 			{
-				change_poster($post_info, $row);
+				if (check_form_key('mcp_post_details'))
+				{
+					change_poster($post_info, $row);
+				}
+				else
+				{
+					trigger_error('FORM_INVALID');
+				}
 			}
 
 		break;
@@ -178,7 +193,6 @@ function mcp_post_details($id, $mode, $action)
 
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
-		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp_chgposter&field=username&select_single=true', false),
 		'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
@@ -304,7 +318,7 @@ function mcp_post_details($id, $mode, $action)
 		if (sizeof($users_ary))
 		{
 			// Get the usernames
-			$sql = 'SELECT user_id, username 
+			$sql = 'SELECT user_id, username
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', array_keys($users_ary));
 			$result = $db->sql_query($sql);
@@ -406,7 +420,7 @@ function change_poster(&$post_info, $userdata)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
-			WHERE user_id = ' . $post_info['user_id'] .' 
+			WHERE user_id = ' . $post_info['user_id'] .'
 			AND user_posts > 0';
 		$db->sql_query($sql);
 

@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package diff
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -269,7 +270,7 @@ class diff_renderer
 * Renders a unified diff
 * @package diff
 */
-class diff_renderer_unified extends diff_renderer 
+class diff_renderer_unified extends diff_renderer
 {
 	var $_leading_context_lines = 4;
 	var $_trailing_context_lines = 4;
@@ -284,12 +285,12 @@ class diff_renderer_unified extends diff_renderer
 
 	function _block_header($xbeg, $xlen, $ybeg, $ylen)
 	{
-		if ($xlen != 1) 
+		if ($xlen != 1)
 		{
 			$xbeg .= ',' . $xlen;
 		}
 
-		if ($ylen != 1) 
+		if ($ylen != 1)
 		{
 			$ybeg .= ',' . $ylen;
 		}
@@ -505,7 +506,7 @@ class diff_renderer_inline extends diff_renderer
 *
 * @package diff
 */
-class diff_renderer_raw extends diff_renderer 
+class diff_renderer_raw extends diff_renderer
 {
 	var $_leading_context_lines = 4;
 	var $_trailing_context_lines = 4;
@@ -520,12 +521,12 @@ class diff_renderer_raw extends diff_renderer
 
 	function _block_header($xbeg, $xlen, $ybeg, $ylen)
 	{
-		if ($xlen != 1) 
+		if ($xlen != 1)
 		{
 			$xbeg .= ',' . $xlen;
 		}
 
-		if ($ylen != 1) 
+		if ($ylen != 1)
 		{
 			$ybeg .= ',' . $ylen;
 		}
@@ -559,7 +560,7 @@ class diff_renderer_raw extends diff_renderer
 *
 * @package diff
 */
-class diff_renderer_side_by_side extends diff_renderer 
+class diff_renderer_side_by_side extends diff_renderer
 {
 	var $_leading_context_lines = 3;
 	var $_trailing_context_lines = 3;
@@ -647,7 +648,7 @@ class diff_renderer_side_by_side extends diff_renderer
 						break;
 
 						case 'change':
-							// Pop the old/new stacks one by one, until both are empty. 
+							// Pop the old/new stacks one by one, until both are empty.
 							$oldsize = sizeof($change['old']);
 							$newsize = sizeof($change['new']);
 							$left = $right = '';

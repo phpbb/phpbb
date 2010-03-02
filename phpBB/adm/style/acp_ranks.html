@@ -7,13 +7,13 @@
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		function update_image(newimage)
 		{
-			document.getElementById('image').src = (newimage) ? "{RANKS_PATH}/" + newimage : "./images/spacer.gif";
+			document.getElementById('image').src = (newimage) ? "{RANKS_PATH}/" + encodeURI(newimage) : "./images/spacer.gif";
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_ACP_MANAGE_RANKS}</h1>
@@ -52,7 +52,7 @@
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->
@@ -90,7 +90,7 @@
 		<input class="button2" name="add" type="submit" value="{L_ADD_RANK}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

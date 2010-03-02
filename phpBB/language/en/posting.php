@@ -13,6 +13,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -44,7 +49,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
-	'BBCODE_F_HELP'				=> 'Font size: [size=x-small]small text[/size]',
+	'BBCODE_F_HELP'				=> 'Font size: [size=85]small text[/size]',
 	'BBCODE_IS_OFF'				=> '%sBBCode%s is <em>OFF</em>',
 	'BBCODE_IS_ON'				=> '%sBBCode%s is <em>ON</em>',
 	'BBCODE_I_HELP'				=> 'Italic text: [i]text[/i]',
@@ -207,6 +212,7 @@ $lang = array_merge($lang, array(
 	'USER_CANNOT_FORUM_POST'	=> 'You are not able to do posting operations on this forum due to the forum type not supporting it.',
 
 	'VIEW_MESSAGE'				=> '%sView your submitted message%s',
+	'VIEW_PRIVATE_MESSAGE'		=> '%sView your submitted private message%s',
 
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s.',
 	'WRONG_SIZE'				=> 'The image must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high. The submitted image is %5$d pixels wide and %6$d pixels high.',

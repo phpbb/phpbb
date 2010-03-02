@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_permissions
@@ -46,7 +54,6 @@ class acp_permissions
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
-			
 			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
@@ -65,6 +72,9 @@ class acp_permissions
 
 		$group_id = request_var('group_id', array(0));
 		$select_all_groups = request_var('select_all_groups', 0);
+
+		$form_name = 'acp_permissions';
+		add_form_key($form_name);
 
 		// If select all groups is set, we pre-build the group id array (this option is used for other screens to link to the permission settings screen)
 		if ($select_all_groups)
@@ -214,6 +224,11 @@ class acp_permissions
 			switch ($action)
 			{
 				case 'delete':
+
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
 					// All users/groups selected?
 					$all_users = (isset($_POST['all_users'])) ? true : false;
 					$all_groups = (isset($_POST['all_groups'])) ? true : false;
@@ -247,6 +262,10 @@ class acp_permissions
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
 				break;
@@ -255,6 +274,10 @@ class acp_permissions
 					if (!isset($_POST['setting']))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -332,8 +355,7 @@ class acp_permissions
 					$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
 						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
-						'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_victim&field=username&select_single=true', false))
-					);
+					));
 
 				break;
 
@@ -395,8 +417,7 @@ class acp_permissions
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
 						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
-						'UA_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=add_user&field=username&select_single=true', false))
-					);
+					));
 
 				break;
 			}
@@ -588,7 +609,7 @@ class acp_permissions
 		}
 	}
 
-	/** 
+	/**
 	* Apply permissions
 	*/
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
@@ -612,6 +633,14 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
+		if (empty($_POST['setting']) || empty($_POST['setting'][$ug_id]) || empty($_POST['setting'][$ug_id][$forum_id]) || !is_array($_POST['setting'][$ug_id][$forum_id]))
+		{
+			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
+		}
+
+		// We obtain and check $_POST['setting'][$ug_id][$forum_id] directly and not using request_var() because request_var()
+		// currently does not support the amount of dimensions required. ;)
+		//		$auth_settings = request_var('setting', array(0 => array(0 => array('' => 0))));
 		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
 
 		// Do we have a role we want to set?
@@ -669,7 +698,7 @@ class acp_permissions
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
-	/** 
+	/**
 	* Apply all permissions
 	*/
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
@@ -841,7 +870,7 @@ class acp_permissions
 		else
 		{
 			// Grab the forum details if non-zero forum_id
-			$sql = 'SELECT forum_name 
+			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);

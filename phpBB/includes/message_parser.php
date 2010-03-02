@@ -672,6 +672,11 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
+		/**
+		* If you change this code, make sure the cases described within the following reports are still working:
+		* #3572, #14667
+		*/
+
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -801,11 +806,18 @@ class bbcode_firstpass extends bbcode
 				{
 					// Search the text for the next tok... if an ending quote comes first, then change tok to []
 					$pos1 = strpos($in, '[/quote');
+					// If the token ] comes first, we change it to ]
 					$pos2 = strpos($in, ']');
+					// If the token [ comes first, we change it to [
+					$pos3 = strpos($in, '[');
 
-					if ($pos1 !== false && ($pos2 === false || $pos1 < $pos2))
+					if ($pos1 !== false && ($pos2 === false || $pos1 < $pos2) && ($pos3 === false || $pos1 < $pos3))
 					{
 						$tok = '[]';
+					}
+					else if ($pos3 !== false && ($pos2 === false || $pos3 < $pos2))
+					{
+						$tok = '[';
 					}
 					else
 					{
@@ -875,7 +887,7 @@ class bbcode_firstpass extends bbcode
 	* Validate url
 	*
 	* @param string $var1 optional url parameter for url bbcode: [url(=$var1)]$var2[/url]
-	* @param string $var2 url bbcode content: [url(=$var1)]$var2[/url] 
+	* @param string $var2 url bbcode content: [url(=$var1)]$var2[/url]
 	*/
 	function validate_url($var1, $var2)
 	{
@@ -921,7 +933,7 @@ class bbcode_firstpass extends bbcode
 				$url = append_sid($url);
 			}
 
-			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']';
 		}
 
 		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
@@ -967,7 +979,7 @@ class bbcode_firstpass extends bbcode
 			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)
 			{
 				// Ok, actually we allow linking to some files (this may be able to be extended in some way later...)
-				if (strpos($url, '/' . $check_path . '/download.' . $phpEx) !== 0)
+				if (strpos($url, '/' . $check_path . '/download/file.' . $phpEx) !== 0)
 				{
 					return false;
 				}
@@ -1006,7 +1018,7 @@ class parse_message extends bbcode_firstpass
 	function parse_message($message = '')
 	{
 		// Init BBCode UID
-		$this->bbcode_uid = substr(md5(time()), 0, BBCODE_UID_LEN);
+		$this->bbcode_uid = substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
 
 		if ($message)
 		{
@@ -1048,8 +1060,8 @@ class parse_message extends bbcode_firstpass
 		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
-		// Message length check. -1 disables this check completely.
-		if ($config['max_' . $mode . '_chars'] != -1)
+		// Message length check. 0 disables this check completely.
+		if ($config['max_' . $mode . '_chars'] > 0)
 		{
 			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 	
@@ -1058,6 +1070,13 @@ class parse_message extends bbcode_firstpass
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
 				return $this->warn_msg;
 			}
+		}
+
+		// Check for "empty" message
+		if (!utf8_clean_string($this->message))
+		{
+			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
+			return $this->warn_msg;
 		}
 
 		// Prepare BBcode (just prepares some tags for better parsing)
@@ -1221,20 +1240,20 @@ class parse_message extends bbcode_firstpass
 			{
 				case 'mssql':
 				case 'mssql_odbc':
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';
 				break;
 	
 				case 'firebird':
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY CHAR_LENGTH(code) DESC';
 				break;
 
 				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
 				default:
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LENGTH(code) DESC';
 				break;

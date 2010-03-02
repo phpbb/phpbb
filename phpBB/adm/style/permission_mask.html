@@ -1,6 +1,6 @@
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 	var active_pmask = '0';
 	var active_fmask = '0';
 	var active_cat = '0';
@@ -12,7 +12,7 @@
 	<!-- IF S_ROLE_JS_ARRAY -->
 		{S_ROLE_JS_ARRAY}
 	<!-- ENDIF -->
-//-->
+// ]]>
 </script>
 <script type="text/javascript" src="style/permissions.js"></script>
 
@@ -102,7 +102,7 @@
 				<tbody>
 				<!-- BEGIN mask -->
 					<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
-					<th class="permissions-name<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->"><!-- IF p_mask.f_mask.category.mask.U_TRACE --><a href="#" class="trace" onclick="trace('{p_mask.f_mask.category.mask.U_TRACE}'); return false;" title="{L_TRACE_SETTING}"><img src="images/icon_trace.gif" alt="{L_TRACE_SETTING}" /></a> <!-- ENDIF -->{p_mask.f_mask.category.mask.PERMISSION}</th>
+					<th class="permissions-name<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->"><!-- IF p_mask.f_mask.category.mask.U_TRACE --><a href="{p_mask.f_mask.category.mask.U_TRACE}" class="trace" onclick="popup(this.href, 750, 515, '_trace'); return false;" title="{L_TRACE_SETTING}"><img src="images/icon_trace.gif" alt="{L_TRACE_SETTING}" /></a> <!-- ENDIF -->{p_mask.f_mask.category.mask.PERMISSION}</th>
 					<!-- IF p_mask.S_VIEW -->
 						<td<!-- IF p_mask.f_mask.category.mask.S_YES --> class="yes"<!-- ENDIF -->>&nbsp;</td>
 						<td<!-- IF p_mask.f_mask.category.mask.S_NEVER --> class="never"<!-- ENDIF -->></td>

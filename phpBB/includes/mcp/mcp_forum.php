@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * MCP Forum View
@@ -78,7 +86,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		}
 	}
 
-	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode", $forum_id . (($merge_select) ? $selected_ids : ''), false, 'm_');
+	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($merge_select) ? $selected_ids : ''), $forum_id, false, 'm_', true);
 
 	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $config['topics_per_page'];
 

@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -24,6 +32,9 @@ class acp_groups
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
 
+		$form_key = 'acp_groups';
+		add_form_key($form_key);
+
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		// Check and set some common vars
@@ -36,6 +47,7 @@ class acp_groups
 		$start		= request_var('start', 0);
 		$update		= (isset($_POST['update'])) ? true : false;
 
+
 		// Clear some vars
 		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
@@ -43,8 +55,8 @@ class acp_groups
 		// Grab basic data for group, if group_id is set and exists
 		if ($group_id)
 		{
-			$sql = 'SELECT * 
-				FROM ' . GROUPS_TABLE . " 
+			$sql = 'SELECT *
+				FROM ' . GROUPS_TABLE . "
 				WHERE group_id = $group_id";
 			$result = $db->sql_query($sql);
 			$group_row = $db->sql_fetchrow($result);
@@ -111,9 +123,9 @@ class acp_groups
 
 						do
 						{
-							$sql = 'SELECT user_id 
+							$sql = 'SELECT user_id
 								FROM ' . USER_GROUP_TABLE . "
-								WHERE group_id = $group_id 
+								WHERE group_id = $group_id
 								ORDER BY user_id";
 							$result = $db->sql_query_limit($sql, 200, $start);
 
@@ -251,13 +263,18 @@ class acp_groups
 
 				$error = array();
 				$user->add_lang('ucp');
-			
+
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
 				// Did we submit?
 				if ($update)
 				{
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
 					$group_desc = utf8_normalize_nfc(request_var('group_desc', '', true));
 					$group_type	= request_var('group_type', GROUP_FREE);
@@ -290,10 +307,10 @@ class acp_groups
 					{
 						// Avatar stuff
 						$var_ary = array(
-							'uploadurl'		=> array('string', true, 5, 255), 
-							'remotelink'	=> array('string', true, 5, 255), 
-							'width'			=> array('string', true, 1, 3), 
-							'height'		=> array('string', true, 1, 3), 
+							'uploadurl'		=> array('string', true, 5, 255),
+							'remotelink'	=> array('string', true, 5, 255),
+							'width'			=> array('string', true, 1, 3),
+							'height'		=> array('string', true, 1, 3),
 						);
 
 						if (!($error = validate_data($data, $var_ary)))
@@ -366,7 +383,7 @@ class acp_groups
 					if (!sizeof($error))
 					{
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
-						// group. This prevents existing group members being updated if no changes 
+						// group. This prevents existing group members being updated if no changes
 						// were made.
 
 						$group_attributes = array();
@@ -468,7 +485,7 @@ class acp_groups
 					$group_rank = $group_row['group_rank'];
 				}
 
-				$sql = 'SELECT * 
+				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
@@ -558,7 +575,6 @@ class acp_groups
 
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
-					'UA_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&name=group_colour', false),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
 					)
@@ -577,9 +593,9 @@ class acp_groups
 				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-					WHERE ug.group_id = $group_id 
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
+					WHERE ug.group_id = $group_id
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 1
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
@@ -600,9 +616,9 @@ class acp_groups
 				$db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
-				$sql = 'SELECT COUNT(user_id) AS total_members 
-					FROM ' . USER_GROUP_TABLE . " 
-					WHERE group_id = $group_id 
+				$sql = 'SELECT COUNT(user_id) AS total_members
+					FROM ' . USER_GROUP_TABLE . "
+					WHERE group_id = $group_id
 						AND group_leader = 0";
 				$result = $db->sql_query($sql);
 				$total_members = (int) $db->sql_fetchfield('total_members');
@@ -628,14 +644,13 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=list&field=usernames', false),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
-				);
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
+				));
 
 				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-					WHERE ug.group_id = $group_id 
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
+					WHERE ug.group_id = $group_id
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 0
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";

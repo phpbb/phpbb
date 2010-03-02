@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -52,7 +52,7 @@ if (!isset($sort_key_text[$sort_key]))
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Whois requested
-if ($mode == 'whois')
+if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
 	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -64,14 +64,7 @@ if ($mode == 'whois')
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$whois = user_ipwhois($row['session_ip']);
-
-		$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-
-		$template->assign_vars(array(
-			'WHOIS'	=> trim($whois))
-		);
+		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
 	}
 	$db->sql_freeresult($result);
 
@@ -113,7 +106,7 @@ if (!$show_guests)
 						FROM ' . SESSIONS_TABLE . '
 						WHERE session_user_id = ' . ANONYMOUS . '
 							AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-				')'; 
+				')';
 		break;
 
 		default:
@@ -132,7 +125,7 @@ if (!$show_guests)
 $sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
 		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
 	ORDER BY ' . $order_by;
 $result = $db->sql_query($sql);
@@ -250,7 +243,7 @@ while ($row = $db->sql_fetchrow($result))
 					case 'viewtopic':
 						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
 					break;
-	
+
 					case 'viewforum':
 						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
 					break;

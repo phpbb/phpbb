@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Permission/Auth class
 * @package phpBB3
 */
@@ -156,7 +164,7 @@ class auth
 			{
 				global $db;
 
-				$sql = 'SELECT forum_id 
+				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE;
 				
 				if (sizeof($this->acl))
@@ -578,7 +586,7 @@ class auth
 				)
 			),
 
-			'WHERE'		=> 'ao.auth_option_id = a.auth_option_id 
+			'WHERE'		=> 'ao.auth_option_id = a.auth_option_id
 				AND a.group_id = ug.group_id
 				AND ug.user_pending = 0
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
@@ -725,7 +733,7 @@ class auth
 
 		$hold_ary = array();
 
-		// Grab group settings... 
+		// Grab group settings...
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
 

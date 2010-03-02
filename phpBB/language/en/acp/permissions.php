@@ -1,18 +1,23 @@
 <?php
-/** 
+/**
 *
 * acp_permissions [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -257,15 +262,16 @@ $lang = array_merge($lang, array(
 	'TRACE_TOTAL'							=> 'Total',
 
 	'USERS_NOT_ASSIGNED'			=> 'No user assigned to this role',
-	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following default groups',
-	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following custom groups',
+	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following pre-defined groups',
+	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following user defined groups',
 
 	'VIEW_ASSIGNED_ITEMS'	=> 'View assigned items',
 	'VIEW_LOCAL_PERMS'		=> 'Local permissions',
 	'VIEW_GLOBAL_PERMS'		=> 'Global permissions',
 	'VIEW_PERMISSIONS'		=> 'View permissions',
 
-	'WRONG_PERMISSION_TYPE'	=> 'Wrong permission type selected.',
+	'WRONG_PERMISSION_TYPE'				=> 'Wrong permission type selected.',
+	'WRONG_PERMISSION_SETTING_FORMAT'	=> 'The permission settings are in a wrong format, phpBB is not able to process them correctly.',
 ));
 
 ?>

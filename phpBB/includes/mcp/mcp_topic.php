@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * View topic in MCP
@@ -34,12 +42,13 @@ function mcp_topic_view($id, $mode, $action)
 	$icon_id		= request_var('icon', 0);
 	$subject		= utf8_normalize_nfc(request_var('subject', '', true));
 	$start			= request_var('start', 0);
+	$sort_days_old	= request_var('st_old', 0);
 	$forum_id		= request_var('f', 0);
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
 	$sort			= isset($_POST['sort']) ? true : false;
-	
+
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
 	{
@@ -84,7 +93,7 @@ function mcp_topic_view($id, $mode, $action)
 	}
 
 	// Jumpbox, sort selects and that kind of things
-	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_');
+	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_', true);
 	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
 
 	$sort_days = $total = 0;
@@ -103,6 +112,10 @@ function mcp_topic_view($id, $mode, $action)
 	if ($posts_per_page == 0)
 	{
 		$posts_per_page = $total;
+	}
+	if (!empty($sort_days_old) && $sort_days_old != $sort_days)
+	{
+		$start = 0;
 	}
 
 	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
@@ -264,6 +277,10 @@ function mcp_topic_view($id, $mode, $action)
 		}
 	}
 
+	$s_hidden_fields = build_hidden_fields(array(
+		'st_old'	=> $sort_days,
+	));
+
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
@@ -290,10 +307,12 @@ function mcp_topic_view($id, $mode, $action)
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 		'S_SPLIT_VIEW'		=> ($action == 'split') ? true : false,
 
+		'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+
 		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 		'S_TOPIC_ICON'			=> $icon_id,
 
-		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select",
+		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 
 		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),

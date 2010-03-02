@@ -8,10 +8,18 @@
 *
 * @package login
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Login function
@@ -19,6 +27,15 @@
 function login_db(&$username, &$password)
 {
 	global $db, $config;
+
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
 
 	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
 		FROM ' . USERS_TABLE . "
@@ -116,15 +133,17 @@ function login_db(&$username, &$password)
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
 			if (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])
 			{
+				$hash = phpbb_hash($password_new_format);
+
 				// Update the password in the users table to the new format and remove user_pass_convert flag
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
+					SET user_password = \'' . $db->sql_escape($hash) . '\',
 						user_pass_convert = 0
 					WHERE user_id = ' . $row['user_id'];
 				$db->sql_query($sql);
 
 				$row['user_pass_convert'] = 0;
-				$row['user_password'] = md5($password_new_format);
+				$row['user_password'] = $hash;
 			}
 			else
 			{
@@ -145,8 +164,23 @@ function login_db(&$username, &$password)
 	}
 
 	// Check password ...
-	if (!$row['user_pass_convert'] && md5($password) == $row['user_password'])
+	if (!$row['user_pass_convert'] && phpbb_check_hash($password, $row['user_password']))
 	{
+		// Check for old password hash...
+		if (strlen($row['user_password']) == 32)
+		{
+			$hash = phpbb_hash($password);
+
+			// Update the password in the users table to the new format
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_password = '" . $db->sql_escape($hash) . "',
+					user_pass_convert = 0
+				WHERE user_id = {$row['user_id']}";
+			$db->sql_query($sql);
+
+			$row['user_password'] = $hash;
+		}
+
 		if ($row['user_login_attempts'] != 0)
 		{
 			// Successful, reset login attempts (the user passed all stages)

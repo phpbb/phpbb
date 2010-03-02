@@ -73,7 +73,7 @@ switch ($mode)
 	case 'leaders':
 		// Display a listing of board admins, moderators
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	
+
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
@@ -127,7 +127,7 @@ switch ($mode)
 
 		// Get group memberships for the admin id ary...
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
-		
+
 		$admin_user_ids = array();
 		
 		if (!empty($admin_memberships))
@@ -140,7 +140,7 @@ switch ($mode)
 		}
 		unset($admin_memberships);
 
-		$sql = 'SELECT forum_id, forum_name 
+		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_type = ' . FORUM_POST;
 		$result = $db->sql_query($sql);
@@ -268,6 +268,7 @@ switch ($mode)
 	break;
 
 	case 'contact':
+
 		$page_title = $user->lang['IM_USER'];
 		$template_html = 'memberlist_im.html';
 
@@ -327,36 +328,46 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'jabber':
+				add_form_key('memberlist_messaging');
+
 				if ($submit && @extension_loaded('xml') && $config['jab_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
-					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = utf8_normalize_nfc(request_var('message', '', true));
-
-					if (empty($message))
+					if (check_form_key('memberlist_messaging'))
 					{
-						trigger_error('EMPTY_MESSAGE_IM');
+
+						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
+						$message = utf8_normalize_nfc(request_var('message', '', true));
+
+						if (empty($message))
+						{
+							trigger_error('EMPTY_MESSAGE_IM');
+						}
+
+						$messenger = new messenger(false);
+
+						$messenger->template('profile_send_im', $row['user_lang']);
+						$messenger->subject(htmlspecialchars_decode($subject));
+
+						$messenger->replyto($user->data['user_email']);
+						$messenger->im($row['user_jabber'], $row['username']);
+
+						$messenger->assign_vars(array(
+							'BOARD_CONTACT'	=> $config['board_contact'],
+							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+							'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
+							'MESSAGE'		=> htmlspecialchars_decode($message))
+						);
+
+						$messenger->send(NOTIFY_IM);
+
+						$s_select = 'S_SENT_JABBER';
 					}
-
-					$messenger = new messenger(false);
-
-					$messenger->template('profile_send_im', $row['user_lang']);
-					$messenger->subject(htmlspecialchars_decode($subject));
-
-					$messenger->replyto($user->data['user_email']);
-					$messenger->im($row['user_jabber'], $row['username']);
-
-					$messenger->assign_vars(array(
-						'BOARD_CONTACT'	=> $config['board_contact'],
-						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
-						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
-						'MESSAGE'		=> htmlspecialchars_decode($message))
-					);
-
-					$messenger->send(NOTIFY_IM);
-
-					$s_select = 'S_SENT_JABBER';
+					else
+					{
+						trigger_error('FORM_INVALID');
+					}
 				}
 			break;
 		}
@@ -364,6 +375,11 @@ switch ($mode)
 		// Send vars to the template
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
+			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
+
+			'U_AIM_CONTACT'	=> ($action == 'aim') ? 'aim:addbuddy?screenname=' . urlencode($row[$sql_field]) : '',
+			'U_AIM_MESSAGE'	=> ($action == 'aim') ? 'aim:goim?screenname=' . urlencode($row[$sql_field]) . '&amp;message=' . urlencode($config['sitename']) : '',
+
 			'USERNAME'		=> $row['username'],
 			'CONTACT_NAME'	=> $row[$sql_field],
 			'SITENAME'		=> $config['sitename'],
@@ -583,7 +599,7 @@ switch ($mode)
 					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
 				break;
 			}
-	
+
 			$template->assign_vars(array(
 				'S_USER_INACTIVE'		=> true,
 				'USER_INACTIVE_REASON'	=> $inactive_reason)
@@ -601,6 +617,8 @@ switch ($mode)
 		// Send an email
 		$page_title = $user->lang['SEND_EMAIL'];
 		$template_html = 'memberlist_email.html';
+
+		add_form_key('memberlist_email');
 
 		if (!$config['email_enable'])
 		{
@@ -708,6 +726,10 @@ switch ($mode)
 
 		if ($submit)
 		{
+			if (!check_form_key('memberlist_email'))
+			{
+				$error[] = 'FORM_INVALID';
+			}
 			if ($user_id)
 			{
 				if (!$subject)
@@ -829,7 +851,7 @@ switch ($mode)
 			$template->assign_vars(array(
 				'S_SEND_USER'	=> true,
 				'USERNAME'		=> $row['username'],
-	
+
 				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
 				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id))
 			);
@@ -895,10 +917,14 @@ switch ($mode)
 		// then only admins can make use of this (for ACP functionality)
 		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
+
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
-		$select_single 	= request_var('select_single', false);	
+		$select_single 	= request_var('select_single', false);
 
+		// We validate form and field here, only id/class allowed
+		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
+		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
@@ -1154,27 +1180,47 @@ switch ($mode)
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
-		foreach (array('_POST', '_GET') as $global_var)
+
+		// We do not use request_var() here directly to save some calls (not all variables are set)
+		$check_params = array(
+			'g'				=> array('g', 0),
+			'sk'			=> array('sk', $default_key),
+			'sd'			=> array('sd', 'a'),
+			'form'			=> array('form', ''),
+			'field'			=> array('field', ''),
+			'select_single'	=> array('select_single', 0),
+			'username'		=> array('username', '', true),
+			'email'			=> array('email', ''),
+			'icq'			=> array('icq', ''),
+			'aim'			=> array('aim', ''),
+			'yahoo'			=> array('yahoo', ''),
+			'msn'			=> array('msn', ''),
+			'jabber'		=> array('jabber', ''),
+			'search_group_id'	=> array('search_group_id', 0),
+			'joined_select'	=> array('joined_select', 'lt'),
+			'active_select'	=> array('active_select', 'lt'),
+			'count_select'	=> array('count_select', 'eq'),
+			'joined'		=> array('joined', ''),
+			'active'		=> array('active', ''),
+			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
+			'ipdomain'		=> array('ip', ''),
+			'first_char'	=> array('first_char', ''),
+		);
+
+		foreach ($check_params as $key => $call)
 		{
-			foreach ($$global_var as $key => $var)
+			if (!isset($_REQUEST[$key]))
 			{
-				if ($global_var == '_POST')
-				{
-					unset($_GET[$key]);
-				}
+				continue;
+			}
 
-				if (in_array($key, array('submit', 'start', 'mode', 'char')) || empty($var))
-				{
-					continue;
-				}
+			$param = call_user_func_array('request_var', $call);
+			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
+			$params[] = $param;
 
-				$param = urlencode($key) . '=' . urlencode(htmlspecialchars($var));
-				$params[] = $param;
-
-				if (!in_array($key, array('sk', 'sd')))
-				{
-					$sort_params[] = $param;
-				}
+			if ($key != 'sk' && $key != 'sd')
+			{
+				$sort_params[] = $param;
 			}
 		}
 
@@ -1309,7 +1355,7 @@ switch ($mode)
 				$id_cache[$row['user_id']] = $row;
 			}
 			$db->sql_freeresult($result);
-				
+
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
@@ -1365,7 +1411,7 @@ switch ($mode)
 				unset($id_cache[$user_id]);
 			}
 		}
-	
+
 		// Generate page
 		$template->assign_vars(array(
 			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
@@ -1405,7 +1451,7 @@ switch ($mode)
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
 			'S_CHAR_OPTIONS'	=> $s_char_options,
-			'S_MODE_ACTION'		=> $pagination_url . "&amp;form=$form")
+			'S_MODE_ACTION'		=> $pagination_url)
 		);
 }
 
@@ -1498,6 +1544,8 @@ function show_profile($data)
 		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
 		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
 
+		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
+
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
@@ -1511,9 +1559,9 @@ function show_profile($data)
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . $data['user_icq'] : '',
+		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($data['user_icq']) : '',
 		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
-		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg' : '',
+		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',

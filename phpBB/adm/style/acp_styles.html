@@ -27,7 +27,7 @@
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_IMAGESET -->
@@ -51,15 +51,15 @@
 	<!-- ENDIF -->
 
 	<script type="text/javascript" defer="defer">
-	<!--
+	// <![CDATA[
 		function update_image(newimage)
 		{
-			document.getElementById('newimg').src = (newimage) ? "../styles/{NAME}/imageset/" + newimage : "images/no_image.png";
+			document.getElementById('newimg').src = (newimage) ? '../styles/{A_NAME}/imageset/' + encodeURI(newimage) : 'images/no_image.png';
 		}
-	//-->
+	// ]]>
 	</script>
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		/**
 		* Handle displaying/hiding the dimension fields
 		*/
@@ -85,7 +85,7 @@
 				dE('img_dimensions', -1);
 			<!-- ENDIF -->
 		}
-	//-->
+	// ]]>
 	</script>
 
 	<form method="post" action="{U_ACTION}">
@@ -148,37 +148,10 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_TEMPLATE or S_EDIT_THEME -->
-
-	<script type="text/javascript" defer="defer">
-	<!--
-		function append_text_rows(form_name, value)
-		{
-			url = document.getElementById(form_name).action;
-			var_start = url.indexOf('&text_rows=');
-			if (var_start == -1)
-			{
-				document.getElementById(form_name).action = url + "&text_rows=" + value;
-			}
-			else
-			{
-				url_start = url.substring(0, var_start + 1);
-				var_end = url.substring(var_start + 1).indexOf('&');
-				if (var_end == -1)
-				{
-					document.getElementById(form_name).action = url_start + "text_rows=" + value;
-				}
-				else
-				{
-					document.getElementById(form_name).action = url_start + url.substring(var_end + var_start + 2) + "&text_rows=" + value;
-				}
-			}
-		}
-	//-->
-	</script>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
@@ -199,15 +172,23 @@
 	</dl>
 	</fieldset>
 	<!-- ENDIF -->
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 	<!-- IF TEMPLATE_FILE or (S_EDIT_THEME and S_THEME_IN_DB) -->
 		<script type="text/javascript" defer="defer">
-		<!--
+		// <![CDATA[
 
 			function change_editor_height(height)
 			{
+				height = Number(height);
+
+				if (isNaN(height))
+				{
+					return;
+				}
+
 				editor = document.getElementById('template_data');
 				editor.rows = Math.max(5, Math.min(height, 999));
 
@@ -217,7 +198,18 @@
 
 			function append_text_rows(form_name, value)
 			{
+				value = Number(value);
+
+				if (isNaN(value))
+				{
+					return;
+				}
+
 				url = document.getElementById(form_name).action;
+
+				// Make sure &amp; is actually... &
+				url = url.replace(/&amp;/g, '&');
+
 				var_start = url.indexOf('&text_rows=');
 				if (var_start == -1)
 				{
@@ -237,7 +229,8 @@
 					}
 				}
 			}
-		//-->
+
+		// ]]>
 		</script>
 
 		<form id="acp_template" method="post" action="{U_ACTION}">
@@ -262,23 +255,12 @@
 			{S_HIDDEN_FIELDS}
 			<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 		</fieldset>
-
+		
+		{S_FORM_TOKEN}
 		</form>
 	<!-- ENDIF -->
 
 <!-- ELSEIF S_CACHE -->
-
-	<script type="text/javascript">
-	<!--
-
-		function viewsource(url)
-		{
-			window.open(url, '_source', 'HEIGHT=550,resizable=yes,scrollbars=yes,WIDTH=750');
-			return false;
-		}
-	
-	//-->
-	</script>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 	
@@ -303,7 +285,7 @@
 	<tbody>
 	<!-- BEGIN file -->
 		<!-- IF file.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{file.U_VIEWSOURCE}" onclick="viewsource('{file.UA_VIEWSOURCE}');return false">{file.FILENAME}</a></td>
+			<td><a href="{file.U_VIEWSOURCE}" onclick="popup(this.href, 750, 550, '_source'); return false;">{file.FILENAME}</a></td>
 			<td>{file.FILESIZE}</td>
 			<td>{file.CACHED}</td>
 			<td>{file.MODIFIED}</td>
@@ -324,6 +306,7 @@
 	</p>
 	</fieldset>
 
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EXPORT -->
@@ -381,6 +364,7 @@
 	</p>
 	</fieldset>
 
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_FRONTEND -->
@@ -525,7 +509,8 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</fieldset>
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

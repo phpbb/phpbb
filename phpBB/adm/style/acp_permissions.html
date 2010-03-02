@@ -39,7 +39,7 @@
 		</p>
 
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 		<!-- IF S_FORUM_MULTIPLE -->
@@ -60,7 +60,7 @@
 			</p>
 
 			</fieldset>
-
+			{S_FORM_TOKEN}
 			</form>
 			
 		<!-- ENDIF -->
@@ -74,7 +74,7 @@
 		<dl>
 			<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 			<dd><input class="text medium" type="text" id="username" name="username[]" /></dd>
-			<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
+			<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 			<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 		</dl>
 
@@ -83,7 +83,7 @@
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 		</p>
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 	<!-- ELSEIF S_SELECT_GROUP and S_CAN_SELECT_GROUP -->
@@ -103,7 +103,7 @@
 		</p>
 
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 		<!-- ELSEIF S_SELECT_USERGROUP -->
@@ -128,7 +128,7 @@
 				{S_HIDDEN_FIELDS}
 				<input type="submit" class="button2" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -138,7 +138,7 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><div style="float: {S_CONTENT_FLOW_END};">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</div><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
+				<dd class="full" style="text-align: left;"><div style="float: {S_CONTENT_FLOW_END};">[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</div><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 			</dl>
 			</fieldset>
 
@@ -146,7 +146,7 @@
 				{S_HIDDEN_FIELDS}
 				<input class="button1" type="submit" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -173,7 +173,7 @@
 				{S_HIDDEN_FIELDS}
 				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_groups" method="post" action="{U_ACTION}">
@@ -190,6 +190,7 @@
 				<input type="submit" class="button1" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -216,6 +217,7 @@
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -225,7 +227,7 @@
 			<dl>
 				<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 				<dd><input type="text" id="username" name="username[]" /></dd>
-				<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
+				<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 				<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 			</dl>
 			</fieldset>
@@ -234,7 +236,7 @@
 				{S_HIDDEN_FIELDS}
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
-
+			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -257,6 +259,7 @@
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="group" method="post" action="{U_ACTION}">
@@ -275,6 +278,7 @@
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
 
+			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -318,7 +322,7 @@
 
 			<input class="button2" type="submit" name="submit" value="{L_GO}" />
 		</fieldset>
-	
+		{S_FORM_TOKEN}	
 		</form>
 	<!-- ENDIF -->
 
@@ -327,9 +331,9 @@
 	<!-- include tooltip file -->
 	<script type="text/javascript" src="style/tooltip.js"></script>
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		window.onload = function(){enable_tooltips_select('set-permissions', '{LA_ROLE_DESCRIPTION}', 'role')};
-	//-->
+	// ]]>
 	</script>
 
 	<form id="set-permissions" method="post" action="{U_ACTION}">
@@ -346,7 +350,8 @@
 	</fieldset>
 
 	<br /><br />
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

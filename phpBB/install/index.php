@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -34,17 +34,17 @@ if (version_compare(PHP_VERSION, '4.3.3') < 0)
 function deregister_globals()
 {
 	$not_unset = array(
-		'GLOBALS' => true,
-		'_GET' => true,
-		'_POST' => true,
-		'_COOKIE' => true,
-		'_REQUEST' => true,
-		'_SERVER' => true,
-		'_SESSION' => true,
-		'_ENV' => true,
-		'_FILES' => true,
-		'phpEx' => true,
-		'phpbb_root_path' => true
+		'GLOBALS'	=> true,
+		'_GET'		=> true,
+		'_POST'		=> true,
+		'_COOKIE'	=> true,
+		'_REQUEST'	=> true,
+		'_SERVER'	=> true,
+		'_SESSION'	=> true,
+		'_ENV'		=> true,
+		'_FILES'	=> true,
+		'phpEx'		=> true,
+		'phpbb_root_path'	=> true
 	);
 
 	// Not only will array_merge and array_keys give a warning if
@@ -55,8 +55,7 @@ function deregister_globals()
 		$_SESSION = array();
 	}
 
-	// Merge all into one extremely huge array; unset
-	// this later
+	// Merge all into one extremely huge array; unset this later
 	$input = array_merge(
 		array_keys($_GET),
 		array_keys($_POST),
@@ -71,8 +70,26 @@ function deregister_globals()
 	{
 		if (isset($not_unset[$varname]))
 		{
-			// Hacking attempt. No point in continuing.
-			exit;
+			// Hacking attempt. No point in continuing unless it's a COOKIE
+			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
+			{
+				exit;
+			}
+			else
+			{
+				$cookie = &$_COOKIE;
+				while (isset($cookie['GLOBALS']))
+				{
+					foreach ($cookie['GLOBALS'] as $registered_var => $value)
+					{
+						if (!isset($not_unset[$registered_var]))
+						{
+							unset($GLOBALS[$registered_var]);
+						}
+					}
+					$cookie = &$cookie['GLOBALS'];
+				}
+			}
 		}
 
 		unset($GLOBALS[$varname]);
@@ -132,6 +149,12 @@ else
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
+if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+}
+
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/template.' . $phpEx);
@@ -211,12 +234,28 @@ $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
 // Set PHP error handler to ours
-set_error_handler('msg_handler');
+set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 $user = new user();
 $auth = new auth();
 $cache = new cache();
 $template = new template();
+
+// Add own hook handler, if present. :o
+if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+	foreach ($cache->obtain_hooks() as $hook)
+	{
+		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	}
+}
+else
+{
+	$phpbb_hook = false;
+}
 
 // Set some standard variables we want to force
 $config = array(
@@ -387,7 +426,10 @@ class module
 			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
+			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> ($lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
+
 			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);
@@ -415,7 +457,10 @@ class module
 			$db->sql_close();
 		}
 
-		exit;
+		if (function_exists('exit_handler'))
+		{
+			exit_handler();
+		}
 	}
 
 	/**
@@ -501,7 +546,7 @@ class module
 
 					if (is_array($this->module_ary[$this->id]['subs']))
 					{
-						$subs = $this->module_ary[$this->id]['subs']; 
+						$subs = $this->module_ary[$this->id]['subs'];
 						foreach ($subs as $option)
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
@@ -518,7 +563,7 @@ class module
 
 					if (is_array($this->module_ary[$this->id]['stages']))
 					{
-						$subs = $this->module_ary[$this->id]['stages']; 
+						$subs = $this->module_ary[$this->id]['stages'];
 						$matched = false;
 						foreach ($subs as $option)
 						{
@@ -606,7 +651,7 @@ class module
 			$db->sql_close();
 		}
 
-		exit;
+		exit_handler();
 	}
 
 	/**

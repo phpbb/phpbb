@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Compose private message
 * Called from ucp_pm with mode == 'compose'
 */
@@ -25,6 +33,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$action = 'post';
 	}
+	add_form_key('ucp_pm_compose');
 
 	// Grab only parameters needed here
 	$to_user_id		= request_var('u', 0);
@@ -105,8 +114,7 @@ function compose_pm($id, $mode, $action)
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
-			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&form=postform&field=username_list&select_single=$select_single", false))
-		);
+		));
 	}
 
 	$sql = '';
@@ -533,6 +541,10 @@ function compose_pm($id, $mode, $action)
 
 	if ($submit || $preview || $refresh)
 	{
+		if (!check_form_key('ucp_pm_compose'))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
 
@@ -605,7 +617,7 @@ function compose_pm($id, $mode, $action)
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
 				'from_user_id'			=> $user->data['user_id'],
-				'from_user_ip'			=> $user->data['user_ip'],
+				'from_user_ip'			=> $user->ip,
 				'from_username'			=> $user->data['username'],
 				'reply_from_root_level'	=> (isset($post['root_level'])) ? (int) $post['root_level'] : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
@@ -630,7 +642,7 @@ function compose_pm($id, $mode, $action)
 			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
 			meta_refresh(3, $return_message_url);
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
 			trigger_error($message);
 		}
 
@@ -969,9 +981,8 @@ function compose_pm($id, $mode, $action)
 
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
-		'UA_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&mode=popup', false),
-		)
-	);
+		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
+	));
 
 	// Build custom bbcodes array
 	display_custom_bbcodes();

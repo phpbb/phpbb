@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Session class
 * @package phpBB3
 */
@@ -51,18 +59,28 @@ class session
 		$script_name = str_replace(array('\\', '//'), '/', $script_name);
 
 		// Now, remove the sid and let us get a clean query string...
+		$use_args = array();
+
+		// Since some browser do not encode correctly we need to do this with some "special" characters...
+		// " -> %22, ' => %27, < -> %3C, > -> %3E
+		$find = array('"', "'", '<', '>');
+		$replace = array('%22', '%27', '%3C', '%3E');
+
 		foreach ($args as $key => $argument)
 		{
 			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
-				unset($args[$key]);
+				continue;
 			}
+
+			$use_args[str_replace($find, $replace, $key)] = str_replace($find, $replace, $argument);
 		}
+		unset($args);
 
 		// The following examples given are for an request uri of {path to the phpbb directory}/adm/index.php?i=10&b=2
 
 		// The current query string
-		$query_string = trim(implode('&', $args));
+		$query_string = trim(implode('&', $use_args));
 
 		// basenamed page name (for example: index.php)
 		$page_name = basename($script_name);
@@ -148,18 +166,12 @@ class session
 		{
 			$this->forwarded_for = preg_replace('#, +#', ', ', $this->forwarded_for);
 
-			// Whoa these look impressive!
-			// The code to generate the following two regular expressions which match valid IPv4/IPv6 addresses
-			// can be found in the develop directory
-			$ipv4 = '#^(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$#';
-			$ipv6 = '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){5}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:))$#i';
-
 			// split the list of IPs
 			$ips = explode(', ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-				if (!empty($ip) && !preg_match($ipv4, $ip) && !preg_match($ipv6, $ip))
+				if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 				{
 					// contains invalid data, don't use the forwarded for header
 					$this->forwarded_for = '';
@@ -363,7 +375,7 @@ class session
 
 		foreach ($active_bots as $row)
 		{
-			if ($row['bot_agent'] && strpos(strtolower($this->browser), strtolower($row['bot_agent'])) !== false)
+			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
 			{
 				$bot = $row['user_id'];
 			}
@@ -637,6 +649,24 @@ class session
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			unset($cookie_expire);
+			
+			$sql = 'SELECT COUNT(session_id) AS sessions
+					FROM ' . SESSIONS_TABLE . '
+					WHERE session_user_id = ' . (int) $this->data['user_id'] . '
+					AND session_time >= ' . ($this->time_now - $config['form_token_lifetime']);
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
+			{
+				$this->data['user_form_salt'] = unique_id();
+				// Update the form key
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\'
+					WHERE user_id = ' . (int) $this->data['user_id'];
+				$db->sql_query($sql);
+			}
 		}
 		else
 		{
@@ -746,6 +776,8 @@ class session
 	{
 		global $db, $config;
 
+		$batch_size = 10;
+		
 		if (!$this->time_now)
 		{
 			$this->time_now = time();
@@ -762,7 +794,7 @@ class session
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
 			GROUP BY session_user_id, session_page';
-		$result = $db->sql_query_limit($sql, 10);
+		$result = $db->sql_query_limit($sql, $batch_size);
 
 		$del_user_id = array();
 		$del_sessions = 0;
@@ -788,23 +820,55 @@ class session
 			$db->sql_query($sql);
 		}
 
-		if ($del_sessions < 10)
+		if ($del_sessions < $batch_size)
 		{
-			// Less than 10 sessions, update gc timer ... else we want gc
+			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
 			set_config('session_last_gc', $this->time_now, true);
+			
+			if ($config['max_autologin_time'])
+			{
+				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
+				$db->sql_query($sql);
+			}
+			$this->confirm_gc();
 		}
-
-		if ($config['max_autologin_time'])
-		{
-			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-			$db->sql_query($sql);
-		}
-
+		
 		return;
 	}
+	
+	function confirm_gc($type = 0)
+	{
+		global $db, $config;
+		
+		$sql = 'SELECT DISTINCT c.session_id
+				FROM ' . CONFIRM_TABLE . ' c
+				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
+				WHERE s.session_id IS NULL' .
+					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+		$result = $db->sql_query($sql);
 
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$sql_in = array();
+			do
+			{
+				$sql_in[] = (string) $row['session_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			if (sizeof($sql_in))
+			{
+				$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
+					WHERE ' . $db->sql_in_set('session_id', $sql_in);
+				$db->sql_query($sql);
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	
+	
 	/**
 	* Sets a cookie
 	*
@@ -921,7 +985,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips))
+					else if ($ip_banned)
 					{
 						$ban_triggered_by = 'ip';
 					}
@@ -1284,7 +1348,7 @@ class user extends session
 		else
 		{
 			// Set up style
-			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
+			$style = ($style) ? $style : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
 		}
 
 		$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
@@ -1479,6 +1543,10 @@ class user extends session
 				add_log('admin', 'LOG_IMAGESET_LANG_MISSING', $this->theme['imageset_name'], $this->img_lang);
 			}
 		}
+
+		// Call phpbb_user_session_handler() in case external application want to "bend" some variables or replace classes...
+		// After calling it we continue script execution...
+		phpbb_user_session_handler();
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))

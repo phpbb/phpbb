@@ -1,12 +1,17 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Helper functions for phpBB 2.0.x to phpBB 3.0.x conversion
@@ -215,7 +220,7 @@ function phpbb_insert_forums()
 			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
-			'enable_prune'		=> ($prune_enabled) ? $row['prune_enable'] : 0,
+			'enable_prune'		=> ($prune_enabled) ? (int)$row['prune_enable'] : 0,
 			'prune_next'		=> (int) null_to_zero($row['prune_next']),
 			'prune_days'		=> (int) null_to_zero($row['prune_days']),
 			'prune_viewed'		=> 0,
@@ -524,7 +529,7 @@ function phpbb_user_id($user_id)
 
 	// A user id of 0 can happen, for example within the ban table if no user is banned...
 	// Within the posts and topics table this can be "dangerous" but is the fault of the user
-	// having mods installed (a poster id of 0 is not possible in 2.0.x). 
+	// having mods installed (a poster id of 0 is not possible in 2.0.x).
 	// Therefore, we return the user id "as is".
 
 	return (int) $user_id;

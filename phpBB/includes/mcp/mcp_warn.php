@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * mcp_warn
@@ -36,6 +44,8 @@ class mcp_warn
 		}
 
 		$this->page_title = 'MCP_WARN';
+
+		add_form_key('mcp_warn');
 
 		switch ($mode)
 		{
@@ -71,7 +81,6 @@ class mcp_warn
 
 		$template->assign_vars(array(
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
-			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp&field=username&select_single=true', false),
 			'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user'),
 		));
 
@@ -194,7 +203,7 @@ class mcp_warn
 		$warning = utf8_normalize_nfc(request_var('warning', '', true));
 
 		$sql = 'SELECT u.*, p.*
-			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE post_id = $post_id
 				AND u.user_id = p.poster_id";
 		$result = $db->sql_query($sql);
@@ -242,8 +251,15 @@ class mcp_warn
 
 		if ($warning && $action == 'add_warning')
 		{
-			add_warning($user_row, $warning, $notify, $post_id);
-
+			if (check_form_key('mcp_warn'))
+			{
+				add_warning($user_row, $warning, $notify, $post_id);
+				$msg = $user->lang['USER_WARNING_ADDED'];
+			}
+			else
+			{
+				$msg = $user->lang['FORM_INVALID'];
+			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
 			trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
@@ -337,11 +353,18 @@ class mcp_warn
 
 		if ($warning && $action == 'add_warning')
 		{
-			add_warning($user_row, $warning, $notify);
-
+			if (check_form_key('mcp_warn'))
+			{
+				add_warning($user_row, $warning, $notify);
+				$msg = $user->lang['USER_WARNING_ADDED'];
+			}
+			else
+			{
+				$msg = $user->lang['FORM_INVALID'];
+			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
-			trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at
@@ -423,7 +446,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 
 	$db->sql_query('INSERT INTO ' . WARNINGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
-	$sql = 'UPDATE ' . USERS_TABLE . ' 
+	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_warnings = user_warnings + 1,
 			user_last_warning = ' . time() . '
 		WHERE user_id = ' . $user_row['user_id'];

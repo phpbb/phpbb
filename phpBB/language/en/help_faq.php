@@ -12,6 +12,10 @@
 
 /**
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 // DEVELOPERS PLEASE NOTE
 //

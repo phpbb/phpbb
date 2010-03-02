@@ -10,6 +10,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_jabber
@@ -44,8 +52,16 @@ class acp_jabber
 		$jab_package_size	= request_var('jab_package_size', $config['jab_package_size']);
 		$jab_use_ssl		= request_var('jab_use_ssl', $config['jab_use_ssl']);
 
+		$form_name = 'acp_jabber';
+		add_form_key($form_name);
+
 		if ($submit)
 		{
+			if (!check_form_key($form_name))
+			{
+				trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			$error = array();
 
 			$message = $user->lang['JAB_SETTINGS_CHANGED'];
@@ -93,6 +109,7 @@ class acp_jabber
 			'JAB_PACKAGE_SIZE'		=> $jab_package_size,
 			'JAB_USE_SSL'			=> $jab_use_ssl,
 			'S_CAN_USE_SSL'			=> jabber::can_use_ssl(),
+			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		));
 	}
 }

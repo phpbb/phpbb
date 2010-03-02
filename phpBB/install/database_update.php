@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC5';
+$updates_to_version = '3.0.RC6';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -55,7 +55,14 @@ require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
+
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
+if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+}
+
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
@@ -78,6 +85,22 @@ else
 $user = new user();
 $cache = new cache();
 $db = new $sql_db();
+
+// Add own hook handler, if present. :o
+if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+	foreach ($cache->obtain_hooks() as $hook)
+	{
+		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	}
+}
+else
+{
+	$phpbb_hook = false;
+}
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
@@ -314,27 +337,6 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 // Only an example, but also commented out
 $database_update_info = array(
-	// Changes from 3.0.RC1 to the next version
-	'3.0.RC1'			=> array(
-		// Remove the following keys
-		'drop_keys'		=> array(
-			STYLES_IMAGESET_DATA_TABLE	=> array(
-				'i_id',
-			),
-			ACL_ROLES_DATA_TABLE		=> array(
-				'ath_opt_id',
-			),
-		),
-		// Add the following keys
-		'add_index'		=> array(
-			STYLES_IMAGESET_DATA_TABLE	=> array(
-				'i_d'			=> array('imageset_id'),
-			),
-			ACL_ROLES_DATA_TABLE		=> array(
-				'ath_opt_id'	=> array('auth_option_id'),
-			),
-		),
-	),
 	// Changes from 3.0.RC2 to the next version
 	'3.0.RC2'			=> array(
 		// Change the following columns
@@ -421,6 +423,27 @@ $database_update_info = array(
 			GROUPS_TABLE			=> array(
 				'group_avatar_width'	=> array('USINT', 0),
 				'group_avatar_height'	=> array('USINT', 0),
+			),
+		),
+	),
+	// Changes from 3.0.RC5 to the next version
+	'3.0.RC5'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			USERS_TABLE	=> array(
+				'user_form_salt'	=> array('VCHAR_UNI:32', ''),
+			),
+		),
+		// Change the following columns
+		'change_columns'		=> array(
+			POSTS_TABLE				=> array(
+				'bbcode_uid'			=> array('VCHAR:8', ''),
+			),
+			PRIVMSGS_TABLE		=> array(
+				'bbcode_uid'			=> array('VCHAR:8', ''),
+			),
+			USERS_TABLE			=> array(
+				'user_sig_bbcode_uid'	=> array('VCHAR:8', ''),
 			),
 		),
 	),
@@ -983,7 +1006,10 @@ if ($exit)
 </html>
 
 <?php
-	exit;
+	if (function_exists('exit_handler'))
+	{
+		exit_handler();
+	}
 }
 
 // Schema updates
@@ -1122,55 +1148,10 @@ flush();
 $no_updates = true;
 
 // some code magic
-if (version_compare($current_version, '3.0.RC1', '<='))
-{
-	// we have to remove a few extra entries from converted boards. 
-	$sql = 'SELECT group_id
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
-	$result = $db->sql_query($sql);
-	$bot_group_id = (int) $db->sql_fetchfield('group_id');
-	$db->sql_freeresult($result);
-
-	$bots = array();
-	$sql = 'SELECT u.user_id
-		FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.group_id = ' . $bot_group_id . '
-		AND ug.user_id = u.user_id';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$bots[] = (int)$row['user_id'];
-	}
-	$db->sql_freeresult($result);
-	
-	if (sizeof($bots))
-	{
-		$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
-			WHERE group_id <> $bot_group_id
-				AND " . $db->sql_in_set('user_id', $bots);
-		$db->sql_query($sql);
-	}
-
-	if ($map_dbms === 'mysql_41')
-	{
-		sql_column_change($map_dbms, POSTS_TABLE, 'post_subject', array('XSTEXT_UNI', '', 'true_sort'));
-	}
-
-	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'jab_resource'";
-	_sql($sql, $errored, $error_ary);
-
-	set_config('jab_use_ssl', '0');
-	set_config('allow_post_flash', '1');
- 
-	$no_updates = false;
-}
-
 if (version_compare($current_version, '3.0.RC2', '<='))
 {
 	$smileys = array();
-	$sql = 'SELECT smiley_id, code 
+	$sql = 'SELECT smiley_id, code
 		FROM ' . SMILIES_TABLE;
 		
 	$result = $db->sql_query($sql);
@@ -1194,7 +1175,7 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 		$new_code = str_replace('&gt;', '>', $new_code);
 		$new_code = utf8_htmlspecialchars($new_code);
 
-		$sql = 'UPDATE ' . SMILIES_TABLE . ' 
+		$sql = 'UPDATE ' . SMILIES_TABLE . '
 			SET code = \'' . $db->sql_escape($new_code) . '\'
 			WHERE smiley_id = ' . (int) $id;
 		$db->sql_query($sql);
@@ -1292,7 +1273,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	}
 
 	// Make sure empty smiley codes do not exist
-	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
+	$sql = 'DELETE FROM ' . SMILIES_TABLE . "
 		WHERE code = ''";
 	_sql($sql, $errored, $error_ary);
 
@@ -1474,7 +1455,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 			[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
 			[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
 			[template_mtime] [int] DEFAULT (0) NOT NULL ,
-			[template_data] [text] DEFAULT ('') NOT NULL 
+			[template_data] [text] DEFAULT ('') NOT NULL
 		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
 		_sql($sql, $errored, $error_ary);
 
@@ -1498,6 +1479,40 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	set_config('cron_lock', '0', true);
 	set_config('ldap_port', '');
 	set_config('ldap_user_filter', '');
+
+	$no_updates = false;
+}
+
+if (version_compare($current_version, '3.0.RC5', '<='))
+{
+	// In case the user is having the bot mediapartner google "as is", adjust it.
+	$sql = 'UPDATE ' . BOTS_TABLE . "
+		SET bot_agent = '" . $db->sql_escape('Mediapartners-Google') . "'
+		WHERE bot_agent = '" . $db->sql_escape('Mediapartners-Google/') . "'";
+	_sql($sql, $errored, $error_ary);
+
+	set_config('form_token_lifetime', '7200');
+	set_config('form_token_mintime', '0');
+	set_config('min_time_reg', '5');
+	set_config('min_time_terms', '2');
+	set_config('form_token_sid_guests', '1');
+
+	$db->sql_transaction('begin');
+
+	$sql = 'SELECT forum_id, forum_password
+			FROM ' . FORUMS_TABLE;
+	$result = _sql($sql, $errored, $error_ary);
+	
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (!empty($row['forum_password']))
+		{
+			_sql('UPDATE ' . FORUMS_TABLE . " SET forum_password = '" . md5($row['forum_password']) . "' WHERE forum_id = {$row['forum_id']}", $errored, $error_ary);
+		}
+	}
+	$db->sql_freeresult($result);
+	
+	$db->sql_transaction('commit');
 
 	$no_updates = false;
 }
@@ -1529,8 +1544,8 @@ $sql = 'UPDATE ' . USERS_TABLE . "
 	SET user_permissions = ''";
 _sql($sql, $errored, $error_ary);
 
-/* Optimize/vacuum analyze the tables where appropriate 
-// this should be done for each version in future along with 
+/* Optimize/vacuum analyze the tables where appropriate
+// this should be done for each version in future along with
 // the version number update
 switch ($db->sql_layer)
 {
@@ -1604,7 +1619,10 @@ $cache->purge();
 
 <?php
 
-exit;
+if (function_exists('exit_handler'))
+{
+	exit_handler();
+}
 
 
 /**
@@ -1780,8 +1798,8 @@ function column_exists($dbms, $table, $column_name)
 		// ugh, SQLite
 		case 'sqlite':
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table}'";
 			$result = $db->sql_query($sql);
 
@@ -2050,8 +2068,8 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			{
 				global $db;
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $db->sql_query($sql);
@@ -2147,8 +2165,8 @@ function sql_column_remove($dbms, $table_name, $column_name)
 			{
 				global $db;
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $db->sql_query($sql);
@@ -2177,7 +2195,7 @@ function sql_column_remove($dbms, $table_name, $column_name)
 				foreach ($old_table_cols as $declaration)
 				{
 					$entities = preg_split('#\s+#', trim($declaration));
-					if ($entities[0] == 'PRIMARY' || $entities[0] === '$column_name')
+					if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
 					{
 						continue;
 					}
@@ -2266,8 +2284,8 @@ function sql_create_primary_key($dbms, $table_name, $column)
 
 		case 'sqlite':
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table_name}'
 				ORDER BY type DESC, name;";
 			$result = _sql($sql, $errored, $error_ary);
@@ -2649,8 +2667,8 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		case 'sqlite':
 
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table_name}'
 				ORDER BY type DESC, name;";
 			$result = _sql($sql, $errored, $error_ary);

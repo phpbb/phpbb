@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
 *
 * LDAP auth plug-in for phpBB3
 *
@@ -7,10 +7,18 @@
 *
 * @package login
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Connect to ldap server
@@ -91,6 +99,15 @@ function init_ldap()
 function login_ldap(&$username, &$password)
 {
 	global $db, $config, $user;
+
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
 
 	if (!@extension_loaded('ldap'))
 	{
@@ -195,7 +212,7 @@ function login_ldap(&$username, &$password)
 				// generate user account data
 				$ldap_user_row = array(
 					'username'		=> $username,
-					'user_password'	=> md5($password),
+					'user_password'	=> phpbb_hash($password),
 					'user_email'	=> (!empty($config['ldap_email'])) ? $ldap_result[0][$config['ldap_email']][0] : '',
 					'group_id'		=> (int) $row['group_id'],
 					'user_type'		=> USER_NORMAL,

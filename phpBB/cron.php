@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -33,7 +33,7 @@ echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
 // test without flush ;)
 // flush();
 
-// 
+//
 if (!isset($config['cron_lock']))
 {
 	set_config('cron_lock', '0', true);
@@ -77,6 +77,12 @@ switch ($cron_type)
 		if (time() - $config['queue_interval'] <= $config['last_queue_run'] || !file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 		{
 			break;
+		}
+
+		// A user reported using the mail() function while using shutdown does not work. We do not want to risk that.
+		if ($use_shutdown_function && !$config['smtp_delivery'])
+		{
+			$use_shutdown_function = false;
 		}
 
 		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
@@ -253,18 +259,29 @@ switch ($cron_type)
 // Unloading cache and closing db after having done the dirty work.
 if ($use_shutdown_function)
 {
+	register_shutdown_function('unlock_cron');
 	register_shutdown_function('garbage_collection');
 }
 else
 {
+	unlock_cron();
 	garbage_collection();
 }
 
-$sql = 'UPDATE ' . CONFIG_TABLE . "
-	SET config_value = '0'
-	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
-$db->sql_query($sql);
-
 exit;
+
+
+/**
+* Unlock cron script
+*/
+function unlock_cron()
+{
+	global $db;
+
+	$sql = 'UPDATE ' . CONFIG_TABLE . "
+		SET config_value = '0'
+		WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
+	$db->sql_query($sql);
+}
 
 ?>

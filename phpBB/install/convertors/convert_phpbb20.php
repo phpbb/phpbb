@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -31,7 +31,7 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '1.0.RC5',
+	'version'		=> '1.0.RC6',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
@@ -57,9 +57,9 @@ $tables = array(
 	'forum_prune',
 	'forums',
 	'groups',
-	'posts', 
-	'posts_text', 
-	'privmsgs', 
+	'posts',
+	'posts_text',
+	'privmsgs',
 	'privmsgs_text',
 	'ranks',
 	'smilies',
@@ -70,7 +70,7 @@ $tables = array(
 	'vote_desc',
 	'vote_results',
 	'vote_voters',
-	'words' 
+	'words'
 );
 
 /**
@@ -140,7 +140,7 @@ $config_schema = array(
 
 /**
 * $test_file is the name of a file which is present on the source
-* forum which can be used to check that the path specified by the 
+* forum which can be used to check that the path specified by the
 * user was correct
 */
 $test_file = 'modcp.php';
@@ -250,14 +250,14 @@ if (!$get_info)
 *
 *		// DB INSERT array
 *		This one consist of three parameters
-*		First Parameter: 
+*		First Parameter:
 *							The key need to be filled within the target table
 *							If this is empty, the target table gets not assigned the source value
 *		Second Parameter:
 *							Source value. If the first parameter is specified, it will be assigned this value.
 *							If the first parameter is empty, this only gets added to the select query
 *		Third Parameter:
-*							Custom Function. Function to execute while storing source value into target table. 
+*							Custom Function. Function to execute while storing source value into target table.
 *							The functions return value get stored.
 *							The function parameter consist of the value of the second parameter.
 *
@@ -596,7 +596,7 @@ if (!$get_info)
 				'autoincrement'	=> 'post_id',
 				'query_first'	=> array('target', $convert->truncate_statement . POSTS_TABLE),
 				'execute_first'	=> '
-					$config["max_post_chars"] = -1;
+					$config["max_post_chars"] = 0;
 					$config["max_quote_depth"] = 0;
 				',
 
@@ -645,7 +645,7 @@ if (!$get_info)
 				),
 
 				'execute_first'	=> '
-					$config["max_post_chars"] = -1;
+					$config["max_post_chars"] = 0;
 					$config["max_quote_depth"] = 0;
 				',
 
@@ -706,7 +706,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_INBOX,							''),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND (privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 			
@@ -746,7 +746,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_SENTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 2',
 			),
 
@@ -766,7 +766,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_to_userid',			'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 3',
 			),
 
@@ -786,7 +786,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_from_userid',		'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 4',
 			),
 
@@ -853,15 +853,15 @@ if (!$get_info)
 				array('username_clean',			'users.username',					array('function1' => 'phpbb_set_default_encoding', 'function2' => 'utf8_clean_string')),
 				array('user_password',			'users.user_password',				''),
 				array('user_pass_convert',		1,									''),
-				array('user_posts',				'users.user_posts',					''),
+				array('user_posts',				'users.user_posts',					'intval'),
 				array('user_email',				'users.user_email',					'strtolower'),
 				array('user_email_hash',		'users.user_email',					'gen_email_hash'),
 				array('user_birthday',			((defined('MOD_BIRTHDAY')) ? 'users.user_birthday' : ''),	'phpbb_get_birthday'),
-				array('user_lastvisit',			'users.user_lastvisit',				''),
-				array('user_lastmark',			'users.user_lastvisit',				''),
+				array('user_lastvisit',			'users.user_lastvisit',				'intval'),
+				array('user_lastmark',			'users.user_lastvisit',				'intval'),
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
-				array('user_timezone',			'users.user_timezone',				''),
+				array('user_timezone',			'users.user_timezone',				'floatval'),
 				array('user_dateformat',		'users.user_dateformat',			array('function1' => 'phpbb_set_encoding', 'function2' => 'fill_dateformat')),
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
@@ -875,7 +875,7 @@ if (!$get_info)
 				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('user_icq',				'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
 				array('user_from',				'users.user_from',					array('function1' => 'phpbb_set_encoding')),
-				array('user_rank',				'users.user_rank',					''),
+				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
 				array('user_avatar',			'users.user_avatar',				'phpbb_import_avatar'),
@@ -885,14 +885,14 @@ if (!$get_info)
 
 				array('user_new_privmsg',		'users.user_new_privmsg',			''),
 				array('user_unread_privmsg',	0,									''), //'users.user_unread_privmsg'
-				array('user_last_privmsg',		'users.user_last_privmsg',			''),
+				array('user_last_privmsg',		'users.user_last_privmsg',			'intval'),
 				array('user_emailtime',			'users.user_emailtime',				'null_to_zero'),
-				array('user_notify',			'users.user_notify',				''),
-				array('user_notify_pm',			'users.user_notify_pm',				''),
+				array('user_notify',			'users.user_notify',				'intval'),
+				array('user_notify_pm',			'users.user_notify_pm',				'intval'),
 				array('user_notify_type',		NOTIFY_EMAIL,						''),
-				array('user_allow_pm',			'users.user_allow_pm',				''),
-				array('user_allow_viewonline',	'users.user_allow_viewonline',		''),
-				array('user_allow_viewemail',	'users.user_viewemail',				''),
+				array('user_allow_pm',			'users.user_allow_pm',				'intval'),
+				array('user_allow_viewonline',	'users.user_allow_viewonline',		'intval'),
+				array('user_allow_viewemail',	'users.user_viewemail',				'intval'),
 				array('user_actkey',			'users.user_actkey',				''),
 				array('user_newpasswd',			'',									''), // Users need to re-request their password...
 				array('user_style',				$config['default_style'],			''),

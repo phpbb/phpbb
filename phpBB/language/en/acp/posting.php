@@ -13,6 +13,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -217,7 +222,7 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *. Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character.',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 
@@ -244,7 +249,7 @@ $lang = array_merge($lang, array(
 	
 	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
-	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason "Other".',
+	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason “Other”.',
 
 	'REASON_ADD'				=> 'Add report/denial reason',
 	'REASON_ADDED'				=> 'Report/denial reason successfully added.',

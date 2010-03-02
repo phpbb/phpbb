@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * ucp_profile
 * Changing profile settings
 *
@@ -44,6 +52,8 @@ class ucp_profile
 					'password_confirm'	=> request_var('password_confirm', '', true),
 				);
 
+				add_form_key('ucp_reg_details');
+
 				if ($submit)
 				{
 					// Do not check cur_password, it is the old one.
@@ -73,13 +83,13 @@ class ucp_profile
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && md5($data['cur_password']) != $user->data['user_password'])
+					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], $user->data['user_password']))
 					{
 						$error[] = 'CUR_PASSWORD_ERROR';
 					}
 
 					// Only check the new password against the previous password if there have been no errors
-					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && md5($data['new_password']) == $user->data['user_password'])
+					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], $user->data['user_password']))
 					{
 						$error[] = 'SAME_PASSWORD_ERROR';
 					}
@@ -89,6 +99,11 @@ class ucp_profile
 						$error[] = 'NEW_EMAIL_ERROR';
 					}
 
+					if (!check_form_key('ucp_reg_details'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
@@ -96,7 +111,7 @@ class ucp_profile
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
 							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32($data['email']) . strlen($data['email']) : $user->data['user_email_hash'],
-							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? md5($data['new_password']) : $user->data['user_password'],
+							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
 
@@ -105,7 +120,7 @@ class ucp_profile
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $data['username']);
 						}
 
-						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && md5($data['new_password']) != $user->data['user_password'])
+						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !phpbb_check_hash($data['new_password'], $user->data['user_password']))
 						{
 							$user->reset_login_keys();
 							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $data['username']);
@@ -224,7 +239,7 @@ class ucp_profile
 
 						trigger_error($message);
 					}
-	
+
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
@@ -282,6 +297,8 @@ class ucp_profile
 					$data['bday_year'] = request_var('bday_year', $data['bday_year']);
 				}
 
+				add_form_key('ucp_profile_info');
+
 				if ($submit)
 				{
 					$validate_array = array(
@@ -307,7 +324,7 @@ class ucp_profile
 						$validate_array = array_merge($validate_array, array(
 							'bday_day'		=> array('num', true, 1, 31),
 							'bday_month'	=> array('num', true, 1, 12),
-							'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
+							'bday_year'		=> array('num', true, 1901, gmdate('Y', time()) + 50),
 						));
 					}
 
@@ -319,6 +336,11 @@ class ucp_profile
 					if (sizeof($cp_error))
 					{
 						$error = array_merge($error, $cp_error);
+					}
+
+					if (!check_form_key('ucp_profile_info'))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					if (!sizeof($error))
@@ -446,6 +468,8 @@ class ucp_profile
 
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
+				add_form_key('ucp_sig');
+
 				if ($submit || $preview)
 				{
 					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
@@ -462,6 +486,11 @@ class ucp_profile
 							$error[] = implode('<br />', $message_parser->warn_msg);
 						}
 
+						if (!check_form_key('ucp_sig'))
+						{
+							$error[] = 'FORM_INVALID';
+						}
+
 						if (!sizeof($error) && $submit)
 						{
 							$sql_ary = array(
@@ -470,8 +499,8 @@ class ucp_profile
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' 
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 
@@ -517,7 +546,7 @@ class ucp_profile
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
-			
+
 				// Build custom bbcodes array
 				display_custom_bbcodes();
 
@@ -533,15 +562,23 @@ class ucp_profile
 
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
+				add_form_key('ucp_avatar');
+
 				if ($submit)
 				{
-					if (avatar_process_user($error))
+					if (check_form_key('ucp_avatar'))
 					{
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						if (avatar_process_user($error))
+						{
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
 					}
-
+					else
+					{
+						$error[] = 'FORM_INVALID';
+					}
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}

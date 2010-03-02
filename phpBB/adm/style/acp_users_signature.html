@@ -1,5 +1,5 @@
-	<script type="text/javascript">
-	<!--
+<script type="text/javascript">
+// <![CDATA[
 
 	var form_name = 'user_signature';
 	var text_name = 'signature';
@@ -31,11 +31,11 @@
 		<!-- END custom_tags -->
 	}
 
-	//-->
-	</script>
-	<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
+// ]]>
+</script>
+<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
-	<form id="user_signature" method="post" action="{U_ACTION}">
+<form id="user_signature" method="post" action="{U_ACTION}">
 
 	<!-- IF SIGNATURE_PREVIEW -->
 		<fieldset>
@@ -67,12 +67,12 @@
 				<input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 
-			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
-				<option value="7">{L_FONT_TINY}</option>
-				<option value="9">{L_FONT_SMALL}</option>
-				<option value="12" selected="selected">{L_FONT_NORMAL}</option>
-				<option value="18">{L_FONT_LARGE}</option>
-				<option value="24">{L_FONT_HUGE}</option>
+			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_FONT_SIZE}" onmouseover="helpline('f')" onmouseout="helpline('tip')">
+				<option value="50">{L_FONT_TINY}</option>
+				<option value="85">{L_FONT_SMALL}</option>
+				<option value="100" selected="selected">{L_FONT_NORMAL}</option>
+				<option value="150">{L_FONT_LARGE}</option>
+				<option value="200">{L_FONT_HUGE}</option>
 			</select>
 		<!-- IF .custom_tags -->
 			<br /><br />
@@ -86,9 +86,12 @@
 		<p><input type="text" class="text full" style="border: 0; background: none;" name="helpbox" value="{L_STYLES_TIP}" /></p>
 
 		<dl>
-			<dt style="width: 90px;"><script type="text/javascript"><!--
-				colorPalette('v', 12, 10);
-				//--></script>
+			<dt style="width: 90px;">
+				<script type="text/javascript">
+				// <![CDATA[
+					colorPalette('v', 12, 10);
+				// ]]>
+				</script>
 			</dt>
 			<dd style="margin-left: 90px;"><textarea name="signature" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
 			<dd style="margin-left: 90px; margin-top: 5px;">
@@ -110,5 +113,5 @@
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
 	</fieldset>
-
-	</form>
+{S_FORM_TOKEN}
+</form>

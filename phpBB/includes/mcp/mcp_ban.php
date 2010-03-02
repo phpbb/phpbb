@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package mcp
@@ -35,7 +43,6 @@ class mcp_ban
 		// Ban submitted?
 		if ($bansubmit)
 		{
-			 
 			// Grab the list of entries
 			$ban				= request_var('ban', '', ($mode === 'user') ? true : false);
 
@@ -49,7 +56,6 @@ class mcp_ban
 			$ban_exclude		= request_var('banexclude', 0);
 			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
 			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
-			
 
 			if ($ban)
 			{
@@ -142,7 +148,7 @@ class mcp_ban
 			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
 
 			'U_ACTION'			=> $this->u_action,
-			'U_FIND_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
 		));
 
 		if ($mode != 'user')

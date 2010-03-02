@@ -10,6 +10,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_board
@@ -26,6 +34,9 @@ class acp_board
 
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
+
+		$form_key = 'acp_board';
+		add_form_key($form_key);
 
 		/**
 		*	Validation types are:
@@ -212,6 +223,8 @@ class acp_board
 						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
 						'max_reg_attempts'		=> array('lang' => 'REG_LIMIT',				'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'min_time_reg'			=> array('lang' => 'MIN_TIME_REG',			'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'min_time_terms'		=> array('lang' => 'MIN_TIME_TERMS',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 
 						'legend3'			=> 'COPPA',
 						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -314,6 +327,10 @@ class acp_board
 						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
 						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'form_token_lifetime'	=> array('lang' => 'FORM_TIME_MAX',			'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'form_token_mintime'	=> array('lang' => 'FORM_TIME_MIN',			'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'form_token_sid_guests'	=> array('lang' => 'FORM_SID_GUESTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+
 					)
 				);
 			break;
@@ -360,6 +377,10 @@ class acp_board
 		// We validate the complete config if whished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 		// Do not write values if there is an error
 		if (sizeof($error))
 		{
@@ -407,7 +428,7 @@ class acp_board
 				{
 					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
 					{
-						$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
 					}
 				}
 				closedir($dp);
@@ -459,7 +480,7 @@ class acp_board
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
-				$method = $cfg_array['auth_method'];
+				$method = basename($cfg_array['auth_method']);
 				if ($method && in_array($method, $auth_plugins))
 				{
 					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
@@ -476,7 +497,7 @@ class acp_board
 							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
-					set_config('auth_method', $cfg_array['auth_method']);
+					set_config('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
@@ -784,7 +805,7 @@ class acp_board
 		$user->timezone = $old_tz;
 		$user->dst = $old_dst;
 
-		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('$key').value = '$value'; } else { document.getElementById('$key').value = this.value; }\">$dateformat_options</select>
+		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";
 	}
 }

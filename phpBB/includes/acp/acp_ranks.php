@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -31,10 +39,17 @@ class acp_ranks
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
 
+		$form_name = 'acp_prune';
+		add_form_key($form_name);
+
 		switch ($action)
 		{
 			case 'save':
-				
+
+				if (!check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
 				$min_posts = ($special_rank) ? 0 : request_var('min_posts', 0);
@@ -124,10 +139,15 @@ class acp_ranks
 			case 'edit':
 			case 'add':
 
+				if (!check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$data = $ranks = $existing_imgs = array();
 				
-				$sql = 'SELECT * 
-					FROM ' . RANKS_TABLE . ' 
+				$sql = 'SELECT *
+					FROM ' . RANKS_TABLE . '
 					ORDER BY rank_min ASC, rank_special ASC';
 				$result = $db->sql_query($sql);
 
@@ -151,7 +171,7 @@ class acp_ranks
 
 					foreach ($img_ary as $img)
 					{
-						$img = $path . $img; 
+						$img = $path . $img;
 
 						if (!in_array($img, $existing_imgs) || $action == 'edit')
 						{

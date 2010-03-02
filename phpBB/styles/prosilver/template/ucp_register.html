@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 	/**
 	* Change language
 	*/
@@ -10,7 +10,26 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
-//-->
+	
+	function disable(disabl, name)
+	{
+		document.getElementById(name).disabled = disabl;
+		if (disabl)
+		{
+			document.getElementById(name).className = 'button1 disabled';
+		}
+		else
+		{
+			document.getElementById(name).className = 'button1 enabled';
+		}
+	}
+	
+	<!-- IF S_TIME -->
+		onload_functions.push('disable(true, "submit")');
+		setTimeout('disable(false, "submit")', {S_TIME});
+	<!-- ENDIF -->
+	
+// ]]>
 </script>
 
 <form method="post" action="{S_UCP_ACTION}" id="register">
@@ -112,12 +131,12 @@
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
-		<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" name="submit" id ="submit" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>
-
+{S_FORM_TOKEN}
 </form>
 
 <!-- INCLUDE overall_footer.html -->

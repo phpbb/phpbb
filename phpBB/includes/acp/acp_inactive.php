@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -33,20 +41,29 @@ class acp_inactive
 		$action = request_var('action', '');
 		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 		$start	= request_var('start', 0);
+		$submit = isset($_POST['submit']);
 
 		// Sort keys
 		$sort_days	= request_var('st', 0);
 		$sort_key	= request_var('sk', 'i');
 		$sort_dir	= request_var('sd', 'd');
 
-		if (sizeof($mark))
+		$form_key = 'acp_inactive';
+		add_form_key($form_key);
+
+		if ($submit && sizeof($mark))
 		{
+			if ($action !== 'delete' && !check_form_key($form_key))
+			{
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			switch ($action)
 			{
 				case 'activate':
 				case 'delete':
 
-					$sql = 'SELECT user_id, username 
+					$sql = 'SELECT user_id, username
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
@@ -107,14 +124,27 @@ class acp_inactive
 					}
 					else if ($action == 'delete')
 					{
-						if (!$auth->acl_get('a_userdel'))
+						if (confirm_box(true))
 						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
+							if (!$auth->acl_get('a_userdel'))
+							{
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							}
 
-						foreach ($mark as $user_id)
+							foreach ($mark as $user_id)
+							{
+								user_delete('retain', $user_id, $user_affected[$user_id]);
+							}
+						}
+						else
 						{
-							user_delete('retain', $user_id, $user_affected[$user_id]);
+							$s_hidden_fields = array(
+								'mode'			=> $mode,
+								'action'		=> $action,
+								'mark'			=> $mark,
+								'submit'		=> 1,
+							);
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					}
 
@@ -128,8 +158,8 @@ class acp_inactive
 						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
-						FROM ' . USERS_TABLE . ' 
+					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
+						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
 
@@ -150,7 +180,7 @@ class acp_inactive
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
+								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']),
 								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 

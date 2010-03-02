@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Database Abstraction Layer
@@ -99,8 +107,8 @@ class dbal
 	*/
 	function sql_add_num_queries($cached = false)
 	{
-		$this->num_queries['cached'] += ($cached) ? 1 : 0;
-		$this->num_queries['normal'] += ($cached) ? 0 : 1;
+		$this->num_queries['cached'] += ($cached !== false) ? 1 : 0;
+		$this->num_queries['normal'] += ($cached !== false) ? 0 : 1;
 		$this->num_queries['total'] += 1;
 	}
 
@@ -651,8 +659,10 @@ class dbal
 					</div>
 					</body>
 					</html>';
-				exit;
-				break;
+
+				exit_handler();
+
+			break;
 
 			case 'stop':
 				$endtime = explode(' ', microtime());
@@ -772,13 +782,6 @@ class dbal
 
 		return true;
 	}
-}
-
-/**
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
 }
 
 /**

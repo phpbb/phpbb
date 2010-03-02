@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_styles
@@ -61,10 +69,10 @@ class acp_styles
 # For on/off options the valid values are on, off, 1, 0, true and false
 #
 # Values get trimmed, if you want to add a space in front or at the end of
-# the value, then enclose the value with single or double quotes. 
+# the value, then enclose the value with single or double quotes.
 # Single and double quotes do not need to be escaped.
 #
-# 
+#
 
 # General Information about this {MODE}
 name = {NAME}
@@ -76,7 +84,7 @@ version = {VERSION}
 # Some configuration options
 
 #
-# You have to turn this option on if you want to use the 
+# You have to turn this option on if you want to use the
 # path template variables ({T_IMAGESET_PATH} for example) within
 # your css file.
 # This is mostly the case if you want to use language specific
@@ -321,7 +329,7 @@ parse_css_file = {PARSE_CSS_FILE}
 							{
 								// Save CSS contents
 								$sql_ary = array(
-									'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
+									'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
 									'theme_data'	=> $this->db_theme_data($theme_row)
 								);
 
@@ -978,7 +986,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$file 		= str_replace('/', '.', $file);
 			
-			// perform some dirty guessing to get the path right. 
+			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
 			$tpl_file 	= str_replace('.', '/', $file);
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
@@ -987,7 +995,6 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
-				'UA_VIEWSOURCE'	=> str_replace('&amp;', '&', $this->u_action) . "&action=cache&id=$template_id&source=$file",
 
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
@@ -1287,7 +1294,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						}
 						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
 						$imgheight	= (int) $imgheight;
-					} 
+					}
 
 
 					if (strpos($imgpath, '/') !== false)
@@ -1300,10 +1307,10 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 
 					$sql_ary = array(
-						'image_filename'	=> $imgfilename,
-						'image_width'		=> $imgwidth,
-						'image_height'		=> $imgheight,
-						'image_lang'		=> $imglang,
+						'image_filename'	=> (string) $imgfilename,
+						'image_width'		=> (int) $imgwidth,
+						'image_height'		=> (int) $imgheight,
+						'image_lang'		=> (string) $imglang,
 					);
 
 					// already exists
@@ -1318,7 +1325,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					else if (!$imageset_data_row)
 					{
 						$sql_ary['image_name']	= $imgname;
-						$sql_ary['imageset_id']	= $imageset_id;
+						$sql_ary['imageset_id']	= (int) $imageset_id;
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
 
@@ -1454,6 +1461,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
+			'A_NAME'			=> addslashes($imageset_name),
 			'ERROR'				=> !$valid_name,
 			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
 			'IMAGE_SELECT'		=> $image_found
@@ -1511,8 +1519,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
 			FROM $sql_from
-			WHERE {$mode}_id <> $style_id 
-			$sql_where 
+			WHERE {$mode}_id <> $style_id
+			$sql_where
 			ORDER BY {$mode}_name ASC";
 		$result = $db->sql_query($sql);
 
@@ -2101,7 +2109,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
 
-					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'])
+					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'] && !$store_db)
 					{
 						$error[] = $user->lang['EDIT_THEME_STORE_PARSED'];
 						$store_db = 1;
@@ -2150,10 +2158,10 @@ parse_css_file = {PARSE_CSS_FILE}
 				case 'style':
 
 					$sql_ary += array(
-						'template_id'		=> $template_id,
-						'theme_id'			=> $theme_id,
-						'imageset_id'		=> $imageset_id,
-						'style_active'		=> $style_active,
+						'template_id'		=> (int) $template_id,
+						'theme_id'			=> (int) $theme_id,
+						'imageset_id'		=> (int) $imageset_id,
+						'style_active'		=> (int) $style_active,
 					);
 				break;
 
@@ -2430,11 +2438,11 @@ parse_css_file = {PARSE_CSS_FILE}
 				// We could do this using extended inserts ... but that could be one
 				// heck of a lot of data ...
 				$sql_ary = array(
-					'template_id'			=> $style_id,
+					'template_id'			=> (int) $style_id,
 					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
-					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
-					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_mtime'		=> (int) filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_data'			=> (string) file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 				);
 
 				if ($mode == 'insert')
@@ -2976,10 +2984,10 @@ parse_css_file = {PARSE_CSS_FILE}
 		$sql_ary = array(
 			'style_name'		=> $name,
 			'style_copyright'	=> $copyright,
-			'style_active'		=> $active,
-			'template_id'		=> $style_row['template_id'],
-			'theme_id'			=> $style_row['theme_id'],
-			'imageset_id'		=> $style_row['imageset_id'],
+			'style_active'		=> (int) $active,
+			'template_id'		=> (int) $style_row['template_id'],
+			'theme_id'			=> (int) $style_row['theme_id'],
+			'imageset_id'		=> (int) $style_row['imageset_id'],
 		);
 
 		$sql = 'INSERT INTO ' . STYLES_TABLE . '
@@ -3107,7 +3115,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_ary += array(
 					'theme_storedb'	=> $store_db,
 					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
-					'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
+					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
 				);
 			break;
 
@@ -3159,7 +3167,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					$image_height = $image_width = 0;
 				}
 
-				if (strpos($key, 'img_') === 0&& $image_filename)
+				if (strpos($key, 'img_') === 0 && $image_filename)
 				{
 					$key = substr($key, 4);
 					if (in_array($key, $imageset_definitions))
@@ -3167,9 +3175,9 @@ parse_css_file = {PARSE_CSS_FILE}
 						$sql_ary = array(
 							'image_name'		=> $key,
 							'image_filename'	=> str_replace('{PATH}', "styles/$path/imageset/", trim($image_filename)),
-							'image_height'		=> $image_height,
-							'image_width'		=> $image_width,
-							'imageset_id'		=> $id,
+							'image_height'		=> (int) $image_height,
+							'image_width'		=> (int) $image_width,
+							'imageset_id'		=> (int) $id,
 							'image_lang'		=> '',
 						);
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -3215,9 +3223,9 @@ parse_css_file = {PARSE_CSS_FILE}
 								$sql_ary = array(
 									'image_name'		=> $image_name,
 									'image_filename'	=> $image_filename,
-									'image_height'		=> $image_height,
-									'image_width'		=> $image_width,
-									'imageset_id'		=> $id,
+									'image_height'		=> (int) $image_height,
+									'image_width'		=> (int) $image_width,
+									'imageset_id'		=> (int) $id,
 									'image_lang'		=> $row['lang_dir'],
 								);
 								$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));

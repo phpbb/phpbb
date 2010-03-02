@@ -764,7 +764,7 @@ CREATE TABLE [phpbb_posts] (
 	[post_checksum] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[post_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[bbcode_uid] [varchar] (5) DEFAULT ('') NOT NULL ,
+	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[post_postcount] [int] DEFAULT (1) NOT NULL ,
 	[post_edit_time] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -820,7 +820,7 @@ CREATE TABLE [phpbb_privmsgs] (
 	[message_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[message_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[bbcode_uid] [varchar] (5) DEFAULT ('') NOT NULL ,
+	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[message_edit_time] [int] DEFAULT (0) NOT NULL ,
 	[message_edit_count] [int] DEFAULT (0) NOT NULL ,
 	[to_address] [varchar] (4000) DEFAULT ('') NOT NULL ,
@@ -1609,7 +1609,7 @@ CREATE TABLE [phpbb_users] (
 	[user_avatar_width] [int] DEFAULT (0) NOT NULL ,
 	[user_avatar_height] [int] DEFAULT (0) NOT NULL ,
 	[user_sig] [text] DEFAULT ('') NOT NULL ,
-	[user_sig_bbcode_uid] [varchar] (5) DEFAULT ('') NOT NULL ,
+	[user_sig_bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_from] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_icq] [varchar] (15) DEFAULT ('') NOT NULL ,
@@ -1621,7 +1621,8 @@ CREATE TABLE [phpbb_users] (
 	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[user_newpasswd] [varchar] (32) DEFAULT ('') NOT NULL 
+	[user_newpasswd] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

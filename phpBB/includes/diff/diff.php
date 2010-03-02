@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package diff
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -66,7 +67,7 @@ class diff
 	* </code>
 	*
 	* @return diff  A Diff object representing the inverse of the original diff.
-	*               Note that we purposely don't return a reference here, since 
+	*               Note that we purposely don't return a reference here, since
 	*               this essentially is a clone() method.
 	*/
 	function reverse()

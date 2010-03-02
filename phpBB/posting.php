@@ -45,6 +45,7 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -114,7 +115,7 @@ switch ($mode)
 		{
 			upload_popup();
 			garbage_collection();
-			exit;
+			exit_handler();
 		}
 	break;
 
@@ -145,7 +146,7 @@ if (!$post_data)
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
-	exit;
+	exit_handler();
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
@@ -276,7 +277,7 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 if ($mode == 'delete')
 {
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data);
-	exit;
+	exit_handler();
 }
 
 // Handle bump mode...
@@ -431,7 +432,7 @@ if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
 		WHERE user_id = ' . $user->data['user_id'] .
-			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') . 
+			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') .
 			(($topic_id) ? ' AND topic_id = ' . (int) $topic_id : '') .
 			(($draft_id) ? " AND draft_id <> $draft_id" : '');
 	$result = $db->sql_query_limit($sql, 1);
@@ -608,10 +609,10 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Delete Poll
-	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
+	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) &&
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		if ($submit)
+		if ($submit && 	check_form_key('posting'))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
 				WHERE topic_id = $topic_id";
@@ -673,7 +674,7 @@ if ($submit || $preview || $refresh)
 	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
-	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch) ? true : false;
+	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
 	
 	// Parse message
 	if ($update_message)
@@ -762,6 +763,12 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
+	// check form
+	if (!check_form_key('posting', false, '', false, 2))
+	{
+		$error[] = $user->lang['FORM_INVALID'];
+	}
+
 	// Parse subject
 	if (!$preview && !$refresh && !utf8_clean_string($post_data['post_subject']) && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
@@ -770,7 +777,7 @@ if ($submit || $preview || $refresh)
 
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
 
-	if ($post_data['poll_option_text'] && 
+	if ($post_data['poll_option_text'] &&
 		($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
 		&& $auth->acl_get('f_poll', $forum_id))
 	{
@@ -1180,7 +1187,7 @@ $bbcode_checked		= (isset($post_data['enable_bbcode'])) ? !$post_data['enable_bb
 $smilies_checked	= (isset($post_data['enable_smilies'])) ? !$post_data['enable_smilies'] : (($config['allow_smilies']) ? !$user->optionget('smilies') : 1);
 $urls_checked		= (isset($post_data['enable_urls'])) ? !$post_data['enable_urls'] : 0;
 $sig_checked		= $post_data['enable_sig'];
-$lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
+$lock_topic_checked	= (isset($topic_lock) && $topic_lock) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
 // If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
@@ -1262,6 +1269,8 @@ if ($solved_captcha !== false)
 }
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
+add_form_key('posting');
+
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
@@ -1289,7 +1298,7 @@ $template->assign_vars(array(
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
-	'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&mode=popup", false),
+	'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup")),
 
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,

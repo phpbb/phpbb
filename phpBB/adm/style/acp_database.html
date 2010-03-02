@@ -25,6 +25,7 @@
 	<!-- ENDIF -->
 
 	</fieldset>
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->
@@ -33,7 +34,7 @@
 	<p>{L_ACP_BACKUP_EXPLAIN}</p>
 
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 
 		function selector(bool)
 		{
@@ -45,7 +46,7 @@
 			}
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<form id="acp_backup" method="post" action="{U_ACTION}">
@@ -85,7 +86,7 @@
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

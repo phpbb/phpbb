@@ -1,4 +1,4 @@
-Subject: Welcome to "{SITENAME}" - {U_BOARD}
+Subject: Welcome to "{SITENAME}"
 
 {WELCOME_MSG}
 
@@ -13,7 +13,7 @@ OR mail it to:
 {MAIL_INFO}
 
 ------------------------------ CUT HERE ------------------------------
-Permission to participate at "{SITENAME}"
+Permission to participate at "{SITENAME}" - {U_BOARD}
 
 Username: {USERNAME}
 Password: {PASSWORD}

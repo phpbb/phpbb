@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_remind
@@ -67,7 +75,7 @@ class ucp_remind
 			$user_password = gen_rand_string(8);
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_newpasswd = '" . $db->sql_escape(md5($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
+				SET user_newpasswd = '" . $db->sql_escape(phpbb_hash($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
 				WHERE user_id = " . $user_row['user_id'];
 			$db->sql_query($sql);
 

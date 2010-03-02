@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Obtain user_ids from usernames or vice versa. Returns false on
 * success else the error string
 *
@@ -208,6 +216,8 @@ function user_add($user_row, $cp_data = false)
 		'user_sig'					=> '',
 		'user_sig_bbcode_uid'		=> '',
 		'user_sig_bbcode_bitfield'	=> '',
+		
+		'user_form_salt'			=> unique_id(),
 	);
 
 	// Now fill the sql array with not required variables
@@ -243,7 +253,7 @@ function user_add($user_row, $cp_data = false)
 			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 		}
 
-		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . 
+		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
 			$db->sql_build_array('INSERT', custom_profile::build_insert_sql_array($cp_data));
 		$db->sql_query($sql);
 	}
@@ -525,7 +535,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			continue;
 		}
 
-		$sql = 'UPDATE ' . USERS_TABLE . ' 
+		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
 				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
 			WHERE user_id = ' . $_user_id;
@@ -551,7 +561,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 /**
 * Flips user_type from active to inactive and vice versa, handles group membership updates
-* 
+*
 * @param string $mode can be flip for flipping from active/inactive, activate or deactivate
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
@@ -580,8 +590,8 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 	{
 		$sql_ary = array();
 
-		if ($row['user_type'] == USER_IGNORE || $row['user_type'] == USER_FOUNDER || 
-			($mode == 'activate' && $row['user_type'] != USER_INACTIVE) || 
+		if ($row['user_type'] == USER_IGNORE || $row['user_type'] == USER_FOUNDER ||
+			($mode == 'activate' && $row['user_type'] != USER_INACTIVE) ||
 			($mode == 'deactivate' && $row['user_type'] == USER_INACTIVE))
 		{
 			continue;
@@ -672,7 +682,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		else
 		{
 			$ban_other = explode('-', $ban_len_other);
-			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) && 
+			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
 				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]));
@@ -1112,6 +1122,13 @@ function user_ipwhois($ip)
 {
 	$ipwhois = '';
 
+	// Check IP
+	// Only supporting IPv4 at the moment...
+	if (empty($ip) || !preg_match(get_preg_expression('ipv4'), $ip))
+	{
+		return '';
+	}
+
 	$match = array(
 		'#RIPE\.NET#is'				=> 'whois.ripe.net',
 		'#whois\.apnic\.net#is'		=> 'whois.apnic.net',
@@ -1147,7 +1164,10 @@ function user_ipwhois($ip)
 		}
 	}
 
-	return $ipwhois;
+	$ipwhois = htmlspecialchars($ipwhois);
+
+	// Magic URL ;)
+	return trim(make_clickable($ipwhois, false, ''));
 }
 
 /**
@@ -1975,14 +1995,14 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 		while (($file = readdir($dp)) !== false)
 		{
-			if ($file[0] != '.' && is_dir("$path/$file"))
+			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	
 				$dp2 = @opendir("$path/$file");
 				while (($sub_file = readdir($dp2)) !== false)
 				{
-					if (preg_match('#^[^&"<>]*\.(?:gif|png|jpe?g)$#i', $sub_file))
+					if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 					{
 						$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
 							'file'		=> "$file/$sub_file",
@@ -2198,7 +2218,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 				}
 			}
 		}
-		if (($config['avatar_max_width'] || $config['avatar_max_height']) && 
+		if (($config['avatar_max_width'] || $config['avatar_max_height']) &&
 			(($data['width'] != $userdata['user_avatar_width']) || $data['height'] != $userdata['user_avatar_height']))
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
@@ -2294,7 +2314,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	{
 		$error[] = $user->lang[$err];
 	}
-	 
+	
 	if (!in_array($type, array(GROUP_OPEN, GROUP_CLOSED, GROUP_HIDDEN, GROUP_SPECIAL, GROUP_FREE)))
 	{
 		$error[] = $user->lang['GROUP_ERR_TYPE'];
@@ -2404,7 +2424,6 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		if (sizeof($sql_ary) && sizeof($user_ary))
 		{
 			group_set_user_default($group_id, $user_ary, $sql_ary);
-		 
 		}
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
@@ -2450,7 +2469,7 @@ function avatar_remove_db($avatar_name)
 	
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
-		user_avatar_type = 0 
+		user_avatar_type = 0
 		WHERE user_avatar = '" . $db->sql_escape($avatar_name) . '\'';
 	$db->sql_query($sql);
 }
@@ -2778,14 +2797,14 @@ function remove_default_avatar($group_id, $user_ids)
 	}
 	$db->sql_freeresult($result);
 	
-	$sql = 'UPDATE ' . USERS_TABLE . '
-		SET user_avatar = \'\', 
-			user_avatar_type = 0, 
-			user_avatar_width = 0, 
-			user_avatar_height = 0 
-		WHERE group_id = ' . (int)$group_id . ' 
-		AND user_avatar = \'' . $db->sql_escape($row['group_avatar']) . '\' 
-		AND ' . $db->sql_in_set('user_id', $user_ids);
+	$sql = 'UPDATE ' . USERS_TABLE . "
+		SET user_avatar = '',
+			user_avatar_type = 0,
+			user_avatar_width = 0,
+			user_avatar_height = 0
+		WHERE group_id = " . (int) $group_id . "
+		AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
+		AND " . $db->sql_in_set('user_id', $user_ids);
 	
 	$db->sql_query($sql);
 }
@@ -2821,9 +2840,9 @@ function remove_default_rank($group_id, $user_ids)
 
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_rank = 0
-		WHERE group_id = ' . (int)$group_id . ' 
-		AND user_rank <> 0 
-		AND user_rank = ' . (int)$row['group_rank'] . ' 
+		WHERE group_id = ' . (int)$group_id . '
+		AND user_rank <> 0
+		AND user_rank = ' . (int)$row['group_rank'] . '
 		AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
 }
@@ -2916,7 +2935,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		break;
 
 		case 'default':
-			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . ' 
+			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $user_id_ary, false, true);
 			$result = $db->sql_query($sql);
 
@@ -2958,7 +2977,7 @@ function group_validate_groupname($group_id, $group_name)
 {
 	global $config, $db;
 
-	$group_name =  utf8_clean_string($group_name); 
+	$group_name =  utf8_clean_string($group_name);
 
 	if (!empty($group_id))
 	{
@@ -3034,8 +3053,6 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		$group_attributes = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 	}
-
- 
 
 	foreach ($attribute_ary as $attribute => $type)
 	{

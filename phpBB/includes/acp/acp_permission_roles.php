@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -34,6 +42,9 @@ class acp_permission_roles
 		$role_id = request_var('role_id', 0);
 		$action = request_var('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
+
+		$form_name = 'acp_permissions';
+		add_form_key($form_name);
 
 		switch ($mode)
 		{
@@ -134,6 +145,11 @@ class acp_permission_roles
 
 				case 'add':
 
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					$role_name = utf8_normalize_nfc(request_var('role_name', '', true));
 					$role_description = utf8_normalize_nfc(request_var('role_description', '', true));
 					$auth_settings = request_var('setting', array('' => 0));
@@ -171,8 +187,8 @@ class acp_permission_roles
 
 					if ($action == 'edit')
 					{
-						$sql = 'UPDATE ' . ACL_ROLES_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+						$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE role_id = ' . $role_id;
 						$db->sql_query($sql);
 					}

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * This file creates new schema files for every database.
 * The filenames will be prefixed with an underscore to not overwrite the current schema files.
@@ -323,7 +323,7 @@ foreach ($supported_dbms as $dbms)
 		}
 
 		// Table specific so we don't get overlap
-		$modded_array = array(); 
+		$modded_array = array();
 
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -1285,7 +1285,7 @@ function get_schema_struct()
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
-			'bbcode_uid'			=> array('VCHAR:5', ''),
+			'bbcode_uid'			=> array('VCHAR:8', ''),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
 			'post_edit_reason'		=> array('STEXT_UNI', ''),
@@ -1322,7 +1322,7 @@ function get_schema_struct()
 			'message_edit_user'		=> array('UINT', 0),
 			'message_attachment'	=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
-			'bbcode_uid'			=> array('VCHAR:5', ''),
+			'bbcode_uid'			=> array('VCHAR:8', ''),
 			'message_edit_time'		=> array('TIMESTAMP', 0),
 			'message_edit_count'	=> array('USINT', 0),
 			'to_address'			=> array('TEXT_UNI', ''),
@@ -1829,7 +1829,7 @@ function get_schema_struct()
 			'user_avatar_width'			=> array('USINT', 0),
 			'user_avatar_height'		=> array('USINT', 0),
 			'user_sig'					=> array('MTEXT_UNI', ''),
-			'user_sig_bbcode_uid'		=> array('VCHAR:5', ''),
+			'user_sig_bbcode_uid'		=> array('VCHAR:8', ''),
 			'user_sig_bbcode_bitfield'	=> array('VCHAR:255', ''),
 			'user_from'					=> array('VCHAR_UNI:100', ''),
 			'user_icq'					=> array('VCHAR:15', ''),
@@ -1842,6 +1842,8 @@ function get_schema_struct()
 			'user_interests'			=> array('TEXT_UNI', ''),
 			'user_actkey'				=> array('VCHAR:32', ''),
 			'user_newpasswd'			=> array('VCHAR_UNI:32', ''),
+			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
+
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(
@@ -1906,17 +1908,17 @@ function custom_data($dbms)
 
 /*
 CREATE TABLESPACE "PHPBB"
-	LOGGING 
-	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora' 
+	LOGGING
+	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora'
 	SIZE 10M
 	AUTOEXTEND ON NEXT 10M
 	MAXSIZE 100M;
 
-CREATE USER "PHPBB" 
-	PROFILE "DEFAULT" 
-	IDENTIFIED BY "phpbb_password" 
-	DEFAULT TABLESPACE "PHPBB" 
-	QUOTA UNLIMITED ON "PHPBB" 
+CREATE USER "PHPBB"
+	PROFILE "DEFAULT"
+	IDENTIFIED BY "phpbb_password"
+	DEFAULT TABLESPACE "PHPBB"
+	QUOTA UNLIMITED ON "PHPBB"
 	ACCOUNT UNLOCK;
 
 GRANT ANALYZE ANY TO "PHPBB";
@@ -2019,5 +2021,7 @@ EOF;
 
 	return '';
 }
+
+echo 'done';
 
 ?>

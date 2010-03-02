@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Messenger
 * @package phpBB3
 */
@@ -275,7 +283,7 @@ class messenger
 			break;
 		}
 
-		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '<em><br /><br />' . $msg . '<br />';
+		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '</em><br /><br />' . $msg . '<br />';
 		add_log('critical', 'LOG_ERROR_' . $type, $message);
 	}
 
@@ -394,7 +402,7 @@ class messenger
 		// Send message ...
 		if (!$use_queue)
 		{
-			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
+			$mail_to = ($to == '') ? 'undisclosed-recipients:;' : $to;
 			$err_msg = '';
 
 			if ($config['smtp_delivery'])
@@ -465,13 +473,13 @@ class messenger
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', 'Could not connect to Jabber server<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->login())
 			{
-				$this->error('JABBER', 'Could not authorise on Jabber server<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
@@ -541,7 +549,7 @@ class queue
 	*/
 	function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path;
+		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
 		set_config('last_queue_run', time(), true);
 
@@ -604,13 +612,13 @@ class queue
 
 					if (!$this->jabber->connect())
 					{
-						messenger::error('JABBER', 'Could not connect to Jabber server');
+						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
 						continue 2;
 					}
 
 					if (!$this->jabber->login())
 					{
-						messenger::error('JABBER', 'Could not authorise on Jabber server');
+						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
 						continue 2;
 					}
 
@@ -629,7 +637,7 @@ class queue
 				{
 					case 'email':
 						$err_msg = '';
-						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
+						$to = (!$to) ? 'undisclosed-recipients:;' : $to;
 
 						if ($config['smtp_delivery'])
 						{
@@ -922,7 +930,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	$smtp->server_send("Subject: $subject");
 
 	// Now the To Header.
-	$to_header = ($to_header == '') ? 'Undisclosed-Recipients:;' : $to_header;
+	$to_header = ($to_header == '') ? 'undisclosed-recipients:;' : $to_header;
 	$smtp->server_send("To: $to_header");
 
 	// Now the CC Header.
@@ -1058,7 +1066,7 @@ class smtp_class
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
-		// NOTE: on some configurations the time between an update of the auth database takes so 
+		// NOTE: on some configurations the time between an update of the auth database takes so
 		// long that the first email send does not work. This is not a biggie on a live board (only
 		// the install mail will most likely fail) - but on a dynamic ip connection this might produce
 		// severe problems and is not fixable!
@@ -1311,7 +1319,7 @@ class smtp_class
 				{
 					$tokens[$matches[1]] = array($tokens[$matches[1]], preg_replace('/^"(.*)"$/', '\\1', $matches[2]));
 				}
-			} 
+			}
 			else if (!empty($tokens[$matches[1]])) // Any other multiple instance = failure
 			{
 				$tokens = array();

@@ -13,6 +13,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -201,6 +206,10 @@ $lang = array_merge($lang, array(
 	'ENABLE_COPPA_EXPLAIN'		=> 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA. If this is disabled the COPPA specific groups will no longer be displayed.',
 	'MAX_CHARS'					=> 'Max',
 	'MIN_CHARS'					=> 'Min',
+	'MIN_TIME_REG'				=> 'Minimum time for registration',
+	'MIN_TIME_REG_EXPLAIN'		=> 'The registration form cannot be submitted before this time has passed.',
+	'MIN_TIME_TERMS'			=> 'Minimum time for accepting terms',
+	'MIN_TIME_TERMS_EXPLAIN'	=> 'The terms page cannot be skipped before this time has passed.',
 	'NO_AUTH_PLUGIN'			=> 'No suitable auth plugin found.',
 	'PASSWORD_LENGTH'			=> 'Password length',
 	'PASSWORD_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in passwords.',
@@ -333,7 +342,7 @@ $lang = array_merge($lang, array(
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
 	'SERVER_NAME'				=> 'Domain name',
-	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.foo.bar</samp>).',
+	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.example.com</samp>).',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different.',
 	'SERVER_PROTOCOL'			=> 'Server protocol',
@@ -364,6 +373,12 @@ $lang = array_merge($lang, array(
 	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the e-mail domain provided on registration and profile changes is checked for a valid MX record.',
 	'FORCE_PASS_CHANGE'				=> 'Force password change',
 	'FORCE_PASS_CHANGE_EXPLAIN'		=> 'Require user to change their password after a set number of days. Setting this value to 0 disables this behaviour.',
+	'FORM_TIME_MAX'					=> 'Maximum time to submit forms',
+	'FORM_TIME_MAX_EXPLAIN'			=> 'The time a user has to submit a form. Use -1 to disable. Note that a form might become invalid if the session expires, regardless of this setting.',
+	'FORM_TIME_MIN'					=> 'Minimum time to submit forms',
+	'FORM_TIME_MIN_EXPLAIN'			=> 'Submissions faster than this time are ignored by the board. Use 0 to disable.',
+	'FORM_SID_GUESTS'				=> 'Tie forms to guest sessions',
+	'FORM_SID_GUESTS_EXPLAIN'		=> 'If enabled, the form token issued to guests will be session-exclusive. This can cause problems with some ISPs.',
 	'FORWARDED_FOR_VALID'			=> 'Validated <var>X_FORWARDED_FOR</var> header',
 	'FORWARDED_FOR_VALID_EXPLAIN'	=> 'Sessions will only be continued if the sent <var>X_FORWARDED_FOR</var> header equals the one sent with the previous request. Bans will be checked against IPs in <var>X_FORWARDED_FOR</var> too.',
 	'IP_VALID'						=> 'Session IP validation',
@@ -424,10 +439,9 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Please be sure to enter already registered account details - phpBB will use the details you enter here as is.',
 
-	'ERR_JAB_AUTH'			=> 'Could not authorise on Jabber server.',
-	'ERR_JAB_CONNECT'		=> 'Could not connect to Jabber server.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
 	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
+	'JAB_GTALK_NOTE'			=> 'Please note that GTalk will not work because the <samp>dns_get_record</samp> function could not be found. This function is not available in PHP4, and is not implemented on Windows platforms. It currently does not work on BSD-based systems, including Mac OS.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',

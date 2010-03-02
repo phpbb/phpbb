@@ -421,7 +421,6 @@ span.corners-bottom span {
 #menu li a:hover, #menu li a:hover span {
 	text-decoration: none;
 	background-color: #FFFFFF;
-	
 	color: #BC2A4D;
 }
 
@@ -703,7 +702,7 @@ input:hover, textarea:hover {
 	border-top: 1px solid #AFAEAA;
 	border-right: 1px solid #AFAEAA;
 	border-bottom: 1px solid #AFAEAA;
-	background-color: #E9E9E2; 
+	background-color: #E9E9E2;
 }
 
 input.langvalue, textarea.langvalue {

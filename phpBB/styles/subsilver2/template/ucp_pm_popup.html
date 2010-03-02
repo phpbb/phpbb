@@ -1,16 +1,16 @@
 <!-- INCLUDE simple_header.html -->
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 /**
 * Jump to inbox
 */
-function jump_to_inbox()
+function jump_to_inbox(url)
 {
-	opener.document.location.href = "{UA_RETURN_INBOX}";
+	opener.document.location.href = url.replace(/&amp;/g, '&');
 	window.close();
 }
-//-->
+// ]]>
 </script>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="10">

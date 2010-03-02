@@ -39,9 +39,9 @@
 			<!-- BEGIN folder -->
 				<!-- IF folder.S_FIRST_ROW --><ul><!-- ENDIF -->
 				<!-- IF folder.S_CUR_FOLDER -->
-					<li id="active-subsection"><a href="ucp.php{SID}&amp;i=pm&amp;folder={folder.FOLDER_ID}"><!-- IF folder.UNREAD_MESSAGES > 0 --><strong>{folder.FOLDER_NAME} ({folder.UNREAD_MESSAGES})</strong><!-- ELSE -->{folder.FOLDER_NAME}<!-- ENDIF --></a></li>
+					<li id="active-subsection"><a href="{folder.U_FOLDER}"><!-- IF folder.UNREAD_MESSAGES > 0 --><strong>{folder.FOLDER_NAME} ({folder.UNREAD_MESSAGES})</strong><!-- ELSE -->{folder.FOLDER_NAME}<!-- ENDIF --></a></li>
 				<!-- ELSE -->
-					<li><a href="ucp.php{SID}&amp;i=pm&amp;folder={folder.FOLDER_ID}"><span><!-- IF folder.UNREAD_MESSAGES > 0 --><strong>{folder.FOLDER_NAME} ({folder.UNREAD_MESSAGES})</strong><!-- ELSE -->{folder.FOLDER_NAME}<!-- ENDIF --></span></a></li>
+					<li><a href="{folder.U_FOLDER}"><span><!-- IF folder.UNREAD_MESSAGES > 0 --><strong>{folder.FOLDER_NAME} ({folder.UNREAD_MESSAGES})</strong><!-- ELSE -->{folder.FOLDER_NAME}<!-- ENDIF --></span></a></li>
 				<!-- ENDIF -->
 				<!-- IF folder.S_LAST_ROW --></ul><!-- ENDIF -->
 			<!-- END folder -->

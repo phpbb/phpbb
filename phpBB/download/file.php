@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 if (isset($_GET['avatar']))
@@ -80,9 +80,9 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
- 
+
 	send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext);
- 
+
 	if (!empty($cache))
 	{
 		$cache->unload();
@@ -149,7 +149,7 @@ else
 {
 	if (!$attachment['in_message'])
 	{
-		// 
+		//
 		$sql = 'SELECT p.forum_id, f.forum_password, f.parent_id
 			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . $attachment['post_msg_id'] . '
@@ -231,8 +231,8 @@ if ($thumbnail)
 else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT_CATEGORY_IMAGE) && !$attachment['is_orphan'])
 {
 	// Update download count
-	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
-		SET download_count = download_count + 1 
+	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+		SET download_count = download_count + 1
 		WHERE attach_id = ' . $attachment['attach_id'];
 	$db->sql_query($sql);
 }
@@ -271,7 +271,7 @@ function send_avatar_to_browser($file)
 {
 	global $config, $phpbb_root_path;
 
-	$prefix = $config['avatar_salt'] . '_'; 
+	$prefix = $config['avatar_salt'] . '_';
 	$image_dir = $config['avatar_path'];
 
 	// worst-case default
@@ -428,7 +428,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
- 
+
 	if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie') !== false))
 	{
 		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));

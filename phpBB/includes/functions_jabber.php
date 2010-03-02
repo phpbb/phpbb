@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 *
 * Jabber class from Flyspray project
 *
@@ -215,10 +223,6 @@ class jabber
 			{
 				$server = $record[0]['target'];
 			}
-		}
-		else
-		{
-			$this->add_to_log('Warning: dns_get_record() function not found. GTalk will not work.');
 		}
 
 		$server = $use_ssl ? 'ssl://' . $server : $server;
@@ -503,6 +507,13 @@ class jabber
 				}
 				else
 				{
+					// Make sure we only use 'auth' for qop (relevant for $this->encrypt_password())
+					// If the <response> is choking up on the changed parameter we may need to adjust encrypt_password() directly
+					if (isset($decoded['qop']) && $decoded['qop'] != 'auth' && strpos($decoded['qop'], 'auth') !== false)
+					{
+						$decoded['qop'] = 'auth';
+					}
+
 					$response = array(
 						'username'	=> $this->username,
 						'response'	=> $this->encrypt_password(array_merge($decoded, array('nc' => '00000001'))),
@@ -699,25 +710,34 @@ class jabber
 	}
 
 	/**
-	* parse_data like a="b",c="d",...
+	* parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
 	* @param string $data
 	* @access public
 	* @return array a => b ...
 	*/
 	function parse_data($data)
 	{
-		// super basic, but should suffice
 		$data = explode(',', $data);
 		$pairs = array();
+		$key = false;
 
 		foreach ($data as $pair)
 		{
 			$dd = strpos($pair, '=');
+
 			if ($dd)
 			{
-				$pairs[substr($pair, 0, $dd)] = trim(substr($pair, $dd + 1), '"');
+				$key = trim(substr($pair, 0, $dd));
+				$pairs[$key] = trim(trim(substr($pair, $dd + 1)), '"');
+			}
+			else if (strpos(strrev(trim($pair)), '"') === 0 && $key)
+			{
+				// We are actually having something left from "a, b" values, add it to the last one we handled.
+				$pairs[$key] .= ',' . trim(trim($pair), '"');
+				continue;
 			}
 		}
+
 		return $pairs;
 	}
 

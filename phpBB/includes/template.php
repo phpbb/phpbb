@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
 * @copyright (c) 2005 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -147,7 +148,15 @@ class template
 	*/
 	function display($handle, $include_once = true)
 	{
-		global $user;
+		global $user, $phpbb_hook;
+
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
+		{
+			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
+			{
+				return $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
+			}
+		}
 
 		if (defined('IN_ERROR_HANDLER'))
 		{
@@ -400,10 +409,10 @@ class template
 	*
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
-	* 
+	*
 	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
 	*
-	*	If insert, the vararray is inserted at the given position (position counting from zero). 
+	*	If insert, the vararray is inserted at the given position (position counting from zero).
 	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)

@@ -13,6 +13,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -160,6 +165,8 @@ $lang = array_merge($lang, array(
 	'ENCLOSURE'							=> 'Enclosure',
 	'ERR_CHANGING_DIRECTORY'			=> 'Unable to change directory.',
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server.',
+	'ERR_JAB_AUTH'						=> 'Could not authorise on Jabber server.',
+	'ERR_JAB_CONNECT'					=> 'Could not connect to Jabber server.',
 	'ERR_UNABLE_TO_LOGIN'				=> 'The specified username or password is incorrect.',
 	'ERR_WRONG_PATH_TO_PHPBB'			=> 'The phpBB path specified appears to be invalid.',
 	'EXPAND_VIEW'						=> 'Expand view',
@@ -176,6 +183,7 @@ $lang = array_merge($lang, array(
 	'FIND_USERNAME'			=> 'Find a member',
 	'FOLDER'				=> 'Folder',
 	'FORGOT_PASS'			=> 'I forgot my password',
+	'FORM_INVALID'			=> 'The submitted form was invalid. Try submitting again.',
 	'FORUM'					=> 'Forum',
 	'FORUMS'				=> 'Forums',
 	'FORUMS_MARKED'			=> 'All forums have been marked read.',
@@ -368,6 +376,7 @@ $lang = array_merge($lang, array(
 	'NO_SUCH_SEARCH_MODULE'		=> 'The specified search backend doesn’t exist.',
 	'NO_SUPPORTED_AUTH_METHODS'	=> 'No supported authentication methods.',
 	'NO_TOPIC'					=> 'The requested topic does not exist.',
+	'NO_TOPIC_FORUM'			=> 'The topic or forum no longer exists.',
 	'NO_TOPICS'					=> 'There are no topics or posts in this forum.',
 	'NO_TOPICS_TIME_FRAME'		=> 'No topics exist inside this forum for the selected time frame.',
 	'NO_UNREAD_PM'				=> '<strong>0</strong> unread messages',

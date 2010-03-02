@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Execute message options
@@ -17,9 +25,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 	$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=options");
 
+	add_form_key('ucp_pm_options');
 	// Change "full folder" setting - what to do if folder is full
 	if (isset($_POST['fullfolder']))
 	{
+		check_form_key('ucp_pm_options', $config['form_token_lifetime'], $redirect_url);
 		$full_action = request_var('full_action', 0);
 
 		$set_folder_id = 0;
@@ -60,79 +70,96 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
-		$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
-		
-		if ($folder_name)
+		if (check_form_key('ucp_pm_options'))
 		{
-			$sql = 'SELECT folder_name 
-				FROM ' . PRIVMSGS_FOLDER_TABLE . "
-				WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
-					AND user_id = " . $user->data['user_id'];
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
+			$msg = '';
 
-			if ($row)
+			if ($folder_name)
 			{
-				trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
+				$sql = 'SELECT folder_name
+					FROM ' . PRIVMSGS_FOLDER_TABLE . "
+					WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
+						AND user_id = " . $user->data['user_id'];
+				$result = $db->sql_query_limit($sql, 1);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row)
+				{
+					trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
+				}
+
+				$sql = 'SELECT COUNT(folder_id) as num_folder
+					FROM ' . PRIVMSGS_FOLDER_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'];
+				$result = $db->sql_query($sql);
+				$num_folder = (int) $db->sql_fetchfield('num_folder');
+				$db->sql_freeresult($result);
+
+				if ($num_folder >= $config['pm_max_boxes'])
+				{
+					trigger_error('MAX_FOLDER_REACHED');
+				}
+
+				$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'user_id'		=> (int) $user->data['user_id'],
+					'folder_name'	=> $folder_name)
+				);
+				$db->sql_query($sql);
+				$msg = $user->lang['FOLDER_ADDED'];
 			}
-
-			$sql = 'SELECT COUNT(folder_id) as num_folder
-				FROM ' . PRIVMSGS_FOLDER_TABLE . '
-					WHERE user_id = ' . $user->data['user_id'];
-			$result = $db->sql_query($sql);
-			$num_folder = (int) $db->sql_fetchfield('num_folder');
-			$db->sql_freeresult($result);
-
-			if ($num_folder >= $config['pm_max_boxes'])
-			{
-				trigger_error('MAX_FOLDER_REACHED');
-			}
-
-			$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'		=> (int) $user->data['user_id'],
-				'folder_name'	=> $folder_name)
-			);
-			$db->sql_query($sql);
-
-			$message = $user->lang['FOLDER_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
-			meta_refresh(3, $redirect_url);
-			trigger_error($message);
 		}
+		else
+		{
+			$msg = $user->lang['FORM_INVALID'];
+		}
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		meta_refresh(3, $redirect_url);
+		trigger_error($message);
 	}
 
 	// Rename folder
 	if (isset($_POST['rename_folder']))
 	{
-		$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
-		$rename_folder_id= request_var('rename_folder_id', 0);
-
-		if (!$new_folder_name)
+		if (check_form_key('ucp_pm_options'))
 		{
-			trigger_error('NO_NEW_FOLDER_NAME');
+			$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
+			$rename_folder_id= request_var('rename_folder_id', 0);
+
+			if (!$new_folder_name)
+			{
+				trigger_error('NO_NEW_FOLDER_NAME');
+			}
+
+			// Select custom folder
+			$sql = 'SELECT folder_name, pm_count
+				FROM ' . PRIVMSGS_FOLDER_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND folder_id = $rename_folder_id";
+			$result = $db->sql_query_limit($sql, 1);
+			$folder_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$folder_row)
+			{
+				trigger_error('CANNOT_RENAME_FOLDER');
+			}
+
+			$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . "
+				SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
+				WHERE folder_id = $rename_folder_id
+					AND user_id = {$user->data['user_id']}";
+			$db->sql_query($sql);
+			$msg = $user->lang['FOLDER_RENAMED'];
+		}
+		else
+		{
+			$msg = $user->lang['FORM_INVALID'];
 		}
 
-		// Select custom folder
-		$sql = 'SELECT folder_name, pm_count
-			FROM ' . PRIVMSGS_FOLDER_TABLE . "
-			WHERE user_id = {$user->data['user_id']}
-				AND folder_id = $rename_folder_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$folder_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 
-		if (!$folder_row)
-		{
-			trigger_error('CANNOT_RENAME_FOLDER');
-		}
-
-		$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . " 
-			SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
-			WHERE folder_id = $rename_folder_id
-				AND user_id = {$user->data['user_id']}";
-		$db->sql_query($sql);
-
-		$message = $user->lang['FOLDER_RENAMED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -177,7 +204,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		if (confirm_box(true))
 		{
 			// Gather message ids
-			$sql = 'SELECT msg_id 
+			$sql = 'SELECT msg_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND folder_id = $remove_folder_id";
@@ -251,60 +278,68 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Rule
 	if (isset($_POST['add_rule']))
 	{
-		$check_option	= request_var('check_option', 0);
-		$rule_option	= request_var('rule_option', 0);
-		$cond_option	= request_var('cond_option', '');
-		$action_option	= explode('|', request_var('action_option', ''));
-		$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
-		$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
-		$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
-		
-		$action = (int) $action_option[0];
-		$folder_id = (int) $action_option[1];
-
-		if (!$action || !$check_option || !$rule_option || !$cond_option || ($cond_option != 'none' && !$rule_string))
+		if (check_form_key('ucp_pm_options'))
 		{
-			trigger_error('RULE_NOT_DEFINED');
-		}
+			$check_option	= request_var('check_option', 0);
+			$rule_option	= request_var('rule_option', 0);
+			$cond_option	= request_var('cond_option', '');
+			$action_option	= explode('|', request_var('action_option', ''));
+			$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
+			$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
+			$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
 
-		if (($cond_option == 'user' && !$rule_user_id) || ($cond_option == 'group' && !$rule_group_id))
+			$action = (int) $action_option[0];
+			$folder_id = (int) $action_option[1];
+
+			if (!$action || !$check_option || !$rule_option || !$cond_option || ($cond_option != 'none' && !$rule_string))
+			{
+				trigger_error('RULE_NOT_DEFINED');
+			}
+
+			if (($cond_option == 'user' && !$rule_user_id) || ($cond_option == 'group' && !$rule_group_id))
+			{
+				trigger_error('RULE_NOT_DEFINED');
+			}
+
+			$rule_ary = array(
+				'user_id'			=> $user->data['user_id'],
+				'rule_check'		=> $check_option,
+				'rule_connection'	=> $rule_option,
+				'rule_string'		=> $rule_string,
+				'rule_user_id'		=> $rule_user_id,
+				'rule_group_id'		=> $rule_group_id,
+				'rule_action'		=> $action,
+				'rule_folder_id'	=> $folder_id
+			);
+
+			$sql = 'SELECT rule_id
+				FROM ' . PRIVMSGS_RULES_TABLE . '
+				WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				trigger_error('RULE_ALREADY_DEFINED');
+			}
+
+			$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
+			$db->sql_query($sql);
+
+			// Update users message rules
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_message_rules = 1
+				WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+
+			$msg = $user->lang['RULE_ADDED'];
+		}
+		else
 		{
-			trigger_error('RULE_NOT_DEFINED');
+			$msg = $user->lang['FORM_INVALID'];
 		}
-
-		$rule_ary = array(
-			'user_id'			=> $user->data['user_id'],
-			'rule_check'		=> $check_option,
-			'rule_connection'	=> $rule_option,
-			'rule_string'		=> $rule_string,
-			'rule_user_id'		=> $rule_user_id,
-			'rule_group_id'		=> $rule_group_id,
-			'rule_action'		=> $action,
-			'rule_folder_id'	=> $folder_id
-		);
-
-		$sql = 'SELECT rule_id 
-			FROM ' . PRIVMSGS_RULES_TABLE . '
-			WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($row)
-		{
-			trigger_error('RULE_ALREADY_DEFINED');
-		}
-
-		$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
-		$db->sql_query($sql);
-
-		// Update users message rules
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_message_rules = 1
-			WHERE user_id = ' . $user->data['user_id'];
-		$db->sql_query($sql);
-
-		$message = $user->lang['RULE_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -332,7 +367,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$message = $user->lang['RULE_DELETED'];
 
 			// Reset user_message_rules if no more assigned
-			$sql = 'SELECT rule_id 
+			$sql = 'SELECT rule_id
 				FROM ' . PRIVMSGS_RULES_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'];
 			$result = $db->sql_query_limit($sql, 1);
@@ -369,11 +404,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$db->sql_freeresult($result);
 	
 	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'		=> $user->lang['PM_INBOX'], 
+		'folder_name'		=> $user->lang['PM_INBOX'],
 		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
 	);
 
-	$sql = 'SELECT folder_id, folder_name, pm_count 
+	$sql = 'SELECT folder_id, folder_name, pm_count
 		FROM ' . PRIVMSGS_FOLDER_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'];
 	$result = $db->sql_query($sql);
@@ -383,7 +418,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
-			'folder_name'		=> $row['folder_name'], 
+			'folder_name'		=> $row['folder_name'],
 			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
 		);
 	}
@@ -443,8 +478,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string&amp;select_single=true'),
-		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=rule_string&select_single=true', false))
-	);
+	));
 
 	$rule_lang = $action_lang = $check_lang = array();
 
@@ -533,7 +567,7 @@ function define_check_option($hardcoded, $check_option, $check_lang)
 	{
 		foreach ($check_lang as $value => $lang)
 		{
-			$s_check_options .= '<option value="' . $value . '"' . (($value == $check_option) ? ' selected="selected"' : '') . '>' . $lang . '</option>'; 
+			$s_check_options .= '<option value="' . $value . '"' . (($value == $check_option) ? ' selected="selected"' : '') . '>' . $lang . '</option>';
 		}
 	}
 
@@ -605,7 +639,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 	{
 		foreach ($check_ary as $value => $_check)
 		{
-			$s_rule_options .= '<option value="' . $value . '"' . (($value == $rule_option) ? ' selected="selected"' : '') . '>' . $rule_lang[$value] . '</option>'; 
+			$s_rule_options .= '<option value="' . $value . '"' . (($value == $rule_option) ? ' selected="selected"' : '') . '>' . $rule_lang[$value] . '</option>';
 		}
 	}
 
@@ -705,10 +739,10 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
-			
+
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g ';
-			 
+
 			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
 				$sql .= 'LEFT JOIN ' . USER_GROUP_TABLE . ' ug
@@ -738,7 +772,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					$rule_string = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
 				}
 
-				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : ''; 
+				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '';
 				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
 				
 				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';

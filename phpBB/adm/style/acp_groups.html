@@ -76,7 +76,7 @@
 	</dl>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
@@ -155,7 +155,7 @@
 		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_LIST -->
@@ -254,14 +254,14 @@
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 	</dl>
 
 	<p class="quick">
 		<input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->
@@ -310,7 +310,7 @@
 			<input type="hidden" name="add" value="1" />
 		<!-- ENDIF -->
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 	<h1>{L_SPECIAL_GROUPS}</h1>

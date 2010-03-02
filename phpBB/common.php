@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * Minimum Requirement: PHP 4.3.3
 */
@@ -65,8 +65,26 @@ function deregister_globals()
 	{
 		if (isset($not_unset[$varname]))
 		{
-			// Hacking attempt. No point in continuing.
-			exit;
+			// Hacking attempt. No point in continuing unless it's a COOKIE
+			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
+			{
+				exit;
+			}
+			else
+			{
+				$cookie = &$_COOKIE;
+				while (isset($cookie['GLOBALS']))
+				{
+					foreach ($cookie['GLOBALS'] as $registered_var => $value)
+					{
+						if (!isset($not_unset[$registered_var]))
+						{
+							unset($GLOBALS[$registered_var]);
+						}
+					}
+					$cookie = &$cookie['GLOBALS'];
+				}
+			}
 		}
 
 		unset($GLOBALS[$varname]);
@@ -88,7 +106,7 @@ else
 	set_magic_quotes_runtime(0);
 
 	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on' || !function_exists('ini_get'))
 	{
 		deregister_globals();
 	}
@@ -166,13 +184,16 @@ require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
+
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
-set_error_handler('msg_handler');
+set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Instantiate some basic classes
 $user		= new user();
@@ -189,5 +210,14 @@ unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
+
+// Add own hook handler
+require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+foreach ($cache->obtain_hooks() as $hook)
+{
+	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+}
 
 ?>

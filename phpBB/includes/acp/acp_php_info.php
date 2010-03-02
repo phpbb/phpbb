@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -28,16 +36,16 @@ class acp_php_info
 		$this->tpl_name = 'acp_php_info';
 		$this->page_title = 'ACP_PHP_INFO';
 		
-		ob_start(); 
-		@phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES); 
-		$phpinfo = ob_get_clean(); 
+		ob_start();
+		@phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
+		$phpinfo = ob_get_clean();
 
 		$phpinfo = trim($phpinfo);
 
 		// Here we play around a little with the PHP Info HTML to try and stylise
 		// it along phpBB's lines ... hopefully without breaking anything. The idea
 		// for this was nabbed from the PHP annotated manual
-		preg_match_all('#<body[^>]*>(.*)</body>#si', $phpinfo, $output); 
+		preg_match_all('#<body[^>]*>(.*)</body>#si', $phpinfo, $output);
 
 		if (empty($phpinfo) || empty($output))
 		{
@@ -66,7 +74,7 @@ class acp_php_info
 
 		$orig_output = $output;
 
-		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output); 
+		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output);
 		$output = (!empty($output[1][0])) ? $output[1][0] : $orig_output;
 
 		$template->assign_var('PHPINFO', $output);

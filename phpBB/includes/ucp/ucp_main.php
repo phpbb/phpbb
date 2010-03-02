@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_main
@@ -38,7 +46,7 @@ class ucp_main
 
 				if ($config['load_db_track'])
 				{
-					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id 
+					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id
 						AND tp.user_id = ' . $user->data['user_id'] . ')';
 					$sql_select .= ', tp.topic_posted';
 				}
@@ -59,7 +67,7 @@ class ucp_main
 				$forum_ary = array_unique(array_keys($forum_ary));
 
 				// Determine first forum the user is able to read into - for global announcement link
-				$sql = 'SELECT forum_id 
+				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST;
 	
@@ -71,7 +79,7 @@ class ucp_main
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
 				$db->sql_freeresult($result);
 
-				$sql = "SELECT t.* $sql_select 
+				$sql = "SELECT t.* $sql_select
 					FROM $sql_from
 					WHERE t.forum_id = 0
 						AND t.topic_type = " . POST_GLOBAL . '
@@ -164,13 +172,13 @@ class ucp_main
 					display_user_activity($user->data);
 				}
 
-				// Do the relevant calculations 
+				// Do the relevant calculations
 				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
 				$posts_per_day = $user->data['user_posts'] / $memberdays;
 				$percentage = ($config['num_posts']) ? min(100, ($user->data['user_posts'] / $config['num_posts']) * 100) : 0;
 
 				$template->assign_vars(array(
-					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
+					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
 					'JOINED'			=> $user->format_date($user->data['user_regdate']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
@@ -181,7 +189,7 @@ class ucp_main
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
-//					'S_GROUP_OPTIONS'	=> $group_options, 
+//					'S_GROUP_OPTIONS'	=> $group_options,
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '',
 				));
@@ -194,41 +202,51 @@ class ucp_main
 
 				$user->add_lang('viewforum');
 
+				add_form_key('ucp_front_subscribed');
+
 				$unwatch = (isset($_POST['unwatch'])) ? true : false;
 
 				if ($unwatch)
 				{
-					$forums = array_keys(request_var('f', array(0 => 0)));
-					$topics = array_keys(request_var('t', array(0 => 0)));
-
-					if (sizeof($forums) || sizeof($topics))
+					if (check_form_key('ucp_front_subscribed'))
 					{
-						$l_unwatch = '';
-						if (sizeof($forums))
+						$forums = array_keys(request_var('f', array(0 => 0)));
+						$topics = array_keys(request_var('t', array(0 => 0)));
+						$msg = '';
+
+						if (sizeof($forums) || sizeof($topics))
 						{
-							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
-								WHERE ' . $db->sql_in_set('forum_id', $forums) . '
-									AND user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
+							$l_unwatch = '';
+							if (sizeof($forums))
+							{
+								$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
+									WHERE ' . $db->sql_in_set('forum_id', $forums) . '
+										AND user_id = ' . $user->data['user_id'];
+								$db->sql_query($sql);
 
-							$l_unwatch .= '_FORUMS';
+								$l_unwatch .= '_FORUMS';
+							}
+
+							if (sizeof($topics))
+							{
+								$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+									WHERE ' . $db->sql_in_set('topic_id', $topics) . '
+										AND user_id = ' . $user->data['user_id'];
+								$db->sql_query($sql);
+
+								$l_unwatch .= '_TOPICS';
+							}
+							$msg = $user->lang['UNWATCHED' . $l_unwatch];
+
 						}
-
-						if (sizeof($topics))
-						{
-							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
-								WHERE ' . $db->sql_in_set('topic_id', $topics) . '
-									AND user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
-
-							$l_unwatch .= '_TOPICS';
-						}
-
-						$message = $user->lang['UNWATCHED' . $l_unwatch] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed") . '">', '</a>');
-
-						meta_refresh(3, append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed"));
-						trigger_error($message);
 					}
+					else
+					{
+						$msg = $user->lang['FORM_INVALID'];
+					}
+					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed") . '">', '</a>');
+					meta_refresh(3, append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed"));
+					trigger_error($message);
 				}
 
 				$forbidden_forums = array();
@@ -246,7 +264,7 @@ class ucp_main
 							FORUMS_TABLE		=> 'f'
 						),
 
-						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . '
 							AND f.forum_id = fw.forum_id
 							AND ' . $db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
 
@@ -312,7 +330,7 @@ class ucp_main
 						}
 
 						$template->assign_block_vars('forumrow', array(
-							'FORUM_ID'				=> $forum_id, 
+							'FORUM_ID'				=> $forum_id,
 							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 							'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
@@ -326,7 +344,7 @@ class ucp_main
 							'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 							'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 
-							'U_LAST_POST'			=> $last_post_url, 
+							'U_LAST_POST'			=> $last_post_url,
 							'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
 						);
 					}
@@ -418,53 +436,65 @@ class ucp_main
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
 				$draft_subject = $draft_message = '';
+				add_form_key('ucp_draft');
 
 				if ($delete)
 				{
-					$drafts = array_keys(request_var('d', array(0 => 0)));
-
-					if (sizeof($drafts))
+					if (check_form_key('ucp_draft'))
 					{
-						$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
-							WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
-								AND user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+						$drafts = array_keys(request_var('d', array(0 => 0)));
 
-						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-
-						meta_refresh(3, $this->u_action);
-						trigger_error($message);
+						if (sizeof($drafts))
+						{
+							$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
+								WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
+									AND user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+						}
+						$msg = $user->lang['DRAFTS_DELETED'];
+						unset($drafts);
 					}
-
-					unset($drafts);
+					else
+					{
+						$msg = $user->lang['FORM_INVALID'];
+					}
+					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					meta_refresh(3, $this->u_action);
+					trigger_error($message);
 				}
 
 				if ($submit && $edit)
 				{
 					$draft_subject = utf8_normalize_nfc(request_var('subject', '', true));
 					$draft_message = utf8_normalize_nfc(request_var('message', '', true));
-					
-					if ($draft_message && $draft_subject)
+					if (check_form_key('ucp_draft'))
 					{
-						$draft_row = array(
-							'draft_subject' => $draft_subject,
-							'draft_message' => $draft_message
-						);
+						if ($draft_message && $draft_subject)
+						{
+							$draft_row = array(
+								'draft_subject' => $draft_subject,
+								'draft_message' => $draft_message
+							);
 
-						$sql = 'UPDATE ' . DRAFTS_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $draft_row) . " 
-							WHERE draft_id = $draft_id
-								AND user_id = " . $user->data['user_id'];
-						$db->sql_query($sql);
+							$sql = 'UPDATE ' . DRAFTS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $draft_row) . "
+								WHERE draft_id = $draft_id
+									AND user_id = " . $user->data['user_id'];
+							$db->sql_query($sql);
 
-						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 
-						meta_refresh(3, $this->u_action);
-						trigger_error($message);
+							meta_refresh(3, $this->u_action);
+							trigger_error($message);
+						}
+						else
+						{
+							$template->assign_var('ERROR', ($draft_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+						}
 					}
 					else
 					{
-						$template->assign_var('ERROR', ($draft_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+						$template->assign_var('ERROR', $user->lang['FORM_INVALID']);
 					}
 				}
 
@@ -482,7 +512,7 @@ class ucp_main
 					$sql = 'SELECT * FROM ' . DRAFTS_TABLE . '
 						WHERE user_id = ' . $user->data['user_id'] . ' ' .
 							(($edit) ? "AND draft_id = $draft_id" : '') . '
-							AND forum_id = 0 
+							AND forum_id = 0
 							AND topic_id = 0
 						ORDER BY save_time DESC';
 				}
@@ -578,10 +608,10 @@ class ucp_main
 		}
 
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
+			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 

@@ -27,10 +27,10 @@
 
 <script type="text/javascript">
 // <![CDATA[
-	var jump_page = '{L_JUMP_PAGE}:';
+	var jump_page = '{LA_JUMP_PAGE}:';
 	var on_page = '{ON_PAGE}';
 	var per_page = '{PER_PAGE}';
-	var base_url = '{BASE_URL}';
+	var base_url = '{A_BASE_URL}';
 	var style_cookie = 'phpBBstyle';
 	var onload_functions = new Array();
 	var onunload_functions = new Array();
@@ -38,18 +38,16 @@
 	<!-- IF S_USER_PM_POPUP -->
 		if ({S_NEW_PM})
 		{
-			window.open('{UA_POPUP_PM}', '_phpbbprivmsg', 'height=225,resizable=yes,width=400');
+			popup('{UA_POPUP_PM}', 400, 225, '_phpbbprivmsg');
 		}
 	<!-- ENDIF -->
 
 	/**
 	* Find a member
 	*/
-	function find_username()
+	function find_username(url)
 	{
-		<!-- IF UA_FIND_USERNAME -->
-		window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740');
-		<!-- ENDIF -->
+		popup(url, 760, 570, '_usersearch');
 		return false;
 	}
 

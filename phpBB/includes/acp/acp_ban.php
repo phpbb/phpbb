@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -23,11 +31,18 @@ class acp_ban
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		$bansubmit	= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit= (isset($_POST['unbansubmit'])) ? true : false;
+		$unbansubmit = (isset($_POST['unbansubmit'])) ? true : false;
 		$current_time = time();
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
+		$form_key = 'acp_ban';
+		add_form_key($form_key);
+
+		if (($bansubmit || $unbansubmit) && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// Ban submitted?
 		if ($bansubmit)
@@ -97,9 +112,8 @@ class acp_ban
 			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
 			
 			'U_ACTION'			=> $this->u_action,
-			'U_FIND_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),
-			)
-		);
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),
+		));
 	}
 
 	/**
@@ -179,10 +193,10 @@ class acp_ban
 			foreach ($ban_length as $ban_id => $length)
 			{
 				$template->assign_block_vars('ban_length', array(
-					'BAN_ID'	=> $ban_id,
+					'BAN_ID'	=> (int) $ban_id,
 					'LENGTH'	=> $length,
-					'A_LENGTH'	=> addslashes($length))
-				);
+					'A_LENGTH'	=> addslashes($length),
+				));
 			}
 		}
 
@@ -193,8 +207,8 @@ class acp_ban
 				$template->assign_block_vars('ban_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)))
-				);
+					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)),
+				));
 			}
 		}
 
@@ -205,8 +219,8 @@ class acp_ban
 				$template->assign_block_vars('ban_give_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)))
-				);
+					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)),
+				));
 			}
 		}
 

@@ -2,19 +2,6 @@
 
 <!-- IF S_EDIT -->
 
-	<script type="text/javascript">
-	<!--
-	/**
-	* Colour swatch
-	*/
-	function swatch()
-	{
-		window.open('{UA_SWATCH}', '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
-		return false;
-	}
-	//-->
-	</script>
-
 	<!-- IF S_ERROR -->
 		<div class="errorbox">
 			<h3>{L_WARNING}</h3>
@@ -62,7 +49,7 @@
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></td>
-		<td class="row2"><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></td>
+		<td class="row2"><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</span></td>
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_rank">{L_GROUP_RANK}:</label></td>
@@ -216,7 +203,7 @@
 	</tr>
 	<tr>
 		<td class="row1"><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></td>
-		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addusers" value="{L_SUBMIT}" /></td>

@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -89,10 +97,10 @@ class acp_prune
 				$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
 
 				// Get a list of forum's or the data for the forum that we are pruning.
-				$sql = 'SELECT forum_id, forum_name 
+				$sql = 'SELECT forum_id, forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . "
-						$sql_forum 
+						$sql_forum
 					ORDER BY left_id ASC";
 				$result = $db->sql_query($sql);
 
@@ -181,8 +189,8 @@ class acp_prune
 		}
 		else
 		{
-			$sql = 'SELECT forum_id, forum_name 
-				FROM ' . FORUMS_TABLE . ' 
+			$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
@@ -350,8 +358,8 @@ class acp_prune
 			'S_JOINED_OPTIONS'	=> $s_find_join_time,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
-			'U_FIND_USER'		=> append_sid($phpbb_root_path . "memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'))
-		);
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
+		));
 	}
 
 	/**
@@ -407,7 +415,7 @@ class acp_prune
 		}
 
 		// Get bot ids
-		$sql = 'SELECT user_id 
+		$sql = 'SELECT user_id
 			FROM ' . BOTS_TABLE;
 		$result = $db->sql_query($sql);
 

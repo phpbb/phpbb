@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -24,6 +32,9 @@ class acp_email
 		$this->tpl_name = 'acp_email';
 		$this->page_title = 'ACP_MASS_EMAIL';
 
+		$form_key = 'acp_email';
+		add_form_key($form_key);
+
 		// Set some vars
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
@@ -36,10 +47,15 @@ class acp_email
 		// Do the job ...
 		if ($submit)
 		{
-			// Error checking needs to go here ... if no subject and/or no message then skip 
+			// Error checking needs to go here ... if no subject and/or no message then skip
 			// over the send and return to the form
 			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
+
+			if (!check_form_key($form_key))
+			{
+				$error[] = $user->lang['FORM_INVALID'];
+			}
 
 			if (!$subject)
 			{
@@ -56,7 +72,7 @@ class acp_email
 				if ($usernames)
 				{
 					// If giving usernames the admin is able to email inactive users too...
-					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
+					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
 							AND user_allow_massemail = 1
@@ -66,18 +82,18 @@ class acp_email
 				{
 					if ($group_id)
 					{
-						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type 
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug 
+						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 							WHERE ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
-								AND u.user_id = ug.user_id 
+								AND u.user_id = ug.user_id
 								AND u.user_allow_massemail = 1
 								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 							ORDER BY u.user_lang, u.user_notify_type';
 					}
 					else
 					{
-						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang 
+						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
 								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
@@ -235,7 +251,6 @@ class acp_email
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
 			'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
-			'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=acp_email&field=usernames', false),
 			'SUBJECT'				=> $subject,
 			'MESSAGE'				=> $message,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options)

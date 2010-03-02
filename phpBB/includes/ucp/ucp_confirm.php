@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package VC
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_confirm
@@ -15,7 +23,7 @@
 * Note to potential users of this code ...
 *
 * Remember this is released under the _GPL_ and is subject
-* to that licence. Do not incorporate this within software 
+* to that licence. Do not incorporate this within software
 * released or distributed in any way under a licence other
 * than the GPL. We will be watching ... ;)
 *
@@ -40,8 +48,8 @@ class ucp_confirm
 
 		// Try and grab code for this id and session
 		$sql = 'SELECT code, seed
-			FROM ' . CONFIRM_TABLE . " 
-			WHERE session_id = '" . $db->sql_escape($user->session_id) . "' 
+			FROM ' . CONFIRM_TABLE . "
+			WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
 				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'
 				AND confirm_type = $type";
 		$result = $db->sql_query($sql);

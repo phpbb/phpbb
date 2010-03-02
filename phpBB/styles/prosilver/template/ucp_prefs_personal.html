@@ -87,7 +87,7 @@
 	<dl>
 		<dt><label for="dateformat">{L_BOARD_DATE_FORMAT}:</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
 		<dd>
-			<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = '{A_DEFAULT_DATEFORMAT}'; } else { document.getElementById('dateformat').value = this.value; }">
+			<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }">
 				{S_DATEFORMAT_OPTIONS}
 			</select>
 		</dd>
@@ -102,12 +102,13 @@
 	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
 	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 </fieldset>
-
+{S_FORM_TOKEN}
 </form>
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 	var date_format = '{A_DATE_FORMAT}';
+	var default_dateformat = '{A_DEFAULT_DATEFORMAT}';
 
 	function customDates()
 	{
@@ -137,7 +138,7 @@
 	}
 
 	customDates();
-//-->
+// ]]>
 </script>
 
 <!-- INCLUDE ucp_footer.html -->

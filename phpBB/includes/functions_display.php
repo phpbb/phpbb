@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Display Forums
 */
 function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
@@ -833,8 +841,8 @@ function display_reasons($reason_id = 0)
 {
 	global $db, $user, $template;
 
-	$sql = 'SELECT * 
-		FROM ' . REPORTS_REASONS_TABLE . ' 
+	$sql = 'SELECT *
+		FROM ' . REPORTS_REASONS_TABLE . '
 		ORDER BY reason_order ASC';
 	$result = $db->sql_query($sql);
 
@@ -1149,7 +1157,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	switch ($avatar_type)
 	{
 		case AVATAR_UPLOAD:
-			$avatar_img = $phpbb_root_path . "download.$phpEx?avatar=";
+			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
 		break;
 
 		case AVATAR_GALLERY:

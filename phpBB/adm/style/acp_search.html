@@ -61,22 +61,23 @@
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
 
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_INDEX -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Popup search progress bar
 		*/
 		function popup_progress_bar(progress_type)
 		{
 			close_waitscreen = 0;
-			window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=240,resizable=yes,scrollbars=no,WIDTH=400');
+			// no scrollbars
+			popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
 		}
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_ACP_SEARCH_INDEX}</h1>
@@ -90,6 +91,7 @@
 				<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');" />&nbsp;
 				<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
 			</fieldset>
+		{S_FORM_TOKEN}
 		</form>
 	<!-- ELSE -->
 
@@ -140,7 +142,7 @@
 			<!-- ENDIF -->
 			</p>
 			</fieldset>
-
+			{S_FORM_TOKEN}
 			</form>
 		<!-- END backend -->
 

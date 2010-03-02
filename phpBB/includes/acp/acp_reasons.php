@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -30,6 +38,9 @@ class acp_reasons
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
 
+		$form_name = 'acp_reason';
+		add_form_key('acp_reason');
+
 		$error = array();
 
 		switch ($action)
@@ -44,6 +55,10 @@ class acp_reasons
 
 				if ($submit)
 				{
+					if (!check_form_key($form_name))
+					{
+						$error[] = $user->lang['FORM_INVALID'];
+					}
 					// Reason specified?
 					if (!$reason_row['reason_title'] || !$reason_row['reason_description'])
 					{
@@ -308,7 +323,7 @@ class acp_reasons
 
 		// Reason count
 		$sql = 'SELECT reason_id, COUNT(reason_id) AS reason_count
-			FROM ' . REPORTS_TABLE . ' 
+			FROM ' . REPORTS_TABLE . '
 			GROUP BY reason_id';
 		$result = $db->sql_query($sql);
 

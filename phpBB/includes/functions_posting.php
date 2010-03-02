@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Fill smiley templates (or just the variables) with smilies, either in a window or inline
@@ -59,7 +67,7 @@ function generate_smilies($mode, $forum_id)
 	$last_url = '';
 
 	$sql = 'SELECT *
-		FROM ' . SMILIES_TABLE . 
+		FROM ' . SMILIES_TABLE .
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
 		ORDER BY smiley_order';
 	$result = $db->sql_query($sql, 3600);
@@ -311,7 +319,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 		$topic_type_array = array_merge(array(0 => array(
 			'VALUE'			=> POST_NORMAL,
 			'S_CHECKED'		=> ($topic_type == POST_NORMAL) ? ' checked="checked"' : '',
-			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])), 
+			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])),
 
 			$topic_type_array
 		);
@@ -571,7 +579,7 @@ function get_supported_image_types($type = false)
 /**
 * Create Thumbnail
 */
-function create_thumbnail($source, $destination, $mimetype) 
+function create_thumbnail($source, $destination, $mimetype)
 {
 	global $config;
 
@@ -618,7 +626,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		}
 	}
 
-	if (!$used_imagick) 
+	if (!$used_imagick)
 	{
 		$type = get_supported_image_types($type);
 
@@ -630,7 +638,7 @@ function create_thumbnail($source, $destination, $mimetype)
 				return false;
 			}
 
-			switch ($type['format']) 
+			switch ($type['format'])
 			{
 				case IMG_GIF:
 					$image = @imagecreatefromgif($source);
@@ -769,10 +777,11 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data)
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
+			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
 
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
+				'A_FILENAME'		=> addslashes(basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'S_IS_ORPHAN'		=> $attach_row['is_orphan'],
@@ -785,7 +794,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data)
 	}
 
 	$template->assign_vars(array(
-		'FILE_COMMENT'	=> $filename_data['filecomment'], 
+		'FILE_COMMENT'	=> $filename_data['filecomment'],
 		'FILESIZE'		=> $config['max_filesize'])
 	);
 
@@ -1105,7 +1114,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	$topic_title = censor_text($topic_title);
 
 	// Get banned User ID's
-	$sql = 'SELECT ban_userid 
+	$sql = 'SELECT ban_userid
 		FROM ' . BANLIST_TABLE;
 	$result = $db->sql_query($sql);
 
@@ -1122,7 +1131,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	$notify_rows = array();
 
 	// -- get forum_userids	|| topic_userids
-	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber 
+	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
 		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
 			AND w.user_id NOT IN ($sql_ignore_users)
@@ -1137,11 +1146,11 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			'user_id'		=> $row['user_id'],
 			'username'		=> $row['username'],
 			'user_email'	=> $row['user_email'],
-			'user_jabber'	=> $row['user_jabber'], 
-			'user_lang'		=> $row['user_lang'], 
+			'user_jabber'	=> $row['user_jabber'],
+			'user_lang'		=> $row['user_lang'],
 			'notify_type'	=> ($topic_notification) ? 'topic' : 'forum',
 			'template'		=> ($topic_notification) ? 'topic_notify' : 'newtopic_notify',
-			'method'		=> $row['user_notify_type'], 
+			'method'		=> $row['user_notify_type'],
 			'allowed'		=> false
 		);
 	}
@@ -1155,7 +1164,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			$sql_ignore_users .= ', ' . implode(', ', array_keys($notify_rows));
 		}
 
-		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber 
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
 				AND fw.user_id NOT IN ($sql_ignore_users)
@@ -1170,11 +1179,11 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				'user_id'		=> $row['user_id'],
 				'username'		=> $row['username'],
 				'user_email'	=> $row['user_email'],
-				'user_jabber'	=> $row['user_jabber'], 
+				'user_jabber'	=> $row['user_jabber'],
 				'user_lang'		=> $row['user_lang'],
 				'notify_type'	=> 'forum',
 				'template'		=> 'forum_notify',
-				'method'		=> $row['user_notify_type'], 
+				'method'		=> $row['user_notify_type'],
 				'allowed'		=> false
 			);
 		}
@@ -1223,7 +1232,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 		$msg_list_ary = array();
 		foreach ($msg_users as $row)
-		{ 
+		{
 			$pos = (!isset($msg_list_ary[$row['template']])) ? 0 : sizeof($msg_list_ary[$row['template']]);
 
 			$msg_list_ary[$row['template']][$pos]['method']	= $row['method'];
@@ -1252,7 +1261,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
 					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=$post_id",
 					'U_STOP_WATCHING_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&unwatch=topic",
-					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&unwatch=forum", 
+					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&unwatch=forum",
 				));
 
 				$messenger->send($addr['method']);
@@ -1627,6 +1636,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
 			}
+			else if (!$data['post_edit_reason'] && $mode == 'edit' && $auth->acl_get('m_edit', $data['forum_id']))
+			{
+				$sql_data[POSTS_TABLE]['sql'] = array(
+					'post_edit_reason'	=> '',
+				);
+			}
 
 			// If the person editing this post is different to the one having posted then we will add a log entry stating the edit
 			// Could be simplified by only adding to the log if the edit is not tracked - but this may confuse admins/mods
@@ -1923,9 +1938,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$sql_insert_ary = array();
+		
 		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
-			if (trim($poll['poll_options'][$i]))
+			if (strlen(trim($poll['poll_options'][$i])))
 			{
 				if (empty($cur_poll_options[$i]))
 				{
@@ -1952,7 +1968,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
-				WHERE poll_option_id >= ' . sizeof($poll['poll_options']) . '
+				WHERE poll_option_id > ' . sizeof($poll['poll_options']) . '
 					AND topic_id = ' . $data['topic_id'];
 			$db->sql_query($sql);
 		}

@@ -1,4 +1,4 @@
-Subject: Welcome to "{SITENAME}" - {U_BOARD}
+Subject: Welcome to "{SITENAME}"
 
 {WELCOME_MSG}
 
@@ -7,6 +7,8 @@ Please keep this e-mail for your records. Your account information is as follows
 ----------------------------
 Username: {USERNAME}
 Password: {PASSWORD}
+
+Board URL: {U_BOARD}
 ----------------------------
 
 Your account is currently inactive. You cannot use it until you visit the following link:

@@ -5,8 +5,7 @@
 <!-- IF S_EDIT_FORUM -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Handle displaying/hiding several options based on the forum type
 		*/
@@ -92,7 +91,7 @@
 			<!-- ENDIF -->
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
@@ -161,20 +160,28 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" /></dd>
+		<dd><input type="password" id="forum_password" name="forum_password" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
+		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
 	</dl>
+	<!-- IF S_FORUM_PASSWORD_SET -->
+	<dl>
+		<dt><label for="forum_password_unset">{L_FORUM_PASSWORD_UNSET}:</label><br /><span>{L_FORUM_PASSWORD_UNSET_EXPLAIN}</span></dt>
+		<dd><input id="forum_password_unset" name="forum_password_unset" type="checkbox" /></dd>
+	</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label for="forum_style">{L_FORUM_STYLE}:</label></dt>
 		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
-		<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
-	</dl>
+	<!-- IF S_CAN_COPY_PERMISSIONS -->
+		<dl>
+			<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
 	</fieldset>
 
 	<div id="forum_cat_options">
@@ -311,7 +318,7 @@
 		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_DELETE_FORUM -->
@@ -360,18 +367,17 @@
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_CONTINUE_SYNC -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		var close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
-
-	//-->
+		// no scrollbars...
+		popup('{UA_PROGRESS_BAR}', 400, 240, '_sync');
+	// ]]>
 	</script>
 
 	<h1>{L_FORUM_ADMIN}</h1>
@@ -383,18 +389,17 @@
 <!-- ELSE -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Popup search progress bar
 		*/
 		function popup_progress_bar()
 		{
 			var close_waitscreen = 0;
-			window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
+			// no scrollbars...
+			popup('{UA_PROGRESS_BAR}', 400, 240, '_sync');
 		}
-
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_FORUM_ADMIN}</h1>
@@ -410,9 +415,9 @@
 
 	<!-- IF S_RESYNCED -->
 		<script type="text/javascript">
-		<!--
+		// <![CDATA[
 			var close_waitscreen = 1;
-		//-->
+		// ]]>
 		</script>
 
 		<div class="successbox">
@@ -471,7 +476,7 @@
 
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 	<form id="forums" method="post" action="{U_ACTION}">
@@ -482,7 +487,7 @@
 		<input type="text" name="forum_name" value="" maxlength="255" />
 		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

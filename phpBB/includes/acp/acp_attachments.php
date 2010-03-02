@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -26,6 +34,14 @@ class acp_attachments
 		$error = $notify = array();
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$action = request_var('action', '');
+
+		$form_key = 'acp_attach';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		switch ($mode)
 		{
@@ -288,7 +304,7 @@ class acp_attachments
 						{
 							if ($row['group_id'] != $extensions[$row['extension_id']]['group_id'])
 							{
-								$sql = 'UPDATE ' . EXTENSIONS_TABLE . ' 
+								$sql = 'UPDATE ' . EXTENSIONS_TABLE . '
 									SET group_id = ' . (int) $extensions[$row['extension_id']]['group_id'] . '
 									WHERE extension_id = ' . $row['extension_id'];
 								$db->sql_query($sql);
@@ -303,7 +319,7 @@ class acp_attachments
 
 						if (sizeof($extension_id_list))
 						{
-							$sql = 'SELECT extension 
+							$sql = 'SELECT extension
 								FROM ' . EXTENSIONS_TABLE . '
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$result = $db->sql_query($sql);
@@ -315,7 +331,7 @@ class acp_attachments
 							}
 							$db->sql_freeresult($result);
 
-							$sql = 'DELETE 
+							$sql = 'DELETE
 								FROM ' . EXTENSIONS_TABLE . '
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$db->sql_query($sql);
@@ -371,8 +387,8 @@ class acp_attachments
 					'GROUP_SELECT_OPTIONS'	=> (isset($_POST['add_extension_check'])) ? $this->group_select('add_group_select', $add_extension_group, 'extension_group') : $this->group_select('add_group_select', false, 'extension_group'))
 				);
 
-				$sql = 'SELECT * 
-					FROM ' . EXTENSIONS_TABLE . ' 
+				$sql = 'SELECT *
+					FROM ' . EXTENSIONS_TABLE . '
 					ORDER BY group_id, extension';
 				$result = $db->sql_query($sql);
 
@@ -452,7 +468,7 @@ class acp_attachments
 					// Check New Group Name
 					if ($new_group_name)
 					{
-						$sql = 'SELECT group_id 
+						$sql = 'SELECT group_id
 							FROM ' . EXTENSION_GROUPS_TABLE . "
 							WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($new_group_name)) . "'";
 						$result = $db->sql_query($sql);
@@ -527,7 +543,7 @@ class acp_attachments
 
 					if (sizeof($extension_list))
 					{
-						$sql = 'UPDATE ' . EXTENSIONS_TABLE . " 
+						$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
 							SET group_id = $group_id
 							WHERE " . $db->sql_in_set('extension_id', $extension_list);
 						$db->sql_query($sql);
@@ -559,15 +575,15 @@ class acp_attachments
 
 						if (confirm_box(true))
 						{
-							$sql = 'SELECT group_name 
+							$sql = 'SELECT group_name
 								FROM ' . EXTENSION_GROUPS_TABLE . "
 								WHERE group_id = $group_id";
 							$result = $db->sql_query($sql);
 							$group_name = (string) $db->sql_fetchfield('group_name');
 							$db->sql_freeresult($result);
 
-							$sql = 'DELETE 
-								FROM ' . EXTENSION_GROUPS_TABLE . " 
+							$sql = 'DELETE
+								FROM ' . EXTENSION_GROUPS_TABLE . "
 								WHERE group_id = $group_id";
 							$db->sql_query($sql);
 
@@ -983,7 +999,7 @@ class acp_attachments
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
+						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
 					);
 				}
 				$db->sql_freeresult($result);

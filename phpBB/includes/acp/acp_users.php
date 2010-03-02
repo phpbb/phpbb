@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_users
@@ -37,6 +45,9 @@ class acp_users
 
 		$submit		= (isset($_POST['update'])) ? true : false;
 
+		$form_name = 'acp_users';
+		add_form_key($form_name);
+
 		// Whois (special case)
 		if ($action == 'whois')
 		{
@@ -47,13 +58,7 @@ class acp_users
 
 			$user_ip = request_var('user_ip', '');
 			$domain = gethostbyaddr($user_ip);
-			$ipwhois = '';
-
-			if ($ipwhois = user_ipwhois($user_ip))
-			{
-				$ipwhois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $ipwhois);
-				$ipwhois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $ipwhois);
-			}
+			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
 				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
@@ -74,9 +79,7 @@ class acp_users
 
 				'S_SELECT_USER'		=> true,
 				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
-				'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_user&field=username&select_single=true', false),
-				)
-			);
+			));
 
 			return;
 		}
@@ -226,6 +229,11 @@ class acp_users
 								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$ban = array();
 
 							switch ($action)
@@ -276,6 +284,11 @@ class acp_users
 							if ($user_id == $user->data['user_id'])
 							{
 								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
@@ -345,6 +358,11 @@ class acp_users
 								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_DEACTIVATE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
@@ -369,6 +387,11 @@ class acp_users
 
 						case 'delsig':
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$sql_ary = array(
 								'user_sig'					=> '',
 								'user_sig_bbcode_uid'		=> '',
@@ -387,7 +410,12 @@ class acp_users
 						break;
 
 						case 'delavatar':
-							
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$sql_ary = array(
 								'user_avatar'			=> '',
 								'user_avatar_type'		=> 0,
@@ -458,6 +486,11 @@ class acp_users
 						break;
 						
 						case 'moveposts':
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
 
 							$user->add_lang('acp/forums');
 
@@ -662,9 +695,14 @@ class acp_users
 						$error[] = 'NEW_EMAIL_ERROR';
 					}
 
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['new_password'] && $user_row['user_password'] != md5($data['new_password'])) ? true : false;
+					$update_password = ($data['new_password'] && !phpbb_check_hash($user_row['user_password'], $data['new_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -736,7 +774,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password' => md5($data['new_password']),
+								'user_password' => phpbb_hash($data['new_password']),
 								'user_passchg'	=> time(),
 							);
 
@@ -890,6 +928,11 @@ class acp_users
 				// Delete entries if requested and able
 				if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					$where_sql = '';
 					if ($deletemark && $marked)
 					{
@@ -915,6 +958,11 @@ class acp_users
 
 				if ($submit && $message)
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
@@ -1034,6 +1082,10 @@ class acp_users
 					if (sizeof($cp_error))
 					{
 						$error = array_merge($error, $cp_error);
+					}
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					if (!sizeof($error))
@@ -1192,7 +1244,7 @@ class acp_users
 					'view_smilies'		=> request_var('view_smilies', $this->optionget($user_row, 'viewsmilies')),
 					'view_sigs'			=> request_var('view_sigs', $this->optionget($user_row, 'viewsigs')),
 					'view_avatars'		=> request_var('view_avatars', $this->optionget($user_row, 'viewavatars')),
-					'view_wordcensor'	=> request_var('view_wordcensore', $this->optionget($user_row, 'viewcensors')),
+					'view_wordcensor'	=> request_var('view_wordcensor', $this->optionget($user_row, 'viewcensors')),
 
 					'bbcode'	=> request_var('bbcode', $this->optionget($user_row, 'bbcode')),
 					'smilies'	=> request_var('smilies', $this->optionget($user_row, 'smilies')),
@@ -1212,6 +1264,11 @@ class acp_users
 						'post_sk'		=> array('string', false, 1, 1),
 						'post_sd'		=> array('string', false, 1, 1),
 					));
+
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
+					}
 
 					if (!sizeof($error))
 					{
@@ -1376,6 +1433,12 @@ class acp_users
 
 				if ($submit)
 				{
+
+					if (!check_form_key($form_name))
+					{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					if (avatar_process_user($error, $user_row))
 					{
 						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
@@ -1418,6 +1481,11 @@ class acp_users
 
 				if ($submit)
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					$rank_id = request_var('user_rank', 0);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
@@ -1428,7 +1496,7 @@ class acp_users
 					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 				
-				$sql = 'SELECT * 
+				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
@@ -1475,17 +1543,22 @@ class acp_users
 					{
 						$error[] = implode('<br />', $message_parser->warn_msg);
 					}
-						
+
+					if (!check_form_key($form_name))
+					{
+						$error = 'FORM_INVALID';
+					}
+
 					if (!sizeof($error) && $submit)
 					{
 						$sql_ary = array(
-							'user_sig'					=> (string) $message_parser->message, 
-							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+							'user_sig'					=> (string) $message_parser->message,
+							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> (string) $message_parser->bbcode_bitfield
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user_id;
 						$db->sql_query($sql);
 
@@ -1525,7 +1598,7 @@ class acp_users
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
@@ -1546,6 +1619,23 @@ class acp_users
 				// Sort keys
 				$sort_key	= request_var('sk', 'a');
 				$sort_dir	= request_var('sd', 'd');
+
+				if ($deletemark && sizeof($marked))
+				{
+					$sql = 'SELECT attach_id
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE poster_id = ' . $user_id . '
+							AND is_orphan = 0
+							AND ' . $db->sql_in_set('attach_id', $marked);
+					$result = $db->sql_query($sql);
+
+					$marked = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$marked[] = $row['attach_id'];
+					}
+					$db->sql_freeresult($result);
+				}
 
 				if ($deletemark && sizeof($marked))
 				{
@@ -1611,18 +1701,20 @@ class acp_users
 
 				$sql = 'SELECT COUNT(attach_id) as num_attachments
 					FROM ' . ATTACHMENTS_TABLE . "
-					WHERE poster_id = $user_id";
+					WHERE poster_id = $user_id
+						AND is_orphan = 0";
 				$result = $db->sql_query_limit($sql, 1);
 				$num_attachments = (int) $db->sql_fetchfield('num_attachments');
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
-					FROM ' . ATTACHMENTS_TABLE . ' a 
+					FROM ' . ATTACHMENTS_TABLE . ' a
 						LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id
 							AND a.in_message = 0)
 						LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id
 							AND a.in_message = 1)
 					WHERE a.poster_id = ' . $user_id . "
+						AND a.is_orphan = 0
 					ORDER BY $order_by";
 				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
 
@@ -1652,7 +1744,7 @@ class acp_users
 				
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}
@@ -1722,6 +1814,12 @@ class acp_users
 				// Add user to group?
 				if ($submit)
 				{
+
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					if (!$group_id)
 					{
 						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);

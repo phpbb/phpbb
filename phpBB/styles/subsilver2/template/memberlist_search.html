@@ -2,7 +2,7 @@
 
 <!-- IF S_IN_SEARCH_POPUP -->
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		function insert_user(user)
 		{
 			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = ( opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value.length && opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value + "\n" + user : user;
@@ -64,7 +64,7 @@
 				}
 			}
 		}
-	//-->
+	// ]]>
 	</script>
 <!-- ENDIF -->
 
@@ -133,7 +133,7 @@
 	<td class="cat" colspan="4" align="center"><input class="btnlite" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 </tr>
 </table>
-
+{S_FORM_TOKEN}
 </form>
 
 <br clear="all" />

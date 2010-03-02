@@ -13,6 +13,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -65,7 +70,7 @@ $lang = array_merge($lang, array(
 	'CONFIG_CONVERT'			=> 'Converting the configuration',
 	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below.',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written. You may now proceed to the next step of the installation.',
-	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for "%s" is empty.',
+	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for “%s” is empty.',
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact e-mail',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
@@ -79,15 +84,16 @@ $lang = array_merge($lang, array(
 	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) board systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the board software you wish to convert from, please check our website where further conversion modules may be available for download.',
 	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist.',
+	'CONVERT_OPTIONS'			=> 'Options',
 	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion process, push the button below to begin.',
-	'CONV_ERR_FATAL'					=> 'Fatal conversion error',
+	'CONV_ERR_FATAL'			=> 'Fatal conversion error',
 
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',
 	'CONV_ERROR_FORUM_ACCESS'			=> 'Unable to get forum access information.',
 	'CONV_ERROR_GET_CATEGORIES'			=> 'Unable to get categories.',
 	'CONV_ERROR_GET_CONFIG'				=> 'Could not retrieve your board configuration.',
-	'CONV_ERROR_COULD_NOT_READ'			=> 'Unable to access/read "%s".',
+	'CONV_ERROR_COULD_NOT_READ'			=> 'Unable to access/read “%s”.',
 	'CONV_ERROR_GROUP_ACCESS'			=> 'Unable to get group authentication information.',
 	'CONV_ERROR_INCONSISTENT_GROUPS'	=> 'Inconsistency in groups table detected in add_bots() - you need to add all special groups if you do it manually.',
 	'CONV_ERROR_INSERT_BOT'				=> 'Unable to insert bot into users table.',
@@ -97,7 +103,7 @@ $lang = array_merge($lang, array(
 	'CONV_ERROR_NO_AVATAR_PATH'			=> 'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
 	'CONV_ERROR_NO_FORUM_PATH'			=> 'The relative path to the source board has not been specified.',
 	'CONV_ERROR_NO_GALLERY_PATH'		=> 'Note to developer: you must specify $convertor[\'avatar_gallery_path\'] to use %s.',
-	'CONV_ERROR_NO_GROUP'				=> 'Group "%1$s" could not be found in %2$s.',
+	'CONV_ERROR_NO_GROUP'				=> 'Group “%1$s” could not be found in %2$s.',
 	'CONV_ERROR_NO_RANKS_PATH'			=> 'Note to developer: you must specify $convertor[\'ranks_path\'] to use %s.',
 	'CONV_ERROR_NO_SMILIES_PATH'		=> 'Note to developer: you must specify $convertor[\'smilies_path\'] to use %s.',
 	'CONV_ERROR_NO_UPLOAD_DIR'			=> 'Note to developer: you must specify $convertor[\'upload_path\'] to use %s.',
@@ -106,12 +112,12 @@ $lang = array_merge($lang, array(
 	'CONV_ERROR_REPLACE_CATEGORY'		=> 'Unable to insert new forum replacing old category.',
 	'CONV_ERROR_REPLACE_FORUM'			=> 'Unable to insert new forum replacing old forum.',
 	'CONV_ERROR_USER_ACCESS'			=> 'Unable to get user authentication information.',
-	'CONV_ERROR_WRONG_GROUP'			=> 'Wrong group "%1$s" defined in %2$s.',
+	'CONV_ERROR_WRONG_GROUP'			=> 'Wrong group “%1$s” defined in %2$s.',
 	'CONV_OPTIONS_BODY'					=> 'This page collects the data required to access the source board. Enter the database details of your former board; the converter will not change anything in the database given below. The source board should be disabled to allow a consistent conversion.',
 	'CONV_SAVED_MESSAGES'				=> 'Saved messages',
 
 	'COULD_NOT_COPY'			=> 'Could not copy file <strong>%1$s</strong> to <strong>%2$s</strong><br /><br />Please check that the target directory exists and is writable by the webserver.',
-	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» Specified source path was %s.',
+	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» %s was specified as the source path.',
 
 	'DBMS'						=> 'Database type',
 	'DB_CONFIG'					=> 'Database configuration',
@@ -119,7 +125,7 @@ $lang = array_merge($lang, array(
 	'DB_ERR_INSERT'				=> 'Error while processing <code>INSERT</code> query.',
 	'DB_ERR_LAST'				=> 'Error while processing <var>query_last</var>.',
 	'DB_ERR_QUERY_FIRST'		=> 'Error while executing <var>query_first</var>.',
-	'DB_ERR_QUERY_FIRST_TABLE'	=> 'Error while executing <var>query_first</var>, %s ("%s").',
+	'DB_ERR_QUERY_FIRST_TABLE'	=> 'Error while executing <var>query_first</var>, %s (“%s”).',
 	'DB_ERR_SELECT'				=> 'Error while running <code>SELECT</code> query.',
 	'DB_HOST'					=> 'Database server hostname or DSN',
 	'DB_HOST_EXPLAIN'			=> 'DSN stands for Data Source Name and is relevant only for ODBC installs.',
@@ -160,7 +166,7 @@ $lang = array_merge($lang, array(
 	'FILES_REQUIRED_EXPLAIN'	=> '<strong>Required</strong> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see “Not Found” you need to create the relevant file or directory. If you see “Unwritable” you need to change the permissions on the file or directory to allow phpBB to write to it.',
 	'FILLING_TABLE'				=> 'Filling table <strong>%s</strong>',
 	'FILLING_TABLES'			=> 'Filling tables',
-	'FINAL_STEP'				=> 'Processing final step',
+	'FINAL_STEP'				=> 'Process final step',
 	'FORUM_ADDRESS'				=> 'Board address',
 	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the URL of your former board, for example <samp>http://www.example.com/phpBB2/</samp>. If an address is entered here and not left empty every instance of this address will be replaced by your new board address within messages, private messages and signatures.',
 	'FORUM_PATH'				=> 'Board path',
@@ -266,7 +272,7 @@ $lang = array_merge($lang, array(
 	'NAMING_CONFLICT'			=> 'Naming conflict: %s and %s are both aliases<br /><br />%s',
 	'NEXT_STEP'					=> 'Proceed to next step',
 	'NOT_FOUND'					=> 'Cannot find',
-	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s ("%s")',
+	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s (“%s”)',
 	'NO_CONVERTORS'				=> 'No convertors are available for use.',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified.',
 	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your administration control panel',
@@ -294,7 +300,7 @@ $lang = array_merge($lang, array(
 	'POST_ID'						=> 'Post ID',
 	'PREFIX_FOUND'					=> 'A scan of your tables has shown a valid installation using <strong>%s</strong> as table prefix.',
 	'PREPROCESS_STEP'				=> 'Executing pre-processing functions/queries',
-	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process. Please note that you may have to manually adjust several things. After conversion, especially check the permissions assigned, rebuild your search index if necessary and also make sure files got copied correctly, for example avatars and smilies.',
+	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process. Please note that you may have to manually do and adjust several things. After conversion, especially check the permissions assigned, rebuild your search index which is not converted and also make sure files got copied correctly, for example avatars and smilies.',
 	'PROCESS_LAST'					=> 'Processing last statements',
 
 	'REFRESH_PAGE'				=> 'Refresh page to continue conversion',
@@ -350,6 +356,7 @@ $lang = array_merge($lang, array(
 	'UNWRITABLE'				=> 'Unwritable',
 	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted information',
 	'UPDATE_TOPICS_POSTED_ERR'	=> 'An error occured while generating topics posted information. You can retry this step in the ACP after the conversion process is completed.',
+	'VERIFY_OPTIONS'			=> 'Verifying conversion options',
 	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB3 Installation',
@@ -371,8 +378,9 @@ $lang = array_merge($lang, array(
 	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all files will be checked against the update files - this can take a while if this is the first file check.',
 	'CHECK_FILES_UP_TO_DATE'		=> 'According to your database your version is up to date. You may want to proceed with the file check to make sure all files are really up to date with the latest phpBB version.',
 	'CHECK_UPDATE_DATABASE'			=> 'Continue update process',
-	'COLLECTED_INFORMATION'			=> 'Information on collected files',
+	'COLLECTED_INFORMATION'			=> 'File information',
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
+	'COLLECTING_FILE_DIFFS'			=> 'Collecting file differences',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
 	'CURRENT_FILE'					=> 'Current original file',
@@ -406,11 +414,11 @@ $lang = array_merge($lang, array(
 	'FILES_MODIFIED'				=> 'Modified files',
 	'FILES_MODIFIED_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. The updated file will be a merge between your modifications and the new file.',
 	'FILES_NEW'						=> 'New files',
-	'FILES_NEW_EXPLAIN'				=> 'The following files currently do not exist within your installation.',
+	'FILES_NEW_EXPLAIN'				=> 'The following files currently do not exist within your installation. These files will be added to your installation.',
 	'FILES_NEW_CONFLICT'			=> 'New conflicting files',
 	'FILES_NEW_CONFLICT_EXPLAIN'	=> 'The following files are new within the latest version but it has been determined that there is already a file with the same name within the same position. This file will be overwritten by the new file.',
 	'FILES_NOT_MODIFIED'			=> 'Not modified files',
-	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files were not modified and represent the original phpBB files from the version you want to update from.',
+	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files are not modified and represent the original phpBB files from the version you want to update from.',
 	'FILES_UP_TO_DATE'				=> 'Already updated files',
 	'FILES_UP_TO_DATE_EXPLAIN'		=> 'The following files are already up to date and do not need to be updated.',
 	'FTP_SETTINGS'					=> 'FTP settings',
@@ -439,6 +447,8 @@ $lang = array_merge($lang, array(
 	'MERGE_MOD_FILE_OPTION'		=> 'Merge differences and use modified code within conflicting block',
 	'MERGE_NEW_FILE_OPTION'		=> 'Merge differences and use new file code within conflicting block',
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
+	'MERGING_FILES'				=> 'Merging differences',
+	'MERGING_FILES_EXPLAIN'		=> 'Currently collecting final file changes.<br /><br />Please wait until phpBB has completed all operations on changed files.',
 
 	'NEW_FILE'						=> 'New updated file',
 	'NEW_USERNAME'					=> 'New username',
@@ -453,6 +463,7 @@ $lang = array_merge($lang, array(
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
+	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently having differences about %1$d from %2$d files collected.<br />Please wait until file collection finished.',
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 
@@ -487,6 +498,8 @@ $lang = array_merge($lang, array(
 	'STATUS_NEW_CONFLICT'		=> 'Conflicting new file',
 	'STATUS_NOT_MODIFIED'		=> 'Not modified file',
 	'STATUS_UP_TO_DATE'			=> 'Already updated file',
+
+	'TOGGLE_DISPLAY'			=> 'View/Hide file list',
 
 	'UPDATE_COMPLETED'				=> 'Update completed',
 	'UPDATE_DATABASE'				=> 'Update database',
@@ -556,10 +569,10 @@ $lang = array_merge($lang, array(
 // Default database schema entries...
 $lang = array_merge($lang, array(
 	'CONFIG_BOARD_EMAIL_SIG'		=> 'Thanks, The Management',
-	'CONFIG_SITE_DESC'				=> 'A _little_ text to describe your forum',
+	'CONFIG_SITE_DESC'				=> 'A short text to describe your forum',
 	'CONFIG_SITENAME'				=> 'yourdomain.com',
 
-	'DEFAULT_INSTALL_POST'			=> 'This is an example post in your phpBB3 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!',
+	'DEFAULT_INSTALL_POST'			=> 'This is an example post in your phpBB3 installation. Everything seems to be working. You may delete this post if you like and continue to set up your board. During the installation process your first category and your first forum are assigned an appropriate set of permissions for the predefined usergroups administrators, bots, global moderators, guests, registered users and registered COPPA users. If you also choose to delete your first category and your first forum, do not forget to assign permissions for all these usergroups for all new categories and forums you create. It is recommended to rename your first category and your first forum and copy permissions from these while creating new categories and forums. Have fun!',
 
 	'EXT_GROUP_ARCHIVES'			=> 'Archives',
 	'EXT_GROUP_DOCUMENTS'			=> 'Documents',
@@ -571,9 +584,9 @@ $lang = array_merge($lang, array(
 	'EXT_GROUP_REAL_MEDIA'			=> 'Real Media',
 	'EXT_GROUP_WINDOWS_MEDIA'		=> 'Windows Media',
 
-	'FORUMS_FIRST_CATEGORY'			=> 'My first Category',
-	'FORUMS_TEST_FORUM_DESC'		=> 'This is just a test forum.',
-	'FORUMS_TEST_FORUM_TITLE'		=> 'Test Forum 1',
+	'FORUMS_FIRST_CATEGORY'			=> 'Your first category',
+	'FORUMS_TEST_FORUM_DESC'		=> 'Description of your first forum.',
+	'FORUMS_TEST_FORUM_TITLE'		=> 'Your first forum',
 
 	'RANKS_SITE_ADMIN_TITLE'		=> 'Site Admin',
 	'REPORT_WAREZ'					=> 'The post contains links to illegal or pirated software.',

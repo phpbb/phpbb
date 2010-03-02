@@ -1,18 +1,23 @@
 <?php
-/** 
+/**
 *
 * acp_forums [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -86,9 +91,12 @@ $lang = array_merge($lang, array(
 	'FORUM_PASSWORD_CONFIRM'			=> 'Confirm forum password',
 	'FORUM_PASSWORD_CONFIRM_EXPLAIN'	=> 'Only needs to be set if a forum password is entered.',
 	'FORUM_PASSWORD_EXPLAIN'			=> 'Defines a password for this forum, use the permission system in preference.',
+	'FORUM_PASSWORD_UNSET'				=> 'Remove forum password',
+	'FORUM_PASSWORD_UNSET_EXPLAIN'		=> 'Check here if you want to remove the forum password.',
+	'FORUM_PASSWORD_OLD'				=> 'The forum password is using an old encryption and should be changed.',
 	'FORUM_PASSWORD_MISMATCH'			=> 'The passwords you entered did not match.',
 	'FORUM_PRUNE_SETTINGS'				=> 'Forum prune settings',
-	'FORUM_RESYNCED'					=> 'Forum "%s" successfully resynced',
+	'FORUM_RESYNCED'					=> 'Forum “%s” successfully resynced',
 	'FORUM_RULES_EXPLAIN'				=> 'Forum rules are displayed at any page within the given forum.',
 	'FORUM_RULES_LINK'					=> 'Link to forum rules',
 	'FORUM_RULES_LINK_EXPLAIN'			=> 'You are able to enter the URL of the page/post containing your forum rules here. This setting will override the forum rules text you specified.',

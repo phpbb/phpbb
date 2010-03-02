@@ -6,10 +6,18 @@
 *
 * @package login
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Checks whether the user is identified to apache
@@ -36,6 +44,15 @@ function login_apache(&$username, &$password)
 {
 	global $db;
 
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
+
 	if (!isset($_SERVER['PHP_AUTH_USER']))
 	{
 		return array(
@@ -59,7 +76,7 @@ function login_apache(&$username, &$password)
 			);
 		}
 
-		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type 
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
 		$result = $db->sql_query($sql);
@@ -185,7 +202,7 @@ function user_row_apache($username, $password)
 	// generate user account data
 	return array(
 		'username'		=> $username,
-		'user_password'	=> md5($password),
+		'user_password'	=> phpbb_hash($password),
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
 		'user_type'		=> USER_NORMAL,

@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
 * @copyright (c) 2005 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -29,7 +30,7 @@ if (!defined('IN_PHPBB'))
 * (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
 * derived from an LGPL application may be relicenced under the GPL, this applies
 * to this source
-* 
+*
 * DEFINE directive inspired by a request by Cyberalien
 *
 * @package phpBB3
@@ -86,16 +87,9 @@ class template_compile
 	}
 
 	/**
-	* Straight-forward strategy: use PHP's tokenizer to escape everything that
-	* looks like a PHP tag.
-	*
-	* We open/close PHP tags at the beginning of the template to clearly indicate
-	* that we are in HTML mode. If we find a PHP tag, we escape it then we reiterate
-	* over the whole file. That can become quite slow if the file is stuffed with
-	* <?php tags, but there's only so much we can do.
-	*
-	* Known issue: templates need to be rechecked everytime the value of the php.ini
-	* settings asp_tags or short_tags are changed
+	* Remove any PHP tags that do not belong, these regular expressions are derived from
+	* the ones that exist in zend_language_scanner.l
+	* @access private
 	*/
 	function remove_php_tags(&$code)
 	{

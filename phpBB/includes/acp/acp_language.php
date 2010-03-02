@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -32,14 +40,19 @@ class acp_language
 		$this->default_variables();
 
 		// Check and set some common vars
-		$action		= request_var('action', '');
 
-		$action		= (isset($_POST['update_details'])) ? 'update_details' : $action;
-		$action		= (isset($_POST['download_file'])) ? 'download_file' : $action;
-		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : $action;
-		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : $action;
-		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : $action;
-		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
+		$action		= (isset($_POST['update_details'])) ? 'update_details' : '';
+		$action		= (isset($_POST['download_file'])) ? 'download_file' : '';
+		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : '';
+		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : '';
+		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : '';
+		$action		= (isset($_POST['remove_store'])) ? 'details' : '';
+
+		$submit = (empty($action)) ? false : true;
+		$action = (empty($action)) ? request_var('action', '') : $action;
+
+		$form_name = 'acp_lang';
+		add_form_key('acp_lang');
 
 		$lang_id = request_var('id', 0);
 		if (isset($_POST['missing_file']))
@@ -59,7 +72,7 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
-		if ($action == 'upload_data' && request_var('test_connection', ''))
+		if ($submit && $action == 'upload_data' && request_var('test_connection', ''))
 		{
 			$test_connection = false;
 			$action = 'upload_file';
@@ -89,6 +102,7 @@ class acp_language
 		switch ($action)
 		{
 			case 'upload_file':
+
 				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
 
 				$method = request_var('method', '');
@@ -132,6 +146,11 @@ class acp_language
 
 			case 'update_details':
 
+				if (!$submit || !check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$lang_id)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -150,7 +169,7 @@ class acp_language
 					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
 				);
 
-				$db->sql_query('UPDATE ' . LANG_TABLE . ' 
+				$db->sql_query('UPDATE ' . LANG_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
 
@@ -162,8 +181,18 @@ class acp_language
 			case 'submit_file':
 			case 'download_file':
 			case 'upload_data':
+				
+				if (!$submit || !check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
-				if (!$lang_id || empty($_POST['entry']) || !is_array($_POST['entry']))
+				if (!$lang_id || empty($_POST['entry']))
+				{
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				if ($this->language_directory != 'email' && !is_array($_POST['entry']))
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -179,6 +208,55 @@ class acp_language
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				// Before we attempt to write anything let's check if the admin really chose a correct filename
+				switch ($this->language_directory)
+				{
+					case 'email':
+						// Get email templates
+						$email_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'email', 'txt');
+						$email_files = $email_files['email/'];
+
+						if (!in_array($this->language_file, $email_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					case 'acp':
+						// Get acp files
+						$acp_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'acp', $phpEx);
+						$acp_files = $acp_files['acp/'];
+
+						if (!in_array($this->language_file, $acp_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					case 'mods':
+						// Get mod files
+						$mods_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'mods', $phpEx);
+						$mods_files = (isset($mods_files['mods/'])) ? $mods_files['mods/'] : array();
+
+						if (!in_array($this->language_file, $mods_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					default:
+						if (!in_array($this->language_file, $this->main_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+				}
 
 				if (!$safe_mode)
 				{
@@ -690,7 +768,7 @@ class acp_language
 
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
-				$sql = 'UPDATE ' . USERS_TABLE . " 
+				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
 					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$db->sql_query($sql);
@@ -869,7 +947,7 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'SELECT * 
+				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
@@ -985,7 +1063,7 @@ class acp_language
 		}
 
 		$sql = 'SELECT user_lang, COUNT(user_lang) AS lang_count
-			FROM ' . USERS_TABLE . ' 
+			FROM ' . USERS_TABLE . '
 			GROUP BY user_lang';
 		$result = $db->sql_query($sql);
 
@@ -996,7 +1074,7 @@ class acp_language
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT * 
+		$sql = 'SELECT *
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
@@ -1078,15 +1156,15 @@ class acp_language
 		global $phpEx;
 
 		$this->language_file_header = '<?php
-/** 
+/**
 *
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
 * @version $' . 'Id: ' . '$
-* @copyright (c) ' . date('Y') . ' phpBB Group 
+* @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 

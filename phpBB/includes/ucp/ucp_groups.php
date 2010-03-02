@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * ucp_groups
 * @package ucp
 */
@@ -393,11 +401,12 @@ class ucp_groups
 				$this->page_title = 'UCP_USERGROUPS_MANAGE';
 				$action		= (isset($_POST['addusers'])) ? 'addusers' : request_var('action', '');
 				$group_id	= request_var('g', 0);
+				add_form_key('ucp_groups');
 
 				if ($group_id)
 				{
-					$sql = 'SELECT * 
-						FROM ' . GROUPS_TABLE . " 
+					$sql = 'SELECT *
+						FROM ' . GROUPS_TABLE . "
 						WHERE group_id = $group_id";
 					$result = $db->sql_query($sql);
 					$group_row = $db->sql_fetchrow($result);
@@ -479,10 +488,10 @@ class ucp_groups
 							{
 								// Avatar stuff
 								$var_ary = array(
-									'uploadurl'		=> array('string', true, 5, 255), 
-									'remotelink'	=> array('string', true, 5, 255), 
-									'width'			=> array('string', true, 1, 3), 
-									'height'		=> array('string', true, 1, 3), 
+									'uploadurl'		=> array('string', true, 5, 255),
+									'remotelink'	=> array('string', true, 5, 255),
+									'width'			=> array('string', true, 1, 3),
+									'height'		=> array('string', true, 1, 3),
 								);
 
 								if (!($error = validate_data($data, $var_ary)))
@@ -552,10 +561,15 @@ class ucp_groups
 								}
 							}
 
+							if (!check_form_key('ucp_groups'))
+							{
+								$error[] = $user->lang['FORM_INVALID'];
+							}
+
 							if (!sizeof($error))
 							{
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
-								// group. This prevents existing group members being updated if no changes 
+								// group. This prevents existing group members being updated if no changes
 								// were made.
 						
 								$group_attributes = array();
@@ -609,7 +623,7 @@ class ucp_groups
 							$group_rank = $group_row['group_rank'];
 						}
 
-						$sql = 'SELECT * 
+						$sql = 'SELECT *
 							FROM ' . RANKS_TABLE . '
 							WHERE rank_special = 1
 							ORDER BY rank_title';
@@ -636,6 +650,9 @@ class ucp_groups
 						{
 							avatar_gallery($category, $avatar_select, 4);
 						}
+						
+						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
+
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
@@ -644,6 +661,7 @@ class ucp_groups
 							'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
+							'S_AVATARS_ENABLED'	=> $avatars_enabled,
 							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
 							'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
 
@@ -678,7 +696,6 @@ class ucp_groups
 							'GROUP_HIDDEN'		=> $type_hidden,
 
 							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
-							'UA_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&name=group_colour', false),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
 						);
@@ -707,9 +724,9 @@ class ucp_groups
 						$start = request_var('start', 0);
 
 						// Grab the leaders - always, on every page...
-						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-							WHERE ug.group_id = $group_id 
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
+							WHERE ug.group_id = $group_id
 								AND u.user_id = ug.user_id
 								AND ug.group_leader = 1
 							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
@@ -731,18 +748,18 @@ class ucp_groups
 						$db->sql_freeresult($result);
 
 						// Total number of group members (non-leaders)
-						$sql = 'SELECT COUNT(user_id) AS total_members 
-							FROM ' . USER_GROUP_TABLE . " 
-							WHERE group_id = $group_id 
+						$sql = 'SELECT COUNT(user_id) AS total_members
+							FROM ' . USER_GROUP_TABLE . "
+							WHERE group_id = $group_id
 								AND group_leader = 0";
 						$result = $db->sql_query($sql);
 						$total_members = (int) $db->sql_fetchfield('total_members');
 						$db->sql_freeresult($result);
 
 						// Grab the members
-						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-							WHERE ug.group_id = $group_id 
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
+							WHERE ug.group_id = $group_id
 								AND u.user_id = ug.user_id
 								AND ug.group_leader = 0
 							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
@@ -790,8 +807,7 @@ class ucp_groups
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
-							'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=usernames', false))
-						);
+						));
 
 					break;
 
@@ -850,9 +866,9 @@ class ucp_groups
 				
 								do
 								{
-									$sql = 'SELECT user_id 
+									$sql = 'SELECT user_id
 										FROM ' . USER_GROUP_TABLE . "
-										WHERE group_id = $group_id 
+										WHERE group_id = $group_id
 										ORDER BY user_id";
 									$result = $db->sql_query_limit($sql, 200, $start);
 

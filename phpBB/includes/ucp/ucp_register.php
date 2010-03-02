@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * ucp_register
 * Board registration
 * @package ucp
@@ -35,6 +43,24 @@ class ucp_register
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
+
+
+		// not so fast, buddy
+		if (($submit && !check_form_key('ucp_register', false, '', false, $config['min_time_reg']))
+			|| (!$submit && !check_form_key('ucp_register_terms', false, '', false, $config['min_time_terms'])))
+		{
+			$agreed = false;
+		}
+		
+		if ($agreed)
+		{
+			add_form_key('ucp_register');
+		}
+		else
+		{
+			add_form_key('ucp_register_terms');
+		}
+
 
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
@@ -103,8 +129,8 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
-				);
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang),
+				));
 			}
 			else
 			{
@@ -114,13 +140,16 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
+					'S_TIME'			=> 1000 * ((int) $config['min_time_terms']),
+					)
 				);
 			}
 
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
+
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;
@@ -289,7 +318,7 @@ class ucp_register
 
 				$user_row = array(
 					'username'				=> $data['username'],
-					'user_password'			=> md5($data['new_password']),
+					'user_password'			=> phpbb_hash($data['new_password']),
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> (float) $data['tz'],
@@ -427,31 +456,8 @@ class ucp_register
 			$str = '';
 			if (!$change_lang)
 			{
-				$sql = 'SELECT DISTINCT c.session_id
-					FROM ' . CONFIRM_TABLE . ' c
-					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-					WHERE s.session_id IS NULL';
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					$sql_in = array();
-					do
-					{
-						$sql_in[] = (string) $row['session_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
-
-					if (sizeof($sql_in))
-					{
-						$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-							WHERE ' . $db->sql_in_set('session_id', $sql_in) . '
-								AND confirm_type = ' . CONFIRM_REG;
-						$db->sql_query($sql);
-					}
-				}
-				$db->sql_freeresult($result);
-
+				$user->confirm_gc(CONFIRM_REG);
+				
 				$sql = 'SELECT COUNT(session_id) AS attempts
 					FROM ' . CONFIRM_TABLE . "
 					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
@@ -522,7 +528,9 @@ class ucp_register
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			'S_TIME'			=> 1000 * ((int) $config['min_time_reg']),
+			)
 		);
 
 		//

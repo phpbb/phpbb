@@ -15,7 +15,7 @@
 	</tr>
 	<!-- IF not S_ALLOW_MASS_PM -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	
 	<tr>
@@ -27,7 +27,7 @@
 		</tr>
 		<tr>
 			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
-				[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]
+				[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]
 			</td>
 		</tr>
 	<!-- ENDIF -->
@@ -86,7 +86,7 @@
 			<!-- END l_block2 -->
 			</ul>
 		<!-- ELSE -->
-			<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{l_block1.U_TITLE}'"><a class="nav" href="{l_block1.U_TITLE}">{l_block1.L_TITLE}</a>
+			<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href=this.firstChild.href;"><a class="nav" href="{l_block1.U_TITLE}">{l_block1.L_TITLE}</a>
 		<!-- ENDIF -->
 		</td>
 	</tr>
