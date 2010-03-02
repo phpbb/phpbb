@@ -85,10 +85,10 @@ function generate_smilies($mode, $forum_id)
 
 	if ($mode == 'window')
 	{
-		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height
+		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order
 			FROM ' . SMILIES_TABLE . '
 			GROUP BY smiley_url, smiley_width, smiley_height
-			ORDER BY MIN(smiley_order)';
+			ORDER BY min_smiley_order';
 		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $start, 3600);
 	}
 	else
