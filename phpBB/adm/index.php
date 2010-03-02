@@ -77,8 +77,8 @@ $module->load_active();
 adm_page_header($module->get_page_title());
 
 $template->set_filenames(array(
-	'body' => $module->get_tpl_name())
-);
+	'body' => $module->get_tpl_name(),
+));
 
 adm_page_footer();
 

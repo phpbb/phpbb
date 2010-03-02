@@ -520,7 +520,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject || !utf_clean_string($subject))
+		if (!$subject || !utf8_clean_string($subject))
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
@@ -530,7 +530,6 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 			$error[] = $user->lang['TOO_FEW_CHARS'];
 		}
 	}
-
 	unset($subject, $message);
 }
 
@@ -612,7 +611,7 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) &&
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		if ($submit && 	check_form_key('posting'))
+		if ($submit && check_form_key('posting'))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
 				WHERE topic_id = $topic_id";
@@ -764,7 +763,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// check form
-	if (!check_form_key('posting', false, '', false, 2))
+	if (($submit || $preview) && !check_form_key('posting'))
 	{
 		$error[] = $user->lang['FORM_INVALID'];
 	}

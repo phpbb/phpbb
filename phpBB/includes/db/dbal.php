@@ -124,7 +124,11 @@ class dbal
 
 		if ($this->transaction)
 		{
-			$this->sql_transaction('commit');
+			do
+			{
+				$this->sql_transaction('commit');
+			}
+			while ($this->transaction);
 		}
 
 		foreach ($this->open_queries as $query_id)
@@ -588,7 +592,12 @@ class dbal
 
 			trigger_error($message, E_USER_ERROR);
 		}
-		
+
+		if ($this->transaction)
+		{
+			$this->sql_transaction('rollback');
+		}
+
 		return $error;
 	}
 

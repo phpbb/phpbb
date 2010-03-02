@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC8';
+$updates_to_version = '3.0.0';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -463,6 +463,16 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.RC8 to the next version
+	'3.0.RC8'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			USERS_TABLE			=> array(
+				'user_new_privmsg'			=> array('INT:4', 0),
+				'user_unread_privmsg'		=> array('INT:4', 0),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -571,7 +581,7 @@ else
 
 // Checks/Operations that have to be completed prior to starting the update itself
 $exit = false;
-if (version_compare($current_version, '3.0.RC4', '<='))
+if (version_compare($current_version, '3.0.RC8', '<='))
 {
 	// Define missing language entries...
 	if (!isset($lang['CLEANING_USERNAMES']))
@@ -715,9 +725,13 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	// duplicates might be created. Since the column has to be unique such usernames
 	// must not exist. We need identify them and let the admin decide what to do
 	// about them.
+	// After RC8 this was changed again, but this time only usernames containing spaces
+	// are affected.
+	$sql_where = (version_compare($current_version, '3.0.RC4', '<=')) ? '' : "WHERE username_clean LIKE '% %'";
 	$sql = 'SELECT user_id, username, username_clean
-		FROM ' . USERS_TABLE . '
-		ORDER BY user_id ASC';
+		FROM ' . USERS_TABLE . "
+		$sql_where
+		ORDER BY user_id ASC";
 	$result = $db->sql_query($sql);
 
 	$colliding_users = $found_names = array();
@@ -1634,6 +1648,8 @@ $cache->purge();
 </html>
 
 <?php
+
+garbage_collection();
 
 if (function_exists('exit_handler'))
 {
@@ -2764,6 +2780,8 @@ function utf8_new_clean_string($text)
 	$text = strtr($text, $homographs);
 	// Other control characters
 	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
+
+	$text = preg_replace('# {2,}#', ' ', $text);
 
 	// we can use trim here as all the other space characters should have been turned
 	// into normal ASCII spaces by now

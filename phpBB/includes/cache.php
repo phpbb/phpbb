@@ -73,12 +73,7 @@ class cache extends acm
 	*/
 	function obtain_word_list()
 	{
-		global $config, $user, $db;
-
-		if (!$user->optionget('viewcensors') && $config['allow_nocensors'])
-		{
-			return array();
-		}
+		global $db;
 
 		if (($censors = $this->get('_word_censors')) === false)
 		{
