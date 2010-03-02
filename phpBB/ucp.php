@@ -22,7 +22,7 @@ require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 $id 	= request_var('i', '');
 $mode	= request_var('mode', '');
 
-if ($mode == 'login' || $mode == 'logout')
+if ($mode == 'login' || $mode == 'logout' || $mode == 'confirm')
 {
 	define('IN_LOGIN', true);
 }
@@ -78,7 +78,7 @@ switch ($mode)
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
-		login_box("index.$phpEx");
+		login_box(request_var('redirect', "index.$phpEx"));
 	break;
 
 	case 'logout':
@@ -139,7 +139,9 @@ switch ($mode)
 			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
-				if (strpos($cookie_name, '_poll') === false)
+
+				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
+				if (strpos($cookie_name, 'poll_') !== 0)
 				{
 					$user->set_cookie($cookie_name, '', $set_time);
 				}
@@ -194,7 +196,7 @@ switch ($mode)
 
 		add_log('admin', 'LOG_ACL_TRANSFER_PERMISSIONS', $user_row['username']);
 
-		$message = sprintf($user->lang['PERMISSIONS_TRANSFERED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+		$message = sprintf($user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 		trigger_error($message);
 
 	break;
@@ -244,7 +246,7 @@ if (!$user->data['is_registered'])
 $update_time = $config['load_online_time'] * 60;
 
 $sql = $db->sql_build_query('SELECT_DISTINCT', array(
-	'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+	'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -262,7 +264,7 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 		AND z.friend = 1
 		AND u.user_id = z.zebra_id',
 
-	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline, u.user_colour',
+	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_allow_viewonline, u.user_colour, u.username',
 
 	'ORDER_BY'	=> 'u.username_clean ASC',
 ));

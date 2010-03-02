@@ -160,6 +160,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) NOT NULL DEFAULT '',
 	confirm_type tinyint(3) NOT NULL DEFAULT '0',
 	code varchar(8) NOT NULL DEFAULT '',
+	seed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (session_id, confirm_id)
 );
 
@@ -246,9 +247,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_prune INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	prune_next INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	prune_days tinyint(4) NOT NULL DEFAULT '0',
-	prune_viewed tinyint(4) NOT NULL DEFAULT '0',
-	prune_freq tinyint(4) NOT NULL DEFAULT '0'
+	prune_days INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_viewed INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_freq INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums (left_id, right_id);
@@ -494,7 +495,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	rule_group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	rule_action INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	rule_folder_id int(4) NOT NULL DEFAULT '0'
+	rule_folder_id int(11) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules (user_id);
@@ -510,7 +511,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	pm_marked INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	pm_forwarded INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	folder_id int(4) NOT NULL DEFAULT '0'
+	folder_id int(11) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);
@@ -639,6 +640,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	session_ip varchar(40) NOT NULL DEFAULT '',
 	session_browser varchar(150) NOT NULL DEFAULT '',
+	session_forwarded_for varchar(255) NOT NULL DEFAULT '',
 	session_page varchar(255) NOT NULL DEFAULT '',
 	session_viewonline INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	session_autologin INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -982,7 +984,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_viewemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	user_options INTEGER UNSIGNED NOT NULL DEFAULT '893',
+	user_options INTEGER UNSIGNED NOT NULL DEFAULT '895',
 	user_avatar varchar(255) NOT NULL DEFAULT '',
 	user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
 	user_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -1031,11 +1033,10 @@ CREATE TABLE phpbb_zebra (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	zebra_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	friend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	foe INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	foe INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (user_id, zebra_id)
 );
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);
 
 
 COMMIT;

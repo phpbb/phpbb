@@ -45,7 +45,7 @@
 	<th colspan="2" align="center">{L_POST_DETAILS}</th>
 </tr>
 <tr>
-	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
+	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
 </tr>
 <tr>
 	<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
@@ -58,7 +58,7 @@
 <!-- IF S_CAN_VIEWIP -->
 	<tr>
 		<td class="row1"><b class="gen">{L_THIS_POST_IP}: </b></td>
-		<td class="row2"><span class="gen">{POST_IP} [ {POST_IPADDR} ]</span></td>
+		<td class="row2"><span class="gen"><!-- IF U_WHOIS --><a href="{U_WHOIS}">{POST_IP}</a><!-- ELSE -->{POST_IP}<!-- ENDIF --> [ {POST_IPADDR} ]</span></td>
 	</tr>
 <!-- ENDIF -->
 <tr>
@@ -101,7 +101,7 @@
 			<tr>
 				<form method="post" name="mcp_chgposter" action="{U_POST_ACTION}">
 					<td class="row1" valign="top"><b class="gen">{L_CHANGE_POSTER}</b></td>
-					<td class="row2"><input class="post" type="text" name="username" value="" /> <input class="btnmain" type="submit" value="{L_CONFIRM}" name="action[chgposter]" /><br /><span class="gensmall">[ <a href="{U_FIND_MEMBER}" onclick="window.open('{U_FIND_MEMBER}', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;">{L_FIND_USERNAME}</a> ]</span><!-- IF S_USER_SELECT --><br /><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter_ip]" value="{L_CONFIRM}" /><!-- ENDIF --></td>
+					<td class="row2"><input class="post" type="text" name="username" value="" /> <input class="btnmain" type="submit" value="{L_CONFIRM}" name="action[chgposter]" /><br /><span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span><!-- IF S_USER_SELECT --><br /><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter_ip]" value="{L_CONFIRM}" /><!-- ENDIF --></td>
 				</form>
 			</tr>
 		<!-- ENDIF -->
@@ -137,7 +137,7 @@
 			</tr>
 		<!-- END userrow -->
 		<tr>
-			<td class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
+			<td class="cat"><b class="gen">{L_IPS_POSTED_FROM}</b></td>
 			<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
 		</tr>
 		<!-- BEGIN iprow -->

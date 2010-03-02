@@ -39,7 +39,7 @@ class ucp_confirm
 		}
 
 		// Try and grab code for this id and session
-		$sql = 'SELECT code  
+		$sql = 'SELECT code, seed
 			FROM ' . CONFIRM_TABLE . " 
 			WHERE session_id = '" . $db->sql_escape($user->session_id) . "' 
 				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'
@@ -64,7 +64,7 @@ class ucp_confirm
 		}
 
 		$captcha = new captcha();
-		$captcha->execute($row['code']);
+		$captcha->execute($row['code'], $row['seed']);
 		exit;
 	}
 }

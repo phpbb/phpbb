@@ -292,7 +292,8 @@ CREATE TABLE [phpbb_confirm] (
 	[confirm_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[confirm_type] [int] DEFAULT (0) NOT NULL ,
-	[code] [varchar] (8) DEFAULT ('') NOT NULL 
+	[code] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[seed] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1140,6 +1141,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_time] [int] DEFAULT (0) NOT NULL ,
 	[session_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[session_browser] [varchar] (150) DEFAULT ('') NOT NULL ,
+	[session_forwarded_for] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[session_page] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[session_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[session_autologin] [int] DEFAULT (0) NOT NULL ,
@@ -1651,7 +1653,7 @@ CREATE TABLE [phpbb_users] (
 	[user_allow_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_viewemail] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_massemail] [int] DEFAULT (1) NOT NULL ,
-	[user_options] [int] DEFAULT (893) NOT NULL ,
+	[user_options] [int] DEFAULT (895) NOT NULL ,
 	[user_avatar] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_avatar_type] [int] DEFAULT (0) NOT NULL ,
 	[user_avatar_width] [int] DEFAULT (0) NOT NULL ,
@@ -1742,10 +1744,12 @@ CREATE TABLE [phpbb_zebra] (
 ) ON [PRIMARY]
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_zebra]([user_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [zebra_id] ON [phpbb_zebra]([zebra_id]) ON [PRIMARY]
+ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_zebra] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[zebra_id]
+	)  ON [PRIMARY] 
 GO
 
 

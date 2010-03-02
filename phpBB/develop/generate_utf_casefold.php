@@ -89,7 +89,7 @@ function my_var_export($var)
 
 		return 'array(' . implode(',', $lines) . ')';
 	}
-	elseif (is_string($var))
+	else if (is_string($var))
 	{
 		return "'" . str_replace(array('\\', "'"), array('\\\\', "\\'"), $var) . "'";
 	}

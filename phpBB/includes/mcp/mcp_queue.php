@@ -50,11 +50,11 @@ class mcp_queue
 
 				if ($action == 'approve')
 				{
-					approve_post($post_id_list, $mode);
+					approve_post($post_id_list, 'queue', $mode);
 				}
 				else
 				{
-					disapprove_post($post_id_list, $mode);
+					disapprove_post($post_id_list, 'queue', $mode);
 				}
 
 			break;
@@ -82,7 +82,7 @@ class mcp_queue
 					}
 				}
 
-				$post_info = get_post_data(array($post_id), 'm_approve');
+				$post_info = get_post_data(array($post_id), 'm_approve', true);
 
 				if (!sizeof($post_info))
 				{
@@ -99,6 +99,21 @@ class mcp_queue
 					);
 				}
 
+				$topic_tracking_info = array();
+				// Get topic tracking info
+				if ($config['load_db_lastread'])
+				{
+					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+					unset($tmp_topic_data);
+				}
+				else
+				{
+					$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+				}
+
+				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
 				$message = str_replace("\n", '<br />', $message);
@@ -109,6 +124,9 @@ class mcp_queue
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
 				$message = smiley_text($message);
+
+				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
+				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
@@ -124,10 +142,14 @@ class mcp_queue
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-					'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-					'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
+					'U_VIEW_POST'			=> $post_url,
+					'U_VIEW_TOPIC'			=> $topic_url,
+
+					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
+					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
+					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
@@ -248,7 +270,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -372,7 +394,7 @@ class mcp_queue
 /**
 * Approve Post/Topic
 */
-function approve_post($post_id_list, $mode)
+function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
@@ -382,11 +404,11 @@ function approve_post($post_id_list, $mode)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_')));
+	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> 'queue',
+		'i'				=> $id,
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
 		'action'		=> 'approve',
@@ -544,7 +566,6 @@ function approve_post($post_id_list, $mode)
 
 				$messenger->template($email_template, $post_data['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($post_data['user_email'], $post_data['username']);
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
@@ -617,7 +638,7 @@ function approve_post($post_id_list, $mode)
 /**
 * Disapprove Post/Topic
 */
-function disapprove_post($post_id_list, $mode)
+function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
@@ -627,13 +648,13 @@ function disapprove_post($post_id_list, $mode)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_')) . '&amp;mode=unapproved_topics');
+	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . '&amp;mode=unapproved_topics');
 	$reason = request_var('reason', '', true);
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> 'queue',
+		'i'				=> $id,
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
 		'action'		=> 'disapprove',
@@ -767,7 +788,6 @@ function disapprove_post($post_id_list, $mode)
 
 				$messenger->template($email_template, $post_data['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($post_data['user_email'], $post_data['username']);
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 

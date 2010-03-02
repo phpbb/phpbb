@@ -226,7 +226,8 @@ CREATE TABLE phpbb_confirm (
 	confirm_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	confirm_type INTEGER DEFAULT 0 NOT NULL,
-	code VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL
+	code VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	seed INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
@@ -960,6 +961,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INTEGER DEFAULT 0 NOT NULL,
 	session_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	session_browser VARCHAR(150) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	session_forwarded_for VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	session_page VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	session_viewonline INTEGER DEFAULT 1 NOT NULL,
 	session_autologin INTEGER DEFAULT 0 NOT NULL,
@@ -1409,7 +1411,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INTEGER DEFAULT 1 NOT NULL,
 	user_allow_viewemail INTEGER DEFAULT 1 NOT NULL,
 	user_allow_massemail INTEGER DEFAULT 1 NOT NULL,
-	user_options INTEGER DEFAULT 893 NOT NULL,
+	user_options INTEGER DEFAULT 895 NOT NULL,
 	user_avatar VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	user_avatar_type INTEGER DEFAULT 0 NOT NULL,
 	user_avatar_width INTEGER DEFAULT 0 NOT NULL,
@@ -1500,6 +1502,6 @@ CREATE TABLE phpbb_zebra (
 	foe INTEGER DEFAULT 0 NOT NULL
 );;
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;
+ALTER TABLE phpbb_zebra ADD PRIMARY KEY (user_id, zebra_id);;
+
 

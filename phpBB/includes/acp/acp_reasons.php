@@ -214,7 +214,7 @@ class acp_reasons
 								WHERE reason_id = $reason_id";
 						break;
 
-						// Nearly standard, not quite
+						// Standard? What's that?
 						case 'mssql':
 						case 'mssql_odbc':
 							// Change the reports using this reason to 'other'
@@ -268,7 +268,7 @@ class acp_reasons
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . '
-					SET reason_order = ' . $order_total  . ' - reason_order
+					SET reason_order = ' . $order_total . ' - reason_order
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
 

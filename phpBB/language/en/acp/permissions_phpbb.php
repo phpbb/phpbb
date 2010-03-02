@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 /**
 *	MODDERS PLEASE NOTE
 *	
-*	You are able to put your permission sets into a seperate file too by
+*	You are able to put your permission sets into a separate file too by
 *	prefixing the new file with permissions_ and putting it into the acp 
 *	language folder.
 *
@@ -128,11 +128,11 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'acl_f_list'		=> array('lang' => 'Can see forum', 'cat' => 'post'),
 	'acl_f_read'		=> array('lang' => 'Can read forum', 'cat' => 'post'),
-	'acl_f_post'		=> array('lang' => 'Can post in forum', 'cat' => 'post'),
+	'acl_f_post'		=> array('lang' => 'Can start new topics', 'cat' => 'post'),
+	'acl_f_reply'		=> array('lang' => 'Can reply to topics', 'cat' => 'post'),
+	'acl_f_icons'		=> array('lang' => 'Can use post icons', 'cat' => 'post'),
 	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
 	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
-	'acl_f_reply'		=> array('lang' => 'Can reply to posts', 'cat' => 'post'),
-	'acl_f_icons'		=> array('lang' => 'Can use post icons', 'cat' => 'post'),
 
 	'acl_f_poll'		=> array('lang' => 'Can create polls', 'cat' => 'polls'),
 	'acl_f_vote'		=> array('lang' => 'Can vote in polls', 'cat' => 'polls'),
@@ -157,7 +157,7 @@ $lang = array_merge($lang, array(
 
 	'acl_f_search'		=> array('lang' => 'Can search the forum', 'cat' => 'misc'),
 	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'misc'),
-	'acl_f_postcount'	=> array('lang' => 'Increment post counter', 'cat' => 'misc'),
+	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'misc'),
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'misc'),
 ));
 
@@ -181,7 +181,7 @@ $lang = array_merge($lang, array(
 
 // Admin Permissions
 $lang = array_merge($lang, array(
-	'acl_a_board'		=> array('lang' => 'Can alter board settings', 'cat' => 'settings'),
+	'acl_a_board'		=> array('lang' => 'Can alter board settings/check for updates', 'cat' => 'settings'),
 	'acl_a_server'		=> array('lang' => 'Can alter server/communication settings', 'cat' => 'settings'),
 	'acl_a_jabber'		=> array('lang' => 'Can alter Jabber settings', 'cat' => 'settings'),
 	'acl_a_phpinfo'		=> array('lang' => 'Can view php settings', 'cat' => 'settings'),
@@ -207,12 +207,12 @@ $lang = array_merge($lang, array(
 	'acl_a_ban'			=> array('lang' => 'Can manage bans', 'cat' => 'user_group'),
 
 	'acl_a_viewauth'	=> array('lang' => 'Can view permission masks', 'cat' => 'permissions'),
-	'acl_a_fauth'		=> array('lang' => 'Can alter forum permissions', 'cat' => 'permissions'),
-	'acl_a_mauth'		=> array('lang' => 'Can alter moderator permissions', 'cat' => 'permissions'),
-	'acl_a_aauth'		=> array('lang' => 'Can alter admin permissions', 'cat' => 'permissions'),
-	'acl_a_uauth'		=> array('lang' => 'Can alter user permissions', 'cat' => 'permissions'),
-	'acl_a_authgroups'	=> array('lang' => 'Can alter permissions for groups', 'cat' => 'permissions'),
-	'acl_a_authusers'	=> array('lang' => 'Can alter permissions for users', 'cat' => 'permissions'),
+	'acl_a_authgroups'	=> array('lang' => 'Can alter permissions for individual groups', 'cat' => 'permissions'),
+	'acl_a_authusers'	=> array('lang' => 'Can alter permissions for individual users', 'cat' => 'permissions'),
+	'acl_a_fauth'		=> array('lang' => 'Can alter forum permission class', 'cat' => 'permissions'),
+	'acl_a_mauth'		=> array('lang' => 'Can alter moderator permission class', 'cat' => 'permissions'),
+	'acl_a_aauth'		=> array('lang' => 'Can alter admin permission class', 'cat' => 'permissions'),
+	'acl_a_uauth'		=> array('lang' => 'Can alter user permission class', 'cat' => 'permissions'),
 	'acl_a_roles'		=> array('lang' => 'Can manage roles', 'cat' => 'permissions'),
 	'acl_a_switchperm'	=> array('lang' => 'Can use others permissions', 'cat' => 'permissions'),
 

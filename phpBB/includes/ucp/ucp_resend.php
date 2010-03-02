@@ -67,8 +67,6 @@ class ucp_resend
 			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
 			{
 				$messenger->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
-
-				$messenger->replyto($config['board_contact']);
 				$messenger->to($user_row['user_email'], $user_row['username']);
 
 				$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -107,13 +105,12 @@ class ucp_resend
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$messenger->template('admin_activate', $row['user_lang']);
-					$messenger->replyto($config['board_contact']);
 					$messenger->to($row['user_email'], $row['username']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
-						'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u={$user->data['user_id']}",
+						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user->data['user_id']}",
 						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);
 
@@ -124,7 +121,7 @@ class ucp_resend
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 

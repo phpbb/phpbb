@@ -47,7 +47,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 	$sql_from = FORUMS_TABLE . ' f ';
-	$lastread_select = $sql_lastread = '';
+	$lastread_select = '';
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
@@ -149,7 +149,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			if ($row['forum_type'] != FORUM_CAT)
 			{
-				$forum_ids_moderator[] = $forum_id;
+				$forum_ids_moderator[] = (int) $forum_id;
 			}
 
 			// Direct child of current branch
@@ -504,24 +504,27 @@ function topic_generate_pagination($replies, $url)
 {
 	global $config, $user;
 
-	if (($replies + 1) > $config['posts_per_page'])
+	// Make sure $per_page is a valid value
+	$per_page = ($config['posts_per_page'] <= 0) ? 1 : $config['posts_per_page'];
+
+	if (($replies + 1) > $per_page)
 	{
-		$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
+		$total_pages = ceil(($replies + 1) / $per_page);
 		$pagination = '';
 
 		$times = 1;
-		for ($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
+		for ($j = 0; $j < $replies + 1; $j += $per_page)
 		{
 			$pagination .= '<a href="' . $url . '&amp;start=' . $j . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 4)
 			{
 				$pagination .= ' ... ';
 				$times = $total_pages - 3;
-				$j += ($total_pages - 4) * $config['posts_per_page'];
+				$j += ($total_pages - 4) * $per_page;
 			}
 			else if ($times < $total_pages)
 			{
-				$pagination .= $user->theme['pagination_sep'];
+				$pagination .= '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
 			}
 			$times++;
 		}
@@ -563,18 +566,43 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			return;
 		}
 
-		$forum_sql = 'AND ' . $db->sql_in_set('forum_id', $forum_id);
+		$forum_sql = 'AND m.' . $db->sql_in_set('forum_id', $forum_id);
 	}
 
-	$sql = 'SELECT *
-		FROM ' . MODERATOR_CACHE_TABLE . "
-		WHERE display_on_index = 1
-			$forum_sql";
+	$sql_array = array(
+		'SELECT'	=> 'm.*, u.user_colour, g.group_colour, g.group_type',
+
+		'FROM'		=> array(
+			MODERATOR_CACHE_TABLE	=> 'm',
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(USERS_TABLE => 'u'),
+				'ON'	=> 'm.user_id = u.user_id',
+			),
+			array(
+				'FROM'	=> array(GROUPS_TABLE => 'g'),
+				'ON'	=> 'm.group_id = g.group_id',
+			),
+		),
+
+		'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+	);
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $row['group_name'] . '</a>';
+		if (!empty($row['user_id']))
+		{
+			$forum_moderators[$row['forum_id']][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		}
+		else
+		{
+			$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';font-weight:bold;"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -682,280 +710,10 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		}
 	}
 
-	if ($topic_row['poll_start'])
+	if ($topic_row['poll_start'] && $topic_row['topic_status'] != ITEM_MOVED)
 	{
-		$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
+		$topic_type = $user->lang['VIEW_TOPIC_POLL'];
 	}
-}
-
-/**
-* Display Attachments
-*/
-function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
-{
-	global $template, $cache, $user;
-	global $extensions, $config, $phpbb_root_path, $phpEx;
-
-	$return_tpl = array();
-
-	$template->set_filenames(array(
-		'attachment_tpl'	=> 'attachment.html')
-	);
-
-	if (!sizeof($attachment_data))
-	{
-		return array();
-	}
-
-	if (empty($extensions) || !is_array($extensions))
-	{
-		$extensions = $cache->obtain_attach_extensions();
-	}
-
-	// Look for missing attachment information...
-	$attach_ids = array();
-	foreach ($attachment_data as $pos => $attachment)
-	{
-		// If is_orphan is set, we need to retrieve the attachments again...
-		if (!isset($attachment['extension']) && !isset($attachment['physical_filename']))
-		{
-			$attach_ids[(int) $attachment['attach_id']] = $pos;
-		}
-	}
-
-	if (sizeof($attach_ids))
-	{
-		global $db;
-
-		$attachment_data = array();
-
-		$sql = 'SELECT *
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids));
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (!isset($attach_ids[$row['attach_id']]))
-			{
-				continue;
-			}
-
-			$attachment_data[$attach_ids[$row['attach_id']]] = $row;
-		}
-		$db->sql_freeresult($result);
-	}
-
-	// Sort correctly (please note that the attachment_data array itself get changed by this
-	if ($config['display_order'])
-	{
-		// Ascending sort
-		krsort($attachment_data);
-	}
-	else
-	{
-		// Descending sort
-		ksort($attachment_data);
-	}
-
-	foreach ($attachment_data as $attachment)
-	{
-		if (!sizeof($attachment))
-		{
-			continue;
-		}
-
-		// We need to reset/empty the _file block var, because this function might be called more than once
-		$template->destroy_block_vars('_file');
-
-		$block_array = array();
-		
-		// Some basics...
-		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
-
-		$upload_icon = '';
-
-		if (isset($extensions[$attachment['extension']]))
-		{
-			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
-			{
-				$upload_icon = $user->img('icon_topic_attach', '');
-			}
-			else if ($extensions[$attachment['extension']]['upload_icon'])
-			{
-				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
-			}
-		}
-
-		$filesize = $attachment['filesize'];
-		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
-
-		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
-
-		$block_array += array(
-			'UPLOAD_ICON'		=> $upload_icon,
-			'FILESIZE'			=> $filesize,
-			'SIZE_LANG'			=> $size_lang,
-			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
-			'COMMENT'			=> $comment,
-		);
-
-		$denied = false;
-
-		if (!extension_allowed($forum_id, $attachment['extension'], $extensions))
-		{
-			$denied = true;
-
-			$block_array += array(
-				'S_DENIED'			=> true,
-				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
-			);
-		}
-
-		if (!$denied)
-		{
-			$l_downloaded_viewed = $download_link = '';
-			$display_cat = $extensions[$attachment['extension']]['display_cat'];
-
-			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
-			{
-				if ($attachment['thumbnail'])
-				{
-					$display_cat = ATTACHMENT_CATEGORY_THUMB;
-				}
-				else
-				{
-					if ($config['img_display_inlined'])
-					{
-						if ($config['img_link_width'] || $config['img_link_height'])
-						{
-							list($width, $height) = @getimagesize($filename);
-
-							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
-						}
-					}
-					else
-					{
-						$display_cat = ATTACHMENT_CATEGORY_NONE;
-					}
-				}
-			}
-
-			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
-
-			$download_link_full = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : generate_board_url() . $filename;
-
-			switch ($display_cat)
-			{
-				// Images
-				case ATTACHMENT_CATEGORY_IMAGE:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-
-					$block_array += array(
-						'S_IMAGE'		=> true,
-					);
-
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Images, but display Thumbnail
-				case ATTACHMENT_CATEGORY_THUMB:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . $forum_id) : $thumbnail_filename;
-
-					$block_array += array(
-						'S_THUMBNAIL'		=> true,
-						'THUMB_IMAGE'		=> $thumbnail_link,
-					);
-				break;
-
-				// Windows Media Streams
-				case ATTACHMENT_CATEGORY_WM:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-
-					// Giving the filename directly because within the wm object all variables are in local context making it impossible
-					// to validate against a valid session (all params can differ)
-					$download_link = $filename;
-
-					$block_array += array(
-						'U_FORUM'		=> generate_board_url(),
-						'S_WM_FILE'		=> true,
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Real Media Streams
-				case ATTACHMENT_CATEGORY_RM:
-				case ATTACHMENT_CATEGORY_QUICKTIME:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-
-					$block_array += array(
-						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
-						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
-						'U_FORUM'			=> generate_board_url(),
-						'ATTACH_ID'			=> $attachment['attach_id'],
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Macromedia Flash Files
-				case ATTACHMENT_CATEGORY_FLASH:
-					list($width, $height) = @getimagesize($filename);
-
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-
-					$block_array += array(
-						'S_FLASH_FILE'	=> true,
-						'WIDTH'			=> $width,
-						'HEIGHT'		=> $height,
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				default:
-					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-
-					$block_array += array(
-						'S_FILE'		=> true,
-					);
-				break;
-			}
-
-			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
-
-			$block_array += array(
-				'U_DOWNLOAD_LINK'		=> $download_link,
-				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
-				'L_DOWNLOAD_COUNT'		=> $l_download_count
-			);
-		}
-
-		$template->assign_block_vars('_file', $block_array);
-
-		$tpl = $template->assign_display('attachment_tpl');
-
-		if (!$return)
-		{
-			$template->assign_block_vars($blockname, array(
-				'DISPLAY_ATTACHMENT' => $tpl)
-			);
-		}
-		else
-		{
-			$return_tpl[] = $tpl;
-		}
-	}
-
-	return $return_tpl;
 }
 
 /**
@@ -1007,7 +765,7 @@ function display_reasons($reason_id = 0)
 		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 		{
-			$row['reson_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+			$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
 			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 		}
 
@@ -1116,13 +874,15 @@ function display_user_activity(&$userdata)
 		$active_t_pct = ($userdata['user_posts']) ? ($active_t_count / $userdata['user_posts']) * 100 : 0;
 	}
 
+	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
+
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
 		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
-		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_f_pct),
+		'ACTIVE_FORUM_PCT'		=> sprintf($l_active_pct, $active_f_pct),
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
-		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_t_pct),
+		'ACTIVE_TOPIC_PCT'		=> sprintf($l_active_pct, $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
 		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id),
 		'S_SHOW_ACTIVITY'		=> true)
@@ -1239,6 +999,50 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 	}
 
 	return;
+}
+
+/**
+* Get user rank title and image
+*
+* @param int $user_rank the current stored users rank id
+* @param int $user_posts the users number of posts
+* @param string &$rank_title the rank title will be stored here after execution
+* @param string &$rank_img the rank image as full img tag is stored here after execution
+* @param string &$rank_img_src the rank image source is stored here after execution
+*
+*/
+function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+{
+	global $ranks, $config;
+
+	if (empty($ranks))
+	{
+		global $cache;
+		$ranks = $cache->obtain_ranks();
+	}
+
+	if (!empty($user_rank))
+	{
+		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
+		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
+	}
+	else
+	{
+		if (!empty($ranks['normal']))
+		{
+			foreach ($ranks['normal'] as $rank)
+			{
+				if ($user_posts >= $rank['rank_min'])
+				{
+					$rank_title = $rank['rank_title'];
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					break;
+				}
+			}
+		}
+	}
 }
 
 ?>

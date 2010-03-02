@@ -13,8 +13,8 @@ Password: {PASSWORD}
 Board URL: {U_BOARD}
 ----------------------------
 
-Useful information on your phpBB installation can be found in the docs folder of your installation and on phpBB.com’s support page — http://www.phpbb.com/support/
+Useful information on your phpBB installation can be found in the docs folder of your installation and on phpBB.com's support page - http://www.phpbb.com/support/
 
-In order to keep the board safe and secure, it is highly recommended that you keep current with software releases which can be easily done by subscribing to phpBB.com’s mailing list, located at the above URL.
+In order to keep the board safe and secure, it is highly recommended that you keep current with software releases which can be easily done by subscribing to phpBB.com's mailing list, located at the above URL.
 
 {EMAIL_SIG}

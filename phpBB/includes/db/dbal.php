@@ -115,6 +115,24 @@ class dbal
 	}
 
 	/**
+	* Build LIMIT query
+	* Doing some validation here.
+	*/
+	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	{
+		if (empty($query))
+		{
+			return false;
+		}
+
+		// Never use a negative total or offset
+		$total = ($total < 0) ? 0 : $total;
+		$offset = ($offset < 0) ? 0 : $offset;
+
+		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
+	}
+
+	/**
 	* Fetch all rows
 	*/
 	function sql_fetchrowset($query_id = false)
@@ -282,15 +300,36 @@ class dbal
 	}
 
 	/**
-	* Build IN, NOT IN, = and <> sql comparison string.
+	* Build IN or NOT IN sql comparison string, uses <> or = on single element
+	* arrays to improve comparison speed
 	* @access public
+	* @param	string	$field				name of the sql column that shall be compared
+	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
+	* @param	bool	$negate				true for IN (), false for NOT IN ()
+	* @param	bool	$allow_empty_set	Allow $array to be empty, this function will return 1=1 or 1=0 then
 	*/
-	function sql_in_set($field, $array, $negate = false)
+	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
 		if (!sizeof($array))
 		{
-			// Not optimal, but at least the backtrace should help in identifying where the problem lies.
-			$this->sql_error('No values specified for SQL IN comparison');
+			if (!$allow_empty_set)
+			{
+				// Print the backtrace to help identifying the location of the problematic code
+				$this->sql_error('No values specified for SQL IN comparison');
+			}
+			else
+			{
+				// NOT IN () actually means everything so use a tautology
+				if ($negate)
+				{
+					return '1=1';
+				}
+				// IN () actually means nothing so use a contradiction
+				else
+				{
+					return '1=0';
+				}
+			}
 		}
 
 		if (!is_array($array))
@@ -438,7 +477,7 @@ class dbal
 	*/
 	function sql_error($sql = '')
 	{
-		global $auth, $user;
+		global $auth, $user, $config;
 
 		// Set var to retrieve errored status
 		$this->sql_error_triggered = true;
@@ -459,7 +498,7 @@ class dbal
 				$backtrace = get_backtrace();
 
 				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />'  . $backtrace : '';
+				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />' . $backtrace : '';
 				$message .= '<br />';
 			}
 			else
@@ -472,7 +511,14 @@ class dbal
 				}
 				else
 				{
-					$message .= '<br /><br />' . $user->lang['SQL_ERROR_OCCURRED'];
+					if (!empty($config['board_contact']))
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+					}
+					else
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '', '');
+					}
 				}
 			}
 

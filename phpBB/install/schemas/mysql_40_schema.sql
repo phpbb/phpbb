@@ -163,6 +163,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' NOT NULL,
 	confirm_type tinyint(3) DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
+	seed int(10) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (session_id, confirm_id),
 	KEY confirm_type (confirm_type)
 );
@@ -253,9 +254,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_prune tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	prune_next int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	prune_days tinyint(4) DEFAULT '0' NOT NULL,
-	prune_viewed tinyint(4) DEFAULT '0' NOT NULL,
-	prune_freq tinyint(4) DEFAULT '0' NOT NULL,
+	prune_days mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	prune_viewed mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	prune_freq mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (forum_id),
 	KEY left_right_id (left_id, right_id),
 	KEY forum_lastpost_id (forum_last_post_id)
@@ -510,7 +511,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_action mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	rule_folder_id int(4) DEFAULT '0' NOT NULL,
+	rule_folder_id int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (rule_id),
 	KEY user_id (user_id)
 );
@@ -527,7 +528,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_marked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_forwarded tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	folder_id int(4) DEFAULT '0' NOT NULL,
+	folder_id int(11) DEFAULT '0' NOT NULL,
 	KEY msg_id (msg_id),
 	KEY author_id (author_id),
 	KEY usr_flder_id (user_id, folder_id)
@@ -661,6 +662,7 @@ CREATE TABLE phpbb_sessions (
 	session_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	session_ip varchar(40) DEFAULT '' NOT NULL,
 	session_browser varchar(150) DEFAULT '' NOT NULL,
+	session_forwarded_for varchar(255) DEFAULT '' NOT NULL,
 	session_page text NOT NULL,
 	session_viewonline tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	session_autologin tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -1011,7 +1013,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_viewemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	user_options int(11) UNSIGNED DEFAULT '893' NOT NULL,
+	user_options int(11) UNSIGNED DEFAULT '895' NOT NULL,
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
 	user_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
@@ -1064,8 +1066,7 @@ CREATE TABLE phpbb_zebra (
 	zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	friend tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY user_id (user_id),
-	KEY zebra_id (zebra_id)
+	PRIMARY KEY (user_id, zebra_id)
 );
 
 

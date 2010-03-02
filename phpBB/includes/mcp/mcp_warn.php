@@ -71,7 +71,8 @@ function mcp_warn_front_view($id, $mode)
 	global $template, $db, $user, $auth;
 
 	$template->assign_vars(array(
-		'U_FIND_MEMBER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+		'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
+		'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp&field=username&select_single=true', false),
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user'),
 		)
 	);
@@ -102,7 +103,7 @@ function mcp_warn_front_view($id, $mode)
 
 	// And now the 5 most recent users to get in trouble
 
-	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_warnings, w.warning_time
+	$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_warnings, w.warning_time
 		FROM ' . USERS_TABLE . ' u, ' . WARNINGS_TABLE . ' w
 		WHERE u.user_id = w.user_id
 		ORDER BY w.warning_time DESC';
@@ -206,22 +207,22 @@ function mcp_warn_post_view($id, $mode, $action)
 		WHERE post_id = $post_id
 			AND u.user_id = p.poster_id";
 	$result = $db->sql_query($sql);
-	$userrow = $db->sql_fetchrow($result);
+	$user_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$userrow)
+	if (!$user_row)
 	{
 		trigger_error($user->lang['NO_POST']);
 	}
 
 	// There is no point issuing a warning to ignored users (ie anonymous and bots)
-	if ($userrow['user_type'] == USER_IGNORE)
+	if ($user_row['user_type'] == USER_IGNORE)
 	{
 		trigger_error($user->lang['CANNOT_WARN_ANONYMOUS']);
 	}
 
 	// Prevent someone from warning themselves
-	if ($userrow['user_id'] == $user->data['user_id'])
+	if ($user_row['user_id'] == $user->data['user_id'])
 	{
 		trigger_error($user->lang['CANNOT_WARN_SELF']);
 	}
@@ -240,11 +241,11 @@ function mcp_warn_post_view($id, $mode, $action)
 		trigger_error($user->lang['ALREADY_WARNED']);
 	}
 
-	$user_id = $userrow['user_id'];
+	$user_id = $user_row['user_id'];
 
 	if ($warning && $action == 'add_warning')
 	{
-		add_warning($userrow, $warning, $notify, $post_id);
+		add_warning($user_row, $warning, $notify, $post_id);
 
 		$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 		meta_refresh(2, $redirect);
@@ -255,16 +256,16 @@ function mcp_warn_post_view($id, $mode, $action)
 	
 	// We want to make the message available here as a reminder
 	// Parse the message and subject
-	$message = $userrow['post_text'];
+	$message = $user_row['post_text'];
 	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Second parse bbcode here
-	if ($userrow['bbcode_bitfield'])
+	if ($user_row['bbcode_bitfield'])
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
-		$bbcode = new bbcode($userrow['bbcode_bitfield']);
-		$bbcode->bbcode_second_pass($message, $userrow['bbcode_uid'], $userrow['bbcode_bitfield']);
+		$bbcode = new bbcode($user_row['bbcode_bitfield']);
+		$bbcode->bbcode_second_pass($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield']);
 	}
 
 	// Always process smilies after parsing bbcodes
@@ -272,13 +273,13 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	// Generate the appropriate user information for the user we are looking at
 	$rank_title = $rank_img = '';
-//	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
+//	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
 
-	if (!empty($userrow['user_avatar']))
+	if (!empty($user_row['user_avatar']))
 	{
-		switch ($userrow['user_avatar_type'])
+		switch ($user_row['user_avatar_type'])
 		{
 			case AVATAR_UPLOAD:
 				$avatar_img = $config['avatar_path'] . '/';
@@ -289,19 +290,19 @@ function mcp_warn_post_view($id, $mode, $action)
 			break;
 		}
 
-		$avatar_img .= $userrow['user_avatar'];
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
+		$avatar_img .= $user_row['user_avatar'];
+		$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
 	}
 
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
 
 		'POST'				=> $message,
-		'USERNAME'			=> $userrow['username'],
-		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
+		'USERNAME'			=> $user_row['username'],
+		'USER_COLOR'		=> (!empty($user_row['user_colour'])) ? $user_row['user_colour'] : '',
 		'RANK_TITLE'		=> $rank_title,
-		'JOINED'			=> $user->format_date($userrow['user_regdate']),
-		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
+		'JOINED'			=> $user->format_date($user_row['user_regdate']),
+		'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,
@@ -316,7 +317,7 @@ function mcp_warn_post_view($id, $mode, $action)
 */
 function mcp_warn_user_view($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config, $module;
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
@@ -330,25 +331,25 @@ function mcp_warn_user_view($id, $mode, $action)
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $sql_where;
 	$result = $db->sql_query($sql);
-	$userrow = $db->sql_fetchrow($result);
+	$user_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$userrow)
+	if (!$user_row)
 	{
 		trigger_error('NO_USER');
 	}
 
 	// Prevent someone from warning themselves
-	if ($userrow['user_id'] == $user->data['user_id'])
+	if ($user_row['user_id'] == $user->data['user_id'])
 	{
 		trigger_error($user->lang['CANNOT_WARN_SELF']);
 	}
 
-	$user_id = $userrow['user_id'];
+	$user_id = $user_row['user_id'];
 
 	if ($warning && $action == 'add_warning')
 	{
-		add_warning($userrow, $warning, $notify);
+		add_warning($user_row, $warning, $notify);
 
 		$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 		meta_refresh(2, $redirect);
@@ -357,13 +358,13 @@ function mcp_warn_user_view($id, $mode, $action)
 
 	// Generate the appropriate user information for the user we are looking at
 	$rank_title = $rank_img = '';
-//	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
+//	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
 
-	if (!empty($userrow['user_avatar']))
+	if (!empty($user_row['user_avatar']))
 	{
-		switch ($userrow['user_avatar_type'])
+		switch ($user_row['user_avatar_type'])
 		{
 			case AVATAR_UPLOAD:
 				$avatar_img = $config['avatar_path'] . '/';
@@ -374,20 +375,20 @@ function mcp_warn_user_view($id, $mode, $action)
 			break;
 		}
 
-		$avatar_img .= $userrow['user_avatar'];
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
+		$avatar_img .= $user_row['user_avatar'];
+		$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
 	}
 
 	// OK, they didn't submit a warning so lets build the page for them to do so
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;u=$user_id"),
 
-		'USERNAME'			=> $userrow['username'],
-		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
+		'USERNAME'			=> $user_row['username'],
+		'USER_COLOR'		=> (!empty($user_row['user_colour'])) ? $user_row['user_colour'] : '',
 		'RANK_TITLE'		=> $rank_title,
-		'JOINED'			=> $user->format_date($userrow['user_regdate']),
-		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
-		'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
+		'JOINED'			=> $user->format_date($user_row['user_regdate']),
+		'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
+		'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,
@@ -398,7 +399,7 @@ function mcp_warn_user_view($id, $mode, $action)
 /**
 * Insert the warning into the database
 */
-function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
+function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 {
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
@@ -408,8 +409,8 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
-		$userrow['user_lang'] = (file_exists($phpbb_root_path . 'language/' . $userrow['user_lang'] . "/mcp.$phpEx")) ? $userrow['user_lang'] : $config['default_lang'];
-		include($phpbb_root_path . 'language/' . basename($userrow['user_lang']) . "/mcp.$phpEx");
+		$user_row['user_lang'] = (file_exists($phpbb_root_path . 'language/' . $user_row['user_lang'] . "/mcp.$phpEx")) ? $user_row['user_lang'] : $config['default_lang'];
+		include($phpbb_root_path . 'language/' . basename($user_row['user_lang']) . "/mcp.$phpEx");
 
 		$message_parser = new parse_message();
 
@@ -428,17 +429,17 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 			'bbcode_uid'			=> $message_parser->bbcode_uid,
 			'message'				=> $message_parser->message,
-			'address_list'			=> array('u' => array($userrow['user_id'] => 'to')),
+			'address_list'			=> array('u' => array($user_row['user_id'] => 'to')),
 		);
 
-		submit_pm('post', $lang['WARNING_PM_SUBJECT'], $pm_data, false, false);
+		submit_pm('post', $lang['WARNING_PM_SUBJECT'], $pm_data, false);
 	}
 
-	add_log('admin', 'LOG_USER_WARNING', $userrow['username']);
-	$log_id = add_log('user', $userrow['user_id'], 'LOG_USER_WARNING_BODY', $warning);
+	add_log('admin', 'LOG_USER_WARNING', $user_row['username']);
+	$log_id = add_log('user', $user_row['user_id'], 'LOG_USER_WARNING_BODY', $warning);
 
 	$sql_ary = array(
-		'user_id'		=> $userrow['user_id'],
+		'user_id'		=> $user_row['user_id'],
 		'post_id'		=> $post_id,
 		'log_id'		=> $log_id,
 		'warning_time'	=> time(),
@@ -449,8 +450,18 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 	$sql = 'UPDATE ' . USERS_TABLE . ' 
 		SET user_warnings = user_warnings + 1,
 			user_last_warning = ' . time() . '
-		WHERE user_id = ' . $userrow['user_id'];
+		WHERE user_id = ' . $user_row['user_id'];
 	$db->sql_query($sql);
+
+	// We add this to the mod log too for moderators to see that a specific user got warned.
+	$sql = 'SELECT forum_id, topic_id
+		FROM ' . POSTS_TABLE . '
+		WHERE post_id = ' . $post_id;
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_USER_WARNING', $user_row['username']);
 }
 
 ?>

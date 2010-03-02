@@ -6,6 +6,7 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo check for writeable cache/store/files directory
 */
 
 /**
@@ -39,7 +40,7 @@ if (!empty($setmodules))
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order'		=> 30,
 		'module_subs'		=> '',
-		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'FILE_CHECK', 'UPDATE_FILES', 'UPDATE_DB'),
+		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'UPDATE_DB', 'FILE_CHECK', 'UPDATE_FILES'),
 		'module_reqs'		=> ''
 	);
 }
@@ -71,6 +72,8 @@ class install_update extends module
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth;
 
 		$this->tpl_name = 'install_update';
+		$this->page_title = 'UPDATE_INSTALLATION';
+
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
 
@@ -78,6 +81,12 @@ class install_update extends module
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
+
+		// Special options for conflicts
+		define('MERGE_NO_MERGE_NEW', 1);
+		define('MERGE_NO_MERGE_MOD', 2);
+		define('MERGE_NEW_FILE', 3);
+		define('MERGE_MOD_FILE', 4);
 
 		$db = new $sql_db();
 
@@ -87,28 +96,37 @@ class install_update extends module
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
 
-		$config = $cache->obtain_config();
+		$config = array();
+
+		$sql = 'SELECT config_name, config_value
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
 
 		// First of all, init the user session
 		$user->session_begin();
 		$auth->acl($user->data);
+
+		// Beta4 and below are having a bug displaying an error if the install directory is present.
+		// This bug got fixed, but we need to get around it by using a tiny 'hack'.
+		if (!defined('DEBUG_EXTRA'))
+		{
+			if (version_compare(strtolower($config['version']), '3.0.b4', '<='))
+			{
+				@define('DEBUG_EXTRA', true);
+			}
+			else if (!empty($config['version_update_from']) && version_compare(strtolower($config['version_update_from']), '3.0.b4', '<='))
+			{
+				@define('DEBUG_EXTRA', true);
+			}
+		}
+
 		$user->setup('install');
-
-		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
-
-		/**
-		* Check for user session
-		* - commented out for beta3 with "broken" install check routine
-		if (!$user->data['is_registered'])
-		{
-			login_box('', $user->lang['LOGIN_UPDATE_EXPLAIN']);
-		}
-
-		if (!$auth->acl_get('a_'))
-		{
-			trigger_error($user->lang['NO_AUTH_UPDATE']);
-		}
-		*/
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
@@ -120,8 +138,6 @@ class install_update extends module
 		$template->set_custom_template('../adm/style', 'admin');
 
 		// Get current and latest version
-		$this->current_version = $config['version'];
-
 		if (($latest_version = $cache->get('_version_info')) === false)
 		{
 			$this->latest_version = $this->get_file('version_info');
@@ -131,6 +147,9 @@ class install_update extends module
 		{
 			$this->latest_version = $latest_version;
 		}
+
+		// For the current version we trick a bit. ;)
+		$this->current_version = (!empty($config['version_update_from'])) ? $config['version_update_from'] : $config['version'];
 
 		$up_to_date = (version_compare(strtolower($this->current_version), strtolower($this->latest_version), '<')) ? false : true;
 
@@ -170,19 +189,27 @@ class install_update extends module
 			return;
 		}
 
-		// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
-		if (in_array('adm/style/install_update.html', $this->update_info['files']))
+		if ($this->test_update === false)
 		{
-			$this->tpl_name = '../../install/update/new/adm/style/install_update';
+			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
+			if (in_array('adm/style/install_update.html', $this->update_info['files']))
+			{
+				$this->tpl_name = '../../install/update/new/adm/style/install_update';
+			}
+
+			// What about the language file? Got it updated?
+			if (in_array('language/en/install.php', $this->update_info['files']))
+			{
+				$lang = array();
+				include($this->new_location . 'language/en/install.php');
+				$user->lang = array_merge($user->lang, $lang);
+			}
 		}
 
-		// What about the language file? Got it updated?
-		if (in_array('language/en/install.php', $this->update_info['files']))
-		{
-			$lang = array();
-			include('./update/new/language/en/install.php');
-			$user->lang = array_merge($user->lang, $lang);
-		}
+		// Include renderer and engine
+		$this->include_file('includes/diff/diff.' . $phpEx);
+		$this->include_file('includes/diff/engine.' . $phpEx);
+		$this->include_file('includes/diff/renderer.' . $phpEx);
 
 		// Make sure we stay at the file check if checking the files again
 		if (!empty($_POST['check_again']))
@@ -210,11 +237,49 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_UP_TO_DATE'		=> $up_to_date,
 					'S_VERSION_CHECK'	=> true,
-					'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 
 					'LATEST_VERSION'	=> $this->latest_version,
-					'CURRENT_VERSION'	=> $config['version'])
+					'CURRENT_VERSION'	=> $this->current_version)
 				);
+
+			break;
+
+			case 'update_db':
+
+				// Make sure the database update is valid for the latest version
+				$valid = false;
+				$updates_to_version = '';
+
+				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
+				{
+					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
+
+					if ($updates_to_version === $this->latest_version)
+					{
+						$valid = true;
+					}
+				}
+
+				// Should not happen at all
+				if (!$valid)
+				{
+					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
+				}
+
+				// Just a precaution
+				$cache->purge();
+
+				// Redirect the user to the database update script with some explanations...
+				$template->assign_vars(array(
+					'S_DB_UPDATE'			=> true,
+					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
+					'U_DB_UPDATE'			=> $phpbb_root_path . 'install/database_update.' . $phpEx . '?type=1',
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+				));
 
 			break;
 
@@ -286,18 +351,41 @@ class install_update extends module
 
 					foreach ($filelist as $file_struct)
 					{
+						$s_binary = (!empty($this->update_info['binary']) && in_array($file_struct['filename'], $this->update_info['binary'])) ? true : false;
+
+						$filename = htmlspecialchars($file_struct['filename']);
+						if (strrpos($filename, '/') !== false)
+						{
+							$dir_part = substr($filename, 0, strrpos($filename, '/') + 1);
+							$file_part = substr($filename, strrpos($filename, '/') + 1);
+						}
+						else
+						{
+							$dir_part = '';
+							$file_part = $filename;
+						}
+
+						$diff_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
+
 						$template->assign_block_vars('files', array(
 							'STATUS'			=> $status,
 
-							'FILENAME'			=> htmlspecialchars($file_struct['filename']),
+							'FILENAME'			=> $filename,
+							'DIR_PART'			=> $dir_part,
+							'FILE_PART'			=> $file_part,
 							'NUM_CONFLICTS'		=> (isset($file_struct['conflicts'])) ? $file_struct['conflicts'] : 0,
 
 							'S_CUSTOM'			=> ($file_struct['custom']) ? true : false,
+							'S_BINARY'			=> $s_binary,
 							'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
 
-							'U_SHOW_DIFF'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename'])),
-							'UA_SHOW_DIFF'		=> append_sid($this->p_master->module_url, "mode=$mode&sub=file_check&action=diff&status=$status&file=" . urlencode($file_struct['filename']), false),
+							'U_SHOW_DIFF'		=> $diff_url,
 							'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? $user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
+
+							'U_VIEW_MOD_FILE'		=> $diff_url . '&amp;op=' . MERGE_MOD_FILE,
+							'U_VIEW_NEW_FILE'		=> $diff_url . '&amp;op=' . MERGE_NEW_FILE,
+							'U_VIEW_NO_MERGE_MOD'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_MOD,
+							'U_VIEW_NO_MERGE_NEW'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_NEW,
 						));
 					}
 				}
@@ -321,6 +409,16 @@ class install_update extends module
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 				));
 
+				if ($all_up_to_date)
+				{
+					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+
+					// Add database update to log
+					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
+
+					$cache->purge();
+				}
+
 			break;
 
 			case 'update_files':
@@ -342,7 +440,7 @@ class install_update extends module
 
 				if (!empty($_POST['download']))
 				{
-					include_once($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
+					$this->include_file('includes/functions_compress.' . $phpEx);
 
 					$use_method = request_var('use_method', '');
 					$methods = array('.tar');
@@ -378,6 +476,7 @@ class install_update extends module
 
 						// To ease the update process create a file location map
 						$update_list = $cache->get('_update_list');
+						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
 
 						foreach ($update_list as $status => $files)
 						{
@@ -395,7 +494,7 @@ class install_update extends module
 
 								$template->assign_block_vars('location', array(
 									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
-									'DESTINATION'	=> $user->page['root_script_path'] . htmlspecialchars($file_struct['filename']),
+									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
 								));
 							}
 						}
@@ -412,7 +511,7 @@ class install_update extends module
 				}
 				else
 				{
-					include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+					$this->include_file('includes/functions_transfer.' . $phpEx);
 
 					// Choose FTP, if not available use fsock...
 					$method = request_var('method', '');
@@ -577,8 +676,11 @@ class install_update extends module
 							break;
 
 							case 'modified':
-								$diff = &new diff3(file($this->old_location . $original_filename), file($phpbb_root_path . $file_struct['filename']), file($this->new_location . $original_filename));
+
+								$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+
 								$contents = implode("\n", $diff->merged_output());
+								unset($diff);
 
 								if ($update_mode == 'download')
 								{
@@ -586,24 +688,46 @@ class install_update extends module
 								}
 								else
 								{
+									// @todo add option to specify if a backup file should be created?
 									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
 									$transfer->write_file($file_struct['filename'], $contents);
 								}
 							break;
 
 							case 'conflict':
-								$diff = &new diff3(file($this->old_location . $original_filename), file($phpbb_root_path . $file_struct['filename']), file($this->new_location . $original_filename));
 
-								if ($conflicts[$file_struct['filename']] == 1)
+								$option = $conflicts[$file_struct['filename']];
+								$contents = '';
+
+								switch ($option)
 								{
-									$contents = implode("\n", $diff->merged_new_output());
-								}
-								else if ($conflicts[$file_struct['filename']] == 2)
-								{
-									$contents = implode("\n", $diff->merged_orig_output());
-								}
-								else
-								{
+									case MERGE_NO_MERGE_NEW:
+										$contents = file_get_contents($this->new_location . $original_filename);
+									break;
+
+									case MERGE_NO_MERGE_MOD:
+										$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+									break;
+
+									default:
+
+										$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+
+										if ($option == MERGE_NEW_FILE)
+										{
+											$contents = implode("\n", $diff->merged_new_output());
+										}
+										else if ($option == MERGE_MOD_FILE)
+										{
+											$contents = implode("\n", $diff->merged_orig_output());
+										}
+										else
+										{
+											unset($diff);
+											break 2;
+										}
+
+										unset($diff);
 									break;
 								}
 
@@ -643,38 +767,6 @@ class install_update extends module
 
 			break;
 
-			case 'update_db':
-
-				// Make sure the database update is valid for the latest version
-				$valid = false;
-				$updates_to_version = '';
-
-				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
-				{
-					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
-
-					if ($updates_to_version === $this->latest_version)
-					{
-						$valid = true;
-					}
-				}
-
-				// Should not happen at all
-				if (!$valid)
-				{
-					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
-				}
-
-				// Because we are done with the file update we purge the cache directory
-				$cache->purge();
-
-				// Redirect the user to the database update script with some explanations...
-				$template->assign_vars(array(
-					'S_DB_UPDATE'		=> true,
-					'U_DB_UPDATE'		=> $phpbb_root_path . 'install/database_update.' . $phpEx)
-				);
-
-			break;
 		}
 	}
 
@@ -719,28 +811,71 @@ class install_update extends module
 		switch ($status)
 		{
 			case 'conflict':
-				$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $file), file($this->new_location . $original_file));
+				$option = request_var('op', 0);
 
-				$template->assign_vars(array(
-					'S_DIFF_CONFLICT_FILE'	=> true,
-					'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true))
-				);
+				switch ($option)
+				{
+					case MERGE_NO_MERGE_NEW:
+					case MERGE_NO_MERGE_MOD:
+
+						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : $phpbb_root_path . $file);
+
+						$template->assign_var('S_DIFF_NEW_FILE', true);
+						$diff_mode = 'inline';
+						$this->page_title = 'VIEWING_FILE_CONTENTS';
+
+					break;
+
+					case MERGE_NEW_FILE:
+					case MERGE_MOD_FILE:
+
+						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
+
+						$tmp = array(
+							'file1'		=> array(),
+							'file2'		=> ($option == MERGE_NEW_FILE) ? implode("\n", $diff->merged_new_output()) : implode("\n", $diff->merged_orig_output()),
+						);
+
+						$diff = &new diff($tmp['file1'], $tmp['file2']);
+
+						unset($tmp);
+
+						$template->assign_var('S_DIFF_NEW_FILE', true);
+						$diff_mode = 'inline';
+						$this->page_title = 'VIEWING_FILE_CONTENTS';
+
+					break;
+
+					default:
+
+						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
+
+						$template->assign_vars(array(
+							'S_DIFF_CONFLICT_FILE'	=> true,
+							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true))
+						);
+					break;
+				}
+
 			break;
 
 			case 'modified':
-				$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $original_file), file($this->new_location . $file));
+				$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $original_file, $this->new_location . $file);
 			break;
 
 			case 'not_modified':
 			case 'new_conflict':
-				$diff = &new diff(file($phpbb_root_path . $file), file($this->new_location . $original_file));
+				$diff = $this->return_diff($phpbb_root_path . $file, $this->new_location . $original_file);
 			break;
 
 			case 'new':
-				$diff = &new diff(array(), file($this->new_location . $original_file));
+
+				$diff = $this->return_diff(array(), $this->new_location . $original_file);
+
 				$template->assign_var('S_DIFF_NEW_FILE', true);
 				$diff_mode = 'inline';
 				$this->page_title = 'VIEWING_FILE_CONTENTS';
+
 			break;
 		}
 
@@ -762,9 +897,12 @@ class install_update extends module
 
 		$template->assign_vars(array(
 			'DIFF_CONTENT'			=> $renderer->get_diff_content($diff),
+			'DIFF_MODE'			=> $diff_mode,
 			'S_DIFF_MODE_OPTIONS'	=> $diff_mode_options,
 			'S_SHOW_DIFF'			=> true,
 		));
+
+		unset($diff, $renderer);
 	}
 
 	/**
@@ -865,11 +1003,19 @@ class install_update extends module
 		// Check for this circumstance, the new file need to be up-to-date with the current file then...
 		if (!file_exists($this->old_location . $original_file) && file_exists($this->new_location . $original_file) && file_exists($phpbb_root_path . $file))
 		{
+			$tmp = array(
+				'file1'		=> file_get_contents($this->new_location . $original_file),
+				'file2'		=> file_get_contents($phpbb_root_path . $file),
+			);
+
 			// We need to diff the contents here to make sure the file is really the one we expect
-			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
+			$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+			$empty = $diff->is_empty();
+
+			unset($tmp, $diff);
 
 			// if there are no differences we have an up-to-date file...
-			if ($diff->is_empty())
+			if ($empty)
 			{
 				$update_list['up_to_date'][] = $update_ary;
 				return;
@@ -880,22 +1026,40 @@ class install_update extends module
 			return;
 		}
 
-		// Check for existance, else abort immediatly
+		// Check for existance, else abort immediately
 		if (!file_exists($this->old_location . $original_file) || !file_exists($this->new_location . $original_file))
 		{
 			trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
 		}
 
-		$diff = &new diff(file($this->old_location . $original_file), file($phpbb_root_path . $file));
+		$tmp = array(
+			'file1'		=> file_get_contents($this->old_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+		);
+
+		// We need to diff the contents here to make sure the file is really the one we expect
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$empty_1 = $diff->is_empty();
+
+		unset($tmp, $diff);
+
+		$tmp = array(
+			'file1'		=> file_get_contents($this->new_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+		);
+
+		// We need to diff the contents here to make sure the file is really the one we expect
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$empty_2 = $diff->is_empty();
+
+		unset($tmp, $diff);
 
 		// If the file is not modified we are finished here...
-		if ($diff->is_empty())
+		if ($empty_1)
 		{
 			// Further check if it is already up to date - it could happen that non-modified files
 			// slip through
-			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
-
-			if ($diff->is_empty())
+			if ($empty_2)
 			{
 				$update_list['up_to_date'][] = $update_ary;
 				return;
@@ -906,29 +1070,45 @@ class install_update extends module
 		}
 
 		// If the file had been modified then we need to check if it is already up to date
-		$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
 
 		// if there are no differences we have an up-to-date file...
-		if ($diff->is_empty())
+		if ($empty_2)
 		{
 			$update_list['up_to_date'][] = $update_ary;
 			return;
 		}
 
 		// if the file is modified we try to make sure a merge succeed
-		$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $file), file($this->new_location . $original_file));
+		$tmp = array(
+			'file1'		=> file_get_contents($this->old_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+			'file3'		=> file_get_contents($this->new_location . $original_file),
+		);
+
+		$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3'], false);
+
+		unset($tmp);
 
 		if ($diff->merged_output(false, false, false, true))
 		{
 			$update_ary['conflicts'] = $diff->_conflicting_blocks;
 			$update_list['conflict'][] = $update_ary;
+
+			unset($diff);
+
 			return;
 		}
 
-		// now compare the merged output with the original file to see if the modified file is up to date
-		$diff = &new diff(file($phpbb_root_path . $file), $diff->merged_output());
+		$tmp = array(
+			'file1'		=> file_get_contents($phpbb_root_path . $file),
+			'file2'		=> implode("\n", $diff->merged_output()),
+		);
 
-		if ($diff->is_empty())
+		// now compare the merged output with the original file to see if the modified file is up to date
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$empty = $diff->is_empty();
+
+		if ($empty)
 		{
 			$update_list['up_to_date'][] = $update_ary;
 			return;
@@ -1040,6 +1220,54 @@ class install_update extends module
 		}
 
 		return $info;
+	}
+
+	/**
+	* Function for including files...
+	*/
+	function include_file($filename)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		if (!empty($this->update_info['files']) && in_array($filename, $this->update_info['files']))
+		{
+			include_once($this->new_location . $filename);
+		}
+		else
+		{
+			include_once($phpbb_root_path . $filename);
+		}
+	}
+
+	/**
+	* Wrapper for returning a diff object
+	*/
+	function &return_diff()
+	{
+		$args = func_get_args();
+		$three_way_diff = (func_num_args() > 2) ? true : false;
+
+		$file1 = array_shift($args);
+		$file2 = array_shift($args);
+
+		$tmp['file1'] = (!empty($file1) && is_string($file1)) ? file_get_contents($file1) : $file1;
+		$tmp['file2'] = (!empty($file2) && is_string($file2)) ? file_get_contents($file2) : $file2;
+
+		if ($three_way_diff)
+		{
+			$file3 = array_shift($args);
+			$tmp['file3'] = (!empty($file3) && is_string($file3)) ? file_get_contents($file3) : $file3;
+
+			$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
+		}
+		else
+		{
+			$diff = &new diff($tmp['file1'], $tmp['file2']);
+		}
+
+		unset($tmp);
+
+		return $diff;
 	}
 }
 

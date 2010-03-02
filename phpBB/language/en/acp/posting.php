@@ -45,16 +45,17 @@ $lang = array_merge($lang, array(
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_OPEN_ENDED_TAG'		=> 'Your custom BBCode must contain both an opening and a closing tag.',
 	'BBCODE_TAG'				=> 'Tag',
-	'BBCODE_TAG_TOO_LONG'		=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
+	'BBCODE_TAG_TOO_LONG'		=> 'The tag name you selected is too long.',
+	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
-	'BBCODE_USAGE_EXAMPLE'		=> '[colour={COLOR}]{TEXT}[/colour]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
+	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
 	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (%ssee below%s)',
 
 	'EXAMPLE'						=> 'Example:',
 	'EXAMPLES'						=> 'Examples:',
 
 	'HTML_REPLACEMENT'				=> 'HTML replacement',
-	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;font color="{COLOR}"&gt;{TEXT}&lt;/font&gt;<br /><br />&lt;font face="{TEXT1}"&gt;{TEXT2}&lt;/font&gt;',
+	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color:{COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family:{TEXT1};"&gt;{TEXT2}&lt;/span&gt;',
 	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement (each template can have its own HTML replacement). Do not forget to put back tokens you used above!',
 
 	'TOKEN'					=> 'Token',
@@ -67,7 +68,7 @@ $lang = array_merge($lang, array(
 		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
 		'NUMBER'		=> 'Any series of digits',
 		'EMAIL'			=> 'A valid email address',
-		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prepended to to the string',
+		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prepended to the string',
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
 		'COLOR'			=> 'A HTML color, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
 	)
@@ -100,7 +101,7 @@ $lang = array_merge($lang, array(
 
 	'FIRST'			=> 'First',
 
-	'ICONS_ADD'				=> 'Add a new Icon',
+	'ICONS_ADD'				=> 'Add a new icon',
 	'ICONS_ADDED'			=> 'The icon has been added successfully.',
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
@@ -137,7 +138,7 @@ $lang = array_merge($lang, array(
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
-	'SMILIES_EDIT'				=> 'Edit Smiley',
+	'SMILIES_EDIT'				=> 'Edit smiley',
 	'SMILIES_EDITED'			=> 'The smiley has been updated successfully.',
 	'SMILIES_EMOTION'			=> 'Emotion',
 	'SMILIES_HEIGHT'			=> 'Smiley height',
@@ -182,7 +183,7 @@ $lang = array_merge($lang, array(
 	
 	'NO_ASSIGNED_RANK'		=> 'No special rank assigned.',
 	'NO_RANK_TITLE'			=> 'You haven’t specified a title for the rank.',
-	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
+	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated. You will need to manually reset the rank on these accounts.',
 
 	'RANK_ADDED'			=> 'The rank was successfully added.',
 	'RANK_IMAGE'			=> 'Rank image',
@@ -196,7 +197,7 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 

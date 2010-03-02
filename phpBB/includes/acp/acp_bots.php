@@ -70,42 +70,54 @@ class acp_bots
 			case 'delete':
 				if ($bot_id || sizeof($mark))
 				{
-					// We need to delete the relevant user, usergroup and bot entries ...
-					$sql_id = ($bot_id) ? " = $bot_id" : ' IN (' . implode(', ', $mark) . ')';
-
-					$sql = 'SELECT bot_name, user_id 
-						FROM ' . BOTS_TABLE . " 
-						WHERE bot_id $sql_id";
-					$result = $db->sql_query($sql);
-
-					$user_id_ary = $bot_name_ary = array();
-					while ($row = $db->sql_fetchrow($result))
+					if (confirm_box(true))
 					{
-						$user_id_ary[] = (int) $row['user_id'];
-						$bot_name_ary[] = $row['bot_name'];
-					}
-					$db->sql_freeresult($result);
+						// We need to delete the relevant user, usergroup and bot entries ...
+						$sql_id = ($bot_id) ? " = $bot_id" : ' IN (' . implode(', ', $mark) . ')';
 
-					$db->sql_transaction('begin');
+						$sql = 'SELECT bot_name, user_id 
+							FROM ' . BOTS_TABLE . " 
+							WHERE bot_id $sql_id";
+						$result = $db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . BOTS_TABLE . " 
-						WHERE bot_id $sql_id";
-					$db->sql_query($sql);
+						$user_id_ary = $bot_name_ary = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$user_id_ary[] = (int) $row['user_id'];
+							$bot_name_ary[] = $row['bot_name'];
+						}
+						$db->sql_freeresult($result);
 
-					$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
-					foreach ($_tables as $table)
-					{
-						$sql = "DELETE FROM $table
-							WHERE " . $db->sql_in_set('user_id', $user_id_ary);
+						$db->sql_transaction('begin');
+
+						$sql = 'DELETE FROM ' . BOTS_TABLE . " 
+							WHERE bot_id $sql_id";
 						$db->sql_query($sql);
+
+						$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+						foreach ($_tables as $table)
+						{
+							$sql = "DELETE FROM $table
+								WHERE " . $db->sql_in_set('user_id', $user_id_ary);
+							$db->sql_query($sql);
+						}
+
+						$db->sql_transaction('commit');
+
+						$cache->destroy('bots');
+
+						add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
+						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 					}
-
-					$db->sql_transaction('commit');
-
-					$cache->destroy('bots');
-
-					add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
-					trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
+					else
+					{
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'mark'		=> $mark,
+							'id'		=> $bot_id,
+							'mode'		=> $mode,
+							'action'	=> $action))
+						);
+					}
 				}
 			break;
 
@@ -169,17 +181,17 @@ class acp_bots
 							}
 
 							$user_id = user_add(array(
-								'user_type'		=> (int) USER_IGNORE, 
-								'group_id'		=> (int) $group_row['group_id'], 
-								'username'		=> (string) $bot_row['bot_name'], 
-								'user_regdate'	=> time(),
-								'user_password'	=> '',
-								'user_colour'	=> (string) $group_row['group_colour'],
-								'user_email'	=> '',
-								'user_lang'		=> (string) $bot_row['bot_lang'], 
-								'user_style'	=> (int) $bot_row['bot_style'],
-								'user_options'	=> 0)
-							);
+								'user_type'				=> (int) USER_IGNORE, 
+								'group_id'				=> (int) $group_row['group_id'], 
+								'username'				=> (string) $bot_row['bot_name'], 
+								'user_regdate'			=> time(),
+								'user_password'			=> '',
+								'user_colour'			=> (string) $group_row['group_colour'],
+								'user_email'			=> '',
+								'user_lang'				=> (string) $bot_row['bot_lang'], 
+								'user_style'			=> (int) $bot_row['bot_style'],
+								'user_allow_massemail'	=> 0,
+							));
 
 							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 								'user_id'		=> (int) $user_id,
@@ -194,7 +206,7 @@ class acp_bots
 						}
 						else if ($bot_id)
 						{
-							$sql = 'SELECT user_id 
+							$sql = 'SELECT user_id, bot_name 
 								FROM ' . BOTS_TABLE . " 
 								WHERE bot_id = $bot_id";
 							$result = $db->sql_query($sql);
@@ -206,10 +218,18 @@ class acp_bots
 								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+							$sql_ary = array(
 								'user_style'	=> (int) $bot_row['bot_style'],
-								'user_lang'		=> (string) $bot_row['bot_lang'])
-							) . " WHERE user_id = {$row['user_id']}";
+								'user_lang'		=> (string) $bot_row['bot_lang'],
+							);
+
+							if ($bot_row['bot_name'] !== $row['bot_name'])
+							{
+								$sql_ary['username'] = (string) $bot_row['bot_name'];
+								$sql_ary['username_clean'] = (string) utf8_clean_string($bot_row['bot_name']);
+							}
+
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
 							$db->sql_query($sql);
 
 							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
@@ -219,6 +239,12 @@ class acp_bots
 								'bot_ip'		=> (string) $bot_row['bot_ip'])
 							) . " WHERE bot_id = $bot_id";
 							$db->sql_query($sql);
+
+							// Updated username?
+							if ($bot_row['bot_name'] !== $row['bot_name'])
+							{
+								user_update_name($row['bot_name'], $bot_row['bot_name']);
+							}
 
 							$log = 'UPDATED';
 						}
@@ -302,7 +328,7 @@ class acp_bots
 		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit 
 			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u
 			WHERE u.user_id = b.user_id
-			ORDER BY u.user_lastvisit DESC';
+			ORDER BY u.user_lastvisit DESC, b.bot_name ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

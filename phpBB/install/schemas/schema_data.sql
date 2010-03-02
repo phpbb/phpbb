@@ -86,9 +86,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confir
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_check', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_common_thres', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
@@ -114,8 +116,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_email', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_user', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');
@@ -161,7 +165,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', '.*');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
@@ -170,6 +174,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_indexing_state', '');
@@ -180,7 +185,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_resul
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('send_encoding', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', '');
@@ -199,13 +203,14 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.B4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.B5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('database_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('last_queue_run', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_colour', 'AA0000', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_username', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_files', '0', 1);
@@ -349,28 +354,28 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_viewprofile', 
 
 
 # -- standard auth roles
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Admin', 'ROLE_DESCRIPTION_ADMIN_STANDARD', 'a_', 1);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Forum Admin', 'ROLE_DESCRIPTION_ADMIN_FORUM', 'a_', 3);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('User and Groups Admin', 'ROLE_DESCRIPTION_ADMIN_USERGROUP', 'a_', 4);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Full Admin', 'ROLE_DESCRIPTION_ADMIN_FULL', 'a_', 2);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('All Features', 'ROLE_DESCRIPTION_USER_FULL', 'u_', 3);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Features', 'ROLE_DESCRIPTION_USER_STANDARD', 'u_', 1);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Features', 'ROLE_DESCRIPTION_USER_LIMITED', 'u_', 2);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('No Private Messages', 'ROLE_DESCRIPTION_USER_NOPM', 'u_', 4);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('No Avatar', 'ROLE_DESCRIPTION_USER_NOAVATAR', 'u_', 5);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Full Moderator', 'ROLE_DESCRIPTION_MOD_FULL', 'm_', 3);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Moderator', 'ROLE_DESCRIPTION_MOD_STANDARD', 'm_', 1);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Simple Moderator', 'ROLE_DESCRIPTION_MOD_SIMPLE', 'm_', 2);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Queue Moderator', 'ROLE_DESCRIPTION_MOD_QUEUE', 'm_', 4);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Full Access', 'ROLE_DESCRIPTION_FORUM_FULL', 'f_', 7);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access', 'ROLE_DESCRIPTION_FORUM_STANDARD', 'f_', 5);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('No Access', 'ROLE_DESCRIPTION_FORUM_NOACCESS', 'f_', 1);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Read Only Access', 'ROLE_DESCRIPTION_FORUM_READONLY', 'f_', 2);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Access', 'ROLE_DESCRIPTION_FORUM_LIMITED', 'f_', 3);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Bot Access', 'ROLE_DESCRIPTION_FORUM_BOT', 'f_', 9);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('On Moderation Queue', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 8);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access + Polls', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 6);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Access + Polls', 'ROLE_DESCRIPTION_FORUM_LIMITED_POLLS', 'f_', 4);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_ADMIN_STANDARD', 'ROLE_DESCRIPTION_ADMIN_STANDARD', 'a_', 1);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_ADMIN_FORUM', 'ROLE_DESCRIPTION_ADMIN_FORUM', 'a_', 3);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_ADMIN_USERGROUP', 'ROLE_DESCRIPTION_ADMIN_USERGROUP', 'a_', 4);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_ADMIN_FULL', 'ROLE_DESCRIPTION_ADMIN_FULL', 'a_', 2);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_FULL', 'ROLE_DESCRIPTION_USER_FULL', 'u_', 3);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_STANDARD', 'ROLE_DESCRIPTION_USER_STANDARD', 'u_', 1);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_LIMITED', 'ROLE_DESCRIPTION_USER_LIMITED', 'u_', 2);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_NOPM', 'ROLE_DESCRIPTION_USER_NOPM', 'u_', 4);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_NOAVATAR', 'ROLE_DESCRIPTION_USER_NOAVATAR', 'u_', 5);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_MOD_FULL', 'ROLE_DESCRIPTION_MOD_FULL', 'm_', 3);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_MOD_STANDARD', 'ROLE_DESCRIPTION_MOD_STANDARD', 'm_', 1);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_MOD_SIMPLE', 'ROLE_DESCRIPTION_MOD_SIMPLE', 'm_', 2);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_MOD_QUEUE', 'ROLE_DESCRIPTION_MOD_QUEUE', 'm_', 4);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_FULL', 'ROLE_DESCRIPTION_FORUM_FULL', 'f_', 7);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_STANDARD', 'ROLE_DESCRIPTION_FORUM_STANDARD', 'f_', 5);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_NOACCESS', 'ROLE_DESCRIPTION_FORUM_NOACCESS', 'f_', 1);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_READONLY', 'ROLE_DESCRIPTION_FORUM_READONLY', 'f_', 2);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_LIMITED', 'ROLE_DESCRIPTION_FORUM_LIMITED', 'f_', 3);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_BOT', 'ROLE_DESCRIPTION_FORUM_BOT', 'f_', 9);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_ONQUEUE', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 8);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_POLLS', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 6);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_LIMITED_POLLS', 'ROLE_DESCRIPTION_FORUM_LIMITED_POLLS', 'f_', 4);
 
 
 # -- phpbb_styles
@@ -391,7 +396,7 @@ INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, 
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_subject, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed, forum_parents) VALUES ('Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 1, 2, 'Admin', 'AA0000', 'Welcome to phpBB 3', 972086460, '', '', '', '', '', '', '', 0, 0, '');
 
 # -- Users / Anonymous user
-INSERT INTO phpbb_users (user_type, group_id, username, username_clean, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (2, 1, 'Anonymous', 'anonymous', 0, '', '', 'en', 1, 0, '', 0, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO phpbb_users (user_type, group_id, username, username_clean, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd, user_allow_massemail) VALUES (2, 1, 'Anonymous', 'anonymous', 0, '', '', 'en', 1, 0, '', 0, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0);
 
 # -- username: Admin    password: admin (change this or remove it once everything is working!)
 INSERT INTO phpbb_users (user_type, group_id, username, username_clean, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (3, 5, 'Admin', 'admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000', 1, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
@@ -466,13 +471,13 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 16, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option = 'f_';
 
 # Read Only Access (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 17, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read', 'f_search', 'f_subscribe');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 17, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read', 'f_search', 'f_subscribe', 'f_print');
 
 # Limited Access (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 18, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg');
 
 # Bot Access (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 19, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 19, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read', 'f_print');
 
 # On Moderation Queue (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 20, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg', 'f_noapprove');
@@ -584,13 +589,20 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 
 
 # -- wordlist
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('this', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('example', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('post', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('your', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('phpbb', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('installation', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('you', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('may', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('delete', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('topic', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('and', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('even', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('forum', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('like', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('since', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('everything', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('seems', 0);
@@ -609,8 +621,15 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (8, 1,
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (9, 1, 0);
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (10, 1, 0);
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (11, 1, 0);
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1, 1);
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1, 1);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (13, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (14, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (15, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (16, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (17, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (18, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (5, 1, 1);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (19, 1, 1);
 
 
 # -- reasons
@@ -663,12 +682,21 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'js');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'xml');
 
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'xls');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'xlsx');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'xlsm');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'xlsb');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'doc');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'docx');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'docm');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'dot');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'dotx');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'dotm');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'pdf');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ai');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ps');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ppt');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'pptx');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'pptm');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odp');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');

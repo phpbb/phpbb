@@ -7,7 +7,7 @@
 	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
 
 	<h1>{L_SELECT_DOWNLOAD_FORMAT}</h1>
-			
+
 	<form id="selectmethod" method="post" action="{U_ACTION}">
 
 	<fieldset>
@@ -36,11 +36,11 @@
 		<legend>{LANG_LOCAL_NAME}</legend>
 	<dl>
 		<dt><label for="lang_english_name">{L_LANG_ENGLISH_NAME}:</label></dt>
-		<dd><input type="text" id="lang_english_name" name="lang_english_name" value="{LANG_ENGLISH_NAME}" /></dd>
+		<dd><input type="text" id="lang_english_name" name="lang_english_name" value="{LANG_ENGLISH_NAME}" maxlength="100" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="lang_local_name">{L_LANG_LOCAL_NAME}:</label></dt>
-		<dd><input type="text" id="lang_local_name" name="lang_local_name" value="{LANG_LOCAL_NAME}" /></dd>
+		<dd><input type="text" id="lang_local_name" name="lang_local_name" value="{LANG_LOCAL_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_LANG_ISO_CODE}:</label></dt>
@@ -48,7 +48,7 @@
 	</dl>
 	<dl>
 		<dt><label for="lang_author">{L_LANG_AUTHOR}:</label></dt>
-		<dd><input type="text" id="lang_author" name="lang_author" value="{LANG_AUTHOR}" /></dd>
+		<dd><input type="text" id="lang_author" name="lang_author" value="{LANG_AUTHOR}" maxlength="255" /></dd>
 	</dl>
 
 	<p class="quick" style="margin-top: -15px;">
@@ -72,7 +72,7 @@
 		<h1>{L_MISSING_LANG_VARIABLES}</h1>
 
 		<p>{L_MISSING_VARS_EXPLAIN}</p>
-						
+
 		<form id="missing" method="post" action="{U_MISSING_ACTION}">
 
 		<table cellspacing="1">
@@ -104,19 +104,28 @@
 
 	<p>{L_LANGUAGE_ENTRIES_EXPLAIN}</p>
 
-	<form id="entries" method="post" action="{U_ENTRY_ACTION}">
+	<form id="lang_entries" method="post" action="{U_ENTRY_ACTION}">
 
 	<!-- IF S_FROM_STORE -->
 		<fieldset class="quick" style="float: left;">
 			<input type="submit" name="remove_store" value="{L_REMOVE_FROM_STORAGE_FOLDER}" class="button2" /> 
 		</fieldset>
 	<!-- ENDIF -->
-	
+
 	<fieldset class="quick" style="float: right;">
 		<select name="language_file">{S_LANG_OPTIONS}</select>&nbsp;<input type="submit" class="button2" name="change" value="{L_SELECT}" />
 	</fieldset>
 
 	<br /><br /><br />
+
+	<!-- DIRTY DIRTY DIRTY IE -->
+	<!--[if lt IE 8]>
+	<style type="text/css">
+		input.langvalue, textarea.langvalue {
+		width: 450px;
+		}
+	</style>
+	< ![endif]-->
 
 	<table cellspacing="1">
 	<thead>
@@ -185,7 +194,7 @@
 	<!-- BEGIN data -->
 	<dl>
 		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
-		<dd><input type="text" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
+		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->
 	</fieldset>

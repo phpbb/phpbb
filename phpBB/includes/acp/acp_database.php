@@ -36,6 +36,8 @@ class acp_database
 		{
 			case 'backup':
 
+				$this->page_title = 'ACP_BACKUP';
+
 				switch ($action)
 				{
 					case 'download':
@@ -70,7 +72,7 @@ class acp_database
 
 						$time = time();
 
-						$filename = 'backup_' . $time;
+						$filename = 'backup_' . $time . '_' . unique_id();
 
 						// We set up the info needed for our on-the-fly creation :D
 						switch ($format)
@@ -88,7 +90,6 @@ class acp_database
 								$open = 'bzopen';
 								$write = 'bzwrite';
 								$close = 'bzclose';
-								$oper = 'bzcompress';
 								$mimetype = 'application/x-bzip2';
 							break;
 							case 'gzip':
@@ -96,7 +97,6 @@ class acp_database
 								$open = 'gzopen';
 								$write = 'gzwrite';
 								$close = 'gzclose';
-								$oper = 'gzencode';
 								$mimetype = 'application/x-gzip';
 							break;
 						}
@@ -104,6 +104,25 @@ class acp_database
 						// We write the file to "store" first (and then compress the file) to not use too much
 						// memory. The server process can be easily killed by storing too much data at once.
 
+						if ($download == true)
+						{
+							$fh = fopen('php://output', 'wb');
+
+							switch ($format)
+							{
+								case 'bzip2':
+									ob_start('ob_bz2handler');
+								break;
+								case 'gzip':
+									ob_start('ob_gzhandler');
+								break;
+							}
+
+							$name = $filename . $ext;
+							header('Pragma: no-cache');
+							header("Content-Type: $mimetype; name=\"$name\"");
+							header("Content-disposition: attachment; filename=$name");
+						}
 						
 						if ($store == true)
 						{
@@ -117,20 +136,12 @@ class acp_database
 							}
 						}
 
-						if ($download == true)
-						{
-							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
-						}
-
 						// All of the generated queries go here
 						$sql_data = '';
 						$sql_data .= "#\n";
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
-						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $time) . " GMT\n";
+						$sql_data .= "# DATE : " . gmdate("d-m-Y H:i:s", $time) . " GMT\n";
 						$sql_data .= "#\n";
 
 						switch ($db->sql_layer)
@@ -149,31 +160,6 @@ class acp_database
 								$sql_data .= "BEGIN TRANSACTION\n";
 								$sql_data .= "GO\n";
 							break;
-						}
-
-						if ($structure && $db->sql_layer == 'firebird')
-						{
-							$sql = 'SELECT RDB$FUNCTION_NAME, RDB$DESCRIPTION
-								FROM RDB$FUNCTIONS
-								ORDER BY RDB$FUNCTION_NAME';
-							$result = $db->sql_query($sql);
-
-							$rows = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$sql = 'SELECT F.RDB$FUNCTION_NAME, F.RDB$MODULE_NAME, F.RDB$ENTRYPOINT, F.RDB$RETURN_ARGUMENT, F.RDB$DESCRIPTION, FA.RDB$ARGUMENT_POSITION, FA.RDB$MECHANISM, FA.RDB$FIELD_TYPE, FA.RDB$FIELD_SCALE, FA.RDB$FIELD_LENGTH, FA.RDB$FIELD_SUB_TYPE, C.RDB$BYTES_PER_CHARACTER, C.RDB$CHARACTER_SET_NAME ,FA.RDB$FIELD_PRECISION
-									FROM RDB$FUNCTIONS F
-									LEFT JOIN RDB$FUNCTION_ARGUMENTS FA ON F.RDB$FUNCTION_NAME = FA.RDB$FUNCTION_NAME
-									LEFT JOIN RDB$CHARACTER_SETS C ON FA.RDB$CHARACTER_SET_ID = C.RDB$CHARACTER_SET_ID
-									WHERE (F.RDB$FUNCTION_NAME = ' . $row['FUNCTION_NAME'] . ')
-									ORDER BY FA.RDB$ARGUMENT_POSITION';
-								$result2 = $db->sql_query($sql);
-								while ($row2 = $db->sql_fetchrow($result2))
-								{
-								}
-								$db->sql_freeresult($result2);
-							}
-							$db->sql_freeresult($result);
 						}
 
 						foreach ($table as $table_name)
@@ -238,14 +224,7 @@ class acp_database
 
 							if ($download == true)
 							{
-								if (!empty($oper))
-								{
-									echo $oper($sql_data);
-								}
-								else
-								{
-									echo $sql_data;
-								}
+								fwrite($fh, $sql_data);
 							}
 
 							$sql_data = '';
@@ -307,14 +286,7 @@ class acp_database
 
 												if ($download == true)
 												{
-													if (!empty($oper))
-													{
-														echo $oper($sql_data);
-													}
-													else
-													{
-														echo $sql_data;
-													}
+													fwrite($fh, $sql_data);
 												}
 												$sql_data = '';
 
@@ -381,14 +353,7 @@ class acp_database
 
 												if ($download == true)
 												{
-													if (!empty($oper))
-													{
-														echo $oper($sql_data);
-													}
-													else
-													{
-														echo $sql_data;
-													}
+													fwrite($fh, $sql_data);
 												}
 												$sql_data = '';
 											}
@@ -470,14 +435,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 											$sql_data = '';
 
@@ -571,14 +529,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -636,8 +587,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[$i] = odbc_field_type($result, $i);
-											$ary_name[$i] = odbc_field_name($result, $i);
+											$ary_type[$i] = odbc_field_type($result, $i + 1);
+											$ary_name[$i] = odbc_field_name($result, $i + 1);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -692,14 +643,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -803,14 +747,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -898,14 +835,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -926,8 +856,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[$i] = ocicolumntype($result, $i);
-											$ary_name[$i] = ocicolumnname($result, $i);
+											$ary_type[$i] = ocicolumntype($result, $i + 1);
+											$ary_name[$i] = ocicolumnname($result, $i + 1);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -982,14 +912,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -1022,14 +945,8 @@ class acp_database
 
 						if ($download == true)
 						{
-							if (!empty($oper))
-							{
-								echo $oper($sql_data);
-							}
-							else
-							{
-								echo $sql_data;
-							}
+							fwrite($fh, $sql_data);
+							fclose($fh);
 							exit;
 						}
 
@@ -1051,7 +968,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['name'];
 									}
@@ -1079,7 +996,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['relname'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['relname'], $table_prefix) === 0)
 									{
 										$tables[] = $row['relname'];
 									}
@@ -1096,7 +1013,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['TABLE_NAME'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['TABLE_NAME'], $table_prefix) === 0)
 									{
 										$tables[] = $row['TABLE_NAME'];
 									}
@@ -1112,7 +1029,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (stripos($row['table_name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['table_name'];
 									}
@@ -1126,7 +1043,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (stripos($row['table_name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['table_name'];
 									}
@@ -1168,13 +1085,16 @@ class acp_database
 			break;
 
 			case 'restore':
+
+				$this->page_title = 'ACP_RESTORE';
+
 				switch ($action)
 				{
 					case 'submit':
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
 
-						preg_match('#^(backup_\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+						preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
@@ -1190,7 +1110,7 @@ class acp_database
 
 						$data = file_get_contents($file_name);
 
-						switch ($matches[2])
+						switch ($matches[1])
 						{
 							case 'sql.bz2':
 								$data = bzdecompress($data);
@@ -1206,7 +1126,7 @@ class acp_database
 						{
 							$name = $matches[0];
 
-							switch ($matches[2])
+							switch ($matches[1])
 							{
 								case 'sql':
 									$mimetype = 'text/x-sql';
@@ -1256,14 +1176,14 @@ class acp_database
 									break;
 
 									case 'mssql':
-									case 'mssql-odbc':
+									case 'mssql_odbc':
 										$delim = 'GO';
 									break;
 								}
 								$pieces = split_sql_file($data, $delim);
 
 								$sql_count = count($pieces);
-								for($i = 0; $i < $sql_count; $i++)
+								for ($i = 0; $i < $sql_count; $i++)
 								{
 									$sql = trim($pieces[$i]);
 
@@ -1279,7 +1199,6 @@ class acp_database
 					break;
 
 					default:
-						$selected = false;
 						$methods = array('sql');
 						$available_methods = array('sql.gz' => 'zlib', 'sql.bz2' => 'bz2');
 
@@ -1293,29 +1212,27 @@ class acp_database
 						}
 
 						$dir = $phpbb_root_path . 'store/';
-						$dh = opendir($dir);
-						while (($file = readdir($dh)) !== false)
-						{
-							if (preg_match('#^backup_(\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
-							{
-								$supported = in_array($matches[2], $methods);
+						$dh = @opendir($dir);
 
-								if ($supported == 'true')
+						if ($dh)
+						{
+							while (($file = readdir($dh)) !== false)
+							{
+								if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 								{
-									$template->assign_block_vars('files', array(
-										'FILE'		=> $file,
-										'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
-										'SUPPORTED'	=> $supported
-									));
-									$selected = true;
+									$supported = in_array($matches[2], $methods);
+
+									if ($supported == 'true')
+									{
+										$template->assign_block_vars('files', array(
+											'FILE'		=> $file,
+											'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
+											'SUPPORTED'	=> $supported
+										));
+									}
 								}
 							}
-						}
-						closedir($dh);
-
-						if ($selected === true)
-						{
-							$template->assign_var('EXISTS', true);
+							closedir($dh);
 						}
 
 						$template->assign_vars(array(
@@ -1333,6 +1250,7 @@ class acp_database
 	function get_table_structure($table_name)
 	{
 		global $db, $domains_created;
+		static $has_index_type;
 
 		$sql_data = '';
 
@@ -1341,6 +1259,18 @@ class acp_database
 			case 'mysqli':
 			case 'mysql4':
 			case 'mysql':
+
+				if ($has_index_type === null)
+				{
+					if ($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '4.0.2', '>='))
+					{
+						$has_index_type = true;
+					}
+					else
+					{
+						$has_index_type = false;
+					}
+				}
 
 				$sql_data .= "CREATE TABLE $table_name(\n";
 				$rows = array();
@@ -1384,7 +1314,7 @@ class acp_database
 
 					if ($kname != 'PRIMARY')
 					{
-						if ($row['Index_type'] == 'FULLTEXT')
+						if ($has_index_type && $row['Index_type'] == 'FULLTEXT')
 						{
 							$kname = "FULLTEXT|$kname";
 						}
@@ -1785,7 +1715,7 @@ class acp_database
 
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
+				$sql = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
 					FROM RDB$RELATION_FIELDS R
 					JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME
 					LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME
@@ -1826,7 +1756,7 @@ class acp_database
 				$sql_data .= "\n);;\n";
 				$keys = array();
 
-				$sql  = 'SELECT I.RDB$FIELD_NAME as NAME
+				$sql = 'SELECT I.RDB$FIELD_NAME as NAME
 					FROM RDB$RELATION_CONSTRAINTS RC, RDB$INDEX_SEGMENTS I, RDB$INDICES IDX
 					WHERE (I.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
 						AND (IDX.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
@@ -1919,7 +1849,7 @@ class acp_database
 			case 'oracle':
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
+				$sql = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
 					FROM ALL_TAB_COLS
 					WHERE table_name = '{$table_name}'";
 				$result = $db->sql_query($sql);
@@ -2029,6 +1959,17 @@ class acp_database
 		}
 
 		return $sql_data;
+	}
+}
+
+// Internal handler for BZip2
+function ob_bz2handler($data, $mode)
+{
+	static $internal = '';
+	$internal .= $data;
+	if ($mode & PHP_OUTPUT_HANDLER_END)
+	{
+		return bzcompress($internal);
 	}
 }
 

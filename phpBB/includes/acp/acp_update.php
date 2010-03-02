@@ -23,7 +23,7 @@ class acp_update
 		$user->add_lang('install');
 
 		$this->tpl_name = 'acp_update';
-		$this->page_title = 'ACP_UPDATE';
+		$this->page_title = 'ACP_VERSION_CHECK';
 
 		// Get current and latest version
 		$errstr = '';
@@ -53,7 +53,7 @@ class acp_update
 			'LATEST_VERSION'	=> $latest_version,
 			'CURRENT_VERSION'	=> $config['version'],
 
-			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $announcement_url, $update_archive_link, $update_link),
+			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $announcement_url, $update_link),
 		));
 	}
 }

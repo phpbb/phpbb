@@ -20,7 +20,7 @@
 *	last modified: 24.03.2004 13:01:53 
 *
 *	Modified by phpBB Development Team
-*	version: v0.4.3a
+*	version: v0.4.3a1
 *
 * @package phpBB3
 */
@@ -113,7 +113,7 @@ class jabber
 		if ($this->connector->open_socket($this->server, $this->port))
 		{
 			$this->send_packet("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-			$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+			$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='0.9'>\n");
 
 			sleep(2);
 
@@ -672,7 +672,7 @@ class jabber
 	{
 		if ($this->enable_logging && sizeof($this->log_array))
 		{
-			return implode("\n\n", $this->log_array);
+			return implode("<br /><br />", $this->log_array);
 		}
 
 		return '';
@@ -805,7 +805,7 @@ class jabber
 	* Check if connected
 	* @access private
 	*/
-	function _check_connected()
+	function _check_connected($in_tls = false)
 	{
 		$incoming_array = $this->_listen_incoming();
 
@@ -815,14 +815,16 @@ class jabber
 			{
 				$this->stream_id = $incoming_array['stream:stream']['@']['id'];
 
-				if (!empty($incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns']) && $incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-tls')
+				// We only start TLS authentication if not called within TLS authentication itself, which may produce a never ending loop...
+				if (!$in_tls)
 				{
-					return $this->_starttls();
+					if (!empty($incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns']) && $incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-tls')
+					{
+						return $this->_starttls();
+					}
 				}
-				else
-				{
-					return true;
-				}
+
+				return true;
 			}
 			else
 			{
@@ -843,9 +845,18 @@ class jabber
 	*/
 	function _starttls()
 	{
-		if (!function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('socket_set_blocking'))
+		if (!function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('socket_set_blocking') || !function_exists('stream_get_wrappers'))
 		{
 			$this->add_to_log('WARNING: TLS is not available');
+			return true;
+		}
+
+		// Make sure the encryption stream is supported
+		$streams = stream_get_wrappers();
+
+		if (!in_array('streams.crypto', $streams))
+		{
+			$this->add_to_log('WARNING: SSL/crypto stream not supported');
 			return true;
 		}
 
@@ -868,19 +879,21 @@ class jabber
 		$meta = stream_get_meta_data($this->connector->active_socket);
 		socket_set_blocking($this->connector->active_socket, 1);
 
-		if (!stream_socket_enable_crypto($this->connector->active_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT))
+		$result = @stream_socket_enable_crypto($this->connector->active_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+		if (!$result)
 		{
 			socket_set_blocking($this->connector->active_socket, $meta['blocked']);
 			$this->add_to_log('ERROR: _starttls() #3');
 			return false;
 		}
+
 		socket_set_blocking($this->connector->active_socket, $meta['blocked']);
 
 		$this->send_packet("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
 		$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
 		sleep(2);
 
-		if (!$this->_check_connected())
+		if (!$this->_check_connected(true))
 		{
 			$this->add_to_log('ERROR: _starttls() #4');
 			return false;

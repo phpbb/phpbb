@@ -40,17 +40,23 @@ class acp_ban
 			$ban_reason			= request_var('banreason', '', true);
 			$ban_give_reason	= request_var('bangivereason', '', true);
 
-			user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
+			if ($ban)
+			{
+				user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+			}
 		}
 		else if ($unbansubmit)
 		{
 			$ban = request_var('unban', array(''));
 
-			user_unban($mode, $ban);
+			if ($ban)
+			{
+				user_unban($mode, $ban);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+			}
 		}
 
 		// Define language vars
@@ -119,7 +125,7 @@ class acp_ban
 				$field = 'username';
 				$l_ban_cell = $user->lang['USERNAME'];
 
-				$sql = 'SELECT b.*, u.user_id, u.username
+				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
 					WHERE (b.ban_end >= ' . time() . '
 							OR b.ban_end = 0)
@@ -160,7 +166,7 @@ class acp_ban
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$banned_options .=  '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
+			$banned_options .= '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
 
 			$time_length = ($row['ban_end']) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
 			$ban_length[$row['ban_id']] = (isset($ban_end_text[$time_length])) ? $ban_end_text[$time_length] : $user->lang['UNTIL'] . ' -> ' . $user->format_date($row['ban_end']);

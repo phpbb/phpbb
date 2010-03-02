@@ -223,28 +223,38 @@ $module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title(), false);
 
-
 /**
 * Functions used to generate additional URL paramters
 */
-function _module_main_url($mode)
+function _module__url($mode, &$module_row)
 {
 	return extra_url();
 }
 
-function _module_logs_url($mode)
+function _module_main_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_logs_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_ban_url($mode, &$module_row)
 {
 	return extra_url();
 }
 
 function extra_url()
 {
-	global $forum_id, $topic_id, $post_id;
+	global $forum_id, $topic_id, $post_id, $user_id;
 
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
 
 	return $url_extra;
 }
@@ -252,9 +262,9 @@ function extra_url()
 /**
 * Get simple topic data
 */
-function get_topic_data($topic_ids, $acl_list = false)
+function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 {
-	global $auth, $db;
+	global $auth, $db, $config, $user;
 	static $rowset = array();
 
 	$topics = array();
@@ -264,15 +274,53 @@ function get_topic_data($topic_ids, $acl_list = false)
 		return array();
 	}
 
-	$cache_topic_ids = array_intersect($topic_ids, array_keys($rowset));
-	$topic_ids = array_diff($topic_ids, array_keys($rowset));
+	// cache might not contain read tracking info, so we can't use it if read
+	// tracking information is requested
+	if (!$read_tracking)
+	{
+		$cache_topic_ids = array_intersect($topic_ids, array_keys($rowset));
+		$topic_ids = array_diff($topic_ids, array_keys($rowset));
+	}
+	else
+	{
+		$cache_topic_ids = array();
+	}
 
 	if (sizeof($topic_ids))
 	{
-		$sql = 'SELECT f.*, t.*
-			FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
-			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
+		$sql_array = array(
+			'SELECT'	=> 't.*, f.*',
+
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'f.forum_id = t.forum_id'
+				)
+			),
+
+			'WHERE'		=> $db->sql_in_set('t.topic_id', $topic_ids)
+		);
+
+		if ($read_tracking && $config['load_db_lastread'])
+		{
+			$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
+
+			$sql_array['LEFT_JOIN'][] = array(
+				'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
+				'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
+			);
+
+			$sql_array['LEFT_JOIN'][] = array(
+				'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+				'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
+			);
+		}
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -309,9 +357,9 @@ function get_topic_data($topic_ids, $acl_list = false)
 /**
 * Get simple post data
 */
-function get_post_data($post_ids, $acl_list = false)
+function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth;
+	global $db, $auth, $config, $user;
 
 	$rowset = array();
 
@@ -320,27 +368,45 @@ function get_post_data($post_ids, $acl_list = false)
 		return array();
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_array = array(
 		'SELECT'	=> 'p.*, u.*, t.*, f.*',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
+			POSTS_TABLE		=> 'p',
 			TOPICS_TABLE	=> 't',
-			POSTS_TABLE		=> 'p'
 		),
 
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(FORUMS_TABLE => 'f'),
-				'ON'	=> 'f.forum_id = p.forum_id'
+				'ON'	=> 'f.forum_id = t.forum_id'
 			)
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
 			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id',
-	));
+	);
+
+	if ($read_tracking && $config['load_db_lastread'])
+	{
+		$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
+
+		$sql_array['LEFT_JOIN'][] = array(
+			'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
+			'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
+		);
+
+		$sql_array['LEFT_JOIN'][] = array(
+			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
+		);
+	}
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql);
+	unset($sql_array);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -371,9 +437,9 @@ function get_post_data($post_ids, $acl_list = false)
 /**
 * Get simple forum data
 */
-function get_forum_data($forum_id, $acl_list = 'f_list')
+function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db;
+	global $auth, $db, $user, $config;
 
 	$rowset = array();
 
@@ -387,9 +453,20 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 		return array();
 	}
 
-	$sql = 'SELECT *
-		FROM ' . FORUMS_TABLE . '
-		WHERE ' . $db->sql_in_set('forum_id', $forum_id);
+	if ($read_tracking && $config['load_db_lastread'])
+	{
+		$read_tracking_join = ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
+			AND ft.forum_id = f.forum_id)';
+		$read_tracking_select = ', ft.mark_time';
+	}
+	else
+	{
+		$read_tracking_join = $read_tracking_select = '';
+	}
+
+	$sql = "SELECT f.* $read_tracking_select
+		FROM " . FORUMS_TABLE . " f$read_tracking_join
+		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -632,6 +709,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	$ids = array();
 	$forum_id = false;
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && $row['forum_id'] && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -652,17 +730,26 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 		}
 
 		// Limit forum to a specific forum id?
-		if ($single_forum !== true && $row['forum_id'] == (int) $single_forum)
+		// This can get really tricky, because we do not want to create a failure on global topics. :)
+		if ($row['forum_id'])
 		{
-			$forum_id = (int) $single_forum;
-		}
-		else if ($forum_id === false)
-		{
-			$forum_id = $row['forum_id'];
-		}
+			if ($single_forum !== true && $row['forum_id'] == (int) $single_forum)
+			{
+				$forum_id = (int) $single_forum;
+			}
+			else if ($forum_id === false)
+			{
+				$forum_id = $row['forum_id'];
+			}
 
-		if ($row['forum_id'] == $forum_id)
+			if ($row['forum_id'] == $forum_id)
+			{
+				$ids[] = $row[$sql_id];
+			}
+		}
+		else
 		{
+			// Always add a global topic
 			$ids[] = $row[$sql_id];
 		}
 	}
@@ -672,6 +759,8 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 	{
 		return false;
 	}
+
+	// If forum id is false and ids populated we may have only global announcements selected (returning 0 because of (int) $forum_id)
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }

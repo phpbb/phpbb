@@ -37,7 +37,7 @@ class custom_profile
 
 			case 'profile':
 				// Show hidden fields to moderators/admins
-				if (!$auth->acl_gets('a_', 'm_'))
+				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 				{
 					$sql_where .= ' AND f.field_hide = 0';
 				}
@@ -199,7 +199,7 @@ class custom_profile
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
 			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
 				AND f.field_active = 1 ' .
-				((!$auth->acl_gets('a_', 'm_')) ? '	AND f.field_hide = 0 ' : '') . '
+				((!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? '	AND f.field_hide = 0 ' : '') . '
 				AND f.field_no_view = 0
 				AND l.field_id = f.field_id 
 			ORDER BY f.field_order';
@@ -264,7 +264,7 @@ class custom_profile
 
 			case 'profile':
 				// Show hidden fields to moderators/admins
-				if (!$auth->acl_gets('a_', 'm_'))
+				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 				{
 					$sql_where .= ' AND f.field_hide = 0';
 				}

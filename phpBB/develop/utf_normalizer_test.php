@@ -71,7 +71,7 @@ $test_suite = array(
 require_once($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 
 $i = $n = 0;
-$failed = FALSE;
+$failed = false;
 $tested_chars = array();
 
 $fp = fopen($phpbb_root_path . 'develop/NormalizationTest.txt', 'rb');
@@ -127,7 +127,7 @@ while (!feof($fp))
 
 				if (strcmp($utf_expected, $utf_result))
 				{
-					$failed = TRUE;
+					$failed = true;
 					$hex_result = utf_to_hexseq($utf_result);
 
 					echo "\nFAILED $expected == $form($test) ($hex_expected != $hex_result)";
@@ -365,11 +365,11 @@ function cp_to_utf($cp)
 	{
 		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7FF)
+	else if ($cp > 0x7FF)
 	{
 		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7F)
+	else if ($cp > 0x7F)
 	{
 		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
 	}

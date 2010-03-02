@@ -21,6 +21,7 @@ class p_master
 	var $p_parent;
 
 	var $active_module = false;
+	var $active_module_row_id = false;
 	var $acl_forum_id = false;
 	var $module_ary = array();
 
@@ -67,6 +68,11 @@ class p_master
 			unset($rows);
 
 			$cache->put('_modules_' . $this->p_class, $this->module_cache);
+		}
+
+		if (empty($this->module_cache))
+		{
+			$this->module_cache = array('modules' => array(), 'parents' => array());
 		}
 
 		// We "could" build a true tree with this function - maybe mod authors want to use this...
@@ -166,7 +172,7 @@ class p_master
 			$depth = sizeof($this->module_cache['parents'][$row['module_id']]);
 
 			// We need to prefix the functions to not create a naming conflict
-			
+
 			// Function for building 'url_extra'
 			$url_func = '_module_' . $row['module_basename'] . '_url';
 
@@ -191,7 +197,7 @@ class p_master
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
 
-				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode']) : '',
+				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode'], $row) : '',
 				
 				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
@@ -209,6 +215,50 @@ class p_master
 		}
 
 		unset($this->module_cache['modules'], $names);
+	}
+
+	/**
+	* Check if a certain main module is accessible/loaded
+	* By giving the module mode you are able to additionally check for only one mode within the main module
+	*
+	* @param string $module_basename The module base name, for example logs, reports, main (for the mcp).
+	* @param mixed $module_mode The module mode to check. If provided the mode will be checked in addition for presence.
+	*
+	* @return bool Returns true if module is loaded and accessible, else returns false
+	*/
+	function loaded($module_basename, $module_mode = false)
+	{
+		if (empty($this->loaded_cache))
+		{
+			$this->loaded_cache = array();
+
+			foreach ($this->module_ary as $row)
+			{
+				if (!$row['name'])
+				{
+					continue;
+				}
+
+				if (!isset($this->loaded_cache[$row['name']]))
+				{
+					$this->loaded_cache[$row['name']] = array();
+				}
+
+				if (!$row['mode'])
+				{
+					continue;
+				}
+
+				$this->loaded_cache[$row['name']][$row['mode']] = true;
+			}
+		}
+
+		if ($module_mode === false)
+		{
+			return (isset($this->loaded_cache[$module_basename])) ? true : false;
+		}
+
+		return (!empty($this->loaded_cache[$module_basename][$module_mode])) ? true : false;
 	}
 
 	/**
@@ -314,6 +364,7 @@ class p_master
 
 				$this->module_cache['parents'] = $this->module_cache['parents'][$this->p_id];
 				$this->active_module = $item_ary['id'];
+				$this->active_module_row_id = $row_id;
 
 				break;
 			}
@@ -369,8 +420,14 @@ class p_master
 			// We pre-define the action parameter we are using all over the place
 			if (defined('IN_ADMIN'))
 			{
+				// Is first module automatically enabled a duplicate and the category not passed yet?
+				if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
+				{
+					$icat = $this->module_ary[$this->active_module_row_id]['parent'];
+				}
+
 				// Not being able to overwrite ;)
-				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 			else
 			{
@@ -384,7 +441,13 @@ class p_master
 					$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 				}
 
-				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			}
+
+			// Add url_extra parameter to u_action url
+			if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
+			{
+				$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
 			}
 
 			// Assign the module path for re-usage
@@ -394,7 +457,7 @@ class p_master
 			// Users are able to call the main method after this function to be able to assign additional parameters manually
 			if ($execute_module)
 			{
-				$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
+				$this->module->main($this->p_name, $this->p_mode);
 			}
 
 			return;
@@ -578,7 +641,9 @@ class p_master
 			}
 
 			$u_title = $module_url . $delim . 'i=' . (($item_ary['cat']) ? $item_ary['id'] : $item_ary['name'] . (($item_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $item_ary['mode']);
-			$u_title .= (!$item_ary['cat'] && isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
+
+			// Was not allowed in categories before - /*!$item_ary['cat'] && */
+			$u_title .= (isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
 
 			// Only output a categories items if it's currently selected
 			if (!$depth || ($depth && (in_array($item_ary['parent'], array_values($this->module_cache['parents'])) || $item_ary['parent'] == $this->p_parent)))

@@ -121,13 +121,13 @@
 	</tr>
 <!-- ENDIF -->
 
-<!-- IF S_SHOW_TOPIC_ICONS -->
+<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_ICON}:</b></td>
 		<td class="row2">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NO_TOPIC_ICON}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed"><!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></span> <!-- BEGIN topic_icon --><span style="white-space: nowrap;"><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /></span> <!-- END topic_icon --></td>
 			</tr>
 			</table>
 		</td>
@@ -147,24 +147,28 @@
 		<td class="row2">
 			{S_HIDDEN_ADDRESS_FIELD}
 		<!-- BEGIN to_recipient -->
-			<span class="genmed"><strong>
-			<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><span class="blue">{to_recipient.NAME}</span></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
+			<span class="genmed nowrap"><strong>
+			<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><span class="blue">{to_recipient.NAME}</span></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;<!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
+			</span>
 		<!-- BEGINELSE -->
 			<span class="genmed">{L_NO_TO_RECIPIENT}</span>
 		<!-- END to_recipient -->
 		</td>
 	</tr>
+	<!-- IF S_ALLOW_MASS_PM -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_BCC}:</b></td>
 		<td class="row2">
 		<!-- BEGIN bcc_recipient -->
-			<span class="genmed"><strong>
-			<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><span class="blue">{bcc_recipient.NAME}</span></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
+			<span class="genmed nowrap"><strong>
+			<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><span class="blue">{bcc_recipient.NAME}</span></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;<!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
+			</span>
 		<!-- BEGINELSE -->
 			<span class="genmed">{L_NO_BCC_RECIPIENT}</span>
 		<!-- END bcc_recipient -->
 		</td>
 	</tr>
+	<!-- ENDIF -->
 <!-- ENDIF -->
 
 <tr>
@@ -196,7 +200,7 @@
 	<!-- ENDIF -->
 	</td>
 	<td class="row2" valign="top">
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 			<!--
 	
 			var form_name = 'post';
@@ -339,8 +343,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}:  </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text"  name="confirm_code" size="8" maxlength="8" /></td>
+		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
+		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" /></td>
 	</tr>
 <!-- ENDIF -->
 
@@ -349,9 +353,9 @@
 		<td class="cat" colspan="2" align="center">
 			<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />
 			&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" />
-			<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->
-			<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->
-			&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" />
+			<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="7" name="save" value="{L_SAVE}" /><!-- ENDIF -->
+			<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="8" name="load" value="{L_LOAD}" /><!-- ENDIF -->
+			&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="9" name="cancel" value="{L_CANCEL}" />
 		</td>
 	</tr>
 
@@ -369,13 +373,13 @@
 
 <tr>
 	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}
-		<input class="btnlite" type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" />
-		&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" />
+		<input class="btnlite" type="submit" tabindex="10" name="preview" value="{L_PREVIEW}" />
+		&nbsp; <input class="btnmain" type="submit" accesskey="s" tabindex="11" name="post" value="{L_SUBMIT}" />
 		<!-- IF not S_SHOW_ATTACH_BOX and not S_SHOW_POLL_BOX -->
-			<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" /><!-- ENDIF -->
-			<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" /><!-- ENDIF -->
+			<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="12" name="save" value="{L_SAVE}" /><!-- ENDIF -->
+			<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="13" name="load" value="{L_LOAD}" /><!-- ENDIF -->
 		<!-- ENDIF -->
-		&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" />
+		&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="14" name="cancel" value="{L_CANCEL}" />
 	</td>
 </tr>
 </table>

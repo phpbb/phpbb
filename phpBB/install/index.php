@@ -102,7 +102,7 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-@set_time_limit(120);
+@set_time_limit(0);
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -148,6 +148,13 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 if (!$language)
 {
 	$dir = @opendir($phpbb_root_path . 'language');
+
+	if (!$dir)
+	{
+		die('Unable to access the language directory');
+		exit;
+	}
+
 	while (($file = readdir($dir)) !== false)
 	{
 		$path = $phpbb_root_path . 'language/' . $file;
@@ -158,6 +165,7 @@ if (!$language)
 			break;
 		}
 	}
+	closedir($dir);
 }
 
 // And finally, load the relevant language files
@@ -222,6 +230,11 @@ class module
 		// Grab module information using Bart's "neat-o-module" system (tm)
 		$dir = @opendir('.');
 
+		if (!$dir)
+		{
+			$this->error('Unable to access the installation directory', __LINE__, __FILE__);
+		}
+
 		$setmodules = 1;
 		while (($file = readdir($dir)) !== false)
 		{
@@ -230,7 +243,7 @@ class module
 				include($file);
 			}
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		unset($setmodules);
 
@@ -324,8 +337,6 @@ class module
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
-			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
-			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
 			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);
@@ -589,7 +600,7 @@ class module
 	}
 
 	/**
-	* Generate the relevant HTML for an input field and the assosciated label and explanatory text
+	* Generate the relevant HTML for an input field and the associated label and explanatory text
 	*/
 	function input_field($name, $type, $value='', $options='')
 	{
@@ -652,6 +663,11 @@ class module
 
 		$dir = @opendir($phpbb_root_path . 'language');
 
+		if (!$dir)
+		{
+			$this->error('Unable to access the language directory', __LINE__, __FILE__);
+		}
+
 		while ($file = readdir($dir))
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
@@ -667,7 +683,7 @@ class module
 				$lang[$localname] = $file;
 			}
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		@asort($lang);
 		@reset($lang);

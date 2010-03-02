@@ -142,6 +142,11 @@ class acp_permission_roles
 						trigger_error($user->lang['NO_ROLE_NAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
+					if (utf8_strlen($role_description) > 4000)
+					{
+						trigger_error($user->lang['ROLE_DESCRIPTION_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
@@ -325,9 +330,11 @@ class acp_permission_roles
 
 					if (sizeof($hold_ary))
 					{
+						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+
 						$template->assign_var(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_row['role_name']))
+							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 						);
 
 						$auth_admin->display_role_mask($hold_ary);
@@ -344,7 +351,7 @@ class acp_permission_roles
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
-					SET role_order = ' . $order_total  . " - role_order
+					SET role_order = ' . $order_total . " - role_order
 					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
 						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
@@ -387,8 +394,10 @@ class acp_permission_roles
 		$s_role_options = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$role_name = (!empty($user->lang[$row['role_name']])) ? $user->lang[$row['role_name']] : $row['role_name'];
+
 			$template->assign_block_vars('roles', array(
-				'ROLE_NAME'				=> $row['role_name'],
+				'ROLE_NAME'				=> $role_name,
 				'ROLE_DESCRIPTION'		=> (!empty($user->lang[$row['role_description']])) ? $user->lang[$row['role_description']] : nl2br($row['role_description']),
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
@@ -398,12 +407,12 @@ class acp_permission_roles
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
-			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $row['role_name'] . '</option>';
+			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $role_name . '</option>';
 
 			if ($display_item == $row['role_id'])
 			{
 				$template->assign_vars(array(
-					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $row['role_name']))
+					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 				);
 			}
 		}

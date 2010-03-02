@@ -11,6 +11,26 @@
 
 <link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
+<script type="text/javascript">
+<!--
+function resize_panel()
+{
+	var block = document.getElementById('codepanel');	
+	var height;
+	
+	if (window.innerHeight)
+	{
+		height = window.innerHeight - 150;
+		block.style.height = height + 'px';
+	}
+	else
+	{
+		//whatever IE needs to do this
+	}	
+}
+-->
+</script>
+
 <style type="text/css">
 <!--
 
@@ -22,13 +42,23 @@
 	width: 99%;
 }
 
-<!-- IF not S_DIFF_NEW_FILE -->
+<!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
+div#codepanel {
+	overflow: auto;
+	width: 100%;
+	height: 350px;
+}
+<!-- ELSE -->
+div#codepanel {	
+	background-color: #eee;
+}
+<!-- ENDIF -->
 
+<!-- IF not IS_DIFF_NEW_FILE -->
 /**
 * Unified Diff
 */
 .file {
-	border: 1px solid #eee;
 	line-height: .7em;
 }
 
@@ -69,8 +99,11 @@
 * Column Diff
 */
 table.hrdiff {
-	width: 99%;
 	margin: 0 0 8px 5px;
+	width: 100%;
+	overflow: hidden;
+	border-bottom: 1px solid #999;
+	table-layout: fixed;
 }
 
 table.hrdiff th {
@@ -89,9 +122,30 @@ table.hrdiff thead th {
 	padding: 2px;
 }
 
+table.hrdiff tr:first-child th {
+	border-top: none;
+}
+
 table.hrdiff tbody th {
 	padding: 2em 1px 1px 1px;
 	font-size: 80%;
+	border-top: 1px solid #999;
+}
+
+table.hrdiff tbody td.old {
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;	
+}
+table.hrdiff tbody td.new {
+	border-right: 1px solid #999;	
+}
+
+table.hrdiff td pre {
+	overflow: auto;
+	display: block;
+	width: 100%;
+	overflow: auto;
+	display: block;
 }
 
 table.hrdiff .unmodified {
@@ -144,11 +198,17 @@ table.hrdiff caption span {
 
 </head>
 
+
+<!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
+<body onresize="resize_panel();" onload="resize_panel();">
+<!-- ELSE -->
 <body>
+<!-- ENDIF -->
 
 <div id="wrap">
 	<div id="page-header">
 <!-- IF S_DIFF_NEW_FILE -->
+
 		<h1>{L_VIEWING_FILE_CONTENTS}</h1>
 <!-- ELSE -->
 		<h1>{L_VIEWING_FILE_DIFF}</h1>
@@ -158,24 +218,27 @@ table.hrdiff caption span {
 		<form method="post">
 			<label for="diff_mode">{L_SELECT_DIFF_MODE}:</label>
 			<select name="diff_mode" id="diff_mode">{S_DIFF_MODE_OPTIONS}</select>
+
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_CHANGE}" />
 		</form>
 <!-- ENDIF -->
 	</div>
 	
 	<div id="page-body">
-		<div class="panel">
+		<div class="panel" id="codepanel">
 			<span class="corners-top"><span></span></span>
 				<div id="content">
 					<div id="main">
+
 <!-- IF S_DIFF_CONFLICT_FILE -->
 		<div style="float: right;"><strong>{L_NUM_CONFLICTS}: {NUM_CONFLICTS}</strong></div>
 <!-- ENDIF -->
-					{DIFF_CONTENT}
+						{DIFF_CONTENT}
 					</div>
 				</div>
 			<span class="corners-bottom"><span></span></span>
 		</div>
 	</div>
 	
+
 <!-- INCLUDE simple_footer.html -->

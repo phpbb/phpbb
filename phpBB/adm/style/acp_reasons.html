@@ -30,7 +30,7 @@
 		<p><!-- IF S_TRANSLATED -->{L_IS_TRANSLATED_EXPLAIN}<!-- ELSE -->{L_IS_NOT_TRANSLATED_EXPLAIN}<!-- ENDIF --></p>
 	<dl>
 		<dt><label for="reason_title">{L_REASON_TITLE}:</label></dt>
-		<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" /></dd>
+		<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" maxlength="255" /></dd>
 	</dl>
 	<!-- IF S_TRANSLATED -->
 	<dl>
@@ -64,7 +64,7 @@
 	<p>{L_ACP_REASONS_EXPLAIN}</p>
 
 	<form id="reasons" method="post" action="{U_ACTION}">
-	<fieldset class="tabuled">
+	<fieldset class="tabulated">
 	<legend>{L_ACP_REASONS}</legend>
 
 	<!-- IF .reasons -->

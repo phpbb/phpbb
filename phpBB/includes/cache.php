@@ -82,7 +82,7 @@ class cache extends acm
 		if (($censors = $this->get('word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
-				FROM  ' . WORDS_TABLE;
+				FROM ' . WORDS_TABLE;
 			$result = $db->sql_query($sql);
 
 			$censors = array();
@@ -173,21 +173,29 @@ class cache extends acm
 
 	/**
 	* Obtain allowed extensions
+	*
+	* @param mixed $forum_id If false then check for private messaging, if int then check for forum id. If true, then only return extension informations.
+	*
+	* @return array allowed extensions array.
 	*/
-	function obtain_attach_extensions($forum_id = false)
+	function obtain_attach_extensions($forum_id)
 	{
 		if (($extensions = $this->get('_extensions')) === false)
 		{
 			global $db;
-	
+
+			$extensions = array(
+				'_allowed_post'	=> array(),
+				'_allowed_pm'	=> array(),
+			);
+
 			// The rule is to only allow those extensions defined. ;)
 			$sql = 'SELECT e.extension, g.*
 				FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
 				WHERE e.group_id = g.group_id
-					AND g.allow_group = 1';
+					AND (g.allow_group = 1 OR g.allow_in_pm = 1)';
 			$result = $db->sql_query($sql);
 
-			$extensions = array('_allowed_' => array());
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$extension = strtolower(trim($row['extension']));
@@ -196,47 +204,62 @@ class cache extends acm
 					'display_cat'	=> (int) $row['cat_id'],
 					'download_mode'	=> (int) $row['download_mode'],
 					'upload_icon'	=> trim($row['upload_icon']),
-					'max_filesize'	=> (int) $row['max_filesize']
+					'max_filesize'	=> (int) $row['max_filesize'],
+					'allow_group'	=> $row['allow_group'],
+					'allow_in_pm'	=> $row['allow_in_pm'],
 				);
 
 				$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();
 
-				if ($row['allow_in_pm'])
+				// Store allowed extensions forum wise
+				if ($row['allow_group'])
 				{
-					$allowed_forums = array_merge($allowed_forums, array(0));
+					$extensions['_allowed_post'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
 				}
 
-				// Store allowed extensions forum wise
-				$extensions['_allowed_'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
+				if ($row['allow_in_pm'])
+				{
+					$extensions['_allowed_pm'][$extension] = 0;
+				}
 			}
 			$db->sql_freeresult($result);
 
 			$this->put('_extensions', $extensions);
 		}
 
-		if ($forum_id !== false)
+		// Forum post
+		if ($forum_id === false)
 		{
-			$return = array();
+			// We are checking for private messages, therefore we only need to get the pm extensions...
+			$return = array('_allowed_' => array());
 
-			foreach ($extensions['_allowed_'] as $extension => $check)
+			foreach ($extensions['_allowed_pm'] as $extension => $check)
 			{
-				$allowed = false;
+				$return['_allowed_'][$extension] = 0;
+				$return[$extension] = $extensions[$extension];
+			}
 
+			$extensions = $return;
+		}
+		else if ($forum_id === true)
+		{
+			return $extensions;
+		}
+		else
+		{
+			$forum_id = (int) $forum_id;
+			$return = array('_allowed_' => array());
+
+			foreach ($extensions['_allowed_post'] as $extension => $check)
+			{
+				// Check for allowed forums
 				if (is_array($check))
 				{
-					// Check for private messaging AND all forums allowed
-					if (sizeof($check) == 1 && $check[0] == 0)
-					{
-						$allowed = true;
-					}
-					else
-					{
-						$allowed = (!in_array($forum_id, $check)) ? false : true;
-					}
+					$allowed = (!in_array($forum_id, $check)) ? false : true;
 				}
 				else
 				{
-					$allowed = ($forum_id === 0) ? false : true;
+					$allowed = true;
 				}
 
 				if ($allowed)
@@ -365,7 +388,7 @@ class cache extends acm
 			global $db;
 
 			$sql = 'SELECT disallow_username
-				FROM  ' . DISALLOW_TABLE;
+				FROM ' . DISALLOW_TABLE;
 			$result = $db->sql_query($sql);
 
 			$usernames = array();

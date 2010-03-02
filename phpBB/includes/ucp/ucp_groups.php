@@ -172,7 +172,7 @@ class ucp_groups
 								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 								$messenger = new messenger();
 
-								$sql = 'SELECT u.username, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
+								$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
 									FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
 									WHERE ug.user_id = u.user_id
 										AND ' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? "ug.user_id = {$user->data['user_id']}" : 'ug.group_leader = 1') . "
@@ -183,7 +183,6 @@ class ucp_groups
 								{
 									$messenger->template($email_template, $row['user_lang']);
 
-									$messenger->replyto($config['board_email']);
 									$messenger->to($row['user_email'], $row['username']);
 									$messenger->im($row['user_jabber'], $row['username']);
 
@@ -675,11 +674,11 @@ class ucp_groups
 						$start = request_var('start', 0);
 
 						// Grab the members
-						$sql = 'SELECT u.user_id, u.username, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND u.user_id = ug.user_id
-							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username";
+							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 						$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 						$pending = false;

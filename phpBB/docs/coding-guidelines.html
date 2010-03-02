@@ -16,17 +16,13 @@
 <style type="text/css">
 <!--
 
-/*
-	    The original "subSilver" theme for phpBB2
-	Created by subBlue design :: http://www.subBlue.com
-*/
-
+/* The original "subSilver" theme for phpBB2 Created by subBlue design :: http://www.subBlue.com */
 body {
-	background-color:	white;
-	font-family:		Verdana, Arial, Helvetica, sans-serif;
-	margin:				0px;
-	border:				0px;
-	padding:			0px;
+	background-color: white;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	margin: 0;
+	border: 0;
+	padding: 0;
 }
 
 img {
@@ -34,40 +30,38 @@ img {
 }
 
 p {
-	font-size:	8pt;
+	font-size: 8pt;
 }
 
 hr { 
-	height: 0px; 
-	border: solid #D1D7DC 0px; 
+	height: 0; 
+	border: solid #D1D7DC 0;
 	border-top-width: 1px;
 }
 
 #title, h1 {
 	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
+	text-decoration: none;
+	line-height: 120%;
 }
 
 h2 {
 	font: bold 12pt Arial, Helvetica, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
+	text-decoration: none;
+	line-height: 120%;
 }
 
 h3 {
 	font: bold 10pt Arial, Helvetica, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
+	text-decoration: none;
+	line-height: 120%;
 }
 
 .paragraph {
 	margin-left: 20px;
 }
 
-/* 
-	Structure 
-*/
+/* Structure */
 #logo {
 	background: #fff url(header_bg.jpg) repeat-x top right;
 	height: 60px;
@@ -98,14 +92,14 @@ h3 {
 	color: #006600;
 }
 
-code { 
+code {
 	color: #006600; 
-	font-weight: normal; 
-	font-family: 'Courier New', monospace; 
-	border-color: #D1D7DC; 
-	border-width: 1px; 
-	border-style: solid; 
-	background-color: #FAFAFA; 
+	font-weight: normal;
+	font-family: 'Courier New', monospace;
+	border-color: #D1D7DC;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FAFAFA;
 }
 
 .indent p {
@@ -113,30 +107,28 @@ code {
 	font-size: 90%;
 }
 
-/*
-	Anchors
-*/
+/* Anchors */
 a {
 	font-size: 70%;
 }
 
 a:link, a:active, a:visited {
 	color:	#006699;
-	text-decoration:	none;
+	text-decoration: none;
 }
 
 a:hover {
-	color:				#DD6900;
-	text-decoration:	underline;
+	color: #DD6900;
+	text-decoration: underline;
 }
 
 a.nav {
-	color:				#006699;
-	text-decoration:	none;
+	color: #006699;
+	text-decoration: none;
 }
 
 a.nav:hover {
-	text-decoration:	underline;
+	text-decoration: underline;
 }
 
 p a {
@@ -154,22 +146,9 @@ p a {
 .comment {
 	color: green;
 }
+
 //-->
 </style>
-
-<!--[if IE]>
-<style type="text/css">
-body {
-	scrollbar-face-color:		#DEE3E7;
-	scrollbar-highlight-color:	white;
-	scrollbar-shadow-color:		#DEE3E7;
-	scrollbar-3dlight-color:	#D1D7DC;
-	scrollbar-arrow-color:		#006699;
-	scrollbar-track-color:		#EFEFEF;
-	scrollbar-darkshadow-color: #98AAB1;
-}
-</style>
-<![endif]-->
 
 </head>
 
@@ -177,10 +156,12 @@ body {
 
 <div id="logo">
 	<div id="title">Coding Guidelines</div>
-	<a href="index.php"><img src="header_left.jpg" alt="phpBB Logo" /></a>
+	<img src="header_left.jpg" alt="phpBB Logo" />
 </div>
 
 <a name="top"></a><div id="main">
+
+<!-- BEGIN DOCUMENT -->
 
 <p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow it as closely as possible.<br />This document is (c) 2006 phpBB Group, copying or redistribution is not allowed without permission.</p>
 
@@ -275,7 +256,7 @@ body {
 
 	<h3>Files containing only classes:</h3>
 	
-	<p>Do not forget to comment the class. Classes need a seperate @package definition, it is the same as the header package name. Apart from this special case the above statement for files containing only functions needs to be applied to classes and it's methods too.</p>
+	<p>Do not forget to comment the class. Classes need a separate @package definition, it is the same as the header package name. Apart from this special case the above statement for files containing only functions needs to be applied to classes and it's methods too.</p>
 
 	<h3>Code following the header but only functions/classes file:</h3>
 
@@ -310,7 +291,7 @@ class ...
 	<p>The following packages are defined, and related new features/functions should be placed within the mentioned files/locations, as well as specifying the correct package name. The package names are bold within this list:</p>
 
 	<ul class="menu">
-		<li><b>phpBB3</b><br />Core files and all files not assigned to a seperate package</li>
+		<li><b>phpBB3</b><br />Core files and all files not assigned to a separate package</li>
 		<li><b>acm</b><br /><code>/includes/acm</code>, <code>/includes/cache.php</code><br />Cache System</li>
 		<li><b>acp</b><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
 		<li><b>dbal</b><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
@@ -881,7 +862,7 @@ $sql_array = array(
 			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
 			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
 		)
-	);
+	),
 
 	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
 		AND f.forum_id = fw.forum_id',
@@ -1037,7 +1018,7 @@ trigger_error($user-&gt;lang['NO_FORUM']);
 	</pre></blockquote>
 
 	<blockquote><pre>
-trigger_error('NO_APPROPIATE_MODE', E_USER_ERROR);
+trigger_error('NO_APPROPRIATE_MODE', E_USER_ERROR);
 	</pre></blockquote>
 
 	<h3>Url formatting</h3>
@@ -1108,7 +1089,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 <p><strong>Use div container/css for styling and table for data representation.</strong></p>
 
-<p>The seperate catXXXX and thXXX classes are gone. When defining a header cell just use <code>&lt;th&gt;</code> rather than <code>&lt;th class="thHead"&gt;</code> etc. Similarly for cat, don't use <code>&lt;td class="catLeft"&gt;</code> use <code>&lt;td class="cat"&gt;</code> etc.</p>
+<p>The separate catXXXX and thXXX classes are gone. When defining a header cell just use <code>&lt;th&gt;</code> rather than <code>&lt;th class="thHead"&gt;</code> etc. Similarly for cat, don't use <code>&lt;td class="catLeft"&gt;</code> use <code>&lt;td class="cat"&gt;</code> etc.</p>
 
 <p>Try to retain consistency of basic layout and class useage, i.e. _EXPLAIN text should generally be placed below the title it explains, e.g. <code>{L_POST_USERNAME}&lt;br /&gt;&lt;span class="gensmall"&gt;{L_POST_USERNAME_EXPLAIN}&lt;/span&gt;</code> is the typical way of handling this ... there may be exceptions and this isn't a hard and fast rule.</p>
 
@@ -1212,7 +1193,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 != [neq, ne]
 &lt;&gt; (same as !=)
 !== (not equivalent in value and type)
-===  (equivalent in value and type)
+=== (equivalent in value and type)
 &gt; [gt]
 &lt; [lt]
 &gt;= [gte]
@@ -1553,6 +1534,8 @@ div
 
 </div>
 <a href="#top">Top</a>
+
+<!-- END DOCUMENT -->
 
 </div>
 

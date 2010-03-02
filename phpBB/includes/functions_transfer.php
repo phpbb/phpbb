@@ -32,8 +32,8 @@ class transfer
 	{
 		global $phpbb_root_path;
 
-		$this->file_perms	= 644;
-		$this->dir_perms	= 777;
+		$this->file_perms	= '0644';
+		$this->dir_perms	= '0777';
 
 		// We use the store directory as temporary path to circumvent open basedir restrictions
 		$this->tmp_path = $phpbb_root_path . 'store/';
@@ -52,7 +52,7 @@ class transfer
 		// ftp functions can only move files around and can't create.
 		// This means that the users will need to have access to write
 		// temporary files or have write access on a folder within phpBB
-		// like the cache folder.  If the user can't do either, then
+		// like the cache folder. If the user can't do either, then
 		// he/she needs to use the fsock ftp method
 		$temp_name = tempnam($this->tmp_path, 'transfer_');
 		@unlink($temp_name);
@@ -196,7 +196,9 @@ class transfer
 		global $phpbb_root_path;
 
 		$directory = $this->root_path . str_replace($phpbb_root_path, '', $directory);
-		$result = $this->_ls($directory);
+
+		$this->_chdir($directory);
+		$result = $this->_ls('');
 
 		if ($result !== false && is_array($result))
 		{
@@ -263,7 +265,11 @@ class ftp extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+
+		if (!empty($root_path))
+		{
+			$this->root_path = (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+		}
 
 		// Init some needed values
 		transfer::transfer();
@@ -353,9 +359,12 @@ class ftp extends transfer
 	*/
 	function _chdir($dir = '')
 	{
-		if (substr($dir, -1, 1) == '/')
+		if ($dir && $dir !== '/')
 		{
-			$dir = substr($dir, 0, -1);
+			if (substr($dir, -1, 1) == '/')
+			{
+				$dir = substr($dir, 0, -1);
+			}
 		}
 
 		return @ftp_chdir($this->connection, $dir);
@@ -373,7 +382,7 @@ class ftp extends transfer
 		}
 		else
 		{
-			$chmod_cmd = 'CHMOD 0' . $perms . ' ' . $file;
+			$chmod_cmd = 'CHMOD ' . $perms . ' ' . $file;
 			$err = $this->_site($chmod_cmd);
 		}
 
@@ -477,7 +486,11 @@ class ftp_fsock extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+
+		if (!empty($root_path))
+		{
+			$this->root_path = (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+		}
 
 		// Init some needed values
 		transfer::transfer();
@@ -575,9 +588,12 @@ class ftp_fsock extends transfer
 	*/
 	function _chdir($dir = '')
 	{
-		if (substr($dir, -1, 1) == '/')
+		if ($dir && $dir !== '/')
 		{
-			$dir = substr($dir, 0, -1);
+			if (substr($dir, -1, 1) == '/')
+			{
+				$dir = substr($dir, 0, -1);
+			}
 		}
 
 		return $this->_send_command('CWD', $dir);

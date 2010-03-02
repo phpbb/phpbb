@@ -97,7 +97,6 @@ class install_install extends module
 
 			case 'create_table':
 				$this->load_schema($mode, $sub);
-			
 			break;
 
 			case 'final' :
@@ -134,7 +133,6 @@ class install_install extends module
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> true,
 			'LEGEND'			=> $lang['PHP_SETTINGS'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
 		));
@@ -206,10 +204,74 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
+/**
+*		Better not enabling and adding to the loaded extensions due to the specific requirements needed
+		if (!@extension_loaded('mbstring'))
+		{
+			$this->can_load_dll('mbstring');
+		}
+*/
+
+		$passed['mbstring'] = true;
+		if (@extension_loaded('mbstring'))
+		{
+			// Test for available database modules
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'			=> true,
+				'LEGEND'			=> $lang['MBSTRING_CHECK'],
+				'LEGEND_EXPLAIN'	=> $lang['MBSTRING_CHECK_EXPLAIN'],
+			));
+
+			$checks = array(
+				array('func_overload', '&', MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),
+				array('encoding_translation', '!=', 0),
+				array('http_input', '!=', 'pass'),
+				array('http_output', '!=', 'pass')
+			);
+
+			foreach ($checks as $mb_checks)
+			{
+				$ini_val = ini_get('mbstring.' . $mb_checks[0]);
+				switch ($mb_checks[1])
+				{
+					case '&':
+						if (intval($ini_val) & $mb_checks[2])
+						{
+							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$passed['mbstring'] = false;
+						}
+						else
+						{
+							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+						}
+					break;
+
+					case '!=':
+						if ($ini_val != $mb_checks[2])
+						{
+							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$passed['mbstring'] = false;
+						}
+						else
+						{
+							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+						}
+					break;
+				}
+				$template->assign_block_vars('checks', array(
+					'TITLE'			=> $lang['MBSTRING_' . strtoupper($mb_checks[0])],
+					'TITLE_EXPLAIN'	=> $lang['MBSTRING_' . strtoupper($mb_checks[0]) . '_EXPLAIN'],
+					'RESULT'		=> $result,
+
+					'S_EXPLAIN'		=> true,
+					'S_LEGEND'		=> false,
+				));
+			}
+		}
+
 		// Test for available database modules
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['PHP_SUPPORTED_DB'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
 		));
@@ -248,7 +310,6 @@ class install_install extends module
 		// Test for other modules
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['PHP_OPTIONAL_MODULE'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_OPTIONAL_MODULE_EXPLAIN'],
 		));
@@ -280,7 +341,7 @@ class install_install extends module
 		}
 
 		// Can we find Imagemagick anywhere on the system?
-		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
+		$exe = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 		$img_imagick = '';
@@ -321,7 +382,6 @@ class install_install extends module
 		// Check permissions on files/directories we need access to
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['FILES_REQUIRED'],
 			'LEGEND_EXPLAIN'	=> $lang['FILES_REQUIRED_EXPLAIN'],
 		));
@@ -356,10 +416,11 @@ class install_install extends module
 			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
 			if ($fp !== false)
 			{
-				@unlink($phpbb_root_path . $dir . 'test_lock');
 				$write = true;
 			}
 			@fclose($fp);
+
+			@unlink($phpbb_root_path . $dir . 'test_lock');
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
@@ -378,7 +439,6 @@ class install_install extends module
 		// Check permissions on files/directories it would be useful access to
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['FILES_OPTIONAL'],
 			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
 		));
@@ -415,8 +475,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
@@ -456,12 +516,10 @@ class install_install extends module
 			}
 			
 			$dbpasswd = htmlspecialchars_decode($dbpasswd);
-
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'S_FIRST_ROW'		=> true,
 				'LEGEND'			=> $lang['DB_CONNECTION'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
@@ -647,7 +705,6 @@ class install_install extends module
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'S_FIRST_ROW'		=> true,
 				'LEGEND'			=> $lang['STAGE_ADMINISTRATOR'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
@@ -773,6 +830,8 @@ class install_install extends module
 		$load_extensions = array();
 		$check_exts = array_merge(array($this->available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
 
+		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
+
 		foreach ($check_exts as $dll)
 		{
 			if (!@extension_loaded($dll))
@@ -781,6 +840,7 @@ class install_install extends module
 				{
 					continue;
 				}
+
 				$load_extensions[] = "$dll.$suffix";
 			}
 		}
@@ -929,6 +989,19 @@ class install_install extends module
 		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
 
+		if ($script_path === '')
+		{
+			$name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+			if (!$name)
+			{
+				$name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			}
+
+			// Replace backslashes and doubled slashes (could happen on some proxy setups)
+			$name = str_replace(array('\\', '//', '/install'), '/', $name);
+			$script_path = trim(dirname($name));
+		}
+
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{
 			if (!is_array($vars) && strpos($config_key, 'legend') === false)
@@ -1015,7 +1088,7 @@ class install_install extends module
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
 		{
-			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
+			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
 		}
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
@@ -1108,6 +1181,22 @@ class install_install extends module
 
 		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 
+		if ($script_path !== '/')
+		{
+			// Adjust destination path (no trailing slash)
+			if (substr($script_path, -1) == '/')
+			{
+				$script_path = substr($script_path, 0, -1);
+			}
+
+			$script_path = str_replace(array('../', './'), '', $script_path);
+
+			if ($script_path[0] != '/')
+			{
+				$script_path = '/' . $script_path;
+			}
+		}
+
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
@@ -1177,23 +1266,19 @@ class install_install extends module
 				WHERE config_name = 'force_server_vars'",
 
 			'UPDATE ' . $table_prefix . "config
-				SET config_value = '" . $db->sql_escape($server_name) . "'
-				WHERE config_name = 'server_name'",
+				SET config_value = '" . $db->sql_escape($script_path) . "'
+				WHERE config_name = 'script_path'",
 
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($server_protocol) . "'
 				WHERE config_name = 'server_protocol'",
 
 			'UPDATE ' . $table_prefix . "config
-				SET config_value = '" . $db->sql_escape($server_port) . "'
-				WHERE config_name = 'server_port'",
-
-			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($admin_name) . "'
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($admin_name)) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (crc32($board_email1) . strlen($board_email1)) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($admin_name)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1222,6 +1307,11 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
+		if (!@extension_loaded('gd'))
+		{
+			$this->can_load_dll('gd');
+		}
+
 		// This is for people who have TTF and GD
 		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
@@ -1230,9 +1320,17 @@ class install_install extends module
 					WHERE config_name = 'captcha_gd'";
 		}
 
+		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
+		$cookie_name = 'phpbb3_';
+		$cookie_name .= strtolower(gen_rand_string(5));
+
+		$sql_ary[] = 'UPDATE ' . $table_prefix . "config
+			SET config_value = '" . $db->sql_escape($cookie_name) . "'
+			WHERE config_name = 'cookie_name'";
+
 		foreach ($sql_ary as $sql)
 		{
-			$sql = trim(str_replace('|', ';', $sql));
+			//$sql = trim(str_replace('|', ';', $sql));
 
 			if (!$db->sql_query($sql))
 			{
@@ -1272,6 +1370,12 @@ class install_install extends module
 		}
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
+
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
+		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
+		{
+			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
+		}
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
@@ -1501,6 +1605,12 @@ class install_install extends module
 		global $db, $lang, $phpbb_root_path, $phpEx;
 
 		$dir = @opendir($phpbb_root_path . 'language');
+
+		if (!$dir)
+		{
+			$this->error('Unable to access the language directory', __LINE__, __FILE__);
+		}
+
 		while (($file = readdir($dir)) !== false)
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
@@ -1526,6 +1636,7 @@ class install_install extends module
 				}
 			}
 		}
+		closedir($dir);
 	}
 
 	/**
@@ -1574,17 +1685,18 @@ class install_install extends module
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
-				'user_type'			=> USER_IGNORE,
-				'group_id'			=> $group_id,
-				'username'			=> $bot_name,
-				'user_regdate'		=> time(),
-				'user_password'		=> '',
-				'user_colour'		=> '9E8DA7',
-				'user_email'		=> '',
-				'user_lang'			=> $default_lang,
-				'user_style'		=> 1,
-				'user_timezone'		=> 0,
-				'user_dateformat'	=> $lang['default_dateformat'],
+				'user_type'				=> USER_IGNORE,
+				'group_id'				=> $group_id,
+				'username'				=> $bot_name,
+				'user_regdate'			=> time(),
+				'user_password'			=> '',
+				'user_colour'			=> '9E8DA7',
+				'user_email'			=> '',
+				'user_lang'				=> $default_lang,
+				'user_style'			=> 1,
+				'user_timezone'			=> 0,
+				'user_dateformat'		=> $lang['default_dateformat'],
+				'user_allow_massemail'	=> 0,
 			);
 			
 			$user_id = user_add($user_row);
@@ -1653,7 +1765,6 @@ class install_install extends module
 
 			$messenger->template('installed', $language);
 
-			$messenger->replyto($config['board_contact']);
 			$messenger->to($board_email1, $admin_name);
 
 			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -1686,6 +1797,11 @@ class install_install extends module
 	function can_load_dll($dll)
 	{
 		global $suffix;
+
+		if (empty($suffix))
+		{
+			$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
+		}
 
 		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
 	}
@@ -1816,7 +1932,8 @@ class install_install extends module
 			if ($row = $db->sql_fetchrow($result))
 			{
 				// Likely matches for an existing phpBB installation
-				$table_ary = array($table_prefix . 'attachments', $table_prefix . 'config', $table_prefix . 'sessions', $table_prefix . 'topics', $table_prefix . 'users');
+				$temp_prefix = strtolower($table_prefix);
+				$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
 				do
 				{
@@ -1858,6 +1975,14 @@ class install_install extends module
 						{
 							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
+						$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
+
+						preg_match('/^\\s*Page size\\s*(\\d+)/m', $db_info, $regs);
+						$page_size = intval($regs[1]);
+						if ($page_size < 8192)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						}
 					}
 					else
 					{
@@ -1885,6 +2010,39 @@ class install_install extends module
 							}
 							$db->sql_freeresult($result);
 						}
+
+						// Setup the stuff for our random table
+						$char_array = array_merge(range('A', 'Z'), range('0', '9'));
+						$char_len = mt_rand(7, 9);
+						$char_array_len = sizeof($char_array) - 1;
+
+						$final = '';
+
+						for ($i = 0; $i < $char_len; $i++)
+						{
+							$final .= $char_array[mt_rand(0, $char_array_len)];
+						}
+
+						// Create some random table
+						$sql = 'CREATE TABLE ' . $final . " (
+							FIELD1 VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+							FIELD2 INTEGER DEFAULT 0 NOT NULL);";
+						$db->sql_query($sql);
+
+						// Create an index that should fail if the page size is less than 8192
+						$sql = 'CREATE INDEX ' . $final . ' ON ' . $final . '(FIELD1, FIELD2);';
+						$db->sql_query($sql);
+
+						if (ibase_errmsg() !== false)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						}
+						else
+						{
+							// Kill the old table
+							$db->sql_query('DROP TABLE ' . $final . ';');
+						}
+						unset($final);
 					}
 				break;
 				
@@ -1967,7 +2125,7 @@ class install_install extends module
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
-	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port', 'script_path');
 
 	/**
 	* The information below will be used to build the input fields presented to the user
@@ -2006,6 +2164,7 @@ class install_install extends module
 		'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'type' => 'text:10:10', 'explain' => true),
 		'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
 		'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
+		'script_path'			=> array('lang' => 'SCRIPT_PATH',		'type' => 'text::255', 'explain' => true),
 	);
 
 	/**

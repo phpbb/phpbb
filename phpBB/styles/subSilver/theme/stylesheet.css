@@ -12,8 +12,6 @@
     --------------------------------------------------------------
 */
 
-
-
 /* Layout
  ------------ */
 * {
@@ -143,10 +141,18 @@ p.moderators {
 	font-weight: bold;
 }
 
+.rtl p.moderators {
+	float: right;
+}
+
 p.linkmcp {
 	margin: 0px;
 	float: right;
 	white-space: nowrap;
+}
+
+.rtl p.linkmcp {
+	float: left;
 }
 
 p.breadcrumbs {
@@ -158,11 +164,19 @@ p.breadcrumbs {
 	font-size: 1em;
 }
 
+.rtl p.breadcrumbs {
+	float: right;
+}
+
 p.datetime {
 	margin: 0px;
 	float: right;
 	white-space: nowrap;
 	font-size: 1em;
+}
+
+.rtl p.datetime {
+	float: left;
 }
 
 p.searchbar {
@@ -174,6 +188,10 @@ p.searchbarreg {
 	margin: 0px;
 	float: right;
 	white-space: nowrap;
+}
+
+.rtl p.searchbarreg {
+	float: left;
 }
 
 p.forumdesc {
@@ -218,7 +236,11 @@ p.topicdetails {
 }
 
 .postbody li, ol, ul {
-	margin-left: 1.5em;
+	margin: 0 0 0 1.5em;
+}
+
+.rtl .postbody li, .rtl ol, .rtl ul {
+	margin: 0 1.5em 0 0;
 }
 
 .posthilit {
@@ -300,12 +322,10 @@ td {
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-	background-color: white;
-	background-image: url('./images/cellpic2.jpg');
-	background-repeat: repeat-y;
+	background: white url('./images/cellpic2.jpg') repeat-y scroll top left;
 }
 .rtl .catdiv {
-	background-image: url('./images/cellpic2_rtl.jpg');
+	background: white url('./images/cellpic2_rtl.jpg') repeat-y scroll top right;
 }
 
 .cat {
@@ -452,7 +472,11 @@ select {
 }
 
 option {
-	padding-right: 1em;
+	padding: 0 1em 0 0;
+}
+
+.rtl option {
+	padding: 0 0 0 1em;
 }
 
 input.radio {
@@ -489,6 +513,14 @@ input.radio {
 	background-color: #ECECEC;
 	border: 1px solid #A9B8C2;
 	cursor: pointer;
+	padding: 1px 5px;
+	font-size: 1.1em;
+}
+
+.btnfile {
+	font-weight: normal;
+	background-color: #ECECEC;
+	border: 1px solid #A9B8C2;
 	padding: 1px 5px;
 	font-size: 1.1em;
 }
@@ -606,7 +638,7 @@ input.radio {
 
 /* Misc
  ------------ */
- img {
+img {
 	border: none;
 }
 
@@ -626,4 +658,8 @@ table.colortable td {
 pre {
 	font-size: 1.1em;
 	font-family: Monaco, 'Courier New', monospace;
+}
+
+.nowrap {
+	white-space: nowrap;
 }

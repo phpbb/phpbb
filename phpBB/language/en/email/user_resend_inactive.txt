@@ -1,4 +1,4 @@
-Subject: Welcome to “{SITENAME}” — {U_BOARD}
+Subject: Welcome to "{SITENAME}" - {U_BOARD}
 
 {WELCOME_MSG}
 

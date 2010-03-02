@@ -2,6 +2,10 @@
 
 <a name="maincontent"></a>
 
+<!-- IF U_BACK -->
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+<!-- ENDIF -->
+
 <h1>{L_TITLE}</h1>
 
 <p>{L_TITLE_EXPLAIN}</p>
@@ -184,10 +188,6 @@
 			<dd><input type="checkbox" class="radio" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
-			<dt><label for="download_mode">{L_DOWNLOAD_MODE}:</label><br /><span>{L_DOWNLOAD_MODE_EXPLAIN}</span></dt>
-			<dd>{S_DOWNLOAD_SELECT}</dd>
-		</dl>
-		<dl>
 			<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
 			<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
 					<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
@@ -234,17 +234,18 @@
 		</thead>
 		<tbody>
 		<!-- BEGIN groups -->
-			<!-- IF groups.S_ADD_SPACER -->
+			<!-- IF groups.S_ADD_SPACER and not groups.S_FIRST_ROW -->
 			<tr>
 				<td class="spacer" colspan="3">&nbsp;</td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td><a href="{groups.U_EDIT}">{groups.GROUP_NAME}</a>
+				<td><strong>{groups.GROUP_NAME}</strong>
 					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span><!-- ENDIF -->
+					<!-- IF groups.S_ALLOWED_IN_PM and not groups.S_GROUP_ALLOWED --><br /><span>&raquo; {L_ONLY_ALLOWED_IN_PM}</span><!-- ENDIF -->
 				</td>
 				<td>{groups.CATEGORY}</td>
-				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{L_EDIT}</a> | <a href="{groups.U_DELETE}">{L_DELETE}</a> | <a href="{groups.U_ACT_DEACT}">{groups.L_ACT_DEACT}</a>&nbsp;</td>
+				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{groups.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
 			</tr>
 		<!-- END groups -->
 		</tbody>
@@ -323,7 +324,7 @@
 
 	<form id="orphan" method="post" action="{U_ACTION}">
 
-	<fieldset>
+	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
 	<table cellspacing="1">

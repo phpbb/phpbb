@@ -133,6 +133,12 @@ class acp_forums
 						'forum_password_confirm'=> request_var('forum_password_confirm', ''),
 					);
 
+					// Use link_display_on_index setting if forum type is link
+					if ($forum_data['forum_type'] == FORUM_LINK)
+					{
+						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+					}
+
 					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
 
 					// Get data for forum rules if specified...
@@ -218,7 +224,7 @@ class acp_forums
 						$auth->acl_clear_prefetch();
 						$cache->destroy('sql', FORUMS_TABLE);
 	
-						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'] . '&amp;select_all_groups=1';
+						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 
@@ -390,19 +396,18 @@ class acp_forums
 					{
 						$forum_data = $row;
 					}
+					else
+					{
+						$forum_data['left_id'] = $row['left_id'];
+						$forum_data['right_id'] = $row['right_id'];
+					}
 
-					// Make sure there is no forum displayed for parents_list having the current forum id as a parent...
-					$sql = 'SELECT forum_id
-						FROM ' . FORUMS_TABLE . '
-						WHERE parent_id = ' . $forum_id;
-					$result = $db->sql_query($sql);
-
-					$exclude_forums = array($forum_id);
-					while ($row = $db->sql_fetchrow($result))
+					// Make sure no direct child forums are able to be selected as parents.
+					$exclude_forums = array();
+					foreach (get_forum_branch($forum_id, 'children') as $row)
 					{
 						$exclude_forums[] = $row['forum_id'];
 					}
-					$db->sql_freeresult($result);
 
 					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
@@ -471,7 +476,7 @@ class acp_forums
 						$forum_data['forum_rules_bitfield'] = '';
 						$forum_data['forum_rules_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smilies', false));
 					}
 
 					// Generate preview content
@@ -491,7 +496,7 @@ class acp_forums
 						$forum_data['forum_desc_bitfield'] = '';
 						$forum_data['forum_desc_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smilies', false));
 					}
 
 					// decode...
@@ -668,7 +673,7 @@ class acp_forums
 				if ($db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id, false, true)) // , false, true, false???
 					);
 				}
 				$db->sql_freeresult($result);
@@ -846,6 +851,16 @@ class acp_forums
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
+		if (utf8_strlen($forum_data['forum_desc']) > 4000)
+		{
+			$errors[] = $user->lang['FORUM_DESC_TOO_LONG'];
+		}
+
+		if (utf8_strlen($forum_data['forum_rules']) > 4000)
+		{
+			$errors[] = $user->lang['FORUM_RULES_TOO_LONG'];
+		}
+
 		if ($forum_data['forum_password'] || $forum_data['forum_password_confirm'])
 		{
 			if ($forum_data['forum_password'] != $forum_data['forum_password_confirm'])
@@ -989,7 +1004,6 @@ class acp_forums
 
 					if ($action_subforums == 'delete')
 					{
-						$log_action_forums = 'FORUMS';
 						$rows = get_forum_branch($row['forum_id'], 'children', 'descending', false);
 
 						foreach ($rows as $_row)
@@ -1055,8 +1069,6 @@ class acp_forums
 							return array($user->lang['NO_DESTINATION_FORUM']);
 						}
 
-						$log_action_forums = 'MOVE_FORUMS';
-
 						$sql = 'SELECT forum_name 
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_id = ' . $subforums_to_id;
@@ -1115,11 +1127,9 @@ class acp_forums
 
 			if ($row['forum_name'] != $forum_data_sql['forum_name'])
 			{
-				// the forum name has changed, clear the parents list of child forums
+				// the forum name has changed, clear the parents list of all forums (for safety)
 				$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_parents = ''
-					WHERE left_id > " . $row['left_id'] . '
-						AND right_id < ' . $row['right_id'];
+					SET forum_parents = ''";
 				$db->sql_query($sql);
 			}
 
@@ -1373,6 +1383,9 @@ class acp_forums
 						$this->move_forum($row['forum_id'], $subforums_to_id);
 					}
 					$db->sql_freeresult($result);
+
+					// Grab new forum data for correct tree updating later
+					$forum_data = $this->get_forum_info($forum_id);
 
 					$sql = 'UPDATE ' . FORUMS_TABLE . "
 						SET parent_id = $subforums_to_id

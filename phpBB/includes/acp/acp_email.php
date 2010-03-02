@@ -38,7 +38,7 @@ class acp_email
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip 
 			// over the send and return to the form
-			$use_queue		= (isset($_POST['send_immediatly'])) ? false : true;
+			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
 			if (!$subject)
@@ -65,7 +65,7 @@ class acp_email
 				{
 					if ($group_id)
 					{
-						$sql = 'SELECT u.user_email, u.username, u.user_lang, u.user_jabber, u.user_notify_type 
+						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND ug.user_pending = 0
@@ -75,7 +75,7 @@ class acp_email
 					}
 					else
 					{
-						$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
+						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang 
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
 							ORDER BY user_lang, user_notify_type';
@@ -107,7 +107,12 @@ class acp_email
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
 							$i = 0;
-							$j++;
+
+							if (sizeof($email_list))
+							{
+								$j++;
+							}
+
 							$old_lang = $row['user_lang'];
 							$old_notify_type = $row['user_notify_type'];
 						}
@@ -151,7 +156,6 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
 					$messenger->subject(htmlspecialchars_decode($subject));
-					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(

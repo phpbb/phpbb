@@ -192,26 +192,19 @@ class dbal_postgres extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{ 
-		if ($query != '')
+		$this->query_result = false; 
+
+		// if $total is set to 0 we do not want to limit the number of rows
+		if ($total == 0)
 		{
-			$this->query_result = false; 
-
-			// if $total is set to 0 we do not want to limit the number of rows
-			if ($total == 0)
-			{
-				$total = -1;
-			}
-
-			$query .= "\n LIMIT $total OFFSET $offset";
-
-			return $this->sql_query($query, $cache_ttl); 
+			$total = -1;
 		}
-		else
-		{
-			return false; 
-		}
+
+		$query .= "\n LIMIT $total OFFSET $offset";
+
+		return $this->sql_query($query, $cache_ttl); 
 	}
 
 	/**
@@ -275,7 +268,7 @@ class dbal_postgres extends dbal
 			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
 			{
 				$query = "SELECT currval('" . $tablename[1] . "_seq') AS last_value";
-				$temp_q_id =  @pg_query($this->db_connect_id, $query);
+				$temp_q_id = @pg_query($this->db_connect_id, $query);
 
 				if (!$temp_q_id)
 				{

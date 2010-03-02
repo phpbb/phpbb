@@ -22,7 +22,7 @@ function mcp_post_details($id, $mode, $action)
 	$start	= request_var('start', 0);
 
 	// Get post data
-	$post_info = get_post_data(array($post_id));
+	$post_info = get_post_data(array($post_id), false, true);
 
 	if (!sizeof($post_info))
 	{
@@ -38,12 +38,12 @@ function mcp_post_details($id, $mode, $action)
 
 			$ip = request_var('ip', '');
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-			
+
 			$whois = user_ipwhois($ip);
-			
+
 			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-			
+			$whois = preg_replace('#(\s)(ht{2}p:/{2}\S*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
+
 			$template->assign_vars(array(
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 				'WHOIS'			=> trim($whois))
@@ -91,6 +91,21 @@ function mcp_post_details($id, $mode, $action)
 	// Set some vars
 	$users_ary = $usernames_ary = array();
 	$post_id = $post_info['post_id'];
+	$topic_tracking_info = array();
+
+	// Get topic tracking info
+	if ($config['load_db_lastread'])
+	{
+		$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+		$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+		unset($tmp_topic_data);
+	}
+	else
+	{
+		$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+	}
+
+	$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
 	// Process message, leave it uncensored
 	$message = $post_info['post_text'];
@@ -119,14 +134,17 @@ function mcp_post_details($id, $mode, $action)
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-		'U_FIND_MEMBER'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username'),
+		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
+		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp_chgposter&field=username&select_single=true', false),
 		'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 		'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 		'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 		'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
-		
+
+		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
@@ -144,8 +162,10 @@ function mcp_post_details($id, $mode, $action)
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
 		'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
-		'POST_ID'				=> $post_info['post_id'])
-	);
+		'POST_ID'				=> $post_info['post_id'],
+
+		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+	));
 
 	// Get User Notes
 	$log_data = array();
@@ -273,9 +293,9 @@ function mcp_post_details($id, $mode, $action)
 
 		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
 			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . '
+			WHERE poster_id = ' . $post_info['poster_id'] . "
 			GROUP BY poster_ip
-			ORDER BY postings DESC';
+			ORDER BY postings DESC";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -316,7 +336,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{

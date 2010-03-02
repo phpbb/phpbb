@@ -1,35 +1,69 @@
-
 <!-- You should retain this javascript in your own template! -->
 
-<script language="javascript" type="text/javascript">
-<!--
-function insert_user(user)
-{
-	opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = ( opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value.length && opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value + "\n" + user : user;
-}
-
-function insert_marked(users)
-{
-	if (typeof(users.length) == "undefined")
-	{
-		insert_user(users.value);
-	}
-	else if (users.length > 0)
-	{
-		for (i = 0; i < users.length; i++)
+<!-- IF S_SEARCH_USER and S_FORM_NAME -->
+	<script type="text/javascript">
+	<!--
+		function insert_user(user)
 		{
-			if (users[i].checked)
+			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = ( opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value.length && opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value + "\n" + user : user;
+		}
+
+		function insert_marked(users)
+		{
+			if (typeof(users.length) == "undefined")
 			{
-				insert_user(users[i].value);
+				insert_user(users.value);
+			}
+			else if (users.length > 0)
+			{
+				for (i = 0; i < users.length; i++)
+				{
+					if (users[i].checked)
+					{
+						insert_user(users[i].value);
+					}
+				}
+			}
+
+			self.close();
+		}
+
+		function insert_single(user)
+		{
+			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = user;
+			self.close();
+		}		
+
+		/**
+		* Mark/unmark checklist
+		* id = ID of parent container, name = name prefix, state = state [true/false]
+		*/
+		function marklist(id, name, state)
+		{
+			var parent = document.getElementById(id);
+			if (!parent)
+			{
+				eval('parent = document.' + id);
+			}
+
+			if (!parent)
+			{
+				return;
+			}
+
+			var rb = parent.getElementsByTagName('input');
+			
+			for (var r = 0; r < rb.length; r++)
+			{
+				if (rb[r].name.substr(0, name.length) == name)
+				{
+					rb[r].checked = state;
+				}
 			}
 		}
-	}
-
-	self.close();
-}
-
-//-->
-</script>
+	//-->
+	</script>
+<!-- ENDIF -->
 
 <form method="post" action="{S_MODE_ACTION}" name="search">
 

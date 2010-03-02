@@ -65,6 +65,7 @@ class ucp_register
 		if (!$agreed)
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
+			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
 
 			if ($coppa === false && $config['coppa_enable'])
 			{
@@ -92,7 +93,7 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
 				);
 			}
 
@@ -121,9 +122,8 @@ class ucp_register
 
 		$data = array(
 			'username'			=> request_var('username', '', true),
-			'password_confirm'	=> request_var('password_confirm', '', true),
 			'new_password'		=> request_var('new_password', '', true),
-			'cur_password'		=> request_var('cur_password', '', true),
+			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
 			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 			'confirm_code'		=> request_var('confirm_code', ''),
@@ -157,7 +157,7 @@ class ucp_register
 			// DNSBL check
 			if ($config['check_dnsbl'])
 			{
-				if (($dnsbl = $user->check_dnsbl()) !== false)
+				if (($dnsbl = $user->check_dnsbl('register')) !== false)
 				{
 					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
 				}
@@ -320,7 +320,6 @@ class ucp_register
 
 					$messenger->template($email_template, $data['lang']);
 
-					$messenger->replyto($config['board_contact']);
 					$messenger->to($data['email'], $data['username']);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -368,7 +367,6 @@ class ucp_register
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$messenger->template('admin_activate', $row['user_lang']);
-							$messenger->replyto($config['board_contact']);
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 
@@ -384,7 +382,7 @@ class ucp_register
 					}
 				}
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -418,7 +416,7 @@ class ucp_register
 
 					if (sizeof($sql_in))
 					{
-						$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
+						$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
 							WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
 								AND confirm_type = ' . CONFIRM_REG;
 						$db->sql_query($sql);
@@ -441,12 +439,17 @@ class ucp_register
 
 				$code = gen_rand_string(mt_rand(5, 8));
 				$confirm_id = md5(unique_id($user->ip));
+				$seed = hexdec(substr(unique_id(), 4, 10));
+
+				// compute $seed % 0x7fffffff
+				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_REG,
-					'code'			=> (string) $code)
+					'code'			=> (string) $code,
+					'seed'			=> (int) $seed)
 				);
 				$db->sql_query($sql);
 			}
@@ -472,10 +475,8 @@ class ucp_register
 			break;
 		}
 
-		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
-		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
+		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[a-z]+' => 'USERNAME_ALPHA_ONLY', '[-\]_+ [a-z]+' => 'USERNAME_ALPHA_SPACERS', '\w+' => 'USERNAME_LETTER_NUM', '[-\]_+ [\w]+' => 'USERNAME_LETTER_NUM_SPACERS', '[\x01-\x7F]+' => 'USERNAME_ASCII');
 
-		//
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
@@ -488,7 +489,7 @@ class ucp_register
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),

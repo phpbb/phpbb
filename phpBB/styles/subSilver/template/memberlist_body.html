@@ -1,6 +1,12 @@
-<!-- INCLUDE overall_header.html -->
+<!-- IF S_SEARCH_USER and S_FORM_NAME -->
+	<!-- INCLUDE simple_header.html -->
+<!-- ELSE -->
+	<!-- INCLUDE overall_header.html -->
+<!-- ENDIF -->
 
-<!-- IF S_SEARCH_USER --><!-- INCLUDE memberlist_search.html --><!-- ENDIF -->
+<!-- IF S_SEARCH_USER -->	
+	<!-- INCLUDE memberlist_search.html -->	
+<!-- ENDIF -->
 
 <!-- IF S_SHOW_GROUP --><!-- INCLUDE memberlist_group.html --><!-- ENDIF -->
 
@@ -24,7 +30,6 @@
 <!-- ELSE -->
 	<form method="post" action="{S_MODE_ACTION}">
 <!-- ENDIF -->
-
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
 	<th nowrap="nowrap">#</th>
@@ -35,7 +40,7 @@
 	<th nowrap="nowrap" width="11%">{L_SEND_MESSAGE}</th>
 	<th nowrap="nowrap" width="11%"><a href="{U_SORT_EMAIL}">{L_EMAIL}</a></th>
 	<th nowrap="nowrap" width="11%"><a href="{U_SORT_WEBSITE}">{L_WEBSITE}</a></th>
-	<!-- IF S_SEARCH_USER and S_FORM_NAME --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
+	<!-- IF S_SEARCH_USER and S_FORM_NAME and not S_SELECT_SINGLE --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
 </tr>
 <!-- BEGIN memberrow -->
 
@@ -55,18 +60,18 @@
 	<!-- IF memberrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-		<td class="genmed" align="left"><strong><a<!-- IF memberrow.USER_COLOR --> style="color:#{memberrow.USER_COLOR}"<!-- ENDIF --> href="{memberrow.U_VIEW_PROFILE}">{memberrow.USERNAME}</a></strong></td>
+		<td class="genmed" align="left">{memberrow.USERNAME_FULL}<!-- IF S_SELECT_SINGLE --> [&nbsp;<a href="#" onclick="insert_single('{memberrow.USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="genmed" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center">{memberrow.POSTS}</td>
-		<td class="gen" align="center">{memberrow.RANK_IMG}</td>
+		<td class="gen" align="center"><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --></td>
 		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_PM --><a href="{memberrow.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
 		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_EMAIL --><a href="{memberrow.U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF -->&nbsp;</td>
-		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_WWW --><a href="{memberrow.U_WWW}" target="_blank">{WWW_IMG}</a><!-- ENDIF -->&nbsp;</td>
+		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_WWW --><a href="{memberrow.U_WWW}">{WWW_IMG}</a><!-- ENDIF -->&nbsp;</td>
 		<!-- IF memberrow.S_PROFILE_FIELD1 -->
 			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 			<td class="gen" align="center">&nbsp;{memberrow.PROFILE_FIELD1_VALUE}</td>
 		<!-- ENDIF -->
-		<!-- IF S_SEARCH_USER and S_FORM_NAME --><td align="center"><input type="checkbox" class="radio" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
+		<!-- IF S_SEARCH_USER and S_FORM_NAME and not S_SELECT_SINGLE --><td align="center"><input type="checkbox" class="radio" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
 	</tr>
 
 <!-- BEGINELSE -->
@@ -80,7 +85,7 @@
 <!-- END memberrow -->
 
 <tr>
-	<td class="cat" colspan="<!-- IF S_SEARCH_USER and S_FORM_NAME -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_SEARCH_USER and S_FORM_NAME --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
+	<td class="cat" colspan="<!-- IF S_SEARCH_USER and S_FORM_NAME -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_SEARCH_USER and S_FORM_NAME and not S_SELECT_SINGLE --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
 </tr>
 </table>
 	
@@ -89,16 +94,21 @@
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
 	<td class="pagination">{PAGE_NUMBER} [ {TOTAL_USERS} ]</td>
-	<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME --><b class="nav"><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- INCLUDE pagination.html --></span></td>
+	<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME and not S_SELECT_SINGLE --><b class="nav"><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- INCLUDE pagination.html --></span></td>
 </tr>
 </table>
 
-<br clear="all" />
 
-<!-- INCLUDE breadcrumbs.html -->
 
-<br clear="all" />
-
-<div align="right"><!-- INCLUDE jumpbox.html --></div>
-
-<!-- INCLUDE overall_footer.html -->
+<!-- IF S_SEARCH_USER and S_FORM_NAME -->
+	<!-- INCLUDE simple_footer.html -->	
+<!-- ELSE -->
+	<br clear="all" />
+	
+	<!-- INCLUDE breadcrumbs.html -->
+	
+	<br clear="all" />
+	
+	<div align="right"><!-- INCLUDE jumpbox.html --></div>	
+	<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

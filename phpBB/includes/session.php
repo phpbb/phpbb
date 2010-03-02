@@ -18,6 +18,7 @@ class session
 	var $page = array();
 	var $data = array();
 	var $browser = '';
+	var $forwarded_for = '';
 	var $host = '';
 	var $session_id = '';
 	var $ip = '';
@@ -91,7 +92,7 @@ class session
 		// The script path from the webroot to the phpBB root (for example: /phpBB2/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -sizeof($page_dirs));
-		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ?  '/' . implode('/', $root_dirs) : '');
+		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ? '/' . implode('/', $root_dirs) : '');
 
 		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
 		if (!$root_script_path)
@@ -145,8 +146,39 @@ class session
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->page					= $this->extract_current_page($phpbb_root_path);
+
+		// if the forwarded for header shall be checked we have to validate its contents
+		if ($config['forwarded_for_check'])
+		{
+			$this->forwarded_for = preg_replace('#, +#', ', ', $this->forwarded_for);
+
+			// Whoa these look impressive!
+			// The code to generate the following two regular expressions which match valid IPv4/IPv6 addresses
+			// can be found in the develop directory
+			$ipv4 = '#^(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$#';
+			$ipv6 = '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){5}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:))$#i';
+
+			// split the list of IPs
+			$ips = explode(', ', $this->forwarded_for);
+			foreach ($ips as $ip)
+			{
+				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
+				if (!empty($ip) && !preg_match($ipv4, $ip) && !preg_match($ipv6, $ip))
+				{
+					if (!defined('DEBUG_EXTRA'))
+					{
+						trigger_error('Hacking attempt!');
+					}
+					else
+					{
+						trigger_error('Invalid HTTP_X_FORWARDED_FOR header detected: ' . htmlspecialchars($this->forwarded_for));
+					}
+				}
+			}
+		}
 
 		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
 		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
@@ -216,7 +248,10 @@ class session
 				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
-				if ($u_ip === $s_ip && $s_browser === $u_browser)
+				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
+				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
+
+				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
 				{
 					$session_expired = false;
 
@@ -278,7 +313,7 @@ class session
 					// Added logging temporarly to help debug bugs...
 					if (defined('DEBUG_EXTRA'))
 					{
-						add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, $u_forwarded_for, $s_forwarded_for);
 					}
 				}
 			}
@@ -398,7 +433,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		// If no data was returned one or more of the following occured:
+		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
 		// User is inactive
@@ -447,7 +482,16 @@ class session
 		// Is user banned? Are they excluded? Won't return on ban, exists within method
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
-			$this->check_ban($this->data['user_id'], $this->ip);
+			if (!$config['forwarded_for_check'])
+			{
+				$this->check_ban($this->data['user_id'], $this->ip);
+			}
+			else
+			{
+				$ips = explode(', ', $this->forwarded_for);
+				$ips[] = $this->ip;
+				$this->check_ban($this->data['user_id'], $ips);
+			}
 		}
 
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
@@ -456,14 +500,17 @@ class session
 		// If our friend is a bot, we re-assign a previously assigned session
 		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
-			// Only assign the current session if the ip and browser match...
+			// Only assign the current session if the ip, browser and forwarded_for match...
 			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
 			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
-			if ($u_ip === $s_ip && $s_browser === $u_browser)
+			$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
+			$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
+
+			if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
 			{
 				$this->session_id = $this->data['session_id'];
 
@@ -512,6 +559,7 @@ class session
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
+			'session_forwarded_for'	=> (string) $this->forwarded_for,
 			'session_ip'			=> (string) $this->ip,
 			'session_autologin'		=> ($session_autologin) ? 1 : 0,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
@@ -580,6 +628,14 @@ class session
 		}
 		else
 		{
+			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+
+			// Update the last visit time
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
+			$db->sql_query($sql);
+
 			$SID = '?sid=';
 			$_SID = '';
 		}
@@ -595,7 +651,7 @@ class session
 	* and update the users information from the relevant session data. It will then
 	* grab guest user information.
 	*/
-	function session_kill()
+	function session_kill($new_session = true)
 	{
 		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
 
@@ -656,7 +712,10 @@ class session
 		$this->session_id = $_SID = '';
 
 		// To make sure a valid session is created we create one for the anonymous user
-		$this->session_create(ANONYMOUS);
+		if ($new_session)
+		{
+			$this->session_create(ANONYMOUS);
+		}
 
 		return true;
 	}
@@ -757,10 +816,17 @@ class session
 	* are passed to the method pre-existing session data is used. If $return is false
 	* this routine does not return on finding a banned user, it outputs a relevant 
 	* message and stops execution.
+	*
+	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs
 	*/
-	function check_ban($user_id = false, $user_ip = false, $user_email = false, $return = false)
+	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
 		global $config, $db;
+
+		if (defined('IN_CHECK_BAN'))
+		{
+			return;
+		}
 
 		$banned = false;
 
@@ -774,14 +840,14 @@ class session
 			$sql .= " AND ban_email = ''";
 		}
 
-		if ($user_ip === false)
+		if ($user_ips === false)
 		{
-			$sql .= " AND (ban_ip = '' OR (ban_ip <> '' AND ban_exclude = 1))";
+			$sql .= " AND (ban_ip = '' OR ban_exclude = 1)";
 		}
 
 		if ($user_id === false)
 		{
-			$sql .= ' AND (ban_userid = 0 OR (ban_userid <> 0 AND ban_exclude = 1))';
+			$sql .= ' AND (ban_userid = 0 OR ban_exclude = 1)';
 		}
 		else
 		{
@@ -792,7 +858,7 @@ class session
 				$sql .= " OR ban_email <> ''";
 			}
 
-			if ($user_ip !== false)
+			if ($user_ips !== false)
 			{
 				$sql .= " OR ban_ip <> ''";
 			}
@@ -805,8 +871,28 @@ class session
 		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$ip_banned = false;
+			if (!empty($row['ban_ip']))
+			{
+				if (!is_array($user_ips))
+				{
+					$ip_banned = preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips);
+				}
+				else
+				{
+					foreach ($user_ips as $user_ip)
+					{
+						if (preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+						{
+							$ip_banned = true;
+							break;
+						}
+					}
+				}
+			}
+
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-				(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip)) ||
+				$ip_banned ||
 				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
 			{
 				if (!empty($row['ban_exclude']))
@@ -823,7 +909,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips))
 					{
 						$ban_triggered_by = 'ip';
 					}
@@ -849,6 +935,23 @@ class session
 				$this->session_kill();
 			}
 
+			// We show a login box here to allow founders accessing the board if banned by IP
+			if (defined('IN_LOGIN') && $this->data['user_id'] == ANONYMOUS)
+			{
+				global $phpEx;
+
+				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
+				define('IN_CHECK_BAN', 1);
+
+				$this->setup('ucp');
+				$this->data['is_registered'] = $this->data['is_bot'] = false;
+
+				login_box("index.$phpEx");
+
+				// The false here is needed, else the user is able to circumvent the ban.
+				$this->session_kill(false);
+			}
+
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
@@ -870,9 +973,10 @@ class session
 	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
 	*
 	* @author satmd (from the php manual)
+	* @param string $mode register/post - spamcop for example is ommitted for posting
 	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
-	function check_dnsbl($ip = false)
+	function check_dnsbl($mode, $ip = false)
 	{
 		if ($ip === false)
 		{
@@ -880,22 +984,39 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'bl.spamcop.net'		=> 'http://spamcop.net/bl.shtml?',
 			'list.dsbl.org'			=> 'http://dsbl.org/listing?',
 			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
+
+		if ($mode == 'register')
+		{
+			$dnsbl_check['bl.spamcop.net'] = 'http://spamcop.net/bl.shtml?';
+		}
 
 		if ($ip)
 		{
 			$quads = explode('.', $ip);
 			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
 
+			// Need to be listed on all servers...
+			$listed = true;
+			$info = array();
+
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
 				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
 				{
-					return array($dnsbl, $lookup . $ip);
+					$info = array($dnsbl, $lookup . $ip);
 				}
+				else
+				{
+					$listed = false;
+				}
+			}
+
+			if ($listed)
+			{
+				return $info;
 			}
 		}
 
@@ -1185,7 +1306,7 @@ class user extends session
 					}
 					$stylesheet = str_replace($match, $content, $stylesheet);
 				}
-				unset ($content);
+				unset($content);
 			}
 
 			$stylesheet = str_replace('./', 'styles/' . $this->theme['theme_path'] . '/theme/', $stylesheet);
@@ -1210,10 +1331,10 @@ class user extends session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
-		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
+		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
-			if ($auth->acl_gets('a_', 'm_'))
+			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
 			{
 				$message = 'REMOVE_INSTALL';
 			}
@@ -1226,7 +1347,7 @@ class user extends session
 		}
 
 		// Is board disabled and user not an admin or moderator?
-		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
@@ -1235,7 +1356,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 			{
 				trigger_error('BOARD_UNAVAILABLE');
 			}
@@ -1325,7 +1446,7 @@ class user extends session
 
 		// $lang == $this->lang
 		// $help == $this->help
-		// - add appropiate variables here, name them as they are used within the language file...
+		// - add appropriate variables here, name them as they are used within the language file...
 		if (!$use_db)
 		{
 			if ((include($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx")) === false)

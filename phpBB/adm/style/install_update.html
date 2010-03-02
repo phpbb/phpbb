@@ -2,11 +2,11 @@
 
 <script type="text/javascript">
 <!--
-function popup(url, width, height)
-{
-	window.open(url.replace(/&amp;/g, '&'), '_popup', 'height=' + height + ',resizable=yes,scrollbars=yes,width=' + width);
-	return false;
-}
+	function popup(url, width, height)
+	{
+		window.open(url.replace(/&amp;/g, '&'), 'diff', 'height=' + height + ',resizable=yes,scrollbars=yes,width=' + width);
+		return false;
+	}
 //-->
 </script>
 
@@ -71,14 +71,16 @@ function popup(url, width, height)
 	</fieldset>
 
 	<!-- IF not S_UP_TO_DATE -->
-		<form id="install_update" method="post" action="{U_ACTION}">
+
+		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
 
 		<fieldset class="submit-buttons">
-			<p>{L_CHECK_FILES_EXPLAIN}</p>
-			<input class="button1" type="submit" name="submit" value="{L_CHECK_FILES}" />
+			<p>{L_UPDATE_DATABASE_EXPLAIN}</p>
+			<input class="button1" type="submit" name="db_update" value="{L_UPDATE_DATABASE}" />
 		</fieldset>
 
 		</form>
+
 	<!-- ELSE -->
 		<form id="install_update" method="post" action="{U_ACTION}">
 
@@ -90,90 +92,147 @@ function popup(url, width, height)
 		</form>
 	<!-- ENDIF -->
 
-<!-- ELSEIF S_FILE_CHECK -->
+<!-- ELSEIF S_DB_UPDATE -->
 
-	<h1>{L_COLLECTED_INFORMATION}</h1>
+	<!-- IF not S_DB_UPDATE_FINISHED -->
 
-	<p>{L_COLLECTED_INFORMATION_EXPLAIN}</p>
+		<h1>{L_PERFORM_DATABASE_UPDATE}</h1>
 
-	<!-- IF S_NO_UPDATE_FILES -->
-		<div class="errorbox">
-			<h3>{L_NO_UPDATE_FILES}</h3>
+		<p>
+			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
+			<br />
+			<a href="{U_DB_UPDATE}" target="update"><strong>&raquo; {L_RUN_DATABASE_SCRIPT} &laquo;</strong></a>
+		</p>
 
-			<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br />
+		<br /><br />
 
-			<strong>{NO_UPDATE_FILES}</strong>
-			
-		</div>
-	<!-- ENDIF -->
+		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
 
-	<form id="install_update" method="post" action="{U_UPDATE_ACTION}">
-
-	<!-- IF .files -->
-		<!-- BEGIN files -->
-			<!-- IF files.S_STATUS -->
-				<!-- IF not files.S_FIRST_ROW -->
-					</fieldset>
-				<!-- ENDIF -->
-
-				<h2>{files.TITLE}</h2>
-
-				<p>{files.EXPLAIN}</p>
-
-				<fieldset>
-					<legend><img src="{T_IMAGE_PATH}file_{files.STATUS}.gif" alt="{files.L_STATUS}" /></legend>
-			<!-- ELSE -->
-				<dl>
-					<!-- IF files.STATUS eq 'up_to_date' -->
-						<dd class="full" style="text-align: left;"><strong>{files.FILENAME}</strong></dd>
-					<!-- ELSE -->
-						<dt>
-							<strong>{files.FILENAME}</strong>
-							<!-- IF files.S_CUSTOM -->
-							<br /><span><em>{L_FILE_USED}: </em>{files.CUSTOM_ORIGINAL}</span>
-							<!-- ENDIF -->
-							<!-- IF files.NUM_CONFLICTS -->
-							<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
-							<!-- ENDIF -->
-						</dt>
-						<dd>[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]</dd>
-						<!-- IF files.S_CUSTOM -->
-							<dd><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
-						<!-- ENDIF -->
-						<!-- IF files.STATUS eq 'conflict' -->
-							<dd><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NEW_FILE_OPTION}<br /><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dd>
-						<!-- ENDIF -->
-					<!-- ENDIF -->
-				</dl>
-			<!-- ENDIF -->
-		<!-- END files -->
-
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" name="db_update" value="{L_CHECK_UPDATE_DATABASE}" />
 		</fieldset>
-	<!-- ENDIF -->
 
-	<br />
-
-	<fieldset class="quick">
-		<input class="button1" type="submit" name="check_again" value="{L_CHECK_FILES_AGAIN}" />
-	</fieldset>
-
-	<br />
-
-	<!-- IF S_ALL_UP_TO_DATE -->
 		</form>
 
-		<!-- IF S_VERSION_UP_TO_DATE -->
-			<p>{L_NO_DATABASE_UPDATE_NEEDED}</p>
-		<!-- ELSE -->
-			<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
+	<!-- ELSE -->
 
-			<fieldset class="submit-buttons">
-				<p>{L_ALL_FILES_UP_TO_DATE}</p>
-				<input class="button1" type="submit" name="db_update" value="{L_UPDATE_DATABASE}" />
+		<h1>{L_UPDATE_DB_SUCCESS}</h1>
+
+		<br /><br />
+
+		<form id="install_update" method="post" action="{U_ACTION}">
+
+		<fieldset class="submit-buttons">
+			<p>{L_CHECK_FILES_EXPLAIN}</p>
+			<input class="button1" type="submit" name="submit" value="{L_CHECK_FILES}" />
+		</fieldset>
+
+		</form>
+
+	<!-- ENDIF -->
+
+<!-- ELSEIF S_FILE_CHECK -->
+
+	<!-- IF S_ALL_UP_TO_DATE -->
+
+		<div class="successbox">
+			<h3>{L_UPDATE_SUCCESS}</h3>
+			<p>{L_ALL_FILES_UP_TO_DATE}</p>
+		</div>
+
+	<!-- ELSE -->
+		<h1>{L_COLLECTED_INFORMATION}</h1>
+
+		<p>{L_COLLECTED_INFORMATION_EXPLAIN}</p>
+
+		<!-- IF S_NO_UPDATE_FILES -->
+			<div class="errorbox">
+				<h3>{L_NO_UPDATE_FILES}</h3>
+
+				<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br />
+
+				<strong>{NO_UPDATE_FILES}</strong>
+				
+			</div>
+		<!-- ENDIF -->
+
+		<form id="install_update" method="post" action="{U_UPDATE_ACTION}">
+
+		<!-- IF .files -->
+			<!-- BEGIN files -->
+				<!-- IF files.S_STATUS -->
+					<!-- IF not files.S_FIRST_ROW -->
+						</fieldset>
+					<!-- ENDIF -->
+
+					<h2>{files.TITLE}</h2>
+
+					<p>{files.EXPLAIN}</p>
+
+					<fieldset>
+						<legend><img src="{T_IMAGE_PATH}file_{files.STATUS}.gif" alt="{files.L_STATUS}" /></legend>
+				<!-- ELSE -->
+					<dl>
+						<!-- IF files.STATUS eq 'up_to_date' -->
+							<dd class="full" style="text-align: left;"><strong>{files.FILENAME}</strong></dd>
+						<!-- ELSE -->
+							<dt style="width: 60%;">
+								<strong><!-- IF files.DIR_PART -->{files.DIR_PART}<br /><!-- ENDIF -->{files.FILE_PART}</strong>
+								<!-- IF files.S_CUSTOM -->
+								<br /><span><em>{L_FILE_USED}: </em>{files.CUSTOM_ORIGINAL}</span>
+								<!-- ENDIF -->
+								<!-- IF files.NUM_CONFLICTS -->
+								<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
+								<!-- ENDIF -->
+							</dt>
+							<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+							<!-- IF files.S_CUSTOM -->
+								<dd style="margin-left: 60%;"><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
+							<!-- ENDIF -->
+							<!-- IF files.STATUS eq 'conflict' -->
+							</dl>
+							<dl>
+								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NO_MERGE_NEW_OPTION}</dt>
+								<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="popup('{files.U_VIEW_NO_MERGE_NEW}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+							</dl>
+							<dl>
+								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_NO_MERGE_MOD_OPTION}</dt>
+								<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="popup('{files.U_VIEW_NO_MERGE_MOD}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+							</dl>
+								<!-- IF not files.S_BINARY -->
+									<dl>
+										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="3" />&nbsp; {L_MERGE_NEW_FILE_OPTION}</dt>
+										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NEW_FILE}" onclick="popup('{files.U_VIEW_NEW_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+									</dl>
+									<dl>
+										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="4" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dt>
+										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_MOD_FILE}" onclick="popup('{files.U_VIEW_MOD_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+									</dl>
+								<!-- ENDIF -->
+							<!-- IF not files.S_LAST_ROW -->
+							</fieldset>
+
+							<fieldset>
+								<legend><img src="{T_IMAGE_PATH}file_{files.STATUS}.gif" alt="{files.L_STATUS}" /></legend>
+							<!-- ENDIF -->
+
+							<!-- ENDIF -->
+						<!-- ENDIF -->
+					<!-- IF files.STATUS neq 'conflict' --></dl><!-- ENDIF -->
+				<!-- ENDIF -->
+			<!-- END files -->
+
 			</fieldset>
 		<!-- ENDIF -->
 
-	<!-- ELSE -->
+		<br />
+
+		<fieldset class="quick">
+			<input class="button1" type="submit" name="check_again" value="{L_CHECK_FILES_AGAIN}" />
+		</fieldset>
+
+		<br />
+
 		<h1>{L_UPDATE_METHOD}</h1>
 
 		<p>{L_UPDATE_METHOD_EXPLAIN}</p>
@@ -182,9 +241,9 @@ function popup(url, width, height)
 			<input class="button1" type="submit" name="ftp_upload" value="{L_FTP_UPDATE_METHOD}" />&nbsp; &nbsp;<input class="button1" type="submit" name="download" value="{L_DOWNLOAD_UPDATE_METHOD}" />
 		</fieldset>
 
-	<!-- ENDIF -->
+		</form>
 
-	</form>
+	<!-- ENDIF -->
 
 <!-- ELSEIF S_DOWNLOAD_FILES -->
 
@@ -258,7 +317,7 @@ function popup(url, width, height)
 	<!-- BEGIN data -->
 	<dl>
 		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
-		<dd><input type="text" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
+		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->
 	</fieldset>
@@ -271,16 +330,6 @@ function popup(url, width, height)
 	</fieldset>
 
 	</form>
-
-<!-- ELSEIF S_DB_UPDATE -->
-
-	<h1>{L_PERFORM_DATABASE_UPDATE}</h1>
-
-	<p>
-		{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
-		<br />
-		<a href="{U_DB_UPDATE}"><strong>&raquo; {L_RUN_DATABASE_SCRIPT} &laquo;</strong></a>
-	</p>
 
 <!-- ENDIF -->
 

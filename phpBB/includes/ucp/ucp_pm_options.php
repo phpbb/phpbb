@@ -227,6 +227,14 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				$user->data['user_full_folder'] = PRIVMSGS_INBOX;
 			}
 
+			// Now make sure the folder is not used for rules
+			// We assign another folder id (the one the messages got moved to) or assign the INBOX (to not have to remove any rule)
+			$sql = 'UPDATE ' . PRIVMSGS_RULES_TABLE . ' SET rule_folder_id = ';
+			$sql .= ($remove_action == 1) ? $move_to : PRIVMSGS_INBOX;
+			$sql .= ' WHERE rule_folder_id = ' . $remove_folder_id;
+
+			$db->sql_query($sql);
+
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 			$message = $user->lang['FOLDER_REMOVED'];
 
@@ -430,11 +438,12 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'S_HOLD_CHECKED'		=> $s_hold_checked,
 		'S_MOVE_CHECKED'		=> $s_move_checked,
 		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= $config['pm_max_boxes']) ? true : false,
+		'S_MAX_FOLDER_ZERO'		=> ($config['pm_max_boxes'] == 0) ? true : false,
 
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 
-		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'),
-		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=rule_string', true))
+		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string&amp;select_single=true'),
+		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=rule_string&select_single=true', false))
 	);
 
 	$rule_lang = $action_lang = $check_lang = array();

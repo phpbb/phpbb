@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /*
 	Ability to simply add own rules by doing three things:
-		1) Add an appropiate constant
+		1) Add an appropriate constant
 		2) Add a new check array to the global_privmsgs_rules variable and the condition array (if one is required)
 		3) Add a new language variable to ucp.php
 
@@ -313,7 +313,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 }
 
 /**
-* Place new messages into appropiate folder
+* Place new messages into appropriate folder
 */
 function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 {
@@ -347,7 +347,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			AND t.folder_id = " . PRIVMSGS_NO_BOX . '
 			AND t.msg_id = p.msg_id';
 
-	// Just place into the appropiate arrays if no rules need to be checked
+	// Just place into the appropriate arrays if no rules need to be checked
 	if (!$user_message_rules)
 	{
 		$result = $db->sql_query($retrieve_sql);
@@ -420,7 +420,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			$db->sql_freeresult($result);
 		}
 
-		// Now place into the appropiate folder
+		// Now place into the appropriate folder
 		foreach ($check_rows as $row)
 		{
 			// Add membership if set
@@ -539,7 +539,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	if (sizeof($important_ids))
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-			SET pm_marked = !pm_marked
+			SET pm_marked = 1 - pm_marked
 			WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
 				AND user_id = $user_id
 				AND " . $db->sql_in_set('msg_id', $important_ids);
@@ -831,7 +831,7 @@ function handle_mark_actions($user_id, $mark_action)
 {
 	global $db, $user, $_POST, $phpbb_root_path, $phpEx;
 
-	$msg_ids		= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
+	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 	$confirm		= (isset($_POST['confirm'])) ? true : false;
 
@@ -845,7 +845,7 @@ function handle_mark_actions($user_id, $mark_action)
 		case 'mark_important':
 
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
-				SET pm_marked = !pm_marked
+				SET pm_marked = 1 - pm_marked
 				WHERE folder_id = $cur_folder_id
 					AND user_id = $user_id
 					AND " . $db->sql_in_set('msg_id', $msg_ids);
@@ -1240,9 +1240,9 @@ function get_folder_status($folder_id, $folder)
 /**
 * Submit PM
 */
-function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
+function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1610,7 +1610,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	{
 		$messenger->template('privmsg_notify', $addr['lang']);
 
-		$messenger->replyto($config['board_email']);
 		$messenger->to($addr['email'], $addr['name']);
 		$messenger->im($addr['jabber'], $addr['name']);
 

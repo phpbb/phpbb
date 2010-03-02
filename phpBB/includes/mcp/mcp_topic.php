@@ -21,7 +21,7 @@ function mcp_topic_view($id, $mode, $action)
 	$user->add_lang('viewtopic');
 
 	$topic_id = request_var('t', 0);
-	$topic_info = get_topic_data(array($topic_id));
+	$topic_info = get_topic_data(array($topic_id), false, true);
 
 	if (!sizeof($topic_info))
 	{
@@ -57,6 +57,21 @@ function mcp_topic_view($id, $mode, $action)
 		$subject = $topic_info['topic_title'];
 	}
 
+	// Approve posts?
+	if ($action == 'approve' && $auth->acl_get('m_approve', $topic_info['forum_id']))
+	{
+		include($phpbb_root_path . 'includes/mcp/mcp_queue.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+		if (!sizeof($post_id_list))
+		{
+			trigger_error('NO_POST_SELECTED');
+		}
+
+		approve_post($post_id_list, $id, $mode);
+	}
+
 	// Jumpbox, sort selects and that kind of things
 	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_');
 	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
@@ -79,7 +94,7 @@ function mcp_topic_view($id, $mode, $action)
 		$posts_per_page = $total;
 	}
 
-	$sql = 'SELECT u.username, u.user_colour, p.*
+	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . ' ' .
@@ -103,6 +118,20 @@ function mcp_topic_view($id, $mode, $action)
 		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
+	$topic_tracking_info = array();
+
+	// Get topic tracking info
+	if ($config['load_db_lastread'])
+	{
+		$tmp_topic_data = array($topic_id => $topic_info);
+		$topic_tracking_info = get_topic_tracking($topic_info['forum_id'], $topic_id, $tmp_topic_data, array($topic_info['forum_id'] => $topic_info['forum_mark_time']));
+		unset($tmp_topic_data);
+	}
+	else
+	{
+		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
+	}
+
 	foreach ($rowset as $i => $row)
 	{
 		$has_unapproved_posts = false;
@@ -123,6 +152,8 @@ function mcp_topic_view($id, $mode, $action)
 			$has_unapproved_posts = true;
 		}
 
+		$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+
 		$template->assign_block_vars('postrow', array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
@@ -135,7 +166,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_ID'		=> $row['post_id'],
 			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
 
-			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_target_unread', $user->lang['NEW_POST']) : $user->img('icon_post_target', $user->lang['POST']),
+			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
@@ -280,7 +311,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -371,6 +402,12 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
+		$topic_info = get_post_data(array($topic_id));
+		$topic_info = $topic_info[$topic_id];
+
+		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_SPLIT_DESTINATION', $subject);
+		add_log('mod', $forum_id, $topic_id, 'LOG_SPLIT_SOURCE', $topic_info['topic_title']);
+
 		// Change topic title of first post
 		$sql = 'UPDATE ' . POSTS_TABLE . "
 			SET post_subject = '" . $db->sql_escape($subject) . "'
@@ -438,7 +475,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -463,12 +500,17 @@ function merge_posts($topic_id, $to_topic_id)
 		$success_msg = 'POSTS_MERGED_SUCCESS';
 
 		// Does the original topic still exist? If yes, link back to it
-		$topic_data = get_topic_data(array($topic_id));
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query_limit($sql, 1);
 
-		if (sizeof($topic_data))
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_data['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
+			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
+
+		$db->sql_freeresult($result);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

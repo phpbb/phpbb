@@ -76,7 +76,7 @@ function deregister_globals()
 }
 
 // If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(phpversion(), '6.0.0-dev', '>='))
+if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 {
 	/**
 	* @ignore

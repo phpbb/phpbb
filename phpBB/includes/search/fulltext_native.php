@@ -80,7 +80,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_keywords($keywords, $terms)
 	{
-		global $db, $config, $user;
+		global $db, $user;
 
 		$keywords = trim($this->cleanup($keywords, '+-|()*'));
 
@@ -166,7 +166,7 @@ class fulltext_native extends search_backend
 
 		$keywords = preg_replace($match, $replace, $keywords);
 
-		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
+		// $keywords input format: each word separated by a space, words in a bracket are not separated
 
 		// the user wants to search for any word, convert the search query
 		if ($terms == 'any')
@@ -187,19 +187,22 @@ class fulltext_native extends search_backend
 		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
+		$common_ids = array();
+
 		if (sizeof($exact_words))
 		{
 			$sql = 'SELECT word_id, word_text, word_common
 				FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE ' . $db->sql_in_set('word_text', $exact_words);
 			$result = $db->sql_query($sql);
-	
+
 			// store an array of words and ids, remove common words
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['word_common'])
 				{
 					$this->common_words[] = $row['word_text'];
+					$common_ids[$row['word_text']] = (int) $row['word_id'];
 					continue;
 				}
 
@@ -270,16 +273,19 @@ class fulltext_native extends search_backend
 			// if this is an array of words then retrieve an id for each
 			if (is_array($word))
 			{
+				$non_common_words = array();
 				$id_words = array();
 				foreach ($word as $i => $word_part)
 				{
 					if (strpos($word_part, '*') !== false)
 					{
 						$id_words[] = '\'' . $db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+						$non_common_words[] = $word_part;
 					}
-					if (isset($words[$word_part]))
+					else if (isset($words[$word_part]))
 					{
 						$id_words[] = $words[$word_part];
+						$non_common_words[] = $word_part;
 					}
 				}
 				if (sizeof($id_words))
@@ -296,17 +302,27 @@ class fulltext_native extends search_backend
 					}
 				}
 				// throw an error if we shall not ignore unexistant words
-				else if (!$ignore_no_id)
+				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $word)));
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $non_common_words)));
 				}
+				unset($non_common_words);
 			}
 			// else we only need one id
 			else if (($wildcard = strpos($word, '*') !== false) || isset($words[$word]))
 			{
+
 				if ($wildcard)
 				{
-					$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+					$len = utf8_strlen(str_replace('*', '', $word));
+					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
+					{
+						$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+					}
+					else
+					{
+						$this->common_words[] = $row['word_text'];
+					}
 				}
 				else
 				{
@@ -316,7 +332,26 @@ class fulltext_native extends search_backend
 			// throw an error if we shall not ignore unexistant words
 			else if (!$ignore_no_id)
 			{
-				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+				if (!isset($common_ids[$word]))
+				{
+					$len = utf8_strlen($word);
+					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
+					{
+						trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+					}
+					else
+					{
+						$this->common_words[] = $word;
+					}
+				}
+			}
+			else
+			{
+				$len = utf8_strlen($word);
+				if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
+				{
+					$this->common_words[] = $word;
+				}
 			}
 		}
 
@@ -460,7 +495,7 @@ class fulltext_native extends search_backend
 							'ON'	=> "w$w_num.word_text LIKE $id"
 						);
 						$word_ids[] = "w$w_num.word_id";
-		
+
 						$w_num++;
 					}
 					else
@@ -488,7 +523,7 @@ class fulltext_native extends search_backend
 			{
 				$sql_where[] = "m$m_num.word_id = $subquery";
 			}
-	
+
 			$sql_array['FROM'][SEARCH_WORDMATCH_TABLE][] = 'm' . $m_num;
 
 			if ($title_match)
@@ -617,11 +652,11 @@ class fulltext_native extends search_backend
 				default:
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
 					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
-		
+
 					$result = $db->sql_query($sql);
 					$total_results = (int) $db->sql_fetchfield('total_results');
 					$db->sql_freeresult($result);
-		
+
 					if (!$total_results)
 					{
 						return false;
@@ -835,10 +870,10 @@ class fulltext_native extends search_backend
 								$sql_time" . (($db->sql_layer == 'sqlite') ? ')' : '');
 					}
 					$result = $db->sql_query($sql);
-		
+
 					$total_results = (int) $db->sql_fetchfield('total_results');
 					$db->sql_freeresult($result);
-		
+
 					if (!$total_results)
 					{
 						return false;
@@ -924,8 +959,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_message($text)
 	{
-		global $phpbb_root_path, $phpEx;
-		global $config, $user;
+		global $phpbb_root_path, $phpEx, $user;
 
 		$match = $words = array();
 
@@ -937,8 +971,8 @@ class fulltext_native extends search_backend
 		// BBcode
 		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
-		$min = $config['fulltext_native_min_chars'];
-		$max = $config['fulltext_native_max_chars'];
+		$min = $this->word_length['min'];
+		$max = $this->word_length['max'];
 
 		$isset_min = $min - 1;
 
@@ -947,10 +981,9 @@ class fulltext_native extends search_backend
 		*/
 		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
 
-		while (isset($word[0]))
+		while (strlen($word))
 		{
-			if (isset($word[255])
-			 || !isset($word[$isset_min]))
+			if (strlen($word) > 255 || strlen($word) <= $isset_min)
 			{
 				/**
 				* Words longer than 255 bytes are ignored. This will have to be
@@ -1131,7 +1164,7 @@ class fulltext_native extends search_backend
 		}
 
 		// destroy cached search results containing any of the words removed or added
-		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['post'])), array($poster_id));
+		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['title'])), array($poster_id));
 
 		unset($unique_add_words);
 		unset($words);
@@ -1174,14 +1207,15 @@ class fulltext_native extends search_backend
 
 		$destroy_cache_words = array();
 
-		// Remove common (> 20% of posts ) words
-		if ($config['num_posts'] >= 100)
+		// Remove common words
+		if ($config['num_posts'] >= 100 && $config['fulltext_native_common_thres'])
 		{
+			$common_threshold = ((double) $config['fulltext_native_common_thres']) / 100.0;
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.2);
+				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * $common_threshold);
 			$result = $db->sql_query($sql);
 
 			$sql_in = array();
@@ -1551,12 +1585,16 @@ class fulltext_native extends search_backend
 			<dt><label for="fulltext_native_max_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) $config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
+		<dl>
+			<dt><label for="fulltext_native_common_thres">' . $user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) $config['fulltext_native_common_thres'] . '" /> %</dd>
+		</dl>
 		';
 
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255', 'fulltext_native_common_thres' => 'double:0:100')
 		);
 	}
 }

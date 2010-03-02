@@ -35,6 +35,7 @@ class acp_styles
 		$bitfield->set(11);
 		$bitfield->set(12);
 		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
+		unset($bitfield);
 
 		$user->add_lang('acp/styles');
 
@@ -82,11 +83,6 @@ version = {VERSION}
 # images within your css file.
 #
 parse_css_file = {PARSE_CSS_FILE}
-
-#
-# This option defines the pagination seperator in templates.
-#
-pagination_sep = \'{PAGINATION_SEP}\'
 ';
 
 		$this->imageset_keys = array(
@@ -262,7 +258,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 										}
 										else
 										{
-											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slashpos - 1);
+											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
 										}
 									}
 								}
@@ -532,30 +528,35 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// Grab uninstalled items
 		$new_ary = $cfg = array();
 
-		$dp = opendir("{$phpbb_root_path}styles");
-		while (($file = readdir($dp)) !== false)
-		{
-			$subpath = ($mode != 'style') ? "$mode/" : '';
-			if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-			{
-				if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-				{
-					$items = parse_cfg_file('', $cfg);
-					$name = (isset($items['name'])) ? trim($items['name']) : false;
+		$dp = @opendir("{$phpbb_root_path}styles");
 
-					if ($name && !in_array($name, $installed))
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				$subpath = ($mode != 'style') ? "$mode/" : '';
+				if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+				{
+					if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 					{
-						$new_ary[] = array(
-							'path'		=> $file,
-							'name'		=> $name,
-							'copyright'	=> $items['copyright'],
-						);
+						$items = parse_cfg_file('', $cfg);
+						$name = (isset($items['name'])) ? trim($items['name']) : false;
+
+						if ($name && !in_array($name, $installed))
+						{
+							$new_ary[] = array(
+								'path'		=> $file,
+								'name'		=> $name,
+								'copyright'	=> $items['copyright'],
+							);
+						}
 					}
 				}
 			}
+			@closedir($dp);
 		}
+
 		unset($installed);
-		@closedir($dp);
 
 		if (sizeof($new_ary))
 		{
@@ -853,7 +854,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 			$code = str_replace($str_from, $str_to, $code);
-			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
+			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#ism', '$1$2$3', $code);
 
 			$code = explode("\n", $code);
 
@@ -966,7 +967,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Pull out a list of classes
 		$classes = array();
-		if (preg_match_all('/^([a-z0-9\.,:#> \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
+		if (preg_match_all('/^([a-z0-9\.,:#_\->* \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
 		{
 			$classes = $matches[1];
 		}
@@ -1121,7 +1122,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_UNIT'] . '</option>' . $s_units;
 
 							$template->assign_vars(array(
-								strtoupper($var) => $value,
+								strtoupper($var) => htmlspecialchars($value),
 								'S_' . strtoupper($var) . '_UNITS' => $s_units)
 							);
 						break;
@@ -1162,7 +1163,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						default:
 							$template->assign_vars(array(
-								strtoupper($var) => $value)
+								strtoupper($var) => htmlspecialchars($value))
 							);
 					}
 				}
@@ -1178,7 +1179,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		// else if we are showing raw css or the user submitted data from the simple view
 		// then we need to turn the given information into raw css
-		elseif (!$css_data && !$add_custom)
+		else if (!$css_data && !$add_custom)
 		{
 			foreach ($match_elements as $type => $match_ary)
 			{
@@ -1226,7 +1227,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						break;
 
 						default:
-							$value = request_var($var, '');
+							$value = htmlspecialchars_decode(request_var($var, ''));
 					}
 
 					// use the element mapping to create raw css code
@@ -1245,7 +1246,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 		}
 		// make sure we have $show_css set, so we can link to the show_css page if we need to
-		elseif (!$hide_css)
+		else if (!$hide_css)
 		{
 			$show_css = true;
 		}
@@ -1265,14 +1266,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			else
 			{
 				// check whether the custom class name is valid
-				if (!preg_match('/^[a-z0-9#:.\- ]+$/i', $add_custom))
+				if (!preg_match('/^[a-z0-9\.,:#_\->*]+$/i', $custom_class))
 				{
 					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"), E_USER_WARNING);
 				}
 				else
 				{
 					// append an empty class definition to the stylesheet
-					$stylesheet .= "\n$custom_class\n{\n}";
+					$stylesheet .= "\n$custom_class {\n\t\n}";
 					$message = $user->lang['THEME_CLASS_ADDED'];
 				}
 			}
@@ -1436,28 +1437,38 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$imagesetlist = array('nolang' => array(), 'lang' => array());
 
 		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
-		$dp = opendir($dir);
-		while (($file = readdir($dp)) !== false)
+		$dp = @opendir($dir);
+
+		if ($dp)
 		{
-			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			while (($file = readdir($dp)) !== false)
 			{
-				$dp2 = opendir("$dir/$file");
-				while (($file2 = readdir($dp2)) !== false)
+				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 				{
-					$imglang = $file;
-					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					$dp2 = @opendir("$dir/$file");
+
+					if (!$dp2)
 					{
-						$imagesetlist['lang'][] = "$file/$file2";
+						continue;
 					}
+
+					while (($file2 = readdir($dp2)) !== false)
+					{
+						$imglang = $file;
+						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+						{
+							$imagesetlist['lang'][] = "$file/$file2";
+						}
+					}
+					closedir($dp2);
 				}
-				closedir($dp2);
+				else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
+				{
+					$imagesetlist['nolang'][] = $file;
+				}
 			}
-			else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
-			{
-				$imagesetlist['nolang'][] = $file;
-			}
+			closedir($dp);
 		}
-		closedir($dp);
 
 		// Make sure the list of possible images is sorted alphabetically
 		sort($imagesetlist['nolang']);
@@ -1812,12 +1823,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$items['parse_css_file'] = 'off';
 				}
 
-				if (!isset($items['pagination_sep']))
-				{
-					$items['pagination_sep'] = ', ';
-				}
-
-				$theme_cfg = str_replace(array('{PARSE_CSS_FILE}', '{PAGINATION_SEP}'), array($items['parse_css_file'], $items['pagination_sep']), $theme_cfg);
+				$theme_cfg = str_replace(array('{PARSE_CSS_FILE}'), array($items['parse_css_file']), $theme_cfg);
 
 				$files[] = array(
 					'src'		=> "styles/{$style_row['theme_path']}/theme/",
@@ -2090,7 +2096,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			);
 		}
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			$sql_ary = array(
@@ -2553,7 +2559,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$style_row['style_active'] = request_var('style_active', 1);
 		$style_row['style_default'] = request_var('style_default', 0);
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			if ($mode == 'style')
@@ -2688,7 +2694,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 		}
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			if ($mode == 'style')
@@ -2890,7 +2896,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		);
 
 		$sql = 'INSERT INTO ' . STYLES_TABLE . '
-			' .  $db->sql_build_array('INSERT', $sql_ary);
+			' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
 		$id = $db->sql_nextid();

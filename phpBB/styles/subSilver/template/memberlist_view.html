@@ -22,11 +22,11 @@
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: #{USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
+				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: {USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 			</tr>
-			<!-- IF RANK -->
+			<!-- IF RANK_TITLE -->
 				<tr>
-					<td class="postdetails" align="center">{RANK}</td>
+					<td class="postdetails" align="center">{RANK_TITLE}</td>
 				</tr>
 			<!-- ENDIF -->
 			<!-- IF RANK_IMG -->
@@ -83,7 +83,7 @@
 				</tr>
 				<tr>
 					<td class="gen" align="right" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
-					<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="gensmall">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
 			</table>
@@ -152,7 +152,7 @@
 			</tr>
 			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
-				<td><!-- IF U_WWW --><b><a class="genmed" href="{U_WWW}" target="_userwww">{U_WWW}</a></b><!-- ENDIF --></td>
+				<td><!-- IF U_WWW --><b><a class="genmed" href="{U_WWW}">{U_WWW}</a></b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF S_PROFILE_FIELD1 -->
 				<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->

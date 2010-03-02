@@ -61,7 +61,7 @@ $db->sql_freeresult($result);
 $birthday_list = '';
 if ($config['load_birthdays'])
 {
-	$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+	$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 	$sql = 'SELECT user_id, username, user_colour, user_birthday
 		FROM ' . USERS_TABLE . "
 		WHERE user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%'
@@ -86,7 +86,7 @@ $template->assign_vars(array(
 	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
 	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
 	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $newest_uid) . '">', $newest_user, '</a>'),
+	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $newest_uid) . '" style="color:#' . $config['newest_user_colour'] . '">', $newest_user, '</a>'),
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> $birthday_list,
 

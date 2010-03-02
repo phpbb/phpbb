@@ -64,7 +64,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.user_colour
+				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
@@ -83,7 +83,7 @@ class mcp_reports
 					$post_id = $report['post_id'];
 				}
 
-				$post_info = get_post_data(array($post_id), 'm_report');
+				$post_info = get_post_data(array($post_id), 'm_report', true);
 
 				if (!sizeof($post_info))
 				{
@@ -107,13 +107,27 @@ class mcp_reports
 					);
 				}
 
+				$topic_tracking_info = array();
+				// Get topic tracking info
+				if ($config['load_db_lastread'])
+				{
+					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+					unset($tmp_topic_data);
+				}
+				else
+				{
+					$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+				}
+
+				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
 				$message = str_replace("\n", '<br />', $message);
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
@@ -139,6 +153,7 @@ class mcp_reports
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
 					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
@@ -279,7 +294,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -337,7 +352,9 @@ class mcp_reports
 					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> $total)
+					'TOTAL'					=> $total,
+					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),					
+					)
 				);
 
 				$this->tpl_name = 'mcp_reports';
@@ -361,15 +378,15 @@ function close_report($post_id_list, $mode, $action)
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
 	else if ($action == 'close' && !request_var('r', 0))
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p', 'quickmod')) . '&amp;mode=reports');
 	}
 	else
 	{
-		$redirect = request_var('redirect', build_url(array('_f_')));
+		$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 	}
 	$success_msg = '';
 
@@ -385,7 +402,7 @@ function close_report($post_id_list, $mode, $action)
 	{
 		$post_info = get_post_data($post_id_list, 'm_report');
 
-		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
+		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
 			WHERE ' . $db->sql_in_set('r.post_id', array_keys($post_info)) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '
@@ -482,7 +499,6 @@ function close_report($post_id_list, $mode, $action)
 
 				$messenger->template('report_' . $action . 'd', $reporter['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($reporter['user_email'], $reporter['username']);
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 

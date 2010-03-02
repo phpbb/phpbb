@@ -114,7 +114,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
-	$right = $iteration = 0;
+	$right = 0;
 	$padding_store = array('0' => '');
 	$padding = '';
 	$forum_list = ($return_array) ? array() : '';
@@ -136,41 +136,44 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		}
 
 		$right = $row['right_id'];
+		$disabled = false;
 
 		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
 		{
-			continue;
+			// List permission?
+			if ($auth->acl_get('f_list', $row['forum_id']))
+			{
+				$disabled = true;
+			}
+			else
+			{
+				continue;
+			}
 		}
 
-		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || $row['forum_id'] == $ignore_id)
-		{
-			continue;
-		}
-
-		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
-		{
+		if (
+			((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || $row['forum_id'] == $ignore_id)
+			||
 			// Non-postable forum with no subforums, don't display
-			continue;
-		}
-
-		if ($row['forum_type'] != FORUM_POST && $ignore_nonpost)
+			($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
+			||
+			($row['forum_type'] != FORUM_POST && $ignore_nonpost)
+			)
 		{
-			continue;
+			$disabled = true;
 		}
 
 		if ($return_array)
 		{
 			// Include some more information...
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? true : false) : (($row['forum_id'] == $select_id) ? true : false);
-			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => $selected), $row);
+			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => ($selected && !$disabled), 'disabled' => $disabled), $row);
 		}
 		else
 		{
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
-			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . (($disabled) ? ' disabled="disabled"' : $selected) . '>' . $padding . $row['forum_name'] . '</option>';
 		}
-
-		$iteration++;
 	}
 	$db->sql_freeresult($result);
 	unset($padding_store);
@@ -200,19 +203,27 @@ function size_select_options($size_compare)
 }
 
 /**
-* Generate list of groups
+* Generate list of groups (option fields without select)
+*
+* @param int $group_id The default group id to mark as selected
+* @param array $exclude_ids The group ids to exclude from the list, false (default) if you whish to exclude no id
+* @param int $manage_founder If set to false (default) all groups are returned, if 0 only those groups returned not being managed by founders only, if 1 only those groups returned managed by founders only.
+*
+* @return string The list of options.
 */
-function group_select_options($group_id, $exclude_ids = false)
+function group_select_options($group_id, $exclude_ids = false, $manage_founder = false)
 {
 	global $db, $user, $config;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
 	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
+	$sql_founder = ($manage_founder !== false) ? (($exclude_sql || $sql_and) ? ' AND ' : ' WHERE ') . 'group_founder_manage = ' . (int) $manage_founder : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . "
 		$exclude_sql
 		$sql_and
+		$sql_founder
 		ORDER BY group_type DESC, group_name ASC";
 	$result = $db->sql_query($sql);
 
@@ -337,7 +348,13 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 		return false;
 	}
 
-	$dh = opendir($rootdir . $dir);
+	$dh = @opendir($rootdir . $dir);
+
+	if (!$dh)
+	{
+		return false;
+	}
+
 	while (($fname = readdir($dh)) !== false)
 	{
 		if (is_file("$rootdir$dir$fname"))
@@ -759,7 +776,7 @@ function delete_attachments($mode, $ids, $resync = true)
 	$space_removed = $files_removed = 0;
 	foreach ($physical as $file_ary)
 	{
-		if (phpbb_unlink($file_ary['filename'], 'file'))
+		if (phpbb_unlink($file_ary['filename'], 'file', true))
 		{
 			$space_removed += $file_ary['filesize'];
 			$files_removed++;
@@ -767,7 +784,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 		if ($file_ary['thumbnail'])
 		{
-			phpbb_unlink($file_ary['filename'], 'thumbnail');
+			phpbb_unlink($file_ary['filename'], 'thumbnail', true);
 		}
 	}
 	set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
@@ -993,14 +1010,28 @@ function update_posted_info(&$topic_ids)
 }
 
 /**
-* Delete File
+* Delete attached file
 */
-function phpbb_unlink($filename, $mode = 'file')
+function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $config, $user, $phpbb_root_path;
+	global $db, $phpbb_root_path, $config;
 
-	$filename = ($mode == 'thumbnail') ? $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($filename) : $phpbb_root_path . $config['upload_path'] . '/' . basename($filename);
-	return @unlink($filename);
+	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
+	$sql = 'SELECT COUNT(attach_id) AS num_entries
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE physical_filename = '" . $db->sql_escape(basename($filename)) . "'";
+	$result = $db->sql_query($sql);
+	$num_entries = (int) $db->sql_fetchfield('num_entries');
+	$db->sql_freeresult($result);
+
+	// Do not remove file if at least one additional entry with the same name exist.
+	if (($entry_removed && $num_entries > 0) || (!$entry_removed && $num_entries > 1))
+	{
+		return false;
+	}
+
+	$filename = ($mode == 'thumbnail') ? 'thumb_' . basename($filename) : basename($filename);
+	return @unlink($phpbb_root_path . $config['upload_path'] . '/' . $filename);
 }
 
 /**
@@ -1927,10 +1958,7 @@ function split_sql_file($sql, $delimiter)
 	$sql = str_replace("\r" , '', $sql);
 	$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
 
-	foreach ($data as $key => $value)
-	{
-		$data[$key] = trim($value);
-	}
+	$data = array_map('trim', $data);
 
 	// The empty case
 	$end_data = end($data);
@@ -2051,7 +2079,7 @@ function cache_moderators()
 
 		// Make sure not hidden or special groups are involved...
 		$sql = 'SELECT group_name, group_id, group_type
-			FROM  ' . GROUPS_TABLE . '
+			FROM ' . GROUPS_TABLE . '
 			WHERE ' . $db->sql_in_set('group_id', $ug_id_ary);
 		$result = $db->sql_query($sql);
 
@@ -2161,7 +2189,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			return;
 	}
 
-	$sql = "SELECT l.*, u.username, u.user_colour
+	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
 		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
@@ -2561,7 +2589,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 				{
 					$get_info = true;
 				}
-				else if (strpos($line, '404 Not Found') !== false)
+				else if (stripos($line, '404 not found') !== false)
 				{
 					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
@@ -2574,11 +2602,12 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	{
 		if ($errstr)
 		{
+			$errstr = utf8_convert_message($errstr);
 			return false;
 		}
 		else
 		{
-			$errstr = 'fsock disabled';
+			$errstr = $user->lang['FSOCK_DISABLED'];
 			return false;
 		}
 	}
@@ -2590,7 +2619,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
 * The duration of a warning can be defined by the administrator
-* This only removes the warning and reduces the assosciated count,
+* This only removes the warning and reduces the associated count,
 * it does not remove the user note recording the contents of the warning
 */
 function tidy_warnings()
@@ -2657,9 +2686,9 @@ function add_permission_language()
 	// Now search in acp and mods folder for permissions_ files.
 	foreach (array('acp/', 'mods/') as $path)
 	{
-		$dh = opendir($user->lang_path . $path);
+		$dh = @opendir($user->lang_path . $path);
 
-		if ($dh !== false)
+		if ($dh)
 		{
 			while (($file = readdir($dh)) !== false)
 			{

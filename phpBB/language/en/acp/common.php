@@ -20,6 +20,8 @@ if (empty($lang) || !is_array($lang))
 
 // DEVELOPERS PLEASE NOTE
 //
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
+//
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
 // translators to re-order the output of data while ensuring it remains correct
@@ -64,7 +66,7 @@ $lang = array_merge($lang, array(
 	'ACP_CAT_POSTING'			=> 'Posting',
 	'ACP_CAT_STYLES'			=> 'Styles',
 	'ACP_CAT_SYSTEM'			=> 'System',
-	'ACP_CAT_USERGROUP'			=> 'Users and groups',
+	'ACP_CAT_USERGROUP'			=> 'Users and Groups',
 	'ACP_CAT_USERS'				=> 'Users',
 	'ACP_CLIENT_COMMUNICATION'	=> 'Client communication',
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie settings',
@@ -90,16 +92,16 @@ $lang = array_merge($lang, array(
 	'ACP_GLOBAL_MODERATORS'			=> 'Global moderators',
 	'ACP_GLOBAL_PERMISSIONS'		=> 'Global permissions',
 	'ACP_GROUPS'					=> 'Groups',
-	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Groups forum permissions',
+	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Groups’ forum permissions',
 	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
 	'ACP_GROUPS_MANAGEMENT'			=> 'Group management',
-	'ACP_GROUPS_PERMISSIONS'		=> 'Groups permissions',
+	'ACP_GROUPS_PERMISSIONS'		=> 'Groups’ permissions',
 	
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_IMAGESETS'				=> 'Imagesets',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
-	'ACP_INDEX'					=> 'Admin index',
+	'ACP_INDEX'					=> 'ACP index',
 	
 	'ACP_JABBER_SETTINGS'		=> 'Jabber settings',
 	
@@ -108,7 +110,7 @@ $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
 	'ACP_LOGGING'				=> 'Logging',
 	
-	'ACP_MAIN'					=> 'Admin index',
+	'ACP_MAIN'					=> 'ACP index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
@@ -137,7 +139,7 @@ $lang = array_merge($lang, array(
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
 	
 	'ACP_RANKS'					=> 'Ranks',
-	'ACP_REASONS'				=> 'Report/Denial reasons',
+	'ACP_REASONS'				=> 'Report/denial reasons',
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
 	'ACP_RESTORE'				=> 'Restore',
@@ -160,9 +162,9 @@ $lang = array_merge($lang, array(
 	'ACP_THEMES'				=> 'Themes',
 	
 	'ACP_UPDATE'					=> 'Updating',
-	'ACP_USERS_FORUM_PERMISSIONS'	=> 'Users forum permissions',
+	'ACP_USERS_FORUM_PERMISSIONS'	=> 'Users’ forum permissions',
 	'ACP_USERS_LOGS'				=> 'User logs',
-	'ACP_USERS_PERMISSIONS'			=> 'Users permissions',
+	'ACP_USERS_PERMISSIONS'			=> 'Users’ permissions',
 	'ACP_USER_ATTACH'				=> 'Attachments',
 	'ACP_USER_AVATAR'				=> 'Avatar',
 	'ACP_USER_FEEDBACK'				=> 'Feedback',
@@ -183,7 +185,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View administrative permissions',
 	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View forum moderation permissions',
 	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View forum-based permissions',
-	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderatoration permissions',
+	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 	
 	'ACP_WORDS'					=> 'Word censoring',
@@ -200,7 +202,6 @@ $lang = array_merge($lang, array(
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
-	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIMENSIONS'				=> 'Dimensions',
@@ -217,8 +218,6 @@ $lang = array_merge($lang, array(
 	'ENABLE'				=> 'Enable',
 	'EXPORT_DOWNLOAD'		=> 'Download',
 	'EXPORT_STORE'			=> 'Store',
-
-	'FORUM_INDEX'			=> 'Forum index',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
@@ -248,21 +247,21 @@ $lang = array_merge($lang, array(
 	'PARSE_BBCODE'						=> 'Parse BBCode',
 	'PARSE_SMILIES'						=> 'Parse smilies',
 	'PARSE_URLS'						=> 'Parse links',
-	'PERMISSIONS_TRANSFERED'			=> 'Permissions transfered',
-	'PERMISSIONS_TRANSFERED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transfered. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
+	'PERMISSIONS_TRANSFERRED'			=> 'Permissions transferred',
+	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transferred. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
 	'PIXEL'							=> 'px',	
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',
 	'REORDER'							=> 'Reorder',
-	'RESYNC'							=> 'Resyncronise',
+	'RESYNC'							=> 'Resynchronise',
 	'RETURN_TO'							=> 'Return to…',
 
-	'SELECT_ANONYMOUS'		=> 'Select Anonymous User',
+	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 
 	'UCP'					=> 'User Control Panel',
-	'USERNAMES_EXPLAIN'		=> 'Place each username on a seperate line',
+	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
@@ -270,7 +269,9 @@ $lang = array_merge($lang, array(
 
 // PHP info
 $lang = array_merge($lang, array(
-	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.',
+	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by <a href="http://www.phpbb.com/about/">official team members</a> on the support forums.',
+
+	'NO_PHPINFO_AVAILABLE'	=> 'The PHP informations are unable to be determined. Phpinfo() has been disabled for security reasons.',
 ));
 
 // Logs
@@ -318,9 +319,9 @@ $lang = array_merge($lang, array(
 
 	'RESET_DATE'			=> 'Reset date',
 	'RESET_ONLINE'			=> 'Reset online',
-	'RESYNC_POSTCOUNTS'		=> 'Resyncronise post counts',
-	'RESYNC_POST_MARKING'	=> 'Resyncronise dotted topics',
-	'RESYNC_STATS'			=> 'Resyncronise statistics',
+	'RESYNC_POSTCOUNTS'		=> 'Resynchronise post counts',
+	'RESYNC_POST_MARKING'	=> 'Resynchronise dotted topics',
+	'RESYNC_STATS'			=> 'Resynchronise statistics',
 
 	'STATISTIC'			=> 'Statistic',
 
@@ -345,8 +346,8 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
-	'INACTIVE_USERS'				=> 'Inactive Users',
-	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
+	'INACTIVE_USERS'				=> 'Inactive users',
+	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
 	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
@@ -365,8 +366,8 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<strong>Added or edited groups user permissions</strong><br />» %s',
 	'LOG_ACL_ADD_USER_GLOBAL_M_'		=> '<strong>Added or edited users global moderator permissions</strong><br />» %s',
 	'LOG_ACL_ADD_GROUP_GLOBAL_M_'		=> '<strong>Added or edited groups global moderator permissions</strong><br />» %s',
-	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users admin permissions</strong><br />» %s',
-	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups admin permissions</strong><br />» %s',
+	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users administrator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups administrator permissions</strong><br />» %s',
 
 	'LOG_ACL_ADD_ADMIN_GLOBAL_A_'		=> '<strong>Added or edited Administrators</strong><br />» %s',
 	'LOG_ACL_ADD_MOD_GLOBAL_M_'			=> '<strong>Added or edited Global Moderators</strong><br />» %s',
@@ -377,14 +378,14 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<strong>Added or edited groups forum moderator access</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<strong>Added or edited Moderators</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<strong>Added or edited Forum Permissions</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<strong>Added or edited forum permissions</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_DEL_ADMIN_GLOBAL_A_'		=> '<strong>Removed Administrators</strong><br />» %s',
 	'LOG_ACL_DEL_MOD_GLOBAL_M_'			=> '<strong>Removed Global Moderators</strong><br />» %s',
 	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<strong>Removed Moderators</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<strong>Removed User/Group Forum Permissions</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<strong>Removed User/Group forum permissions</strong> from %1$s<br />» %2$s',
 
-	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transfered from</strong><br />» %s',
+	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transferred from</strong><br />» %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<strong>Own permissions restored after using permissions from</strong><br />» %s',
 	
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
@@ -402,11 +403,11 @@ $lang = array_merge($lang, array(
 	'LOG_BAN_EXCLUDE_USER'	=> '<strong>Excluded user from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_EXCLUDE_IP'	=> '<strong>Excluded IP from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded email from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
-	'LOG_BAN_USER'			=> '<strong>Banned User</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
+	'LOG_BAN_USER'			=> '<strong>Banned user</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_IP'			=> '<strong>Banned IP</strong> for reason "<em>%1$s</em>"<br />» %2$s',
 	'LOG_BAN_EMAIL'			=> '<strong>Banned email</strong> for reason "<em>%1$s</em>"<br />» %2$s',
 	'LOG_UNBAN_USER'		=> '<strong>Unbanned user</strong><br />» %s',
-	'LOG_UNBAN_IP'			=> '<strong>Unbanned ip</strong><br />» %s',
+	'LOG_UNBAN_IP'			=> '<strong>Unbanned IP</strong><br />» %s',
 	'LOG_UNBAN_EMAIL'		=> '<strong>Unbanned email</strong><br />» %s',
 
 	'LOG_BBCODE_ADD'		=> '<strong>Added new BBCode</strong><br />» %s',
@@ -447,8 +448,11 @@ $lang = array_merge($lang, array(
 	'LOG_FORK'					=> '<strong>Copied topic</strong><br />» from %s',
 	'LOG_LOCK'					=> '<strong>Locked topic</strong><br />» %s',
 	'LOG_LOCK_POST'				=> '<strong>Locked post</strong><br />» %s',
-	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />»%s',
+	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />» %s',
 	'LOG_MOVE'					=> '<strong>Moved topic</strong><br />» from %s',
+	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved splitted posts</strong><br />» to %s',
+	'LOG_SPLIT_SOURCE'			=> '<strong>Splitted posts</strong><br />» from %s',
+
 	'LOG_TOPIC_DELETED'			=> '<strong>Deleted topic</strong><br />» %s',
 	'LOG_TOPIC_RESYNC'			=> '<strong>Resynchronised topic counters</strong><br />» %s',
 	'LOG_TOPIC_TYPE_CHANGED'	=> '<strong>Changed topic type</strong><br />» %s',
@@ -461,7 +465,7 @@ $lang = array_merge($lang, array(
 	'LOG_DB_BACKUP'			=> '<strong>Database backup</strong>',
 	'LOG_DB_RESTORE'		=> '<strong>Database restore</strong>',
 
-	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<strong>Exluded IP/hostname from download list</strong><br />» %s',
+	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<strong>Excluded IP/hostname from download list</strong><br />» %s',
 	'LOG_DOWNLOAD_IP'			=> '<strong>Added IP/hostname to download list</strong><br />» %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<strong>Removed IP/hostname from download list</strong><br />» %s',
 
@@ -508,7 +512,7 @@ $lang = array_merge($lang, array(
 	'LOG_INSTALL_CONVERTED'	=> '<strong>Converted from %1$s to phpBB %2$s</strong>',
 	'LOG_INSTALL_INSTALLED'	=> '<strong>Installed phpBB %s</strong>',
 
-	'LOG_IP_BROWSER_CHECK'	=> '<strong>Session IP/browser check failed</strong><br />»User IP "<em>%1$s</em>" checked against session IP "<em>%2$s</em>" and user browser string "<em>%3$s</em>" checked against session browser string "<em>%4$s</em>".',
+	'LOG_IP_BROWSER_FORWARDED_CHECK'	=> '<strong>Session IP/browser/X_FORWARDED_FOR check failed</strong><br />»User IP "<em>%1$s</em>" checked against session IP "<em>%2$s</em>", user browser string "<em>%3$s</em>" checked against session browser string "<em>%4$s</em>" and user X_FORWARDED_FOR string "<em>%5$s</em>" checked against session X_FORWARDED_FOR string "<em>%6$s</em>".',
 
 	'LOG_JAB_CHANGED'			=> '<strong>Jabber account changed</strong>',
 	'LOG_JAB_PASSCHG'			=> '<strong>Jabber password changed</strong>',
@@ -557,15 +561,19 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
 
+	'LOG_RANK_ADDED'		=> '<strong>Added new rank</strong><br />» %s',
+	'LOG_RANK_REMOVED'		=> '<strong>Removed rank</strong><br />» %s',
+	'LOG_RANK_UPDATED'		=> '<strong>Updated rank</strong><br />» %s',
+
 	'LOG_REASON_ADDED'		=> '<strong>Added report/denial reason</strong><br />» %s',
 	'LOG_REASON_REMOVED'	=> '<strong>Removed report/denial reason</strong><br />» %s',
 	'LOG_REASON_UPDATED'	=> '<strong>Updated report/denial reason</strong><br />» %s',
 
 	'LOG_RESET_DATE'			=> '<strong>Board start date reset</strong>',
 	'LOG_RESET_ONLINE'			=> '<strong>Most users online reset</strong>',
-	'LOG_RESYNC_POSTCOUNTS'		=> '<strong>User post counts resyncronised</strong>',
-	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resyncronised</strong>',
-	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resyncronised</strong>',
+	'LOG_RESYNC_POSTCOUNTS'		=> '<strong>User post counts resynchronised</strong>',
+	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resynchronised</strong>',
+	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resynchronised</strong>',
 
 	'LOG_STYLE_ADD'				=> '<strong>Added new style</strong><br />» %s',
 	'LOG_STYLE_DELETE'			=> '<strong>Deleted style</strong><br />» %s',
@@ -589,6 +597,9 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_EDIT_ADD'		=> '<strong>Edited theme <em>%1$s</em></strong><br />» Added class <em>%2$s</em>',
 	'LOG_THEME_EXPORT'			=> '<strong>Exported theme</strong><br />» %s',
 	'LOG_THEME_REFRESHED'		=> '<strong>Refreshed theme</strong><br />» %s',
+
+	'LOG_UPDATE_DATABASE'	=> '<strong>Updated Database from version %1$s to version %2$s</strong>',
+	'LOG_UPDATE_PHPBB'		=> '<strong>Updated phpBB from version %1$s to version %2$s</strong>',
 
 	'LOG_USER_ACTIVE'		=> '<strong>User activated</strong><br />» %s',
 	'LOG_USER_BAN_USER'		=> '<strong>Banned User via user management</strong> for reason "<em>%1$s</em>"<br />» %2$s',
@@ -617,8 +628,8 @@ $lang = array_merge($lang, array(
 	'LOG_USER_MOVE_POSTS_USER'	=> '<strong>Moved all posts to forum "%s"</strong>',
 	'LOG_USER_REACTIVATE_USER'	=> '<strong>Forced user account re-activation</strong>',
 	'LOG_USER_UNLOCK'			=> '<strong>User unlocked own topic</strong><br />» %s',
-	'LOG_USER_WARNING'			=> '<strong>Added user warning</strong><br />»%s',
-	'LOG_USER_WARNING_BODY'		=> '<strong>The following warning was issued to this user</strong><br />»%s',
+	'LOG_USER_WARNING'			=> '<strong>Added user warning</strong><br />» %s',
+	'LOG_USER_WARNING_BODY'		=> '<strong>The following warning was issued to this user</strong><br />» %s',
 
 	'LOG_USER_GROUP_CHANGE'			=> '<strong>User changed default group</strong><br />» %s',
 	'LOG_USER_GROUP_DEMOTE'			=> '<strong>User demoted as leaders from usergroup</strong><br />» %s',

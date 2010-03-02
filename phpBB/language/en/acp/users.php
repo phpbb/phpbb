@@ -58,10 +58,11 @@ $lang = array_merge($lang, array(
 	'FOUNDER'						=> 'Founder',
 	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members',
 
-	'GROUP_DEFAULT'					=> 'Default',
-	'GROUP_DELETE'					=> 'Delete',
-	'GROUP_DEMOTE'					=> 'Demote',
-	'GROUP_PROMOTE'					=> 'Promote',
+	'GROUP_APPROVE'					=> 'Approve member',
+	'GROUP_DEFAULT'					=> 'Make group default for member',
+	'GROUP_DELETE'					=> 'Remove member from group',
+	'GROUP_DEMOTE'					=> 'Demote group leader',
+	'GROUP_PROMOTE'					=> 'Promote to group leader',
 
 	'IP_WHOIS_FOR'			=> 'IP whois for %s',
 
@@ -79,7 +80,7 @@ $lang = array_merge($lang, array(
 	'RETAIN_POSTS'			=> 'Retain posts',
 
 	'SELECT_FORM'			=> 'Select form',
-	'SELECT_USER'			=> 'Select User',
+	'SELECT_USER'			=> 'Select user',
 
 	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
@@ -113,14 +114,12 @@ $lang = array_merge($lang, array(
 	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user.',
 	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum.',
 	'USER_PREFS_UPDATED'			=> 'User preferences updated.',
-	'USER_PROFILE'					=> 'User Profile',
+	'USER_PROFILE'					=> 'User profile',
 	'USER_PROFILE_UPDATED'			=> 'User profile updated.',
-	'USER_RANK'						=> 'User Rank',
+	'USER_RANK'						=> 'User rank',
 	'USER_RANK_UPDATED'				=> 'User rank updated.',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
 	'USER_TOOLS'					=> 'Basic tools',
-
-	'WARNINGS_EXPLAIN'		=> 'You can directly alter the warnings this users has received.',
 ));
 
 ?>

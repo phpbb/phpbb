@@ -36,11 +36,16 @@
 			<!-- IF topicrow.S_TOPIC_REPORTED and topicrow.U_MCP_REPORT -->
 				<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
+			<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->
+				[ <a href="{topicrow.U_DELETE_TOPIC}">{L_DELETE_SHADOW_TOPIC}</a> ]&nbsp;
+			<!-- ENDIF -->
 			</p>
 		</td>
 		<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 		<td class="row1" width="120" align="center"><p class="topicdetails">{topicrow.LAST_POST_TIME}</p></td>
-		<td class="row2" align="center"><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" {topicrow.S_TOPIC_CHECKED}/></td>
+		<td class="row2" align="center">
+			<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
+		</td>
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
@@ -56,6 +61,12 @@
 			<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
 			<!-- IF S_CAN_LOCK --><option value="lock">{L_LOCK}</option><option value="unlock">{L_UNLOCK}</option><!-- ENDIF -->
 			<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
+			<!-- IF S_CAN_MAKE_NORMAL --><option value="make_normal">{L_MAKE_NORMAL}</option><!-- ENDIF -->
+			<!-- IF S_CAN_MAKE_STICKY --><option value="make_sticky">{L_MAKE_STICKY}</option><!-- ENDIF -->
+			<!-- IF S_CAN_MAKE_ANNOUNCE -->
+				<option value="make_announce">{L_MAKE_ANNOUNCE}</option>
+				<option value="make_global">{L_MAKE_GLOBAL}</option>
+			<!-- ENDIF -->
 		</select>
 		<input class="btnmain" type="submit" value="{L_SUBMIT}" />
 	</td>

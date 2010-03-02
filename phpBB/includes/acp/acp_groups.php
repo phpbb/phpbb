@@ -91,8 +91,6 @@ class acp_groups
 					break;
 				}
 
-				group_update_listings($group_id);
-
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
@@ -141,8 +139,6 @@ class acp_groups
 					{
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
-
-					group_update_listings($group_id);
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
@@ -265,7 +261,9 @@ class acp_groups
 					$allow_desc_smilies	= request_var('desc_parse_smilies', false);
 
 					$data['uploadurl']	= request_var('uploadurl', '');
-					$data['remotelink'] = request_var('remotelink', '');
+					$data['remotelink']	= request_var('remotelink', '');
+					$data['width']		= request_var('width', '');
+					$data['height']		= request_var('height', '');
 					$delete				= request_var('delete', '');
 
 					$submit_ary = array(
@@ -287,9 +285,6 @@ class acp_groups
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
-						$data['width']		= request_var('width', '');
-						$data['height']		= request_var('height', '');
-
 						// Avatar stuff
 						$var_ary = array(
 							'uploadurl'		=> array('string', true, 5, 255), 
@@ -321,6 +316,34 @@ class acp_groups
 
 							list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
 							$submit_ary['avatar'] = $category . '/' . $avatar_select;
+						}
+					}
+					else if ($data['width'] && $data['height'])
+					{
+						// Only update the dimensions?
+						if ($config['avatar_max_width'] || $config['avatar_max_height'])
+						{
+							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+							{
+								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+							}
+						}
+
+						if (!sizeof($error))
+						{
+							if ($config['avatar_min_width'] || $config['avatar_min_height'])
+							{
+								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
+								{
+									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+								}
+							}
+						}
+
+						if (!sizeof($error))
+						{
+							$submit_ary['avatar_width'] = $data['width'];
+							$submit_ary['avatar_height'] = $data['height'];
 						}
 					}
 					else if ($delete)
@@ -358,35 +381,49 @@ class acp_groups
 							$group_perm_from = request_var('group_perm_from', 0);
 
 							// Copy permissions?
-							if ($group_perm_from && $action == 'add')
+							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transferred.
+							// We do not limit on one auth category because this can lead to incomplete permissions being tricky to fix for the admin, roles being assigned or added non-default permissions.
+							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
+							if ($group_perm_from && $action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
 							{
-								// From the mysql documentation:
-								// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-								// Due to this we stay on the safe side if we do the insertion "the manual way"
-								
-								// Copy permisisons from/to the acl groups table (only group_id gets changed)
-								$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
-									FROM ' . ACL_GROUPS_TABLE . '
+								$sql = 'SELECT group_founder_manage
+									FROM ' . GROUPS_TABLE . '
 									WHERE group_id = ' . $group_perm_from;
 								$result = $db->sql_query($sql);
-
-								$groups_sql_ary = array();
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$groups_sql_ary[] = array(
-										'group_id'			=> (int) $group_id,
-										'forum_id'			=> (int) $row['forum_id'],
-										'auth_option_id'	=> (int) $row['auth_option_id'],
-										'auth_role_id'		=> (int) $row['auth_role_id'],
-										'auth_setting'		=> (int) $row['auth_setting']
-									);
-								}
+								$check_row = $db->sql_fetchrow($result);
 								$db->sql_freeresult($result);
 
-								// Now insert the data
-								$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+								// Check the group if non-founder
+								if ($check_row && ($user->data['user_type'] == USER_FOUNDER || $check_row['group_founder_manage'] == 0))
+								{
+									// From the mysql documentation:
+									// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+									// Due to this we stay on the safe side if we do the insertion "the manual way"
 
-								$auth->acl_clear_prefetch();
+									// Copy permisisons from/to the acl groups table (only group_id gets changed)
+									$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+										FROM ' . ACL_GROUPS_TABLE . '
+										WHERE group_id = ' . $group_perm_from;
+									$result = $db->sql_query($sql);
+
+									$groups_sql_ary = array();
+									while ($row = $db->sql_fetchrow($result))
+									{
+										$groups_sql_ary[] = array(
+											'group_id'			=> (int) $group_id,
+											'forum_id'			=> (int) $row['forum_id'],
+											'auth_option_id'	=> (int) $row['auth_option_id'],
+											'auth_role_id'		=> (int) $row['auth_role_id'],
+											'auth_setting'		=> (int) $row['auth_setting']
+										);
+									}
+									$db->sql_freeresult($result);
+
+									// Now insert the data
+									$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+
+									$auth->acl_clear_prefetch();
+								}
 							}
 
 							$cache->destroy('sql', GROUPS_TABLE);
@@ -494,6 +531,7 @@ class acp_groups
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
+					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
 					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
@@ -518,7 +556,7 @@ class acp_groups
 					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 					'S_RANK_OPTIONS'		=> $rank_options,
-					'S_GROUP_OPTIONS'		=> group_select_options(0),
+					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
@@ -574,11 +612,11 @@ class acp_groups
 				$db->sql_freeresult($result);
 
 				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 					WHERE ug.group_id = $group_id 
 						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username";
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$leader = $member = 0;

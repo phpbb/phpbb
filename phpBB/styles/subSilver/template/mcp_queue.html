@@ -4,10 +4,10 @@
 
 <table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0">
 <tr>
-	<th colspan="6" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+	<th colspan="4" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 </tr>
 <tr>
-	<td colspan="5" class="cat" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	<td colspan="4" class="cat" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr> 
 	<th>&nbsp;<!-- IF S_TOPICS -->{L_TOPIC}<!-- ELSE -->{L_POST}<!-- ENDIF -->&nbsp;</th>
@@ -27,11 +27,11 @@
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_POSTS}</span></td>
+		<td class="row1" colspan="4" height="30" align="center" valign="middle"><span class="gen">{L_NO_POSTS}</span></td>
 	</tr>
 <!-- END postrow -->
 <tr>
-	<td class="cat" colspan="6" align="center"><input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
+	<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
 </tr>
 </table>
 

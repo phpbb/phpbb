@@ -30,7 +30,7 @@
 
 <tr> 
 	<td class="row1"><b class="genmed">{L_FILENAME}</b></td> 
-	<td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnlite" /></td> 
+	<td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnfile" /></td> 
 </tr> 
 <tr> 
 	<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
@@ -68,9 +68,6 @@
 					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual">{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
 					<td valign="top">
 						<table border="0" cellspacing="4" cellpadding="0">
-						<tr>
-							<td><input class="btnlite" type="submit" style="width:150px" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /></td>
-						</tr>
 						<tr>
 							<td><input class="btnlite" type="submit" style="width:150px" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
 						</tr>

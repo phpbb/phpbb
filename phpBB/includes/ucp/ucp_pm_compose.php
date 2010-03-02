@@ -48,10 +48,11 @@ function compose_pm($id, $mode, $action)
 	$add_to		= (isset($_REQUEST['add_to'])) ? true : false;
 	$add_bcc	= (isset($_REQUEST['add_bcc'])) ? true : false;
 
-	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || $save || $load
+	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
+	$select_single = ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
 
 	$error = array();
 	$current_time = time();
@@ -90,7 +91,8 @@ function compose_pm($id, $mode, $action)
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
-			'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=post&amp;field=username_list'))
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=post&amp;field=username_list&amp;select_single=$select_single"),
+			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&form=post&field=username_list&select_single=$select_single", false))
 		);
 	}
 
@@ -513,14 +515,17 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Subject defined
-		if (!$subject && !($remove_u || $remove_g || $add_to || $add_bcc))
+		if ($submit)
 		{
-			$error[] = $user->lang['EMPTY_SUBJECT'];
-		}
+			if (!$subject)
+			{
+				$error[] = $user->lang['EMPTY_SUBJECT'];
+			}
 
-		if (!sizeof($address_list))
-		{
-			$error[] = $user->lang['NO_RECIPIENT'];
+			if (!sizeof($address_list))
+			{
+				$error[] = $user->lang['NO_RECIPIENT'];
+			}
 		}
 
 		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
@@ -553,7 +558,7 @@ function compose_pm($id, $mode, $action)
 			unset($message_parser);
 
 			// ((!$message_subject) ? $subject : $message_subject)
-			$msg_id = submit_pm($action, $subject, $pm_data, true);
+			$msg_id = submit_pm($action, $subject, $pm_data);
 
 			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
 			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
@@ -569,8 +574,6 @@ function compose_pm($id, $mode, $action)
 	// Preview
 	if (!sizeof($error) && $preview)
 	{
-		$post_time = ($action == 'edit') ? $post_time : $current_time;
-
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];
@@ -596,10 +599,20 @@ function compose_pm($id, $mode, $action)
 		// Attachment Preview
 		if (sizeof($message_parser->attachment_data))
 		{
-			$extensions = $update_count = array();
-
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
-			display_attachments(0, 'attachment', $message_parser->attachment_data, $update_count);
+
+			$update_count = array();
+			$attachment_data = $message_parser->attachment_data;
+
+			parse_attachments(false, $preview_message, $attachment_data, $update_count, true);
+
+			foreach ($attachment_data as $i => $attachment)
+			{
+				$template->assign_block_vars('attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment)
+				);
+			}
+			unset($attachment_data);
 		}
 
 		$preview_subject = censor_text($subject);

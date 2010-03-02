@@ -600,7 +600,7 @@ class compress_tar extends compress
 	function open()
 	{
 		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && @extension_loaded('zlib')) ? 'gzopen' : 'fopen');
-		$this->fp = @$fzopen($this->file, $this->mode . 'b' . (($fzopen == 'gzopen') ? '9' : ''));
+		$this->fp = @$fzopen($this->file, $this->mode . (($fzopen == 'bzopen') ? '' : 'b') . (($fzopen == 'gzopen') ? '9' : ''));
 
 		if (!$this->fp)
 		{

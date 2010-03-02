@@ -261,8 +261,8 @@
 			<fieldset>
 				<legend>{L_LOOK_UP_GROUP}</legend>
 			<dl>
-				<dt><label for="group">{L_LOOK_UP_GROUP}:</label></dt>
-				<dd><select name="group_id[]" id="group">{S_ADD_GROUP_OPTIONS}</select></dd>
+				<dt><label for="group_select">{L_LOOK_UP_GROUP}:</label></dt>
+				<dd><select name="group_id[]" id="group_select">{S_ADD_GROUP_OPTIONS}</select></dd>
 				<dd>&nbsp;</dd>
 			</dl>
 			</fieldset>
@@ -337,14 +337,9 @@
 
 	<br /><br />
 
-	<fieldset class="quick" style="float: left; text-align: left;">
-		{L_PERMISSION_APPLIED_TO_ALL}<br />
-		<a href="#" onclick="marklist('set_permissions', 'inherit', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('set_permissions', 'inherit', false); return false;">{L_UNMARK_ALL}</a>
-	</fieldset>
-
 	<fieldset class="quick" style="float: right;">
 		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
-		<input class="button2" type="reset" name="cancel" value="{L_RESET}" />
+		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set_permissions'].reset(); init_colours(active_pmask + active_fmask);" />
 	</fieldset>
 
 	<br /><br />

@@ -95,7 +95,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	else if ($author)
 	{
-		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
+		if ((strpos($author, '*') !== false) && (utf8_strlen(str_replace(array('*', '%'), '', $author)) < $config['min_search_author_chars']))
 		{
 			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
 		}
@@ -103,7 +103,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
-			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
+			WHERE username_clean $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', utf8_clean_string($author))) . "'
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query_limit($sql, 100);
 
@@ -148,7 +148,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
-		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
+		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
 			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 		$not_in_fid
 		ORDER BY f.left_id";
@@ -250,13 +250,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$sort_by_sql = array('a' => 'u.username_clean', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
 	// pre-made searches
-	$sql = $field = '';
+	$sql = $field = $l_search_title = '';
 	if ($search_id)
 	{
 		switch ($search_id)
 		{
 			// Oh holy Bob, bring us some activity...
 			case 'active_topics':
+				$l_search_title = $user->lang['SEARCH_ACTIVE_TOPICS'];
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
@@ -279,6 +280,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'unanswered':
+				$l_search_title = $user->lang['SEARCH_UNANSWERED'];
 				$show_results = request_var('sr', 'topics');
 				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
@@ -331,6 +333,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'newposts':
+				$l_search_title = $user->lang['SEARCH_NEW'];
 				// force sorting
 				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
 				$sort_key = 't';
@@ -362,6 +365,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$sql_sort";
 					$field = 'topic_id';
 				}
+			break;
+
+			case 'egosearch':
+				$l_search_title = $user->lang['SEARCH_SELF'];
 			break;
 		}
 	}
@@ -446,7 +453,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	// @todo preg_replace still needed?
 	$hilit = htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords)))));
 	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
@@ -464,6 +470,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($return_chars != 200) ? '&amp;ch=' . $return_chars : '';
 
 	$template->assign_vars(array(
+		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars($search->search_query)),
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? htmlspecialchars(implode(' ', $search->common_words)) : '',
@@ -490,9 +497,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		if ($show_results == 'posts')
 		{
-			/**
-			* @todo Joining this query to the one below?
-			*/
+			// @todo Joining this query to the one below?
 			$sql = 'SELECT zebra_id, friend, foe
 				FROM ' . ZEBRA_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'];
@@ -505,7 +510,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
+			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
 				FROM ' . POSTS_TABLE . ' p
 					LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
 					LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
@@ -620,14 +625,26 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		else
 		{
-			$bbcode_bitfield = '';
+			$bbcode_bitfield = $text_only_message = '';
 			$attach_list = array();
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$rowset[] = $row;
-				if (($return_chars == -1) || (utf8_strlen($row['post_text']) < $return_chars + 3))
+				// We pre-process some variables here for later usage
+				$row['post_text'] = censor_text($row['post_text']);
+
+				$text_only_message = $row['post_text'];
+				// make list items visible as such
+				if ($row['bbcode_uid'])
 				{
+					$text_only_message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $text_only_message);
+					// no BBCode in text only message
+					strip_bbcode($text_only_message, $row['bbcode_uid']);
+				}
+
+				if ($return_chars == -1 || utf8_strlen($text_only_message) < ($return_chars + 3))
+				{
+					$row['display_text_only'] = false;
 					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 					// Does this post have an attachment? If so, add it to the list
@@ -636,8 +653,17 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$attach_list[$row['forum_id']][] = $row['post_id'];
 					}
 				}
+				else
+				{
+					$row['post_text'] = $text_only_message;
+					$row['display_text_only'] = true;
+				}
+
+				$rowset[] = $row;
 			}
 			$db->sql_freeresult($result);
+
+			unset($text_only_message);
 
 			// Instantiate BBCode if needed
 			if ($bbcode_bitfield !== '')
@@ -794,50 +820,39 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				// Replace naughty words such as farty pants
 				$row['post_subject'] = censor_text($row['post_subject']);
-				$message = $row['post_text'];
 
-				if ($return_chars != -1 && utf8_strlen($message) >= ($return_chars + 3))
+				if ($row['display_text_only'])
 				{
-					$message = censor_text($message);
-
-					// make list items visible as such
-					$message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $message);
-
-					// do not display raw bbcode
-					strip_bbcode($message, $row['bbcode_uid']);
-
 					// now find context for the searched words
-					$message = get_context($message, array_filter(explode('|', $hilit), 'strlen'), $return_chars);
-
-					$message = str_replace("\n", '<br />', $message);
+					$row['post_text'] = get_context($row['post_text'], array_filter(explode('|', $hilit), 'strlen'), $return_chars);
+					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
 				}
 				else
 				{
-					$message = censor_text($message);
-					$message = str_replace("\n", '<br />', $message);
+					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
 
 					// Second parse bbcode here
 					if ($row['bbcode_bitfield'])
 					{
-						$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+						$bbcode->bbcode_second_pass($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield']);
 					}
 
-					if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+					if (!empty($attachments[$row['post_id']]))
 					{
-						parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
+						parse_attachments($forum_id, $row['post_text'], $attachments[$row['post_id']], $update_count);
 				
 						// we only display inline attachments
 						unset($attachments[$row['post_id']]);
 					}
 
 					// Always process smilies after parsing bbcodes
-					$message = smiley_text($message);
+					$row['post_text'] = smiley_text($row['post_text']);
 				}
 
 				if ($hilit)
 				{
 					// post highlighting
-					$message = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $message);
+					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['post_text']);
 				}
 
 				$tpl_ary = array(
@@ -848,7 +863,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
-					'MESSAGE'			=> $message
+					'MESSAGE'			=> $row['post_text']
 				);
 			}
 
@@ -878,10 +893,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	unset($rowset);
 
-	page_header($user->lang['SEARCH']);
+	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
 
 	$template->set_filenames(array(
-		'body' =>  'search_results.html')
+		'body' => 'search_results.html')
 	);
 	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
@@ -893,7 +908,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
-	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
+	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
 		AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);
@@ -960,6 +975,12 @@ while ($row = $db->sql_fetchrow($result))
 		$holding = '';
 	}
 }
+
+if ($holding)
+{
+	$s_forums .= $holding;
+}
+
 $db->sql_freeresult($result);
 unset($pad_store);
 
@@ -990,14 +1011,21 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 );
 
-// Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
+// Handle large objects differently for Oracle and MSSQL
 switch ($db->sql_layer)
 {
+	case 'oracle':
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE dbms_lob.getlength(search_keywords) > 0
+			ORDER BY search_time DESC';
+	break;
+
 	case 'mssql':
 	case 'mssql_odbc':
 		$sql = 'SELECT search_time, search_keywords
 			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE CAST(search_keywords AS varchar) <> \'\'
+			WHERE DATALENGTH(search_keywords) > 0
 			ORDER BY search_time DESC';
 	break;
 

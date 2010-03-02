@@ -117,16 +117,10 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Assign inline attachments
-	if (isset($attachments) && sizeof($attachments))
+	if (!empty($attachments))
 	{
 		$update_count = array();
-		$unset_attachments = parse_inline_attachments($message, $attachments, $update_count, 0);
-
-		// Needed to let not display the inlined attachments at the end of the message again
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachments[$index]);
-		}
+		parse_attachments(false, $message, $attachments, $update_count);
 
 		// Update the attachment download counts
 		if (sizeof($update_count))
@@ -170,8 +164,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 
-		'AUTHOR_RANK'		=> $user_info['rank_title'],
-		'RANK_IMAGE'		=> $user_info['rank_image'],
+		'RANK_TITLE'		=> $user_info['rank_title'],
+		'RANK_IMG'			=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
@@ -193,6 +187,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
+		'MESSAGE_ID'		=> $message_row['msg_id'],
 
 		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -277,11 +272,11 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	{
 		$folder_id = (int) $row['folder_id'];
 
-		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKOWN_FOLDER'];
+		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
 
 		if (isset($rowset[$row['msg_id']]))
 		{
-			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKOWN_FOLDER'];
+			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
 		}
 		else
 		{
@@ -467,7 +462,7 @@ function get_user_information($user_id, $user_row)
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
-		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $user_row['user_email']);
+		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
 	}
 	else
 	{

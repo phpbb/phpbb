@@ -15,6 +15,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -122,7 +123,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
 
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -305,7 +306,7 @@ switch ($mode)
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'BOARD_EMAIL'	=> $config['board_contact'],
+						'BOARD_CONTACT'	=> $config['board_contact'],
 						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
 						'MESSAGE'		=> htmlspecialchars_decode($message))
@@ -418,10 +419,6 @@ switch ($mode)
 
 		if ($config['load_user_activity'])
 		{
-			if (!function_exists('display_user_activity'))
-			{
-				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-			}
 			display_user_activity($member);
 		}
 
@@ -518,10 +515,10 @@ switch ($mode)
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])) : '',
-			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])) : '',
+			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
+			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
 			'U_REMOVE_FRIEND'	=> ($friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
-			'U_REMOVE_FOE'		=> ($foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+			'U_REMOVE_FOE'		=> ($foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
 		));
 
 		if (!empty($profile_fields['row']))
@@ -780,7 +777,7 @@ switch ($mode)
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'BOARD_EMAIL'	=> $config['board_contact'],
+						'BOARD_CONTACT'	=> $config['board_contact'],
 						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
 						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 						'MESSAGE'		=> htmlspecialchars_decode($message))
@@ -798,7 +795,7 @@ switch ($mode)
 				}
 
 				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
+				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
 				trigger_error($user->lang['EMAIL_SENT'] . '<br /><br />' . $message);
 			}
 		}
@@ -874,8 +871,9 @@ switch ($mode)
 		// then only admins can make use of this (for ACP functionality)
 		$sql_select = $sql_from = $sql_where = $order_by = '';
 
-		$form	= request_var('form', '');
-		$field	= request_var('field', '');
+		$form			= request_var('form', '');
+		$field			= request_var('field', '');
+		$select_single 	= request_var('select_single', false);	
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
@@ -940,7 +938,7 @@ switch ($mode)
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
 			{
-				if (preg_match('#[a-z]#', $ipdomain))
+				if (strspn($ipdomain, 'abcdefghijklmnopqrstuvwxyz'))
 				{
 					$hostnames = gethostbynamel($ipdomain);
 
@@ -969,7 +967,7 @@ switch ($mode)
 
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
-						WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)
+						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
 							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
 					$result = $db->sql_query($sql);
 
@@ -1120,7 +1118,7 @@ switch ($mode)
 			$sort_key = $default_key;
 		}
 
-		$order_by .= $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+		$order_by .= $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...
 		if ($sql_where)
@@ -1204,6 +1202,7 @@ switch ($mode)
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
+				'S_SELECT_SINGLE'		=> $select_single,
 				'S_COUNT_OPTIONS'		=> $s_find_count,
 				'S_SORT_OPTIONS'		=> $s_sort_key,
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
@@ -1240,7 +1239,8 @@ switch ($mode)
 		$id_cache = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : '';
+			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
+			$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 			$id_cache[$row['user_id']] = $row;
 		}
@@ -1254,6 +1254,13 @@ switch ($mode)
 
 			// Grab all profile fields from users in id cache for later use - similar to the poster cache
 			$profile_fields_cache = $cp->generate_profile_fields_template('grab', array_keys($id_cache));
+		}
+
+		// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
+		if ($sort_key == 'l')
+		{
+			$lesser_than = ($sort_dir == 'a') ? -1 : 1;
+			uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
 		}
 
 		$i = 0;
@@ -1346,37 +1353,6 @@ make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 page_footer();
 
 /**
-* Get user rank title and image
-*/
-function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
-{
-	global $ranks, $config;
-
-	if (!empty($user_rank))
-	{
-		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
-	}
-	else
-	{
-		if (isset($ranks['normal']))
-		{
-			foreach ($ranks['normal'] as $rank)
-			{
-				if ($user_posts >= $rank['rank_min'])
-				{
-					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
-					break;
-				}
-			}
-		}
-	}
-}
-
-/**
 * Prepare profile data
 */
 function show_profile($data)
@@ -1388,7 +1364,7 @@ function show_profile($data)
 
 	$rank_title = $rank_img = $rank_img_src = '';
 	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
-	
+
 	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
 		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
@@ -1425,7 +1401,7 @@ function show_profile($data)
 
 		if ($bday_year)
 		{
-			$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+			$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 
 			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)
@@ -1444,22 +1420,24 @@ function show_profile($data)
 	// Dump it out to the template
 	return array(
 		'AGE'			=> $age,
-		'USERNAME'		=> $username,
-		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '',
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
-		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
+		'USERNAME_FULL'		=> get_username_string('full', $user_id, $username, $data['user_colour']),
+		'USERNAME'			=> get_username_string('username', $user_id, $username, $data['user_colour']),
+		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
+		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
+
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
 		'RANK_IMG_SRC'		=> $rank_img_src,
 		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
-		'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> $auth->acl_getf_global('m_warn') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',

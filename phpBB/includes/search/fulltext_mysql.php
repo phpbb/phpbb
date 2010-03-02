@@ -32,12 +32,18 @@ class fulltext_mysql extends search_backend
 	var $split_words = array();
 	var $search_query;
 	var $common_words = array();
+	var $pcre_properties = false;
 
 	function fulltext_mysql(&$error)
 	{
 		global $config;
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
+
+		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+		{
+			$this->pcre_properties = true;
+		}
 
 		$error = false;
 	}
@@ -49,16 +55,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $db, $user;
 
-		if (strpos($db->sql_layer, 'mysql') === false)
-		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
-		}
-
-		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
-		$version = $db->sql_fetchfield('mysql_version');
-		$db->sql_freeresult($result);
-
-		if (!preg_match('#^4|5|6#s', $version))
+		if ($db->sql_layer != 'mysql4' && $db->sql_layer != 'mysqli')
 		{
 			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
 		}
@@ -132,9 +129,9 @@ class fulltext_mysql extends search_backend
 		$keywords = preg_replace($match, ' ', trim($keywords));
 
 		// Split words
-		$split_keywords = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		$split_keywords = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
 		$matches = array();
-		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $split_keywords, $matches);
+		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $split_keywords, $matches);
 		$this->split_words = $matches[1];
 
 		if (sizeof($this->ignore_words))
@@ -183,9 +180,9 @@ class fulltext_mysql extends search_backend
 		$this->get_synonyms();
 
 		// Split words
-		$text = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$text = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 		$matches = array();
-		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $text, $matches);
+		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
 		$text = $matches[1];
 
 		if (sizeof($this->ignore_words))
@@ -648,14 +645,29 @@ class fulltext_mysql extends search_backend
 			$this->get_stats();
 		}
 
+		$alter = array();
+
 		if (!isset($this->stats['post_subject']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_subject)');
+			if ($db->sql_layer == 'mysqli' || version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+			}
+			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_text)');
+			if ($db->sql_layer == 'mysqli' || version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
+			}
+			$alter[] = 'ADD FULLTEXT (post_text)';
+		}
+
+		if (sizeof($alter))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -681,14 +693,21 @@ class fulltext_mysql extends search_backend
 			$this->get_stats();
 		}
 
+		$alter = array();
+
 		if (isset($this->stats['post_subject']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_subject');
+			$alter[] = 'DROP INDEX post_subject';
 		}
 
 		if (isset($this->stats['post_text']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_text');
+			$alter[] = 'DROP INDEX post_text';
+		}
+
+		if (sizeof($alter))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -766,6 +785,28 @@ class fulltext_mysql extends search_backend
 		$result = $db->sql_query($sql);
 		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
 		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Display a note, that UTF-8 support is not available with certain versions of PHP
+	*/
+	function acp()
+	{
+		global $user, $config;
+
+
+		$tpl = '
+		<dl>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_UNICODE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_UNICODE_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
+		</dl>
+		';
+
+		// These are fields required in the config table
+		return array(
+			'tpl'		=> $tpl,
+			'config'	=> array()
+		);
 	}
 }
 

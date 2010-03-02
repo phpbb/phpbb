@@ -21,7 +21,7 @@ class bbcode
 
 	var $bbcodes = array();
 
-	var $template_bitfield = 0;
+	var $template_bitfield;
 	var $template_filename = '';
 
 	/**
@@ -115,7 +115,7 @@ class bbcode
 
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = $user->theme['bbcode_bitfield'];
+			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 
 			if (!@file_exists($this->template_filename))
@@ -238,7 +238,7 @@ class bbcode
 				case 6:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'!\[color=(#[0-9a-fA-F]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!s'	=> $this->bbcode_tpl('color', $bbcode_id),
+							'!\[color=(#[0-9a-f]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!is'	=> $this->bbcode_tpl('color', $bbcode_id),
 						)
 					);
 				break;
@@ -318,13 +318,9 @@ class bbcode
 				break;
 
 				default:
-					if (!isset($template_bitfield))
-					{
-						$template_bitfield = new bitfield($this->template_bitfield);
-					}
 					if (isset($rowset[$bbcode_id]))
 					{
-						if ($template_bitfield->get($bbcode_id))
+						if ($this->template_bitfield->get($bbcode_id))
 						{
 							// The bbcode requires a custom template to be loaded
 							if (!$bbcode_tpl = $this->bbcode_tpl($rowset[$bbcode_id]['bbcode_tag'], $bbcode_id))
@@ -383,10 +379,10 @@ class bbcode
 	*/
 	function bbcode_tpl($tpl_name, $bbcode_id = -1, $skip_bitfield_check = false)
 	{
+		static $bbcode_hardtpl = array();
 		if (empty($bbcode_hardtpl))
 		{
 			global $user;
-			static $bbcode_hardtpl = array();
 			
 			$bbcode_hardtpl = array(
 				'b_open'	=> '<span style="font-weight: bold">',
@@ -400,10 +396,9 @@ class bbcode
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
 			);
-			$template_bitfield = new bitfield($this->template_bitfield);
 		}
 
-		if ($bbcode_id != -1 && !$template_bitfield->get($bbcode_id) && !$skip_bitfield_check)
+		if ($bbcode_id != -1 && !$skip_bitfield_check && !$this->template_bitfield->get($bbcode_id))
 		{
 			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false;
 		}
@@ -477,49 +472,41 @@ class bbcode
 		{
 			$tpl = 'ulist_open_default';
 			$type = 'default';
-			$start = 0;
 		}
 		else if ($type == 'i')
 		{
 			$tpl = 'olist_open';
 			$type = 'lower-roman';
-			$start = 1;
 		}
 		else if ($type == 'I')
 		{
 			$tpl = 'olist_open';
 			$type = 'upper-roman';
-			$start = 1;
 		}
 		else if (preg_match('#^(disc|circle|square)$#i', $type))
 		{
 			$tpl = 'ulist_open';
 			$type = strtolower($type);
-			$start = 1;
 		}
 		else if (preg_match('#^[a-z]$#', $type))
 		{
 			$tpl = 'olist_open';
 			$type = 'lower-alpha';
-			$start = ord($type) - 96;
 		}
 		else if (preg_match('#[A-Z]#', $type))
 		{
 			$tpl = 'olist_open';
 			$type = 'upper-alpha';
-			$start = ord($type) - 64;
 		}
 		else if (is_numeric($type))
 		{
 			$tpl = 'olist_open';
 			$type = 'arabic-numbers';
-			$start = intval($type);
 		}
 		else
 		{
 			$tpl = 'olist_open';
 			$type = 'arabic-numbers';
-			$start = 1;
 		}
 
 		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));

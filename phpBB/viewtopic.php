@@ -480,7 +480,7 @@ $icons = $cache->obtain_icons();
 $extensions = array();
 if ($topic_data['topic_attachment'])
 {
-	$extensions = $cache->obtain_attach_extensions();
+	$extensions = $cache->obtain_attach_extensions($forum_id);
 }
 
 // Forum rules listing
@@ -493,7 +493,7 @@ $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_regist
 $topic_mod = '';
 $topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED)) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
+$topic_mod .= ($auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . $user->lang['MERGE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="fork">' . $user->lang['FORK_TOPIC'] . '</option>' : '';
@@ -674,7 +674,7 @@ if (!empty($topic_data['poll_start']))
 					'vote_user_ip'		=> (string) $user->ip,
 				);
 
-				$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+				$sql = 'INSERT INTO ' . POLL_VOTES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				$db->sql_query($sql);
 			}
 		}
@@ -880,7 +880,7 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
-$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
@@ -1005,8 +1005,8 @@ while ($row = $db->sql_fetchrow($result))
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 
 				'sig'					=> $user_sig,
-				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid']  : '',
-				'sig_bbcode_bitfield'	=> (!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield']  : '',
+				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid'] : '',
+				'sig_bbcode_bitfield'	=> (!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield'] : '',
 
 				'viewonline'	=> $row['user_allow_viewonline'],
 				'allow_pm'		=> $row['user_allow_pm'],
@@ -1050,28 +1050,7 @@ while ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" alt="" />';
 			}
 
-			if (!empty($row['user_rank']))
-			{
-				$user_cache[$poster_id]['rank_title'] = (isset($ranks['special'][$row['user_rank']])) ? $ranks['special'][$row['user_rank']]['rank_title'] : '';
-				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] . '" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
-				$user_cache[$poster_id]['rank_image_src'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] : '';
-			}
-			else
-			{
-				if (isset($ranks['normal']) && sizeof($ranks['normal']))
-				{
-					foreach ($ranks['normal'] as $rank)
-					{
-						if ($row['user_posts'] >= $rank['rank_min'])
-						{
-							$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
-							$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-							$user_cache[$poster_id]['rank_image_src'] = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
-							break;
-						}
-					}
-				}
-			}
+			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
 			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 			{
@@ -1255,7 +1234,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	// Parse the message and subject
 	$message = censor_text($row['post_text']);
-	$message = str_replace("\n", '<br />', $message);
 
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
@@ -1263,18 +1241,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
+	$message = str_replace("\n", '<br />', $message);
+
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
 
-	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+	if (!empty($attachments[$row['post_id']]))
 	{
-		$unset_attachments = parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
-
-		// Needed to let not display the inlined attachments at the end of the post again
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachments[$row['post_id']][$index]);
-		}
+		parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 	}
 
 	// Highlight active words (primarily for search)
@@ -1388,9 +1362,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 
-		'POSTER_RANK'		=> $user_cache[$poster_id]['rank_title'],
-		'RANK_IMAGE'		=> $user_cache[$poster_id]['rank_image'],
-		'RANK_IMAGE_SRC'	=> $user_cache[$poster_id]['rank_image_src'],
+		'RANK_TITLE'		=> $user_cache[$poster_id]['rank_title'],
+		'RANK_IMG'			=> $user_cache[$poster_id]['rank_image'],
+		'RANK_IMG_SRC'		=> $user_cache[$poster_id]['rank_image_src'],
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM'		=> $user_cache[$poster_id]['from'],

@@ -45,13 +45,15 @@ $lang = array_merge($lang, array(
 	'IGNORED_TERMS'			=> 'ignored',
 	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored: <strong>%s</strong>',
 
+	'JUMP_TO_POST'			=> 'Jump to post',
+
 	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %d characters and must not contain more than %d characters excluding wildcards.',
 	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently',
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'NO_SEARCH_TIME'		=> 'Sorry but you cannot use search at this time. Please try again in a few minutes.',
-	'WORD_IN_NO_POST'		=> 'No posts were found because the word %s is not contained in any post.',
-	'WORDS_IN_NO_POST'		=> 'No posts were found because the words %s are not contained in any post.',
+	'WORD_IN_NO_POST'		=> 'No posts were found because the word <strong>%s</strong> is not contained in any post.',
+	'WORDS_IN_NO_POST'		=> 'No posts were found because the words <strong>%s</strong> are not contained in any post.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
 
@@ -70,10 +72,10 @@ $lang = array_merge($lang, array(
 	'SEARCH_FORUMS'				=> 'Search in forums',
 	'SEARCH_FORUMS_EXPLAIN'		=> 'Select the forum or forums you wish to search in. For speed all subforums can be searched by selecting the parent and setting enable search subforums below.',
 	'SEARCH_IN_RESULTS'			=> 'Search these results',
-	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Place <strong>+</strong> in front of a word which must be found and <strong>-</strong> in front of a word which must not be found. Put a list of words seperated by <strong>|</strong> into brackets if only one of the words must be found. Use * as a wildcard for partial matches.',
+	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Place <strong>+</strong> in front of a word which must be found and <strong>-</strong> in front of a word which must not be found. Put a list of words separated by <strong>|</strong> into brackets if only one of the words must be found. Use * as a wildcard for partial matches.',
 	'SEARCH_MSG_ONLY'			=> 'Message text only',
-	'SEARCH_OPTIONS'			=> 'Search Options',
-	'SEARCH_QUERY'				=> 'Search Query',
+	'SEARCH_OPTIONS'			=> 'Search options',
+	'SEARCH_QUERY'				=> 'Search query',
 	'SEARCH_SUBFORUMS'			=> 'Search subforums',
 	'SEARCH_TITLE_MSG'			=> 'Post subjects and message text',
 	'SEARCH_TITLE_ONLY'			=> 'Topic titles only',

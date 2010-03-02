@@ -34,6 +34,8 @@ $lang = array_merge($lang, array(
 	'ACP_SEARCH_INDEX_EXPLAIN'				=> 'Here you can manage the search backend’s indexes. Since you normally use only one backend you should delete all indexes that you do not make use of. After altering some of the search settings (e.g. the number of minimum/maximum chars) it might be worth recreating the index so it reflects those changes.',
 	'ACP_SEARCH_SETTINGS_EXPLAIN'			=> 'Here you can define what search backend will be used for indexing posts and performing searches. You can set various options that can influence how much processing these actions require. Some of these settings are the same for all search engine backends.',
 
+	'COMMON_WORD_THRESHOLD'					=> 'Common word threshold',
+	'COMMON_WORD_THRESHOLD_EXPLAIN'			=> 'Words which are contained in a greater percentage of all posts will be regarded as common. Common words are ignored in search queries. Set to zero to disable. Only takes effect if there are more than 100 posts.',
 	'CONFIRM_SEARCH_BACKEND'				=> 'Are you sure you wish to switch to a different search backend? After changing the search backend you will have to create an index for the new search backend. If you don’t plan on switching back to the old search backend you can also delete the old backend’s index in order to free system resources.',
 	'CONTINUE_DELETING_INDEX'				=> 'Continue previous index deleting process',
 	'CONTINUE_DELETING_INDEX_EXPLAIN'		=> 'An index deleting process has been started. In order to access the search index page again you need to complete it first.',
@@ -50,6 +52,8 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_MYSQL_SUBJECT_CARDINALITY'	=> 'Cardinality of the post_subject fulltext index (estimate of unique values)',
 	'FULLTEXT_MYSQL_TEXT_CARDINALITY'		=> 'Cardinality of the post_text fulltext index (estimate of unique values)',
 	'FULLTEXT_MYSQL_TOTAL_POSTS'			=> 'Total number of indexed posts',
+	'FULLTEXT_MYSQL_UNICODE'				=> 'Support for non-latin UTF-8 characters:',
+	'FULLTEXT_MYSQL_UNICODE_EXPLAIN'		=> 'This search backend requires PCRE unicode character properties, only available in PHP 4.4, 5.1 and above, if you want to search for non-latin characters.',
 
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',
@@ -75,11 +79,11 @@ $lang = array_merge($lang, array(
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',
-	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independendly for each user.',
+	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independently for each user.',
 	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',
 	'SEARCH_STORE_RESULTS_EXPLAIN'			=> 'Cached search results will expire after this time, in seconds. Set to 0 if you want to disable search cache.',
 	'SEARCH_TYPE'							=> 'Search backend',
-	'SEARCH_TYPE_EXPLAIN'					=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search  will use phpBB’s own fulltext search.',
+	'SEARCH_TYPE_EXPLAIN'					=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search will use phpBB’s own fulltext search.',
 	'SWITCHED_SEARCH_BACKEND'				=> 'You switched the search backend. In order to use the new search backend you should make sure that there is an index for the backend you chose.',
 
 	'TOTAL_WORDS'							=> 'Total number of indexed words',
@@ -88,7 +92,7 @@ $lang = array_merge($lang, array(
 	'YES_SEARCH'							=> 'Enable search facilities',
 	'YES_SEARCH_EXPLAIN'					=> 'Enables user facing search functionality including member search.',
 	'YES_SEARCH_UPDATE'						=> 'Enable fulltext updating',
-	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overriden if search is disabled.',
+	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overridden if search is disabled.',
 ));
 
 ?>

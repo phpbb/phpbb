@@ -218,7 +218,7 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
+					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? request_var('marked_msg_id', array(0)) : array();
 					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
@@ -239,7 +239,7 @@ class ucp_pm
 					handle_mark_actions($user->data['user_id'], $mark_option);
 				}
 
-				// If new messages arrived, place them into the appropiate folder
+				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
 
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
@@ -368,6 +368,7 @@ class ucp_pm
 					'U_OUTBOX'				=> $this->u_action . '&amp;folder=outbox',
 					'U_SENTBOX'				=> $this->u_action . '&amp;folder=sentbox',
 					'U_CREATE_FOLDER'		=> $this->u_action . '&amp;mode=options',
+					'U_CURRENT_FOLDER'		=> $this->u_action . '&amp;folder=' . $folder_id,
 
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,

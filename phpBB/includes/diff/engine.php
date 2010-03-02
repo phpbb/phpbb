@@ -47,10 +47,32 @@ if (!defined('IN_PHPBB'))
 */
 class diff_engine
 {
-	function diff($from_lines, $to_lines)
+	function diff(&$from_lines, &$to_lines, $preserve_cr = true)
 	{
-		array_walk($from_lines, array('diff', 'trim_newlines'));
-		array_walk($to_lines, array('diff', 'trim_newlines'));
+		// Remove empty lines...
+		// If preserve_cr is true, we basically only change \r\n and bare \r to \n to get the same carriage returns for both files
+		// If it is false, we try to only use \n once per line and ommit all empty lines to be able to get a proper data diff
+
+		if (is_array($from_lines))
+		{
+			$from_lines = implode("\n", $from_lines);
+		}
+
+		if (is_array($to_lines))
+		{
+			$to_lines = implode("\n", $to_lines);
+		}
+
+		if ($preserve_cr)
+		{
+			$from_lines = explode("\n", str_replace("\r", "\n", str_replace("\r\n", "\n", $from_lines)));
+			$to_lines = explode("\n", str_replace("\r", "\n", str_replace("\r\n", "\n", $to_lines)));
+		}
+		else
+		{
+			$from_lines = explode("\n", preg_replace('#[\n\r]+#', "\n", $from_lines));
+			$to_lines = explode("\n", preg_replace('#[\n\r]+#', "\n", $to_lines));
+		}
 
 		$n_from = sizeof($from_lines);
 		$n_to = sizeof($to_lines);
@@ -249,6 +271,7 @@ class diff_engine
 					}
 				}
 
+				// no reset() here
 				while (list($junk, $y) = each($matches))
 				{
 					if ($y > $this->seq[$k - 1])

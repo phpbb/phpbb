@@ -322,15 +322,15 @@
 				</dl>
 				<dl>
 					<dt><label for="font_weight">{L_BOLD}:</label></dt>
-					<dd><input id="font_weight" type="radio" class="radio" name="font_weight" value="bold"<!-- IF FONT_WEIGHT eq "bold" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_weight" value="normal"<!-- IF FONT_WEIGHT eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_weight" value=""<!-- IF not FONT_WEIGHT --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="font_weight" type="radio" class="radio" name="font_weight" value="bold"<!-- IF FONT_WEIGHT eq "bold" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_weight" value="none"<!-- IF FONT_WEIGHT eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_weight" value=""<!-- IF not FONT_WEIGHT --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="font_style">{L_ITALIC}:</label></dt>
-					<dd><input id="font_style" type="radio" class="radio" name="font_style" value="italic"<!-- IF FONT_STYLE eq "italic" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_style" value="normal"<!-- IF FONT_STYLE eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_style" value=""<!-- IF not FONT_STYLE --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="font_style" type="radio" class="radio" name="font_style" value="italic"<!-- IF FONT_STYLE eq "italic" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_style" value="none"<!-- IF FONT_STYLE eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_style" value=""<!-- IF not FONT_STYLE --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="text_decoration">{L_UNDERLINE}:</label></dt>
-					<dd><input id="text_decoration" type="radio" class="radio" name="text_decoration" value="underline"<!-- IF TEXT_DECORATION eq "underline" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="text_decoration" value="normal"<!-- IF TEXT_DECORATION eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="text_decoration" value=""<!-- IF not TEXT_DECORATION --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="text_decoration" type="radio" class="radio" name="text_decoration" value="underline"<!-- IF TEXT_DECORATION eq "underline" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="text_decoration" value="none"<!-- IF TEXT_DECORATION eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="text_decoration" value=""<!-- IF not TEXT_DECORATION --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="line_height">{L_LINE_SPACING}</label></dt>
@@ -516,7 +516,7 @@
 	</tr>
 	<!-- BEGIN installed -->
 	<tr>
-		<td><strong>{installed.NAME}</strong></a><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
+		<td><strong>{installed.NAME}</strong><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
 		<!-- IF S_STYLE -->
 			<td style="text-align: center;">{installed.STYLE_COUNT}</td>
 		<!-- ENDIF -->

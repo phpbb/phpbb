@@ -142,27 +142,20 @@ class dbal_mysqli extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{
-		if ($query != '')
+		$this->query_result = false;
+
+		// if $total is set to 0 we do not want to limit the number of rows
+		if ($total == 0)
 		{
-			$this->query_result = false;
-
-			// if $total is set to 0 we do not want to limit the number of rows
-			if ($total == 0)
-			{
-				// MySQL 4.1+ no longer supports -1 in limit queries
-				$total = '18446744073709551615';
-			}
-
-			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
-
-			return $this->sql_query($query, $cache_ttl);
+			// MySQL 4.1+ no longer supports -1 in limit queries
+			$total = '18446744073709551615';
 		}
-		else
-		{
-			return false;
-		}
+
+		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+
+		return $this->sql_query($query, $cache_ttl);
 	}
 
 	/**

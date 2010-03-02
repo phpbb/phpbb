@@ -9,7 +9,7 @@
 */
 
 /**
-* Fill smiley templates (or just the variables) with smileys, either in a window or inline
+* Fill smiley templates (or just the variables) with smilies, either in a window or inline
 */
 function generate_smilies($mode, $forum_id)
 {
@@ -96,7 +96,7 @@ function generate_smilies($mode, $forum_id)
 }
 
 /**
-* Update Post Information (First/Last Post in topic/forum)
+* Update last post information
 * Should be used instead of sync() if only the last post information are out of sync... faster
 *
 * @param string $type Can be forum|topic
@@ -338,7 +338,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		return $filedata;
 	}
 
-	$extensions = $cache->obtain_attach_extensions($forum_id);
+	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
 	$file = ($local) ? $upload->local_upload($local_storage) : $upload->form_upload($form_name);
@@ -1107,7 +1107,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			{
 				$messenger->template($email_template, $addr['lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($addr['email'], $addr['name']);
 				$messenger->im($addr['jabber'], $addr['name']);
 
@@ -1324,12 +1323,12 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	$db->sql_transaction('commit');
 
 	// Adjust posted info for this user by looking for a post by him/her within this topic...
-	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $user->data['is_registered'])
+	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $data['poster_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . $topic_id . '
-				AND poster_id = ' . $user->data['user_id'];
+				AND poster_id = ' . $data['poster_id'];
 		$result = $db->sql_query_limit($sql, 1);
 		$poster_id = (int) $db->sql_fetchfield('poster_id');
 		$db->sql_freeresult($result);
@@ -1339,7 +1338,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		{
 			$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
 				WHERE topic_id = ' . $topic_id . '
-					AND user_id = ' . $user->data['user_id'];
+					AND user_id = ' . $data['poster_id'];
 			$db->sql_query($sql);
 		}
 	}
@@ -1578,7 +1577,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 		}
 
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .	$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 
@@ -1973,7 +1972,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 	else
 	{
-		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ?  append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}") . "#p{$data['post_id']}" : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}");
+		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}") . "#p{$data['post_id']}" : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}");
 	}
 
 	return $url;

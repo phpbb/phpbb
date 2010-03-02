@@ -58,7 +58,7 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// First we'll try to authorise using this account, if that fails we'll try to create it.
@@ -87,16 +87,16 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$jabber->send_auth())
 				{
-					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['ERR_JAB_AUTH'] . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$jabber->send_presence(NULL, NULL, 'online');
 
-				if (($result = $jabber->change_password($jab_password))  <> 2)
+				if (($result = $jabber->change_password($jab_password)) <> 2)
 				{
 					$error[] = ($result == 1) ? $user->lang['ERR_JAB_PASSCHG'] : sprintf($user->lang['ERR_JAB_PASSFAIL'], $result);
 				}

@@ -45,8 +45,8 @@
 		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
 		<td style="vertical-align: top;">[{items.IMG}]</td>
 		<!-- IF S_SMILIES -->
-			<td><input class="post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" /></td>
-			<td><input class="post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" /></td>
+			<td><input class="post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" maxlength="50" /></td>
+			<td><input class="post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" maxlength="50" /></td>
 		<!-- ENDIF -->
 		<td><input class="post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
@@ -122,10 +122,12 @@
 	<!-- ENDIF -->
 
 	<form id="acp_icons" method="post" action="{U_ACTION}">
-	<fieldset class="tabular">
-	<legend>{L_TITLE}<legend>
 
 	<div style="text-align: right;"><a href="{U_IMPORT}">{L_IMPORT}</a> | <a href="{U_EXPORT}">{L_EXPORT}</a></div>
+
+	<fieldset class="tabulated">
+
+	<legend>{L_TITLE}</legend>
 
 	<table cellspacing="1">
 	<thead>
@@ -151,19 +153,10 @@
 				<td style="text-align: center;">{items.CODE}</td>
 				<td style="text-align: center;">{items.EMOTION}</td>
 			<!-- ENDIF -->
-			<td style="width: 80px; text-align: right; white-space: nowrap;">
-				<!-- IF items.S_FIRST_ROW && not items.S_LAST_ROW -->
-					{ICON_MOVE_UP_DISABLED}
-					<a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
-				<!-- ELSEIF not items.S_FIRST_ROW && not items.S_LAST_ROW-->
-					<a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-					<a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-				<!-- ELSEIF items.S_LAST_ROW && not items.S_FIRST_ROW -->						
-					<a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-					{ICON_MOVE_DOWN_DISABLED}
-				<!-- ENDIF -->
-				<a href="{items.U_EDIT}">{ICON_EDIT}</a> 
-				<a href="{items.U_DELETE}">{ICON_DELETE}</a>
+			<td style="text-align: right; white-space: nowrap;">
+				<!-- IF items.S_FIRST_ROW -->{ICON_MOVE_UP_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a><!-- ENDIF -->&nbsp;
+				<!-- IF items.S_LAST_ROW -->{ICON_MOVE_DOWN_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a><!-- ENDIF -->
+				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- END items -->

@@ -949,6 +949,7 @@ function get_schema_struct()
 			'session_id'		=> array('CHAR:32', ''),
 			'confirm_type'		=> array('TINT:3', 0),
 			'code'				=> array('VCHAR:8', ''),
+			'seed'				=> array('UINT:10', 0),
 		),
 		'PRIMARY_KEY'	=> array('session_id', 'confirm_id'),
 		'KEYS'			=> array(
@@ -1043,9 +1044,9 @@ function get_schema_struct()
 			'enable_icons'			=> array('BOOL', 1),
 			'enable_prune'			=> array('BOOL', 0),
 			'prune_next'			=> array('TIMESTAMP', 0),
-			'prune_days'			=> array('TINT:4', 0),
-			'prune_viewed'			=> array('TINT:4', 0),
-			'prune_freq'			=> array('TINT:4', 0),
+			'prune_days'			=> array('UINT', 0),
+			'prune_viewed'			=> array('UINT', 0),
+			'prune_freq'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'forum_id',
 		'KEYS'			=> array(
@@ -1326,7 +1327,7 @@ function get_schema_struct()
 			'rule_user_id'			=> array('UINT', 0),
 			'rule_group_id'			=> array('UINT', 0),
 			'rule_action'			=> array('UINT', 0),
-			'rule_folder_id'		=> array('INT:4', 0),
+			'rule_folder_id'		=> array('INT:11', 0),
 		),
 		'PRIMARY_KEY'	=> 'rule_id',
 		'KEYS'			=> array(
@@ -1345,7 +1346,7 @@ function get_schema_struct()
 			'pm_replied'			=> array('BOOL', 0),
 			'pm_marked'				=> array('BOOL', 0),
 			'pm_forwarded'			=> array('BOOL', 0),
-			'folder_id'				=> array('INT:4', 0),
+			'folder_id'				=> array('INT:11', 0),
 		),
 		'KEYS'			=> array(
 			'msg_id'				=> array('INDEX', 'msg_id'),
@@ -1487,6 +1488,7 @@ function get_schema_struct()
 			'session_time'			=> array('TIMESTAMP', 0),
 			'session_ip'			=> array('VCHAR:40', ''),
 			'session_browser'		=> array('VCHAR:150', ''),
+			'session_forwarded_for'	=> array('VCHAR:255', ''),
 			'session_page'			=> array('VCHAR_UNI', ''),
 			'session_viewonline'	=> array('BOOL', 1),
 			'session_autologin'		=> array('BOOL', 0),
@@ -1876,7 +1878,7 @@ function get_schema_struct()
 			'user_allow_viewonline'		=> array('BOOL', 1),
 			'user_allow_viewemail'		=> array('BOOL', 1),
 			'user_allow_massemail'		=> array('BOOL', 1),
-			'user_options'				=> array('UINT:11', 893),
+			'user_options'				=> array('UINT:11', 895),
 			'user_avatar'				=> array('VCHAR', ''),
 			'user_avatar_type'			=> array('TINT:2', 0),
 			'user_avatar_width'			=> array('USINT', 0),
@@ -1932,10 +1934,7 @@ function get_schema_struct()
 			'friend'				=> array('BOOL', 0),
 			'foe'					=> array('BOOL', 0),
 		),
-		'KEYS'			=> array(
-			'user_id'				=> array('INDEX', 'user_id'),
-			'zebra_id'				=> array('INDEX', 'zebra_id'),
-		),
+		'PRIMARY_KEY'	=> array('user_id', 'zebra_id'),
 	);
 
 	return $schema_data;

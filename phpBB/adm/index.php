@@ -150,14 +150,11 @@ function adm_page_header($page_title)
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
-		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
-	);
+	));
 
-	if ($config['send_encoding'])
-	{
-		header('Content-type: text/html; charset=UTF-8');
-	}
+	// application/xhtml+xml not used because of IE
+	header('Content-type: text/html; charset=UTF-8');
+
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
@@ -184,7 +181,7 @@ function adm_page_footer($copyright_html = true)
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
@@ -408,6 +405,35 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
 			break;
 
+			// Absolute path
+			case 'script_path':
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$destination = str_replace('\\', '/', $cfg_array[$config_name]);
+
+				if ($destination !== '/')
+				{
+					// Adjust destination path (no trailing slash)
+					if (substr($destination, -1, 1) == '/')
+					{
+						$destination = substr($destination, 0, -1);
+					}
+
+					$destination = str_replace(array('../', './'), '', $destination);
+
+					if ($destination[0] != '/')
+					{
+						$destination = '/' . $destination;
+					}
+				}
+
+				$cfg_array[$config_name] = trim($destination);
+
+			break;
+
 			// Relative path (appended $phpbb_root_path)
 			case 'rpath':
 			case 'rwpath':
@@ -419,9 +445,9 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$destination = $cfg_array[$config_name];
 
 				// Adjust destination path (no trailing slash)
-				if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+				if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
 				{
-					$destination = substr($destination, 0, sizeof($destination)-2);
+					$destination = substr($destination, 0, -1);
 				}
 
 				$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);

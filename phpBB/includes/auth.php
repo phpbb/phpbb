@@ -113,7 +113,7 @@ class auth
 			{
 				if (isset($this->acl[0]))
 				{
-					$this->cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
+					$this->cache[$f][$opt] = $this->acl[0][$this->acl_options['global'][$opt]];
 				}
 			}
 
@@ -123,7 +123,7 @@ class auth
 			{
 				if (isset($this->acl[$f]))
 				{
-					$this->cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
+					$this->cache[$f][$opt] |= $this->acl[$f][$this->acl_options['local'][$opt]];
 				}
 			}
 		}
@@ -221,7 +221,19 @@ class auth
 	*/
 	function acl_getf_global($opt)
 	{
-		$allowed = false;
+		if (is_array($opt))
+		{
+			// evaluates to true as soon as acl_getf_global is true for one option
+			foreach ($opt as $check_option)
+			{
+				if ($this->acl_getf_global($check_option))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		if (isset($this->acl_options['local'][$opt]))
 		{
@@ -233,20 +245,19 @@ class auth
 					continue;
 				}
 
-				$allowed = (!isset($this->cache[$f][$opt])) ? $this->acl_get($opt, $f) : $this->cache[$f][$opt];
-
-				if ($allowed)
+				// as soon as the user has any permission we're done so return true
+				if ((!isset($this->cache[$f][$opt])) ? $this->acl_get($opt, $f) : $this->cache[$f][$opt])
 				{
-					break;
+					return true;
 				}
 			}
 		}
 		else if (isset($this->acl_options['global'][$opt]))
 		{
-			$allowed = $this->acl_get($opt);
+			return $this->acl_get($opt);
 		}
 
-		return $allowed;
+		return false;
 	}
 
 	/**

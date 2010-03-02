@@ -17,7 +17,7 @@ class acp_search
 	var $state;
 	var $search;
 	var $max_post_id;
-	var $batch_size = 4000;
+	var $batch_size = 5000;
 
 	function main($id, $mode)
 	{
@@ -320,6 +320,16 @@ class acp_search
 				}
 				else
 				{
+					$sql = 'SELECT forum_id, enable_indexing
+						FROM ' . FORUMS_TABLE;
+					$result = $db->sql_query($sql, 3600);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
+					}
+					$db->sql_freeresult($result);
+
 					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
@@ -328,7 +338,12 @@ class acp_search
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+						// Indexing enabled for this forum or global announcement?
+						// Global announcements get indexed by default.
+						if (!$row['forum_id'] || (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']]))
+						{
+							$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+						}
 					}
 					$db->sql_freeresult($result);
 
@@ -470,15 +485,21 @@ class acp_search
 
 		$search_types = array();
 
-		$dp = opendir($phpbb_root_path . 'includes/search');
-		while (($file = readdir($dp)) !== false)
+		$dp = @opendir($phpbb_root_path . 'includes/search');
+
+		if ($dp)
 		{
-			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
+			while (($file = readdir($dp)) !== false)
 			{
-				$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+				if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
+				{
+					$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+				}
 			}
+			closedir($dp);
+
+			sort($search_types);
 		}
-		sort($search_types);
 
 		return $search_types;
 	}
@@ -511,7 +532,7 @@ class acp_search
 	/**
 	* Initialises a search backend object
 	*
-	* @return false if no error occured else an error message
+	* @return false if no error occurred else an error message
 	*/
 	function init_search($type, &$search, &$error)
 	{

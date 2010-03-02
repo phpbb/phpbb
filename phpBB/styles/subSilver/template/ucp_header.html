@@ -13,21 +13,21 @@
 	<tr>
 		<th>{L_PM_TO}</th>
 	</tr>
+	<!-- IF not S_ALLOW_MASS_PM -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
+	
 	<tr>
-		<td class="row2"><input class="post" type="text" name="username" size="20" maxlength="40" value="" />&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD}" /></td>
+		<td class="row2"><input class="post" type="text" name="username_list" size="20" maxlength="40" value="" />&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD}" /></td>
 	</tr>
-	<!-- IF S_ALLOW_MASS_PM -->
+	<!-- ELSE -->
 		<tr>
 			<td class="row1"><b class="genmed">{L_USERNAMES}:</b></td>
 		</tr>
 		<tr>
 			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
-				<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
-					<li>&#187; <a href="{U_SEARCH_USER}" onclick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false">{L_FIND_USERNAME}</a></li>
-				</ul>
+				[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a> ]
 			</td>
 		</tr>
 	<!-- ENDIF -->

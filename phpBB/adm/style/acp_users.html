@@ -112,6 +112,10 @@
 		<dd><strong>{USER_POSTS}</strong></dd>
 	</dl>
 	<dl>
+		<dt><label>{L_WARNINGS}:</label></dt>
+		<dd><strong>{USER_WARNINGS}</strong></dd>
+	</dl>
+	<dl>
 		<dt><label for="user_founder">{L_FOUNDER}:</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
 		<dd><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp; <input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_NO}&nbsp;</dd>
 	</dl>
@@ -137,10 +141,6 @@
 	<fieldset>
 		<legend>{L_USER_TOOLS}</legend>
 	<dl>
-		<dt><label for="warnings">{L_WARNINGS}:</label><br /><span>{L_WARNINGS_EXPLAIN}</span></dt>
-		<dd><input type="text" id="warnings" name="warnings" value="{USER_WARNINGS}" size="2" /></dd>
-	</dl>
-	<dl>
 		<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
 		<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>
 	</dl>
@@ -164,20 +164,9 @@
 
 	<form id="list" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: left;">
-		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
-
-	<div class="clearfix"></div>
-
 	<!-- IF PAGINATION -->
 	<div class="pagination">
-		<!-- IF PAGINATION -->
 			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-		<!-- ELSE -->
-			{S_ON_PAGE}
-		<!-- ENDIF -->
 	</div>
 	<!-- ENDIF -->
 
@@ -188,7 +177,7 @@
 		<th>{L_REPORT_BY}</th>
 		<th>{L_IP}</th>
 		<th>{L_TIME}</th>
-		<th>{L_ACTION}</th>
+		<th>{L_FEEDBACK}</th>
 		<th>{L_MARK}</th>
 	</tr>
 	</thead>
@@ -213,12 +202,23 @@
 			<p>{L_NO_ENTRIES}</p>
 		</div>
 	<!-- ENDIF -->
+	
+	<fieldset class="display-options">
+		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+	<hr />
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+	</div>
+	<!-- ENDIF -->
 
 	<!-- IF S_CLEARLOGS -->
 		<fieldset class="quick">
-			<b class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 			<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />&nbsp;
-			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />
+			<p class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></p>
 		</fieldset>
 	<!-- ENDIF -->
 
@@ -548,31 +548,31 @@
 	var text_name = 'signature';
 
 	// Define the bbCode tags
-bbcode = new Array();
-bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
-imageTag = false;
+	bbcode = new Array();
+	bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
+	imageTag = false;
 
-// Helpline messages
-var help_line = {
-	b: '{LA_BBCODE_B_HELP}',
-	i: '{LA_BBCODE_I_HELP}',
-	u: '{LA_BBCODE_U_HELP}',
-	q: '{LA_BBCODE_Q_HELP}',
-	c: '{LA_BBCODE_C_HELP}',
-	l: '{LA_BBCODE_L_HELP}',
-	o: '{LA_BBCODE_O_HELP}',
-	p: '{LA_BBCODE_P_HELP}',
-	w: '{LA_BBCODE_W_HELP}',
-	s: '{LA_BBCODE_S_HELP}',
-	f: '{LA_BBCODE_F_HELP}',
-	e: '{LA_BBCODE_E_HELP}',
-	d: '{LA_BBCODE_D_HELP}',
-	t: '{LA_BBCODE_T_HELP}',
-	tip: '{L_STYLES_TIP}'
-	<!-- BEGIN custom_tags -->
-		,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
-	<!-- END custom_tags -->
-}
+	// Helpline messages
+	var help_line = {
+		b: '{LA_BBCODE_B_HELP}',
+		i: '{LA_BBCODE_I_HELP}',
+		u: '{LA_BBCODE_U_HELP}',
+		q: '{LA_BBCODE_Q_HELP}',
+		c: '{LA_BBCODE_C_HELP}',
+		l: '{LA_BBCODE_L_HELP}',
+		o: '{LA_BBCODE_O_HELP}',
+		p: '{LA_BBCODE_P_HELP}',
+		w: '{LA_BBCODE_W_HELP}',
+		s: '{LA_BBCODE_S_HELP}',
+		f: '{LA_BBCODE_F_HELP}',
+		e: '{LA_BBCODE_E_HELP}',
+		d: '{LA_BBCODE_D_HELP}',
+		t: '{LA_BBCODE_T_HELP}',
+		tip: '{L_STYLES_TIP}'
+		<!-- BEGIN custom_tags -->
+			,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
+		<!-- END custom_tags -->
+	}
 
 	//-->
 	</script>
@@ -600,7 +600,7 @@ var help_line = {
 			<input type="button" class="button2" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" onmouseout="helpline('tip')" />
 			<input type="button" class="button2" accesskey="t" name="addlitsitem" value="[*]" style="width: 40px" onclick="bbstyle(-1)" onmouseover="helpline('e')" onmouseout="helpline('tip')" />
 			<!-- IF S_BBCODE_IMG -->
-				<input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" onmouseout="helpline('tip')" />
+				<input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px" onclick="bbstyle(14)" onmouseover="helpline('p')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 			<!-- IF S_LINKS_ALLOWED -->
 				<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" onmouseout="helpline('tip')" />
@@ -609,12 +609,12 @@ var help_line = {
 				<input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" onmouseout="helpline('tip')" />
 			<!-- ENDIF -->
 
-			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')"  onmouseout="helpline('tip')">
+			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
 				<option value="7">{L_FONT_TINY}</option>
 				<option value="9">{L_FONT_SMALL}</option>
 				<option value="12" selected="selected">{L_FONT_NORMAL}</option>
 				<option value="18">{L_FONT_LARGE}</option>
-				<option  value="24">{L_FONT_HUGE}</option>
+				<option value="24">{L_FONT_HUGE}</option>
 			</select>
 		<!-- IF .custom_tags -->
 			<br /><br />
@@ -625,8 +625,10 @@ var help_line = {
 
 		</div>
 		<p><input type="text" name="helpbox" value="{L_STYLES_TIP}" class="full" style="border: 0; background: none;" /></p>
-	<div style="text-align: left;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></div>
-	<div><!-- IF S_BBCODE_ALLOWED -->
+		<div style="text-align: left;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></div>
+
+		<div>
+			<!-- IF S_BBCODE_ALLOWED -->
 				<input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
@@ -636,7 +638,7 @@ var help_line = {
 				<input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
 			<!-- ENDIF -->
 			<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}
-	</div>
+		</div>
 	</fieldset>
 
 	<fieldset class="quick">
@@ -678,20 +680,12 @@ var help_line = {
 
 	<form id="user_attachments" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: left;">
-		{L_SORT_BY}: <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
 
-	<div class="pagination" style="float: right;">
-		<!-- IF PAGINATION -->
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-		<!-- ELSE -->
-			{S_ON_PAGE}
-		<!-- ENDIF -->
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
 	</div>
-
-	<div class="clearfix"></div>
+	<!-- ENDIF -->
 
 	<!-- IF .attach -->
 	<table cellspacing="1">
@@ -701,17 +695,17 @@ var help_line = {
 		<th>{L_POST_TIME}</th>
 		<th>{L_FILESIZE}</th>
 		<th>{L_DOWNLOADS}</th>
-		<th>{L_DELETE}</th>
+		<th>{L_MARK}</th>
 	</tr>
 	</thead>
 	<tbody>
 	<!-- BEGIN attach -->
 		<!-- IF attach.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td><a href="{attach.U_DOWNLOAD}">{attach.REAL_FILENAME}</a><br /><span class="small"><!-- IF attach.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attach.U_VIEW_TOPIC}">{attach.TOPIC_TITLE}</a></span></td>
-		<td>{attach.POST_TIME}</td>
-		<td>{attach.SIZE}</td>
-		<td>{attach.DOWNLOAD_COUNT}</td>
-		<td><input type="checkbox" class="radio" name="mark[]" value="{attach.ATTACH_ID}" /></td>
+		<td style="text-align: center">{attach.POST_TIME}</td>
+		<td style="text-align: center">{attach.SIZE}</td>
+		<td style="text-align: center">{attach.DOWNLOAD_COUNT}</td>
+		<td style="text-align: center"><input type="checkbox" class="radio" name="mark[]" value="{attach.ATTACH_ID}" /></td>
 	</tr>
 	<!-- END attach -->
 	</tbody>
@@ -721,20 +715,41 @@ var help_line = {
 		<p>{L_NO_ENTRIES}</p>
 	</div>
 	<!-- ENDIF -->
-
+	<fieldset class="display-options">
+		{L_SORT_BY}: <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+	<hr />
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+	</div>
+	<!-- ENDIF -->
+	
 	<fieldset class="quick">
-		<b class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
+		<p class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></p>
 	</fieldset>
 
 	</form>
 
 <!-- ELSEIF S_PERMISSIONS -->
 
-	<fieldset class="quick">
+	<div style="float: right;">
 		<a href="{U_USER_PERMISSIONS}">&raquo; {L_SET_USERS_PERMISSIONS}</a><br />
 		<a href="{U_USER_FORUM_PERMISSIONS}">&raquo; {L_SET_USERS_FORUM_PERMISSIONS}</a>
-	</fieldset>
+	</div>
+
+	<form id="select_forum" method="post" action="{U_ACTION}">
+
+		<fieldset class="quick" style="text-align: left;">
+			{L_SELECT_FORUM}: <select name="f">{S_FORUM_OPTIONS}</select> 
+			<input class="button2" type="submit" value="{L_GO}" name="select" />
+		</fieldset>
+
+	</form>
+
+	<br clear="all" />
 
 	<!-- INCLUDE permission_mask.html -->
 

@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.B4';
+$updates_to_version = '3.0.B5';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -27,7 +27,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 //error_reporting(E_ALL ^ E_NOTICE);
 error_reporting(E_ALL);
 
-@set_time_limit(120);
+@set_time_limit(0);
 
 // Include essential scripts
 include($phpbb_root_path . 'config.' . $phpEx);
@@ -60,6 +60,7 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
+$user = new user();
 $cache = new cache();
 $db = new $sql_db();
 
@@ -85,6 +86,7 @@ include($phpbb_root_path . 'language/' . $row['config_value'] . '/install.' . $p
 //set_error_handler('msg_handler');
 
 // Define some variables for the database update
+$inline_update = (request_var('type', 0)) ? true : false;
 
 // Database column types mapping
 $dbms_type_map = array(
@@ -283,7 +285,7 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 // Only an example, but also commented out
 $database_update_info = array(
-	// Changes within this version
+	// Changes from 3.0.b3 to the next version
 	'3.0.b3'		=> array(
 		// Change the following columns...
 		'change_columns'	=> array(
@@ -307,8 +309,48 @@ $database_update_info = array(
 			),
 		),
 	),
-	// Latest version
-	'3.0.b4'			=> array(),
+	// Changes from 3.0.b4 to the next version
+	'3.0.b4'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			CONFIRM_TABLE		=> array(
+				'seed'					=> array('UINT:10', 0),
+			),
+			SESSIONS_TABLE		=> array(
+				'session_forwarded_for'	=> array('VCHAR:255', 0),
+			),
+		),
+		'change_columns'	=> array(
+			USERS_TABLE		=> array(
+				'user_options'		=> array('UINT:11', 895),
+			),
+			FORUMS_TABLE	=> array(
+				'prune_days'			=> array('UINT', 0),
+				'prune_viewed'			=> array('UINT', 0),
+				'prune_freq'			=> array('UINT', 0),
+			),
+			PRIVMSGS_RULES_TABLE	=> array(
+				'rule_folder_id'		=> array('INT:11', 0),
+			),
+			PRIVMSGS_TO_TABLE		=> array(
+				'folder_id'				=> array('INT:11', 0),
+			),
+		),
+		// Remove the following keys
+		'drop_keys'		=> array(
+			ZEBRA_TABLE		=> array(
+				'user_id',
+				'zebra_id',
+			),
+		),
+		// Add the following primary keys
+		'add_primary_keys'	=> array(
+			ZEBRA_TABLE			=> array(
+				'user_id',
+				'zebra_id',
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -369,18 +411,39 @@ $errored = false;
 	<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
 <?php
 
-$sql = "SELECT config_value
-	FROM " . CONFIG_TABLE . "
-	WHERE config_name = 'version'";
+// To let set_config() calls succeed, we need to make the config array available globally
+$config = array();
+$sql = 'SELECT *
+	FROM ' . CONFIG_TABLE;
 $result = $db->sql_query($sql);
-$row = $db->sql_fetchrow($result);
+
+while ($row = $db->sql_fetchrow($result))
+{
+	$config[$row['config_name']] = $row['config_value'];
+}
 $db->sql_freeresult($result);
 
-echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $row['config_value'] . '</strong><br />';
+
+echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
 
-$current_version = strtolower($row['config_value']);
+$current_version = strtolower($config['version']);
 $latest_version = strtolower($updates_to_version);
+$orig_version = $config['version'];
+
+// If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
+if ($inline_update)
+{
+	if ($current_version !== $latest_version)
+	{
+		set_config('version_update_from', $orig_version);
+	}
+}
+else
+{
+	// If not called from the update script, we will actually remove the traces
+	$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+}
 
 // Schema updates
 ?>
@@ -439,6 +502,27 @@ foreach ($database_update_info as $version => $schema_changes)
 			}
 		}
 	}
+
+	// Remove keys?
+	if (!empty($schema_changes['drop_keys']))
+	{
+		foreach ($schema_changes['drop_keys'] as $table => $indexes)
+		{
+			foreach ($indexes as $index_name)
+			{
+				sql_index_drop($map_dbms, $index_name, $table);
+			}
+		}
+	}
+
+	// Add primary keys?
+	if (!empty($schema_changes['add_primary_keys']))
+	{
+		foreach ($schema_changes['add_primary_keys'] as $table => $columns)
+		{
+			sql_create_primary_key($map_dbms, $table, $columns);
+		}
+	}
 }
 
 _write_result($no_updates, $errored, $error_ary);
@@ -461,7 +545,7 @@ flush();
 $no_updates = true;
 
 // some code magic
-if (version_compare($current_version, '3.0.b3', '<'))
+if (version_compare($current_version, '3.0.b3', '<='))
 {
 	// Set group_founder_manage for administrators group
 	$sql = 'SELECT group_id
@@ -479,6 +563,92 @@ if (version_compare($current_version, '3.0.b3', '<'))
 	}
 
 	add_bots();
+
+	$no_updates = false;
+}
+
+if (version_compare($current_version, '3.0.b4', '<='))
+{
+	// Add config values
+	set_config('script_path', '/');
+	set_config('forwarded_for_check', '0');
+	set_config('ldap_password', '');
+	set_config('ldap_user', '');
+	set_config('fulltext_native_common_thres', '20');
+
+	// Remove config variables
+	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'send_encoding'";
+	_sql($sql, $errored, $error_ary);
+
+	$sql = 'SELECT user_colour
+		FROM ' . USERS_TABLE . '
+		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+		ORDER BY user_id DESC';
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	set_config('newest_user_colour', $row['user_colour'], true);
+
+	switch ($config['allow_name_chars'])
+	{
+		case '[\w]+':
+			set_config('allow_name_chars', '[a-z]+');
+		break;
+
+		case '[\w_\+\. \-\[\]]+':
+			set_config('allow_name_chars', '[-\]_+ [a-z]+');
+		break;
+	}
+
+	switch ($config['pass_complex'])
+	{
+		case '.*':
+			set_config('pass_complex', 'PASS_TYPE_ANY');
+		break;
+
+		case '[a-zA-Z]':
+			set_config('pass_complex', 'PASS_TYPE_CASE');
+		break;
+
+		case '[a-zA-Z0-9]':
+			set_config('pass_complex', 'PASS_TYPE_ALPHA');
+		break;
+
+		case '[a-zA-Z\W]':
+			set_config('pass_complex', 'PASS_TYPE_SYMBOL');
+		break;
+	}
+
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = 895 WHERE user_options = 893';
+	_sql($sql, $errored, $error_ary);
+
+	$sql = 'UPDATE ' . MODULES_TABLE . " SET module_auth = 'acl_a_board'
+		WHERE module_class = 'acp' AND module_mode = 'version_check' AND module_auth = 'acl_a_'";
+	_sql($sql, $errored, $error_ary);
+
+	// Because the email hash could have been calculated wrongly as well as the clean string function changed, 
+	// we will update it for every user.
+
+	// Since this is not used in a live environment there are not much... not used in a live environment, yes!
+	$sql = 'SELECT user_id, user_email, username
+		FROM ' . USERS_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET username_clean = '" . $db->sql_escape(utf8_clean_string($row['username'])) . "'";
+		
+		if ($row['user_email'])
+		{
+			$sql .= ', user_email_hash = ' . (crc32($row['user_email']) . strlen($row['user_email']));
+		}
+
+		$sql .= ' WHERE user_id = ' . $row['user_id'];
+		_sql($sql, $errored, $error_ary);
+	}
+	$db->sql_freeresult($result);
 
 	$no_updates = false;
 }
@@ -533,11 +703,33 @@ _write_result($no_updates, $errored, $error_ary);
 
 <br />
 
-<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
+<?php
 
-<p><?php echo $lang['COMPLETE_LOGIN_TO_BOARD']; ?></p>
+if (!$inline_update)
+{
+?>
+
+	<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
+
+	<p><?php echo $lang['COMPLETE_LOGIN_TO_BOARD']; ?></p>
 
 <?php
+}
+else
+{
+?>
+
+	<p><?php echo ((isset($lang['CONTINUE_INLINE_UPDATE'])) ? $lang['CONTINUE_INLINE_UPDATE'] : 'The database update was successful. Now please close this window and continue the update process as explained.'); ?></p>
+
+	<p><a href="#" onclick="window.close();">&raquo; <?php echo $lang['CLOSE_WINDOW']; ?></a></p>
+
+<?php
+}
+
+// Add database update to log
+
+$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
 $cache->purge();
@@ -892,6 +1084,117 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 	}
 }
 
+function sql_index_drop($dbms, $index_name, $table_name)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'mssql':
+			$sql = 'DROP INDEX ' . $table_name . '\.' . $index_name . ' ON ' . $table_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'firebird':
+		case 'oracle':
+		case 'postgres':
+		case 'sqlite':
+			$sql = 'DROP INDEX ' . $table_name . '_' . $index_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+	}
+}
+
+function sql_create_primary_key($dbms, $table_name, $column)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'firebird':
+		case 'postgres':
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mssql':
+			$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
+			$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
+			$sql .= '[' . implode("],\n\t\t[", $column) . ']';
+			$sql .= ') ON [PRIMARY]';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'oracle':
+			$sql = 'ALTER TABLE ' . $table_name . 'add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'sqlite':
+			$sql = "SELECT sql
+				FROM sqlite_master 
+				WHERE type = 'table' 
+					AND name = '{$table_name}'
+				ORDER BY type DESC, name;";
+			$result = _sql($sql, $errored, $error_ary);
+
+			if (!$result)
+			{
+				break;
+			}
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$db->sql_transaction('begin');
+
+			// Create a backup table and populate it, destroy the existing one
+			$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']));
+			$db->sql_query('INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name);
+			$db->sql_query('DROP TABLE ' . $table_name);
+
+			preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+			$new_table_cols = trim($matches[1]);
+			$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
+			$column_list = array();
+
+			foreach ($old_table_cols as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				if ($entities == 'PRIMARY')
+				{
+					continue;
+				}
+				$column_list[] = $entities[0];
+			}
+
+			$columns = implode(',', $column_list);
+
+			// create a new table and fill it up. destroy the temp one
+			$db->sql_query('CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ', PRIMARY KEY (' . implode(', ', $column) . '));');
+			$db->sql_query('INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;');
+			$db->sql_query('DROP TABLE ' . $table_name . '_temp');
+
+			$db->sql_transaction('commit');
+		break;
+	}
+}
+
 /**
 * Change column type (not name!)
 */
@@ -986,6 +1289,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 /**
 * Add search robots to the database
+* @ignore
 */
 function add_bots()
 {
@@ -1057,6 +1361,12 @@ function add_bots()
 			$db->sql_query($sql);
 		}
 	}
+	else
+	{
+		// If the old bots are missing we can safely assume the user tries to execute the database update twice and
+		// fiddled around...
+		return;
+	}
 
 	if (!function_exists('user_add'))
 	{
@@ -1121,17 +1431,18 @@ function add_bots()
 	foreach ($bot_list as $bot_name => $bot_ary)
 	{
 		$user_row = array(
-			'user_type'			=> USER_IGNORE,
-			'group_id'			=> $group_id,
-			'username'			=> $bot_name,
-			'user_regdate'		=> time(),
-			'user_password'		=> '',
-			'user_colour'		=> '9E8DA7',
-			'user_email'		=> '',
-			'user_lang'			=> $config['default_lang'],
-			'user_style'		=> 1,
-			'user_timezone'		=> 0,
-			'user_dateformat'	=> $config['default_dateformat'],
+			'user_type'				=> USER_IGNORE,
+			'group_id'				=> $group_id,
+			'username'				=> $bot_name,
+			'user_regdate'			=> time(),
+			'user_password'			=> '',
+			'user_colour'			=> '9E8DA7',
+			'user_email'			=> '',
+			'user_lang'				=> $config['default_lang'],
+			'user_style'			=> 1,
+			'user_timezone'			=> 0,
+			'user_dateformat'		=> $config['default_dateformat'],
+			'user_allow_massemail'	=> 0,
 		);
 
 		$user_id = user_add($user_row);

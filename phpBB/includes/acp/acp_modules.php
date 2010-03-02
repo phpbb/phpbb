@@ -67,6 +67,17 @@ class acp_modules
 
 				if (confirm_box(true))
 				{
+					// Make sure we are not directly within a module
+					if ($module_id == $this->parent_id)
+					{
+						$sql = 'SELECT parent_id
+							FROM ' . MODULES_TABLE . '
+							WHERE module_id = ' . $module_id;
+						$result = $db->sql_query($sql);
+						$this->parent_id = (int) $db->sql_fetchfield('parent_id');
+						$db->sql_freeresult($result);
+					}
+
 					$errors = $this->delete_module($module_id);
 
 					if (!sizeof($errors))
@@ -501,7 +512,13 @@ class acp_modules
 
 		if (!$module)
 		{
-			$dh = opendir($directory);
+			$dh = @opendir($directory);
+
+			if (!$dh)
+			{
+				return $fileinfo;
+			}
+
 			while (($file = readdir($dh)) !== false)
 			{
 				// Is module?
@@ -1007,14 +1024,6 @@ class acp_modules
 		$this->remove_cache_file();
 
 		return $this->lang_name($target['module_langname']);
-	}
-
-	/**
-	* Check if the module or her childs hold the management module(s)
-	*/
-	function is_management_module($module_id)
-	{
-		
 	}
 }
 

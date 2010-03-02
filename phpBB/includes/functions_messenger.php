@@ -26,15 +26,6 @@ class messenger
 	*/
 	function messenger($use_queue = true)
 	{
-		global $config;
-
-		if (preg_match('#^[c-z]:\\\#i', getenv('PATH')) && !$config['smtp_delivery'] && phpversion() < '4.3')
-		{
-			// We are running on windows, force delivery to use our smtp functions since php's are broken by default
-			$config['smtp_delivery'] = 1;
-			$config['smtp_host'] = @ini_get('SMTP');
-		}
-
 		$this->use_queue = $use_queue;
 		$this->subject = '';
 	}
@@ -54,9 +45,21 @@ class messenger
 	*/
 	function to($address, $realname = '')
 	{
+		global $config;
+
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
+
 		$this->addresses['to'][$pos]['email'] = trim($address);
-		$this->addresses['to'][$pos]['name'] = trim($realname);
+
+		// If empty sendmail_path on windows, PHP changes the to line
+		if (!$config['smtp_delivery'] && strpos(strtolower(PHP_OS), 'win') === 0)
+		{
+			$this->addresses['to'][$pos]['name'] = '';
+		}
+		else
+		{
+			$this->addresses['to'][$pos]['name'] = trim($realname);
+		}
 	}
 
 	/**
@@ -249,7 +252,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path, $config;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -257,7 +260,22 @@ class messenger
 			$user->session_begin();
 		}
 
-		add_log('critical', 'LOG_ERROR_' . $type, $msg);
+		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+
+		$message = '';
+		switch ($type)
+		{
+			case 'EMAIL':
+				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/' . $config['email_function_name'] . '()') . '</strong>';
+			break;
+
+			default:
+				$message = "<strong>$type</strong>";
+			break;
+		}
+
+		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '<em><br /><br />' . $msg . '<br />';
+		add_log('critical', 'LOG_ERROR_' . $type, $message);
 	}
 
 	/**
@@ -345,12 +363,12 @@ class messenger
 
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_email'] . '>';
+			$this->replyto = '<' . $config['board_contact'] . '>';
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_email'] . '>';
+			$this->from = '<' . $config['board_contact'] . '>';
 		}
 
 		// Build to, cc and bcc strings
@@ -364,7 +382,7 @@ class messenger
 
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ? '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -383,14 +401,14 @@ class messenger
 			}
 			else
 			{
-				$result = @$config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				ob_start();
+				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				$err_msg = ob_get_clean();
 			}
 
 			if (!$result)
 			{
-				$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
-				
-				$this->error('EMAIL', $message);
+				$this->error('EMAIL', $err_msg);
 				return false;
 			}
 		}
@@ -440,25 +458,25 @@ class messenger
 
 		if (!$use_queue)
 		{
-			include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
 			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', 'Could not connect to Jabber server');
+				$this->error('JABBER', 'Could not connect to Jabber server<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->send_auth())
 			{
-				$this->error('JABBER', 'Could not authorise on Jabber server');
+				$this->error('JABBER', 'Could not authorise on Jabber server<br />' . $this->jabber->get_log());
 				return false;
 			}
 			$this->jabber->send_presence(NULL, NULL, 'online');
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg, 'subject' => $this->subject));
 			}
 
 			sleep(1);
@@ -607,14 +625,22 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						if ($config['smtp_delivery'])
+						{
+							$result = smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers);
+						}
+						else
+						{
+							ob_start();
+							$result = $config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+							$err_msg = ob_get_clean();
+						}
 
 						if (!$result)
 						{
 							@unlink($this->cache_file . '.lock');
 
-							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
-							messenger::error('EMAIL', $message);
+							messenger::error('EMAIL', $err_msg);
 							continue 2;
 						}
 					break;
@@ -622,10 +648,9 @@ class queue
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
+							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg, 'subject' => $subject)) === false)
 							{
-								$message = 'Method: [ JABBER ]<br /><br />' . $this->jabber->get_log() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
-								messenger::error('JABBER', $message);
+								messenger::error('JABBER', $this->jabber->get_log());
 								continue 3;
 							}
 						}
@@ -657,12 +682,10 @@ class queue
 		}
 		else
 		{
-			$file = '<?php $this->queue_data=' . $this->format_array($this->queue_data) . '; ?>';
-
 			if ($fp = @fopen($this->cache_file, 'w'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, $file);
+				fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->queue_data, true) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 			}
@@ -697,48 +720,15 @@ class queue
 				}
 			}
 		}
-		
-		$file = '<?php $this->queue_data = ' . $this->format_array($this->data) . '; ?>';
 
 		if ($fp = @fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, $file);
+			fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->data, true) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
 	}
-
-	/**
-	* Format array
-	* @access private
-	*/
-	function format_array($array)
-	{
-		$lines = array();
-		foreach ($array as $k => $v)
-		{
-			if (is_array($v))
-			{
-				$lines[] = "'$k'=>" . $this->format_array($v);
-			}
-			else if (is_int($v))
-			{
-				$lines[] = "'$k'=>$v";
-			}
-			else if (is_bool($v))
-			{
-				$lines[] = "'$k'=>" . (($v) ? 'true' : 'false');
-			}
-			else
-			{
-				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
-			}
-		}
-
-		return 'array(' . implode(',', $lines) . ')';
-	}
-
 }
 
 /**
@@ -767,10 +757,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 		// Something we really didn't take into consideration originally
 		$header_array = explode("\r\n", $headers);
 		$headers = '';
-		
+
 		foreach ($header_array as $header)
 		{
-			if (preg_match('#^cc:#si', $header) || preg_match('#^bcc:#si', $header))
+			if (strpos(strtolower($header), 'cc:') === 0 || strpos(strtolower($header), 'bcc:') === 0)
 			{
 				$header = '';
 			}
@@ -831,6 +821,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
+		if ($errstr)
+		{
+			$errstr = utf8_convert_message($errstr);
+		}
+
 		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		return false;
 	}
@@ -851,7 +846,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
+	$smtp->server_send('MAIL FROM:<' . $config['board_contact'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);
@@ -976,7 +971,7 @@ class smtp_class
 	{
 		if ($this->backtrace)
 		{
-			$this->backtrace_log[] = $message;
+			$this->backtrace_log[] = htmlspecialchars($message, ENT_COMPAT, 'UTF-8');
 		}
 	}
 
@@ -987,7 +982,7 @@ class smtp_class
 	{
 		fputs($this->socket, $command . "\r\n");
 
-		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive information');
+		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Omitting sensitive information');
 
 		// We could put additional code here
 	}
@@ -1033,7 +1028,7 @@ class smtp_class
 
 		if ($this->backtrace)
 		{
-			$message = '<h1>Backtrace</h1><p>' . implode('<br />', array_map('htmlspecialchars', $this->backtrace_log)) . '</p>';
+			$message = '<h1>Backtrace</h1><p>' . implode('<br />', $this->backtrace_log) . '</p>';
 			$err_msg .= $message;
 		}
 	}
@@ -1072,6 +1067,11 @@ class smtp_class
 			// able to get our ip for matching...
 			if (!$this->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 10))
 			{
+				if ($errstr)
+				{
+					$errstr = utf8_convert_message($errstr);
+				}
+
 				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 				return $err_msg;
 			}
@@ -1162,6 +1162,11 @@ class smtp_class
 
 		if (!$this->socket = @fsockopen($hostname, 110, $errno, $errstr, 10))
 		{
+			if ($errstr)
+			{
+				$errstr = utf8_convert_message($errstr);
+			}
+
 			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
@@ -1406,7 +1411,7 @@ function mail_encode($str)
 	{
 		$text = '';
 
-		while (sizeof($array) && strlen(base64_encode($text . $array[0])) <= $split_length)
+		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
 		{
 			$text .= array_shift($array);
 		}

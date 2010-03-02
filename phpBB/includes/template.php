@@ -23,11 +23,12 @@ class template
 {
 	/** variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
-	* --> $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
 	* if it's a root-level variable, it'll be like this:
 	* --> $this->_tpldata[.][0][varname] == value
 	*/
-	var $_tpldata = array();
+	var $_tpldata = array('.' => array(0 => array()));
+	var $_rootref;
 
 	// Root dir and hash of filenames for each template handle.
 	var $root = '';
@@ -54,6 +55,8 @@ class template
 		{
 			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
 		}
+
+		$this->_rootref = &$this->_tpldata['.'][0];
 
 		return true;
 	}
@@ -104,7 +107,7 @@ class template
 	*/
 	function destroy()
 	{
-		$this->_tpldata = array();
+		$this->_tpldata = array('.' => array(0 => array()));
 	}
 
 	/**
@@ -204,12 +207,6 @@ class template
 
 		$compile = new template_compile($this);
 
-		// If the file for this handle is already loaded and compiled, do nothing.
-		if (!empty($this->uncompiled_code[$handle]))
-		{
-			return true;
-		}
-
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
@@ -281,7 +278,7 @@ class template
 	{
 		foreach ($vararray as $key => $val)
 		{
-			$this->_tpldata['.'][0][$key] = $val;
+			$this->_rootref[$key] = $val;
 		}
 
 		return true;
@@ -293,7 +290,7 @@ class template
 	*/
 	function assign_var($varname, $varval)
 	{
-		$this->_tpldata['.'][0][$varname] = $varval;
+		$this->_rootref[$varname] = $varval;
 
 		return true;
 	}
@@ -476,7 +473,7 @@ class template
 	}
 
 	/**
-	* Include a seperate template
+	* Include a separate template
 	* @access private
 	*/
 	function _tpl_include($filename, $include = true)

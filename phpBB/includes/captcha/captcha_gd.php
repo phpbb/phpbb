@@ -19,7 +19,7 @@ class captcha
 	var $width = 360;
 	var $height = 96;
 
-	function execute($code)
+	function execute($code, $seed)
 	{
 		global $config;
 		$stats = gd_info();
@@ -48,8 +48,11 @@ class captcha
 			imageantialias($image, true);
 		}
 
+		// seed the random generator
+		mt_srand($seed);
+
 		// set background color
-		$back =  imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
+		$back = imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
 		imagefilledrectangle($image, 0, 0, $this->width, $this->height, $back);
 
 		// allocates the 216 websafe color palette to the image
@@ -70,6 +73,7 @@ class captcha
 		// fill with noise or grid
 		if ($config['captcha_gd_noise'])
 		{
+			$chars_allowed = array_merge(range('1', '9'), range('A', 'Z'));
 			// random characters in background with random position, angle, color
 			for ($i = 0 ; $i < 72; $i++)
 			{
@@ -78,9 +82,10 @@ class captcha
 				$x		= mt_rand(0, 360);
 				$y		= mt_rand(0, (int)($this->height - ($size / 5)));
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
-				$text	= chr(mt_rand(45, 250));
+				$text	= $chars_allowed[mt_rand(0, sizeof($chars_allowed) - 1)];
 				imagettftext($image, $size, $angle, $x, $y, $color, $this->get_font(), $text);
 			}
+			unset($chars_allowed);
 		}
 		else
 		{
@@ -132,7 +137,13 @@ class captcha
 		{
 			global $phpbb_root_path;
 	
-			$dr = opendir($phpbb_root_path . 'includes/captcha/fonts');
+			$dr = @opendir($phpbb_root_path . 'includes/captcha/fonts');
+
+			if (!$dr)
+			{
+				trigger_error('Unable to open includes/captcha/fonts directory.', E_USER_ERROR);
+			}
+
 			while (false !== ($entry = readdir($dr)))
 			{
 				if (strtolower(pathinfo($entry, PATHINFO_EXTENSION)) == 'ttf')
@@ -143,7 +154,7 @@ class captcha
 			closedir($dr);
 		}
 
-		return $fonts[array_rand($fonts)];
+		return $fonts[mt_rand(0, sizeof($fonts) - 1)];
 	}
 }
 

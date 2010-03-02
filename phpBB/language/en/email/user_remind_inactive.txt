@@ -2,10 +2,10 @@ Subject: Inactive account reminder
 
 Hello {USERNAME},
 
-On {REGISTER_DATE} you registered a new account at “{SITENAME}”. So far you have not activated this account, you must do this before you can login. For your convenience the activation link is repeated below.
- 
+On {REGISTER_DATE} you registered a new account at "{SITENAME}". To date you have not activated this account which is a prerequisite for forum login. For your convenience the activation link is repeated below.
+
 {U_ACTIVATE}
 
-Thank you for registering at “{SITENAME}”, we look forward to your participation.
+Thank you for registering at "{SITENAME}", we look forward to your participation.
 
 {EMAIL_SIG}

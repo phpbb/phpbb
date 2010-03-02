@@ -141,26 +141,19 @@ class dbal_sqlite extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{
-		if ($query != '')
+		$this->query_result = false; 
+
+		// if $total is set to 0 we do not want to limit the number of rows
+		if ($total == 0)
 		{
-			$this->query_result = false; 
-
-			// if $total is set to 0 we do not want to limit the number of rows
-			if ($total == 0)
-			{
-				$total = -1;
-			}
-
-			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
-
-			return $this->sql_query($query, $cache_ttl); 
+			$total = -1;
 		}
-		else
-		{
-			return false;
-		}
+
+		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+
+		return $this->sql_query($query, $cache_ttl); 
 	}
 
 	/**

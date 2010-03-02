@@ -29,14 +29,20 @@ class acp_php_info
 		$this->page_title = 'ACP_PHP_INFO';
 		
 		ob_start(); 
-		phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES); 
-		$phpinfo = ob_get_contents(); 
-		ob_end_clean(); 
+		@phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES); 
+		$phpinfo = ob_get_clean(); 
+
+		$phpinfo = trim($phpinfo);
 
 		// Here we play around a little with the PHP Info HTML to try and stylise
 		// it along phpBB's lines ... hopefully without breaking anything. The idea
 		// for this was nabbed from the PHP annotated manual
 		preg_match_all('#<body[^>]*>(.*)</body>#si', $phpinfo, $output); 
+
+		if (empty($phpinfo) || empty($output))
+		{
+			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
+		}
 
 		$output = $output[1][0];
 		$output = preg_replace('#<tr class="v"><td>(.*?<a[^>]*><img[^>]*></a>)(.*?)</td></tr>#s', '<tr class="row1"><td><table class="type2"><tr><td>\2</td><td>\1</td></tr></table></td></tr>', $output);

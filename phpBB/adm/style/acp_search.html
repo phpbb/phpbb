@@ -17,11 +17,11 @@
 	</dl>
 	<dl>
 		<dt><label for="search_interval">{L_SEARCH_INTERVAL}:</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_interval" type="text" size="4" maxlength="4" name="config[search_interval]" value="{SEARCH_INTERVAL}" /></dd>
+		<dd><input id="search_interval" type="text" size="4" maxlength="4" name="config[search_interval]" value="{SEARCH_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
 		<dt><label for="search_anonymous_interval">{L_SEARCH_GUEST_INTERVAL}:</label><br /><span>{L_SEARCH_GUEST_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_anonymous_interval" type="text" size="4" maxlength="4" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /></dd>
+		<dd><input id="search_anonymous_interval" type="text" size="4" maxlength="4" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
 		<dt><label for="limit_search_load">{L_LIMIT_SEARCH_LOAD}:</label><br /><span>{L_LIMIT_SEARCH_LOAD_EXPLAIN}</span></dt>
@@ -33,7 +33,7 @@
 	</dl>
 	<dl>
 		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}:</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
-		<dd><input id="search_store_results" type="text" size="4" maxlength="6" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /></dd>
+		<dd><input id="search_store_results" type="text" size="4" maxlength="6" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
 	</dl>
 	</fieldset>
 
@@ -91,10 +91,13 @@
 		<!-- BEGIN backend -->
 
 			<!-- IF backend.S_STATS -->
-			
+
 			<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
+
+				<fieldset class="tabulated">
+
 				{backend.S_HIDDEN_FIELDS}
-				<fieldset class="tabular">
+
 				<legend>{L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></legend>
 
 				<table cellspacing="1">
@@ -130,7 +133,7 @@
 			<!-- ENDIF -->
 			</p>
 			</fieldset>
-			
+
 			</form>
 		<!-- END backend -->
 

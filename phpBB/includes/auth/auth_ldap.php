@@ -34,6 +34,14 @@ function init_ldap()
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 	@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
+	if ($config['ldap_user'] || $config['ldap_password'])
+	{
+		if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
+		{
+			return $user->lang['LDAP_INCORRECT_USER_PASSWORD'];
+		}
+	}
+
 	// ldap_connect only checks whether the specified server is valid, so the connection might still fail
 	$search = @ldap_search(
 		$ldap,
@@ -94,6 +102,14 @@ function login_ldap(&$username, &$password)
 
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 	@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+
+	if ($config['ldap_user'] || $config['ldap_password'])
+	{
+		if (!@ldap_bind($ldap, $config['ldap_user'], htmlspecialchars_decode($config['ldap_password'])))
+		{
+			return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+		}
+	}
 
 	$search = @ldap_search(
 		$ldap,
@@ -222,6 +238,14 @@ function acp_ldap(&$new)
 		<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 	</dl>
 	<dl>
+		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . ':</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
+		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" /></dd>
+	</dl>
+	<dl>
 		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 	</dl>
@@ -238,7 +262,7 @@ function acp_ldap(&$new)
 	// These are fields required in the config table
 	return array(
 		'tpl'		=> $tpl,
-		'config'	=> array('ldap_server', 'ldap_base_dn', 'ldap_uid', 'ldap_email')
+		'config'	=> array('ldap_server', 'ldap_user', 'ldap_password', 'ldap_base_dn', 'ldap_uid', 'ldap_email')
 	);
 }
 

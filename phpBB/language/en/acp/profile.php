@@ -45,7 +45,7 @@ $lang = array_merge($lang, array(
 	'CHECKBOX'					=> 'Checkbox',
 	'COLUMNS'					=> 'Columns',
 	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
-	'CP_LANG_EXPLAIN'			=> 'Field Description',
+	'CP_LANG_EXPLAIN'			=> 'Field description',
 	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user',
 	'CP_LANG_NAME'				=> 'Field name/title presented to the user',
 	'CP_LANG_OPTIONS'			=> 'Options',
@@ -62,7 +62,7 @@ $lang = array_merge($lang, array(
 	'DISPLAY_AT_REGISTER'			=> 'Display at registration screen',
 	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration and able to be changed within the user control panel.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Display profile field',
-	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on viewtopic/viewprofile/memberlist/etc.',
+	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on viewtopic/viewprofile/memberlist. if this is enabled within the load settings. Only showing within the users profile is enabled by default.',
 	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line',
 
 	'EDIT_DROPDOWN_LANG_EXPLAIN'	=> 'Please note that you are able to change your options text and also able to add new options to the end. It is not advised to add new options between existing options - this could result in wrong options assigned to your users. This can also happen if you remove options in-between. Removing options from the end result in users having assigned this item now reverting back to the default one.',
@@ -90,7 +90,7 @@ $lang = array_merge($lang, array(
 	'FIRST_OPTION'				=> 'First option',
 
 	'HIDE_PROFILE_FIELD'			=> 'Hide profile field',
-	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in user profiles.',
+	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only administrators and moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in users’ profiles.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
 	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
@@ -119,7 +119,7 @@ $lang = array_merge($lang, array(
 
 	'RADIO_BUTTONS'				=> 'Radio buttons',
 	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
-	'REQUIRED_FIELD'			=> 'Required Field',
+	'REQUIRED_FIELD'			=> 'Required field',
 	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user. This will display the profile field at registration and within the user control panel.',
 	'ROWS'						=> 'Rows',
 

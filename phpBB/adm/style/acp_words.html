@@ -16,11 +16,11 @@
 		<legend>{L_EDIT_WORD}</legend>
 		<dl>
 			<dt><label for="word">{L_WORD}</label></dt>
-			<dd><input id="word" type="text" name="word" value="{WORD}" /></dd>
+			<dd><input id="word" type="text" name="word" value="{WORD}" maxlength="255" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="replacement">{L_REPLACEMENT}</label></dt>
-			<dd><input id="replacement" type="text" name="replacement" value="{REPLACEMENT}" /></dd>
+			<dd><input id="replacement" type="text" name="replacement" value="{REPLACEMENT}" maxlength="255" /></dd>
 		</dl>
 		{S_HIDDEN_FIELDS}
 
@@ -52,7 +52,7 @@
 	<tr>
 		<th>{L_WORD}</th>
 		<th>{L_REPLACEMENT}</th>
-		<th colspan="2">{L_ACTION}</th>
+		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -60,8 +60,7 @@
 		<!-- IF words.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="text-align: center;">{words.WORD}</td>
 		<td style="text-align: center;">{words.REPLACEMENT}</td>
-		<td>&nbsp;<a href="{words.U_EDIT}">{L_EDIT}</a>&nbsp;</td>
-		<td>&nbsp;<a href="{words.U_DELETE}">{L_DELETE}</a>&nbsp;</td>
+		<td>&nbsp;<a href="{words.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{words.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
 	</tr>
 	<!-- END words -->
 	</tbody>

@@ -26,6 +26,8 @@ class acp_inactive
 		global $config, $db, $user, $auth, $template;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 		$user->add_lang('memberlist');
 
 		$action = request_var('action', '');
@@ -43,7 +45,8 @@ class acp_inactive
 			{
 				case 'activate':
 				case 'delete':
-					$sql = 'SELECT username 
+
+					$sql = 'SELECT user_id, username 
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
@@ -51,13 +54,12 @@ class acp_inactive
 					$user_affected = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$user_affected[] = $row['username'];
+						$user_affected[$row['user_id']] = $row['username'];
 					}
 					$db->sql_freeresult($result);
 
 					if ($action == 'activate')
 					{
-						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 						user_active_flip('activate', $mark);
 					}
 					else if ($action == 'delete')
@@ -67,13 +69,13 @@ class acp_inactive
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-						$sql = 'DELETE FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-	
-						add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
+						foreach ($mark as $user_id)
+						{
+							user_delete('retain', $user_id, $user_affected[$user_id]);
+						}
 					}
+
+					add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
 
 				break;
 
@@ -94,22 +96,19 @@ class acp_inactive
 						include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 						$messenger = new messenger();
-
-						$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-
 						$usernames = array();
+
 						do
 						{
 							$messenger->template('user_remind_inactive', $row['user_lang']);
 
-							$messenger->replyto($config['board_email']);
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 
 							$messenger->send($row['user_notify_type']);

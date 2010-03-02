@@ -64,7 +64,6 @@ class ucp_remind
 
 			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
-			$messenger->replyto($user->data['user_email']);
 			$messenger->to($user_row['user_email'], $user_row['username']);
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 
@@ -78,7 +77,7 @@ class ucp_remind
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = $user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 

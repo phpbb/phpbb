@@ -62,11 +62,15 @@ class acp_ranks
 				{
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
 					$message = $user->lang['RANK_UPDATED'];
+
+					add_log('admin', 'LOG_RANK_UPDATED', $rank_title);
 				}
 				else
 				{
 					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$message = $user->lang['RANK_ADDED'];
+
+					add_log('admin', 'LOG_RANK_ADDED', $rank_title);
 				}
 				$db->sql_query($sql);
 
@@ -78,9 +82,20 @@ class acp_ranks
 
 			case 'delete':
 
-				// Ok, they want to delete their rank
-				if ($rank_id)
+				if (!$rank_id)
 				{
+					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				if (confirm_box(true))
+				{
+					$sql = 'SELECT rank_title
+						FROM ' . RANKS_TABLE . '
+						WHERE rank_id = ' . $rank_id;
+					$result = $db->sql_query($sql);
+					$rank_title = (string) $db->sql_fetchfield('rank_title');
+					$db->sql_freeresult($result);
+
 					$sql = 'DELETE FROM ' . RANKS_TABLE . "
 						WHERE rank_id = $rank_id";
 					$db->sql_query($sql);
@@ -92,11 +107,16 @@ class acp_ranks
 
 					$cache->destroy('ranks');
 
-					trigger_error($user->lang['RANK_REMOVED'] . adm_back_link($this->u_action));
+					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
 				}
 				else
 				{
-					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'rank_id'	=> $rank_id,
+						'action'	=> 'delete',
+					)));
 				}
 
 			break;
@@ -142,6 +162,11 @@ class acp_ranks
 							else
 							{
 								$selected = '';
+							}
+
+							if (strlen($img) > 255)
+							{
+								continue;
 							}
 
 							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';

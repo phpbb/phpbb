@@ -44,7 +44,7 @@
 		<input name="group_type" type="hidden" value="{GROUP_TYPE_SPECIAL}" />
 	<!-- ENDIF -->
 
-	<!-- IF S_ADD_GROUP -->
+	<!-- IF S_ADD_GROUP and S_GROUP_PERM -->
 		<dl>
 			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
 			<dd><select id="group_perm_from" name="group_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_GROUP_OPTIONS}</select></dd>
@@ -221,20 +221,16 @@
 	<!-- END member -->
 	</tbody>
 	</table>
-
-	<div class="pagination" style="float: left;">
-		<!-- IF PAGINATION -->
+	<!-- IF PAGINATION -->
+	<div class="pagination">
 			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-		<!-- ELSE -->
-			{S_ON_PAGE}
-		<!-- ENDIF -->
 	</div>
+	<!-- ENDIF -->	
 
 	<fieldset class="quick">
-		<span class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></span><br />
-
 		<select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
 		<input class="button2" type="submit" name="update" value="{L_SUBMIT}" />
+		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>		
 	</fieldset>
 
 	<h1>{L_ADD_USERS}</h1>

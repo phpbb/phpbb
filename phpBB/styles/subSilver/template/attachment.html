@@ -10,7 +10,7 @@
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_THUMBNAIL -->
-			<a href="{_file.U_DOWNLOAD_LINK}" target="_blank"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" /></a><br />
+			<a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" /></a><br />
 			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
@@ -21,24 +21,39 @@
 
 		<!-- IF _file.S_FILE -->
 			<span class="genmed">
-				<!-- IF _file.UPLOAD_IMAGE -->{_file.UPLOAD_IMAGE} <!-- ENDIF -->
+				<!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF -->
 				<a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [{_file.FILESIZE} {_file.SIZE_LANG}]
 			</span><br />
 			<span class="gensmall">{_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT}</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE -->
-			<object classid="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,7,1112" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject">
-				<param name="FileName" VALUE="{_file.U_DOWNLOAD_LINK}">
-				<param name="ShowControls" value="1">
-				<param name="ShowDisplay" value="0">
-				<param name="ShowStatusBar" value="1"> 
-				<param name="AutoSize" value="1">
-				<param name="AutoStart" value="0">
-				<param name="Visible" value="1">
-				<param name="AnimationStart" value="0">
-				<param name="Loop" value="0"> 
-			<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows/windowsmedia/download/AllDownloads.aspx/" filename="{_file.U_DOWNLOAD_LINK}" src="{_file.U_DOWNLOAD_LINK}" name="MediaPlayer" ShowControls="1" ShowDisplay="0" ShowStatusBar="1" AutoSize="1" AutoStart="0" Visible="1" AnimationStart="0" Loop="0"></embed>
+			<!-- method used here from http://alistapart.com/articles/byebyeembed / autosizing seems to not work always, this will not fix -->
+			<object width="320" height="285" classid="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" id="wmstream_{_file.ATTACH_ID}">
+				<param name="url" value="{_file.U_DOWNLOAD_LINK}" />
+				<param name="showcontrols" value="1" />
+				<param name="showdisplay" value="0" />
+				<param name="showstatusbar" value="0" />
+				<param name="autosize" value="1" />
+				<param name="autostart" value="0" />
+				<param name="visible" value="1" />
+				<param name="animationstart" value="0" />
+				<param name="loop" value="0" />
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
+				<!--[if !IE]>-->
+					<object width="320" height="285" type="video/x-ms-wmv" data="{_file.U_DOWNLOAD_LINK}">
+						<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
+						<param name="controller" value="1" />
+						<param name="showcontrols" value="1" />
+						<param name="showdisplay" value="0" />
+						<param name="showstatusbar" value="0" />
+						<param name="autosize" value="1" />
+						<param name="autostart" value="0" />
+						<param name="visible" value="1" />
+						<param name="animationstart" value="0" />
+						<param name="loop" value="0" />
+					</object>
+				<!--<![endif]-->
 			</object>
 
 		<!-- ELSEIF _file.S_FLASH_FILE -->
@@ -74,7 +89,7 @@
 				<embed name="ctrls_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="ctrls_{_file.ATTACH_ID}"></embed>
 			</object>
 
-			<script language="Javascript">
+			<script type="text/javascript">
 			<!--
 				if (document.rmstream_{_file.ATTACH_ID}.GetClipWidth)
 				{
@@ -96,7 +111,7 @@
 		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
 			<br />
 			<!-- IF _file.S_QUICKTIME_FILE --><a href="javascript:play_qt_file(document.qtstream_{_file.ATTACH_ID});">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
-			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
+			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<br />

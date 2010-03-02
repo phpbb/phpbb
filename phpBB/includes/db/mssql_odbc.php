@@ -156,40 +156,33 @@ class dbal_mssql_odbc extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{
-		if ($query != '')
+		$this->query_result = false;
+
+		// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
+		if ($total)
 		{
-			$this->query_result = false;
-
-			// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
-			if ($total)
+			// We need to grab the total number of rows + the offset number of rows to get the correct result
+			if (strpos($query, 'SELECT DISTINCT') === 0)
 			{
-				// We need to grab the total number of rows + the offset number of rows to get the correct result
-				if (strpos($query, 'SELECT DISTINCT') === 0)
-				{
-					$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
-				}
-				else
-				{
-					$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
-				}
+				$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
 			}
-
-			$result = $this->sql_query($query, $cache_ttl);
-
-			// Seek by $offset rows
-			if ($offset)
+			else
 			{
-				$this->sql_rowseek($offset, $result);
+				$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
 			}
-
-			return $result;
 		}
-		else
+
+		$result = $this->sql_query($query, $cache_ttl);
+
+		// Seek by $offset rows
+		if ($offset)
 		{
-			return false;
+			$this->sql_rowseek($offset, $result);
 		}
+
+		return $result;
 	}
 
 	/**

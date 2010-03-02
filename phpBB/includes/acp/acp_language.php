@@ -116,6 +116,7 @@ class acp_language
 					'S_UPLOAD'	=> true,
 					'NAME'		=> $method,
 					'U_ACTION'	=> $this->u_action . "&amp;id=$lang_id&amp;action=upload_data",
+					'U_BACK'	=> $this->u_action . "&amp;id=$lang_id&amp;action=details&amp;language_file=" . urlencode($selected_lang_file),
 					'HIDDEN'	=> $hidden_data,
 
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
@@ -203,7 +204,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')
@@ -240,6 +241,9 @@ class acp_language
 							$entry .= "\t),\n";
 							fwrite($fp, $entry);
 						}
+
+						$footer = ");\n\n?>";
+						fwrite($fp, $footer);
 					}
 					else
 					{
@@ -252,10 +256,10 @@ class acp_language
 							$entry = $this->format_lang_array($key, $value);
 							fwrite($fp, $entry);
 						}
-					}
 
-					$footer = "));\n\n?>";
-					fwrite($fp, $footer);
+						$footer = "));\n\n?>";
+						fwrite($fp, $footer);
+					}
 				}
 
 				fclose($fp);
@@ -316,7 +320,17 @@ class acp_language
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
-					$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+					$result = $transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+
+					if ($result === false)
+					{
+						// If failed, try to rename again and print error out...
+						$transfer->delete_file($lang_path . $file);
+						$transfer->rename($lang_path . $file . '.bak', $lang_path . $file);
+
+						trigger_error($user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					}
+
 					$transfer->close_session();
 
 					// Remove from storage folder
@@ -621,16 +635,15 @@ class acp_language
 
 				if (!$is_email_file)
 				{
-					$method = ($is_help_file) ? 'print_help_entries' : 'print_language_entries';
 					$tpl = '';
 					$name = (($this->language_directory) ? $this->language_directory . '/' : '') . $this->language_file;
 
 					if (isset($missing_vars[$name]) && sizeof($missing_vars[$name]))
 					{
-						$tpl .= $this->$method($missing_vars[$name], '* ');
+						$tpl .= $this->print_language_entries($missing_vars[$name], '* ');
 					}
 
-					$tpl .= $this->$method($lang);
+					$tpl .= $this->print_language_entries($lang);
 
 					$template->assign_var('TPL', $tpl);
 					unset($tpl);
@@ -672,6 +685,13 @@ class acp_language
 				$sql = 'UPDATE ' . USERS_TABLE . " 
 					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
 					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
+				$db->sql_query($sql);
+
+				// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
+				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
+				$db->sql_query($sql);
+
+				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 				$db->sql_query($sql);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
@@ -725,6 +745,43 @@ class acp_language
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+				$lang_id = $db->sql_nextid();
+
+				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
+				$sql = 'SELECT lang_id
+					FROM ' . LANG_TABLE . "
+					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+				$result = $db->sql_query($sql);
+				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
+				$db->sql_freeresult($result);
+
+				// From the mysql documentation:
+				// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+				// Due to this we stay on the safe side if we do the insertion "the manual way"
+
+				$sql = 'SELECT field_id, lang_name, lang_explain, lang_default_value
+					FROM ' . PROFILE_LANG_TABLE . '
+					WHERE lang_id = ' . $default_lang_id;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$row['lang_id'] = $lang_id;
+					$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+				}
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT field_id, option_id, field_type, lang_value
+					FROM ' . PROFILE_FIELDS_LANG_TABLE . '
+					WHERE lang_id = ' . $default_lang_id;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$row['lang_id'] = $lang_id;
+					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+				}
+				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
@@ -866,7 +923,7 @@ class acp_language
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT *  
+		$sql = 'SELECT * 
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
@@ -893,31 +950,35 @@ class acp_language
 		$db->sql_freeresult($result);
 
 		$new_ary = $iso = array();
-		$dp = opendir("{$phpbb_root_path}language");
+		$dp = @opendir("{$phpbb_root_path}language");
 
-		while (($file = readdir($dp)) !== false)
+		if ($dp)
 		{
-			if ($file[0] != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
+			while (($file = readdir($dp)) !== false)
 			{
-				if (!in_array($file, $installed))
+				if ($file[0] != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
 				{
-					if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
+					if (!in_array($file, $installed))
 					{
-						if (sizeof($iso) == 3)
+						if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
 						{
-							$new_ary[$file] = array(
-								'iso'		=> $file,
-								'name'		=> trim($iso[0]),
-								'local_name'=> trim($iso[1]),
-								'author'	=> trim($iso[2])
-							);
+							if (sizeof($iso) == 3)
+							{
+								$new_ary[$file] = array(
+									'iso'		=> $file,
+									'name'		=> trim($iso[0]),
+									'local_name'=> trim($iso[1]),
+									'author'	=> trim($iso[2])
+								);
+							}
 						}
 					}
 				}
 			}
+			closedir($dp);
 		}
+
 		unset($installed);
-		@closedir($dp);
 
 		if (sizeof($new_ary))
 		{
@@ -949,7 +1010,7 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @copyright (c) 2006 phpBB Group 
+* @copyright (c) ' . date('Y') . ' phpBB Group 
 * @author {CHANGED} - {AUTHOR}
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
@@ -1029,6 +1090,35 @@ $lang = array_merge($lang, array(
 	}
 
 	/**
+	* Little helper to add some hardcoded template bits
+	*/
+	function add_input_field()
+	{
+		$keys = func_get_args();
+
+		$non_static		= array_shift($keys);
+		$value			= array_shift($keys);
+
+		if (!$non_static)
+		{
+			return '<strong>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</strong>';
+		}
+
+		// If more then 270 characters, then we present a textarea, else an input field
+		$textarea = (utf8_strlen($value) > 270) ? true : false;
+		$tpl = '';
+
+		$tpl .= ($textarea) ? '<textarea name="' : '<input type="text" name="';
+		$tpl .= 'entry[' . implode('][', array_map('utf8_htmlspecialchars', $keys)) . ']"';
+
+		$tpl .= ($textarea) ? ' cols="80" rows="5" class="langvalue">' : ' class="langvalue" value="';
+		$tpl .= htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		$tpl .= ($textarea) ? '</textarea>' : '" />';
+
+		return $tpl;
+	}
+
+	/**
 	* Print language entries
 	*/
 	function print_language_entries(&$lang_ary, $key_prefix = '', $input_field = true)
@@ -1039,56 +1129,46 @@ $lang = array_merge($lang, array(
 		{
 			if (is_array($value))
 			{
+				// Write key
 				$tpl .= '
 				<tr>
-					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
+					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 				</tr>';
 
 				foreach ($value as $_key => $_value)
 				{
 					if (is_array($_value))
 					{
+						// Write key
 						$tpl .= '
 							<tr>
-								<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '&nbsp; &nbsp;<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
+								<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '&nbsp; &nbsp;<strong>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 							</tr>';
 
 						foreach ($_value as $__key => $__value)
 						{
+							// Write key
 							$tpl .= '
 								<tr>
-									<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . '</b></td>
+									<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 									<td class="row2">';
 
-							if ($input_field)
-							{
-								$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-							}
-							else
-							{
-								$tpl .= '<b>' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '</b>';
-							}
-							
+							$tpl .= $this->add_input_field($input_field, $__value, $key, $_key, $__key);
+
 							$tpl .= '</td>
 								</tr>';
 						}
 					}
 					else
 					{
+						// Write key
 						$tpl .= '
 							<tr>
-								<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
+								<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 								<td class="row2">';
 
-						if ($input_field)
-						{
-							$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-						}
-						else
-						{
-							$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
-						}
-						
+						$tpl .= $this->add_input_field($input_field, $_value, $key, $_key);
+
 						$tpl .= '</td>
 							</tr>';
 					}
@@ -1101,84 +1181,13 @@ $lang = array_merge($lang, array(
 			}
 			else
 			{
+				// Write key
 				$tpl .= '
 				<tr>
-					<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
+					<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 					<td class="row2">';
 
-				if ($input_field)
-				{
-					$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-				}
-				else
-				{
-					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
-				}
-				
-				$tpl .= '</td>
-					</tr>';
-			}
-		}
-
-		return $tpl;
-	}
-
-	/**
-	* Print help entries
-	*/
-	function print_help_entries(&$lang_ary, $key_prefix = '', $text_field = true)
-	{
-		$tpl = '';
-		
-		foreach ($lang_ary as $key => $value)
-		{
-			if (is_array($value))
-			{
-				$tpl .= '
-				<tr>
-					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
-				</tr>';
-
-				foreach ($value as $_key => $_value)
-				{
-					$tpl .= '
-						<tr>
-							<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
-							<td class="row2">';
-					
-					if ($text_field)
-					{
-						$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</textarea>';
-					}
-					else
-					{
-						$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
-					}
-					
-					$tpl .= '</td>
-						</tr>';
-				}
-
-				$tpl .= '
-				<tr>
-					<td class="spacer" colspan="2">&nbsp;</td>
-				</tr>';
-			}
-			else
-			{
-				$tpl .= '
-				<tr>
-					<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
-					<td class="row2">';
-
-				if ($text_field)
-				{
-					$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</textarea>';
-				}
-				else
-				{
-					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
-				}
+				$tpl .= $this->add_input_field($input_field, $value, $key);
 
 				$tpl .= '</td>
 					</tr>';

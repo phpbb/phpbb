@@ -98,8 +98,13 @@ class diff_renderer
 		if (is_a($diff, 'diff3'))
 		{
 			$diff3 = &$diff;
-			$diff = &new diff($diff3->get_original(), $diff3->merged_output());
+
+			$diff_1 = $diff3->get_original();
+			$diff_2 = $diff3->merged_output();
+
 			unset($diff3);
+
+			$diff = &new diff($diff_1, $diff_2);
 		}
 
 		$nlead = $this->_leading_context_lines;
@@ -293,17 +298,17 @@ class diff_renderer_unified extends diff_renderer
 
 	function _context($lines)
 	{
-		return '<pre class="diff context">' . htmlspecialchars($this->_lines($lines, ' ')) . '</pre>';
+		return '<pre class="diff context">' . htmlspecialchars($this->_lines($lines, ' ')) . '<br /></pre>';
 	}
 	
 	function _added($lines)
 	{
-		return '<pre class="diff added">' . htmlspecialchars($this->_lines($lines, '+')) . '</pre>';
+		return '<pre class="diff added">' . htmlspecialchars($this->_lines($lines, '+')) . '<br /></pre>';
 	}
 
 	function _deleted($lines)
 	{
-		return '<pre class="diff removed">' . htmlspecialchars($this->_lines($lines, '-')) . '</pre>';
+		return '<pre class="diff removed">' . htmlspecialchars($this->_lines($lines, '-')) . '<br /></pre>';
 	}
 
 	function _changed($orig, $final)
@@ -360,7 +365,7 @@ class diff_renderer_inline extends diff_renderer
 	*/
 	function get_diff_content($diff)
 	{
-		return '<pre>' . nl2br($this->render($diff)) . '</pre>';
+		return '<pre>' . nl2br($this->render($diff)) . '<br /></pre>';
 	}
 
 	function _start_diff()
@@ -440,7 +445,11 @@ class diff_renderer_inline extends diff_renderer
 
 		// We want to split on word boundaries, but we need to preserve whitespace as well.
 		// Therefore we split on words, but include all blocks of whitespace in the wordlist.
-		$diff = &new diff($this->_split_on_words($text1, $nl), $this->_split_on_words($text2, $nl));
+		$splitted_text_1 = $this->_split_on_words($text1, $nl);
+		$splitted_text_2 = $this->_split_on_words($text2, $nl);
+		
+		$diff = &new diff($splitted_text_1, $splitted_text_2);
+		unset($splitted_text_1, $splitted_text_2);
 
 		// Get the diff in inline format.
 		$renderer = &new diff_renderer_inline(array_merge($this->get_params(), array('split_level' => 'words')));
@@ -506,7 +515,7 @@ class diff_renderer_raw extends diff_renderer
 	*/
 	function get_diff_content($diff)
 	{
-		return '<textarea style="height: 400px;" class="full">' . htmlspecialchars($this->render($diff)) . '</textarea>';
+		return '<textarea style="height: 290px;" class="full">' . htmlspecialchars($this->render($diff)) . '</textarea>';
 	}
 
 	function _block_header($xbeg, $xlen, $ybeg, $ylen)
@@ -605,8 +614,8 @@ class diff_renderer_side_by_side extends diff_renderer
 						$line = $current_context;
 						$current_context = '';
 
-						$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td>
-							<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+						$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td>
+							<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 					}
 
 					switch ($change['type'])
@@ -619,7 +628,7 @@ class diff_renderer_side_by_side extends diff_renderer
 								$line .= htmlspecialchars($_line) . '<br />';
 							}
 
-							$output .= '<tr><td class="added_empty">&nbsp;</td><td class="added"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+							$output .= '<tr><td class="added_empty">&nbsp;</td><td class="added"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 						break;
 
 						case 'remove':
@@ -630,7 +639,7 @@ class diff_renderer_side_by_side extends diff_renderer
 								$line .= htmlspecialchars($_line) . '<br />';
 							}
 
-							$output .= '<tr><td class="removed"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td><td class="removed_empty">&nbsp;</td></tr>';
+							$output .= '<tr><td class="removed"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td><td class="removed_empty">&nbsp;</td></tr>';
 						break;
 
 						case 'empty':
@@ -655,7 +664,7 @@ class diff_renderer_side_by_side extends diff_renderer
 
 							if (!empty($left))
 							{
-								$output .= '<td class="modified"><pre>' . $left . '</pre></td>';
+								$output .= '<td class="modified"><pre>' . $left . '<br /></pre></td>';
 							}
 							else if ($row < $oldsize)
 							{
@@ -668,7 +677,7 @@ class diff_renderer_side_by_side extends diff_renderer
 
 							if (!empty($right))
 							{
-								$output .= '<td class="modified"><pre>' . $right . '</pre></td>';
+								$output .= '<td class="modified"><pre>' . $right . '<br /></pre></td>';
 							}
 							else if ($row < $newsize)
 							{
@@ -689,8 +698,8 @@ class diff_renderer_side_by_side extends diff_renderer
 					$line = $current_context;
 					$current_context = '';
 
-					$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td>';
-					$output .= '<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+					$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td>';
+					$output .= '<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 				}
 			}
 		}

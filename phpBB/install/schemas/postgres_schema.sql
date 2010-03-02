@@ -275,6 +275,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' NOT NULL,
 	confirm_type INT2 DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
+	seed INT4 DEFAULT '0' NOT NULL CHECK (seed >= 0),
 	PRIMARY KEY (session_id, confirm_id)
 );
 
@@ -385,9 +386,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons INT2 DEFAULT '1' NOT NULL CHECK (enable_icons >= 0),
 	enable_prune INT2 DEFAULT '0' NOT NULL CHECK (enable_prune >= 0),
 	prune_next INT4 DEFAULT '0' NOT NULL CHECK (prune_next >= 0),
-	prune_days INT2 DEFAULT '0' NOT NULL,
-	prune_viewed INT2 DEFAULT '0' NOT NULL,
-	prune_freq INT2 DEFAULT '0' NOT NULL,
+	prune_days INT4 DEFAULT '0' NOT NULL CHECK (prune_days >= 0),
+	prune_viewed INT4 DEFAULT '0' NOT NULL CHECK (prune_viewed >= 0),
+	prune_freq INT4 DEFAULT '0' NOT NULL CHECK (prune_freq >= 0),
 	PRIMARY KEY (forum_id)
 );
 
@@ -875,6 +876,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INT4 DEFAULT '0' NOT NULL CHECK (session_time >= 0),
 	session_ip varchar(40) DEFAULT '' NOT NULL,
 	session_browser varchar(150) DEFAULT '' NOT NULL,
+	session_forwarded_for varchar(255) DEFAULT '' NOT NULL,
 	session_page varchar(255) DEFAULT '' NOT NULL,
 	session_viewonline INT2 DEFAULT '1' NOT NULL CHECK (session_viewonline >= 0),
 	session_autologin INT2 DEFAULT '0' NOT NULL CHECK (session_autologin >= 0),
@@ -1271,7 +1273,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewonline >= 0),
 	user_allow_viewemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewemail >= 0),
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
-	user_options INT4 DEFAULT '893' NOT NULL CHECK (user_options >= 0),
+	user_options INT4 DEFAULT '895' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_type INT2 DEFAULT '0' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),
@@ -1333,11 +1335,10 @@ CREATE TABLE phpbb_zebra (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	zebra_id INT4 DEFAULT '0' NOT NULL CHECK (zebra_id >= 0),
 	friend INT2 DEFAULT '0' NOT NULL CHECK (friend >= 0),
-	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0)
+	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0),
+	PRIMARY KEY (user_id, zebra_id)
 );
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);
 
 
 COMMIT;

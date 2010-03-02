@@ -15,10 +15,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Include renderer and engine
-include_once($phpbb_root_path . 'includes/diff/engine.' . $phpEx);
-include_once($phpbb_root_path . 'includes/diff/renderer.' . $phpEx);
-
 /**
 * Code from pear.php.net, Text_Diff-0.2.1 (beta) package
 * http://pear.php.net/package/Text_Diff/
@@ -46,10 +42,10 @@ class diff
 	* @param array $from_lines  An array of strings. Typically these are lines from a file.
 	* @param array $to_lines    An array of strings.
 	*/
-	function diff($from_lines, $to_lines)
+	function diff(&$from_content, &$to_content, $preserve_cr = true)
 	{
 		$diff_engine = &new diff_engine();
-		$this->_edits = call_user_func_array(array($diff_engine, 'diff'), array($from_lines, $to_lines));
+		$this->_edits = $diff_engine->diff($from_content, $to_content, $preserve_cr);
 	}
 
 	/**
@@ -248,7 +244,7 @@ class mapped_diff extends diff
 	*                                  compared when computing the diff.
 	* @param array $mapped_to_lines    This array should have the same number of elements as $to_lines.
 	*/
-	function mapped_diff($from_lines, $to_lines, $mapped_from_lines, $mapped_to_lines)
+	function mapped_diff(&$from_lines, &$to_lines, &$mapped_from_lines, &$mapped_to_lines)
 	{
 		if (sizeof($from_lines) != sizeof($mapped_from_lines) || sizeof($to_lines) != sizeof($mapped_to_lines))
 		{
@@ -414,10 +410,16 @@ class diff3 extends diff
 	* @param array $final1  The first version to compare to.
 	* @param array $final2  The second version to compare to.
 	*/
-	function diff3($orig, $final1, $final2)
+	function diff3(&$orig, &$final1, &$final2)
 	{
-		$engine = new diff_engine();
-		$this->_edits = $this->_diff3($engine->diff($orig, $final1), $engine->diff($orig, $final2));
+		$diff_engine = &new diff_engine();
+
+		$diff_1 = $diff_engine->diff($orig, $final1);
+		$diff_2 = $diff_engine->diff($orig, $final2);
+
+		unset($engine);
+
+		$this->_edits = $this->_diff3($diff_1, $diff_2);
 	}
 
 	/**
@@ -542,7 +544,7 @@ class diff3 extends diff
 	/**
 	* @access private
 	*/
-	function _diff3($edits1, $edits2)
+	function _diff3(&$edits1, &$edits2)
 	{
 		$edits = array();
 		$bb = &new diff3_block_builder();

@@ -53,7 +53,7 @@ class acp_prune
 		{
 			$prune_posted = request_var('prune_days', 0);
 			$prune_viewed = request_var('prune_vieweddays', 0);
-			$prune_all = !$prune_posted && !$prune_viewed;
+			$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
 	
 			$prune_flags = 0;
 			$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;

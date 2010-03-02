@@ -403,7 +403,7 @@ if (!function_exists('stripos'))
 	* @param string $haystack is the string to search in
 	* @param string $needle is the string to search for
 	*
-	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
+	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack string. Unlike strpos(), stripos() is case-insensitive.
 	* Note that the needle may be a string of one or more characters.
 	* If needle is not found, stripos() will return boolean FALSE. 
 	*/
@@ -524,8 +524,8 @@ if (!function_exists('realpath'))
 			// Break the string into little bits for us to nibble on
 			$bits = explode('/', $path);
 
-			// Remove any . in the path
-			$bits = array_diff($bits, array('.'));
+			// Remove any . in the path, renumber array for the loop below
+			$bits = array_keys(array_diff($bits, array('.')));
 
 			// Lets get looping, run over and resolve any .. (up directory)
 			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
@@ -636,7 +636,7 @@ function language_select($default = '')
 	$sql = 'SELECT lang_iso, lang_local_name
 		FROM ' . LANG_TABLE . '
 		ORDER BY lang_english_name';
-	$result = $db->sql_query($sql, 600);
+	$result = $db->sql_query($sql);
 
 	$lang_options = '';
 	while ($row = $db->sql_fetchrow($result))
@@ -1285,8 +1285,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 {
 	global $template, $user;
 
-	$seperator = $user->theme['pagination_sep'];
-	$total_pages = ceil($num_items/$per_page);
+	// Make sure $per_page is a valid value
+	$per_page = ($per_page <= 0) ? 1 : $per_page;
+
+	$seperator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
+	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
 	{
@@ -1360,6 +1363,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 function on_page($num_items, $per_page, $start)
 {
 	global $template, $user;
+
+	// Make sure $per_page is a valid value
+	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
 	$on_page = floor($start / $per_page) + 1;
 
@@ -1451,6 +1457,7 @@ function generate_board_url($without_script_path = false)
 		$server_protocol = ($config['server_protocol']) ? $config['server_protocol'] : (($config['cookie_secure']) ? 'https://' : 'http://');
 		$server_name = $config['server_name'];
 		$server_port = (int) $config['server_port'];
+		$script_path = $config['script_path'];
 
 		$url = $server_protocol . $server_name;
 	}
@@ -1459,6 +1466,8 @@ function generate_board_url($without_script_path = false)
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
+
+		$script_path = $user->page['root_script_path'];
 	}
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
@@ -1466,13 +1475,18 @@ function generate_board_url($without_script_path = false)
 		$url .= ':' . $server_port;
 	}
 
-	if ($without_script_path)
+	if (!$without_script_path)
 	{
-		return $url;
+		$url .= $script_path;
 	}
 
 	// Strip / from the end
-	return $url . substr($user->page['root_script_path'], 0, -1);
+	if (substr($url, -1, 1) == '/')
+	{
+		$url = substr($url, 0, -1);
+	}
+
+	return $url;
 }
 
 /**
@@ -1494,12 +1508,6 @@ function redirect($url, $return = false)
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
-
-	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
-	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false)
-	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
-	}
 
 	// Determine which type of redirect we need to handle...
 	$url_parts = parse_url($url);
@@ -1572,7 +1580,18 @@ function redirect($url, $return = false)
 	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
 	{
 		header('Refresh: 0; URL=' . $url);
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $url . '"><title>Redirect</title></head><body><div align="center">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . $url . '">', '</a>') . '</div></body></html>';
+
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
+		echo '<head>';
+		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta http-equiv="refresh" content="0; url=' . $url . '" />';
+		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
+		echo '</head>';
+		echo '<body>';
+		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . $url . '">', '</a>') . '</div>';
+		echo '</body>';
+		echo '</html>';
 
 		exit;
 	}
@@ -1879,6 +1898,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
 
+			// Special case... the user is effectively banned, but we allow founders to login
+			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
+			{
+				return;
+			}
+
 			meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
@@ -1903,12 +1928,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Generate code
 				$code = gen_rand_string(mt_rand(5, 8));
 				$confirm_id = md5(unique_id($user->ip));
+				$seed = hexdec(substr(unique_id(), 4, 10));
+
+				// compute $seed % 0x7fffffff
+				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_LOGIN,
-					'code'			=> (string) $code)
+					'code'			=> (string) $code,
+					'seed'			=> (int) $seed)
 				);
 				$db->sql_query($sql);
 
@@ -2096,7 +2126,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 * @param	string	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
 * @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
 *
-* @return	string			Context of the specified words seperated by "..."
+* @return	string			Context of the specified words separated by "..."
 */
 function get_context($text, $words, $length = 400)
 {
@@ -2319,7 +2349,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		$uid = '';
 	}
 
-	$flags = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
+	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 	$bitfield = $message_parser->bbcode_bitfield;
 
 	return;
@@ -2366,15 +2396,15 @@ function make_clickable($text, $server_url = false)
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '</a><!-- l -->'";
+		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
+		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (])([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (])(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url_inline') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
@@ -2425,24 +2455,299 @@ function smiley_text($text, $force_option = false)
 }
 
 /**
-* Inline Attachment processing
+* General attachment parsing
+*
+* @param mixed $forum_id The forum id the attachments are displayed in (false if in private message)
+* @param string &$message The post/private message
+* @param array &$attachments The attachments to parse for (inline) display. The attachments array will hold templated data after parsing.
+* @param array &$update_count The attachment counts to be updated - will be filled
+* @param bool $preview If set to true the attachments are parsed for preview. Within preview mode the comments are fetched from the given $attachments array and not fetched from the database.
 */
-function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
+function parse_attachments($forum_id, &$message, &$attachments, &$update_count, $preview = false)
 {
-	global $config, $user;
-
-	if (!function_exists('display_attachments'))
+	if (!sizeof($attachments))
 	{
-		global $phpbb_root_path, $phpEx;
-		include("{$phpbb_root_path}includes/functions_display.$phpEx");
+		return;
 	}
 
-	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
+	global $template, $cache, $user;
+	global $extensions, $config, $phpbb_root_path, $phpEx;
+
+	// 
+	$compiled_attachments = array();
+
+	if (!isset($template->filename['attachment_tpl']))
+	{
+		$template->set_filenames(array(
+			'attachment_tpl'	=> 'attachment.html')
+		);
+	}
+
+	if (empty($extensions) || !is_array($extensions))
+	{
+		$extensions = $cache->obtain_attach_extensions($forum_id);
+	}
+
+	// Look for missing attachment information...
+	$attach_ids = array();
+	foreach ($attachments as $pos => $attachment)
+	{
+		// If is_orphan is set, we need to retrieve the attachments again...
+		if (!isset($attachment['extension']) && !isset($attachment['physical_filename']))
+		{
+			$attach_ids[(int) $attachment['attach_id']] = $pos;
+		}
+	}
+
+	// Grab attachments (security precaution)
+	if (sizeof($attach_ids))
+	{
+		global $db;
+
+		$new_attachment_data = array();
+
+		$sql = 'SELECT *
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids));
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($attach_ids[$row['attach_id']]))
+			{
+				continue;
+			}
+
+			// If we preview attachments we will set some retrieved values here
+			if ($preview)
+			{
+				$row['attach_comment'] = $attachments[$attach_ids[$row['attach_id']]]['attach_comment'];
+			}
+
+			$new_attachment_data[$attach_ids[$row['attach_id']]] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		$attachments = $new_attachment_data;
+		unset($new_attachment_data);
+	}
+
+	// Sort correctly
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachments);
+	}
+	else
+	{
+		// Descending sort
+		ksort($attachments);
+	}
+
+	foreach ($attachments as $attachment)
+	{
+		if (!sizeof($attachment))
+		{
+			continue;
+		}
+
+		// We need to reset/empty the _file block var, because this function might be called more than once
+		$template->destroy_block_vars('_file');
+
+		$block_array = array();
+		
+		// Some basics...
+		$attachment['extension'] = strtolower(trim($attachment['extension']));
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+
+		$upload_icon = '';
+
+		if (isset($extensions[$attachment['extension']]))
+		{
+			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = $user->img('icon_topic_attach', '');
+			}
+			else if ($extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+			}
+		}
+
+		$filesize = $attachment['filesize'];
+		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
+
+		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
+
+		$block_array += array(
+			'UPLOAD_ICON'		=> $upload_icon,
+			'FILESIZE'			=> $filesize,
+			'SIZE_LANG'			=> $size_lang,
+			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
+			'COMMENT'			=> $comment,
+		);
+
+		$denied = false;
+
+		if (!extension_allowed($forum_id, $attachment['extension'], $extensions))
+		{
+			$denied = true;
+
+			$block_array += array(
+				'S_DENIED'			=> true,
+				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
+			);
+		}
+
+		if (!$denied)
+		{
+			$l_downloaded_viewed = $download_link = '';
+			$display_cat = $extensions[$attachment['extension']]['display_cat'];
+
+			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
+			{
+				if ($attachment['thumbnail'])
+				{
+					$display_cat = ATTACHMENT_CATEGORY_THUMB;
+				}
+				else
+				{
+					if ($config['img_display_inlined'])
+					{
+						if ($config['img_link_width'] || $config['img_link_height'])
+						{
+							list($width, $height) = @getimagesize($filename);
+
+							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
+						}
+					}
+					else
+					{
+						$display_cat = ATTACHMENT_CATEGORY_NONE;
+					}
+				}
+			}
+
+			// Make some descisions based on user options being set.
+			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+			{
+				$display_cat = ATTACHMENT_CATEGORY_NONE;
+			}
+
+			if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
+			{
+				$display_cat = ATTACHMENT_CATEGORY_NONE;
+			}
+
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id);
+
+			switch ($display_cat)
+			{
+				// Images
+				case ATTACHMENT_CATEGORY_IMAGE:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_IMAGE'		=> true,
+					);
+
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Images, but display Thumbnail
+				case ATTACHMENT_CATEGORY_THUMB:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . (int) $forum_id);
+
+					$block_array += array(
+						'S_THUMBNAIL'		=> true,
+						'THUMB_IMAGE'		=> $thumbnail_link,
+					);
+				break;
+
+				// Windows Media Streams
+				case ATTACHMENT_CATEGORY_WM:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					// Giving the filename directly because within the wm object all variables are in local context making it impossible
+					// to validate against a valid session (all params can differ)
+					// $download_link = $filename;
+
+					$block_array += array(
+						'U_FORUM'		=> generate_board_url(),
+						'ATTACH_ID'		=> $attachment['attach_id'],
+						'S_WM_FILE'		=> true,
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Real Media Streams
+				case ATTACHMENT_CATEGORY_RM:
+				case ATTACHMENT_CATEGORY_QUICKTIME:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
+						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
+						'U_FORUM'			=> generate_board_url(),
+						'ATTACH_ID'			=> $attachment['attach_id'],
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Macromedia Flash Files
+				case ATTACHMENT_CATEGORY_FLASH:
+					list($width, $height) = @getimagesize($filename);
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_FLASH_FILE'	=> true,
+						'WIDTH'			=> $width,
+						'HEIGHT'		=> $height,
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				default:
+					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+
+					$block_array += array(
+						'S_FILE'		=> true,
+					);
+				break;
+			}
+
+			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+
+			$block_array += array(
+				'U_DOWNLOAD_LINK'		=> $download_link,
+				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+				'L_DOWNLOAD_COUNT'		=> $l_download_count
+			);
+		}
+
+		$template->assign_block_vars('_file', $block_array);
+
+		$compiled_attachments[] = $template->assign_display('attachment_tpl');
+	}
+
+	$attachments = $compiled_attachments;
+	unset($compiled_attachments);
+
 	$tpl_size = sizeof($attachments);
 
 	$unset_tpl = array();
 
-	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $text, $matches, PREG_PATTERN_ORDER);
+	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
 
 	$replace = array();
 	foreach ($matches[0] as $num => $capture)
@@ -2458,42 +2763,36 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 
 	if (isset($replace['from']))
 	{
-		$text = str_replace($replace['from'], $replace['to'], $text);
+		$message = str_replace($replace['from'], $replace['to'], $message);
 	}
 
-	return array_unique($unset_tpl);
+	$unset_tpl = array_unique($unset_tpl);
+
+	// Needed to let not display the inlined attachments at the end of the post again
+	foreach ($unset_tpl as $index)
+	{
+		unset($attachments[$index]);
+	}
 }
 
 /**
-* Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
+* Check if extension is allowed to be posted.
+*
+* @param mixed $forum_id The forum id to check or false if private message
+* @param string $extension The extension to check, for example zip.
+* @param array &$extensions The extension array holding the information from the cache (will be obtained if empty)
+*
+* @return bool False if the extension is not allowed to be posted, else true.
 */
 function extension_allowed($forum_id, $extension, &$extensions)
 {
-	if (!sizeof($extensions))
+	if (empty($extensions))
 	{
 		global $cache;
-		$extensions = $cache->obtain_attach_extensions();
+		$extensions = $cache->obtain_attach_extensions($forum_id);
 	}
 
-	if (!isset($extensions['_allowed_'][$extension]))
-	{
-		return false;
-	}
-
-	$check = $extensions['_allowed_'][$extension];
-
-	if (is_array($check))
-	{
-		// Check for private messaging AND all forums allowed
-		if (sizeof($check) == 1 && $check[0] == 0)
-		{
-			return true;
-		}
-
-		return (!in_array($forum_id, $check)) ? false : true;
-	}
-
-	return ($forum_id == 0) ? false : true;
+	return (!isset($extensions['_allowed_'][$extension])) ? false : true;
 }
 
 // Little helpers
@@ -2712,8 +3011,8 @@ function get_backtrace()
 
 /**
 * This function returns a regular expression pattern for commonly used expressions
-* Use with / as delimiter for email mode
-* mode can be: email|bbcode_htm
+* Use with / as delimiter for email mode and # for url modes
+* mode can be: email|bbcode_htm|url|url_inline|www_url|www_url_inline|relative_url|relative_url_inline
 */
 function get_preg_expression($mode)
 {
@@ -2726,11 +3025,30 @@ function get_preg_expression($mode)
 		case 'bbcode_htm':
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-				'#<!\-\- (l|m|w) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- ([lmw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',
 			);
+		break;
+
+		case 'url':
+		case 'url_inline':
+			$inline = ($mode == 'url') ? ')' : '';
+			// generated with regex generation file in the develop folder
+			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+		break;
+
+		case 'www_url':
+		case 'www_url_inline':
+			$inline = ($mode == 'www_url') ? ')' : '';
+			return "www\.(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+		break;
+
+		case 'relative_url':
+		case 'relative_url_inline':
+			$inline = ($mode == 'relative_url') ? ')' : '';
+			return "(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
 	}
 
@@ -2793,7 +3111,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 {
 	global $phpbb_root_path, $phpEx, $user;
 
-	$full_string = $profile_url = '';
+	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
 
 	if ($guest_username === false)
@@ -2838,7 +3156,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			{
 				$tpl = '{USERNAME}';
 			}
-			else if (!$profile_url &&  $username_colour)
+			else if (!$profile_url && $username_colour)
 			{
 				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
 			}
@@ -2916,7 +3234,7 @@ function phpbb_checkdnsrr($host, $type = '')
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $msg_title, $msg_long_text;
+	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
@@ -3095,7 +3413,6 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
-		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
 		$prev_session_ip = $reading_sql = '';
 
@@ -3140,7 +3457,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$db->sql_freeresult($result);
 		}
 
-		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
+		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . 
 				$reading_sql .
@@ -3363,7 +3680,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
-		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_')) ? true : false,
+		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
@@ -3372,8 +3689,6 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
-		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
@@ -3399,10 +3714,9 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
 
-	if ($config['send_encoding'])
-	{
-		header('Content-type: text/html; charset=UTF-8');
-	}
+	// application/xhtml+xml not used because of IE
+	header('Content-type: text/html; charset=UTF-8');
+
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
@@ -3415,7 +3729,7 @@ function page_header($page_title = '', $display_online_list = true)
 */
 function page_footer($run_cron = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -3428,7 +3742,7 @@ function page_footer($run_cron = true)
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
@@ -3542,17 +3856,18 @@ class bitfield
 		// Get the ($n / 8)th char
 		$byte = $n >> 3;
 
-		if (!isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
-			// Of course, if it doesn't exist then the result if FALSE
+			$c = $this->data[$byte];
+	
+			// Lookup the ($n % 8)th bit of the byte
+			$bit = 7 - ($n & 7);
+			return (bool) (ord($c) & (1 << $bit));
+		}
+		else
+		{
 			return false;
 		}
-
-		$c = $this->data[$byte];
-
-		// Lookup the ($n % 8)th bit of the byte
-		$bit = 7 - ($n & 7);
-		return (bool) (ord($c) & (1 << $bit));
 	}
 
 	function set($n)
@@ -3560,16 +3875,13 @@ class bitfield
 		$byte = $n >> 3;
 		$bit = 7 - ($n & 7);
 
-		if (isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
 			$this->data[$byte] = $this->data[$byte] | chr(1 << $bit);
 		}
 		else
 		{
-			if ($byte - strlen($this->data) > 0)
-			{
-				$this->data .= str_repeat("\0", $byte - strlen($this->data));
-			}
+			$this->data .= str_repeat("\0", $byte - strlen($this->data));
 			$this->data .= chr(1 << $bit);
 		}
 	}
@@ -3578,13 +3890,11 @@ class bitfield
 	{
 		$byte = $n >> 3;
 
-		if (!isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
-			return;
+			$bit = 7 - ($n & 7);
+			$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
 		}
-
-		$bit = 7 - ($n & 7);
-		$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
 	}
 
 	function get_blob()

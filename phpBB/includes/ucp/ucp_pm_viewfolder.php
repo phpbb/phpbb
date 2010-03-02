@@ -239,7 +239,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 			$template->assign_vars(array(
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
-				'S_SHOW_COLOUR_LEGEND'	=> true)
+				'S_SHOW_COLOUR_LEGEND'	=> true,
+
+				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
 			);
 		}
 	}
@@ -519,7 +521,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_start = $start;
 	}
 
-	$sql = 'SELECT t.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.user_colour
+	$sql = 'SELECT t.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour
 		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE t.user_id = $user_id
 			AND p.author_id = u.user_id

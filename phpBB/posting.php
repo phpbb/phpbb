@@ -39,7 +39,7 @@ $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
@@ -88,7 +88,7 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
-		$sql = 'SELECT f.*, t.*, p.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
+		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
@@ -191,6 +191,11 @@ switch ($mode)
 	break;
 
 	case 'quote':
+
+		$post_data['post_edit_locked'] = 0;
+
+	// no break;
+
 	case 'reply':
 		if ($auth->acl_get('f_reply', $forum_id))
 		{
@@ -488,6 +493,18 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 		}
 	}
+	else
+	{
+		if (!$subject)
+		{
+			$error[] = $user->lang['EMPTY_SUBJECT'];
+		}
+
+		if (!$message)
+		{
+			$error[] = $user->lang['TOO_FEW_CHARS'];
+		}
+	}
 
 	unset($subject, $message);
 }
@@ -532,7 +549,8 @@ if ($submit || $preview || $refresh)
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
-	
+
+	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 	$post_data['icon_id']			= request_var('icon', 0);
@@ -721,7 +739,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -782,7 +800,16 @@ if ($submit || $preview || $refresh)
 
 		if (!$auth->acl_get($auth_option, $forum_id))
 		{
-			$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
+			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod
+			if ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id'])
+			{
+				// To prevent non-authed users messing around with the topic type we reset it to the original one.
+				$post_data['topic_type'] = $post_data['orig_topic_type'];
+			}
+			else
+			{
+				$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
+			}
 		}
 	}
 
@@ -794,7 +821,7 @@ if ($submit || $preview || $refresh)
 	// DNSBL check
 	if ($config['check_dnsbl'] && !$refresh)
 	{
-		if (($dnsbl = $user->check_dnsbl()) !== false)
+		if (($dnsbl = $user->check_dnsbl('post')) !== false)
 		{
 			$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
 		}
@@ -987,17 +1014,12 @@ if (!sizeof($error) && $preview)
 	// Attachment Preview
 	if (sizeof($message_parser->attachment_data))
 	{
-		$extensions = $update_count = array();
-
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
 
+		$update_count = array();
 		$attachment_data = $message_parser->attachment_data;
-		$unset_attachments = parse_inline_attachments($preview_message, $attachment_data, $update_count, $forum_id, true);
 
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachment_data[$index]);
-		}
+		parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
 
 		foreach ($attachment_data as $i => $attachment)
 		{
@@ -1005,7 +1027,7 @@ if (!sizeof($error) && $preview)
 				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
 		}
-		unset($attachment_data, $attachment);
+		unset($attachment_data);
 	}
 
 	if (!sizeof($error))
@@ -1128,12 +1150,17 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_c
 	// Generate code
 	$code = gen_rand_string(mt_rand(5, 8));
 	$confirm_id = md5(unique_id($user->ip));
+	$seed = hexdec(substr(unique_id(), 4, 10));
+
+	// compute $seed % 0x7fffffff
+	$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
 
 	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'confirm_id'	=> (string) $confirm_id,
 		'session_id'	=> (string) $user->session_id,
 		'confirm_type'	=> (int) CONFIRM_POST,
-		'code'			=> (string) $code)
+		'code'			=> (string) $code,
+		'seed'			=> (int) $seed)
 	);
 	$db->sql_query($sql);
 

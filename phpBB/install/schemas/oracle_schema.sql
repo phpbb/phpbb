@@ -337,6 +337,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' ,
 	confirm_type number(3) DEFAULT '0' NOT NULL,
 	code varchar2(8) DEFAULT '' ,
+	seed number(10) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
 /
@@ -508,9 +509,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons number(1) DEFAULT '1' NOT NULL,
 	enable_prune number(1) DEFAULT '0' NOT NULL,
 	prune_next number(11) DEFAULT '0' NOT NULL,
-	prune_days number(4) DEFAULT '0' NOT NULL,
-	prune_viewed number(4) DEFAULT '0' NOT NULL,
-	prune_freq number(4) DEFAULT '0' NOT NULL,
+	prune_days number(8) DEFAULT '0' NOT NULL,
+	prune_viewed number(8) DEFAULT '0' NOT NULL,
+	prune_freq number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_forums PRIMARY KEY (forum_id)
 )
 /
@@ -988,7 +989,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id number(8) DEFAULT '0' NOT NULL,
 	rule_group_id number(8) DEFAULT '0' NOT NULL,
 	rule_action number(8) DEFAULT '0' NOT NULL,
-	rule_folder_id number(4) DEFAULT '0' NOT NULL,
+	rule_folder_id number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs_rules PRIMARY KEY (rule_id)
 )
 /
@@ -1025,7 +1026,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied number(1) DEFAULT '0' NOT NULL,
 	pm_marked number(1) DEFAULT '0' NOT NULL,
 	pm_forwarded number(1) DEFAULT '0' NOT NULL,
-	folder_id number(4) DEFAULT '0' NOT NULL
+	folder_id number(11) DEFAULT '0' NOT NULL
 )
 /
 
@@ -1279,6 +1280,7 @@ CREATE TABLE phpbb_sessions (
 	session_time number(11) DEFAULT '0' NOT NULL,
 	session_ip varchar2(40) DEFAULT '' ,
 	session_browser varchar2(150) DEFAULT '' ,
+	session_forwarded_for varchar2(255) DEFAULT '' ,
 	session_page varchar2(765) DEFAULT '' ,
 	session_viewonline number(1) DEFAULT '1' NOT NULL,
 	session_autologin number(1) DEFAULT '0' NOT NULL,
@@ -1820,7 +1822,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
-	user_options number(11) DEFAULT '893' NOT NULL,
+	user_options number(11) DEFAULT '895' NOT NULL,
 	user_avatar varchar2(255) DEFAULT '' ,
 	user_avatar_type number(2) DEFAULT '0' NOT NULL,
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,
@@ -1933,12 +1935,9 @@ CREATE TABLE phpbb_zebra (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	zebra_id number(8) DEFAULT '0' NOT NULL,
 	friend number(1) DEFAULT '0' NOT NULL,
-	foe number(1) DEFAULT '0' NOT NULL
+	foe number(1) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_zebra PRIMARY KEY (user_id, zebra_id)
 )
 /
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id)
-/
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id)
-/
 

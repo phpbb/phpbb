@@ -7,7 +7,7 @@
 	<th colspan="2"align="center">{L_SELECT_USER}</th>
 </tr>
 <tr>
-	<td class="row1" width="40%"><b class="gen">{L_FIND_USERNAME}: </b><br /><span class="gensmall">[ <a href="{U_FIND_MEMBER}" onclick="window.open('{U_FIND_MEMBER}', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;">{L_FIND_USERNAME}</a> ]</span></td>
+	<td class="row1" width="40%"><b class="gen">{L_FIND_USERNAME}: </b><br /><span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span></td>
 	<td class="row2"><input type="text" class="post" name="username" maxlength="50" size="20" /></td>
 </tr>
 <tr>
@@ -21,7 +21,7 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
-	<td class="row3" colspan="5" align="center"><b class="gen">{L_MOST_WARNINGS}</b></td>
+	<td class="row3" colspan="4" align="center"><b class="gen">{L_MOST_WARNINGS}</b></td>
 </tr>
 <tr>
 	<th>&nbsp;{L_USERNAME}&nbsp;</th>
@@ -38,7 +38,7 @@
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_WARNINGS_ZERO_TOTAL}</span></td>
+		<td class="row1" colspan="4" align="center"><span class="gen">{L_WARNINGS_ZERO_TOTAL}</span></td>
 	</tr>
 <!-- END highest -->
 </table>
@@ -47,7 +47,7 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
-	<td class="row3" colspan="5" align="center"><b class="gen">{L_LATEST_WARNINGS}</b></td>
+	<td class="row3" colspan="4" align="center"><b class="gen">{L_LATEST_WARNINGS}</b></td>
 </tr>
 <tr>
 	<th>&nbsp;{L_USERNAME}&nbsp;</th>
@@ -64,7 +64,7 @@
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_WARNINGS_ZERO_TOTAL}</span></td>
+		<td class="row1" colspan="4" align="center"><span class="gen">{L_WARNINGS_ZERO_TOTAL}</span></td>
 	</tr>
 <!-- END latest -->
 </table>

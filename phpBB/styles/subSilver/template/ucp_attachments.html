@@ -28,7 +28,7 @@
 		<!-- IF attachrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
 		<td class="genmed" style="padding: 4px;" align="center" width="2%">&nbsp;{attachrow.ROW_NUMBER}&nbsp;</td>
-		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}" target="file">{attachrow.FILENAME}</a><br /><span class="gensmall"><!-- IF attachrow.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
+		<td style="padding: 4px;"><a class="gen" href="{attachrow.U_VIEW_ATTACHMENT}">{attachrow.FILENAME}</a><br /><span class="gensmall"><!-- IF attachrow.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></span></td>
 		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">&nbsp;{attachrow.POST_TIME}&nbsp;</td>
 		<td class="genmed" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">{attachrow.SIZE}</td>
 		<td class="genmed" style="padding: 4px;" align="center">{attachrow.DOWNLOAD_COUNT}</td>
@@ -40,7 +40,7 @@
 	</tr>
 	</table>
 
-	<div style="float:right"><b class="gensmall"><a href="#" onclick="marklist('ucp', 'attachment', true); return false;">{L_MARK_ALL}</a> :: <a  href="#" onclick="marklist('ucp', 'attachment', false); return false;">{L_UNMARK_ALL}</a></b></div>
+	<div style="float:right"><b class="gensmall"><a href="#" onclick="marklist('ucp', 'attachment', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'attachment', false); return false;">{L_UNMARK_ALL}</a></b></div>
 
 <!-- ELSE -->
 

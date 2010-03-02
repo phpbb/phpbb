@@ -46,7 +46,7 @@ class dbal_oracle extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'Oracle ' . @ociserverversion($this->db_connect_id);
+		return @ociserverversion($this->db_connect_id);
 	}
 
 	/**
@@ -213,20 +213,13 @@ class dbal_oracle extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{
-		if ($query != '')
-		{
-			$this->query_result = false; 
+		$this->query_result = false; 
 
-			$query = 'SELECT * FROM (SELECT /*+ FIRST_ROWS */ rownum AS xrownum, a.* FROM (' . $query . ') a WHERE rownum <= ' . ($offset + $total) . ') WHERE xrownum >= ' . $offset;
+		$query = 'SELECT * FROM (SELECT /*+ FIRST_ROWS */ rownum AS xrownum, a.* FROM (' . $query . ') a WHERE rownum <= ' . ($offset + $total) . ') WHERE xrownum >= ' . $offset;
 
-			return $this->sql_query($query, $cache_ttl); 
-		}
-		else
-		{
-			return false; 
-		}
+		return $this->sql_query($query, $cache_ttl); 
 	}
 
 	/**

@@ -1,4 +1,4 @@
-Subject: Welcome to “{SITENAME}” — {U_BOARD}
+Subject: Welcome to "{SITENAME}" - {U_BOARD}
 
 {WELCOME_MSG}
 
@@ -13,14 +13,14 @@ OR mail it to:
 {MAIL_INFO}
 
 ------------------------------ CUT HERE ------------------------------
-Permission to participate at “{SITENAME}”
+Permission to participate at "{SITENAME}"
 
 Username: {USERNAME}
 Email: {EMAIL_ADDRESS}
 
-I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO “{SITENAME}” TO STORE THIS INFORMATION. 
+I HAVE REVIEWED THE INFORMATION PROVIDED BY MY CHILD AND HEREBY GRANT PERMISSION TO "{SITENAME}" TO STORE THIS INFORMATION. 
 I UNDERSTAND THIS INFORMATION CAN BE CHANGED AT ANY TIME BY ENTERING A PASSWORD. 
-I UNDERSTAND THAT I MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM “{SITENAME}” AT ANY TIME.
+I UNDERSTAND THAT I MAY REQUEST FOR THIS INFORMATION TO BE REMOVED FROM "{SITENAME}" AT ANY TIME.
 
 
 Parent or guardian 
@@ -33,7 +33,7 @@ Date: _______________
 ------------------------------ CUT HERE ------------------------------
 
 
-Once the administrator has recived the above form via fax or regular mail your account will be activated.
+Once the administrator has received the above form via fax or regular mail your account will be activated.
 
 Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you. However, should you forget your password you can request a new one which will be activated in the same way as this account.
 

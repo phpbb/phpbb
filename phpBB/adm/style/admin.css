@@ -48,6 +48,17 @@ h2, caption {
 	margin-top: 25px;
 }
 
+.rtl h2, .rtl caption {
+	text-align: right;
+}
+
+h3, h4 {
+	font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif;
+	text-decoration: none; 
+	line-height: 120%; 
+	margin-top: 25px;
+}
+
 p {
 	margin-bottom: 0.7em;
 	line-height: 1.4em;
@@ -56,8 +67,11 @@ p {
 
 ul {
 	list-style: disc;
-	margin-left: 2em;	
-	margin-bottom: 1em;
+	margin: 0 0 1em 2em;
+}
+
+.rtl ul {
+	margin: 0 2em 1em 0;
 }
 
 hr {
@@ -98,6 +112,10 @@ a:hover {
 	height: 84px;
 }
 
+.rtl #page-header {
+	text-align: left;
+}
+
 #page-header h1 {
 	font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 	font-size: 1.5em;
@@ -129,10 +147,15 @@ a:hover {
 }
 
 #main {
-	float:left;
+	float: left;
 	width: 76%;
-	margin-left: 3%;
+	margin: 0 0 0 3%;
 	min-height: 350px;
+}
+
+.rtl #main {
+	float: right;
+	margin: 0 3% 0 0;
 }
 
 * html #main { 
@@ -147,6 +170,10 @@ a:hover {
 	line-height: normal;
 	margin: 0 0 -6px 7px;
 	min-width: 570px;
+}
+
+.rtl #tabs {
+	margin: 0 7px -6px 0;
 }
 
 #tabs ul {
@@ -164,12 +191,18 @@ a:hover {
 }
 
 #tabs a {
-	float:left;
+	float: left;
 	background:url("../images/bg_tabs1.gif") no-repeat 0% -35px;
 	margin: 0 1px 0 0;
 	padding: 0 0 0 6px;
 	text-decoration: none;
 	position: relative;
+}
+
+.rtl #tabs a {
+	float: right;
+	margin: 0 0 0 1px;
+	padding: 0 6px 0 0;
 }
 
 #tabs a span {
@@ -182,8 +215,13 @@ a:hover {
 	text-transform: uppercase;
 }
 
+.rtl #tabs a span {
+	float: left;
+	padding: 7px 6px 6px 12px;
+}
+
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
-#tabs a span { float:none; }
+#tabs a span, .rtl #tabs a span { float:none;}
 /* End hack */
 
 #tabs a:hover span {
@@ -235,6 +273,10 @@ span.corners-top span, span.corners-bottom span {
 	width: 20%;
 	font-size: 100%;
 	padding: 0;
+}
+
+.rtl #menu {
+	float: right;
 }
 
 #menu p {
@@ -316,11 +358,16 @@ th, td {
 	text-align: left;
 }
 
+.rtl th, .rtl td {
+	text-align: right;
+}
+
 th {
 	padding: 6px 4px;
 	color: #FFA34F;
 	font-weight: bold;
 	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
+	white-space: nowrap;
 }
 
 td {
@@ -328,12 +375,12 @@ td {
 	line-height: 1.2em;
 }
 
-.row1 { background-color: #EFEFEF; }
-.row2 { background-color: #DEE3E7; }
-.row3 { background-color: #D1D7DC; }
-.row4 { background-color: #E4E8EB; }
-.col1 { background-color: #DEE3E7; }
-.col2 { background-color: #EFEFEF; }
+.row1 { background-color: #EFEFEF;}
+.row2 { background-color: #DEE3E7;}
+.row3 { background-color: #D1D7DC;}
+.row4 { background-color: #E4E8EB;}
+.col1 { background-color: #DEE3E7;}
+.col2 { background-color: #EFEFEF;}
 
 .spacer {
 	background-color: #D1D7DC;
@@ -363,42 +410,38 @@ table.type2 td {
 
 /* General form styles
 ----------------------------------------*/
-fieldset { 
+fieldset {
+	background-color: #DDD;
+	padding: 10px;
 	margin: 15px 0;
-	padding: 10px; 
 	border-right: 1px solid #AFAEAA;
 	border-bottom: 1px solid #AFAEAA;
 	border-left: 1px solid #D5D5C8;
 	border-top: 1px solid #D5D5C8;
-	background-color: #ECECEC;
+	background-color: #ECECEC;	
 	position: relative;
 }
 
-* html fieldset { 
-	padding: 0 10px 5px 10px; 
+.rtl fieldset {
+	border-right: 1px solid #D5D5C8;
+	border-bottom: 1px solid #AFAEAA;
+	border-left: 1px solid #AFAEAA;
+	border-top: 1px solid #D5D5C8;
+}
+
+legend {
+	position: absolute;
+	top: -0.5em;
+	font-size: 1.1em;
+	color:#006699;
+	font-family: "Lucida Grande",Arial,Verdana,Sans-serif;
+	font-weight: bold;
+	line-height: 100%;
+	text-transform: uppercase;
 }
 
 fieldset p {
 	font-size: 1.1em;
-}
-
-legend {
-	padding: 1px 0; 
-	font-family: "Lucida Grande", Arial, Verdana,Sans-serif;
-	font-size: 1.1em;
-	font-weight: bold;
-	color: #006699;
-	position: relative;
-	text-transform: uppercase;
-	line-height: 100%;
-	top: 0em;
-	vertical-align:middle;
-}
-
-* html legend { 
-	margin-bottom: -10px; 
-	margin-left: -7px;
-	top: -1.2em;
 }
 
 input {
@@ -414,6 +457,17 @@ input {
 	padding: 2px;
 	cursor: text;
 	vertical-align: middle;
+}
+
+.rtl input {
+	border-left: 1px solid #D5D5C8;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #AFAEAA;
+	border-bottom: 1px solid #D5D5C8;
+}
+
+input.langvalue, textarea.langvalue {
+	width: 90%;
 }
 
 select {
@@ -434,12 +488,16 @@ optgroup {
 }
 
 option {
-	padding-right: 1em;
+	padding: 0 1em 0 0;
+}
+
+.rtl option {
+	padding: 0 0 0 1em;
 }
 
 .sep {
 	color: black;
-	background-color: #FFA34F;
+	font-weight: bold;
 }
 
 textarea {
@@ -455,10 +513,21 @@ textarea {
 	cursor: text;
 }
 
+.rtl textarea {
+	border-left: 1px solid #D5D5C8;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #AFAEAA;
+	border-bottom: 1px solid #D5D5C8;
+}
+
 label {
-	cursor:pointer;
+	cursor: pointer;
 	font-size: 1.1em;
-	padding-right: 5px;
+	padding: 0 5px 0 0;
+}
+
+.rtl label {
+	padding: 0 0 0 5px;
 }
 
 label input {
@@ -471,12 +540,16 @@ label img {
 }
 
 fieldset.quick, p.quick {
-	margin: 0 0 5px 0;
-	padding: 5px 0 0 0; 
+	margin: 0 0 5px;
+	padding: 5px 0 0; 
 	border: none;
 	background-color: transparent;
 	text-align: right;
 	font-size: 1.1em;
+}
+
+.rtl fieldset.quick, .rtl p.quick {
+	text-align: left;
 }
 
 fieldset.quick legend {
@@ -484,7 +557,16 @@ fieldset.quick legend {
 }
 
 fieldset.tabulated {
-	background-color: #DADFE4;
+/*	background-color: #DADFE4;*/
+	background: none;
+	margin: 0;
+	padding: 0;
+	padding-top: 5px;
+	border: 0;
+}
+
+fieldset.tabulated legend {
+	display: none;
 }
 
 fieldset.nobg {
@@ -533,11 +615,16 @@ dt {
 	width: auto;
 }
 
-dd { color: #000; }
-dd + dd { padding-top: 5px; }
-dt span { padding-right: 5px; }
+.rtl dt {
+	float: right;
+}
 
-dt .explain { font-style: italic; }
+dd { color: #000;}
+dd + dd { padding-top: 5px;}
+dt span { padding: 0 5px 0 0;}
+.rtl dt span { padding: 0 0 0 5px;}
+
+dt .explain { font-style: italic;}
 
 dt label {
 	font-size: 100%;
@@ -545,12 +632,20 @@ dt label {
 	font-weight: bold;
 }
 
-dd label {
-	white-space: nowrap;
-	margin-right: 10px;
+.rtl dt label {
+	text-align: right;
 }
 
-html>body dd label input { vertical-align: text-bottom; }	/* Tweak for Moz to align checkboxes/radio buttons nicely */
+dd label {
+	white-space: nowrap;
+	margin: 0 10px 0 0;
+}
+
+.rtl dd label {
+	margin: 0 0 0 10px;
+}
+
+html>body dd label input { vertical-align: text-bottom;}	/* Tweak for Moz to align checkboxes/radio buttons nicely */
 
 dd input, 
 dd select {
@@ -561,7 +656,7 @@ dd textarea {
 	width: 100%;
 }
 
-input.radio {
+input.radio, input.perm_cb {
 	width: auto !important;
 	background-color: transparent;
 	border: none;
@@ -581,21 +676,36 @@ fieldset dl {
 fieldset dt {
 	width: 45%;
 	text-align: left;
+	border: none;
 	border-right: 1px solid #CCC;
 	padding-top: 3px;
 }
 
+.rtl fieldset dt {
+	text-align: right;
+	border: none;
+	border-left: 1px solid #CCC;
+}
+
 fieldset dd {
-	margin-left: 45%;
-	padding-left: 5px;
+	margin: 0 0 0 45%;
+	padding: 0 0 0 5px;
+	border: none;
 	border-left: 1px solid #CCC;
 	vertical-align: top;
 }
 
+.rtl fieldset dd {
+	margin: 0 45% 0 0;
+	padding: 0 5px 0 0;
+	border: none;
+	border-right: 1px solid #CCC;
+}
+
 dd.full {
-	margin-left: 0;
+	margin: 0;
 	border: 0;
-	padding-left: 0;
+	padding: 0;
 	padding-top: 3px;
 	text-align: center;
 	width: 95%;
@@ -652,6 +762,13 @@ fieldset.submit-buttons legend {
 	width: 75%;
 }
 
+.rtl .inputbox {
+	border-left: 1px solid #D5D5C8;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #AFAEAA;
+	border-bottom: 1px solid #D5D5C8;
+}
+
 select.inputbox {
 	cursor: pointer;
 	padding: 0;
@@ -659,10 +776,7 @@ select.inputbox {
 }
 
 .inputbox:hover {
-	border-left: 1px solid #AFAEAA;
-	border-top: 1px solid #AFAEAA;
-	border-right: 1px solid #AFAEAA;
-	border-bottom: 1px solid #AFAEAA;
+	border: 1px solid #AFAEAA;
 	background-color: #E9E9E2;
 }
 
@@ -677,12 +791,12 @@ textarea.full {
 	width: 99%;
 }
 
-* html input.full, * html textarea.full { width: 95%; }
-input.medium { width: 50%; }
-input.narrow { width: 25%; }
-input.tiny { width: 10%; }
-input.autowidth { width: auto !important; }
-.box2 .inputbox { background-color: #E9E9E9; }
+* html input.full, * html textarea.full { width: 95%;}
+input.medium { width: 50%;}
+input.narrow { width: 25%;}
+input.tiny { width: 10%;}
+input.autowidth { width: auto !important;}
+.box2 .inputbox { background-color: #E9E9E9;}
 
 
 /* Pagination
@@ -694,6 +808,10 @@ input.autowidth { width: auto !important; }
 	margin-top: 5px;
 	font-size: 1em;
 	padding-bottom: 2px;
+}
+
+.rtl .pagination {
+	text-align: left;
 }
 
 .pagination strong,
@@ -761,167 +879,9 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	padding: 4px 8px;
 }
 
-/* Permission related
----------------------------------------- */
-
-.permissions {
-	margin: 15px 0 0 0;
-	padding: 0;
-	border: none;
-	background-color: transparent;
-}
-
-.permissions table {
-	width: 100%;
-	/*empty-cells: hide;*/
-	border: 1px solid #CCCFD3;
-	background-color: #FFFFFF;
-	padding: 1px;
-}
-
-.permissions th {
-	padding: 3px 4px;
-	color: #FFFFFF;
-	background: #DDE1E4 url("../images/gradient2b.gif") bottom left repeat-x;
-	border-top: 1px solid #6DACD2;
-	border-bottom: 1px solid #327AA5;
-	text-align: left;
-	font-size: .85em;
-	text-transform: uppercase;	
-}
-
-.permissions td {
-	text-align: left;
-	font-size: 1.1em;
-	padding: 4px;
-	line-height: 120%;
-}
-
-table.pmask {
-	border: none;
-	background: none;
-	padding: 0;
-}
-
-table.pmask th {
-	background: none;
-	border-top: none;
-	text-align: center;
-	vertical-align: bottom;
-	color: #115098;
-	padding: 2px 0;
-}
-
-table.pmask td {
-	padding: 0px;
-}
-
-table.pmask td.name {
-	padding: 2px;
-	vertical-align: middle;
-}
-
-.permissions th.name {
-	text-align: left;
-	width: auto;
-	padding-left: 4px;
-}
-
-.permissions .entry {
-	text-align: left;
+input.disabled {
 	font-weight: normal;
-}
-
-.permissions td.name {
-	text-align: left;
-	font-weight: bold;
-}
-
-.permissions table.type3 {
-	float: right;
-	width: 350px; /* Setting the length of the permission view box */
-	border: none;
-	background-color: transparent;
-	padding: 0;
-}
-
-.permissions table.type3 thead th {
-	background-color: transparent;
-	border-top: none;
-	text-align: center;
-	color: #115098;
-	padding: 0 3px;
-	font-size: .9em;
-	font-weight: normal;
-	text-transform: none;
-}
-
-.permissions table.type3 tbody th {
-	border-top: none;
-	text-align: left;
-	text-transform: none;
-	padding: 0;
-	border: none;
-	font-size: 1em;
-	font-weight: normal;
-	width: 100%;
-	vertical-align: middle;
-}
-
-.permissions table.type3 td {
-	text-align: center;
-	padding: 1px;
-}
-
-.permissions td.yes {
-	width: 20px;
-	background-color: #40C53D;
-}
-
-.permissions td.never {
-	width: 20px;
-	background-color: #EC7181;
-}
-
-.permissions td.no {
-	width: 20px;
-	background-color: transparent;
-}
-
-/* Preset Styles
----------------------------------------- */
-.preset {
-	width: 60px;
-}
-
-.preset a {
-	float: left;
-	display: block;
-	width: 100%;
-	height: 20px;
-	cursor: pointer;
-	background: transparent;
-}
-
-.preset a:hover {
-	background: url("../images/arrow_down.gif") no-repeat 50% 50%;
-	text-decoration: none;
-}
-
-.preset_yes {
-	background: #D3F3D2 url("../images/bg_hash1.gif") repeat;
-}
-
-.preset_custom {
-	background: #DAE4EC url("../images/bg_hash2.gif") repeat;
-}
-
-.preset_never {
-	background: #ECD7DA url("../images/bg_hash3.gif") repeat;
-}
-
-.preset_no {
-	background: #ECD7DA url("../images/bg_hash4.gif") repeat;
+	color: #666;
 }
 
 /* Action Highlighting
@@ -1046,6 +1006,10 @@ table.pmask td.name {
 	padding: 0px;
 }
 
+.rtl .sourcenum {
+	text-align: left;
+}
+
 .source {
 	font-family: Monaco, 'Courier New', monospace;
 	font-size: 125%;
@@ -1075,4 +1039,308 @@ table.pmask td.name {
 
 .syntaxstring {
 	color: #DD0000;
+}
+
+/* Permission interface
+---------------------------------------- */
+
+fieldset.perm legend {
+	text-transform: none;
+}
+fieldset.perm legend input{
+	height: 1.1em;
+}
+
+/* Permission sections */ 
+fieldset.perm .perm_simple {
+	text-align: left;
+	padding-top: 3px;
+}
+
+.rtl fieldset.perm .perm_simple {
+	text-align: right;
+}
+
+fieldset.perm .perm_advanced {
+	padding: 10px 0 0 5px;
+	vertical-align: top;
+	clear: right;
+}
+
+.rtl fieldset.perm .perm_advanced {
+	padding: 10px 5px 0 0;
+	clear: left;
+}
+
+fieldset.perm .perm_switch {
+	float: right;
+	font-size: 1.1em;
+}
+
+.rtl fieldset.perm .perm_switch {
+	float: left;
+}
+
+.perm_switch a {
+	text-decoration: underline;
+}
+
+/* Tabbed menu */
+.perm_cat {
+	line-height: normal;
+	margin: 0 0 0 7px;
+	min-width: 570px;
+	font-size: 1em;
+}
+
+.rtl .perm_cat {
+	margin: 0 7px 0 0;
+}
+
+.perm_cat ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.perm_cat li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+.perm_cat a {
+	float: left;
+	background: url("../images/bg_tabs1.gif") no-repeat 0% -35px;
+	margin: 0 1px 0 0;
+	padding: 0 0 0 6px;
+	text-decoration: none;
+	position: relative;
+}
+
+.rtl .perm_cat a {
+	float: right;
+	margin: 0 0 0 1px;
+	padding: 0 6px 0 0;
+}
+
+.perm_cat a span.tabbg {
+	float: left;
+	display: block;
+	background: url("../images/bg_tabs2.gif") no-repeat 100% -35px;
+	padding: 7px 12px 6px 6px;
+	color: #536482;
+	white-space: nowrap;
+}
+
+.rtl .perm_cat a span.tabbg {
+	float: left;
+	padding: 7px 6px 6px 12px;
+}
+
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+.perm_cat a span.tabbg, .rtl .perm_cat a span.tabbg { float: none;}
+/* End hack */
+
+.perm_cat a:hover span.tabbg {
+	color: #DD6900;
+}
+
+.perm_cat .activetab a {
+	background-position: 0 0px;
+}
+
+.perm_cat .activetab a span.tabbg {
+	background-position: 100% 0px;
+	padding-bottom: 7px;
+	color: #333333;
+}
+
+.perm_cat a:hover {
+	background-position: 0 -70px;
+}
+
+.perm_cat a:hover span.tabbg {
+	background-position: 100% -70px;
+}
+
+.perm_cat .activetab a:hover span.tabbg {
+	color: #333333;
+	background-position: 100% 0px;
+}
+
+.perm_cat .activetab a:hover {
+	background-position: 0 0px;
+}
+
+.perm_cat a span.colour {
+	border: 1px solid #536482;
+	display: block;
+	float: left;
+	width: 10px;
+	height: 10px;
+	margin: 0 5px 0 0;
+}
+
+.rtl .perm_cat a span.colour {
+	float: right;
+	margin: 0 0 0 5px;
+}
+
+.perm_cat .activetab span.colour {
+	border-color: #333333;
+}
+
+.perm_cat a:hover span.colour {
+	border-color: #DD6900;
+}
+
+.perm_cat .activetab a:hover span.colour {
+	border-color: #333333;
+}
+
+/* Permission preset colours */
+.perm_preset_yes span.colour,
+.yes {
+	background-color: #86F786;
+}
+
+.perm_preset_custom span.colour {
+	background-color: #B2BBDD;
+}
+
+.perm_preset_never span.colour {
+	background-color: #DD0000;
+}
+
+.perm_preset_no span.colour,
+.never {
+	background-color: #EFB0B2;
+}
+
+/* Pemrission panel
+---------------------------------------- */
+.perm_panel {
+	float: left;
+	background-color: #FFF;
+	width: 100%;
+	border: 1px solid #A9B8C2;
+	margin-top: -1px;
+}
+
+.rtl .perm_panel {
+	float: right;
+}
+
+.perm_panel span.corners-top {
+	background-image: url("../images/corners_left2.gif");
+}
+
+.perm_panel span.corners-top span {
+	background-image: url("../images/corners_right2.gif");
+}
+
+.perm_panel span.corners-bottom {
+	background-image: url("../images/corners_left2.gif");
+}
+
+.perm_panel span.corners-bottom span {
+	background-image: url("../images/corners_right2.gif");
+}
+
+.perm_panel span.corners-top, .perm_panel span.corners-bottom, 
+.perm_panel span.corners-top span, .perm_panel span.corners-bottom span {
+	font-size: 1px;
+	line-height: 1px;
+	display: block;
+	height: 5px;
+	background-repeat: no-repeat;
+}
+
+.perm_panel span.corners-top {
+	background-image: url("../images/corners_left2.gif");
+	background-position: 0 0;
+	margin: 0 0;
+}
+
+.perm_panel span.corners-top span {
+	background-image: url("../images/corners_right2.gif");
+	background-position: 100% 0;
+}
+
+.perm_panel span.corners-bottom {
+	background-image: url("../images/corners_left2.gif");
+	background-position: 0 100%;
+	margin: 0 0;
+	clear: both;
+}
+
+.perm_panel span.corners-bottom span {
+	background-image: url("../images/corners_right2.gif");
+	background-position: 100% 100%;
+}
+
+/* Permission table
+---------------------------------------- */
+.perm_panel .tablewrap {
+	margin: 0 10px;
+}
+
+.perm_panel table {
+	width: 100%;
+}
+
+.perm_panel th {
+	text-transform: none;
+}
+
+.perm_panel th.value {
+	text-align: center;
+}
+
+.perm_panel th.name {
+	text-align: left;
+	width: auto;
+	text-transform: none;
+}
+
+.rtl .perm_panel th.name {
+	text-align: right;
+}
+
+.perm_panel th.permission_name {
+	border: none;
+	color: #536482;
+	font-weight: normal;
+}
+
+.perm_panel th.permission_name a.trace {
+	display: inline;
+}
+
+.perm_panel th.row3 {
+	background-image: none;
+	background-color: #D1D7DC; 
+}
+
+.perm_panel th.row4 {
+	background-image: none;	
+	background-color: #E4E8EB; 
+}
+
+.perm_panel th a:link, .perm_panel th a:hover, .perm_panel th a:visited {
+	display: block;
+	color: #FFA34F; 
+	text-decoration: underline; 
+}
+
+.perm_panel td {
+	padding: 0;
+	text-align: center;
+}
+
+.perm_panel td label {
+	display: block;
 }

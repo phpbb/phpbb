@@ -44,7 +44,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
-		1 => 'In your profile you will find an option <em>Hide your online status</em>, if you switch this <em>on</em> you’ll only appear to board administrators, moderators, or to yourself. You will be counted as a hidden user.'
+		1 => 'Within the UCP under “Forum preferences” you will find an option <em>Hide your online status</em>, if you enable this option with <samp>Yes</samp>, you’ll only appear to the administrators, moderators or yourself. You will be counted as a hidden user.'
 	),
 	array(
 		0 => 'I’ve lost my password!',
@@ -112,7 +112,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
-		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post.  If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, this lists the number of times you edited it. This will only appear if no one has replied, it also will not appear if moderators or administrators edit the post (they should leave a message saying what they altered and why). Please note that normal users cannot delete a post once someone has replied.'
+		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post. If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, which lists the number of times you edited it along with when. This will not appear if no one has replied, nor will not appear if moderators or administrators edit the post though they may leave a note as to why they’ve edited the post at their own disgression. Please note that normal users cannot delete a post once someone has replied.'
 	),
 	array(
 		0 => 'How do I add a signature to my post?',
@@ -140,7 +140,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why did I receive a warning?',
-		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of your rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
+		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of their rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
 	),
 	array(
 		0 => 'How can I report posts to a moderator?',
@@ -172,7 +172,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are Smilies?',
-		1 => 'Smilies, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smileys though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether.'
+		1 => 'Smilies, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smilies though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether. The board administrator may also have set a limit to the number of such smilies you may use within a post.'
 	),
 	array(
 		0 => 'Can I post images?',
@@ -180,7 +180,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are global announcements?',
-		1 => 'Global announcements contain important information and you should read them as soon as possible. Global announcements will appear at the top of every forum and also within your User Control Panel. Whether or not you can post a gloabl announcement depends on the permissions required, these are set by the administrator.'
+		1 => 'Global announcements contain important information and you should read them as soon as possible. Global announcements will appear at the top of every forum and also within your User Control Panel. Whether or not you can post a global announcement depends on the permissions required, these are set by the administrator.'
 	),
 	array(
 		0 => 'What are announcements?',
@@ -196,7 +196,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are topic icons?',
-		1 => 'Topic icons are images which can be assosciated with posts to indicate their content. The ability to use topic icons depends on the permissions set by the administrator.'
+		1 => 'Topic icons are images which can be associated with posts to indicate their content. The ability to use topic icons depends on the permissions set by the administrator.'
 	),
 	array(
 		0 => '--',
@@ -216,11 +216,11 @@ $help = array(
 	),
 	array(
 		0 => 'How do I join a Usergroup?',
-		1 => 'To join a Usergroup click the Usergroup link within your User Control Panel, you can then view all usergroups. Not all groups are <em>open access</em>, some may require approval to join, some are closed and some may even have hidden memberships. If the group is open then you can join it by clicking the appropriate button. If a group requires approval to join you may request to join it by clicking the appropriate button. The user group moderator will need to approve your request, they may ask why you want to join the group. Please do not pester a group moderator if they turn your request down, they will have their reasons.'
+		1 => 'To join a Usergroup click the Usergroup link within your User Control Panel, you can then view all usergroups. Not all groups are <em>open access</em>, some may require approval to join, some are closed and some may even have hidden memberships. If the group is open then you can join it by clicking the appropriate button. If a group requires approval to join you may request to join it by clicking the appropriate button. The user group leader will need to approve your request, they may ask why you want to join the group. Please do not pester a group leader if they turn your request down, they will have their reasons.'
 	),
 	array(
-		0 => 'How do I become a Usergroup Moderator?',
-		1 => 'When Usergroups are initially created by the board administrator, they also assign a Usergroup moderator. If you are interested in creating a Usergroup then your first point of contact should be the administrator, try sending them a private message.'
+		0 => 'How do I become a Usergroup Leader?',
+		1 => 'When Usergroups are initially created by the board administrator, they also assign a Usergroup leader. If you are interested in creating a Usergroup then your first point of contact should be the administrator, try sending them a private message.'
 	),
 	array(
 		0 => 'Why do some Usergroups appear in a different colour?',
@@ -256,7 +256,7 @@ $help = array(
 	),
 	array(
 		0 => 'What is my Friends and Foes list?',
-		1 => 'You can use these lists to organise other members of the forum. Members added to your friends list will be listed within your User Control Panel for quick access to see their online status and to send them private messages. Subject to template support, posts from these users may also be highlighted. If you add a user to your foes list them any posts made by them will be hidden by default.'
+		1 => 'You can use these lists to organise other members of the forum. Members added to your friends list will be listed within your User Control Panel for quick access to see their online status and to send them private messages. Subject to template support, posts from these users may also be highlighted. If you add a user to your foes list then any posts made by them will be hidden by default.'
 	),
 	array(
 		0 => 'How can I add / remove users to my friends or foes list?',
@@ -284,7 +284,7 @@ $help = array(
 	),
 	array(
 		0 => 'How can I find my own posts and topics?',
-		1 => 'Your own posts can be retrieved either by clicking the “Search user’s posts” within the User Control Panel or via your own profile page. To search for your topics, use the Advanced search page and fill in the various options appropiately.'
+		1 => 'Your own posts can be retrieved either by clicking the “Search user’s posts” within the User Control Panel or via your own profile page. To search for your topics, use the Advanced search page and fill in the various options appropriately.'
 	),
 	array(
 		0 => '--',
@@ -320,7 +320,7 @@ $help = array(
 	),
 	array(
 		0 => 'Who wrote this bulletin board?',
-		1 => 'This software (in its unmodified form) is produced, released and is copyright  <a href="http://www.phpbb.com/" target="_blank">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
+		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="http://www.phpbb.com/">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
 	),
 	array(
 		0 => 'Why isn’t X feature available?',

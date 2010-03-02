@@ -8,20 +8,11 @@
 
 <form id="list" method="post" action="{U_ACTION}">
 
-<fieldset class="quick" style="float: left;">
-	{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
-	<input class="button2" type="submit" value="{L_GO}" name="sort" />
-</fieldset>
-
-<div class="clearfix"></div>
-
+<!-- IF PAGINATION -->
 <div class="pagination">
-	<!-- IF PAGINATION -->
 		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	<!-- ELSE -->
-		{S_ON_PAGE}
-	<!-- ENDIF -->
 </div>
+<!-- ENDIF -->
 
 <!-- IF .log -->
 	<table cellspacing="1">
@@ -46,7 +37,7 @@
 			</td>
 			<td style="text-align: center;">{log.IP}</td>
 			<td style="text-align: center;">{log.DATE}</td>
-			<td>{log.ACTION}<!-- IF log.DATA --><br />{log.DATA}</span><!-- ENDIF --></td>
+			<td>{log.ACTION}<!-- IF log.DATA --><br /><span>{log.DATA}</span><!-- ENDIF --></td>
 			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{log.ID}" /></td>
 		</tr>
 	<!-- END log -->
@@ -61,8 +52,19 @@
 
 <!-- ENDIF -->
 
+
+<fieldset class="display-options">
+	{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+	<input class="button2" type="submit" value="{L_GO}" name="sort" />
+</fieldset>
+<hr />
+<!-- IF PAGINATION -->
+<div class="pagination">
+	<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+</div>
+<!-- ENDIF -->
 <!-- IF S_SHOW_FORUMS -->
-	<fieldset class="quick" style="float: left;">
+	<fieldset class="quick">
 		{L_SELECT_FORUM}: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{S_FORUM_BOX}</select>
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
@@ -70,19 +72,13 @@
 
 <!-- IF S_CLEARLOGS -->
 	<fieldset class="quick">
-		<b class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></b><br />
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />&nbsp;
-		<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+		<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" /><br />
+		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>
 	</fieldset>
 <!-- ENDIF -->
 
-<div class="pagination">
-	<!-- IF PAGINATION -->
-		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	<!-- ELSE -->
-		{S_ON_PAGE}
-	<!-- ENDIF -->
-</div>
+
 
 </form>
 

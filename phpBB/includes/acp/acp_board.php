@@ -27,7 +27,12 @@ class acp_board
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		// Validation types are: string, int, bool, rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
+		/**
+		*	Validation types are:
+		*		string, int, bool,
+		*		script_path (absolute path in url - beginning with / and no trailing slash),
+		*		rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
+		*/
 		switch ($mode)
 		{
 			case 'settings':
@@ -148,7 +153,7 @@ class acp_board
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int',	'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
 						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
 						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
-						'hot_threshold'			=> array('lang' => 'HOT_THRESHOLD',			'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
+						'hot_threshold'			=> array('lang' => 'HOT_THRESHOLD',			'validate' => 'int',	'type' => 'text:3:4', 'explain' => true),
 						'max_poll_options'		=> array('lang' => 'MAX_POLL_OPTIONS',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => false),
 						'max_post_chars'		=> array('lang' => 'CHAR_LIMIT',			'validate' => 'int',	'type' => 'text:4:6', 'explain' => true),
 						'max_post_smilies'		=> array('lang' => 'SMILIES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
@@ -233,9 +238,9 @@ class acp_board
 					'vars'	=> array(
 						'legend1'			=> 'GENERAL_SETTINGS',
 						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
-						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
-						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int',	'type' => 'text:4:3', 'explain' => true),
+						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int',	'type' => 'text:4:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'load_db_track'			=> array('lang' => 'YES_POST_MARKING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -273,7 +278,6 @@ class acp_board
 					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
-						'send_encoding'			=> array('lang' => 'SEND_ENCODING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 
 						'legend2'				=> 'PATH_SETTINGS',
@@ -283,10 +287,11 @@ class acp_board
 						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 
 						'legend3'				=> 'SERVER_URL_SETTINGS',
-						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',	'type' => 'text:10:10', 'explain' => true),
-						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
-						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',			'type' => 'radio:yes_no', 'explain' => true),
+						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',			'type' => 'text:10:10', 'explain' => true),
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',			'type' => 'text:40:255', 'explain' => true),
+						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int',			'type' => 'text:5:5', 'explain' => true),
+						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'validate' => 'script_path',	'type' => 'text::255', 'explain' => true),
 					)
 				);
 			break;
@@ -297,13 +302,14 @@ class acp_board
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
 						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 						'ip_check'				=> array('lang' => 'IP_VALID',				'validate' => 'int',	'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
 						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'forwarded_for_check'	=> array('lang' => 'FORWARDED_FOR_VALID',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'check_dnsbl'			=> array('lang' => 'CHECK_DNSBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'email_check_mx'		=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',			'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
 						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 					)
@@ -391,16 +397,21 @@ class acp_board
 			// Retrieve a list of auth plugins and check their config values
 			$auth_plugins = array();
 
-			$dp = opendir($phpbb_root_path . 'includes/auth');
-			while (($file = readdir($dp)) !== false)
-			{
-				if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-				{
-					$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
-				}
-			}
+			$dp = @opendir($phpbb_root_path . 'includes/auth');
 
-			sort($auth_plugins);
+			if ($dp)
+			{
+				while (($file = readdir($dp)) !== false)
+				{
+					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+					{
+						$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+					}
+				}
+				closedir($dp);
+
+				sort($auth_plugins);
+			}
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
@@ -569,7 +580,13 @@ class acp_board
 
 		$auth_plugins = array();
 
-		$dp = opendir($phpbb_root_path . 'includes/auth');
+		$dp = @opendir($phpbb_root_path . 'includes/auth');
+
+		if (!$dp)
+		{
+			return '';
+		}
+
 		while (($file = readdir($dp)) !== false)
 		{
 			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
@@ -577,6 +594,7 @@ class acp_board
 				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
 			}
 		}
+		closedir($dp);
 
 		sort($auth_plugins);
 
@@ -661,7 +679,8 @@ class acp_board
 	{
 		global $user;
 
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[a-z]+', 'USERNAME_ALPHA_SPACERS' => '[-\]_+ [a-z]+', 'USERNAME_LETTER_NUM' => '\w+', 'USERNAME_LETTER_NUM_SPACERS' => '[-\]_+ [\w]+', 'USERNAME_ASCII' => '[\x01-\x7F]+');
+
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
 		{
@@ -689,12 +708,12 @@ class acp_board
 	{
 		global $user;
 
-		$pass_type_ary = array('PASS_TYPE_ANY' => '.*', 'PASS_TYPE_CASE' => '[a-zA-Z]', 'PASS_TYPE_ALPHA' => '[a-zA-Z0-9]', 'PASS_TYPE_SYMBOL' => '[a-zA-Z\W]');
+		$pass_type_ary = array('PASS_TYPE_ANY', 'PASS_TYPE_CASE', 'PASS_TYPE_ALPHA', 'PASS_TYPE_SYMBOL');
 		$pass_char_options = '';
-		foreach ($pass_type_ary as $lang => $value)
+		foreach ($pass_type_ary as $pass_type)
 		{
-			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$pass_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$selected = ($selected_value == $pass_type) ? ' selected="selected"' : '';
+			$pass_char_options .= '<option value="' . $pass_type . '"' . $selected . '>' . $user->lang[$pass_type] . '</option>';
 		}
 
 		return $pass_char_options;
@@ -735,7 +754,14 @@ class acp_board
 	*/
 	function dateformat_select($value, $key)
 	{
-		global $user;
+		global $user, $config;
+
+		// Let the format_date function operate with the acp values
+		$old_tz = $user->timezone;
+		$old_dst = $user->dst;
+
+		$user->timezone = $config['board_timezone'];
+		$user->dst = $config['board_dst'];
 
 		$dateformat_options = '';
 
@@ -752,6 +778,10 @@ class acp_board
 			$dateformat_options .= ' selected="selected"';
 		}
 		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+		// Reset users date options
+		$user->timezone = $old_tz;
+		$user->dst = $old_dst;
 
 		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('$key').value = '$value'; } else { document.getElementById('$key').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";
