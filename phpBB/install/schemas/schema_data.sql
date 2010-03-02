@@ -172,8 +172,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_reg', '5');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_terms', '2');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_reg', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_terms', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
@@ -213,7 +213,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.RC6');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.RC7');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 

@@ -2,6 +2,17 @@
 
 <script type="text/javascript">
 // <![CDATA[
+	function popup(url, width, height, name)
+	{
+		if (!name)
+		{
+			name = '_popup';
+		}
+
+		window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
+		return false;
+	}
+
 	function diff_popup(url)
 	{
 		popup(url, 950, 600, '_diff');
@@ -52,7 +63,7 @@
 	<p>{L_UPDATE_SUCCESS_EXPLAIN}</p>
 
 	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" name="submit" value="{L_CHECK_FILES_AGAIN}" />
+		<input class="button1" type="submit" name="check_again" value="{L_CHECK_FILES_AGAIN}" />
 	</fieldset>
 
 	</form>
@@ -244,10 +255,6 @@
 							<dl>
 								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
 								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
-							</dl>
-							<dl>
-								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
-								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 							</dl>
 								<!-- IF not files.S_BINARY -->
 									<dl>

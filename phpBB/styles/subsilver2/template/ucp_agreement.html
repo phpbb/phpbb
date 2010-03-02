@@ -4,12 +4,12 @@
 // <![CDATA[
 
 	var old_func = window.onload;
-	
+
 	function disable(disabl)
 	{
 		document.getElementById("agreed").disabled = disabl;
 	}
-	
+
 	function disable_and_handle()
 	{
 		if (old_func)
@@ -18,18 +18,18 @@
 		}
 		disable(true);
 	}
-	
-	<!-- IF S_TIME -->		
+
+	<!-- IF S_TIME -->
 		window.onload = disable_and_handle;
-		setTimeout("disable(false)", {S_TIME});	
+		setInterval("disable(false)", {S_TIME});
 	<!-- ENDIF -->
 // ]]>
 </script>
 
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
-	
+
 	<form method="post" action="{S_UCP_ACTION}">
-	
+
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th height="25">{SITENAME} - {L_REGISTRATION}</th>
@@ -57,7 +57,7 @@
 	{S_HIDDEN_FIELDS}
 	{S_FORM_TOKEN}
 	</form>
-	
+
 <!-- ELSEIF S_AGREEMENT -->
 
 	<table class="tablebg" width="100%" cellspacing="1">
