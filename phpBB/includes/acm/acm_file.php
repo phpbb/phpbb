@@ -410,7 +410,7 @@ class acm
 	{
 		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field] : false;
+			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
 		}
 
 		return false;

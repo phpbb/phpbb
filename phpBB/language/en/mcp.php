@@ -253,6 +253,8 @@ $lang = array_merge($lang, array(
 	'PM_REPORT_DELETED_SUCCESS'	=> 'The selected PM report has been deleted successfully.',
 	'PM_REPORTED_SUCCESS'		=> 'This private message has been successfully reported.',
 	'PM_REPORT_TOTAL'			=> 'In total there is <strong>1</strong> PM report to review.',
+	'PM_REPORTS_CLOSED_SUCCESS'	=> 'The selected PM reports have been closed successfully.',
+	'PM_REPORTS_DELETED_SUCCESS'=> 'The selected PM reports have been deleted successfully.',
 	'PM_REPORTS_TOTAL'			=> 'In total there are <strong>%d</strong> PM reports to review.',
 	'PM_REPORTS_ZERO_TOTAL'		=> 'There are no PM reports to review.',
 	'PM_REPORT_DETAILS'			=> 'Private message report details',
@@ -327,6 +329,7 @@ $lang = array_merge($lang, array(
 	'SPLIT_TOPIC_BEYOND_CONFIRM'		=> 'Are you sure you want to split this topic at the selected post?',
 	'SPLIT_TOPIC_EXPLAIN'				=> 'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post.',
 
+	'THIS_PM_IP'				=> 'IP for this private message',
 	'THIS_POST_IP'				=> 'IP for this post',
 	'TOPICS_APPROVED_SUCCESS'	=> 'The selected topics have been approved.',
 	'TOPICS_DELETED_SUCCESS'	=> 'The selected topics have been successfully removed from the database.',

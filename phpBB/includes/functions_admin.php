@@ -66,8 +66,6 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 {
 	global $db, $user, $auth;
 
-	$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
-
 	// This query is identical to the jumpbox one
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, forum_flags, forum_options, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -98,17 +96,20 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		$right = $row['right_id'];
 		$disabled = false;
 
-		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
+		if (!$ignore_acl && $auth->acl_get('f_list', $row['forum_id']))
 		{
-			// List permission?
-			if ($auth->acl_get('f_list', $row['forum_id']))
+			if ($only_acl_post && !$auth->acl_get('f_post', $row['forum_id']) || (!$auth->acl_get('m_approve', $row['forum_id']) && !$auth->acl_get('f_noapprove', $row['forum_id'])))
 			{
 				$disabled = true;
 			}
-			else
+			else if (!$only_acl_post && !$auth->acl_gets(array('a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
 			{
-				continue;
+				$disabled = true;
 			}
+		}
+		else if (!$ignore_acl)
+		{
+			continue;
 		}
 
 		if (

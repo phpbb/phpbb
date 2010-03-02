@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.6';
+$updates_to_version = '3.0.7-RC1';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -30,8 +30,12 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices
-//error_reporting(E_ALL ^ E_NOTICE);
+// Report all errors, except notices and deprecation messages
+if (!defined('E_DEPRECATED'))
+{
+	define('E_DEPRECATED', 8192);
+}
+//error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
 error_reporting(E_ALL);
 
 @set_time_limit(0);
@@ -45,7 +49,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 }
 
 // Load Extensions
-if (!empty($load_extensions))
+if (!empty($load_extensions) && function_exists('dl'))
 {
 	$load_extensions = explode(',', $load_extensions);
 
@@ -881,18 +885,27 @@ function database_update_info()
 				),
 			),
 		),
-		// Changes from 3.0.6-RC1 to 3.0.6-RC2
-		'3.0.6-RC1'		=> array(
-			'drop_keys'		=> array(
-				LOG_TABLE			=> array('log_time'),
-			),
-		),
+
+		// No changes from 3.0.6-RC1 to 3.0.6-RC2
+		'3.0.6-RC1'		=> array(),
 		// No changes from 3.0.6-RC2 to 3.0.6-RC3
 		'3.0.6-RC2'		=> array(),
 		// No changes from 3.0.6-RC3 to 3.0.6-RC4
 		'3.0.6-RC3'		=> array(),
 		// No changes from 3.0.6-RC4 to 3.0.6
 		'3.0.6-RC4'		=> array(),
+
+		// Changes from 3.0.6 to 3.0.7-RC1
+		'3.0.6'		=> array(
+			'drop_keys'		=> array(
+				LOG_TABLE			=> array('log_time'),
+			),
+			'add_index'		=> array(
+				TOPICS_TRACK_TABLE	=> array(
+					'topic_id'		=> array('topic_id'),
+				),
+			),
+		),
 	);
 }
 
@@ -1564,6 +1577,25 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.6-RC4 to 3.0.6
 		case '3.0.6-RC4':
+		break;
+
+		// Changes from 3.0.6 to 3.0.7-RC1
+		case '3.0.6':
+
+			// ATOM Feeds
+			set_config('feed_overall', '1');
+			set_config('feed_http_auth', '0');
+			set_config('feed_limit_post', (string) (isset($config['feed_limit']) ? (int) $config['feed_limit'] : 15));
+			set_config('feed_limit_topic', (string) (isset($config['feed_overall_topics_limit']) ? (int) $config['feed_overall_topics_limit'] : 10));
+			set_config('feed_topics_new', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+			set_config('feed_topics_active', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+
+			// Delete all text-templates from the template_data
+			$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
+				WHERE template_filename ' . $db->sql_like_expression($db->any_char . '.txt');
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
 		break;
 	}
 }
@@ -2903,7 +2935,29 @@ class updater_db_tools
 
 			case 'postgres':
 				// Does not support AFTER, only through temporary table
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+
+				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+				}
+				else
+				{
+					// old versions cannot add columns with default and null information
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type'] . ' ' . $column_data['constraint'];
+
+					if (isset($column_data['null']))
+					{
+						if ($column_data['null'] == 'NOT NULL')
+						{
+							$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET NOT NULL';
+						}
+					}
+
+					if (isset($column_data['default']))
+					{
+						$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
+					}
+				}
 			break;
 
 			case 'sqlite':

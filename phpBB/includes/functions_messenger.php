@@ -184,6 +184,9 @@ class messenger
 
 		if (!trim($template_lang))
 		{
+			// fall back to board default language if the user's language is
+			// missing $template_file.  If this does not exist either,
+			// $tpl->set_custom_template will do a trigger_error
 			$template_lang = basename($config['default_lang']);
 		}
 
@@ -193,13 +196,23 @@ class messenger
 			$this->tpl_msg[$template_lang . $template_file] = new template();
 			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
+			$fallback_template_path = false;
+
 			if (!$template_path)
 			{
 				$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
 				$template_path .= $template_lang . '/email';
+
+				// we can only specify default language fallback when the path is not a custom one for which we
+				// do not know the default language alternative
+				if ($template_lang !== basename($config['default_lang']))
+				{
+					$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+					$fallback_template_path .= basename($config['default_lang']) . '/email';
+				}
 			}
 
-			$tpl->set_custom_template($template_path, $template_lang . '_email', 'email');
+			$tpl->set_custom_template($template_path, $template_lang . '_email', $fallback_template_path);
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',

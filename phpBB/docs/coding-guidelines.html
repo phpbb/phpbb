@@ -69,7 +69,7 @@
 		<li><a href="#general">General Guidelines</a></li>
 	</ol>
 	</li>
-	<li><a href="#styling">Styling</a></li>
+	<li><a href="#styling">Styling</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#cfgfiles">Style Config Files</a></li>
 		<li><a href="#genstyling">General Styling Rules</a></li>
@@ -125,7 +125,7 @@
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
 
 	<h3>Linefeeds:</h3>
-	<p>Ensure that your editor is saving files in the UNIX (LF) line ending format. This means that lines are terminated with a newline, not with Windows Line endings (CR/LF combo) as they are on Win32 or Classic Mac (CR) Line endings. Any decent editor should be able to do this, but it might not always be the default setting. Know your editor. If you want advice for an editor for your Operating System, just ask one of the developers. Some of them do their editing on Win32.
+	<p>Ensure that your editor is saving files in the UNIX (LF) line ending format. This means that lines are terminated with a newline, not with Windows Line endings (CR/LF combo) as they are on Win32 or Classic Mac (CR) Line endings. Any decent editor should be able to do this, but it might not always be the default setting. Know your editor. If you want advice for an editor for your Operating System, just ask one of the developers. Some of them do their editing on Win32.</p>
 
 	<a name="fileheader"></a><h3>1.ii. File Header</h3>
 
@@ -203,7 +203,7 @@ class ...
 				<li><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer</li>
 				<li><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer</li>
 				<li><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL</li>
-				<li><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer for MySQL 3.x/4.0.x/4.1.x/5.x
+				<li><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer for MySQL 3.x/4.0.x/4.1.x/5.x</li>
 				<li><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer</li>
 				<li><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
 				<li><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer</li>
@@ -224,7 +224,7 @@ class ...
 		<li><strong>styles</strong><br /><code>/styles</code>, <code>style.php</code><br />phpBB Styles/Templates/Themes/Imagesets</li>
 	</ul>
 
-	<a name="constants"></a></h3>1.iv. Special Constants</h3>
+	<a name="constants"></a><h3>1.iv. Special Constants</h3>
 
 	<p>There are some special constants application developers are able to utilize to bend some of phpBB's internal functionality to suit their needs.</p>
 
@@ -1170,24 +1170,13 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 <span class="comment">&lt;!-- INCLUDE {FILE_VAR} --&gt;</span>
 </pre></div>
 
-<p>Template defined variables can also be utilised.
+<p>Template defined variables can also be utilised.</p>
 
 <div class="codebox"><pre>
 <span class="comment">&lt;!-- DEFINE $SOME_VAR = 'my_file.html' --&gt;</span>
 <span class="comment">&lt;!-- INCLUDE {$SOME_VAR} --&gt;</span>
 </pre></div>
-<!-- no longer added in 3.0.6
-<p>Also added in <strong>3.0.6</strong> is the ability to increment or decrement a variable on use. This can be used for instances like tabindexes, where the amount of entries is not statically known.
-The INC (for incrementing) and DEC (for decrementing) commands will print the <strong>current</strong> state of a defined var and then increment/decrement it by one (postincrement/postdecrement).</p>
 
-<div class="codebox"><pre>
-<span class="comment">&lt;!-- DEFINE $SOME_VAR = 1 --&gt;</span>
-<span class="comment">&lt;!-- INC $SOME_VAR --&gt;</span>
-Result: 1<br />
-<span class="comment">{$SOME_VAR}</span>
-Result: 2<br />
-</pre></div>
-//-->
 <h4>PHP</h4>
 <p>A contentious decision has seen the ability to include PHP within the template introduced. This is achieved by enclosing the PHP within relevant tags:</p>
 
@@ -1541,11 +1530,11 @@ div
 &lt;form method=&quot;post&quot; id=&quot;mcp&quot; action=&quot;{U_POST_ACTION}&quot;&gt;
 
 	&lt;fieldset class="submit-buttons"&gt;
-		&lt;input type=&quot;reset&quot; value=&quot;{L_RESET}&quot; name=&quot;reset&quot; class=&quot;button2&quot; /&gt&nbsp;
-		&lt;input type=&quot;submit&quot; name=&quot;action[add_warning]&quot; value=&quot;{L_SUBMIT}&quot; class=&quot;button1&quot; /&gt
+		&lt;input type=&quot;reset&quot; value=&quot;{L_RESET}&quot; name=&quot;reset&quot; class=&quot;button2&quot; /&gt;&nbsp;
+		&lt;input type=&quot;submit&quot; name=&quot;action[add_warning]&quot; value=&quot;{L_SUBMIT}&quot; class=&quot;button1&quot; /&gt;
 		{S_FORM_TOKEN}
-	&lt;/fieldset&gt
-&lt;/form&gt
+	&lt;/fieldset&gt;
+&lt;/form&gt;
 		</pre></div><br />
 
 	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
@@ -2337,7 +2326,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="content">
 
-	<p>The version control system for phpBB3 is subversion. The repository is available at <a href="http://code.phpbb.com/svn/phpbb" title="repository">http://code.phpbb.com/svn/phpbb</a>.
+	<p>The version control system for phpBB3 is subversion. The repository is available at <a href="http://code.phpbb.com/svn/phpbb" title="repository">http://code.phpbb.com/svn/phpbb</a>.</p>
 
 	<a name="repostruct"></a><h3>7.i. Repository Structure</h3>
 

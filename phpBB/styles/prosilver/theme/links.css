@@ -1,6 +1,12 @@
 /* proSilver Link Styles
 ---------------------------------------- */
 
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+a {
+	direction: ltr;
+	unicode-bidi: embed;
+}
+
 a:link	{ color: #898989; text-decoration: none; }
 a:visited	{ color: #898989; text-decoration: none; }
 a:hover	{ color: #d3d3d3; text-decoration: underline; }

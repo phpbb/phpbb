@@ -362,7 +362,6 @@ CREATE TABLE phpbb_log (
 	log_data mediumblob NOT NULL,
 	PRIMARY KEY (log_id),
 	KEY log_type (log_type),
-	KEY log_time (log_time),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
@@ -862,6 +861,7 @@ CREATE TABLE phpbb_topics_track (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id),
+	KEY topic_id (topic_id),
 	KEY forum_id (forum_id)
 );
 

@@ -1355,13 +1355,13 @@ class session
 	{
 		global $config, $db;
 
-		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
+		$user_id = ($user_id === false) ? (int) $this->data['user_id'] : (int) $user_id;
 
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 			WHERE user_id = ' . (int) $user_id;
 		$db->sql_query($sql);
 
-		// Update last visit info first before deleting sessions
+		// If the user is logged in, update last visit info first before deleting sessions
 		$sql = 'SELECT session_time, session_page
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_user_id = ' . (int) $user_id . '
@@ -1370,15 +1370,18 @@ class session
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-			WHERE user_id = " . (int) $user_id;
-		$db->sql_query($sql);
+		if ($row)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				WHERE user_id = " . (int) $user_id;
+			$db->sql_query($sql);
+		}
 
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
-		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
+		$sql_where .= ($user_id === (int) $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE $sql_where";
@@ -1386,7 +1389,7 @@ class session
 
 		// We're changing the password of the current user and they have a key
 		// Lets regenerate it to be safe
-		if ($user_id === $this->data['user_id'] && $this->cookie_data['k'])
+		if ($user_id === (int) $this->data['user_id'] && $this->cookie_data['k'])
 		{
 			$this->set_login_key($user_id);
 		}

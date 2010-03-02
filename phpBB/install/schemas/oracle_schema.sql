@@ -715,8 +715,6 @@ CREATE TABLE phpbb_log (
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type)
 /
-CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time)
-/
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id)
 /
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id)
@@ -1667,6 +1665,8 @@ CREATE TABLE phpbb_topics_track (
 )
 /
 
+CREATE INDEX phpbb_topics_track_topic_id ON phpbb_topics_track (topic_id)
+/
 CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track (forum_id)
 /
 

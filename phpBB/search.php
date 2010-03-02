@@ -47,6 +47,26 @@ $sort_dir		= request_var('sd', 'd');
 $return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
+// We put login boxes for the case if search_id is egosearch or unreadposts
+// because a guest should be able to log in even if guests search is not permitted
+
+// Egosearch is an author search
+if ($search_id == 'egosearch')
+{
+	$author_id = $user->data['user_id'];
+
+	if ($user->data['user_id'] == ANONYMOUS)
+	{
+		login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
+	}
+}
+
+// Search for unread posts needs user to be logged in if topics tracking for guests is disabled
+if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
+{
+	login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+}
+
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
@@ -83,24 +103,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 {
 	// clear arrays
 	$id_ary = array();
-
-	// egosearch is an author search
-	if ($search_id == 'egosearch')
-	{
-		$author_id = $user->data['user_id'];
-
-		if ($user->data['user_id'] == ANONYMOUS)
-		{
-			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
-		}
-	}
-
-	// search for unread posts needs user to be logged in
-	// if topics tracking for guests is disabled
-	if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
-	{
-		login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
-	}
 
 	// If we are looking for authors get their ids
 	$author_id_ary = array();
@@ -653,6 +655,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$forums = $rowset = $shadow_topic_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$row['forum_id'] = (int) $row['forum_id'];
+				$row['topic_id'] = (int) $row['topic_id'];
+
 				if ($row['topic_status'] == ITEM_MOVED)
 				{
 					$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];

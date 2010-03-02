@@ -114,10 +114,14 @@ $uniarray = array(
 
 $copy = $uniarray;
 
+/**
+* @todo we need to check that the $uniarray does not reverse any of the mappings defined in the unicode definition
+*/
+
 foreach ($array as $value)
 {
 	$temp_hold = implode(array_map('utf8_chr', array_map('hexdec', explode(' ', trim($value[2])))));
-	
+
 	if (isset($copy[utf8_chr(hexdec((string)$value[1]))]))
 	{
 		$num = '';

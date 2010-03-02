@@ -796,6 +796,7 @@ ul.cplist {
 }
 
 #navigation a:hover {
+	background-image: none;
 	background-color: #aabac6;
 	color: #BC2A4D;
 }

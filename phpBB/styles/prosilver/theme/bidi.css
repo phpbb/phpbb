@@ -225,6 +225,12 @@
 	text-align: left;
 }
 
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+.rtl a {
+	direction: rtl;
+	unicode-bidi: embed;
+}
+
 .rtl a.top {
 	float: left;
 }
@@ -371,7 +377,7 @@
 /* Quote block */
 .rtl blockquote {
 	margin: 0.5em 25px 0 1px;
-	background-position: 99% 5px;
+	background-position: 99% 8px;
 }
 
 .rtl blockquote blockquote {

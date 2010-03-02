@@ -639,9 +639,6 @@ GO
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [log_time] ON [phpbb_log]([log_time]) ON [PRIMARY]
-GO
-
 CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id]) ON [PRIMARY]
 GO
 
@@ -1507,6 +1504,9 @@ ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD
 		[user_id],
 		[topic_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id]) ON [PRIMARY]

@@ -88,7 +88,7 @@ function generate_smilies($mode, $forum_id)
 		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height
 			FROM ' . SMILIES_TABLE . '
 			GROUP BY smiley_url, smiley_width, smiley_height
-			ORDER BY smiley_order';
+			ORDER BY MIN(smiley_order)';
 		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $start, 3600);
 	}
 	else
@@ -2525,7 +2525,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
 			$db->sql_query($sql);
 		}
-		else if ($data['notify_set'] && !$data['notify'])
+		else if (($config['email_enable'] || $config['jab_enable']) && $data['notify_set'] && !$data['notify'])
 		{
 			$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . '

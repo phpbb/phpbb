@@ -99,13 +99,15 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit', '10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_forums', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_forums_limit', '15');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topics', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topics_limit', '15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_post', '15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_topic', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_forums', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_forum', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_topic', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_topics_new', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_topics_active', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_item_statistics', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
@@ -239,7 +241,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.6');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.7-RC1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 

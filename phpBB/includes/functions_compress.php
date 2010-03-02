@@ -80,6 +80,11 @@ class compress
 				}
 			}
 		}
+		else
+		{
+			// $src does not exist
+			return false;
+		}
 
 		return true;
 	}
@@ -89,6 +94,11 @@ class compress
 	*/
 	function add_custom_file($src, $filename)
 	{
+		if (!file_exists($src))
+		{
+			return false;
+		}
+
 		$this->data($filename, file_get_contents($src), false, stat($src));
 		return true;
 	}

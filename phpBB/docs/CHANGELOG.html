@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v306">Changes since 3.0.6</a></li>
 		<li><a href="#v305">Changes since 3.0.5</a></li>
 		<li><a href="#v304">Changes since 3.0.4</a></li>
 		<li><a href="#v303">Changes since 3.0.3</a></li>
@@ -85,7 +86,95 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
-	<a name="v305"></a><h3>1.i. Changes since 3.0.5</h3>
+	<a name="v306"></a><h3>1.i. Changes since 3.0.6</h3>
+
+	<ul>
+		<li>[Fix] Allow ban reason and length to be selected and copied in ACP and subsilver2 MCP. (Bug #51095)</li>
+		<li>[Fix] Force full date for board online record date.</li>
+		<li>[Fix] Correctly reset login keys if passed value is the current user. (Bug #54125)</li>
+		<li>[Fix] Correctly set last modified headers. (Bug #54245, thanks Paul.J.Murphy)</li>
+		<li>[Fix] Show correct HTML title when reporting private messages. (Bug #54375)</li>
+		<li>[Fix] Correctly exclude subforums from ATOM Feeds. (Bug #54285)</li>
+		<li>[Fix] Do not link to user profile in ATOM feed entry if post has been made by the guest user. (Bug #54275)</li>
+		<li>[Fix] Make word censoring case insensitive. (Bug #54265)</li>
+		<li>[Fix] Fulltext-MySQL search for keywords and username at the same time. (Bug #54325)</li>
+		<li>[Fix] Various XHTML and CSS mistakes in prosilver. (Bugs #54705, #55895)</li>
+		<li>[Fix] Correctly show topic ATOM feed link when only post id is specified. (Bug #53025)</li>
+		<li>[Fix] Cleanly handle forum/topic not found in ATOM Feeds. (Bug #54295)</li>
+		<li>[Fix] PHP 5.3 compatibility: Check if function dl() exists before calling it. (Bug #54665)</li>
+		<li>[Fix] PHP 5.3 compatibility: Disable E_DEPRECATED on startup to keep set_magic_quotes_runtime(0) quiet. (Bug #54495)</li>
+		<li>[Fix] Correctly replace table prefix before inserting schema data into the database. (Bug #54815)</li>
+		<li>[Fix] Correctly take post time instead of topic time for the overall forum feed statistics row. (Bug #55005)</li>
+		<li>[Fix] Posting errors with CAPTCHAs using user::add_lang(). (Bug #55245)</li>
+		<li>[Fix] Use memcache::replace() instead of memcache::set() for existing keys to prevent problems.</li>
+		<li>[Fix] Check for required functions in eAccelerator. (Bug #54465)</li>
+		<li>[Fix] Use correct RFC 3339 date format in ATOM feed. (Bug #55005)</li>
+		<li>[Fix] Do not deliver topics from unreadable or passworded forums in the news feed. (Bug #54345)</li>
+		<li>[Fix] Restore user language choice to compiled stylesheets. (Bug #54035)</li>
+		<li>[Fix] Add missing language entries. (Bug #55095)</li>
+		<li>[Fix] Do not permit unauthorised users to delete private messages from folder listing. (Bug #54355)</li>
+		<li>[Fix] Correctly check for empty strings in custom profile fields. (Bug #55335)</li>
+		<li>[Fix] Use correct options to parse BBCodes in signatures when previewing PMs.</li>
+		<li>[Fix] Correct rendering of prosilver quick reply under IE6. (Bug #54115 - Patch by Raimon)</li>
+		<li>[Fix] Correct wording for &quot;How do I show an image below my username&quot; question answer in FAQ. (Bug #23935)</li>
+		<li>[Fix] Handle export of private messages where all recipients were deleted. (Bug #50985)</li>
+		<li>[Fix] Correctly get unread status information for global announcements in search results.</li>
+		<li>[Fix] Correctly handle global announcements in ATOM feeds.</li>
+		<li>[Fix] Use correct limit config parameter in the News feed.</li>
+		<li>[Fix] Restrict search for styles/../style.cfg to folders. (Bug #55665)</li>
+		<li>[Fix] Add ability to disable overall (aka board-wide) feed.</li>
+		<li>[Fix] Do not pass new_link parameter when creating a persistent connection with mysql. (Bug #55785)</li>
+		<li>[Fix] Improved search query performance through sorting words by their occurance. (Bug #21555)</li>
+		<li>[Fix] Correctly move sql_row_pointer forward when calling sql_fetchfield() on cached queries. (Bug #55865)</li>
+		<li>[Fix] Remove item limit from &quot;All forums&quot; feed.</li>
+		<li>[Fix] Do not use group colours for usernames on print view. (Bug #30315 - Patch by Pasqualle)</li>
+		<li>[Fix] Pagination of User Notes in MCP uses two different config values. (Bug #56025)</li>
+		<li>[Fix] List hidden groups on viewprofile where the viewing user is also a member. (Bug #31845)</li>
+		<li>[Fix] Sort viewprofile group list by group name.</li>
+		<li>[Fix] Strictly check whether a moderator can post in the destination forum when moving topic. (Bug #56255)</li>
+		<li>[Fix] Added some error handling to the compress class.</li>
+		<li>[Fix] Correctly determine permissions to show quick reply button. (Bug #56555)</li>
+		<li>[Fix] Do not unsubscribe users from topics replying with quickreply. (Bug #56235)</li>
+		<li>[Fix] Don't submit when pressing enter on preview button. (Bug #54395)</li>
+		<li>[Fix] Load reCAPTCHA over https when using a secure connection to the board. (Bug #55755)</li>
+		<li>[Fix] Clarify explanation of bump feature setting. (Bug #56075)</li>
+		<li>[Fix] Properly paginate unapproved posts in the MCP. (Bug #56285)</li>
+		<li>[Fix] Do not duplicate previous/next links in pagination text of moderator logs and user notes in MCP for subsilver2. (Bug #55045)</li>
+		<li>[Fix] Do not automatically unsubscribe users from topics, when email and jabber is disabled.</li>
+		<li>[Fix] Don't send activation email when user tries to change email without permission (fix by nrohler). (Bug #56335)</li>
+		<li>[Fix] Replace hard coded &quot;px&quot; with translated language-string. (Bug #52495)</li>
+		<li>[Fix] Correctly hover list menu in UCP and MCP for RTL languages. (Bug #49945)</li>
+		<li>[Fix] Correctly orientate quoted text image on RTL languages. (Bug #33745)</li>
+		<li>[Fix] Deprecate $allow_reply parameter to truncate_string() (Bug #56675)</li>
+		<li>[Fix] Fall back to default language email template if specified file does not exist. (Bug #35595)</li>
+		<li>[Fix] Update users last visit field correctly when changing activation status. (Bug #56185)</li>
+		<li>[Fix] Database updater now separates ADD COLUMN from SET NOT NULL and SET DEFAULT, when using PostgreSQL &lt;= 7.4 (Bug #54435)</li>
+		<li>[Fix] Styles adjustment to correctly display an order of rtl/ltr mixed content. (Bugs #55485, #55545)</li>
+		<li>[Fix] Fix language string for PM-Reports refering to post-data. (Bug #54745)</li>
+		<li>[Fix] Do not store email templates in database. (Bug #54505)</li>
+		<li>[Fix] Fix javascript bug in the smilies ACP. (Bug #55725)</li>
+		<li>[Change] Move redirect into a hidden field to avoid issues with mod_security. (Bug #54145)</li>
+		<li>[Change] Log activation through inactive users ACP. (Bug #30145)</li>
+		<li>[Change] Send time of last item instead of current time in ATOM Feeds. (Bug #53305)</li>
+		<li>[Change] Use em dash instead of hyphen/minus as separator in ATOM Feeds item statistics. (Bug #53565)</li>
+		<li>[Change] Alter ACP user quick tools interface to reduce confusion with the delete operation.</li>
+		<li>[Change] Send statistics now check for IPv6 and send private network status as a boolean.</li>
+		<li>[Change] Split &quot;All topics&quot; feed into &quot;New Topics&quot; and &quot;Active Topics&quot; feeds.</li>
+		<li>[Change] Forum feed no longer includes posts of subforums.</li>
+		<li>[Change] Show login attempt CAPTCHA option in the captcha plugin module.</li>
+		<li>[Change] It is no longer possible to persist a solution for the login CAPTCHA.</li>
+		<li>[Change] SQLite is no longer autoloaded by the installer. (Bug #56105)</li>
+		<li>[Change] Friends and foes will not show up as private message rule options if their respective UCP modules are disabled. (Bug #51155)</li>
+		<li>[Change] Offer for guests to log in for egosearch and unreadposts search before the search permissions check. (Bug #51585)</li>
+		<li>[Change] Show warning box for users of PHP &lt; 5.2.0 about phpBB ending support.</li>
+		<li>[Change] Disallow deleting the last question of the Q&amp;A CAPTCHA.</li>
+		<li>[Change] Tweak Q&amp;A CAPTCHA garbage collection.</li>
+		<li>[Change] Show a proper preview for the Q&amp;A CAPTCHA. (Bug #56365)</li>
+		<li>[Change] Speed up topic move operation by adding an index for topic_id on the topics track table. (Bug #56545)</li>
+		<li>[Feature] Ability to use HTTP authentication in ATOM feeds by passing the GET parameter &quot;auth=http&quot;.</li>
+	</ul>
+
+	<a name="v305"></a><h3>1.ii. Changes since 3.0.5</h3>
 
 	<ul>
 		<li>[Fix] Allow whitespaces in avatar gallery names. (Bug #44955)</li>
@@ -307,7 +396,7 @@
 		<li>[Feature] Send anonymous statistical information to phpBB on installation and update (optional).</li>
 	</ul>
 
-	<a name="v304"></a><h3>1.ii. Changes since 3.0.4</h3>
+	<a name="v304"></a><h3>1.iii. Changes since 3.0.4</h3>
 
 	<ul>
 		<li>[Fix] Delete user entry from ban list table upon user deletion (Bug #40015 - Patch by TerraFrost)</li>
@@ -396,7 +485,7 @@
 		<li>[Sec] Only use forum id supplied for posting if global announcement detected. (Reported by nickvergessen)</li>
 	</ul>
 
-	<a name="v303"></a><h3>1.iii. Changes since 3.0.3</h3>
+	<a name="v303"></a><h3>1.iv. Changes since 3.0.3</h3>
 
 	<ul>
 		<li>[Fix] Allow mixed-case template directories to be inherited (Bug #36725)</li>
@@ -428,7 +517,7 @@
 		<li>[Sec] Ask for forum password if post within passworded forum quoted in private message. (Reported by nickvergessen)</li>
 	</ul>
 
-	<a name="v302"></a><h3>1.iv. Changes since 3.0.2</h3>
+	<a name="v302"></a><h3>1.v. Changes since 3.0.2</h3>
 
 	<ul>
 		<li>[Fix] Correctly set topic starter if first post in topic removed (Bug #30575 - Patch by blueray2048)</li>
@@ -527,7 +616,7 @@
 		<li>[Sec Precaution] Stricter validation of the HTTP_HOST header (Thanks to Techie-Micheal et al for pointing out possible issues in derived code)</li>
 	</ul>
 
-	<a name="v301"></a><h3>1.v. Changes since 3.0.1</h3>
+	<a name="v301"></a><h3>1.vi. Changes since 3.0.1</h3>
 
 	<ul>
 		<li>[Fix] Ability to set permissions on non-mysql dbms (Bug #24955)</li>
@@ -575,7 +664,7 @@
 		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 	</ul>
 
-	<a name="v300"></a><h3>1.vi Changes since 3.0.0</h3>
+	<a name="v300"></a><h3>1.vii Changes since 3.0.0</h3>
 
 	<ul>
 		<li>[Change] Validate birthdays (Bug #15004)</li>
@@ -646,7 +735,7 @@
 		<li>[Fix] Find and display colliding usernames correctly when converting from one database to another (Bug #23925)</li>
 	</ul>
 
-	<a name="v30rc8"></a><h3>1.vii. Changes since 3.0.RC8</h3>
+	<a name="v30rc8"></a><h3>1.viii. Changes since 3.0.RC8</h3>
 
 	<ul>
 		<li>[Fix] Cleaned usernames contain only single spaces, so &quot;a_name&quot; and &quot;a__name&quot; are treated as the same name (Bug #15634)</li>
@@ -655,7 +744,7 @@
 		<li>[Fix] Call garbage_collection() within database updater to correctly close connections (affects Oracle for example)</li>
 	</ul>
 
-	<a name="v30rc7"></a><h3>1.viii. Changes since 3.0.RC7</h3>
+	<a name="v30rc7"></a><h3>1.ix. Changes since 3.0.RC7</h3>
 
 	<ul>
 		<li>[Fix] Fixed MSSQL related bug in the update system</li>
@@ -690,7 +779,7 @@
 		<li>[Fix] No duplication of active topics (Bug #15474)</li>
 	</ul>
 
-	<a name="v30rc6"></a><h3>1.ix. Changes since 3.0.RC6</h3>
+	<a name="v30rc6"></a><h3>1.x. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -700,7 +789,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.x. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.xi. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -763,7 +852,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.xi. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.xii. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -814,7 +903,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.xii. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.xiii. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -923,7 +1012,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.xiii. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.xiv. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -969,7 +1058,7 @@
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.xiv. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.xv. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>

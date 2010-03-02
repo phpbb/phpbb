@@ -417,6 +417,7 @@ $lang = array_merge($lang, array(
 
 	'PAGE_OF'				=> 'Page <strong>%1$d</strong> of <strong>%2$d</strong>',
 	'PASSWORD'				=> 'Password',
+	'PIXEL'					=> 'px',
 	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
 	'PM'					=> 'PM',
 	'POSTING_MESSAGE'		=> 'Posting message in %s',
@@ -491,6 +492,8 @@ $lang = array_merge($lang, array(
 	'RETURN_TO'					=> 'Return to',
 	'FEED'						=> 'Feed',
 	'FEED_NEWS'					=> 'News',
+	'FEED_TOPICS_ACTIVE'		=> 'Active Topics',
+	'FEED_TOPICS_NEW'			=> 'New Topics',
 	'RULES_ATTACH_CAN'			=> 'You <strong>can</strong> post attachments in this forum',
 	'RULES_ATTACH_CANNOT'		=> 'You <strong>cannot</strong> post attachments in this forum',
 	'RULES_DELETE_CAN'			=> 'You <strong>can</strong> delete your posts in this forum',
