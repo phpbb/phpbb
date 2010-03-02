@@ -674,7 +674,7 @@ foreach ($supported_dbms as $dbms)
 						}
 
 						$line .= ($key_data[0] == 'INDEX') ? 'CREATE INDEX' : '';
-						
+
 						$line .= " {$table_name}_{$key_name} ON {$table_name} (" . implode(', ', $key_data[1]) . ")\n";
 						$line .= "/\n";
 					break;
@@ -1005,7 +1005,7 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'forum_id'			=> array('UINT', 0),
 			'save_time'			=> array('TIMESTAMP', 0),
-			'draft_subject'		=> array('XSTEXT_UNI', ''),
+			'draft_subject'		=> array('STEXT_UNI', ''),
 			'draft_message'		=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'draft_id',
@@ -1067,7 +1067,7 @@ function get_schema_struct()
 			'forum_topics_real'		=> array('UINT', 0),
 			'forum_last_post_id'	=> array('UINT', 0),
 			'forum_last_poster_id'	=> array('UINT', 0),
-			'forum_last_post_subject' => array('XSTEXT_UNI', ''),
+			'forum_last_post_subject' => array('STEXT_UNI', ''),
 			'forum_last_post_time'	=> array('TIMESTAMP', 0),
 			'forum_last_poster_name'=> array('VCHAR_UNI', ''),
 			'forum_last_poster_colour'=> array('VCHAR:6', ''),
@@ -1281,7 +1281,7 @@ function get_schema_struct()
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
 			'post_username'			=> array('VCHAR_UNI:255', ''),
-			'post_subject'			=> array('XSTEXT_UNI', '', 'true_sort'),
+			'post_subject'			=> array('STEXT_UNI', '', 'true_sort'),
 			'post_text'				=> array('MTEXT_UNI', ''),
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),
@@ -1317,7 +1317,7 @@ function get_schema_struct()
 			'enable_smilies'		=> array('BOOL', 1),
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
-			'message_subject'		=> array('XSTEXT_UNI', ''),
+			'message_subject'		=> array('STEXT_UNI', ''),
 			'message_text'			=> array('MTEXT_UNI', ''),
 			'message_edit_reason'	=> array('STEXT_UNI', ''),
 			'message_edit_user'		=> array('UINT', 0),
@@ -1536,7 +1536,7 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'session_time'		=> array('INDEX', 'session_time'),
 			'session_user_id'	=> array('INDEX', 'session_user_id'),
-			'session_forum_id'	=> array('INDEX', 'session_forum_id'),
+			'session_fid'		=> array('INDEX', 'session_forum_id'),
 		),
 	);
 
@@ -1682,7 +1682,7 @@ function get_schema_struct()
 			'topic_attachment'			=> array('BOOL', 0),
 			'topic_approved'			=> array('BOOL', 1),
 			'topic_reported'			=> array('BOOL', 0),
-			'topic_title'				=> array('XSTEXT_UNI', '', 'true_sort'),
+			'topic_title'				=> array('STEXT_UNI', '', 'true_sort'),
 			'topic_poster'				=> array('UINT', 0),
 			'topic_time'				=> array('TIMESTAMP', 0),
 			'topic_time_limit'			=> array('TIMESTAMP', 0),
@@ -1698,7 +1698,7 @@ function get_schema_struct()
 			'topic_last_poster_id'		=> array('UINT', 0),
 			'topic_last_poster_name'	=> array('VCHAR_UNI', ''),
 			'topic_last_poster_colour'	=> array('VCHAR:6', ''),
-			'topic_last_post_subject'	=> array('XSTEXT_UNI', ''),
+			'topic_last_post_subject'	=> array('STEXT_UNI', ''),
 			'topic_last_post_time'		=> array('TIMESTAMP', 0),
 			'topic_last_view_time'		=> array('TIMESTAMP', 0),
 			'topic_moved_id'			=> array('UINT', 0),

@@ -654,7 +654,7 @@ CREATE TABLE phpbb_sessions (
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time);
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id);
-CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions (session_forum_id);
+CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions (session_forum_id);
 
 # Table: 'phpbb_sessions_keys'
 CREATE TABLE phpbb_sessions_keys (

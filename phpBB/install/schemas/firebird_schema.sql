@@ -261,7 +261,7 @@ CREATE TABLE phpbb_drafts (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	save_time INTEGER DEFAULT 0 NOT NULL,
-	draft_subject VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	draft_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	draft_message BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
 );;
 
@@ -357,7 +357,7 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_poster_id INTEGER DEFAULT 0 NOT NULL,
-	forum_last_post_subject VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	forum_last_post_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	forum_last_post_time INTEGER DEFAULT 0 NOT NULL,
 	forum_last_poster_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	forum_last_poster_colour VARCHAR(6) CHARACTER SET NONE DEFAULT '' NOT NULL,
@@ -625,7 +625,7 @@ CREATE TABLE phpbb_posts (
 	enable_magic_url INTEGER DEFAULT 1 NOT NULL,
 	enable_sig INTEGER DEFAULT 1 NOT NULL,
 	post_username VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	post_subject VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	post_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	post_checksum VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	post_attachment INTEGER DEFAULT 0 NOT NULL,
@@ -671,7 +671,7 @@ CREATE TABLE phpbb_privmsgs (
 	enable_smilies INTEGER DEFAULT 1 NOT NULL,
 	enable_magic_url INTEGER DEFAULT 1 NOT NULL,
 	enable_sig INTEGER DEFAULT 1 NOT NULL,
-	message_subject VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	message_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	message_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	message_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	message_edit_user INTEGER DEFAULT 0 NOT NULL,
@@ -977,7 +977,7 @@ ALTER TABLE phpbb_sessions ADD PRIMARY KEY (session_id);;
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions(session_time);;
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions(session_user_id);;
-CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions(session_forum_id);;
+CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions(session_forum_id);;
 
 # Table: 'phpbb_sessions_keys'
 CREATE TABLE phpbb_sessions_keys (
@@ -1189,7 +1189,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment INTEGER DEFAULT 0 NOT NULL,
 	topic_approved INTEGER DEFAULT 1 NOT NULL,
 	topic_reported INTEGER DEFAULT 0 NOT NULL,
-	topic_title VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	topic_title VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_poster INTEGER DEFAULT 0 NOT NULL,
 	topic_time INTEGER DEFAULT 0 NOT NULL,
 	topic_time_limit INTEGER DEFAULT 0 NOT NULL,
@@ -1205,7 +1205,7 @@ CREATE TABLE phpbb_topics (
 	topic_last_poster_id INTEGER DEFAULT 0 NOT NULL,
 	topic_last_poster_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_last_poster_colour VARCHAR(6) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_last_post_subject VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	topic_last_post_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_last_post_time INTEGER DEFAULT 0 NOT NULL,
 	topic_last_view_time INTEGER DEFAULT 0 NOT NULL,
 	topic_moved_id INTEGER DEFAULT 0 NOT NULL,

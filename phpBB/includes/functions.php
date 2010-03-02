@@ -822,7 +822,7 @@ function tz_select($default = '', $truncate = false)
 	{
 		if ($truncate)
 		{
-			$zone_trunc = truncate_string($zone, 50, false, '...');
+			$zone_trunc = truncate_string($zone, 50, 255, false, '...');
 		}
 		else
 		{
@@ -1802,8 +1802,12 @@ function generate_board_url($without_script_path = false)
 /**
 * Redirects the user to another page then exits the script nicely
 * This function is intended for urls within the board. It's not meant to redirect to cross-domains.
+*
+* @param string $url The url to redirect to
+* @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
+* @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
 */
-function redirect($url, $return = false)
+function redirect($url, $return = false, $disable_cd_check = false)
 {
 	global $db, $cache, $config, $user, $phpbb_root_path;
 
@@ -1830,8 +1834,8 @@ function redirect($url, $return = false)
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
-		// Attention: only able to redirect within the same domain (yourdomain.com -> www.yourdomain.com will not work)
-		if ($url_parts['host'] !== $user->host)
+		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
+		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
 			$url = generate_board_url();
 		}
@@ -2880,7 +2884,7 @@ function phpbb_checkdnsrr($host, $type = '')
 		}
 
 		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
-		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host) . '.', $output);
 
 		// If output is empty, the nslookup failed
 		if (empty($output))
@@ -2906,7 +2910,8 @@ function phpbb_checkdnsrr($host, $type = '')
 	}
 	else if (function_exists('checkdnsrr'))
 	{
-		return (checkdnsrr($host, $type)) ? true : false;
+		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+		return (checkdnsrr($host . '.', $type)) ? true : false;
 	}
 
 	return NULL;

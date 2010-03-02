@@ -35,7 +35,7 @@
 			</td>
 			<td class="row1">
 				<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
-				{topicrow.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+				{searchresults.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
 				<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 					<a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
@@ -94,7 +94,7 @@
 						<td class="gensmall">
 							<div style="float: {S_CONTENT_FLOW_BEGIN};">
 							<!-- IF searchresults.POST_SUBJECT neq "" -->
-								&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a> 
+								&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a>
 							<!-- ELSE -->
 								[ <a href="{searchresults.U_VIEW_POST}">{L_JUMP_TO_POST}</a> ]
 							<!-- ENDIF -->

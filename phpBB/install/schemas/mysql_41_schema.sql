@@ -183,7 +183,7 @@ CREATE TABLE phpbb_drafts (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	save_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	draft_subject varchar(100) DEFAULT '' NOT NULL,
+	draft_subject varchar(255) DEFAULT '' NOT NULL,
 	draft_message mediumtext NOT NULL,
 	PRIMARY KEY (draft_id),
 	KEY save_time (save_time)
@@ -243,7 +243,7 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	forum_last_post_subject varchar(100) DEFAULT '' NOT NULL,
+	forum_last_post_subject varchar(255) DEFAULT '' NOT NULL,
 	forum_last_post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
@@ -437,7 +437,7 @@ CREATE TABLE phpbb_posts (
 	enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_sig tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_username varchar(255) DEFAULT '' NOT NULL,
-	post_subject varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
+	post_subject varchar(255) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	post_text mediumtext NOT NULL,
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
 	post_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -471,7 +471,7 @@ CREATE TABLE phpbb_privmsgs (
 	enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_sig tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	message_subject varchar(100) DEFAULT '' NOT NULL,
+	message_subject varchar(255) DEFAULT '' NOT NULL,
 	message_text mediumtext NOT NULL,
 	message_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	message_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -674,7 +674,7 @@ CREATE TABLE phpbb_sessions (
 	PRIMARY KEY (session_id),
 	KEY session_time (session_time),
 	KEY session_user_id (session_user_id),
-	KEY session_forum_id (session_forum_id)
+	KEY session_fid (session_forum_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -803,7 +803,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_title varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
+	topic_title varchar(255) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time_limit int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -819,7 +819,7 @@ CREATE TABLE phpbb_topics (
 	topic_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	topic_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
-	topic_last_post_subject varchar(100) DEFAULT '' NOT NULL,
+	topic_last_post_subject varchar(255) DEFAULT '' NOT NULL,
 	topic_last_post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_last_view_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

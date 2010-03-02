@@ -362,7 +362,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
-	
+
 	if (!$local)
 	{
 		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
@@ -1345,7 +1345,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	else if ($data['topic_first_post_id'] == $post_id)
 	{
 		$post_mode = 'delete_first_post';
-	} 
+	}
 	else if ($data['topic_last_post_id'] == $post_id)
 	{
 		$post_mode = 'delete_last_post';
@@ -1651,7 +1651,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
 			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
-				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, false);
+				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, 255, false);
 
 				$sql_data[POSTS_TABLE]['sql']	= array(
 					'post_edit_time'	=> $current_time,

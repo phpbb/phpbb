@@ -344,7 +344,7 @@ CREATE TABLE [phpbb_drafts] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[save_time] [int] DEFAULT (0) NOT NULL ,
-	[draft_subject] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[draft_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[draft_message] [text] DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -433,7 +433,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_topics_real] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_post_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_poster_id] [int] DEFAULT (0) NOT NULL ,
-	[forum_last_post_subject] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[forum_last_post_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_last_post_time] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_poster_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_last_poster_colour] [varchar] (6) DEFAULT ('') NOT NULL ,
@@ -760,7 +760,7 @@ CREATE TABLE [phpbb_posts] (
 	[enable_magic_url] [int] DEFAULT (1) NOT NULL ,
 	[enable_sig] [int] DEFAULT (1) NOT NULL ,
 	[post_username] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[post_subject] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[post_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_text] [text] DEFAULT ('') NOT NULL ,
 	[post_checksum] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[post_attachment] [int] DEFAULT (0) NOT NULL ,
@@ -815,7 +815,7 @@ CREATE TABLE [phpbb_privmsgs] (
 	[enable_smilies] [int] DEFAULT (1) NOT NULL ,
 	[enable_magic_url] [int] DEFAULT (1) NOT NULL ,
 	[enable_sig] [int] DEFAULT (1) NOT NULL ,
-	[message_subject] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[message_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[message_text] [text] DEFAULT ('') NOT NULL ,
 	[message_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[message_edit_user] [int] DEFAULT (0) NOT NULL ,
@@ -1180,7 +1180,7 @@ GO
 CREATE  INDEX [session_user_id] ON [phpbb_sessions]([session_user_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [session_forum_id] ON [phpbb_sessions]([session_forum_id]) ON [PRIMARY]
+CREATE  INDEX [session_fid] ON [phpbb_sessions]([session_forum_id]) ON [PRIMARY]
 GO
 
 
@@ -1411,7 +1411,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_attachment] [int] DEFAULT (0) NOT NULL ,
 	[topic_approved] [int] DEFAULT (1) NOT NULL ,
 	[topic_reported] [int] DEFAULT (0) NOT NULL ,
-	[topic_title] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[topic_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_poster] [int] DEFAULT (0) NOT NULL ,
 	[topic_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_time_limit] [int] DEFAULT (0) NOT NULL ,
@@ -1427,7 +1427,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_last_poster_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_last_poster_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_last_poster_colour] [varchar] (6) DEFAULT ('') NOT NULL ,
-	[topic_last_post_subject] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[topic_last_post_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_last_post_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_last_view_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_moved_id] [int] DEFAULT (0) NOT NULL ,
