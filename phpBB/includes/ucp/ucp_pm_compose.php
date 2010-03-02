@@ -320,6 +320,11 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	if ($action == 'post')
+	{
+		$template->assign_var('S_NEW_MESSAGE', true);
+	}
+
 	if (!isset($icon_id))
 	{
 		$icon_id = 0;
@@ -975,6 +980,15 @@ function compose_pm($id, $mode, $action)
 	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)
 	{
 		posting_gen_attachment_entry($attachment_data, $filename_data);
+	}
+
+	// Message History
+	if ($action == 'reply' || $action == 'quote' || $action == 'forward')
+	{
+		if (message_history($msg_id, $user->data['user_id'], $post, array(), true))
+		{
+			$template->assign_var('S_DISPLAY_HISTORY', true);
+		}
 	}
 }
 

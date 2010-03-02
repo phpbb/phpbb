@@ -43,7 +43,28 @@ class dbal_mssql_odbc extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		@ini_set('odbc.defaultlrl', 65536);
+		$max_size = @ini_get('odbc.defaultlrl');
+		if (!empty($max_size))
+		{
+			$unit = strtolower(substr($max_size, -1, 1));
+			$max_size = (int) $max_size;
+
+			if ($unit == 'k')
+			{
+				$max_size = floor($max_size / 1024);
+			}
+			else if ($unit == 'g')
+			{
+				$max_size *= 1024;
+			}
+			else if (is_numeric($unit))
+			{
+				$max_size = floor((int) ($max_size . $unit) / 1048576);
+			}
+			$max_size = max(8, $max_size) . 'M';
+
+			@ini_set('odbc.defaultlrl', $max_size);
+		}
 
 		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
 
@@ -81,19 +102,15 @@ class dbal_mssql_odbc extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				return @odbc_autocommit($this->db_connect_id, false);
+				return @odbc_exec($this->db_connect_id, 'BEGIN TRANSACTION');
 			break;
 
 			case 'commit':
-				$result = @odbc_commit($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
-				return $result;
+				return @odbc_exec($this->db_connect_id, 'COMMIT TRANSACTION');
 			break;
 
 			case 'rollback':
-				$result = @odbc_rollback($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
-				return $result;
+				return @odbc_exec($this->db_connect_id, 'ROLLBACK TRANSACTION');
 			break;
 		}
 

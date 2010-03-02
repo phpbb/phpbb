@@ -399,12 +399,12 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap($this->msg), $err_msg, $headers);
+				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers);
 			}
 			else
 			{
 				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
 			}
 
@@ -575,6 +575,12 @@ class queue
 			$package_size = $data_ary['package_size'];
 			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
+			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
+			if (sizeof($data_ary['data']) > $package_size * 2.5)
+			{
+				$num_items = sizeof($data_ary['data']);
+			}
+
 			switch ($object)
 			{
 				case 'email':
@@ -627,12 +633,12 @@ class queue
 
 						if ($config['smtp_delivery'])
 						{
-							$result = smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers);
+							$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
 						}
 						else
 						{
 							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
 							$err_msg = ob_get_clean();
 						}
 

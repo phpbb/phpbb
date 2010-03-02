@@ -156,10 +156,9 @@ class bbcode
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// To circumvent replacing newlines with <br /> for the generated html,
-				// we just remove newlines here. We do not do this within the admin panel to 
-				// let the admin lay out his html code nicely
-				$row['bbcode_tpl'] = str_replace(array("\n", "\r"), '', $row['bbcode_tpl']);
-				$row['second_pass_replace'] = str_replace(array("\n", "\r"), '', $row['second_pass_replace']);
+				// we use carriage returns here. They are later changed back to newlines
+				$row['bbcode_tpl'] = str_replace("\n", "\r", $row['bbcode_tpl']);
+				$row['second_pass_replace'] = str_replace("\n", "\r", $row['second_pass_replace']);
 
 				$rowset[$row['bbcode_id']] = $row;
 			}
@@ -333,7 +332,7 @@ class bbcode
 								// In order to use templates with custom bbcodes we need
 								// to replace all {VARS} to corresponding backreferences
 								// Note that backreferences are numbered from bbcode_match
-								if (preg_match_all('/\{(URL|EMAIL|TEXT|COLOR|NUMBER)[0-9]*\}/', $rowset[$bbcode_id]['bbcode_match'], $m))
+								if (preg_match_all('/\{(URL|LOCAL_URL|EMAIL|TEXT|SIMPLETEXT|IDENTIFIER|COLOR|NUMBER)[0-9]*\}/', $rowset[$bbcode_id]['bbcode_match'], $m))
 								{
 									foreach ($m[0] as $i => $tok)
 									{

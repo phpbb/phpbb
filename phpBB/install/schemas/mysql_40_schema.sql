@@ -743,7 +743,7 @@ CREATE TABLE phpbb_styles_template (
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
-	template_id smallint(4) UNSIGNED NOT NULL auto_increment,
+	template_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	template_filename varbinary(100) DEFAULT '' NOT NULL,
 	template_included blob NOT NULL,
 	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,

@@ -761,7 +761,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$u_forum_id = $forum_id;
 			}
 
-			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$u_forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit");
+			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : ''));
 
 			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
@@ -775,6 +775,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
+
+				$row['topic_title'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['topic_title']);
 
 				$tpl_ary = array(
 					'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -836,17 +838,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					// now find context for the searched words
 					$row['post_text'] = get_context($row['post_text'], array_filter(explode('|', $hilit), 'strlen'), $return_chars);
-					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
+					$row['post_text'] = bbcode_nl2br($row['post_text']);
 				}
 				else
 				{
-					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
-
 					// Second parse bbcode here
 					if ($row['bbcode_bitfield'])
 					{
 						$bbcode->bbcode_second_pass($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield']);
 					}
+
+					$row['post_text'] = bbcode_nl2br($row['post_text']);
+					$row['post_text'] = smiley_text($row['post_text']);
 
 					if (!empty($attachments[$row['post_id']]))
 					{
@@ -855,15 +858,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						// we only display inline attachments
 						unset($attachments[$row['post_id']]);
 					}
-
-					// Always process smilies after parsing bbcodes
-					$row['post_text'] = smiley_text($row['post_text']);
 				}
 
 				if ($hilit)
 				{
 					// post highlighting
 					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['post_text']);
+					$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['post_subject']);
 				}
 
 				$tpl_ary = array(
@@ -890,7 +891,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit) . '#p' . $row['post_id'] : '')
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
 			));
 		}
 
@@ -936,9 +937,9 @@ while ($row = $db->sql_fetchrow($result))
 		continue;
 	}
 
-	if (!$auth->acl_get('f_list', $row['forum_id']) || $row['forum_type'] == FORUM_LINK || ($row['forum_password'] && !$row['user_id']))
+	if ($row['forum_type'] == FORUM_LINK || ($row['forum_password'] && !$row['user_id']))
 	{
-		// if the user does not have permissions to list this forum skip to the next branch
+		// if this forum is a link or password protected (user has not entered the password yet) then skip to the next branch
 		continue;
 	}
 
@@ -961,9 +962,9 @@ while ($row = $db->sql_fetchrow($result))
 
 	$right = $row['right_id'];
 
-	if (!$auth->acl_get('f_search', $row['forum_id']))
+	if ($auth->acl_gets('!f_search', '!f_list', $row['forum_id']))
 	{
-		// if the user does not have permissions to search this forum skip only this forum/category
+		// if the user does not have permissions to search or see this forum skip only this forum/category
 		continue;
 	}
 
@@ -1041,45 +1042,49 @@ $template->assign_vars(array(
 	'S_IN_SEARCH'			=> true,
 ));
 
-// Handle large objects differently for Oracle and MSSQL
-switch ($db->sql_layer)
+// only show recent searches to search administrators
+if ($auth->acl_get('a_search'))
 {
-	case 'oracle':
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE dbms_lob.getlength(search_keywords) > 0
-			ORDER BY search_time DESC';
-	break;
+	// Handle large objects differently for Oracle and MSSQL
+	switch ($db->sql_layer)
+	{
+		case 'oracle':
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE dbms_lob.getlength(search_keywords) > 0
+				ORDER BY search_time DESC';
+		break;
+	
+		case 'mssql':
+		case 'mssql_odbc':
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE DATALENGTH(search_keywords) > 0
+				ORDER BY search_time DESC';
+		break;
+	
+		default:
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE search_keywords <> \'\'
+				ORDER BY search_time DESC';
+		break;
+	}
+	$result = $db->sql_query_limit($sql, 5);
 
-	case 'mssql':
-	case 'mssql_odbc':
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE DATALENGTH(search_keywords) > 0
-			ORDER BY search_time DESC';
-	break;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$keywords = $row['search_keywords'];
 
-	default:
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE search_keywords <> \'\'
-			ORDER BY search_time DESC';
-	break;
+		$template->assign_block_vars('recentsearch', array(
+			'KEYWORDS'	=> $keywords,
+			'TIME'		=> $user->format_date($row['search_time']),
+
+			'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
+		));
+	}
+	$db->sql_freeresult($result);
 }
-$result = $db->sql_query_limit($sql, 5);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	$keywords = $row['search_keywords'];
-
-	$template->assign_block_vars('recentsearch', array(
-		'KEYWORDS'	=> $keywords,
-		'TIME'		=> $user->format_date($row['search_time']),
-
-		'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
-	));
-}
-$db->sql_freeresult($result);
 
 // Output the basic page
 page_header($user->lang['SEARCH']);

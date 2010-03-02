@@ -4,7 +4,7 @@
 
 <!-- IF FORUM_DESC or MODERATORS or U_MCP -->
 <p>
-	<!-- NOTE: remove the style="display: none" when you wnat to have the forum description on the forum body -->
+	<!-- NOTE: remove the style="display: none" when you want to have the forum description on the forum body -->
 	<!-- IF FORUM_DESC --><span style="display: none">{FORUM_DESC}<br /></span><!-- ENDIF -->
 	<!-- IF MODERATORS --><strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}<!-- ENDIF -->
 </p>
@@ -39,7 +39,7 @@
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
 		<div class="buttons">
-			<div class="post-icon"><a href="{U_POST_NEW_TOPIC}" accesskey="n"><span>{L_POST_TOPIC}</span></a></div>
+			<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->"><a href="{U_POST_NEW_TOPIC}"><span><!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF --></span></a></div>
 		</div>
 	<!-- ENDIF -->
 
@@ -157,11 +157,13 @@
 	<!-- ENDIF -->
 
 <!-- BEGINELSE -->
+	<!-- IF S_IS_POSTABLE -->
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 		<strong>{L_NO_TOPICS}</strong>
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
+	<!-- ENDIF -->
 <!-- END topicrow -->
 
 <!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
@@ -181,7 +183,7 @@
 	<div class="topic-actions">
 		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
 		<div class="buttons">
-			<div class="post-icon"><a href="{U_POST_NEW_TOPIC}"><span>{L_POST_TOPIC}</span></a></div>
+			<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->"><a href="{U_POST_NEW_TOPIC}"><span><!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF --></span></a></div>
 		</div>
 		<!-- ENDIF -->
 	

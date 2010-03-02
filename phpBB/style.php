@@ -46,7 +46,7 @@ if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
 // happen to have a current session it will output nothing. We will also cache the
 // resulting CSS data for five minutes ... anything to reduce the load on the SQL
 // server a little
-if ($id && $sid)
+if ($id)
 {
 	if (empty($acm_type) || empty($dbms))
 	{
@@ -101,6 +101,11 @@ if ($id && $sid)
 	$theme = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	if (!$theme)
+	{
+		exit;
+	}
+
 	if ($user['user_id'] == ANONYMOUS)
 	{
 		$user['user_lang'] = $config['default_lang'];
@@ -111,25 +116,23 @@ if ($id && $sid)
 	$sql = 'SELECT *
 		FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 		WHERE imageset_id = ' . $theme['imageset_id'] . "
-		AND image_lang IN('" . $db->sql_escape($user_image_lang) . "', '')";
+		AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
 	$result = $db->sql_query($sql, 3600);
 
 	$img_array = array();
-
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$img_array[$row['image_name']] = $row;
 	}
-
-	if (!$theme)
-	{
-		exit;
-	}
+	$db->sql_freeresult($result);
 
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
-		if (@extension_loaded('zlib') && !headers_sent())
+		// IE6 is not able to compress the style (do not ask us why!)
+		$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? strtolower(htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT'])) : '';
+
+		if ($browser && strpos($browser, 'msie 6.0') === false && @extension_loaded('zlib') && !headers_sent())
 		{
 			ob_start('ob_gzhandler');
 		}
@@ -171,8 +174,6 @@ if ($id && $sid)
 		}
 	}
 
-	header('Content-type: text/css; charset=UTF-8');
-
 	if ($recache)
 	{
 		include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
@@ -191,15 +192,19 @@ if ($id && $sid)
 		$db->sql_query($sql);
 
 		$cache->destroy('sql', STYLES_THEME_TABLE);
+	}
 
-		header('Cache-Control: private, no-cache="set-cookie"');
+	// Only set the expire time if the theme changed data is older than 30 minutes - to cope with changes from the ACP
+	if ($recache || $theme['theme_mtime'] > (time() - 1800))
+	{
 		header('Expires: 0');
-		header('Pragma: no-cache');
 	}
 	else
 	{
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $expire_time));
 	}
+
+	header('Content-type: text/css; charset=UTF-8');
 
 	// Parse Theme Data
 	$replace = array(

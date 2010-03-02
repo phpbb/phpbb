@@ -1582,6 +1582,13 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL;
 
+	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
+	// They could mimick most of what is within this function
+	if (function_exists('append_sid_phpbb_hook'))
+	{
+		return append_sid_phpbb_hook($url, $params, $is_amp, $session_id);
+	}
+
 	// Assign sid if session id is not specified
 	if ($session_id === false)
 	{
@@ -1950,8 +1957,8 @@ function meta_refresh($time, $url)
 * @param boolean $check True for checking if confirmed (without any additional parameters) and false for displaying the confirm box
 * @param string $title Title/Message used for confirm box.
 *		message text is _CONFIRM appended to title. 
-*		If title can not be found in user->lang a default one is displayed
-*		If title_CONFIRM can not be found in user->lang the text given is used.
+*		If title cannot be found in user->lang a default one is displayed
+*		If title_CONFIRM cannot be found in user->lang the text given is used.
 * @param string $hidden Hidden variables
 * @param string $html_body Template used for confirm box
 * @param string $u_action Custom form action
@@ -1970,7 +1977,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if (isset($_POST['confirm']))
 	{
 		// language frontier
-		if ($_POST['confirm'] == $user->lang['YES'])
+		if ($_POST['confirm'] === $user->lang['YES'])
 		{
 			$confirm = true;
 		}
@@ -2286,8 +2293,10 @@ function login_forum_box($forum_data)
 	if ($password)
 	{
 		// Remove expired authorised sessions
-		$sql = 'SELECT session_id
-			FROM ' . SESSIONS_TABLE;
+		$sql = 'SELECT f.session_id
+			FROM ' . FORUMS_ACCESS_TABLE . ' f
+			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (f.session_id = s.session_id)
+			WHERE s.session_id IS NULL';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -2301,7 +2310,7 @@ function login_forum_box($forum_data)
 
 			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_id', $sql_in, true);
+				WHERE ' . $db->sql_in_set('session_id', $sql_in);
 			$db->sql_query($sql);
 		}
 		$db->sql_freeresult($result);
@@ -2520,7 +2529,7 @@ function strip_bbcode(&$text, $uid = '')
 		$uid = '[0-9a-z]{5,}';
 	}
 
-	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
+	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
 
 	$match = get_preg_expression('bbcode_htm');
 	$replace = array('\1', '\1', '\2', '\1', '', '');
@@ -2564,8 +2573,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
-	$text = str_replace("\n", '<br />', $text);
-
+	$text = bbcode_nl2br($text);
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	return $text;
@@ -2807,6 +2815,17 @@ function censor_text($text)
 }
 
 /**
+* custom version of nl2br which takes custom BBCodes into account
+*/
+function bbcode_nl2br($text)
+{
+	// custom BBCodes might contain carriage returns so they
+	// are not converted into <br /> so now revert that
+	$text = str_replace(array("\n", "\r"), array('<br />', "\n"), $text);
+	return $text;
+}
+
+/**
 * Smiley processing
 */
 function smiley_text($text, $force_option = false)
@@ -2948,7 +2967,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
+		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
@@ -3491,14 +3510,14 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 	}
 
 	$_chars = utf8_str_split(htmlspecialchars_decode($string));
-	$chars = array_map('htmlspecialchars', $_chars);
+	$chars = array_map('utf8_htmlspecialchars', $_chars);
 
 	// Now check the length ;)
 	if (sizeof($chars) > $max_length)
 	{
 		// Cut off the last elements from the array
 		$string = implode('', array_slice($chars, 0, $max_length));
-		$stripped = true;		
+		$stripped = true;
 	}
 
 	if ($strip_reply)
@@ -3685,6 +3704,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
+				// flush the content, else we get a white page if output buffering is on
+				if ($config['gzip_compress'])
+				{
+					if (@extension_loaded('zlib') && !headers_sent())
+					{
+						ob_flush();
+					}
+				}
+
 				// remove complete path to installation, with the risk of changing backslashes meant to be there
 				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
 				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
@@ -4276,7 +4304,10 @@ function page_footer($run_cron = true)
 
 	garbage_collection();
 
-	exit;
+	if (!defined('PHPBB_EMBEDDED'))
+	{
+		exit;
+	}
 }
 
 /**

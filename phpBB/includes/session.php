@@ -1190,6 +1190,7 @@ class user extends session
 	var $dst;
 
 	var $lang_name;
+	var $lang_id = false;
 	var $lang_path;
 	var $img_lang;
 	var $img_array = array();
@@ -1397,7 +1398,7 @@ class user extends session
 		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
-			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
+			AND image_lang IN ('" . $db->sql_escape($this->img_lang) . "', '')";
 		$result = $db->sql_query($sql, 3600);
 
 		$localised_images = false;
@@ -1720,7 +1721,7 @@ class user extends session
 	{
 		global $config, $db;
 
-		if (isset($this->lang_id))
+		if (!empty($this->lang_id))
 		{
 			return $this->lang_id;
 		}
@@ -1734,10 +1735,10 @@ class user extends session
 			FROM ' . LANG_TABLE . "
 			WHERE lang_iso = '" . $db->sql_escape($this->lang_name) . "'";
 		$result = $db->sql_query($sql);
-		$lang_id = (int) $db->sql_fetchfield('lang_id');
+		$this->lang_id = (int) $db->sql_fetchfield('lang_id');
 		$db->sql_freeresult($result);
 
-		return $lang_id;
+		return $this->lang_id;
 	}
 
 	/**

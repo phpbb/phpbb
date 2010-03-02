@@ -442,12 +442,6 @@ dl.faq dt {
 	color: #BC2A4D;
 }
 
-.announce, .unreadpost {
-	/* Highlight the announcements & unread posts box */
-	border-left-color: #BC2A4D;
-	border-right-color: #BC2A4D;
-}
-
 /* Post signature */
 .signature {
 	border-top-color: #CCCCCC;

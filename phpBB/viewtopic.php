@@ -109,13 +109,20 @@ if ($view && !$post_id)
 		$sql_condition = ($view == 'next') ? '>' : '<';
 		$sql_ordering = ($view == 'next') ? 'ASC' : 'DESC';
 
-		$sql = 'SELECT t.topic_id, t.forum_id
-			FROM ' . TOPICS_TABLE . ' t
-			LEFT JOIN ' . TOPICS_TABLE . " t2 ON (t2.topic_id = $topic_id AND t.forum_id = t2.forum_id)
-			WHERE t.topic_last_post_time $sql_condition t2.topic_last_post_time
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-				AND t.topic_moved_id = 0
-			ORDER BY t.topic_last_post_time $sql_ordering";
+		$sql = 'SELECT forum_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT topic_id, forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE forum_id = ' . $row['forum_id'] . "
+				AND topic_moved_id = 0
+				AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
+				" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
+			ORDER BY topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -648,7 +655,7 @@ if (!empty($topic_data['poll_start']))
 	{
 		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'])
 		{
-			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
+			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
 			meta_refresh(5, $redirect_url);
 
@@ -716,7 +723,7 @@ if (!empty($topic_data['poll_start']))
 		//, topic_last_post_time = ' . time() . " -- for bumping topics with new votes, ignore for now
 		$db->sql_query($sql);
 
-		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
+		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
 		meta_refresh(5, $redirect_url);
 		trigger_error($user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>'));
@@ -740,23 +747,24 @@ if (!empty($topic_data['poll_start']))
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
 		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 
 		if ($poll_bbcode !== false)
 		{
 			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
 		}
 
+		$poll_info[$i]['poll_option_text'] = bbcode_nl2br($poll_info[$i]['poll_option_text']);
 		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
 	}
 
 	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
-	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	if ($poll_bbcode !== false)
 	{
 		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
 	}
+
+	$topic_data['poll_title'] = bbcode_nl2br($topic_data['poll_title']);
 	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
 
 	unset($poll_bbcode);
@@ -1215,13 +1223,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	if ($user_cache[$poster_id]['sig'] && $row['enable_sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
+		$user_cache[$poster_id]['sig'] = bbcode_nl2br($user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
@@ -1235,9 +1243,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
-	$message = str_replace("\n", '<br />', $message);
-
-	// Always process smilies after parsing bbcodes
+	$message = bbcode_nl2br($message);
 	$message = smiley_text($message);
 
 	if (!empty($attachments[$row['post_id']]))
@@ -1245,14 +1251,15 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 	}
 
+	// Replace naughty words such as farty pants
+	$row['post_subject'] = censor_text($row['post_subject']);
+
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
 		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
+		$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $row['post_subject']);
 	}
-
-	// Replace naughty words such as farty pants
-	$row['post_subject'] = censor_text($row['post_subject']);
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])

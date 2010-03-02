@@ -39,7 +39,14 @@ class dbal_mssql extends dbal
 		@ini_set('mssql.textlimit', 2147483647);
 		@ini_set('mssql.textsize', 2147483647);
 
-		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.1', '>=')))
+		{
+			$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		}
+		else
+		{
+			$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword) : @mssql_connect($this->server, $this->user, $sqlpassword);
+		}
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{

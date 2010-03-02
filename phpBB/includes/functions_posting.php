@@ -652,11 +652,23 @@ function create_thumbnail($source, $destination, $mimetype)
 			if ($type['version'] == 1)
 			{
 				$new_image = imagecreate($new_width, $new_height);
+
+				if ($new_image === false)
+				{
+					return false;
+				}
+
 				imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			}
 			else
 			{
 				$new_image = imagecreatetruecolor($new_width, $new_height);
+
+				if ($new_image === false)
+				{
+					return false;
+				}
+
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			}
 
@@ -1009,8 +1021,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$decoded_message = $message;
 			decode_message($decoded_message, $row['bbcode_uid']);
 
-			$decoded_message = censor_text($decoded_message);
-			$decoded_message = str_replace("\n", "<br />", $decoded_message);
+			$decoded_message = bbcode_nl2br($decoded_message);
 		}
 
 		if ($row['bbcode_bitfield'])
@@ -1018,8 +1029,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = str_replace("\n", '<br />', $message);
-
+		$message = bbcode_nl2br($message);
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		if (!empty($attachments[$row['post_id']]))
@@ -1238,8 +1248,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
 					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
 
-					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&e=0",
-					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&e=0",
+					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
+					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
 					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=$post_id",
 					'U_STOP_WATCHING_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&unwatch=topic",
 					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&unwatch=forum", 

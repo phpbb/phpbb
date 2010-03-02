@@ -22,10 +22,10 @@
 			<!-- IF U_SWITCH_PERMISSIONS --> [ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]<!-- ENDIF -->
 		</dd>
 		<!-- IF not AVATAR_IMG -->
-			<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+			<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt> <dd>{RANK_TITLE}</dd><!-- ENDIF -->
+			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt> <dd>{RANK_IMG}</dd><!-- ENDIF -->
 		<!-- ENDIF -->
-		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt><dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
+		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF LOCATION --><dt>{L_LOCATION}:</dt> <dd>{LOCATION}</dd><!-- ENDIF -->
 		<!-- IF AGE --><dt>{L_AGE}:</dt> <dd>{AGE}</dd><!-- ENDIF -->
 		<!-- IF OCCUPATION --><dt>{L_OCCUPATION}:</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
@@ -96,8 +96,8 @@
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 		<h3>{L_SIGNATURE}</h3>
-		
-		<div class="postbody"><div class="content">{SIGNATURE}</div></div>
+
+		<div class="postbody"><div class="signature" style="border-top:none; margin-top: 0;">{SIGNATURE}</div></div>
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>

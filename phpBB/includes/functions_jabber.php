@@ -14,7 +14,7 @@
 *
 * @version class.jabber2.php 1306 2007-06-21
 * @copyright 2006 Flyspray.org
-* @author: Florian Schmitz (floele)
+* @author Florian Schmitz (floele)
 *
 * Modified by Acyd Burn
 *
@@ -416,7 +416,7 @@ class jabber
 				}
 
 				// Let's use TLS if SSL is not enabled and we can actually use it
-				if (!$this->session['ssl'] && $this->can_use_tls() && isset($xml['stream:features'][0]['#']['starttls']))
+				if (!$this->session['ssl'] && $this->can_use_tls() && $this->can_use_ssl() && isset($xml['stream:features'][0]['#']['starttls']))
 				{
 					$this->add_to_log('Switching to TLS.');
 					$this->send("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");

@@ -1093,7 +1093,7 @@ END;;
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
-	template_id INTEGER NOT NULL,
+	template_id INTEGER DEFAULT 0 NOT NULL,
 	template_filename VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	template_included BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
 	template_mtime INTEGER DEFAULT 0 NOT NULL,
@@ -1102,17 +1102,6 @@ CREATE TABLE phpbb_styles_template_data (
 
 CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data(template_id);;
 CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data(template_filename);;
-
-CREATE GENERATOR phpbb_styles_template_data_gen;;
-SET GENERATOR phpbb_styles_template_data_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_template_data FOR phpbb_styles_template_data
-BEFORE INSERT
-AS
-BEGIN
-	NEW.template_id = GEN_ID(phpbb_styles_template_data_gen, 1);
-END;;
-
 
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (

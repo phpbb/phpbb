@@ -119,13 +119,15 @@ class mcp_queue
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
-				$message = str_replace("\n", '<br />', $message);
+
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
+
+				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
@@ -460,11 +462,11 @@ function approve_post($post_id_list, $id, $mode)
 		'redirect'		=> $redirect)
 	);
 
+	$post_info = get_post_data($post_id_list, 'm_approve');
+
 	if (confirm_box(true))
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
-
-		$post_info = get_post_data($post_id_list, 'm_approve');
 
 		// If Topic -> total_topics = total_topics+1, total_posts = total_posts+1, forum_topics = forum_topics+1, forum_posts = forum_posts+1
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
@@ -690,8 +692,23 @@ function approve_post($post_id_list, $id, $mode)
 	}
 	else
 	{
+		$show_notify = false;
+
+		foreach ($post_info as $post_data)
+		{
+			if ($post_data['poster_id'] == ANONYMOUS)
+			{
+				continue;
+			}
+			else
+			{
+				$show_notify = true;
+				break;
+			}
+		}
+
 		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> true,
+			'S_NOTIFY_POSTER'	=> $show_notify,
 			'S_APPROVE'			=> true)
 		);
 
@@ -771,9 +788,10 @@ function disapprove_post($post_id_list, $id, $mode)
 		}
 	}
 
+	$post_info = get_post_data($post_id_list, 'm_approve');
+
 	if (confirm_box(true))
 	{
-		$post_info = get_post_data($post_id_list, 'm_approve');
 
 		// If Topic -> forum_topics_real -= 1
 		// If Post -> topic_replies_real -= 1
@@ -929,8 +947,23 @@ function disapprove_post($post_id_list, $id, $mode)
 
 		display_reasons($reason_id);
 
+		$show_notify = false;
+
+		foreach ($post_info as $post_data)
+		{
+			if ($post_data['poster_id'] == ANONYMOUS)
+			{
+				continue;
+			}
+			else
+			{
+				$show_notify = true;
+				break;
+			}
+		}
+
 		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> true,
+			'S_NOTIFY_POSTER'	=> $show_notify,
 			'S_APPROVE'			=> false,
 			'REASON'			=> $reason,
 			'ADDITIONAL_MSG'	=> $additional_msg)

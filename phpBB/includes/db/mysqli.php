@@ -45,6 +45,31 @@ class dbal_mysqli extends dbal
 		if ($this->db_connect_id && $this->dbname != '')
 		{
 			@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
+			// enforce strict mode on databases that support it
+			if (mysqli_get_server_version($this->db_connect_id) >= 50002)
+			{
+				$result = @mysqli_query($this->db_connect_id, 'SELECT @@session.sql_mode AS sql_mode');
+				$row = @mysqli_fetch_assoc($result);
+				@mysqli_free_result($result);
+				$modes = array_map('trim', explode(',', $row['sql_mode']));
+
+				// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
+				if (!in_array('TRADITIONAL', $modes))
+				{
+					if (!in_array('STRICT_ALL_TABLES', $modes))
+					{
+						$modes[] = 'STRICT_ALL_TABLES';
+					}
+
+					if (!in_array('STRICT_TRANS_TABLES', $modes))
+					{
+						$modes[] = 'STRICT_TRANS_TABLES';
+					}
+				}
+
+				$mode = implode(',', $modes);
+				@mysqli_query($this->db_connect_id, "SET SESSION sql_mode='{$mode}'");
+			}
 			return $this->db_connect_id;
 		}
 
@@ -314,7 +339,7 @@ class dbal_mysqli extends dbal
 			if (strpos(mysqli_get_server_info($this->db_connect_id), 'community') !== false)
 			{
 				$ver = mysqli_get_server_version($this->db_connect_id);
-				if ($ver >= 50037 && $ver < 51000)
+				if ($ver >= 50037 && $ver < 50100)
 				{
 					$test_prof = true;
 				}

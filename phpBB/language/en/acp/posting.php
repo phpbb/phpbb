@@ -49,14 +49,14 @@ $lang = array_merge($lang, array(
 	'BBCODE_TAG_TOO_LONG'		=> 'The tag name you selected is too long.',
 	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
-	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
+	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={SIMPLETEXT1}]{SIMPLETEXT2}[/font]',
 	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the BBCode. Replace any variable input by the corresponding token (%ssee below%s).',
 
 	'EXAMPLE'						=> 'Example:',
 	'EXAMPLES'						=> 'Examples:',
 
 	'HTML_REPLACEMENT'				=> 'HTML replacement',
-	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color: {COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family: {TEXT1};"&gt;{TEXT2}&lt;/span&gt;',
+	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color: {COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family: {SIMPLETEXT1};"&gt;{SIMPLETEXT2}&lt;/span&gt;',
 	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement. Do not forget to put back tokens you used above!',
 
 	'TOKEN'					=> 'Token',
@@ -66,7 +66,9 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again.',
 
 	'tokens'	=>	array(
-		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
+		'TEXT'			=> 'Any text, including foreign characters, numbers, etc… You should not use this token in HTML tags. Instead try to use IDENTIFIER or SIMPLETEXT.',
+		'SIMPLETEXT'	=> 'Characters from the latin alphabet (A-Z), numbers, spaces, commas, dots, minus, plus, hyphen and underscore',
+		'IDENTIFIER'	=> 'Characters from the latin alphabet (A-Z), numbers, hyphen and underscore',
 		'NUMBER'		=> 'Any series of digits',
 		'EMAIL'			=> 'A valid e-mail address',
 		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, &quot;http://&quot; is prefixed to the string.',
@@ -91,8 +93,12 @@ $lang = array_merge($lang, array(
 	'CURRENT_SMILIES'			=> 'Current smilies',
 	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies.',
 
-	'DISPLAY_ON_POSTING'	=> 'Display on posting page',
+	'DISPLAY_ON_POSTING'		=> 'Display on posting page',
+	'DISPLAY_POSTING'			=> 'On posting page',
+	'DISPLAY_POSTING_NO'		=> 'Not on posting page',
 
+
+	
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
@@ -104,11 +110,15 @@ $lang = array_merge($lang, array(
 	'FIRST'			=> 'First',
 
 	'ICONS_ADD'				=> 'Add a new icon',
-	'ICONS_ADDED'			=> 'The icon has been added successfully.',
+	'ICON_NONE_ADDED'		=> 'No icons were added.',
+	'ICONS_ONE_ADDED'		=> 'The icon has been added successfully.',
+	'ICONS_ADDED'			=> 'The icons have been added successfully.',
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
 	'ICONS_EDIT'			=> 'Edit icon',
-	'ICONS_EDITED'			=> 'The icon has been updated successfully.',
+	'ICONS_ONE_EDITED'		=> 'The icon has been updated successfully.',
+	'ICON_NONE_EDITED'		=> 'No icons were updated.',
+	'ICONS_EDITED'			=> 'The icons have been updated successfully.',
 	'ICONS_HEIGHT'			=> 'Icon height',
 	'ICONS_IMAGE'			=> 'Icon image',
 	'ICONS_IMPORTED'		=> 'The icons pack has been installed successfully.',
@@ -140,12 +150,16 @@ $lang = array_merge($lang, array(
 
 	'SELECT_PACKAGE'			=> 'Select a package file',
 	'SMILIES_ADD'				=> 'Add a new smiley',
-	'SMILIES_ADDED'				=> 'The smiley has been added successfully.',
+	'SMILIES_NONE_ADDED'		=> 'No smilies were added.',
+	'SMILIES_ONE_ADDED'			=> 'The smiley has been added successfully.',
+	'SMILIES_ADDED'				=> 'The smilies have been added successfully.',
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
 	'SMILIES_EDIT'				=> 'Edit smiley',
-	'SMILIES_EDITED'			=> 'The smiley has been updated successfully.',
+	'SMILIES_NONE_EDITED'		=> 'No smilies were updated.',
+	'SMILIES_ONE_EDITED'		=> 'The smiley has been updated successfully.',
+	'SMILIES_EDITED'			=> 'The smilies have been updated successfully.',
 	'SMILIES_EMOTION'			=> 'Emotion',
 	'SMILIES_HEIGHT'			=> 'Smiley height',
 	'SMILIES_IMAGE'				=> 'Smiley image',

@@ -17,7 +17,7 @@
 	<!-- ELSE -->
 		<fieldset class="jumpbox">
 	<!-- ENDIF -->
-			<label for="f" accesskey="j"><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->: </label>
+			<label for="f" accesskey="j"><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->:</label>
 			<select name="f" id="f" onchange="if(this.options[this.selectedIndex].value != -1){ document.forms['jumpbox'].submit() }">
 			<!-- BEGIN jumpbox_forums -->
 				<!-- IF jumpbox_forums.S_FORUM_COUNT == 1 --><option value="-1">------------------</option><!-- ENDIF -->

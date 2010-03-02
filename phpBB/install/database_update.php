@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC4';
+$updates_to_version = '3.0.RC5';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -387,6 +387,43 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.RC4 to the next version
+	'3.0.RC4'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			STYLES_TABLE				=> array(
+				'style_id'			=> array('USINT', NULL, 'auto_increment'),
+				'template_id'		=> array('USINT', 0),
+				'theme_id'			=> array('USINT', 0),
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_TABLE		=> array(
+				'template_id'		=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_TEMPLATE_DATA_TABLE	=> array(
+				'template_id'		=> array('USINT', 0),
+			),
+			STYLES_THEME_TABLE			=> array(
+				'theme_id'			=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_IMAGESET_TABLE		=> array(
+				'imageset_id'		=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			USERS_TABLE	=> array(
+				'user_style'		=> array('USINT', 0),
+			),
+			FORUMS_TABLE				=> array(
+				'forum_style'		=> array('USINT', 0),
+			),
+			GROUPS_TABLE			=> array(
+				'group_avatar_width'	=> array('USINT', 0),
+				'group_avatar_height'	=> array('USINT', 0),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -473,7 +510,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
-echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
+echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong></p>';
 
 $current_version = str_replace('rc', 'RC', strtolower($config['version']));
 $latest_version = str_replace('rc', 'RC', strtolower($updates_to_version));
@@ -495,7 +532,7 @@ else
 
 // Checks/Operations that have to be completed prior to starting the update itself
 $exit = false;
-if (version_compare($current_version, '3.0.RC3', '<='))
+if (version_compare($current_version, '3.0.RC4', '<='))
 {
 	// Define missing language entries...
 	if (!isset($lang['CLEANING_USERNAMES']))
@@ -517,7 +554,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		));
 	}
 ?>
-	</p><br /><br />
+	<br /><br />
 
 	<h1><?php echo $lang['CLEANING_USERNAMES']; ?></h1>
 
@@ -529,6 +566,16 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
 	$modify_users	= request_var('modify_users', array(0 => ''));
 	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
+
+	if (!class_exists('utf_new_normalizer'))
+	{
+		if (!file_exists($phpbb_root_path . 'install/data/new_normalizer.' . $phpEx))
+		{
+			global $lang;
+			trigger_error(sprintf($lang['UPDATE_REQUIRES_FILE'], $phpbb_root_path . 'install/data/new_normalizer.' . $phpEx), E_USER_ERROR);
+		}
+		include($phpbb_root_path . 'install/data/new_normalizer.' . $phpEx);
+	}
 
 	// the admin decided to change some usernames
 	if (sizeof($modify_users) && $submit)
@@ -564,7 +611,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 					case 'edit':
 						if (isset($new_usernames[$user_id]))
 						{
-							$data = array('username' => utf8_normalize_nfc($new_usernames[$user_id]));
+							$data = array('username' => utf8_new_normalize_nfc($new_usernames[$user_id]));
 							// Need to update config, forum, topic, posting, messages, etc.
 							if ($data['username'] != $row['username'])
 							{
@@ -720,6 +767,8 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	}
 	$db->sql_freeresult($result);
 
+	_write_result(false, $errored, $error_ary);
+
 	// now retrieve all information about the users and let the admin decide what to do
 	if (sizeof($colliding_users))
 	{
@@ -775,7 +824,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		// for the admin: keep name, change name (with text input) or delete user
 		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
 ?>
-</strong></p><br /><br />
+<br /><br />
 
 <p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
 <form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
@@ -939,7 +988,7 @@ if ($exit)
 
 // Schema updates
 ?>
-	</p><br /><br />
+	<br /><br />
 
 	<h1><?php echo $lang['UPDATE_DATABASE_SCHEMA']; ?></h1>
 
@@ -1253,6 +1302,206 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$no_updates = false;
 }
 
+if (version_compare($current_version, '3.0.RC4', '<='))
+{
+	$update_auto_increment = array(
+		STYLES_TABLE				=> 'style_id',
+		STYLES_TEMPLATE_TABLE		=> 'template_id',
+		STYLES_THEME_TABLE			=> 'theme_id',
+		STYLES_IMAGESET_TABLE		=> 'imageset_id'
+	);
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_TABLE . '
+		WHERE style_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(style_id) as max_id
+			FROM ' . STYLES_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET style_id = $proper_id WHERE style_id = 0", $errored, $error_ary);
+		_sql('UPDATE ' . FORUMS_TABLE . " SET forum_style = $proper_id WHERE forum_style = 0", $errored, $error_ary);
+		_sql('UPDATE ' . USERS_TABLE . " SET user_style = $proper_id WHERE user_style = 0", $errored, $error_ary);
+
+		$sql = 'SELECT config_value
+			FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'default_style'";
+		$result = _sql($sql, $errored, $error_ary);
+		$style_config = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($style_config['config_value'] === '0')
+		{
+			set_config('default_style', (string) $proper_id);
+		}
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_TEMPLATE_TABLE . '
+		WHERE template_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(template_id) as max_id
+			FROM ' . STYLES_TEMPLATE_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET template_id = $proper_id WHERE template_id = 0", $errored, $error_ary);
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_THEME_TABLE . '
+		WHERE theme_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(theme_id) as max_id
+			FROM ' . STYLES_THEME_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET theme_id = $proper_id WHERE theme_id = 0", $errored, $error_ary);
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_IMAGESET_TABLE . '
+		WHERE imageset_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(imageset_id) as max_id
+			FROM ' . STYLES_IMAGESET_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
+		_sql('UPDATE ' . STYLES_IMAGESET_DATA_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
+	}
+
+	if ($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41')
+	{
+		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
+		{
+			$sql = "SELECT MAX({$auto_column_name}) as max_id
+				FROM {$auto_table_name}";
+			$result = _sql($sql, $errored, $error_ary);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$max_id = ((int) $row['max_id']) + 1;
+			_sql("ALTER TABLE {$auto_table_name} AUTO_INCREMENT = {$max_id}", $errored, $error_ary);
+		}
+
+		$no_updates = false;
+	}
+	else if ($map_dbms == 'postgres')
+	{
+		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
+		{
+			$sql = "SELECT SETVAL('" . $auto_table_name . "_seq',(select case when max({$auto_column_name})>0 then max({$auto_column_name})+1 else 1 end from " . $auto_table_name . '));';
+			_sql($sql, $errored, $error_ary);
+		}
+
+		$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'firebird')
+	{
+		$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'DROP GENERATOR ' . STYLES_TEMPLATE_DATA_TABLE . '_gen';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'oracle')
+	{
+		$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'mssql')
+	{
+		// we use transactions because we need to have a working DB at the end of all of this
+		$db->sql_transaction('begin');
+
+		$sql = 'SELECT *
+			FROM ' . STYLES_TEMPLATE_DATA_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$old_style_rows = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$old_style_rows[] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		// death to the table, it is evil!
+		$sql = 'DROP TABLE ' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		// the table of awesomeness, praise be to it (or something)
+		$sql = 'CREATE TABLE [' . STYLES_TEMPLATE_DATA_TABLE . "] (
+			[template_id] [int] DEFAULT (0) NOT NULL ,
+			[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
+			[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
+			[template_mtime] [int] DEFAULT (0) NOT NULL ,
+			[template_data] [text] DEFAULT ('') NOT NULL 
+		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
+		_sql($sql, $errored, $error_ary);
+
+		// index? index
+		$sql = 'CREATE  INDEX [tid] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_id]) ON [PRIMARY]';
+		_sql($sql, $errored, $error_ary);
+
+		// yet another index
+		$sql = 'CREATE  INDEX [tfn] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_filename]) ON [PRIMARY]';
+		_sql($sql, $errored, $error_ary);
+
+		foreach ($old_style_rows as $return_row)
+		{
+			_sql('INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $return_row), $errored, $error_ary);
+		}
+
+		$db->sql_transaction('commit');
+	}
+
+	// Setting this here again because new installations may not have it...
+	set_config('cron_lock', '0', true);
+	set_config('ldap_port', '');
+	set_config('ldap_user_filter', '');
+
+	$no_updates = false;
+}
+
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();
@@ -1336,8 +1585,6 @@ add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 // Now we purge the session table as well as all cache files
 $cache->purge();
 
-exit;
-
 ?>
 
 					</div>
@@ -1357,6 +1604,9 @@ exit;
 
 <?php
 
+exit;
+
+
 /**
 * Function for triggering an sql statement
 */
@@ -1372,7 +1622,6 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 	$db->sql_return_on_error(true);
 
 	$result = $db->sql_query($sql);
-
 	if ($db->sql_error_triggered)
 	{
 		$errored = true;
@@ -1570,7 +1819,7 @@ function column_exists($dbms, $table, $column_name)
 /**
 * Function to prepare some column information for better usage
 */
-function prepare_column_data($dbms, $column_data)
+function prepare_column_data($dbms, $column_data, $table_name, $column_name)
 {
 	global $dbms_type_map, $unsigned_types;
 
@@ -1704,22 +1953,32 @@ function prepare_column_data($dbms, $column_data)
 
 			// In Oracle empty strings ('') are treated as NULL.
 			// Therefore in oracle we allow NULL's for all DEFAULT '' entries
-			$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
+			// Oracle does not like setting NOT NULL on a column that is already NOT NULL (this happens only on number fields)
+			if (preg_match('/number/i', $column_type))
+			{
+				$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
+			}
 		break;
 
 		case 'postgres':
 			$return_array['column_type'] = $column_type;
-			$return_array['null'] = 'NOT NULL';
-
-			if (!is_null($column_data[1]))
-			{
-				$return_array['default'] = $column_data[1];
-			}
 
 			$sql .= " {$column_type} ";
-			$sql .= 'NOT NULL ';
 
-			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+			{
+				$default_val = "nextval('{$table_name}_seq')";
+			}
+			else if (!is_null($column_data[1]))
+			{
+				$default_val = "'" . $column_data[1] . "'";
+				$return_array['null'] = 'NOT NULL';
+				$sql .= 'NOT NULL ';
+			}
+
+			$return_array['default'] = $default_val;
+
+			$sql .= "DEFAULT {$default_val}";
 
 			// Unsigned? Then add a CHECK contraint
 			if (in_array($orig_column_type, $unsigned_types))
@@ -1730,7 +1989,7 @@ function prepare_column_data($dbms, $column_data)
 		break;
 
 		case 'sqlite':
-/*			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 			{
 				$sql .= ' INTEGER PRIMARY KEY';
 			}
@@ -1738,8 +1997,6 @@ function prepare_column_data($dbms, $column_data)
 			{
 				$sql .= ' ' . $column_type;
 			}
-*/
-			$sql .= ' ' . $column_type;
 
 			$sql .= ' NOT NULL ';
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}'" : '';
@@ -1758,7 +2015,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 {
 	global $errored, $error_ary;
 
-	$column_data = prepare_column_data($dbms, $column_data);
+	$column_data = prepare_column_data($dbms, $column_data, $table_name, $column_name);
 
 	switch ($dbms)
 	{
@@ -2300,7 +2557,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 	global $dbms_type_map, $db;
 	global $errored, $error_ary;
 
-	$column_data = prepare_column_data($dbms, $column_data);
+	$column_data = prepare_column_data($dbms, $column_data, $table_name, $column_name);
 
 	switch ($dbms)
 	{
@@ -2332,18 +2589,21 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			$sql_array = array();
 			$sql_array[] = 'ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type'];
 
-			if ($column_data['null'] == 'NOT NULL')
+			if (isset($column_data['null']))
 			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
-			}
-			else
-			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
+				if ($column_data['null'] == 'NOT NULL')
+				{
+					$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
+				}
+				else if ($column_data['null'] == 'NULL')
+				{
+					$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
+				}
 			}
 
 			if (isset($column_data['default']))
 			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . " SET DEFAULT '" . $column_data['default'] . "'";
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
 			}
 
 			// we don't want to double up on constraints if we change different number data types
@@ -2377,7 +2637,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 				if (!$constraint_exists)
 				{
-					$sql_array[] = "ADD '" . $column_data['constraint'] . "'";
+					$sql_array[] = 'ADD ' . $column_data['constraint'];
 				}
 			}
 

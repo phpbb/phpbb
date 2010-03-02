@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package phpBB3
+* @package diff
 * @version $Id$
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -27,7 +27,7 @@ if (!defined('IN_PHPBB'))
 * This class renders the diff in classic diff format. It is intended that
 * this class be customized via inheritance, to obtain fancier outputs.
 *
-* @package phpBB3
+* @package diff
 */
 class diff_renderer
 {
@@ -267,7 +267,7 @@ class diff_renderer
 
 /**
 * Renders a unified diff
-* @package phpBB3
+* @package diff
 */
 class diff_renderer_unified extends diff_renderer 
 {
@@ -340,7 +340,7 @@ class diff_renderer_unified extends diff_renderer
 * This class renders diffs in the Wiki-style "inline" format.
 *
 * @author  Ciprian Popovici
-* @package phpBB3
+* @package diff
 */
 class diff_renderer_inline extends diff_renderer
 {
@@ -503,7 +503,7 @@ class diff_renderer_inline extends diff_renderer
 * "raw" diff renderer.
 * This class could be used to output a raw unified patch file
 *
-* @package phpBB3
+* @package diff
 */
 class diff_renderer_raw extends diff_renderer 
 {
@@ -557,7 +557,7 @@ class diff_renderer_raw extends diff_renderer
 * "chora (Horde)" diff renderer - similar style.
 * This renderer class is a modified human_readable function from the Horde Framework.
 *
-* @package phpBB3
+* @package diff
 */
 class diff_renderer_side_by_side extends diff_renderer 
 {

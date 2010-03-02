@@ -253,8 +253,7 @@ class mcp_warn
 		
 		// We want to make the message available here as a reminder
 		// Parse the message and subject
-		$message = $user_row['post_text'];
-		$message = str_replace("\n", '<br />', censor_text($message));
+		$message = censor_text($user_row['post_text']);
 
 		// Second parse bbcode here
 		if ($user_row['bbcode_bitfield'])
@@ -265,7 +264,7 @@ class mcp_warn
 			$bbcode->bbcode_second_pass($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield']);
 		}
 
-		// Always process smilies after parsing bbcodes
+		$message = bbcode_nl2br($message);
 		$message = smiley_text($message);
 
 		// Generate the appropriate user information for the user we are looking at

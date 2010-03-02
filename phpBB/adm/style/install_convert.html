@@ -120,8 +120,9 @@
 	<!-- ENDIF -->
 
 	<!-- IF L_SUBMIT -->
+		<!-- IF L_MESSAGE --><p>{L_MESSAGE}</p><!-- ENDIF -->
+
 		<fieldset class="submit-buttons">
-			<!-- IF L_MESSAGE --><p>{L_MESSAGE}</p><!-- ENDIF -->
 			{S_HIDDEN}
 			<!-- IF L_SUBMIT --><input class="button1<!-- IF S_REFRESH --> disabled<!-- ENDIF -->" type="submit" id="submit" <!-- IF S_REFRESH -->disabled="disabled" <!-- ELSE --> onclick="this.className = 'button1 disabled';" onsubmit="this.disabled = 'disabled';" <!-- ENDIF -->name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
 		</fieldset>

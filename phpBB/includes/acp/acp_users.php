@@ -114,19 +114,31 @@ class acp_users
 		// Generate overall "header" for user admin
 		$s_form_options = '';
 
-		// Include info file...
-		include_once($phpbb_root_path . 'includes/acp/info/acp_users.' . $phpEx);
-		$forms_ary = acp_users_info::module();
+		// Build modes dropdown list
+		$sql = 'SELECT module_mode, module_auth
+			FROM ' . MODULES_TABLE . "
+			WHERE module_basename = 'users'
+				AND module_enabled = 1
+				AND module_class = 'acp'
+			ORDER BY left_id, module_mode";
+		$result = $db->sql_query($sql);
 
-		foreach ($forms_ary['modes'] as $value => $ary)
+		$dropdown_modes = array();
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$this->p_master->module_auth($ary['auth']))
+			if (!$this->p_master->module_auth($row['module_auth']))
 			{
 				continue;
 			}
-			
-			$selected = ($mode == $value) ? ' selected="selected"' : '';
-			$s_form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($value)] . '</option>';
+
+			$dropdown_modes[$row['module_mode']] = true;
+		}
+		$db->sql_freeresult($result);
+
+		foreach ($dropdown_modes as $module_mode => $null)
+		{
+			$selected = ($mode == $module_mode) ? ' selected="selected"' : '';
+			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($module_mode)] . '</option>';
 		}
 
 		$template->assign_vars(array(

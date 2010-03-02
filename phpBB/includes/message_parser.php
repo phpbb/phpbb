@@ -426,10 +426,10 @@ class bbcode_firstpass extends bbcode
 				}
 
 				$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
-				$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
+				$code = preg_replace('#(?:\s++|&nbsp;)*+</span>$#u', '</span>', $code);
 
 				// remove newline at the end
-				if (!empty($code) && $code[strlen($code) - 1] == "\n")
+				if (!empty($code) && substr($code, -1) == "\n")
 				{
 					$code = substr($code, 0, -1);
 				}
@@ -1138,6 +1138,9 @@ class parse_message extends bbcode_firstpass
 			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, $this->allow_url_bbcode, true);
 		}
 
+		// Replace naughty words such as farty pants
+		$this->message = censor_text($this->message);
+
 		// Parse BBcode
 		if ($allow_bbcode)
 		{
@@ -1147,10 +1150,8 @@ class parse_message extends bbcode_firstpass
 			$this->bbcode_second_pass($this->message, $this->bbcode_uid);
 		}
 
+		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
-
-		// Replace naughty words such as farty pants
-		$this->message = str_replace("\n", '<br />', censor_text($this->message));
 
 		if (!$update_this_message)
 		{
@@ -1370,9 +1371,10 @@ class parse_message extends bbcode_firstpass
 			{
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-				$index = (int) key($_POST['delete_file']);
+				$index = array_keys(request_var('delete_file', array(0 => 0)));
+				$index = (!empty($index)) ? $index[0] : false;
 
-				if (!empty($this->attachment_data[$index]))
+				if ($index !== false && !empty($this->attachment_data[$index]))
 				{
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])
@@ -1564,7 +1566,7 @@ class parse_message extends bbcode_firstpass
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
 
-		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
+		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
 
 		// Parse Poll Title

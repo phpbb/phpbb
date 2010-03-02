@@ -121,7 +121,7 @@ class ucp_attachments
 				$template->assign_block_vars('attachrow', array(
 					'ROW_NUMBER'		=> $row_count + ($start + 1),
 					'FILENAME'			=> $row['real_filename'],
-					'COMMENT'			=> str_replace("\n", '<br />', $row['attach_comment']),
+					'COMMENT'			=> bbcode_nl2br($row['attach_comment']),
 					'EXTENSION'			=> $row['extension'],
 					'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],

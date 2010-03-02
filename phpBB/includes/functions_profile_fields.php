@@ -176,7 +176,7 @@ class custom_profile
 
 				if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
 				{
-					$field_validate = ($field_type == FIELD_STRING) ? $field_value : str_replace("\n", ' ', $field_value);
+					$field_validate = ($field_type == FIELD_STRING) ? $field_value : bbcode_nl2br($field_value);
 					if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
 					{
 						return 'FIELD_INVALID_CHARS';
@@ -462,7 +462,7 @@ class custom_profile
 
 				$value = make_clickable($value);
 				$value = censor_text($value);
-				$value = str_replace("\n", '<br />', $value);
+				$value = bbcode_nl2br($value);
 				return $value;
 			break;
 

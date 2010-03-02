@@ -295,16 +295,22 @@ class acp_bbcodes
 		// @todo Make sure to change this too if something changed in message parsing
 		$tokens = array(
 			'URL'	 => array(
-				'!([a-z0-9]+://)?([^< "\r\n\t\]]*?)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
+				'!(?:(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('url')) . ')|(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('www_url')) . '))!ie'	=>	"\$this->bbcode_specialchars(('\$1') ? '\$1' : 'http://\$2')"
 			),
 			'LOCAL_URL'	 => array(
-				'!([^:]+/[^< "\r\n\t\]]*?)!'	=>	'$1'
+				'!(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')!e'	=>	"\$this->bbcode_specialchars('$1')"
 			),
 			'EMAIL' => array(
-				'!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i'	=>	'$1'
+				'!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i'	=>	"\$this->bbcode_specialchars('$1')"
 			),
 			'TEXT' => array(
-				'!(.*?)!es'	 =>	"str_replace(\"\\r\\n\",\"\\n\", str_replace('\\\"', '\"', str_replace('\\'', '&#39;', trim('\$1'))))"
+				'!(.*?)!es'	 =>	"str_replace(array(\"\\r\\n\", '\\\"', '\\'', '(', ')'), array(\"\\n\", '\"', '&#39;', '&#40;', '&#41;'), trim('\$1'))"
+			),
+			'SIMPLETEXT' => array(
+				'!([a-zA-Z0-9-+.,_ ]+)!'	 =>	"$1"
+			),
+			'IDENTIFIER' => array(
+				'!([a-zA-Z0-9-_]+)!'	 =>	"$1"
 			),
 			'COLOR' => array(
 				'!([a-z]+|#[0-9abcdef]+)!i'	=>	'$1'

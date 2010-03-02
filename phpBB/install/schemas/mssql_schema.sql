@@ -1309,7 +1309,7 @@ GO
 	Table: 'phpbb_styles_template_data'
 */
 CREATE TABLE [phpbb_styles_template_data] (
-	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[template_id] [int] DEFAULT (0) NOT NULL ,
 	[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
 	[template_mtime] [int] DEFAULT (0) NOT NULL ,

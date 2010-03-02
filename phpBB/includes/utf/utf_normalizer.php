@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package phpBB3
+* @package utf
 * @version $Id$ 
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -57,7 +57,7 @@ define('UNICODE_JAMO_T', 2);
 /**
 * Unicode normalization routines
 *
-* @package phpBB3
+* @package utf
 */
 class utf_normalizer
 {
@@ -87,6 +87,12 @@ class utf_normalizer
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/utf/data/utf_nfc_qc.' . $phpEx);
+		}
+
+		if (!isset($GLOBALS['utf_canonical_decomp']))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
 		}
 
 		// Replace any byte in the range 0x00..0x1F, except for \r, \n and \t
@@ -123,6 +129,12 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_nfc_qc.' . $phpEx);
 		}
 
+		if (!isset($GLOBALS['utf_canonical_decomp']))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
+		}
+
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
@@ -149,10 +161,10 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_nfkc_qc.' . $phpEx);
 		}
 
-		if (!isset($GLOBALS['utf_canonical_comp']))
+		if (!isset($GLOBALS['utf_compatibility_decomp']))
 		{
 			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
@@ -232,6 +244,13 @@ class utf_normalizer
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.' . $phpEx);
+		}
+
+		// Load the canonical composition table
+		if (!isset($utf_canonical_comp))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
 		}
 
 		// Buffer the last ASCII char before the UTF-8 stuff if applicable

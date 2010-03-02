@@ -2429,11 +2429,11 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 				// If within the admin panel we do not censor text out
 				if (defined('IN_ADMIN'))
 				{
-					$log[$i]['action'] = str_replace("\n", '<br />', $log[$i]['action']);
+					$log[$i]['action'] = bbcode_nl2br($log[$i]['action']);
 				}
 				else
 				{
-					$log[$i]['action'] = str_replace("\n", '<br />', censor_text($log[$i]['action']));
+					$log[$i]['action'] = bbcode_nl2br(censor_text($log[$i]['action']));
 				}
 			}
 			else

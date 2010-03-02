@@ -164,9 +164,13 @@ class dbal_firebird extends dbal
 					}
 				}
 
-				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+\s+(WHERE.*)$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*WHERE\s*(.*)$/s', $query, $regs)))
+				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+\s+(WHERE.*)?$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*(WHERE\s*.*)?$/s', $query, $regs)))
 				{
-					$affected_sql = 'SELECT COUNT(*) as num_rows_affected FROM ' . $regs[1] . ' ' . $regs[2];
+					$affected_sql = 'SELECT COUNT(*) as num_rows_affected FROM ' . $regs[1];
+					if (!empty($regs[2]))
+					{
+						$affected_sql .= ' ' . $regs[2];
+					}
 
 					if (!($temp_q_id = @ibase_query($this->db_connect_id, $affected_sql)))
 					{
@@ -297,7 +301,7 @@ class dbal_firebird extends dbal
 
 		foreach (get_object_vars($cur_row) as $key => $value)
 		{
-			$row[strtolower($key)] = trim(str_replace(array("\\0", "\\n"), array("\0", "\n"), $value));
+			$row[strtolower($key)] = (is_string($value)) ? trim(str_replace(array("\\0", "\\n"), array("\0", "\n"), $value)) : $value;
 		}
 
 		return (sizeof($row)) ? $row : false;

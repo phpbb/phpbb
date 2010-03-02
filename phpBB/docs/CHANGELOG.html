@@ -169,6 +169,7 @@ p a {
 <ol class="menu">
 	<li><a href="#changelog">Changelog</a>
 	<ol type="i">
+		<li><a href="#v30rc4">Changes since RC-4</a></li>
 		<li><a href="#v30rc3">Changes since RC-3</a></li>
 		<li><a href="#v30rc2">Changes since RC-2</a></li>
 		<li><a href="#v30rc1">Changes since RC-1</a></li>
@@ -181,11 +182,70 @@ p a {
 
 <a name="changelog"></a><h1>1. Changelog</h1>
 
-	<a name="v30rc3"></a><b>1.i. Changes since 3.0.RC3</b>
+	<a name="v30rc4"></a><b>1.i. Changes since 3.0.RC4</b>
 	<br /><br />
 	<div class="paragraph">
 
 	<p>These fixes/changes are currently only present within CVS and will appear within the next phpBB3 version.</p>
+
+	<ul class="menu">
+		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
+		<li>[Fix] Allow MS SQL to properly connect when using the mssql driver and PHP is less than either 4.4.1 or 5.1 (Bug #13874)</li>
+		<li>[Fix] Ignore files containing HTML special chars in the filenames as gallery avatars (Bug #13906)</li>
+		<li>[Fix] Multiple PM recipients not separated (Bug #13876)</li>
+		<li>[Change] Split the select list for the smilie order to clarify which are feasible and which are not (Bug #13911)</li>
+		<li>[Fix] Convert empty homepage fields (Bug #13917)</li>
+		<li>[Fix] Use board default DST setting on creating new profiles (Bug #11563)</li>
+		<li>[Feature] New constant PHPBB_EMBEDDED can be used to let phpBB not call exit; if wrapped/embedded (We may re-check this constant on other code locations later too)</li>
+		<li>[Feature] append_sid() having a check for the function append_sid_phpbb_hook(). This function is called in favour of append_sid() with the exact same parameters if present.</li>
+		<li>[Fix] Only list enabled modes within the dropdown at user administration (Bug #13883) - patch provided by damnian</li>
+		<li>[Fix] Properly display ban reason if selecting banned entries within the ACP (Bug #13896)</li>
+		<li>[Fix] Properly parse SQL expressions for Oracle (Bug #13916)</li>
+		<li>[Fix] Added label bindings to the custom profile fields in the ACP (Bug #13936) - patch provided by damnian</li>
+		<li>[Change] Made group avatar/rank changes more intuitive</li>
+		<li>[Fix] Give more feedback in icon/smilie management (Bug #13295)</li>
+		<li>[Fix] Correctly set user::lang_id (Bug #14010)</li>
+		<li>[Fix] Properly display the smiley export screen (Bug #13968)</li>
+		<li>[Feature] Add "DECIMAL:", "PDECIMAL", and "PDECIMAL:" to the schema creation code (Bug #13999) - patch provided by poyntesm</li>
+		<li>[Fix] Don't show the notify checkbox in the approval queue if the only posts are written by ANONYMOUS (Bug #13973)</li>
+		<li>[Fix] Redirect to bots management page on edit/add (Bug #14073)</li>
+		<li>[Fix] Display locked icon in viewforum/prosilver if forum locked (Bug #14009)</li>
+		<li>[Feature] Display message history in compose PM screen</li>
+		<li>[Change] Do not force login on visiting topic/forum from notification emails (Bug #13818)</li>
+		<li>[Fix] Fixed cron_lock value for cron execution. This bug led to users having problems with the email queue and other cron related issues.</li>
+		<li>[Fix] Prevent white pages on php notices with gzip compression enabled (Bug #14096)</li>
+		<li>[Fix] Propagate the cleaned identifier for CFPs (Bug #14072)</li>
+		<li>[Fix] Do not display NO_TOPICS message if viewing non-postable category (Bug #13489)</li>
+		<li>[Fix] Let the theme immediately expire if changed from ACP for at least 30 minutes after change</li>
+		<li>[Fix] Do not append hilit= in search if highlighting term is empty (Bug #13910)</li>
+		<li>[Fix] Return to last page after voting in viewtopic instead of first page in topic (Bug #13976)</li>
+		<li>[Fix] If sending PM's to groups only include activated member (Bug #14040)</li>
+		<li>[Fix] Correctly wrap words in emails containing utf8 characters (Bug #14109)</li>
+		<li>[Change] For new posts or editing the first post topic titles have a maxlength of 60 characters. For any subsequent posts the length is extended to 64 to make room for the Re: part, but cutting at 60 characters. The maxlength need to be 64, else users using opera are unable to post (opera does not allow pre-filling a field with more characters than specified within the maxlength attribute)</li>
+		<li>[Fix] Disable gzip compression for cached stylesheet for Internet Explorer 6 or empty browser (IE6 is not able to properly display the compressed stylesheet) (Bug #14054)</li>
+		<li>[Fix] Header icons fixed in FF for RTL languages (Bug #14084)</li>
+		<li>[Change] Words in topic titles and post subjects are highlighted on the search results page and viewtopic too now (Bug #13383)</li>
+		<li>[Fix] Made sure strip_bbcode cannot get the idea that a smiley is a BBCode (Bug #14030)</li>
+		<li>[Change] Added a filter for user objects to LDAP configuration and improved explanations (Bug #12627)</li>
+		<li>[Fix] Display searchable subforums of invisible parents in advanced search forum selection (Bug #11395)</li>
+		<li>[Fix] Allow line breaks in custom BBCodes (Bug #10758)</li>
+		<li>[Fix] Ordered BBcode parsing functions in the same way everywhere where they are used</li>
+		<li>[Fix] Prevent {URL} token in custom BBCodes from make_clickable messing (Bug #14151)</li>
+		<li>[Sec] Added alternative tokens to custom BBCodes which are safe for CSS/Javascript and changed TEXT token to entitise opening and closing parantheses.</li>
+		<li>[Fix] Convert 2.0 moderator posting permissions (Bug #14105)</li>
+		<li>[Fix] Correctly apply PM box limit of 0 to custom folder (Bug #14154)</li>
+		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
+	</ul>
+
+	</div>
+	<a href="#top">Top</a>
+	<br /><br />
+
+	<hr />
+
+	<a name="v30rc3"></a><b>1.ii. Changes since 3.0.RC3</b>
+	<br /><br />
+	<div class="paragraph">
 
 	<ul class="menu">
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -246,7 +306,7 @@ p a {
 		<li>[Fix] Use global url validation for img bbcode tag (Bug #11935)</li>
 		<li>[Fix] Added proper unicode support to style names (Bug #12165)</li>
 		<li>[Fix] Search result extract should not end in the middle of a multibyte character (Bug #11863)</li>
-		<li>[Fix] Missing localisation for an imageset no longer triggers a lot of "imageset refreshed" log messages (Bug #12027)</li>
+		<li>[Fix] Missing localisation for an imageset no longer triggers a lot of &quot;imageset refreshed&quot; log messages (Bug #12027)</li>
 		<li>[Fix] Explain that themes which need parsing cannot be stored on the filesystem (Bug #11134)</li>
 		<li>[Fix] Normalize usernames</li>
 		<li>[Change] Improved utf8_clean_string with a more complete list of homographs and NFKC normalization</li>
@@ -300,7 +360,7 @@ p a {
 
 	<hr />
 
-	<a name="v30rc2"></a><b>1.ii. Changes since 3.0.RC2</b>
+	<a name="v30rc2"></a><b>1.iii. Changes since 3.0.RC2</b>
 	<br /><br />
 	<div class="paragraph">
 
@@ -354,7 +414,7 @@ p a {
 
 	<hr />
 
-	<a name="v30rc1"></a><b>1.iii. Changes since 3.0.RC1</b>
+	<a name="v30rc1"></a><b>1.iiii. Changes since 3.0.RC1</b>
 	<br /><br />
 	<div class="paragraph">
 
@@ -485,7 +545,7 @@ p a {
 
 	<div class="paragraph">
 
-	<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 </div>
 <a href="#top">Top</a>

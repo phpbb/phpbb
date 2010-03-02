@@ -115,7 +115,7 @@ class dbal_oracle extends dbal
 	*/
 	function _rewrite_where($where_clause)
 	{
-		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<>)\s*((?>\'(?>[^\']++|\'\')*+\'|[\d-.]+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|[\d-.]+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
+		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<[=>]?|>=?)\s*((?>\'(?>[^\']++|\'\')*+\'|[\d-.]+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|[\d-.]+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
 		$out = '';
 		foreach ($result as $val)
 		{

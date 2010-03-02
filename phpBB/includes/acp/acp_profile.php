@@ -492,11 +492,11 @@ class acp_profile
 							}
 						}	
 					} 
-					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
 						// Get the number of options if this key is 'field_maxlen'
 						$var = request_var('field_default_value', 0);
-					}
+					}*/
 
 					$cp->vars[$key] = $var;
 				}
@@ -661,6 +661,10 @@ class acp_profile
 							if (!isset($_REQUEST[$key]))
 							{
 								$var = false;
+							}
+							else if ($key == 'field_ident' && isset($cp->vars[$key]))
+							{
+								$_new_key_ary[$key]= $cp->vars[$key];
 							}
 							else
 							{
@@ -921,7 +925,7 @@ class acp_profile
 			$lang_options[1]['lang_iso'] = $this->lang_defs['id'][$default_lang_id];
 			$lang_options[1]['fields'][$field] = array(
 				'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-				'FIELD'		=> '<dd>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : str_replace("\n", '<br />', $cp->vars[$field])) . '</dd>'
+				'FIELD'		=> '<dd>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : bbcode_nl2br($cp->vars[$field])) . '</dd>'
 			);
 
 			if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))

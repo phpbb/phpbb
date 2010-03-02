@@ -1,14 +1,11 @@
 <?php
 /**
 *
-* @package phpBB3
+* @package utf
 * @version $Id$
 * @copyright (c) 2006 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
-* @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
-* remaining:	strspn, chr, ord
 */
 
 /**
@@ -27,7 +24,7 @@ setlocale(LC_CTYPE, 'C');
 * Whenever possible, these functions will try to use PHP's built-in functions or
 * extensions, otherwise they will default to custom routines.
 *
-* @package phpBB3
+* @package utf
 */
 
 if (!extension_loaded('xml'))
@@ -621,7 +618,7 @@ else
 * @author Harry Fuecks
 * @param string $str UTF-8 encoded
 * @param int $split_len number to characters to split string by
-* @return string characters in string reverses
+* @return array characters in string reverses
 */
 function utf8_str_split($str, $split_len = 1)
 {
@@ -911,8 +908,8 @@ function utf8_recode($string, $encoding)
 	}
 
 	// Trigger an error?! Fow now just give bad data :-(
-	//trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
-	return $string;
+	trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+	//return $string; // use utf_normalizer::cleanup() ?
 }
 
 /**
@@ -1862,6 +1859,59 @@ function utf8_convert_message($message)
 
 	// else we need to convert some part of the message
 	return utf8_htmlspecialchars(utf8_recode($message, 'ISO-8859-1'));
+}
+
+/**
+* UTF8-compatible wordwrap replacement
+*
+* @param	string	$string	The input string
+* @param	int		$width	The column width. Defaults to 75.
+* @param	string	$break	The line is broken using the optional break parameter. Defaults to '\n'.
+* @param	bool	$cut	If the cut is set to TRUE, the string is always wrapped at the specified width. So if you have a word that is larger than the given width, it is broken apart.
+*
+* @return	string			the given string wrapped at the specified column.
+*
+*/
+function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
+{
+	// We first need to explode on $break, not destroying existing (intended) breaks
+	$lines = explode($break, $string);
+	$new_lines = array(0 => '');
+	$index = 0;
+
+	foreach ($lines as $line)
+	{
+		$words = explode(' ', $line);
+
+		for ($i = 0, $size = sizeof($words); $i < $size; $i++)
+		{
+			$word = $words[$i];
+
+			// If cut is true we need to cut the word if it is > width chars
+			if ($cut && utf8_strlen($word) > $width)
+			{
+				$words[$i] = utf8_substr($word, $width);
+				$word = utf8_substr($word, 0, $width);
+				$i--;
+			}
+
+			if (utf8_strlen($new_lines[$index] . $word) > $width)
+			{
+				$new_lines[$index] = substr($new_lines[$index], 0, -1);
+				$index++;
+				$new_lines[$index] = '';
+			}
+
+			$new_lines[$index] .= $word . ' ';
+		}
+
+		$new_lines[$index] = substr($new_lines[$index], 0, -1);
+		$index++;
+		$new_lines[$index] = '';
+	}
+
+	unset($new_lines[$index]);
+	return implode($break, $new_lines);
 }
 
 ?>
