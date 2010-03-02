@@ -2361,8 +2361,8 @@ function cache_moderators()
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'o',
 				USER_GROUP_TABLE	=> 'ug',
-				ACL_GROUPS_TABLE	=> 'a',
 				GROUPS_TABLE		=> 'g',
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(

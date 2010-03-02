@@ -212,6 +212,8 @@
 		<li>[Fix] Only check whether forum image exists if forum image is specified. (Bug #51905)</li>
 		<li>[Fix] Fixed database updater for changes to columns having default value in MSSQL (adding/dropping constraints).</li>
 		<li>[Fix] Jabber SASL PLAIN authentication failures. (Bug #52995)</li>
+		<li>[Fix] Check sort options on memberlist to avoid a general error. (Bug #53655)</li>
+		<li>[Fix] Fix sql error in cache_moderators() if using postgresql. (Bug #53765)</li>
 		<li>[Change] Database updater now supports checking for existing/missing indexes.</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>

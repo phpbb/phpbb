@@ -927,7 +927,7 @@ class install_update extends module
 				{
 					if (function_exists('phpbb_is_writable') && !phpbb_is_writable($phpbb_root_path . 'store/'))
 					{
-						trigger_error(sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $phpbb_root_path . 'store/'), E_USER_ERROR);
+						trigger_error(sprintf('The directory “%s” is not writable.', $phpbb_root_path . 'store/'), E_USER_ERROR);
 					}
 
 					if ($use_method == '.zip')

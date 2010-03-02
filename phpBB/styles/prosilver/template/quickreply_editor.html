@@ -1,12 +1,16 @@
 <script type="text/javascript">
 // <![CDATA[
-	function hide_qr()
+	function hide_qr(show)
 	{
 		dE('qr_editor_div');
 		dE('qr_showeditor_div');
+		if (show && document.getElementById('qr_editor_div').style.display != 'none')
+		{
+			document.getElementsByName('message')[0].focus();
+		}
 		return true;
 	}
-	
+
 
 	function init_qr()
 	{
@@ -62,7 +66,7 @@
 					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 					<input type="submit" accesskey="f" tabindex="6" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
 				</fieldset>
-				<a href="" class="right-box up" onclick="hide_qr(); return false;" title="{L_COLLAPSE_QR}">{L_COLLAPSE_QR}</a>
+				<a href="" class="right-box up" onclick="hide_qr(false); return false;" title="{L_COLLAPSE_QR}">{L_COLLAPSE_QR}</a>
 			</div>
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
@@ -71,7 +75,7 @@
 
 			<div class="content">
 				<fieldset class="submit-buttons">
-					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr();return false;"/>
+					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr(true);return false;"/>
 				</fieldset>
 			</div>
 		<span class="corners-bottom"><span></span></span></div>

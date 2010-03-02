@@ -317,6 +317,39 @@ function find_in_tree(node, tag, type, class_name)
 	}
 }
 
+var in_autocomplete = false;
+var last_key_entered = '';
+
+/**
+* Check event key
+*/
+function phpbb_check_key(event)
+{
+	// Keycode is array down or up?
+	if (event.keyCode && (event.keyCode == 40 || event.keyCode == 38))
+		in_autocomplete = true;
+
+	// Make sure we are not within an "autocompletion" field
+	if (in_autocomplete)
+	{
+		// If return pressed and key changed we reset the autocompletion
+		if (!last_key_entered || last_key_entered == event.which)
+		{
+			in_autocompletion = false;
+			return true;
+		}
+	}
+
+	// Keycode is not return, then return. ;)
+	if (event.which != 13)
+	{
+		last_key_entered = event.which;
+		return true;
+	}
+
+	return false;
+}
+
 /**
 * Usually used for onkeypress event, to submit a form on enter
 */
@@ -326,8 +359,7 @@ function submit_default_button(event, selector, class_name)
 	if (!event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode))
 		event.which = event.charCode || event.keyCode;
 
-	// Keycode is not return, then return. ;)
-	if (event.which != 13)
+	if (phpbb_check_key(event))
 		return true;
 
 	var current = selector['parentNode'];
@@ -371,6 +403,9 @@ function apply_onkeypress_event()
 			var default_button = $(this).parents('form').find('input[type=submit].default-submit-action');
 			
 			if (!default_button || default_button.length <= 0)
+				return true;
+
+			if (phpbb_check_key(e))
 				return true;
 
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))
