@@ -24,6 +24,9 @@ if (!defined('IN_PHPBB'))
 * PHPBB_ADMIN_PATH
 */
 
+// phpBB Version
+define('PHPBB_VERSION', '3.0.3-RC1');
+
 // QA-related
 // define('PHPBB_QA', 1);
 
@@ -176,6 +179,11 @@ define('REFERER_VALIDATE_NONE', 0);
 define('REFERER_VALIDATE_HOST', 1);
 define('REFERER_VALIDATE_PATH', 2);
 
+// phpbb_chmod() permissions
+@define('CHMOD_ALL', 7);
+@define('CHMOD_READ', 4);
+@define('CHMOD_WRITE', 2);
+@define('CHMOD_EXECUTE', 1);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);

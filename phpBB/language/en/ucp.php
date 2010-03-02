@@ -50,7 +50,7 @@ $lang = array_merge($lang, array(
 	<br />
 	We may also create cookies external to the phpBB software whilst browsing “%1$s”, though these are outside the scope of this document which is intended to only cover the pages created by the phpBB software. The second way in which we collect your information is by what you submit to us. This can be, and is not limited to: posting as an anonymous user (hereinafter “anonymous posts”), registering on “%1$s” (hereinafter “your account”) and posts submitted by you after registration and whilst logged in (hereinafter “your posts”).<br />
 	<br />
-	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter “your user name”), a personal password used for logging into your account (hereinafter “your password”) and a personal, valid e-mail address (hereinafter “your e-mail”). Your information for your account at “%1$s” is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password and your e-mail required by “%1$s” during the registration process are at our digression what is mandatory and what is optional. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated e-mails from the phpBB software.<br />
+	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter “your user name”), a personal password used for logging into your account (hereinafter “your password”) and a personal, valid e-mail address (hereinafter “your e-mail”). Your information for your account at “%1$s” is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password, and your e-mail address required by “%1$s” during the registration process is either mandatory or optional, at the discretion of “%1$s”. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated e-mails from the phpBB software.<br />
 	<br />
 	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at “%1$s”, so please guard it carefully and under no circumstance will anyone affiliated with “%1$s”, phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the “I forgot my password” feature provided by the phpBB software. This process will ask you to submit your user name and your e-mail, then the phpBB software will generate a new password to reclaim your account.<br />
 	',
@@ -288,9 +288,11 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
 	'NO_AUTH_FORWARD_MESSAGE'		=> 'You are not authorised to forward private messages.',
 	'NO_AUTH_GROUP_MESSAGE'			=> 'You are not authorised to send private messages to groups.',
+	'NO_AUTH_PASSWORD_REMINDER'		=> 'You are not authorised to request a new password.',
+	'NO_AUTH_READ_HOLD_MESSAGE'		=> 'You are not authorised to read private messages that are on hold.',
 	'NO_AUTH_READ_MESSAGE'			=> 'You are not authorised to read private messages.',
 	'NO_AUTH_READ_REMOVED_MESSAGE'	=> 'You are not able to read this message because it was removed by the author.',
-	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised sending private messages.',
+	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised to send private messages.',
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature.',
 
 	'NO_BCC_RECIPIENT'			=> 'None',
@@ -314,6 +316,7 @@ $lang = array_merge($lang, array(
 	'NO_SAVED_DRAFTS'			=> 'No drafts saved.',
 	'NO_TO_RECIPIENT'			=> 'None',
 	'NO_WATCHED_FORUMS'			=> 'You are not subscribed to any forums.',
+	'NO_WATCHED_SELECTED'		=> 'You have not selected any subscribed topics or forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not subscribed to any topics.',
 
 	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case and must contain numbers.',
@@ -390,7 +393,7 @@ $lang = array_merge($lang, array(
 
 	'TIMEZONE'					=> 'Timezone',
 	'TO'						=> 'To',
-	'TOO_MANY_RECIPIENTS'		=> 'Too many recipients.',
+	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
 
 	'UCP'						=> 'User Control Panel',

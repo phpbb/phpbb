@@ -50,7 +50,7 @@ class template_compile
 	{
 		$this->template = &$template;
 	}
-	
+
 	/**
 	* Load template source from file
 	* @access private
@@ -74,7 +74,7 @@ class template_compile
 			global $db, $user;
 
 			$sql_ary = array(
-				'template_id'			=> $user->theme['template_id'],
+				'template_id'			=> $this->template->files_template[$handle],
 				'template_filename'		=> $this->template->filename[$handle],
 				'template_included'		=> '',
 				'template_mtime'		=> time(),
@@ -264,8 +264,8 @@ class template_compile
 		}
 
 		// Handle remaining varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]+)\}#is', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]+)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return;
 	}
@@ -515,11 +515,20 @@ class template_compile
 						}
 						$token = "sizeof($varref)";
 					}
+					else if (!empty($token))
+					{
+						$token = '(' . $token . ')';
+					}
 
 				break;
 			}
 		}
 
+		// If there are no valid tokens left or only control/compare characters left, we do skip this statement
+		if (!sizeof($tokens) || str_replace(array(' ', '=', '!', '<', '>', '&', '|', '%', '(', ')'), '', implode('', $tokens)) == '')
+		{
+			$tokens = array('false');
+		}
 		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
 
@@ -746,7 +755,7 @@ class template_compile
 			@flock($fp, LOCK_UN);
 			@fclose($fp);
 
-			@chmod($filename, 0666);
+			phpbb_chmod($filename, CHMOD_WRITE);
 		}
 
 		return;

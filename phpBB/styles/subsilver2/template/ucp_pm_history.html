@@ -32,7 +32,7 @@
 					<td valign="top">
 						<table width="100%" cellspacing="0" cellpadding="2">
 						<tr>
-							<td><div id="message_{history_row.MSG_ID}"><div class="postbody">{history_row.MESSAGE}</div></div></td>
+							<td><div class="postbody">{history_row.MESSAGE}</div><div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div></td>
 						</tr>
 						</table>
 					</td>
@@ -54,7 +54,7 @@
 
 		<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td class="gensmall"><a href="{history_row.U_VIEW_MESSAGE}">{L_VIEW_PM}</a></td>
-			<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF history_row.U_PROFILE --><a href="{history_row.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_EMAIL --><a href="{history_row.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF history_row.U_QUOTE --><a href="{history_row.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_POST_REPLY_PM --><a href="{history_row.U_POST_REPLY_PM}">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
+			<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF history_row.U_PROFILE --><a href="{history_row.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_EMAIL --><a href="{history_row.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE --><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}'); return false;"<!-- ENDIF -->>{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_POST_REPLY_PM --><a href="{history_row.U_POST_REPLY_PM}">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
 		</tr>
 		<tr>
 			<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>

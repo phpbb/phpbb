@@ -55,10 +55,31 @@ class dbal_oracle extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return @ociserverversion($this->db_connect_id);
+/*
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('oracle_version')) === false)
+		{
+			$result = @ociparse($this->db_connect_id, 'SELECT * FROM v$version WHERE banner LIKE \'Oracle%\'');
+			@ociexecute($result, OCI_DEFAULT);
+			@ocicommit($this->db_connect_id);
+
+			$row = array();
+			@ocifetchinto($result, $row, OCI_ASSOC + OCI_RETURN_NULLS);
+			@ocifreestatement($result);
+			$this->sql_server_version = trim($row['BANNER']);
+
+			$cache->put('oracle_version', $this->sql_server_version);
+		}
+*/
+		$this->sql_server_version = @ociserverversion($this->db_connect_id);
+
+		return $this->sql_server_version;
 	}
 
 	/**
@@ -355,7 +376,7 @@ class dbal_oracle extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**
@@ -530,7 +551,7 @@ class dbal_oracle extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return str_replace("'", "''", $msg);
+		return str_replace(array("'", "\0"), array("''", ''), $msg);
 	}
 
 	/**

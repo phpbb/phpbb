@@ -22,7 +22,7 @@
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: {USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
+				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: {USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_BAN --><span class="genmed"> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]</span><!-- ENDIF --><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 			</tr>
 			<!-- IF RANK_TITLE -->
 				<tr>
@@ -74,7 +74,9 @@
 			<!-- ENDIF -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
+				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF -->
+				<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />[<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>]<!-- ELSEIF POSTS_IN_QUEUE --><br />[{L_POSTS_IN_QUEUE}]<!-- ENDIF -->
+				<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>

@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Code from pear.php.net, Text_Diff-0.2.1 (beta) package
+* Code from pear.php.net, Text_Diff-1.0.0 package
 * http://pear.php.net/package/Text_Diff/
 *
 * Modified by phpBB Group to meet our coding standards
@@ -27,6 +27,8 @@ if (!defined('IN_PHPBB'))
 *
 * This class renders the diff in classic diff format. It is intended that
 * this class be customized via inheritance, to obtain fancier outputs.
+*
+* Copyright 2004-2008 The Horde Project (http://www.horde.org/)
 *
 * @package diff
 */
@@ -105,7 +107,7 @@ class diff_renderer
 
 			unset($diff3);
 
-			$diff = &new diff($diff_1, $diff_2);
+			$diff = new diff($diff_1, $diff_2);
 		}
 
 		$nlead = $this->_leading_context_lines;
@@ -116,33 +118,41 @@ class diff_renderer
 
 		foreach ($diffs as $i => $edit)
 		{
+			// If these are unchanged (copied) lines, and we want to keep leading or trailing context lines, extract them from the copy block.
 			if (is_a($edit, 'diff_op_copy'))
 			{
+				// Do we have any diff blocks yet?
 				if (is_array($block))
 				{
+					// How many lines to keep as context from the copy block.
 					$keep = ($i == sizeof($diffs) - 1) ? $ntrail : $nlead + $ntrail;
 					if (sizeof($edit->orig) <= $keep)
 					{
+						// We have less lines in the block than we want for context => keep the whole block.
 						$block[] = $edit;
 					}
 					else
 					{
 						if ($ntrail)
 						{
+							// Create a new block with as many lines as we need for the trailing context.
 							$context = array_slice($edit->orig, 0, $ntrail);
-							$block[] = &new diff_op_copy($context);
+							$block[] = new diff_op_copy($context);
 						}
 
 						$output .= $this->_block($x0, $ntrail + $xi - $x0, $y0, $ntrail + $yi - $y0, $block);
 						$block = false;
 					}
 				}
+				// Keep the copy block as the context for the next block.
 				$context = $edit->orig;
 			}
 			else
 			{
+				// Don't we have any diff blocks yet?
 				if (!is_array($block))
 				{
+					// Extract context lines from the preceding copy block.
 					$context = array_slice($context, sizeof($context) - $nlead);
 					$x0 = $xi - sizeof($context);
 					$y0 = $yi - sizeof($context);
@@ -150,7 +160,7 @@ class diff_renderer
 
 					if ($context)
 					{
-						$block[] = &new diff_op_copy($context);
+						$block[] = new diff_op_copy($context);
 					}
 				}
 				$block[] = $edit;
@@ -217,6 +227,16 @@ class diff_renderer
 		if ($ylen > 1)
 		{
 			$ybeg .= ',' . ($ybeg + $ylen - 1);
+		}
+
+		// this matches the GNU Diff behaviour
+		if ($xlen && !$ylen)
+		{
+			$ybeg--;
+		}
+		else if (!$xlen)
+		{
+			$xbeg--;
 		}
 
 		return $xbeg . ($xlen ? ($ylen ? 'c' : 'd') : 'a') . $ybeg;
@@ -449,11 +469,11 @@ class diff_renderer_inline extends diff_renderer
 		$splitted_text_1 = $this->_split_on_words($text1, $nl);
 		$splitted_text_2 = $this->_split_on_words($text2, $nl);
 
-		$diff = &new diff($splitted_text_1, $splitted_text_2);
+		$diff = new diff($splitted_text_1, $splitted_text_2);
 		unset($splitted_text_1, $splitted_text_2);
 
 		// Get the diff in inline format.
-		$renderer = &new diff_renderer_inline(array_merge($this->get_params(), array('split_level' => 'words')));
+		$renderer = new diff_renderer_inline(array_merge($this->get_params(), array('split_level' => 'words')));
 
 		// Run the diff and get the output.
 		return str_replace($nl, "\n", $renderer->render($diff)) . "\n";

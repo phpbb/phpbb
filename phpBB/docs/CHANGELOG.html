@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v302">Changes since 3.0.2</a></li>
 		<li><a href="#v301">Changes since 3.0.1</a></li>
 		<li><a href="#v300">Changes since 3.0.0</a></li>
 		<li><a href="#v30rc8">Changes since RC-8</a></li>
@@ -82,7 +83,105 @@
 
 		<div class="content">
 
-	<a name="v301"></a><h3>1.i. Changes since 3.0.1</h3>
+	<a name="v302"></a><h3>1.i. Changes since 3.0.2</h3>
+
+	<ul>
+		<li>[Fix] Correctly set topic starter if first post in topic removed (Bug #30575 - Patch by blueray2048)</li>
+		<li>[Fix] Delete avatar files (Bug #29985).</li>
+		<li>[Fix] Preserve selection in the MCP. (Bug #31265).</li>
+		<li>[Fix] Added VST - Venezuela Standard Time (Bug #30545).</li>
+		<li>[Fix] Close DB connections in file.php.</li>
+		<li>[Fix] Correctly return results for nested cached queries (Bug #31445 - Patch by faw).</li>
+		<li>[Fix] Allow export of PM pages greater one. (#33155)</li>
+		<li>[Fix] Display coloured username of last poster in list of subscribed forums (prosilver).</li>
+		<li>[Fix] Added missing UCP language string <em>NO_AUTH_READ_HOLD_MESSAGE</em>.</li>
+		<li>[Fix] Do not jump back to page 1 when hiding member search in memberlist. (Bug #32515)</li>
+		<li>[Fix] Correctly limit input of the users location to 100 characters in the UCP and ACP. (Bug #32655)</li>
+		<li>[Fix] Sync reports when using the move all users posts tool in the ACP. (Bug #31165)</li>
+		<li>[Fix] Extra slash is included in the redirect url when redirecting to the forum root directory. (Bug #33605)</li>
+		<li>[Fix] Remove reported flag from shadow topics when closing reports. (Bug #19765)</li>
+		<li>[Fix] Do not show non indexed forums on the search page if they contain no subforums. (Bug #33125)</li>
+		<li>[Fix] Stop search bots incrementing topic views. (Bug #32675 - Patch by eviL&lt;3)</li>
+		<li>[Fix] Use correct link for post author search. (Bug #32595)</li>
+		<li>[Fix] Do not decrease topics counter when deleting shadow topics. (Bug #26495)</li>
+		<li>[Fix] Send localised disapproval reasons in the recipients local language. (Bug #31645)</li>
+		<li>[Fix] Language typos/fixes. (Bugs #27625, #30755, #34185, #32795)</li>
+		<li>[Fix] Added missing terms parameter to search pagination. (Bug #34085)</li>
+		<li>[Fix] Wrong table order in query obtaining posts if post id given.</li>
+		<li>[Fix] Do not display reported topic icon for shadow topics. (Bug #13970)</li>
+		<li>[Fix] Display popular topic based on posts within topic instead of replies within topic. (Bug #16099)</li>
+		<li>[Fix] Expand shown ban reason in unban screen to fully show long entries. (Bug #16234)</li>
+		<li>[Fix] Preserve alpha transparency for created thumbnails. (Bug #16575)</li>
+		<li>[Fix] Use correct port delimiter for MSSQL connections in windows. (Bug #16615)</li>
+		<li>[Fix] Do not allow setting forums parent to the forum itself. (Bug #18855)</li>
+		<li>[Fix] Display assigned rank/avatar for guests. (Bug #19155)</li>
+		<li>[Fix] Set secure cookie for style switcher if required. (Bug #19625)</li>
+		<li>[Fix] Fix native full text search on postgresql while using excluding keyword matches. (Bug #19195)</li>
+		<li>[Fix] Pass S_SEARCH_ACTION through append_sid() in search.php. (Bug #21585)</li>
+		<li>[Fix] Correctly delete message attachments. (Bug #23755)</li>
+		<li>[Fix] Correctly handle unread status of subforums (that are not shown on the index) of forums that are shown on the index. (Bug #14589)</li>
+		<li>[Fix] Stop users from deleting posts after the edit time has passed or they have been locked. (Bug #19115)</li>
+		<li>[Fix] Split posts target forum requires 'f_post' now instead of 'm_split'. (Bug #31015)</li>
+		<li>[Fix] Duplicate log messages for deleting a topic ('LOG_TOPIC_DELETED' has been deprecated in favour of 'LOG_DELETE_TOPIC').</li>
+		<li>[Fix] Use a distinct log message for shadow topic deletions to differentiate between normal topic deletions. (Bug #34635)</li>
+		<li>[Fix] Fix problems with styles using an underscore within the filename. (Bug #34315)</li>
+		<li>[Fix] Better return links when deleting topics through the MCP. (Bug #34655)</li>
+		<li>[Fix] Add quoting support to PM history when composing a reply. (Bug #34285)</li>
+		<li>[Fix] Use phpBB 3.1.x method for storing cached data to prevent PHP bug with our usage of var_export(). (Thanks to Techie-Micheal and HoL for pointing out possible problems)</li>
+		<li>[Fix] Check users pm preferences for pm's sent to groups. (Bug #33245)</li>
+		<li>[Fix] Do not allow password reminders if u_passchg permission is not given. (Bug #14806)</li>
+		<li>[Fix] Implemented strict check for cached user permissions and existing ACL options. This fix makes sure cached permissions are valid, even if they got already cached.</li>
+		<li>[Fix] Do not show link to user/group profiles if user has no permission to view the linked page and gets a denied message anyway. (Bug #15088)</li>
+		<li>[Fix] Do not display last post link and sort display options for search engines. (Bug #15088)</li>
+		<li>[Fix] Make sure users still get notifications if they set to only be notified by Jabber, but Jabber service disabled. (Bug #29715 - Patch by Paul)</li>
+		<li>[Fix] Don't show forum subscription link on categories. (Bug #34895)</li>
+		<li>[Fix] Display a message if no topics or forums are selected when unsubscribing. (Bug #34855)</li>
+		<li>[Fix] Mark/unmark all links in UCP now select/unselect both subscribed topics and forums.</li>
+		<li>[Fix] Increase board topic counter when splitting topics. (Bug #32125)</li>
+		<li>[Fix] Display profile icons when viewing a topic, or PM when only the jabber icon is to be visible. (Bug #34755)</li>
+		<li>[Fix] Do not send PMs with warnings if the user cannot read PMs or they are disabled. (Bug #30815)</li>
+		<li>[Fix] Correctly convert Niels' Birthday MOD to the date format used in phpBB3. (Bug #32895)</li>
+		<li>[Fix] Parse BBCode lists of type square, circle and disc. (Bug #35295)</li>
+		<li>[Fix] Round the displayed percentages in polls. (Bug #32375)</li>
+		<li>[Fix] Disable mass e-mail when e-mail is disabled. (Bug #27385)</li>
+		<li>[Fix] Display coloured poster username of queued posts displayed on the front of the MCP.</li>
+		<li>[Fix] Moderators can only see reports/queue/logs from forums they can actually read. (Bug #31085)</li>
+		<li>[Fix] Correctly display topic when start parameter is equal to the number of posts.</li>
+		<li>[Fix] Correctly display topic in MCP when start parameter is equal to or greater than the number of posts. (Bug #30525)</li>
+
+		<li>[Change] No longer allow the direct use of MULTI_INSERT in sql_build_array. sql_multi_insert() must be used.</li>
+		<li>[Change] Display warning in ACP if config.php file is left writable.</li>
+		<li>[Change] More restrictive chmod to new files being created. (phpbb_chmod() function mostly by faw)</li>
+		<li>[Change] Set headers to allow browsers to better cache attachments (Mylek pointed this out)</li>
+		<li>[Change] Hide parameters if they equal the default in viewforum/viewtopic (Bug #31185)</li>
+		<li>[Change] Various improvements to group listings (Bugs #32155, #32145, #32085, #26675, #26265)</li>
+		<li>[Change] Set headers for IE 8 in file.php</li>
+		<li>[Change] Do not count queued posts to user_posts.</li>
+		<li>[Change] Allow setting birth year to current year.</li>
+		<li>[Change] Do not use the topics posted table when performing an egosearch.</li>
+		<li>[Change] Log the forum name that topics are moved into.</li>
+		<li>[Change] Automatically add users/groups to the PM recipient list, if entered or selected.</li>
+		<li>[Change] Reply to PM now includes all previous recipients and not only the original sender.</li>
+		<li>[Change] Make topic selection for merge less confusing by removing unneeded controls. (Bug #21925)</li>
+		<li>[Change] MCP topic view checkboxes now default to unchecked.</li>
+		<li>[Change] Adjust language key <em>SPLIT_AFTER</em> to make the action clearer.</li>
+		<li>[Change] Add links to the post and forum when viewing a report from the MCP. (Bugs #33795, #33805)</li>
+		<li>[Change] Remove NUL-Bytes directly in request_var() for strings and within the custom DBAL sql_escape() functions (MSSQL, Firebird, Oracle) (reported by AdhostMikeSw)</li>
+
+		<li>[Feature] Allow limited inheritance for template sets.</li>
+		<li>[Feature] Allow hard disabling of the template editor.</li>
+		<li>[Feature] Allow setting custom language path through $user-&gt;set_custom_lang_path(). $user-&gt;lang_path now also do not include the user language, but only the path.</li>
+		<li>[Feature] Ability to define nullar/singular/plural language entries</li>
+		<li>[Feature] Ability to mimic sprintf() calls with $user-&gt;lang() with the ability to correctly assign nullar/singular/plural language entries.</li>
+		<li>[Feature] Added the possibility to force user posts put in queue if post count is lower than an admin defined value. Guest posting is not affected by this setting.</li>
+		<li>[Feature] Added 'max_recipients' setting for private messages. This setting allows admins to define the maximum number of recipients per private message with a board-wide setting and a group-specific setting.</li>
+		<li>[Feature] Added new permission setting for sending private messages to groups. Now there are two permissions to define sending private messages to multiple recipients and private messages to groups.</li>
+		<li>[Feature] Allow specific connection to different server for jabber functionality by providing a valid JID as username. This also allows the use of talk.google.com as jabber server with gmail.com JIDs. (Bug #14989)</li>
+
+		<li>[Sec Precaution] Stricter validation of the HTTP_HOST header (Thanks to Techie-Micheal et al for pointing out possible issues in derived code)</li>
+	</ul>
+
+	<a name="v301"></a><h3>1.ii. Changes since 3.0.1</h3>
 
 	<ul>
 		<li>[Fix] Ability to set permissions on non-mysql dbms (Bug #24955)</li>
@@ -130,7 +229,7 @@
 		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 	</ul>
 
-	<a name="v300"></a><h3>1.ii. Changes since 3.0.0</h3>
+	<a name="v300"></a><h3>1.iii. Changes since 3.0.0</h3>
 
 	<ul>
 		<li>[Change] Validate birthdays (Bug #15004)</li>
@@ -201,7 +300,7 @@
 		<li>[Fix] Find and display colliding usernames correctly when converting from one database to another (Bug #23925)</li>
 	</ul>
 
-	<a name="v30rc8"></a><h3>1.iii. Changes since 3.0.RC8</h3>
+	<a name="v30rc8"></a><h3>1.iv. Changes since 3.0.RC8</h3>
 
 	<ul>
 		<li>[Fix] Cleaned usernames contain only single spaces, so &quot;a_name&quot; and &quot;a__name&quot; are treated as the same name (Bug #15634)</li>
@@ -210,7 +309,7 @@
 		<li>[Fix] Call garbage_collection() within database updater to correctly close connections (affects Oracle for example)</li>
 	</ul>
 
-	<a name="v30rc7"></a><h3>1.iv. Changes since 3.0.RC7</h3>
+	<a name="v30rc7"></a><h3>1.v. Changes since 3.0.RC7</h3>
 
 	<ul>
 		<li>[Fix] Fixed MSSQL related bug in the update system</li>
@@ -245,7 +344,7 @@
 		<li>[Fix] No duplication of active topics (Bug #15474)</li>
 	</ul>
 
-	<a name="v30rc6"></a><h3>1.v. Changes since 3.0.RC6</h3>
+	<a name="v30rc6"></a><h3>1.vi. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -255,7 +354,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.vi. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.vii. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -318,7 +417,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.vii. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.viii. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -369,7 +468,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.viii. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.ix. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -478,7 +577,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.ix. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.x. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -524,7 +623,7 @@
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.x. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.xi. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>

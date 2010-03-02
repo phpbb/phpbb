@@ -237,7 +237,10 @@ class ucp_main
 								$l_unwatch .= '_TOPICS';
 							}
 							$msg = $user->lang['UNWATCHED' . $l_unwatch];
-
+						}
+						else
+						{
+							$msg = $user->lang['NO_WATCHED_SELECTED'];
 						}
 					}
 					else

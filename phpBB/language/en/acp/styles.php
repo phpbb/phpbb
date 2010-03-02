@@ -86,6 +86,7 @@ $lang = array_merge($lang, array(
 	'DETAILS'					=> 'Details',
 	'DIMENSIONS_EXPLAIN'		=> 'Selecting yes here will include width/height parameters.',
 
+
 	'EDIT_DETAILS_IMAGESET'				=> 'Edit imageset details',
 	'EDIT_DETAILS_IMAGESET_EXPLAIN'		=> 'Here you can edit certain imageset details such as its name.',
 	'EDIT_DETAILS_STYLE'				=> 'Edit style',
@@ -103,6 +104,7 @@ $lang = array_merge($lang, array(
 	'EDIT_THEME_EXPLAIN'				=> 'Here you can edit the selected theme, changing colours, images, etc.',
 	'EDIT_THEME_STORED_DB'				=> 'The stylesheet file was unwritable so the stylesheet is now stored in the database containing your modification.',
 	'EDIT_THEME_STORE_PARSED'			=> 'The theme requires that its stylesheet is parsed. This is only possible if it’s stored in the database.',
+	'EDITOR_DISABLED'					=> 'The template editor is disabled.',
 	'EXPORT'							=> 'Export',
 
 	'FOREGROUND'			=> 'Foreground',
@@ -168,7 +170,7 @@ $lang = array_merge($lang, array(
 	'IMG_FORUM_UNREAD_SUBFORUM'	=> 'Subforum new posts',
 	'IMG_SUBFORUM_READ'			=> 'Legend subforum',
 	'IMG_SUBFORUM_UNREAD'		=> 'Legend subforum new posts',
-	
+
 	'IMG_TOPIC_MOVED'			=> 'Topic moved',
 
 	'IMG_TOPIC_READ'				=> 'Topic',
@@ -269,6 +271,7 @@ $lang = array_merge($lang, array(
 	'INCLUDE_IMAGESET'			=> 'Include imageset',
 	'INCLUDE_TEMPLATE'			=> 'Include template',
 	'INCLUDE_THEME'				=> 'Include theme',
+	'INHERITING_FROM'			=> 'Inherits from',
 	'INSTALL_IMAGESET'			=> 'Install imageset',
 	'INSTALL_IMAGESET_EXPLAIN'	=> 'Here you can install your selected imageset. You can edit certain details if you wish or use the installation defaults.',
 	'INSTALL_STYLE'				=> 'Install style',
@@ -284,6 +287,8 @@ $lang = array_merge($lang, array(
 
 	'LINE_SPACING'				=> 'Line spacing',
 	'LOCALISED_IMAGES'			=> 'Localised',
+	'LOCATION_DISABLED_EXPLAIN'	=> 'This setting is inherited and cannot be changed.',
+
 
 	'NO_CLASS'					=> 'Cannot find class in stylesheet.',
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem.',
@@ -364,6 +369,7 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_CACHE_CLEARED'	=> 'Template cache cleared successfully.',
 	'TEMPLATE_CACHE_EMPTY'		=> 'There are no cached templates.',
 	'TEMPLATE_DELETED'			=> 'Template set deleted successfully.',
+	'TEMPLATE_DELETE_DEPENDENT'	=> 'The template set cannot be deleted as there are one or more other template sets inheriting from it:',
 	'TEMPLATE_DELETED_FS'		=> 'Template set removed from database but some files may remain on the filesystem.',
 	'TEMPLATE_DETAILS_UPDATED'	=> 'Template details successfully updated.',
 	'TEMPLATE_EDITOR'			=> 'Raw HTML template editor',
@@ -375,12 +381,14 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_ERR_NAME_EXIST'	=> 'A template set with that name already exists.',
 	'TEMPLATE_ERR_NAME_LONG'	=> 'The template name can be no longer than 30 characters.',
 	'TEMPLATE_ERR_NOT_TEMPLATE'	=> 'The archive you specified does not contain a valid template set.',
+	'TEMPLATE_ERR_REQUIRED_OR_INCOMPLETE' => 'The new template set requires the template %s to be installed and not inheriting itself.',
 	'TEMPLATE_ERR_STYLE_NAME'	=> 'You must supply a name for this template.',
 	'TEMPLATE_EXPORT'			=> 'Export templates',
 	'TEMPLATE_EXPORT_EXPLAIN'	=> 'Here you can export a template set in the form of an archive. This archive will contain all the files necessary to install the templates on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.',
 	'TEMPLATE_EXPORTED'			=> 'Templates exported successfully and stored in %s.',
 	'TEMPLATE_FILE'				=> 'Template file',
 	'TEMPLATE_FILE_UPDATED'		=> 'Template file updated successfully.',
+	'TEMPLATE_INHERITS'			=> 'This template sets inherits from %s and thus cannot have a different storage setting than its super template.',
 	'TEMPLATE_LOCATION'			=> 'Store templates in',
 	'TEMPLATE_LOCATION_EXPLAIN'	=> 'Images are always stored on the filesystem.',
 	'TEMPLATE_NAME'				=> 'Template name',

@@ -545,6 +545,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_sig_chars] [int] DEFAULT (0) NOT NULL ,
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
+	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
 	[group_legend] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -1295,7 +1296,9 @@ CREATE TABLE [phpbb_styles_template] (
 	[template_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[template_path] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
-	[template_storedb] [int] DEFAULT (0) NOT NULL 
+	[template_storedb] [int] DEFAULT (0) NOT NULL ,
+	[template_inherits_id] [int] DEFAULT (0) NOT NULL ,
+	[template_inherit_path] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

@@ -26,7 +26,7 @@
 					<dt>{L_TOPICS}</dt>
 					<dd class="posts">{L_REPLIES}</dd>
 					<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
-					<dd class="mark">{L_MARK}</dd>
+					<!-- IF not S_MERGE_SELECT --><dd class="mark">{L_MARK}</dd><!-- ENDIF -->
 				</dl>
 			</li>
 		</ul>
@@ -47,9 +47,11 @@
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} {L_POSTED_ON_DATE}<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
+				<!-- IF not S_MERGE_SELECT -->
 				<dd class="mark">
 					<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
 				</dd>
+				<!-- ENDIF -->
 			</dl>
 		</li>
 		<!-- END topicrow -->
@@ -83,6 +85,7 @@
 </div>
 
 <fieldset class="display-actions">
+	<!-- IF not S_MERGE_SELECT -->
 	<select name="action">
 		<option value="" selected="selected">{L_SELECT_ACTION}</option>
 		<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
@@ -100,6 +103,7 @@
 	</select>
 	<input class="button2" type="submit" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
+	<!-- ENDIF -->
 	{S_FORM_TOKEN}
 </fieldset>
 </form>

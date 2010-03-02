@@ -242,6 +242,17 @@ class mcp_queue
 				}
 
 				$forum_list_approve = get_forum_list('m_approve', false, true);
+				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
+
+				// Remove forums we cannot read
+				foreach ($forum_list_approve as $k => $forum_data)
+				{
+					if (!isset($forum_list_read[$forum_data['forum_id']]))
+					{
+						unset($forum_list_approve[$k]);
+					}
+				}
+				unset($forum_list_read);
 
 				if (!$forum_id)
 				{
@@ -481,6 +492,7 @@ function approve_post($post_id_list, $id, $mode)
 
 		$total_topics = $total_posts = 0;
 		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
+		$user_posts_sql = array();
 
 		$update_forum_information = false;
 
@@ -492,6 +504,9 @@ function approve_post($post_id_list, $id, $mode)
 			{
 				$forum_id_list[$post_data['forum_id']] = 1;
 			}
+
+			// User post update (we do not care about topic or post, since user posts are strictly connected to posts
+			$user_posts_sql[$post_data['poster_id']] = (empty($user_posts_sql[$post_data['poster_id']])) ? 1 : $user_posts_sql[$post_data['poster_id']] + 1;
 
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id)
@@ -608,6 +623,25 @@ function approve_post($post_id_list, $id, $mode)
 				$sql .= ($row['forum_posts']) ? "forum_posts = forum_posts + {$row['forum_posts']}" : '';
 				$sql .= " WHERE forum_id = $forum_id";
 
+				$db->sql_query($sql);
+			}
+		}
+
+		if (sizeof($user_posts_sql))
+		{
+			// Try to minimize the query count by merging users with the same post count additions
+			$user_posts_update = array();
+
+			foreach ($user_posts_sql as $user_id => $user_posts)
+			{
+				$user_posts_update[$user_posts][] = $user_id;
+			}
+
+			foreach ($user_posts_update as $user_posts => $user_id_ary)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts + ' . $user_posts . '
+					WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 				$db->sql_query($sql);
 			}
 		}
@@ -793,6 +827,13 @@ function disapprove_post($post_id_list, $id, $mode)
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+
+			if (isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			{
+				$disapprove_reason_lang = strtoupper($row['reason_title']);
+			}
+
+			$email_disapprove_reason = $disapprove_reason;
 		}
 	}
 
@@ -912,11 +953,42 @@ function disapprove_post($post_id_list, $id, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
+			$lang_reasons = array();
+
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
 				{
 					continue;
+				}
+
+				if (isset($disapprove_reason_lang))
+				{
+					// Okay we need to get the reason from the posters language
+					if (!isset($lang_reasons[$post_data['user_lang']]))
+					{
+						// Assign the current users translation as the default, this is not ideal but getting the board default adds another layer of complexity.
+						$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+
+						// Only load up the language pack if the language is different to the current one
+						if ($post_data['user_lang'] != $user->lang_name && file_exists($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx))
+						{
+							// Load up the language pack
+							$lang = array();
+							@include($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx);
+
+							// If we find the reason in this language pack use it
+							if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
+							{
+								$lang_reasons[$post_data['user_lang']] = $lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+							}
+
+							unset($lang); // Free memory
+						}
+					}
+
+					$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
+					$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 				}
 
 				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
@@ -928,15 +1000,17 @@ function disapprove_post($post_id_list, $id, $mode)
 
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'REASON'		=> htmlspecialchars_decode($disapprove_reason),
+					'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
 					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);
 			}
+
+			unset($lang_reasons);
 		}
-		unset($post_info, $disapprove_reason);
+		unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
 
 		$messenger->save_queue();
 

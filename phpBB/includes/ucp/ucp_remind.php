@@ -36,7 +36,7 @@ class ucp_remind
 
 		if ($submit)
 		{
-			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
+			$sql = 'SELECT user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
@@ -64,6 +64,15 @@ class ucp_remind
 				{
 					trigger_error('ACCOUNT_NOT_ACTIVATED');
 				}
+			}
+
+			// Check users permissions
+			$auth2 = new auth();
+			$auth2->acl($user_row);
+
+			if (!$auth2->acl_get('u_chgpasswd'))
+			{
+				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 
 			$server_url = generate_board_url();

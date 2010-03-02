@@ -147,7 +147,7 @@ function user_update_name($old_name, $new_name)
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
-* @return: the new user's ID.
+* @return the new user's ID.
 */
 function user_add($user_row, $cp_data = false)
 {
@@ -315,8 +315,6 @@ function user_delete($mode, $user_id, $post_username = false)
 		return false;
 	}
 
-	$db->sql_transaction('begin');
-
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
 		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
@@ -385,6 +383,8 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		case 'retain':
 
+			$db->sql_transaction('begin');
+
 			if ($post_username === false)
 			{
 				$post_username = $user->lang['GUEST'];
@@ -432,6 +432,9 @@ function user_delete($mode, $user_id, $post_username = false)
 					$db->sql_query($sql);
 				}
 			}
+
+			$db->sql_transaction('commit');
+
 		break;
 
 		case 'remove':
@@ -484,6 +487,8 @@ function user_delete($mode, $user_id, $post_username = false)
 
 		break;
 	}
+
+	$db->sql_transaction('begin');
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE);
 
@@ -553,6 +558,8 @@ function user_delete($mode, $user_id, $post_username = false)
 		$db->sql_query($sql);
 	}
 
+	$db->sql_transaction('commit');
+
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
 	{
@@ -564,8 +571,6 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		set_config('num_users', $config['num_users'] - 1, true);
 	}
-
-	$db->sql_transaction('commit');
 
 	return false;
 }
@@ -934,7 +939,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	$sql = "SELECT $type
 		FROM " . BANLIST_TABLE . "
 		WHERE $sql_where
-			AND ban_exclude = $ban_exclude";
+			AND ban_exclude = " . (int) $ban_exclude;
 	$result = $db->sql_query($sql);
 
 	// Reset $sql_where, because we use it later...
@@ -2297,22 +2302,29 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		// Do we actually have any data to update?
 		if (sizeof($sql_ary))
 		{
+			$ext_new = $ext_old = '';
+			if (isset($sql_ary['user_avatar']))
+			{
+				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
+				$ext_new = (empty($sql_ary['user_avatar'])) ? '' : substr(strrchr($sql_ary['user_avatar'], '.'), 1);
+				$ext_old = (empty($userdata['user_avatar'])) ? '' : substr(strrchr($userdata['user_avatar'], '.'), 1);
+
+				if ($userdata['user_avatar_type'] == AVATAR_UPLOAD)
+				{
+					// Delete old avatar if present
+					if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']))
+					   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $ext_new !== $ext_old))
+					{
+						avatar_delete('user', $userdata);
+					}
+				}
+			}
+
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
 			$db->sql_query($sql);
 
-			if (isset($sql_ary['user_avatar']))
-			{
-				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
-
-				// Delete old avatar if present
-				if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD)
-				   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD && $sql_ary['user_avatar_type'] != AVATAR_UPLOAD))
-				{
-					avatar_delete('user', $userdata);
-				}
-			}
 		}
 	}
 
@@ -2343,12 +2355,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		'group_receive_pm'		=> 'int',
 		'group_legend'			=> 'int',
 		'group_message_limit'	=> 'int',
+		'group_max_recipients'	=> 'int',
 
 		'group_founder_manage'	=> 'int',
 	);
 
 	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_founder_manage');
+	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_max_recipients', 'group_founder_manage');
 
 	// Check data. Limit group name length.
 	if (!utf8_strlen($name) || utf8_strlen($name) > 60)
@@ -3080,7 +3093,7 @@ function group_validate_groupname($group_id, $group_name)
 /**
 * Set users default group
 *
-* @private
+* @access private
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {

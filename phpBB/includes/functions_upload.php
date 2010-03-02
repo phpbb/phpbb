@@ -121,9 +121,9 @@ class filespec
 			case 'avatar':
 				$this->extension = strtolower($this->extension);
 				$this->realname = $prefix . $user_id . '.' . $this->extension;
-				
+
 			break;
-			
+
 			case 'unique_ext':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
@@ -228,8 +228,8 @@ class filespec
 	{
 		return @filesize($filename);
 	}
-	
-	
+
+
 	/**
 	* Check the first 256 bytes for forbidden content
 	*/
@@ -239,7 +239,7 @@ class filespec
 		{
 			return true;
 		}
-		
+
 		$fp = @fopen($this->filename, 'rb');
 
 		if ($fp !== false)
@@ -263,10 +263,11 @@ class filespec
 	*
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
-	* @param octal $chmod Permission mask for chmodding the file after a successful move
+	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}
+	*
 	* @access public
 	*/
-	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = 0666)
+	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
 		global $user, $phpbb_root_path;
 
@@ -274,6 +275,8 @@ class filespec
 		{
 			return false;
 		}
+
+		$chmod = ($chmod === false) ? CHMOD_READ | CHMOD_WRITE : $chmod;
 
 		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
 		$this->destination_path = $phpbb_root_path . $destination;
@@ -345,7 +348,7 @@ class filespec
 				break;
 			}
 
-			@chmod($this->destination_file, $chmod);
+			phpbb_chmod($this->destination_file, $chmod);
 		}
 
 		// Try to get real filesize from destination folder
@@ -416,7 +419,7 @@ class filespec
 		{
 			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES'] );
 			$max_filesize = get_formatted_filesize($this->upload->max_filesize, false);
-	
+
 			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 
 			return false;
@@ -528,7 +531,7 @@ class fileupload
 			$this->max_filesize = (int) $max_filesize;
 		}
 	}
-	
+
 	/**
 	* Set disallowed strings
 	*/
@@ -872,7 +875,7 @@ class fileupload
 		{
 			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_EXTENSION'], $file->get('extension'));
 		}
-		
+
 		// MIME Sniffing
 		if (!$this->valid_content($file))
 		{

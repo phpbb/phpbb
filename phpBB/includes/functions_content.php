@@ -41,57 +41,66 @@ if (!defined('IN_PHPBB'))
 /**
 * Generate sort selection fields
 */
-function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
+function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {
 	global $user;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-	// Check if the key is selectable. If not, we reset to the first key found.
-	// This ensures the values are always valid.
-	if (!isset($limit_days[$sort_days]))
-	{
-		@reset($limit_days);
-		$sort_days = key($limit_days);
-	}
+	$sorts = array(
+		'st'	=> array(
+			'key'		=> 'sort_days',
+			'default'	=> $def_st,
+			'options'	=> $limit_days,
+			'output'	=> &$s_limit_days,
+		),
 
-	if (!isset($sort_by_text[$sort_key]))
-	{
-		@reset($sort_by_text);
-		$sort_key = key($sort_by_text);
-	}
+		'sk'	=> array(
+			'key'		=> 'sort_key',
+			'default'	=> $def_sk,
+			'options'	=> $sort_by_text,
+			'output'	=> &$s_sort_key,
+		),
 
-	if (!isset($sort_dir_text[$sort_dir]))
-	{
-		@reset($sort_dir_text);
-		$sort_dir = key($sort_dir_text);
-	}
+		'sd'	=> array(
+			'key'		=> 'sort_dir',
+			'default'	=> $def_sd,
+			'options'	=> $sort_dir_text,
+			'output'	=> &$s_sort_dir,
+		),
+	);
+	$u_sort_param  = '';
 
-	$s_limit_days = '<select name="st" id="st">';
-	foreach ($limit_days as $day => $text)
+	foreach ($sorts as $name => $sort_ary)
 	{
-		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
-		$s_limit_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
-	}
-	$s_limit_days .= '</select>';
+		$key = $sort_ary['key'];
+		$selected = $$sort_ary['key'];
 
-	$s_sort_key = '<select name="sk" id="sk">';
-	foreach ($sort_by_text as $key => $text)
-	{
-		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-		$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
-	}
-	$s_sort_key .= '</select>';
+		// Check if the key is selectable. If not, we reset to the default or first key found.
+		// This ensures the values are always valid. We also set $sort_dir/sort_key/etc. to the
+		// correct value, else the protection is void. ;)
+		if (!isset($sort_ary['options'][$selected]))
+		{
+			if ($sort_ary['default'] !== false)
+			{
+				$selected = $$key = $sort_ary['default'];
+			}
+			else
+			{
+				@reset($sort_ary['options']);
+				$selected = $$key = key($sort_ary['options']);
+			}
+		}
 
-	$s_sort_dir = '<select name="sd" id="sd">';
-	foreach ($sort_dir_text as $key => $value)
-	{
-		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
-		$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-	$s_sort_dir .= '</select>';
+		$sort_ary['output'] = '<select name="' . $name . '" id="' . $name . '">';
+		foreach ($sort_ary['options'] as $option => $text)
+		{
+			$sort_ary['output'] .= '<option value="' . $option . '"' . (($selected == $option) ? ' selected="selected"' : '') . '>' . $text . '</option>';
+		}
+		$sort_ary['output'] .= '</select>';
 
-	$u_sort_param = "st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+		$u_sort_param .= ($selected !== $sort_ary['default']) ? ((strlen($u_sort_param)) ? '&amp;' : '') . "{$name}={$selected}" : '';
+	}
 
 	return;
 }
@@ -239,7 +248,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 function get_context($text, $words, $length = 400)
 {
 	// first replace all whitespaces with single spaces
-	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '), $text);
+	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
 
 	$word_indizes = array();
 	if (sizeof($words))

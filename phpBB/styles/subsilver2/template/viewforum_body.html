@@ -58,7 +58,7 @@
 			<td class="row1" width="140" align="center">
 				<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
 				<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
+					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
 				</p>
 			</td>
 		</tr>
@@ -209,7 +209,7 @@
 				<td class="row1" width="140" align="center">
 					<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
-						<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
+						<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
 					</p>
 				</td>
 			</tr>
@@ -226,6 +226,7 @@
 			<!-- ENDIF -->
 		<!-- END topicrow -->
 
+		<!-- IF not S_IS_BOT -->
 		<tr align="center">
 			<!-- IF S_TOPIC_ICONS -->
 				<td class="cat" colspan="7">
@@ -235,6 +236,7 @@
 					<form method="post" action="{S_FORUM_ACTION}"><span class="gensmall">{L_DISPLAY_TOPICS}:</span>&nbsp;{S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></form>
 				</td>
 		</tr>
+		<!-- ENDIF -->
 		</table>
 	<!-- ENDIF -->
 

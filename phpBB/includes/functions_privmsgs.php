@@ -930,7 +930,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db, $user;
+	global $db, $user, $phpbb_root_path, $phpEx;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -978,6 +978,8 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	{
 		return false;
 	}
+
+	$db->sql_transaction('begin');
 
 	// if no one has read the message yet (meaning it is in users outbox)
 	// then mark the message as deleted...
@@ -1056,10 +1058,20 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 
 	if (sizeof($delete_ids))
 	{
+		// Check if there are any attachments we need to remove
+		if (!function_exists('delete_attachments'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
+		delete_attachments('message', $delete_ids, false);
+
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 		$db->sql_query($sql);
 	}
+
+	$db->sql_transaction('commit');
 
 	return true;
 }
@@ -1329,12 +1341,17 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if (isset($data['address_list']['g']) && sizeof($data['address_list']['g']))
 		{
+			// We need to check the PM status of group members (do they want to receive PM's?)
+			// Only check if not a moderator or admin, since they are allowed to override this user setting
+			$sql_allow_pm = (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? ' AND u.user_allow_pm = 1' : '';
+
 			$sql = 'SELECT u.user_type, ug.group_id, ug.user_id
 				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . 
+					$sql_allow_pm;
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1756,6 +1773,16 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 		$message = censor_text($message);
 
+		$decoded_message = false;
+
+		if ($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id'])
+		{
+			$decoded_message = $message;
+			decode_message($decoded_message, $row['bbcode_uid']);
+
+			$decoded_message = bbcode_nl2br($decoded_message);
+		}
+
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
@@ -1774,15 +1801,17 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		}
 
 		$template->assign_block_vars('history_row', array(
+			'MESSAGE_AUTHOR_QUOTE'		=> (($decoded_message) ? addslashes(get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username'])) : ''),
 			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $row['username'], $row['user_colour'], $row['username']),
 
-			'SUBJECT'		=> $subject,
-			'SENT_DATE'		=> $user->format_date($row['message_time']),
-			'MESSAGE'		=> $message,
-			'FOLDER'		=> implode(', ', $row['folder']),
+			'SUBJECT'			=> $subject,
+			'SENT_DATE'			=> $user->format_date($row['message_time']),
+			'MESSAGE'			=> $message,
+			'FOLDER'			=> implode(', ', $row['folder']),
+			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
 			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,

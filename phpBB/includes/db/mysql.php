@@ -29,7 +29,6 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_mysql extends dbal
 {
-	var $mysql_version;
 	var $multi_insert = true;
 
 	/**
@@ -52,13 +51,12 @@ class dbal_mysql extends dbal
 			if (@mysql_select_db($this->dbname, $this->db_connect_id))
 			{
 				// Determine what version we are using and if it natively supports UNICODE
-				$this->mysql_version = mysql_get_server_info($this->db_connect_id);
-
-				if (version_compare($this->mysql_version, '4.1.3', '>='))
+				if (version_compare($this->sql_server_info(true), '4.1.3', '>='))
 				{
 					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+
 					// enforce strict mode on databases that support it
-					if (version_compare($this->mysql_version, '5.0.2', '>='))
+					if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
 					{
 						$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
 						$row = @mysql_fetch_assoc($result);
@@ -83,7 +81,7 @@ class dbal_mysql extends dbal
 						@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
 					}
 				}
-				else if (version_compare($this->mysql_version, '4.0.0', '<'))
+				else if (version_compare($this->sql_server_info(true), '4.0.0', '<'))
 				{
 					$this->sql_layer = 'mysql';
 				}
@@ -97,10 +95,28 @@ class dbal_mysql extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'MySQL ' . $this->mysql_version;
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('mysql_version')) === false)
+		{
+			$result = @mysql_query('SELECT VERSION() AS version', $this->db_connect_id);
+			$row = @mysql_fetch_assoc($result);
+			@mysql_free_result($result);
+
+			$this->sql_server_version = $row['version'];
+
+			if (!empty($cache))
+			{
+				$cache->put('mysql_version', $this->sql_server_version);
+			}
+		}
+
+		return ($raw) ? $this->sql_server_version : 'MySQL ' . $this->sql_server_version;
 	}
 
 	/**
@@ -183,7 +199,7 @@ class dbal_mysql extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**
@@ -367,13 +383,9 @@ class dbal_mysql extends dbal
 		if ($test_prof === null)
 		{
 			$test_prof = false;
-			if (strpos($this->mysql_version, 'community') !== false)
+			if (version_compare($this->sql_server_info(true), '5.0.37', '>=') && version_compare($this->sql_server_info(true), '5.1', '<'))
 			{
-				$ver = substr($this->mysql_version, 0, strpos($this->mysql_version, '-'));
-				if (version_compare($ver, '5.0.37', '>=') && version_compare($ver, '5.1', '<'))
-				{
-					$test_prof = true;
-				}
+				$test_prof = true;
 			}
 		}
 

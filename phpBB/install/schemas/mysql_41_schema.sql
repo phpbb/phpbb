@@ -312,6 +312,7 @@ CREATE TABLE phpbb_groups (
 	group_sig_chars mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_receive_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name)
@@ -739,6 +740,8 @@ CREATE TABLE phpbb_styles_template (
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
 	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
+	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;

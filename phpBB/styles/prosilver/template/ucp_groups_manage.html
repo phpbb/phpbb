@@ -1,6 +1,6 @@
 <!-- INCLUDE ucp_header.html -->
 
-<h2>{L_USERGROUPS}</h2>
+<h2<!-- IF GROUP_COLOR --> style="color:#{GROUP_COLOR};"<!-- ENDIF -->>{L_USERGROUPS}<!-- IF GROUP_NAME --> :: {GROUP_NAME}<!-- ENDIF --></h2>
 
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
@@ -79,6 +79,7 @@
 
 <!-- ELSEIF S_LIST -->
 
+	<!-- IF .leader -->
 	<table class="table1" cellspacing="1">
 	<thead>
 	<tr>
@@ -101,23 +102,10 @@
 	<!-- END leader -->
 	</tbody>
 	</table>
+	<!-- ENDIF -->
 
-	<table class="table1" cellspacing="1">
-	<thead>
-	<tr>
-		<th class="name">{L_GROUP_APPROVED}</th>
-		<th class="info">{L_GROUP_DEFAULT}</th>
-		<th class="posts">{L_POSTS}</th>
-		<th class="joined">{L_JOINED}</th>
-		<th class="mark">{L_MARK}</th>
-	</tr>
-	</thead>
-	<tbody>	
 	<!-- BEGIN member -->
 		<!-- IF member.S_PENDING -->
-			</tbody>
-			</table>
-
 			<table class="table1" cellspacing="1">
 			<thead>
 			<tr>
@@ -128,7 +116,23 @@
 				<th class="mark">{L_MARK}</th>
 			</tr>
 			</thead>
-			<tbody>	
+			<tbody>
+		<!-- ELSEIF member.S_APPROVED -->
+			<!-- IF member.S_PENDING_SET -->
+				</tbody>
+				</table>
+			<!-- ENDIF -->
+			<table class="table1" cellspacing="1">
+			<thead>
+			<tr>
+				<th class="name">{L_GROUP_APPROVED}</th>
+				<th class="info">{L_GROUP_DEFAULT}</th>
+				<th class="posts">{L_POSTS}</th>
+				<th class="joined">{L_JOINED}</th>
+				<th class="mark">{L_MARK}</th>
+			</tr>
+			</thead>
+			<tbody>
 		<!-- ELSE -->
 			<tr class="<!-- IF member.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 				<td class="name">{member.USERNAME_FULL}</td>

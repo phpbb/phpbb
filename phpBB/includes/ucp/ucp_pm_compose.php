@@ -25,6 +25,10 @@ function compose_pm($id, $mode, $action)
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
 
+	// Damn php and globals - i know, this is horrible
+	// Needed for handle_message_list_actions()
+	global $refresh, $submit, $preview;
+
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
@@ -44,6 +48,11 @@ function compose_pm($id, $mode, $action)
 
 	// Do NOT use request_var or specialchars here
 	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
+
+	if (!is_array($address_list))
+	{
+		$address_list = array();
+	}
 
 	$submit		= (isset($_POST['post'])) ? true : false;
 	$preview	= (isset($_POST['preview'])) ? true : false;
@@ -79,7 +88,8 @@ function compose_pm($id, $mode, $action)
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
 	{
-		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
+		// Add groups to PM box
+		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 				FROM ' . GROUPS_TABLE . ' g';
@@ -112,7 +122,7 @@ function compose_pm($id, $mode, $action)
 		$template->assign_vars(array(
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
+			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
 		));
 	}
@@ -281,7 +291,24 @@ function compose_pm($id, $mode, $action)
 
 			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 			{
-				$address_list = array('u' => array($post['author_id'] => 'to'));
+				if ($action == 'quotepost')
+				{
+					$address_list = array('u' => array($post['author_id'] => 'to'));
+				}
+				else
+				{
+					// We try to include every previously listed member from the TO Header
+					$address_list = rebuild_header(array('to' => $post['to_address']));
+
+					// Add the author (if he is already listed then this is no shame (it will be overwritten))
+					$address_list['u'][$post['author_id']] = 'to';
+
+					// Now, make sure the user itself is not listed. ;)
+					if (isset($address_list['u'][$user->data['user_id']]))
+					{
+						unset($address_list['u'][$user->data['user_id']]);
+					}
+				}
 			}
 			else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 			{
@@ -315,7 +342,7 @@ function compose_pm($id, $mode, $action)
 		$check_value = 0;
 	}
 
-	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')))
+	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
 	{
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
@@ -380,14 +407,58 @@ function compose_pm($id, $mode, $action)
 		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 	}
 
+	// Get maximum number of allowed recipients
+	$sql = 'SELECT MAX(g.group_max_recipients) as max_recipients
+		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
+		WHERE ug.user_id = ' . $user->data['user_id'] . '
+			AND ug.user_pending = 0
+			AND ug.group_id = g.group_id';
+	$result = $db->sql_query($sql);
+	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
+	$db->sql_freeresult($result);
+
+	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
+
+	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
+	if (($action == 'reply' || $action == 'quote') && $max_recipients)
+	{
+		// We try to include every previously listed member from the TO Header
+		$list = rebuild_header(array('to' => $post['to_address']));
+		$list = $list['u'];
+		$list[$post['author_id']] = 'to';
+
+		if (isset($list[$user->data['user_id']]))
+		{
+			unset($list[$user->data['user_id']]);
+		}
+
+		$max_recipients = ($max_recipients < sizeof($list)) ? sizeof($list) : $max_recipients;
+
+		unset($list);
+	}
+
 	// Handle User/Group adding/removing
 	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
-	// Check for too many recipients
+	// Check mass pm to group permission
+	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
+	{
+		$address_list = array();
+		$error[] = $user->lang['NO_AUTH_GROUP_MESSAGE'];
+	}
+
+	// Check mass pm to users permission
 	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
-		$address_list = get_recipient_pos($address_list, 1);
-		$error[] = $user->lang['TOO_MANY_RECIPIENTS'];
+		$address_list = get_recipients($address_list, 1);
+		$error[] = $user->lang('TOO_MANY_RECIPIENTS', 1);
+	}
+
+	// Check for too many recipients
+	if (!empty($address_list['u']) && $max_recipients && sizeof($address_list['u']) > $max_recipients)
+	{
+		$address_list = get_recipients($address_list, $max_recipients);
+		$error[] = $user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
 	}
 
 	// Always check if the submitted attachment data is valid and belongs to the user.
@@ -762,7 +833,7 @@ function compose_pm($id, $mode, $action)
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
-		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"{$quote_username}\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
+		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=&quot;{$quote_username}&quot;]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
 	}
 
@@ -932,7 +1003,7 @@ function compose_pm($id, $mode, $action)
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
 
-	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
+	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
@@ -949,6 +1020,7 @@ function compose_pm($id, $mode, $action)
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
+		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
 		'S_COMPOSE_PM'			=> true,
 		'S_EDIT_POST'			=> ($action == 'edit'),
@@ -982,11 +1054,11 @@ function compose_pm($id, $mode, $action)
 	// Build custom bbcodes array
 	display_custom_bbcodes();
 
+	// Show attachment box for adding attachments if true
+	$allowed = ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype);
+
 	// Attachment entry
-	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)
-	{
-		posting_gen_attachment_entry($attachment_data, $filename_data);
-	}
+	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 	// Message History
 	if ($action == 'reply' || $action == 'quote' || $action == 'forward')
@@ -1027,13 +1099,32 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 	}
 
+	// Add Selected Groups
+	$group_list = request_var('group_list', array(0));
+
+	// Build usernames to add
+	$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
+	$username_list = request_var('username_list', '', true);
+	if ($username_list)
+	{
+		$usernames = array_merge($usernames, explode("\n", $username_list));
+	}
+
+	// If add to or add bcc not pressed, users could still have usernames listed they want to add...
+	if (!$add_to && !$add_bcc && (sizeof($group_list) || sizeof($usernames)))
+	{
+		$add_to = true;
+
+		global $refresh, $submit, $preview;
+
+		$refresh = $preview = true;
+		$submit = false;
+	}
+
 	// Add User/Group [TO]
 	if ($add_to || $add_bcc)
 	{
 		$type = ($add_to) ? 'to' : 'bcc';
-
-		// Add Selected Groups
-		$group_list = request_var('group_list', array(0));
 
 		if (sizeof($group_list))
 		{
@@ -1045,14 +1136,6 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 
 		// User ID's to add...
 		$user_id_ary = array();
-
-		// Build usernames to add
-		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
-		$username_list = request_var('username_list', '', true);
-		if ($username_list)
-		{
-			$usernames = array_merge($usernames, explode("\n", $username_list));
-		}
 
 		// Reveal the correct user_ids
 		if (sizeof($usernames))
@@ -1068,7 +1151,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Add Friends if specified
-		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$friend_list = (isset($_REQUEST['add_' . $type]) && is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 		foreach ($user_id_ary as $user_id)
@@ -1144,22 +1227,22 @@ function num_recipients($address_list)
 }
 
 /**
-* Get recipient at position 'pos'
+* Get number of 'num_recipients' recipients from first position
 */
-function get_recipient_pos($address_list, $position = 1)
+function get_recipients($address_list, $num_recipients = 1)
 {
 	$recipient = array();
 
-	$count = 1;
+	$count = 0;
 	foreach ($address_list as $field => $adr_ary)
 	{
 		foreach ($adr_ary as $id => $type)
 		{
-			if ($count == $position)
+			if ($count >= $num_recipients)
 			{
-				$recipient[$field][$id] = $type;
 				break 2;
 			}
+			$recipient[$field][$id] = $type;
 			$count++;
 		}
 	}

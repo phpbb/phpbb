@@ -10,6 +10,7 @@ a:active	{ color: #d2d2d2; text-decoration: none; }
 .username-coloured {
 	font-weight: bold;
 	display: inline !important;
+	padding: 0 !important;
 }
 
 /* Links on gradient backgrounds */

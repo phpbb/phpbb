@@ -391,7 +391,7 @@ class bbcode_firstpass extends bbcode
 
 	/**
 	* Parse code text from code tag
-	* @private
+	* @access private
 	*/
 	function bbcode_parse_code($stx, &$code)
 	{
@@ -604,10 +604,10 @@ class bbcode_firstpass extends bbcode
 					$out .= array_pop($list_end_tags) . ']';
 					$tok = '[';
 				}
-				else if (preg_match('#^list(=[0-9a-z])?$#i', $buffer, $m))
+				else if (preg_match('#^list(=[0-9a-z]+)?$#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
-					if (empty($m[1]) || preg_match('/^(?:disc|square|circle)$/i', $m[1]))
+					if (empty($m[1]) || preg_match('/^=(?:disc|square|circle)$/i', $m[1]))
 					{
 						array_push($list_end_tags, '/list:u:' . $this->bbcode_uid);
 					}

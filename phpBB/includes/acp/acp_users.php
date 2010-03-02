@@ -634,7 +634,7 @@ class acp_users
 
 							if (sizeof($topic_id_ary))
 							{
-								sync('reported', 'topic_id', $topic_id_ary);
+								sync('topic_reported', 'topic_id', $topic_id_ary);
 								sync('topic', 'topic_id', $topic_id_ary);
 							}
 
@@ -891,9 +891,19 @@ class acp_users
 					}
 				}
 
+				// Posts in Queue
+				$sql = 'SELECT COUNT(post_id) as posts_in_queue
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id = ' . $user_id . '
+						AND post_approved = 0';
+				$result = $db->sql_query($sql);
+				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
+				$db->sql_freeresult($result);
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
 					'S_OVERVIEW'		=> true,
@@ -905,9 +915,11 @@ class acp_users
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
+					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
 					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}") : '',
 
+					'POSTS_IN_QUEUE'	=> $user_row['posts_in_queue'],
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
 					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
@@ -1081,7 +1093,7 @@ class acp_users
 						'website'		=> array(
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
-						'location'		=> array('string', true, 2, 255),
+						'location'		=> array('string', true, 2, 100),
 						'occupation'	=> array('string', true, 2, 500),
 						'interests'		=> array('string', true, 2, 500),
 						'bday_day'		=> array('num', true, 1, 31),

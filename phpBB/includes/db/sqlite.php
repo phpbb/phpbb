@@ -41,18 +41,31 @@ class dbal_sqlite extends dbal
 		if ($this->db_connect_id)
 		{
 			@sqlite_query('PRAGMA short_column_names = 1', $this->db_connect_id);
+//			@sqlite_query('PRAGMA encoding = "UTF-8"', $this->db_connect_id);
 		}
 
-		
 		return ($this->db_connect_id) ? true : array('message' => $error);
 	}
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'SQLite ' . @sqlite_libversion();
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('sqlite_version')) === false)
+		{
+			$result = @sqlite_query('SELECT sqlite_version() AS version', $this->db_connect_id);
+			$row = @sqlite_fetch_array($result, SQLITE_ASSOC);
+
+			$this->sql_server_version = (!empty($row['version'])) ? $row['version'] : 0;
+			$cache->put('sqlite_version', $this->sql_server_version);
+		}
+
+		return ($raw) ? $this->sql_server_version : 'SQLite ' . $this->sql_server_version;
 	}
 
 	/**
@@ -135,7 +148,7 @@ class dbal_sqlite extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

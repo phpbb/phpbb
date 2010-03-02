@@ -78,7 +78,7 @@
 <!-- ENDIF -->
 </table>
 <!-- IF .topicrow or .forumrow -->
-<div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
+<div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); marklist('ucp', 'f', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false);marklist('ucp', 'f', false); return false;">{L_UNMARK_ALL}</a></b></div>
 <!-- ENDIF -->
 
 <!-- INCLUDE ucp_footer.html -->

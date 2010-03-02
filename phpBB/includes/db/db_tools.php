@@ -265,7 +265,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mysql4':
-				if (version_compare($this->db->mysql_version, '4.1.3', '>='))
+				if (version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 				{
 					$this->sql_layer = 'mysql_41';
 				}
@@ -593,7 +593,7 @@ class phpbb_db_tools
 
 	/**
 	* Private method for performing sql statements (either execute them or return them)
-	* @private
+	* @access private
 	*/
 	function _sql_run_sql($statements)
 	{
@@ -624,7 +624,7 @@ class phpbb_db_tools
 
 	/**
 	* Function to prepare some column information for better usage
-	* @private
+	* @access private
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{

@@ -455,6 +455,7 @@ CREATE TABLE phpbb_groups (
 	group_sig_chars INT4 DEFAULT '0' NOT NULL CHECK (group_sig_chars >= 0),
 	group_receive_pm INT2 DEFAULT '0' NOT NULL CHECK (group_receive_pm >= 0),
 	group_message_limit INT4 DEFAULT '0' NOT NULL CHECK (group_message_limit >= 0),
+	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
 	group_legend INT2 DEFAULT '1' NOT NULL CHECK (group_legend >= 0),
 	PRIMARY KEY (group_id)
 );
@@ -972,6 +973,8 @@ CREATE TABLE phpbb_styles_template (
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
 	template_storedb INT2 DEFAULT '0' NOT NULL CHECK (template_storedb >= 0),
+	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
+	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id)
 );
 

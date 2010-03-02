@@ -398,7 +398,7 @@ class install_install extends module
 					$location .= '/';
 				}
 
-				if (@is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
+				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
 				{
 					$img_imagick = str_replace('\\', '/', $location);
 					continue;
@@ -438,16 +438,13 @@ class install_install extends module
 			if (!file_exists($phpbb_root_path . $dir))
 			{
 				@mkdir($phpbb_root_path . $dir, 0777);
-				@chmod($phpbb_root_path . $dir, 0777);
+				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
 			}
 
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				if (!@is_writable($phpbb_root_path . $dir))
-				{
-					@chmod($phpbb_root_path . $dir, 0777);
-				}
+				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
 				$exists = true;
 			}
 
@@ -877,7 +874,7 @@ class install_install extends module
 		}
 		@fclose($fp);
 
-		@chmod($phpbb_root_path . 'cache/install_lock', 0666);
+		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
 		$load_extensions = implode(',', $load_extensions);
 
@@ -930,7 +927,8 @@ class install_install extends module
 
 			if ($written)
 			{
-				@chmod($phpbb_root_path . 'config.' . $phpEx, 0644);
+				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
+				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
 			}
 		}
 
@@ -1120,6 +1118,7 @@ class install_install extends module
 
 		// HTTP_HOST is having the correct browser url in most cases...
 		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$referer = (!empty($_SERVER['HTTP_REFERER'])) ? strtolower($_SERVER['HTTP_REFERER']) : getenv('HTTP_REFERER');
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1159,7 +1158,7 @@ class install_install extends module
 		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
 		if ($data['dbms'] == 'mysql')
 		{
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if (version_compare($db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$available_dbms[$data['dbms']]['SCHEMA'] .= '_41';
 			}
@@ -1365,6 +1364,10 @@ class install_install extends module
 
 			'UPDATE ' . $data['table_prefix'] . "forums
 				SET forum_last_post_time = $current_time",
+
+			'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '" . $db->sql_escape($db->sql_server_info(true)) . "'
+				WHERE config_name = 'dbms_version'",
 		);
 
 		if (@extension_loaded('gd') || can_load_dll('gd'))
@@ -1372,6 +1375,15 @@ class install_install extends module
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '1'
 				WHERE config_name = 'captcha_gd'";
+		}
+
+		$ref = substr($referer, strpos($referer, '://') + 3);
+
+		if (!(stripos($ref, $server_name) === 0))
+		{
+			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '0'
+				WHERE config_name = 'referer_validation'";
 		}
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
@@ -1478,7 +1490,7 @@ class install_install extends module
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
-		$_module = &new acp_modules();
+		$_module = new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
 		// Add categories

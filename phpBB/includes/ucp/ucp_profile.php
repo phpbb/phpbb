@@ -315,7 +315,7 @@ class ucp_profile
 						'website'		=> array(
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
-						'location'		=> array('string', true, 2, 255),
+						'location'		=> array('string', true, 2, 100),
 						'occupation'	=> array('string', true, 2, 500),
 						'interests'		=> array('string', true, 2, 500),
 					);
@@ -347,6 +347,15 @@ class ucp_profile
 
 					if (!sizeof($error))
 					{
+						$data['notify'] = $user->data['user_notify_type'];
+
+						if (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml'))
+						{
+							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
+							// Disable notify by Jabber now for this user.
+							$data['notify'] = NOTIFY_BOTH;
+						}
+
 						$sql_ary = array(
 							'user_icq'		=> $data['icq'],
 							'user_aim'		=> $data['aim'],
@@ -357,6 +366,7 @@ class ucp_profile
 							'user_from'		=> $data['location'],
 							'user_occ'		=> $data['occupation'],
 							'user_interests'=> $data['interests'],
+							'user_notify_type'	=> $data['notify'],
 						);
 
 						if ($config['allow_birthdays'])
@@ -418,7 +428,7 @@ class ucp_profile
 
 					$now = getdate();
 					$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
-					for ($i = $now['year'] - 100; $i < $now['year']; $i++)
+					for ($i = $now['year'] - 100; $i <= $now['year']; $i++)
 					{
 						$selected = ($i == $data['bday_year']) ? ' selected="selected"' : '';
 						$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
@@ -460,7 +470,7 @@ class ucp_profile
 				{
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
-				
+
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
@@ -589,9 +599,9 @@ class ucp_profile
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
-					
+
 					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
-					
+
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
@@ -604,7 +614,7 @@ class ucp_profile
 				else
 				{
 					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
-					
+
 					$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
 						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),

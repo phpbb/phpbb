@@ -45,12 +45,14 @@ class dbal_mysqli extends dbal
 		if ($this->db_connect_id && $this->dbname != '')
 		{
 			@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
+
 			// enforce strict mode on databases that support it
-			if (mysqli_get_server_version($this->db_connect_id) >= 50002)
+			if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
 			{
 				$result = @mysqli_query($this->db_connect_id, 'SELECT @@session.sql_mode AS sql_mode');
 				$row = @mysqli_fetch_assoc($result);
 				@mysqli_free_result($result);
+
 				$modes = array_map('trim', explode(',', $row['sql_mode']));
 
 				// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
@@ -78,10 +80,28 @@ class dbal_mysqli extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'MySQL(i) ' . @mysqli_get_server_info($this->db_connect_id);
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('mysqli_version')) === false)
+		{
+			$result = @mysqli_query($this->db_connect_id, 'SELECT VERSION() AS version');
+			$row = @mysqli_fetch_assoc($result);
+			@mysqli_free_result($result);
+
+			$this->sql_server_version = $row['version'];
+
+			if (!empty($cache))
+			{
+				$cache->put('mysqli_version', $this->sql_server_version);
+			}
+		}
+
+		return ($raw) ? $this->sql_server_version : 'MySQL(i) ' . $this->sql_server_version;
 	}
 
 	/**
@@ -163,7 +183,7 @@ class dbal_mysqli extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

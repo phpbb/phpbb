@@ -305,7 +305,7 @@ while ($row = $db->sql_fetchrow($result))
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 		break;
 
-		case 'download':
+		case 'download/file':
 			$location = $user->lang['DOWNLOADING_FILE'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 		break;

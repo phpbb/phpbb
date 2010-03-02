@@ -63,7 +63,7 @@ class mcp_logs
 		$this->tpl_name = 'mcp_logs';
 		$this->page_title = 'MCP_LOGS';
 
-		$forum_list = get_forum_list('m_');
+		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
 		$forum_list[] = 0;
 
 		$forum_id = $topic_id = 0;

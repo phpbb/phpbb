@@ -461,7 +461,7 @@ function phpbb_get_birthday($birthday = '')
 		}
 
 		// The birthday mod from niels is using this code to transform to day/month/year
-		return gmdate('d-m-Y', $birthday * 86400 + 1);
+		return sprintf('%2d-%2d-%4d', gmdate('n', $birthday * 86400 + 1), gmdate('j', $birthday * 86400 + 1), gmdate('Y', $birthday * 86400 + 1));
 	}
 }
 
@@ -1710,7 +1710,7 @@ function phpbb_check_username_collisions()
 		break;
 	
 		case 'mysql4':
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if (version_compare($db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$map_dbms = 'mysql_41';
 			}

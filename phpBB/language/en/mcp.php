@@ -292,7 +292,7 @@ $lang = array_merge($lang, array(
 	'SORT_DATE'							=> 'Date',
 	'SORT_IP'							=> 'IP address',
 	'SORT_WARNINGS'						=> 'Warnings',
-	'SPLIT_AFTER'						=> 'Split from selected post',
+	'SPLIT_AFTER'						=> 'Split topic from selected post onwards',
 	'SPLIT_FORUM'						=> 'Forum for new topic',
 	'SPLIT_POSTS'						=> 'Split selected posts',
 	'SPLIT_SUBJECT'						=> 'New topic title',
@@ -346,6 +346,7 @@ $lang = array_merge($lang, array(
 	'USER_WARNING_ADDED'			=> 'User warned successfully.',
 
 	'VIEW_DETAILS'			=> 'View details',
+	'VIEW_POST'				=> 'View post',
 
 	'WARNED_USERS'			=> 'Warned users',
 	'WARNED_USERS_EXPLAIN'	=> 'This is a list of users with unexpired warnings issued to them.',

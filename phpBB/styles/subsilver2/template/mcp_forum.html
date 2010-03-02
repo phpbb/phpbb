@@ -44,7 +44,7 @@
 		<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 		<td class="row1" width="120" align="center"><p class="topicdetails">{topicrow.LAST_POST_TIME}</p></td>
 		<td class="row2" align="center">
-			<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
+			<!-- IF not topicrow.S_MOVED_TOPIC and not S_MERGE_SELECT --><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
 		</td>
 	</tr>
 <!-- BEGINELSE -->
@@ -52,6 +52,7 @@
 		<td class="row1" colspan="8" align="center"><p class="gen">{L_NO_TOPICS}</p></td>
 	</tr>
 <!-- END topicrow -->
+<!-- IF not S_MERGE_SELECT -->
 <tr>
 	<td class="cat" colspan="6" align="{S_CONTENT_FLOW_END}">
 		<select name="action">
@@ -72,14 +73,17 @@
 		<input class="btnmain" type="submit" value="{L_SUBMIT}" />
 	</td>
 </tr>
+<!-- ENDIF -->
 </table>
 {S_FORM_TOKEN}
 </form>
 
+<!-- IF not S_MERGE_SELECT -->
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 <tr>
 	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></b></td>
 </tr>
 </table>
+<!-- ENDIF -->
 
 <!-- INCLUDE mcp_footer.html -->

@@ -261,11 +261,11 @@
 <!-- ELSEIF S_CACHE -->
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
-	
+
 	<h1>{L_TEMPLATE_CACHE}</h1>
-	
+
 	<p>{L_TEMPLATE_CACHE_EXPLAIN}</p>
-	
+
 	<form name="acp_styles" method="post" action="{U_ACTION}">
 	<fieldset class="tabulated">
 	<legend>{L_TEMPLATE_CACHE}</legend>
@@ -283,7 +283,7 @@
 	<tbody>
 	<!-- BEGIN file -->
 		<!-- IF file.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{file.U_VIEWSOURCE}" onclick="popup(this.href, 750, 550, '_source'); return false;">{file.FILENAME}</a></td>
+			<td><a href="{file.U_VIEWSOURCE}" onclick="popup(this.href, 750, 550, '_source'); return false;">{file.FILENAME_PATH}</a></td>
 			<td>{file.FILESIZE}</td>
 			<td>{file.CACHED}</td>
 			<td>{file.MODIFIED}</td>
@@ -361,7 +361,7 @@
 	</p>
 	</fieldset>
 
-	
+
 	</form>
 
 <!-- ELSEIF S_FRONTEND -->
@@ -461,6 +461,12 @@
 		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
 		<dd><!-- IF S_INSTALL --><b id="copyright">{COPYRIGHT}</b><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
 	</dl>
+	<!-- IF S_SUPERTEMPLATE -->
+	<dl>
+		<dt><label for="inheriting">{L_INHERITING_FROM}:</label></dt>
+		<dd><b id="inheriting">{S_SUPERTEMPLATE}</b></dd>
+	</dl>
+	<!-- ENDIF -->
 	<!-- IF S_STYLE and not S_BASIS -->
 		<dl>
 			<dt><label for="template_id">{L_STYLE_TEMPLATE}:</label></dt>
@@ -475,11 +481,11 @@
 			<dd><!-- IF S_INSTALL --><b id="imageset_id">{IMAGESET_NAME}</b><!-- ELSE --><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->
-	<!-- IF S_TEMPLATE or S_THEME -->
+	<!-- IF (S_TEMPLATE or S_THEME) and (S_LOCATION or not S_INSTALL) -->
 		<dl>
-			<dt><label for="store_db">{L_LOCATION}:</label><br /><span>{L_LOCATION_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> /> {L_STORE_FILESYSTEM}</label>
-				<label><input type="radio" class="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> /> {L_STORE_DATABASE}</label></dd>
+			<dt><label for="store_db">{L_LOCATION}:</label><br /><span><!-- IF S_STORE_DB_DISABLED -->{L_LOCATION_DISABLED_EXPLAIN}<!-- ELSE -->{L_LOCATION_EXPLAIN}<!-- ENDIF --></span></dt>
+			<dd><label><input type="radio" class="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> <!-- IF S_STORE_DB_DISABLED -->disabled="disabled" <!-- ENDIF --> />{L_STORE_FILESYSTEM}</label>
+				<label><input type="radio" class="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> <!-- IF S_STORE_DB_DISABLED -->disabled="disabled" <!-- ENDIF -->/> {L_STORE_DATABASE}</label></dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_STYLE -->
@@ -507,7 +513,7 @@
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		{S_FORM_TOKEN}
 	</fieldset>
-	
+
 	</form>
 
 <!-- ENDIF -->

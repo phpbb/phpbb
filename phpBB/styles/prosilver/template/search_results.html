@@ -66,7 +66,7 @@
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
 					<dd class="lastpost"><span>
 						{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
-						<a href="{searchresults.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{L_POSTED_ON_DATE} {searchresults.LAST_POST_TIME}<br /> </span>
+						<!-- IF not S_IS_BOT --><a href="{searchresults.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{L_POSTED_ON_DATE} {searchresults.LAST_POST_TIME}<br /> </span>
 					</dd>
 				</dl>
 			</li>

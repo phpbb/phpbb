@@ -26,7 +26,6 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
-	var $pgsql_version;
 	
 	/**
 	* Connect to server
@@ -81,24 +80,7 @@ class dbal_postgres extends dbal
 
 		if ($this->db_connect_id)
 		{
-			// determine what version of PostgreSQL is running, we can be more efficient if they are running 8.2+
-			if (version_compare(PHP_VERSION, '5.0.0', '>='))
-			{
-				$this->pgsql_version = @pg_parameter_status($this->db_connect_id, 'server_version');
-			}
-			else
-			{
-				$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION()');
-				$row = @pg_fetch_assoc($query_id, null);
-				@pg_free_result($query_id);
-
-				if (!empty($row['version']))
-				{
-					$this->pgsql_version = substr($row['version'], 10);
-				}
-			}
-
-			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8' && $this->pgsql_version[2] >= '2')
+			if (version_compare($this->sql_server_info(true), '8.2', '>='))
 			{
 				$this->multi_insert = true;
 			}
@@ -115,10 +97,28 @@ class dbal_postgres extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'PostgreSQL ' . $this->pgsql_version;
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
+		{
+			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
+			$row = @pg_fetch_assoc($query_id, null);
+			@pg_free_result($query_id);
+
+			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
+
+			if (!empty($cache))
+			{
+				$cache->put('pgsql_version', $this->sql_server_version);
+			}
+		}
+
+		return ($raw) ? $this->sql_server_version : 'PostgreSQL ' . $this->sql_server_version;
 	}
 
 	/**
@@ -202,7 +202,7 @@ class dbal_postgres extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

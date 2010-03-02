@@ -112,7 +112,7 @@ function createCookie(name, value, days)
 		expires = '';
 	}
 
-	document.cookie = name + '=' + value + expires + '; path=/';
+	document.cookie = name + '=' + value + expires + style_cookie_settings;
 }
 
 function readCookie(name)

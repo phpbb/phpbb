@@ -16,7 +16,7 @@
 			<dl class="faq">
 				<dt><strong>{faq_block.BLOCK_TITLE}</strong></dt>
 				<!-- BEGIN faq_row -->
-					<dd><a href="#f{faq_block.S_ROW_COUNT}{faq_block.faq_row.S_ROW_COUNT}">{faq_block.faq_row.FAQ_QUESTION}</a></dd>
+					<dd><a href="#f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}">{faq_block.faq_row.FAQ_QUESTION}</a></dd>
 				<!-- END faq_row -->
 			</dl>
 		<!-- END faq_block -->
@@ -36,7 +36,7 @@
 			<h2>{faq_block.BLOCK_TITLE}</h2>
 			<!-- BEGIN faq_row -->
 				<dl class="faq">
-					<dt id="f{faq_block.S_ROW_COUNT}{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
+					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
 					<dd>{faq_block.faq_row.FAQ_ANSWER}</dd>
 					<dd><a href="#faqlinks" class="top2">{L_BACK_TO_TOP}</a></dd>
 				</dl>

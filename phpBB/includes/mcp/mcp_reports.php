@@ -65,7 +65,7 @@ class mcp_reports
 		{
 			case 'report_details':
 
-				$user->add_lang('posting');
+				$user->add_lang(array('posting', 'viewforum', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 
@@ -200,6 +200,7 @@ class mcp_reports
 					'U_MCP_USER_NOTES'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 					'U_MCP_WARN_REPORTER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
 					'U_MCP_WARN_USER'			=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_FORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $post_info['forum_id']),
 					'U_VIEW_POST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
@@ -245,6 +246,17 @@ class mcp_reports
 
 				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
+				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
+
+				// Remove forums we cannot read
+				foreach ($forum_list_reports as $k => $forum_data)
+				{
+					if (!isset($forum_list_read[$forum_data['forum_id']]))
+					{
+						unset($forum_list_reports[$k]);
+					}
+				}
+				unset($forum_list_read);
 
 				if ($topic_id && $forum_id)
 				{
@@ -555,7 +567,8 @@ function close_report($report_id_list, $mode, $action)
 				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 						SET topic_reported = 0
-						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics);
+						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
+							OR ' . $db->sql_in_set('topic_moved_id', $close_report_topics);
 					$db->sql_query($sql);
 				}
 			}
@@ -634,7 +647,7 @@ function close_report($report_id_list, $mode, $action)
 		$return_topic = '';
 		if (sizeof($topic_ids == 1))
 		{
-			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 		}
 		
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));

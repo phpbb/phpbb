@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * Jabber class from Flyspray project
 *
-* @version class.jabber2.php 1488 2007-11-25
+* @version class.jabber2.php 1595 2008-09-19 (0.9.9)
 * @copyright 2006 Flyspray.org
 * @author Florian Schmitz (floele)
 *
@@ -35,6 +35,7 @@ class jabber
 	var $timeout = 10;
 
 	var $server;
+	var $connect_server;
 	var $port;
 	var $username;
 	var $password;
@@ -50,9 +51,23 @@ class jabber
 	*/
 	function jabber($server, $port, $username, $password, $use_ssl = false)
 	{
-		$this->server				= ($server) ? $server : 'localhost';
+		$this->connect_server		= ($server) ? $server : 'localhost';
 		$this->port					= ($port) ? $port : 5222;
-		$this->username				= $username;
+
+		// Get the server and the username
+		if (strpos($username, '@') === false)
+		{
+			$this->server = $this->connect_server;
+			$this->username = $username;
+		}
+		else
+		{
+			$jid = explode('@', $username, 2);
+
+			$this->username = $jid[0];
+			$this->server = $jid[1];
+		}
+
 		$this->password				= $password;
 		$this->use_ssl				= ($use_ssl && $this->can_use_ssl()) ? true : false;
 
@@ -123,7 +138,7 @@ class jabber
 
 		$this->session['ssl'] = $this->use_ssl;
 
-		if ($this->open_socket($this->server, $this->port, $this->use_ssl))
+		if ($this->open_socket($this->connect_server, $this->port, $this->use_ssl))
 		{
 			$this->send("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
 			$this->send("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
@@ -399,13 +414,11 @@ class jabber
 				$second_time = isset($this->session['id']);
 				$this->session['id'] = $xml['stream:stream'][0]['@']['id'];
 
-				/** Currently commented out due to problems with some jabber server - reason unknown
 				if ($second_time)
 				{
 					// If we are here for the second time after TLS, we need to continue logging in
-					$this->login();
-					return;
-				}*/
+					return $this->login();
+				}
 
 				// go on with authentication?
 				if (isset($this->features['stream:features'][0]['#']['bind']) || !empty($this->session['tls']))
@@ -501,14 +514,7 @@ class jabber
 				}
 
 				// better generate a cnonce, maybe it's needed
-				$str = '';
-				mt_srand((double)microtime()*10000000);
-
-				for ($i = 0; $i < 32; $i++)
-				{
-					$str .= chr(mt_rand(0, 255));
-				}
-				$decoded['cnonce'] = base64_encode($str);
+				$decoded['cnonce'] = base64_encode(md5(uniqid(mt_rand(), true)));
 
 				// second challenge?
 				if (isset($decoded['rspauth']))

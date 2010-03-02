@@ -1140,6 +1140,7 @@ function get_schema_struct()
 			'group_sig_chars'		=> array('UINT', 0),
 			'group_receive_pm'		=> array('BOOL', 0),
 			'group_message_limit'	=> array('UINT', 0),
+			'group_max_recipients'	=> array('UINT', 0),
 			'group_legend'			=> array('BOOL', 1),
 		),
 		'PRIMARY_KEY'	=> 'group_id',
@@ -1608,6 +1609,8 @@ function get_schema_struct()
 			'template_path'			=> array('VCHAR:100', ''),
 			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
+			'template_inherits_id'		=> array('UINT:4', 0),
+			'template_inherit_path'		=> array('VCHAR', ''),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
 		'KEYS'			=> array(

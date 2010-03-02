@@ -279,7 +279,7 @@ class acp_attachments
 					{
 						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
-					
+
 					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 					if (empty($content))
 					{
@@ -765,6 +765,8 @@ class acp_attachments
 
 						$s_forum_id_options = '';
 
+						/** @todo use in-built function **/
+
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
@@ -795,7 +797,7 @@ class acp_attachments
 							}
 							else if ($row['left_id'] > $right + 1)
 							{
-								$padding = $padding_store[$row['parent_id']];
+								$padding = empty($padding_store[$row['parent_id']]) ? '' : $padding_store[$row['parent_id']];
 							}
 
 							$right = $row['right_id'];
@@ -1168,7 +1170,7 @@ class acp_attachments
 					$location .= '/';
 				}
 
-				if (@is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
+				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
 				{
 					$imagick = str_replace('\\', '/', $location);
 					continue;
@@ -1196,7 +1198,7 @@ class acp_attachments
 			if (!file_exists($phpbb_root_path . $upload_dir))
 			{
 				@mkdir($phpbb_root_path . $upload_dir, 0777);
-				@chmod($phpbb_root_path . $upload_dir, 0777);
+				phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
 			}
 		}
 

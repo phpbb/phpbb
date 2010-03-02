@@ -32,7 +32,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 	if ($type == 'string')
 	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result), ENT_COMPAT, 'UTF-8'));
+		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
 
 		if (!empty($result))
 		{
@@ -320,6 +320,11 @@ function phpbb_hash($password)
 
 /**
 * Check for correct password
+*
+* @param string $password The password in plain text
+* @param string $hash The stored password hash
+*
+* @return bool Returns true if the password is correct, false if not.
 */
 function phpbb_check_hash($password, $hash)
 {
@@ -452,6 +457,142 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	$output .= _hash_encode64($hash, 16, $itoa64);
 
 	return $output;
+}
+
+/**
+* Global function for chmodding directories and files for internal use
+* This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
+* The function determines owner and group from common.php file and sets the same to the provided file.
+* The function uses bit fields to build the permissions.
+* The function sets the appropiate execute bit on directories.
+*
+* Supported constants representing bit fields are:
+*
+* CHMOD_ALL - all permissions (7)
+* CHMOD_READ - read permission (4)
+* CHMOD_WRITE - write permission (2)
+* CHMOD_EXECUTE - execute permission (1)
+*
+* NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
+*
+* @param $filename The file/directory to be chmodded
+* @param $perms Permissions to set
+* @return true on success, otherwise false
+*
+* @author faw, phpBB Group
+*/
+function phpbb_chmod($filename, $perms = CHMOD_READ)
+{
+	// Return if the file no longer exists.
+	if (!file_exists($filename))
+	{
+		return false;
+	}
+
+	if (!function_exists('fileowner') || !function_exists('filegroup'))
+	{
+		$file_uid = $file_gid = false;
+		$common_php_owner = $common_php_group = false;
+	}
+	else
+	{
+		global $phpbb_root_path, $phpEx;
+
+		// Determine owner/group of common.php file and the filename we want to change here
+		$common_php_owner = fileowner($phpbb_root_path . 'common.' . $phpEx);
+		$common_php_group = filegroup($phpbb_root_path . 'common.' . $phpEx);
+
+		$file_uid = fileowner($filename);
+		$file_gid = filegroup($filename);
+
+		// Try to set the owner to the same common.php has
+		if ($common_php_owner !== $file_uid && $common_php_owner !== false && $file_uid !== false)
+		{
+			// Will most likely not work
+			if (@chown($filename, $common_php_owner));
+			{
+				$file_uid = fileowner($filename);
+			}
+		}
+
+		// Try to set the group to the same common.php has
+		if ($common_php_group !== $file_gid && $common_php_group !== false && $file_gid !== false)
+		{
+			if (@chgrp($filename, $common_php_group));
+			{
+				$file_gid = filegroup($filename);
+			}
+		}
+	}
+
+	// And the owner and the groups PHP is running under.
+	$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
+	$php_gids = (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
+
+	// Who is PHP?
+	if ($file_uid === false || $file_gid === false || $php_uid === false || $php_gids === false)
+	{
+		$php = null;
+	}
+	else if ($file_uid == $php_uid /* && $common_php_owner !== false && $common_php_owner === $file_uid*/)
+	{
+		$php = 'owner';
+	}
+	else if (in_array($file_gid, $php_gids))
+	{
+		$php = 'group';
+	}
+	else
+	{
+		$php = 'other';
+	}
+
+	// Owner always has read/write permission
+	$owner = CHMOD_READ | CHMOD_WRITE;
+	if (is_dir($filename))
+	{
+		$owner |= CHMOD_EXECUTE;
+
+		// Only add execute bit to the permission if the dir needs to be readable
+		if ($perms & CHMOD_READ)
+		{
+			$perms |= CHMOD_EXECUTE;
+		}
+	}
+
+	switch ($php)
+	{
+		case null:
+		case 'owner':
+			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
+
+			if (!is_null($php) || (is_readable($filename) && is_writable($filename)))
+			{
+				break;
+			}
+
+		case 'group':
+			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
+
+			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			{
+				break;
+			}
+
+		case 'other':
+			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + ($perms << 0));
+
+			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			{
+				break;
+			}
+
+		default:
+			return false;
+		break;
+	}
+
+	return $result;
 }
 
 // Compatibility functions
@@ -1766,6 +1907,7 @@ function generate_board_url($without_script_path = false)
 		$script_path = $config['script_path'];
 
 		$url = $server_protocol . $server_name;
+		$cookie_secure = $config['cookie_secure'];
 	}
 	else
 	{
@@ -1776,7 +1918,7 @@ function generate_board_url($without_script_path = false)
 		$script_path = $user->page['root_script_path'];
 	}
 
-	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
+	if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
 	{
 		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
 		if (strpos($server_name, ':') === false)
@@ -1902,7 +2044,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 				$url = substr($url, 1);
 			}
 
-			$url = $dir . '/' . $url;
+			$url = (!empty($dir) ? $dir . '/' : '') . $url;
 			$url = generate_board_url() . '/' . $url;
 		}
 	}
@@ -2066,6 +2208,37 @@ function meta_refresh($time, $url)
 
 //Form validation
 
+
+/**
+* Add a secret hash   for use in links/GET requests
+* @param string  $link_name The name of the link; has to match the name used in check_link_hash, otherwise no restrictions apply
+* @return string the hash
+
+*/
+function generate_link_hash($link_name)
+{
+	global $user;
+
+	if (!isset($user->data["hash_$link_name"]))
+	{
+		$user->data["hash_$link_name"] = substr(sha1($user->data['user_form_salt'] . $link_name), 0, 8);
+	}
+
+	return $user->data["hash_$link_name"];
+}
+
+
+/**
+* checks a link hash - for GET requests
+* @param string $token the submitted token
+* @param string $link_name The name of the link
+* @return boolean true if all is fine
+*/
+function check_link_hash($token, $link_name)
+{
+	return $token === generate_link_hash($link_name);
+}
+
 /**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
 * @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
@@ -2073,16 +2246,18 @@ function meta_refresh($time, $url)
 function add_form_key($form_name)
 {
 	global $config, $template, $user;
+
 	$now = time();
 	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 	$token = sha1($now . $user->data['user_form_salt'] . $form_name . $token_sid);
 
 	$s_fields = build_hidden_fields(array(
-			'creation_time' => $now,
-			'form_token'	=> $token,
+		'creation_time' => $now,
+		'form_token'	=> $token,
 	));
+
 	$template->assign_vars(array(
-			'S_FORM_TOKEN'	=> $s_fields,
+		'S_FORM_TOKEN'	=> $s_fields,
 	));
 }
 
@@ -2108,23 +2283,26 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$creation_time	= abs(request_var('creation_time', 0));
 		$token = request_var('form_token', '');
 
-		$diff = (time() - $creation_time);
+		$diff = time() - $creation_time;
 
-		if (($diff <= $timespan) || $timespan === -1)
+		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
+		if ($diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
+
 			if ($key === $token)
 			{
 				return true;
 			}
 		}
 	}
+
 	if ($trigger)
 	{
 		trigger_error($user->lang['FORM_INVALID'] . $return_page);
 	}
+
 	return false;
 }
 
@@ -2960,7 +3138,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 
 				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
-				if ($config['gzip_compress'])
+				if (!empty($config['gzip_compress']))
 				{
 					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
 					{
@@ -3050,6 +3228,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</html>';
 
 			exit_handler();
+
+			// On a fatal error (and E_USER_ERROR *is* fatal) we never want other scripts to continue and force an exit here.
+			exit;
 		break;
 
 		case E_USER_WARNING:
@@ -3409,7 +3590,7 @@ function page_header($page_title = '', $display_online_list = true)
 	$s_privmsg_new = false;
 
 	// Obtain number of new private messages if user is logged in
-	if (isset($user->data['is_registered']) && $user->data['is_registered'])
+	if (!empty($user->data['is_registered']))
 	{
 		if ($user->data['user_new_privmsg'])
 		{
@@ -3500,14 +3681,14 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),
 		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
 		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
-		'U_TEAM'				=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=leaders'),
+		'U_TEAM'				=> ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=leaders'),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
-		'S_REGISTERED_USER'		=> $user->data['is_registered'],
-		'S_IS_BOT'				=> $user->data['is_bot'],
+		'S_REGISTERED_USER'		=> (!empty($user->data['is_registered'])) ? true : false,
+		'S_IS_BOT'				=> (!empty($user->data['is_bot'])) ? true : false,
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
@@ -3519,13 +3700,14 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
-		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered'] && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
+		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && !empty($user->data['is_registered']) && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path'])) ? "{$phpbb_root_path}styles/" . $user->theme['template_inherit_path'] . '/template' : '',
 		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
 		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
@@ -3538,8 +3720,10 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 
-		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
-	);
+		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
+
+		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
+	));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
@@ -3593,7 +3777,7 @@ function page_footer($run_cron = true)
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
@@ -3682,7 +3866,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	(!$config['gzip_compress']) ? @flush() : @ob_flush();
+	(empty($config['gzip_compress'])) ? @flush() : @ob_flush();
 
 	exit;
 }

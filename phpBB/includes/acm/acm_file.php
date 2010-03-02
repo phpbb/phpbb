@@ -93,7 +93,7 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			@chmod($this->cache_dir . 'data_global.' . $phpEx, 0666);
+			phpbb_chmod($this->cache_dir . 'data_global.' . $phpEx, CHMOD_WRITE);
 		}
 		else
 		{
@@ -154,7 +154,7 @@ class acm
 				}
 			}
 		}
-		
+
 		set_config('cache_last_gc', time(), true);
 	}
 
@@ -193,11 +193,11 @@ class acm
 			if ($fp = @fopen($this->cache_dir . "data{$var_name}.$phpEx", 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = " . var_export($var, true) . ";\n?>");
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = unserialize(" . var_export(serialize($var), true) . ");\n\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
-				@chmod($this->cache_dir . "data{$var_name}.$phpEx", 0666);
+				phpbb_chmod($this->cache_dir . "data{$var_name}.$phpEx", CHMOD_WRITE);
 			}
 		}
 		else
@@ -412,11 +412,11 @@ class acm
 			$file = "<?php\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
-			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");
+			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = unserialize(" . var_export(serialize($this->sql_rowset[$query_id]), true) . ");\n\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			@chmod($filename, 0666);
+			phpbb_chmod($filename, CHMOD_WRITE);
 
 			$query_result = $query_id;
 		}
@@ -491,7 +491,7 @@ class acm
 	*/
 	function remove_file($filename, $check = false)
 	{
-		if ($check && !@is_writeable($this->cache_dir))
+		if ($check && !@is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
 			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);

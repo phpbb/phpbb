@@ -29,7 +29,7 @@
 					<dt>
 						<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> {unapproved.ATTACH_ICON_IMG}<br />
 						<!-- IF report.PAGINATION --><strong class="pagination"><span>{report.PAGINATION}</span></strong><!-- ENDIF -->
-						{L_POSTED} {L_POST_BY_AUTHOR} <!-- IF unapproved.U_AUTHOR --><a href="{unapproved.U_AUTHOR}">{unapproved.AUTHOR}</a><!-- ELSE -->{unapproved.AUTHOR}<!-- ENDIF --> {L_POSTED_ON_DATE} {unapproved.POST_TIME}
+						{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} {L_POSTED_ON_DATE} {unapproved.POST_TIME}
 					</dt>
 					<dd class="moderation"><span>
 						{L_TOPIC}: <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />

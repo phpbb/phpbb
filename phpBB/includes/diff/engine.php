@@ -17,21 +17,20 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Code from pear.php.net, Text_Diff-0.2.1 (beta) package
-* http://pear.php.net/package/Text_Diff/
+* Code from pear.php.net, Text_Diff-1.0.0 package
+* http://pear.php.net/package/Text_Diff/ (native engine)
 *
 * Modified by phpBB Group to meet our coding standards
 * and being able to integrate into phpBB
 *
-* Class used internally by Diff to actually compute the diffs.  This class is
-* implemented using native PHP code.
+* Class used internally by Text_Diff to actually compute the diffs. This
+* class is implemented using native PHP code.
 *
 * The algorithm used here is mostly lifted from the perl module
 * Algorithm::Diff (version 1.06) by Ned Konz, which is available at:
 * http://www.perl.com/CPAN/authors/id/N/NE/NEDKONZ/Algorithm-Diff-1.06.zip
 *
-* More ideas are taken from:
-* http://www.ics.uci.edu/~eppstein/161/960229.html
+* More ideas are taken from: http://www.ics.uci.edu/~eppstein/161/960229.html
 *
 * Some ideas (and a bit of code) are taken from analyze.c, of GNU
 * diffutils-2.7, which can be found at:
@@ -40,6 +39,8 @@ if (!defined('IN_PHPBB'))
 * Some ideas (subdivision by NCHUNKS > 2, and some optimizations) are from
 * Geoffrey T. Dairiki <dairiki@dairiki.org>. The original PHP version of this
 * code was written by him, and is used/adapted with his permission.
+*
+* Copyright 2004-2008 The Horde Project (http://www.horde.org/)
 *
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 * @package diff
@@ -159,7 +160,7 @@ class diff_engine
 
 			if ($copy)
 			{
-				$edits[] = &new diff_op_copy($copy);
+				$edits[] = new diff_op_copy($copy);
 			}
 
 			// Find deletes & adds.
@@ -177,15 +178,15 @@ class diff_engine
 
 			if ($delete && $add)
 			{
-				$edits[] = &new diff_op_change($delete, $add);
+				$edits[] = new diff_op_change($delete, $add);
 			}
 			else if ($delete)
 			{
-				$edits[] = &new diff_op_delete($delete);
+				$edits[] = new diff_op_delete($delete);
 			}
 			else if ($add)
 			{
-				$edits[] = &new diff_op_add($add);
+				$edits[] = new diff_op_add($add);
 			}
 		}
 
@@ -251,7 +252,7 @@ class diff_engine
 				}
 			}
 
-			$x1 = $xoff + (int)(($numer + ($xlim-$xoff)*$chunk) / $nchunks);
+			$x1 = $xoff + (int)(($numer + ($xlim - $xoff) * $chunk) / $nchunks);
 
 			for (; $x < $x1; $x++)
 			{
@@ -262,7 +263,8 @@ class diff_engine
 				}
 				$matches = $ymatches[$line];
 
-				foreach ($matches as $y)
+				reset($matches);
+				while (list(, $y) = each($matches))
 				{
 					if (empty($this->in_seq[$y]))
 					{
@@ -273,7 +275,7 @@ class diff_engine
 				}
 
 				// no reset() here
-				while (list($junk, $y) = each($matches))
+				while (list(, $y) = each($matches))
 				{
 					if ($y > $this->seq[$k - 1])
 					{

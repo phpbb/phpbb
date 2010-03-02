@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Code from pear.php.net, Text_Diff-0.2.1 (beta) package
+* Code from pear.php.net, Text_Diff-1.0.0 package
 * http://pear.php.net/package/Text_Diff/
 *
 * Modified by phpBB Group to meet our coding standards
@@ -25,6 +25,9 @@ if (!defined('IN_PHPBB'))
 *
 * General API for generating and formatting diffs - the differences between
 * two sequences of strings.
+*
+* Copyright 2004 Geoffrey T. Dairiki <dairiki@dairiki.org>
+* Copyright 2004-2008 The Horde Project (http://www.horde.org/)
 *
 * @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
@@ -45,7 +48,7 @@ class diff
 	*/
 	function diff(&$from_content, &$to_content, $preserve_cr = true)
 	{
-		$diff_engine = &new diff_engine();
+		$diff_engine = new diff_engine();
 		$this->_edits = $diff_engine->diff($from_content, $to_content, $preserve_cr);
 	}
 
@@ -62,7 +65,7 @@ class diff
 	*
 	* Example:
 	* <code>
-	* $diff = &new diff($lines1, $lines2);
+	* $diff = new diff($lines1, $lines2);
 	* $rev = $diff->reverse();
 	* </code>
 	*
@@ -285,7 +288,7 @@ class diff_op
 	var $orig;
 	var $final;
 
-	function reverse()
+	function &reverse()
 	{
 		trigger_error('[diff] Abstract method', E_USER_ERROR);
 	}
@@ -321,7 +324,7 @@ class diff_op_copy extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_copy($this->final, $this->orig);
+		$reverse = new diff_op_copy($this->final, $this->orig);
 		return $reverse;
 	}
 }
@@ -342,7 +345,7 @@ class diff_op_delete extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_add($this->orig);
+		$reverse = new diff_op_add($this->orig);
 		return $reverse;
 	}
 }
@@ -363,7 +366,7 @@ class diff_op_add extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_delete($this->final);
+		$reverse = new diff_op_delete($this->final);
 		return $reverse;
 	}
 }
@@ -384,7 +387,7 @@ class diff_op_change extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_change($this->final, $this->orig);
+		$reverse = new diff_op_change($this->final, $this->orig);
 		return $reverse;
 	}
 }
@@ -413,7 +416,7 @@ class diff3 extends diff
 	*/
 	function diff3(&$orig, &$final1, &$final2)
 	{
-		$diff_engine = &new diff_engine();
+		$diff_engine = new diff_engine();
 
 		$diff_1 = $diff_engine->diff($orig, $final1);
 		$diff_2 = $diff_engine->diff($orig, $final2);
@@ -548,7 +551,7 @@ class diff3 extends diff
 	function _diff3(&$edits1, &$edits2)
 	{
 		$edits = array();
-		$bb = &new diff3_block_builder();
+		$bb = new diff3_block_builder();
 
 		$e1 = current($edits1);
 		$e2 = current($edits2);
@@ -565,7 +568,7 @@ class diff3 extends diff
 				}
 
 				$ncopy = min($e1->norig(), $e2->norig());
-				$edits[] = &new diff3_op_copy(array_slice($e1->orig, 0, $ncopy));
+				$edits[] = new diff3_op_copy(array_slice($e1->orig, 0, $ncopy));
 
 				if ($e1->norig() > $ncopy)
 				{
@@ -759,7 +762,7 @@ class diff3_block_builder
 		}
 		else
 		{
-			$edit = &new diff3_op($this->orig, $this->final1, $this->final2);
+			$edit = new diff3_op($this->orig, $this->final1, $this->final2);
 			$this->_init();
 			return $edit;
 		}

@@ -27,7 +27,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 
 if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
 {
-	set_magic_quotes_runtime(0);
+	@set_magic_quotes_runtime(0);
 }
 
 // Load Extensions
@@ -62,6 +62,7 @@ if ($id)
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 	$db = new $sql_db();
 	$cache = new cache();
