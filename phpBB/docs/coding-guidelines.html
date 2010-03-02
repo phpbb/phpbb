@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -779,6 +778,23 @@ $sql = 'SELECT *
 	</pre></blockquote> 
 
 	<p>In other words use single quotes where no variable substitution is required or where the variable involved shouldn't appear within double quotes. Otherwise use double quotes.</p>
+
+	<h3>Avoid DB specific SQL: </h3>
+	<p>The &quot;not equals operator&quot;, as defined by the SQL:2003 standard, is &quot;&lt;&gt;&quot;</p>
+
+	<p class="bad">// This is wrong.</p>
+	<blockquote><pre>
+$sql = 'SELECT * 
+	FROM ' . SOME_TABLE . ' 
+	WHERE a != 2';
+	</pre></blockquote>
+
+	<p class="good">// This is right. </p>
+	<blockquote><pre>
+$sql = 'SELECT * 
+	FROM ' . SOME_TABLE . ' 
+	WHERE a <> 2';
+	</pre></blockquote>
 
 	<h3>Common DBAL methods: </h3>
 

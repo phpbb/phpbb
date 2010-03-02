@@ -164,6 +164,10 @@ if ($post_data['forum_password'])
 }
 
 // Check permissions
+if ($user->data['is_bot'])
+{
+	redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+}
 
 // Is the user able to read within this forum?
 if (!$auth->acl_get('f_read', $forum_id))
@@ -716,7 +720,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Validate username
-	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
+	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -977,6 +981,7 @@ if ($submit || $preview || $refresh)
 			if ($mode == 'edit')
 			{
 				$data['topic_replies_real'] = $post_data['topic_replies_real'];
+				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
 			unset($message_parser);
@@ -989,6 +994,7 @@ if ($submit || $preview || $refresh)
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
+				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : $user->lang['POST_APPROVAL_NOTIFY']);
 			}
 			else
 			{

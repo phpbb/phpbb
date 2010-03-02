@@ -224,7 +224,13 @@ function make_uid($timestamp)
 */
 function validate_website($url)
 {
-	return ($url == 'http://') ? '' : $url;
+	if ($url === 'http://'){
+		return '';
+	}
+	else if (strpos(strtolower($url), 'http://') !== 0)
+	{
+		return 'http://' . $url;
+	}
 }
 
 /**
@@ -2412,5 +2418,15 @@ function get_smiley_display()
 	$smiley_count++;
 	return ($smiley_count < 50) ? 1 : 0;
 }
+
+
+function fill_dateformat($user_dateformat)
+{
+	global $config;
+	
+	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
+}
+
+
 
 ?>

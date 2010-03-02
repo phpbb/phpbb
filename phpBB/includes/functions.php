@@ -472,7 +472,7 @@ if (!function_exists('stripos'))
 
 if (!function_exists('realpath'))
 {
-	if (substr(PHP_OS, 0, 3) != 'WIN' && !(bool) ini_get('safe_mode') && function_exists('shell_exec') && trim(`realpath .`))
+	if (DIRECTORY_SEPARATOR != '\\' && !(bool) ini_get('safe_mode') && function_exists('shell_exec') && trim(`realpath .`))
 	{
 		/**
 		* @author Chris Smith <chris@project-minerva.org>
@@ -497,7 +497,7 @@ if (!function_exists('realpath'))
 		*/
 		function is_absolute($path)
 		{
-			return ($path[0] == '/' || (substr(PHP_OS, 0, 3) == 'WIN' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
+			return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
 		}
 
 		/**
@@ -3608,7 +3608,7 @@ function phpbb_checkdnsrr($host, $type = '')
 {
 	$type = (!$type) ? 'MX' : $type;
 
-	if (strpos(PHP_OS, 'WIN') !== false)
+	if (DIRECTORY_SEPARATOR == '\\')
 	{
 		if (!function_exists('exec'))
 		{

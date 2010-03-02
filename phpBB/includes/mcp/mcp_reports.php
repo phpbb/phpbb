@@ -451,6 +451,8 @@ function close_report($report_id_list, $mode, $action)
 		$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 	}
 	$success_msg = '';
+	$forum_ids = array();
+	$topic_ids = array();
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'					=> 'reports',
@@ -586,6 +588,13 @@ function close_report($report_id_list, $mode, $action)
 				$messenger->send($reporter['user_notify_type']);
 			}
 		}
+		
+		foreach($post_info as $post)
+		{
+			$forum_ids[$post['forum_id']] = $post['forum_id'];
+			$topic_ids[$post['topic_id']] = $post['topic_id'];
+		}
+		
 		unset($notify_reporters, $post_info, $reports);
 
 		$messenger->save_queue();
@@ -607,7 +616,18 @@ function close_report($report_id_list, $mode, $action)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		$return_forum = '';
+		if (sizeof($forum_ids == 1))
+		{
+			$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+		}
+		$return_topic = '';
+		if (sizeof($topic_ids == 1))
+		{
+			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+		}
+		
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
 

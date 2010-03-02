@@ -8,7 +8,7 @@
 
 	<p>{L_VERSION_CHECK_EXPLAIN}</p>
 
-	<!-- IF S_UP_TO_DATE -->
+	<!-- IF S_UP_TO_DATE and S_UP_TO_DATE_AUTO -->
 		<div class="successbox">
 			<p>{L_VERSION_UP_TO_DATE_ACP}</p>
 		</div>
@@ -22,7 +22,7 @@
 		<legend></legend>
 	<dl>
 		<dt><label>{L_CURRENT_VERSION}</label></dt>
-		<dd><strong>{CURRENT_VERSION}</strong></dd>
+		<dd><strong><!-- IF S_UP_TO_DATE and not S_UP_TO_DATE_AUTO -->{AUTO_VERSION}<!-- ELSE -->{CURRENT_VERSION}<!-- ENDIF --></strong></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_LATEST_VERSION}</label></dt>
@@ -30,6 +30,12 @@
 	</dl>
 	</fieldset>
 
+	<!-- IF S_UP_TO_DATE and not S_UP_TO_DATE_AUTO -->
+		{L_UPDATE_INSTRUCTIONS_INCOMPLETE}
+		<br /><br />
+		{UPDATE_INSTRUCTIONS}
+		<br /><br />
+	<!-- ENDIF -->
 	<!-- IF not S_UP_TO_DATE -->
 		{UPDATE_INSTRUCTIONS}
 		<br /><br />

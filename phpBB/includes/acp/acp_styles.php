@@ -249,8 +249,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
-									{
+//									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
+//									{
 										// get folder info from the filename
 										if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
 										{
@@ -258,9 +258,9 @@ parse_css_file = {PARSE_CSS_FILE}
 										}
 										else
 										{
-											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
+											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)][] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
 										}
-									}
+//									}
 								}
 								$db->sql_freeresult($result);
 
@@ -739,6 +739,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
 
+			$cache->destroy('sql', STYLES_TABLE);
+
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
 			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
@@ -779,7 +781,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 					else
 					{
-						$filelist[$file_info['dirname'] . '/'][] = "{$file_info['basename']}.{$file_info['extension']}";
+						$filelist[$file_info['dirname'] . '/'][] = $file_info['basename'];
 					}
 				}
 
@@ -2168,6 +2170,14 @@ parse_css_file = {PARSE_CSS_FILE}
 						{
 							$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
 							$this->store_templates('insert', $style_id, $style_row['template_path'], $filelist);
+						}
+						else
+						{
+							// We no longer store within the db, but are also not able to update the file structure
+							// Since the admin want to switch this, we adhere to his decision. But we also need to remove the cache
+							$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
+								WHERE template_id = $style_id";
+							$db->sql_query($sql);
 						}
 
 						$sql_ary += array(

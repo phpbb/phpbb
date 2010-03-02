@@ -199,8 +199,8 @@ CREATE TABLE phpbb_banlist (
 	ban_start INT4 DEFAULT '0' NOT NULL CHECK (ban_start >= 0),
 	ban_end INT4 DEFAULT '0' NOT NULL CHECK (ban_end >= 0),
 	ban_exclude INT2 DEFAULT '0' NOT NULL CHECK (ban_exclude >= 0),
-	ban_reason varchar(3000) DEFAULT '' NOT NULL,
-	ban_give_reason varchar(3000) DEFAULT '' NOT NULL,
+	ban_reason varchar(255) DEFAULT '' NOT NULL,
+	ban_give_reason varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (ban_id)
 );
 

@@ -85,6 +85,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if ($search_id == 'egosearch')
 	{
 		$author_id = $user->data['user_id'];
+		
+		if ($user->data['user_id'] == ANONYMOUS)
+		{
+			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
+		}
 	}
 
 	// If we are looking for authors get their ids

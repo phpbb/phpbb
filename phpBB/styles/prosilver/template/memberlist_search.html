@@ -80,10 +80,12 @@ function insert_single(user)
 		<dt><label for="joined">{L_JOINED}:</label></dt>
 		<dd><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="inputbox medium" type="text" name="joined" id="joined" value="{JOINED}" /></dd>
 	</dl>
+<!-- IF S_VIEWONLINE -->
 	<dl>
 		<dt><label for="active">{L_LAST_ACTIVE}:</label></dt>
 		<dd><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="inputbox medium" type="text" name="active" id="active" value="{ACTIVE}" /></dd>
 	</dl>
+<!-- ENDIF -->
 	<dl>
 		<dt><label for="count">{L_POSTS}:</label></dt>
 		<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="inputbox medium" type="text" name="count" id="count" value="{COUNT}" /></dd>

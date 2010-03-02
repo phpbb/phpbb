@@ -115,10 +115,15 @@ function update_post_information($type, $ids, $return_update_sql = false)
 {
 	global $db;
 
+	if (empty($ids))
+	{
+		return;
+	}
 	if (!is_array($ids))
 	{
 		$ids = array($ids);
 	}
+
 
 	$update_sql = $empty_forums = $not_empty_forums = array();
 
@@ -1310,6 +1315,29 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 	$db->sql_transaction('begin');
 
+	// we must make sure to update forums that contain the shadow'd topic
+	if ($post_mode == 'delete_topic')
+	{
+		$shadow_forum_ids = array();
+
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_moved_id', $topic_id);
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($shadow_forum_ids[(int) $row['forum_id']]))
+			{
+				$shadow_forum_ids[(int) $row['forum_id']] = 1;
+			}
+			else
+			{
+				$shadow_forum_ids[(int) $row['forum_id']]++;
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+
 	if (!delete_posts('post_id', array($post_id), false, false))
 	{
 		// Try to delete topic, we may had an previous error causing inconsistency
@@ -1327,6 +1355,15 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	switch ($post_mode)
 	{
 		case 'delete_topic':
+
+			foreach ($shadow_forum_ids as $updated_forum => $topic_count)
+			{
+				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
+				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
+				$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_topics_real = forum_topics_real - ' . $topic_count . ', forum_topics = forum_topics - ' . $topic_count . ' WHERE forum_id = ' . $updated_forum);
+				update_post_information('forum', $updated_forum);
+			}
+
 			delete_topics('topic_id', array($topic_id), false);
 
 			if ($data['topic_type'] != POST_GLOBAL)
@@ -2005,6 +2042,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		// We make a new topic
 		// We reply to a topic
 		// We edit the last post in a topic and this post is the latest in the forum (maybe)
+		// We edit the only post in the topic
+		// We edit the first post in the topic and all the other posts are not approved
 		if (($post_mode == 'post' || $post_mode == 'reply') && $post_approved)
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
@@ -2014,9 +2053,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')) . "'";
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($user->data['user_colour']) . "'";
 		}
-		else if ($post_mode == 'edit_last_post')
+		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
-			// edit_last_post does not _necessarily_ mean that we must update the info again,
+			// this does not _necessarily_ mean that we must update the info again,
 			// it just means that we might have to
 			$sql = 'SELECT forum_last_post_id, forum_last_post_subject
 				FROM ' . FORUMS_TABLE . '
@@ -2025,7 +2064,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			// this post is the last post in the forum, better update
+			// this post is the latest post in the forum, better update
 			if ($row['forum_last_post_id'] == $data['post_id'])
 			{
 				if ($post_approved && $row['forum_last_post_subject'] !== $subject)
@@ -2065,7 +2104,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					}
 					else
 					{
-						// just our luck, the last topic in the forum has just been globalized...
+						// just our luck, the last topic in the forum has just been turned unapproved...
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = 0';
 						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = ''";
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = 0';
@@ -2164,13 +2203,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $current_time;
 		}
-		else if ($post_mode == 'edit_last_post')
+		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
 			// only the subject can be changed from edit
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 		}
 	}
-	else if (!$data['post_approved'] && $post_mode == 'edit_last_post')
+	else if (!$data['post_approved'] && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
 	{
 		// like having the rug pulled from under us
 		$sql = 'SELECT MAX(post_id) as last_post_id
@@ -2248,7 +2287,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		require_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		if (!class_exists($search_type))
+		{
+			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		}
 
 		$error = false;
 		$search = new $search_type($error);

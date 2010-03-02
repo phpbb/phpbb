@@ -83,7 +83,7 @@
 			<th class="posts"><a href="{U_SORT_POSTS}#memberlist">{L_POSTS}</a></th>
 			<th class="info"><a href="{U_SORT_WEBSITE}#memberlist">{L_WEBSITE}</a>{L_COMMA_SEPARATOR}<a href="{U_SORT_LOCATION}">{L_LOCATION}</a></th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
-			<th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th>
+			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
 		</tr>
 		</thead>
 		<tbody>
@@ -106,7 +106,7 @@
 		<th class="posts">&nbsp;</th>
 		<th class="info">&nbsp;</th>
 		<th class="joined">&nbsp;</th>
-		<th class="active">&nbsp;</th>
+		<!-- IF U_SORT_ACTIVE --><th class="active">&nbsp;</th><!-- ENDIF -->
 	</tr>
 	</thead>
 	<tbody>
@@ -119,11 +119,11 @@
 		<td class="posts"><!-- IF memberrow.POSTS --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
 		<td class="info"><!-- IF memberrow.U_WWW or memberrow.LOCATION --><!-- IF memberrow.U_WWW --><div><a href="{memberrow.U_WWW}" title="{L_VISIT_WEBSITE}: {memberrow.U_WWW}">{memberrow.U_WWW}</a></div><!-- ENDIF --><!-- IF memberrow.LOCATION --><div>{memberrow.LOCATION}</div><!-- ENDIF --><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td>{memberrow.JOINED}</td>
-		<td>{memberrow.VISITED}&nbsp;</td>
+		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
 	</tr>
 		<!-- BEGINELSE -->
 	<tr class="bg1">
-		<td colspan="5">{L_NO_MEMBERS}</td>
+		<td colspan="<!-- IF S_VIEWONLINE -->5<!-- ELSE -->4<!-- ENDIF -->">{L_NO_MEMBERS}</td>
 	</tr>
 		<!-- END memberrow -->
 	</tbody>

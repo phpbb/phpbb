@@ -118,7 +118,7 @@ class dbal_firebird extends dbal
 					{
 						if (strlen($regs[3]) > 32767)
 						{
-							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\\d+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
 
 							$inserts = $vals[0];
 							unset($vals);
@@ -135,13 +135,13 @@ class dbal_firebird extends dbal
 							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
 						}
 					}
-					else if (preg_match('/^(UPDATE ([\\w_]++)\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data))
+					else if (preg_match('/^(UPDATE ([\\w_]++)\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+)\\s+(WHERE.*)$/s', $query, $data))
 					{
 						if (strlen($data[3]) > 32767)
 						{
 							$update = $data[1];
 							$where = $data[4];
-							preg_match_all('/(\\w++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[3], $temp, PREG_SET_ORDER);
+							preg_match_all('/(\\w++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|[\d-.]++)/', $data[3], $temp, PREG_SET_ORDER);
 							unset($data);
 
 							$cols = array();
@@ -164,7 +164,7 @@ class dbal_firebird extends dbal
 					}
 				}
 
-				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\d+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\d+))*+\s+(WHERE.*)$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*WHERE\s*(.*)$/s', $query, $regs)))
+				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+\s+(WHERE.*)$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*WHERE\s*(.*)$/s', $query, $regs)))
 				{
 					$affected_sql = 'SELECT COUNT(*) as num_rows_affected FROM ' . $regs[1] . ' ' . $regs[2];
 

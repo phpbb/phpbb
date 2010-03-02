@@ -43,6 +43,7 @@ class session
 		if (!$script_name)
 		{
 			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, strpos($script_name, '?')) : $script_name;
 			$page_array['failover'] = 1;
 		}
 
@@ -884,13 +885,13 @@ class session
 			{
 				if (!is_array($user_ips))
 				{
-					$ip_banned = preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips);
+					$ip_banned = preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips);
 				}
 				else
 				{
 					foreach ($user_ips as $user_ip)
 					{
-						if (preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip))
 						{
 							$ip_banned = true;
 							break;
@@ -901,7 +902,7 @@ class session
 
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
 				$ip_banned ||
-				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
+				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email)))
 			{
 				if (!empty($row['ban_exclude']))
 				{
@@ -917,7 +918,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips))
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips))
 					{
 						$ban_triggered_by = 'ip';
 					}
@@ -1510,29 +1511,32 @@ class user extends session
 			}
 		}
 		
-		// Make sure the user is able to hide his session
-		if (!$this->data['session_viewonline'])
+		if (isset($this->data['session_viewonline']))
 		{
-			// Reset online status if not allowed to hide the session...
-			if (!$auth->acl_get('u_hideonline'))
+			// Make sure the user is able to hide his session
+			if (!$this->data['session_viewonline'])
 			{
-				$sql = 'UPDATE ' . SESSIONS_TABLE . '
-					SET session_viewonline = 1
-					WHERE session_user_id = ' . $this->data['user_id'];
-				$db->sql_query($sql);
-				$this->data['session_viewonline'] = 1;
+				// Reset online status if not allowed to hide the session...
+				if (!$auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 1
+						WHERE session_user_id = ' . $this->data['user_id'];
+					$db->sql_query($sql);
+					$this->data['session_viewonline'] = 1;
+				}
 			}
-		}
-		else if (!$this->data['user_allow_viewonline'])
-		{
-			// the user wants to hide and is allowed to  -> cloaking device on.
-			if ($auth->acl_get('u_hideonline'))
+			else if (!$this->data['user_allow_viewonline'])
 			{
-				$sql = 'UPDATE ' . SESSIONS_TABLE . '
-					SET session_viewonline = 0
-					WHERE session_user_id = ' . $this->data['user_id'];
-				$db->sql_query($sql);
-				$this->data['session_viewonline'] = 0;
+				// the user wants to hide and is allowed to  -> cloaking device on.
+				if ($auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 0
+						WHERE session_user_id = ' . $this->data['user_id'];
+					$db->sql_query($sql);
+					$this->data['session_viewonline'] = 0;
+				}
 			}
 		}
 
@@ -1624,9 +1628,18 @@ class user extends session
 		// - add appropriate variables here, name them as they are used within the language file...
 		if (!$use_db)
 		{
-			if ((include($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx")) === false)
+			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				trigger_error("Language file {$this->lang_path}" . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx couldn't be opened.", E_USER_ERROR);
+				$language_filename = $this->lang_path . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+			}
+			else
+			{
+				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+			}
+
+			if ((include($language_filename)) === false)
+			{
+				trigger_error("Language file $language_filename couldn't be opened.", E_USER_ERROR);
 			}
 		}
 		else if ($use_db)

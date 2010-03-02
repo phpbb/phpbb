@@ -812,7 +812,7 @@ class ucp_groups
 						$user->add_lang('acp/groups');
 
 						// Approve, demote or promote
-						group_user_attributes('approve', $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
+						group_user_attributes('approve', $group_id, $mark_ary, false, false);
 
 						trigger_error($user->lang['USERS_APPROVED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
@@ -835,6 +835,8 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
+
+						$group_row['group_name'] = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						if (confirm_box(true))
 						{
@@ -909,6 +911,8 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
+
+						$group_row['group_name'] = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						if (confirm_box(true))
 						{

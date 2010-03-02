@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC2';
+$updates_to_version = '3.0.RC3';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -332,6 +332,16 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.RC2 to the next version
+	'3.0.RC2'			=> array(
+		// Remove the following keys
+		'change_columns'		=> array(
+			BANLIST_TABLE	=> array(
+				'ban_reason'		=> array('VCHAR_UNI', ''),
+				'ban_give_reason'	=> array('VCHAR_UNI', ''),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -620,10 +630,47 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 	$no_updates = false;
 }
 
-//if (version_compare($current_version, '3.0.RC2', '<='))
-//{
-//		$no_updates = false;
-//}
+if (version_compare($current_version, '3.0.RC2', '<='))
+{
+	$smileys = array();
+	$sql = 'SELECT smiley_id, code 
+		FROM ' . SMILIES_TABLE;
+		
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$smileys[$row['smiley_id']] = $row['code'];
+	}
+	$db->sql_freeresult($result);
+	
+	foreach($smileys as $id => $code)
+	{
+		// 2.0 only entitized lt and gt; We need to do something about double quotes.
+		if (strchr($code, '"') === false)
+		{
+			continue;
+		}
+		$new_code = str_replace('&amp;', '&', $code);
+		$new_code = str_replace('&lt;', '<', $new_code);
+		$new_code = str_replace('&gt;', '>', $new_code);
+		$new_code = utf8_htmlspecialchars($new_code);
+		$sql = 'UPDATE ' . SMILIES_TABLE . ' 
+			SET code = \'' . $db->sql_escape($new_code) . '\'
+			WHERE smiley_id = ' . (int)$id;
+		$db->sql_query($sql);
+	}
+
+	$index_list = sql_list_index($map_dbms, ACL_ROLES_DATA_TABLE);
+
+	if (in_array('ath_opt_id', $index_list))
+	{
+		sql_index_drop($map_dbms, 'ath_opt_id', ACL_ROLES_DATA_TABLE);
+		sql_create_index($map_dbms, 'ath_op_id', ACL_ROLES_DATA_TABLE, array('auth_option_id'));
+	}
+
+	$no_updates = false;
+}
 
 _write_result($no_updates, $errored, $error_ary);
 
@@ -647,6 +694,10 @@ $sql = "UPDATE " . CONFIG_TABLE . "
 	WHERE config_name = 'version'";
 _sql($sql, $errored, $error_ary);
 
+// Reset permissions
+$sql = 'UPDATE ' . USERS_TABLE . "
+	SET user_permissions = ''";
+_sql($sql, $errored, $error_ary);
 
 /* Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
@@ -777,8 +828,8 @@ function _write_result($no_updates, $errored, $error_ary)
 
 			for ($i = 0; $i < sizeof($error_ary['sql']); $i++)
 			{
-				echo '<li>' . $lang['ERROR'] . ' :: <strong>' . $error_ary['error_code'][$i]['message'] . '</strong><br />';
-				echo $lang['SQL'] . ' :: <strong>' . $error_ary['sql'][$i] . '</strong><br /><br /></li>';
+				echo '<li>' . $lang['ERROR'] . ' :: <strong>' . htmlspecialchars($error_ary['error_code'][$i]['message']) . '</strong><br />';
+				echo $lang['SQL'] . ' :: <strong>' . htmlspecialchars($error_ary['sql'][$i]) . '</strong><br /><br /></li>';
 			}
 
 			echo '</ul> <br /><br />' . $lang['SQL_FAILURE_EXPLAIN'] . '</p>';
@@ -1338,6 +1389,86 @@ function sql_create_index($dbms, $index_name, $table_name, $column)
 	}
 }
 
+// List all of the indices that belong to a table,
+// does not count:
+// * UNIQUE indices
+// * PRIMARY keys
+function sql_list_index($dbms, $table_name)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	$index_array = array();
+
+	if ($dbms == 'mssql')
+	{
+		$sql = "EXEC sp_statistics '$table_name'";
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['TYPE'] == 3)
+			{
+				$index_array[] = $row['INDEX_NAME'];
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		switch ($dbms)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB$INDEX_NAME) as index_name
+					FROM RDB$INDICES
+					WHERE RDB$RELATION_NAME = " . strtoupper($table_name) . "
+						AND RDB$UNIQUE_FLAG IS NULL
+						AND RDB$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisunique != 't')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name .'
+					WHERE Non_unique = 1';
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name
+					FROM user_indexes
+					WHERE table_name = '" . $table_name . "'
+						AND generated = 'N'";
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_info('" . $table_name . "');";
+				$col = 'name';
+			break;
+		}
+
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$index_array[] = $row[$col];
+		}
+		$db->sql_freeresult($result);
+	}
+
+	return array_map('strtolower', $index_array);
+}
+
 /**
 * Change column type (not name!)
 */
@@ -1373,7 +1504,16 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'postgres':
-			$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET ' . $column_data['column_type_sql'];
+			$default_pos = strpos($column_data['column_type_sql'], ' DEFAULT');
+
+			if ($default_pos === false)
+			{
+				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type_sql'];
+			}
+			else
+			{
+				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . substr($column_data['column_type_sql'], 0, $default_pos) . ', ALTER COLUMN ' . $column_name . ' SET ' . substr($column_data['column_type_sql'], $default_pos + 1);
+			}
 			_sql($sql, $errored, $error_ary);
 		break;
 

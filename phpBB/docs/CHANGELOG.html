@@ -169,6 +169,7 @@ p a {
 <ol class="menu">
 	<li><a href="#changelog">Changelog</a>
 	<ol type="i">
+		<li><a href="#v30rc2">Changes since RC-2</a></li>
 		<li><a href="#v30rc1">Changes since RC-1</a></li>
 	</ol>
 	</li>
@@ -179,7 +180,61 @@ p a {
 
 <a name="changelog"></a><h1>1. Changelog</h1>
 
-	<a name="v30rc1"></a><b>1.i. Changes since 3.0.RC1</b>
+	<a name="v30rc2"></a><b>1.i. Changes since 3.0.RC2</b>
+	<br /><br />
+	<div class="paragraph">
+
+	<ul class="menu">
+		<li>[Fix] Re-allow searching within the memberlist</li>
+		<li>[Fix] Force prune related values to integers during conversions</li>
+		<li>[Fix] Updater now detects successfully merged files having conflicts and user chose to merge with modifications (Bug #12685)</li>
+		<li>[Fix] Updater is no longer listing missing language entries and styles if these had been removed (Bug #12655)</li>
+		<li>[Fix] Correct approval of posts in global announcements (Bug #12699)</li>
+		<li>[Sec] Do not allow setup spiders/robots to post, even if permissions are given. We see no reason why this should be possible. (Thanks to Frank Rizzo for convincing us regarding this)</li>
+		<li>[Sec] Do not display the last active column within the memberlist if u_viewonline permission is not given (Bug #12797)</li>
+		<li>[Fix] Display custom profile field &quotdate&quot; based on users language (Bug #12787)</li>
+		<li>[Fix] Allow adding of help language files within subdirectories (Bug #12783)</li>
+		<li>[Fix] Correctly apply smileys on posting having # within their emotion code</li>
+		<li>[Fix] Correctly convert smileys having double quotes within their emotion code (Bug #12731)</li>
+		<li>[Fix] The converter now adds the protocol to user website profile fields missing it (Bug #12819)</li>
+		<li>[Fix] Correctly escape banned ip/email using wildcard for ban check (Bug #12815)</li>
+		<li>[Fix] Fixed some very nasty opera bugs (dropdown list bug, cpu spike bug) (Bug #12763, #11609)</li>
+		<li>[Fix] Font colour list having the correct height in IE (Bug #9571)</li>
+		<li>[Feature] Added mark/unmark all links to the bots page (Bug #12461)</li>
+		<li>[Fix] Introduced check on duplicate usernames during bot creation/edit (Bug #12461)</li>
+		<li>[Fix] Allow multibyte letters for smilie codes(Bug #12321)</li>
+		<li>[Fix] Correctly chmod created cache files (Bug #12859)</li>
+		<li>[Fix] Use our global expression for checking email syntax in memberlist (Bug #12827)</li>
+		<li>[Fix] Correctly retrieve/refresh templates stored in database if using subdirectories within template directory (Bug #12839)</li>
+		<li>[Fix] Correctly translate special group names in ucp_groups.php (Bug #12597)</li>
+		<li>[Fix] Search boxes not loosing session id (changing method from get to post) (Bug #12643)</li>
+		<li>[Fix] Make sure the automatic update is also working for those having fsockopen disabled</li>
+		<li>[Fix] Simulate recache of theme data on automatic update finished page - recaching it if css data changed</li>
+		<li>[Feature] Allow dropping in custom &quot;info_[module class]_*.php&quot; files to language/*/mods directory for inclusion into the menu structure without the need to modify phpBB language files for menu placements</li>
+		<li>[Fix] Added login box to egosearch (Bug #12941)</li>
+		<li>[Fix] Deal with slashed quotes during quote bbcode conversion (Bug #12607)</li>
+		<li>[Fix] Minor language and style fixes (Bugs #12235, #12493, #11949)</li>
+		<li>[Feature] Added backlinks to mcp_report (Bug #12905)</li>
+		<li>[Fix] Only check usernames in guest posts upon edit (Bug #11349)</li>
+		<li>[Fix] Consider viewonline permission when viewing friends/foes (Bug #12955)</li>
+		<li>[Fix] Added proper unicode support to ban reasons (Bug #12947)</li>
+		<li>[Fix] The forum/topic sync code now recognizes other ways that the latest post in a topic can be expressed (Bug #12947) - patch provided by APTX</li>
+		<li>[Fix] Topic deletion via the user post deletion mechanism did not take into account statistics for forums that hold shadow topics (Bug #12981)</li>
+		<li>[Fix] Allow for negative and decimal numbers to be in transposed queries in the Oracle and Firebird DBAL (Bug #13033)</li>
+		<li>[Fix] Some jabber related bugs (Bug #12989, #11805, #11809)</li>
+		<li>[Fix] Added UTF-8 support for banning via the MCP (Bug #13013)</li>
+		<li>[Fix] Properly detect the script name in session::extract_current_page() if PHP_SELF is not defined (Bug #12705) - patch provided by ToonArmy</li>
+		<li>[Fix] Show role mask for global permission class under Permissions->Permission Roles (Bug #13057)</li>
+
+	</ul>
+
+	</div>
+	<a href="#top">Top</a>
+	<br /><br />
+
+	<hr />
+
+	<a name="v30rc1"></a><b>1.ii. Changes since 3.0.RC1</b>
 	<br /><br />
 	<div class="paragraph">
 

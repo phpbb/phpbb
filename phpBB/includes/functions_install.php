@@ -13,14 +13,7 @@
 */
 function can_load_dll($dll)
 {
-	global $suffix;
-
-	if (empty($suffix))
-	{
-		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
-	}
-
-	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
+	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
 }
 
 /**

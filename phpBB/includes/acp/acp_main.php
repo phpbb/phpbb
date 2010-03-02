@@ -270,6 +270,10 @@ class acp_main
 
 						global $cache;
 						$cache->purge();
+
+						// Clear permissions
+						$auth->acl_clear_prefetch();
+
 						add_log('admin', 'LOG_PURGE_CACHE');
 					break;
 				}

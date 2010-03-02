@@ -469,8 +469,8 @@ class custom_profile
 			// case 'datetime':
 			case 'date':
 				$date = explode('-', $value);
-				$month = (isset($date[0])) ? (int) $date[0] : 0;
-				$day = (isset($date[1])) ? (int) $date[1] : 0;
+				$day = (isset($date[0])) ? (int) $date[0] : 0;
+				$month = (isset($date[1])) ? (int) $date[1] : 0;
 				$year = (isset($date[2])) ? (int) $date[2] : 0;
 
 				if (!$day && !$month && !$year)
@@ -479,7 +479,8 @@ class custom_profile
 				}
 				else if ($day && $month && $year)
 				{
-					return sprintf('%4d-%02d-%02d', $year, $month, $day);
+					global $user;
+					return $user->format_date(mktime(0, 0, 0, $month, $day, $year), $user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;

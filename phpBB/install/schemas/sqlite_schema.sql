@@ -97,8 +97,8 @@ CREATE TABLE phpbb_banlist (
 	ban_start INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	ban_end INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	ban_exclude INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	ban_reason text(65535) NOT NULL DEFAULT '',
-	ban_give_reason text(65535) NOT NULL DEFAULT ''
+	ban_reason varchar(255) NOT NULL DEFAULT '',
+	ban_give_reason varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_banlist_ban_end ON phpbb_banlist (ban_end);
