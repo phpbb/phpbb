@@ -12,16 +12,22 @@
 	<dl>
 	<dt><label>{L_CONFIRM_CODE}</label>:<br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
 	<dd>
-
-		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
+		<script type="text/javascript">
 		// <![CDATA[
 		var RecaptchaOptions = {
-			lang : {L_RECAPTCHA_LANG},
+			lang : '{L_RECAPTCHA_LANG}',
 			tabindex : <!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->
 		};
 		// ]]>
 		</script>
-
+		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
+		<script type="text/javascript">
+		// <![CDATA[
+		<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+			document.getElementById('recaptcha_table').style.direction = 'ltr';
+		<!-- ENDIF -->
+		// ]]>
+		</script>
 		<noscript>
 		<div>
 			<object data="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" type="text/html" height="300" width="500"></object><br />

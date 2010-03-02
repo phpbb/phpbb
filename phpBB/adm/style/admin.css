@@ -195,7 +195,6 @@ li {
 	width: 76%;
 	margin: 0 0 0 3%;
 	min-height: 350px;
-	overflow-x: auto;
 }
 
 .rtl #main {
@@ -205,7 +204,6 @@ li {
 
 * html #main {
 	height: 350px;
-	overflow-x: visible;
 }
 
 #page-body.simple-page-body {

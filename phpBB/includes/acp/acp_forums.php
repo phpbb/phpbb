@@ -193,18 +193,19 @@ class acp_forums
 						$cache->destroy('sql', FORUMS_TABLE);
 
 						// Copy permissions?
-						if (!empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
-							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
+						if ($forum_perm_from && $forum_perm_from != $forum_data['forum_id'] &&
+							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
 						}
-						else if (($action != 'edit') && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
+/* Commented out because of questionable UI workflow - re-visit for 3.0.7
+						else if (!$this->parent_id && $action != 'edit' && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
 						{
 							$this->copy_permission_page($forum_data);
 							return;
 						}
-
+*/
 						$auth->acl_clear_prefetch();
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
@@ -1919,6 +1920,7 @@ class acp_forums
 
 	/**
 	* Display copy permission page
+	* Not used at the moment - we will have a look at it for 3.0.7
 	*/
 	function copy_permission_page($forum_data)
 	{

@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.6-RC2';
+$updates_to_version = '3.0.6-RC3';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -883,6 +883,8 @@ function database_update_info()
 				LOG_TABLE			=> array('log_time'),
 			),
 		),
+		// No changes from 3.0.6-RC2 to 3.0.6-RC3
+		'3.0.6-RC2'		=> array(),
 	);
 }
 
@@ -1512,6 +1514,19 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.6-RC1 to 3.0.6-RC2
 		case '3.0.6-RC1':
+		break;
+
+		// Changes from 3.0.6-RC2 to 3.0.6-RC3
+		case '3.0.6-RC2':
+
+			// Update the Custom Profile Fields based on previous settings to the new format
+			$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '
+				SET field_show_on_vt = 1
+				WHERE field_hide = 0
+					AND (field_required = 1 OR field_show_on_reg = 1 OR field_show_profile = 1)';
+			_sql($sql, $errored, $error_ary);
+			$no_updates = false;
+
 		break;
 	}
 }

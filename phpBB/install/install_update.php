@@ -262,6 +262,16 @@ class install_update extends module
 					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
 				}
 
+				// Since some people try to update to RC releases, but phpBB.com tells them the last version is the version they currently run
+				// we are faced with the updater thinking the database schema is up-to-date; which it is, but should be updated none-the-less
+				// We now try to cope with this by triggering the update process
+				if (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->update_info['version']['to'])), '<'))
+				{
+					$template->assign_vars(array(
+						'S_UP_TO_DATE'		=> false,
+					));
+				}
+
 			break;
 
 			case 'update_db':

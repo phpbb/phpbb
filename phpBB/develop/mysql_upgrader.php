@@ -796,6 +796,7 @@ function get_schema_struct()
 			'poster_ip'				=> array('INDEX', 'poster_ip'),
 			'poster_id'				=> array('INDEX', 'poster_id'),
 			'post_approved'			=> array('INDEX', 'post_approved'),
+			'post_username'			=> array('INDEX', 'post_username'),
 			'tid_post_time'			=> array('INDEX', array('topic_id', 'post_time')),
 		),
 	);

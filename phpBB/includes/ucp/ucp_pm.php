@@ -122,6 +122,7 @@ class ucp_pm
 					// trigger_error('NO_AUTH_SEND_MESSAGE');
 					$template->assign_vars(array(
 						'S_NO_AUTH_SEND_MESSAGE'	=> true,
+						'S_COMPOSE_PM_VIEW'			=> true,
 					));
 
 					$tpl_file = 'ucp_pm_viewfolder';

@@ -1,11 +1,19 @@
 <!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
 	<dd>
-		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
+		<script type="text/javascript">
 		// <![CDATA[
 		var RecaptchaOptions = {
-		   lang : {L_RECAPTCHA_LANG}
+			lang : '{L_RECAPTCHA_LANG}',
 		};
+		// ]]>
+		</script>
+		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
+		<script type="text/javascript">
+		// <![CDATA[
+		<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+			document.getElementById('recaptcha_table').style.direction = 'ltr';
+		<!-- ENDIF -->
 		// ]]>
 		</script>
 
