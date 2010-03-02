@@ -171,7 +171,7 @@ class acp_forums
 						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
-					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
+					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', true);
 
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
@@ -443,7 +443,7 @@ class acp_forums
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
-							'forum_flags'			=> FORUM_FLAG_POST_REVIEW,
+							'forum_flags'			=> FORUM_FLAG_POST_REVIEW + FORUM_FLAG_ACTIVE_TOPICS,
 							'forum_options'			=> 0,
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
@@ -907,7 +907,7 @@ class acp_forums
 			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
 
-		if (!file_exists($phpbb_root_path . $forum_data['forum_image']))
+		if (!empty($forum_data['forum_image']) && !file_exists($phpbb_root_path . $forum_data['forum_image']))
 		{
 			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
 		}

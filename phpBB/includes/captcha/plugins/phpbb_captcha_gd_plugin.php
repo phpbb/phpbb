@@ -80,7 +80,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 	{
 		return true;
 	}
-	
+
 	function get_name()
 	{
 		return 'CAPTCHA_GD';
@@ -123,6 +123,8 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 					set_config($captcha_var, $value);
 				}
 			}
+
+			add_log('admin', 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
@@ -148,7 +150,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 	function execute_demo()
 	{
 		global $config;
-		
+
 		$config_old = $config;
 		foreach ($this->captcha_vars as $captcha_var => $template_var)
 		{

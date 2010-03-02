@@ -49,6 +49,9 @@ if (!defined('IN_PHPBB'))
 */
 class diff_engine
 {
+	/**
+	* If set to true we trim all lines before we compare them. This ensures that sole space/tab changes do not trigger diffs.
+	*/
 	var $skip_whitespace_changes = true;
 
 	function diff(&$from_lines, &$to_lines, $preserve_cr = true)
@@ -87,7 +90,7 @@ class diff_engine
 		// Skip leading common lines.
 		for ($skip = 0; $skip < $n_from && $skip < $n_to; $skip++)
 		{
-			if ($from_lines[$skip] !== $to_lines[$skip])
+			if (trim($from_lines[$skip]) !== trim($to_lines[$skip]))
 			{
 				break;
 			}
@@ -100,7 +103,7 @@ class diff_engine
 
 		for ($endskip = 0; --$xi > $skip && --$yi > $skip; $endskip++)
 		{
-			if ($from_lines[$xi] !== $to_lines[$yi])
+			if (trim($from_lines[$xi]) !== trim($to_lines[$yi]))
 			{
 				break;
 			}
@@ -110,12 +113,12 @@ class diff_engine
 		// Ignore lines which do not exist in both files.
 		for ($xi = $skip; $xi < $n_from - $endskip; $xi++)
 		{
-			$xhash[$from_lines[$xi]] = 1;
+			if ($this->skip_whitespace_changes) $xhash[trim($from_lines[$xi])] = 1; else $xhash[$from_lines[$xi]] = 1;
 		}
 
 		for ($yi = $skip; $yi < $n_to - $endskip; $yi++)
 		{
-			$line = $to_lines[$yi];
+			$line = ($this->skip_whitespace_changes) ? trim($to_lines[$yi]) : $to_lines[$yi];
 
 			if (($this->ychanged[$yi] = empty($xhash[$line])))
 			{
@@ -128,7 +131,7 @@ class diff_engine
 
 		for ($xi = $skip; $xi < $n_from - $endskip; $xi++)
 		{
-			$line = $from_lines[$xi];
+			$line = ($this->skip_whitespace_changes) ? trim($from_lines[$xi]) : $from_lines[$xi];
 
 			if (($this->xchanged[$xi] = empty($yhash[$line])))
 			{
@@ -142,8 +145,21 @@ class diff_engine
 		$this->_compareseq(0, sizeof($this->xv), 0, sizeof($this->yv));
 
 		// Merge edits when possible.
-		$this->_shift_boundaries($from_lines, $this->xchanged, $this->ychanged);
-		$this->_shift_boundaries($to_lines, $this->ychanged, $this->xchanged);
+		if ($this->skip_whitespace_changes)
+		{
+			$from_lines_clean = array_map('trim', $from_lines);
+			$to_lines_clean = array_map('trim', $to_lines);
+
+			$this->_shift_boundaries($from_lines_clean, $this->xchanged, $this->ychanged);
+			$this->_shift_boundaries($to_lines_clean, $this->ychanged, $this->xchanged);
+
+			unset($from_lines_clean, $to_lines_clean);
+		}
+		else
+		{
+			$this->_shift_boundaries($from_lines, $this->xchanged, $this->ychanged);
+			$this->_shift_boundaries($to_lines, $this->ychanged, $this->xchanged);
+		}
 
 		// Compute the edit operations.
 		$edits = array();
@@ -176,20 +192,6 @@ class diff_engine
 			while ($yi < $n_to && $this->ychanged[$yi])
 			{
 				$add[] = $to_lines[$yi++];
-			}
-
-			// Here we are a bit naughty. Naughty Boy... Naughty Boy...
-			// We check if delete and add is filled and only consist of one item
-			if ($this->skip_whitespace_changes && sizeof($delete) == 1 && sizeof($add) == 1)
-			{
-				// Now we simply trim the string and see if the lines are identical
-				// If they are identical we do not need to take them into account for the merge (less conflicts in phpBB)
-				if (trim($delete[0]) === trim($add[0]))
-				{
-					// This line ensures the line found here is correctly copied later (remember: we naughty boys like loops)
-					$xi--; $yi--; $this->xchanged[$xi] = $this->ychanged[$yi] = false;
-					$delete = $add = array();
-				}
 			}
 
 			if ($delete && $add)

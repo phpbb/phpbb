@@ -20,7 +20,7 @@
 	</dl>
 	<dl>
 		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
-		<dd><select name="new_id">{S_REPLACE_OPTIONS}</select></dd>
+		<dd><select id="new_id" name="new_id">{S_REPLACE_OPTIONS}</select></dd>
 	</dl>
 
 	<p class="quick">
@@ -135,11 +135,11 @@
 	<div id="img_dimensions">
 		<dl>
 			<dt><label for="imgwidth">{L_IMAGE_WIDTH}:</label><br /><span>{L_AUTOMATIC_EXPLAIN}</span></dt>
-			<dd><input type="text" name="imgwidth" value="{IMAGE_SIZE}" /></dd>
+			<dd><input id="imgwidth" type="text" name="imgwidth" value="{IMAGE_SIZE}" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="imgheight">{L_IMAGE_HEIGHT}:</label><br /><span>{L_AUTOMATIC_EXPLAIN}</span></dt>
-			<dd><input type="text" name="imgheight" value="{IMAGE_HEIGHT}" /></dd>
+			<dd><input id="imgheight" type="text" name="imgheight" value="{IMAGE_HEIGHT}" /></dd>
 		</dl>
 	</div>
 	</fieldset>
@@ -266,7 +266,7 @@
 
 	<p>{L_TEMPLATE_CACHE_EXPLAIN}</p>
 
-	<form name="acp_styles" method="post" action="{U_ACTION}">
+	<form id="acp_styles" method="post" action="{U_ACTION}">
 	<fieldset class="tabulated">
 	<legend>{L_TEMPLATE_CACHE}</legend>
 

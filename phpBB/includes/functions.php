@@ -1693,11 +1693,11 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			'LEFT_JOIN'		=> array(
 				array(
 					'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
-					'ON'	=> "tt.user_id = $user_id AND t.topic_id = tt.topic_id AND tt.mark_time > $last_mark",
+					'ON'	=> "tt.user_id = $user_id AND t.topic_id = tt.topic_id",
 				),
 				array(
 					'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-					'ON'	=> "ft.user_id = $user_id AND t.forum_id = ft.forum_id AND ft.mark_time > $last_mark",
+					'ON'	=> "ft.user_id = $user_id AND t.forum_id = ft.forum_id",
 				),
 			),
 
@@ -1705,10 +1705,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 				(
 				(tt.mark_time IS NOT NULL AND t.topic_last_post_time > tt.mark_time) OR
 				(tt.mark_time IS NULL AND ft.mark_time IS NOT NULL AND t.topic_last_post_time > ft.mark_time) OR
-					(
-						((tt.mark_time IS NULL AND ft.mark_time IS NULL) OR (tt.mark_time < $last_mark AND ft.mark_time < $last_mark))
-						AND t.topic_last_post_time > $last_mark
-					)
+				(tt.mark_time IS NULL AND ft.mark_time IS NULL AND t.topic_last_post_time > $last_mark)
 				)
 				$sql_extra
 				$sql_sort",
@@ -3050,6 +3047,7 @@ function login_forum_box($forum_data)
 	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
+		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);
 
@@ -4034,16 +4032,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
-	// Which timezone?
-	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-
-	// Send a proper content-language to the output
-	$user_lang = $user->lang['USER_LANG'];
-	if (strpos($user_lang, '-x-') !== false)
-	{
-		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
-	}
-
 	$forum_id = request_var('f', 0);
 	$topic_id = request_var('t', 0);
 
@@ -4063,6 +4051,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+
+	// Which timezone?
+	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
+
+	// Send a proper content-language to the output
+	$user_lang = $user->lang['USER_LANG'];
+	if (strpos($user_lang, '-x-') !== false)
+	{
+		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(

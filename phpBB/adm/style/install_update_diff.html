@@ -15,9 +15,9 @@
 // <![CDATA[
 function resize_panel()
 {
-	var block = document.getElementById('codepanel');	
+	var block = document.getElementById('codepanel');
 	var height;
-	
+
 	if (window.innerHeight)
 	{
 		height = window.innerHeight - 150;
@@ -26,7 +26,7 @@ function resize_panel()
 	else
 	{
 		//whatever IE needs to do this
-	}	
+	}
 }
 
 window.onresize = resize_panel;
@@ -54,7 +54,7 @@ div#codepanel {
 	width: 100%;
 }
 <!-- ELSE -->
-div#codepanel {	
+div#codepanel {
 	background-color: #eee;
 }
 <!-- ENDIF -->
@@ -149,10 +149,10 @@ table.hrdiff tbody th {
 
 table.hrdiff tbody td.old {
 	border-left: 1px solid #999;
-	border-right: 1px solid #999;	
+	border-right: 1px solid #999;
 }
 table.hrdiff tbody td.new {
-	border-right: 1px solid #999;	
+	border-right: 1px solid #999;
 }
 
 table.hrdiff td pre {
@@ -238,18 +238,18 @@ table.hrdiff caption span {
 		</fieldset>
 		</form>
 <!-- ENDIF -->
+<!-- IF S_DIFF_CONFLICT_FILE -->
+		<div style="float: {S_CONTENT_FLOW_BEGIN};"><strong>{L_NUM_CONFLICTS}: {NUM_CONFLICTS}</strong></div>
+		<br style="clear: both;" />
+<!-- ENDIF -->
 	</div>
-	
+
 	<div id="page-body">
 		<div id="acp">
 		<div class="panel" id="codepanel">
 			<span class="corners-top"><span></span></span>
 				<div id="diff_content">
 					<div id="main">
-
-<!-- IF S_DIFF_CONFLICT_FILE -->
-		<div style="float: {S_CONTENT_FLOW_END};"><strong>{L_NUM_CONFLICTS}: {NUM_CONFLICTS}</strong></div>
-<!-- ENDIF -->
 						{DIFF_CONTENT}
 					</div>
 				</div>
@@ -257,6 +257,6 @@ table.hrdiff caption span {
 		</div>
 		</div>
 	</div>
-	
+
 
 <!-- INCLUDE simple_footer.html -->

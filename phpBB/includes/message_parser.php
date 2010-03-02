@@ -1345,7 +1345,7 @@ class parse_message extends bbcode_firstpass
 	/**
 	* Parse Attachments
 	*/
-	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false, $post_msg_id = 0, $topic_id = 0)
+	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db;
 
@@ -1498,25 +1498,16 @@ class parse_message extends bbcode_firstpass
 							'filesize'			=> $filedata['filesize'],
 							'filetime'			=> $filedata['filetime'],
 							'thumbnail'			=> $filedata['thumbnail'],
-							'is_orphan'			=> ($post_msg_id) ? 0 : 1,
+							'is_orphan'			=> 1,
 							'in_message'		=> ($is_message) ? 1 : 0,
 							'poster_id'			=> $user->data['user_id'],
 						);
-
-						if ($post_msg_id)
-						{
-							$sql_ary['post_msg_id'] = $post_msg_id;
-							if ($topic_id)
-							{
-								$sql_ary['topic_id'] = $topic_id;
-							}
-						}
 
 						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 						$new_entry = array(
 							'attach_id'		=> $db->sql_nextid(),
-							'is_orphan'		=> ($post_msg_id) ? 0 : 1,
+							'is_orphan'		=> 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
 						);

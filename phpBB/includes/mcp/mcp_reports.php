@@ -593,7 +593,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 					$db->sql_query($sql);
 
 					if ($action == 'delete')
-					{echo "aha";
+					{
 						delete_pm(ANONYMOUS, $close_report_posts, PRIVMSGS_INBOX);
 					}
 				}

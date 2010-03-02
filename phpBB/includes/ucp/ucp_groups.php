@@ -708,7 +708,6 @@ class ucp_groups
 							'S_UPLOAD_AVATAR_FILE'	=> ($config['allow_avatar'] && $config['allow_avatar_upload'] && $can_upload) ? true : false,
 							'S_UPLOAD_AVATAR_URL'	=> ($config['allow_avatar'] && $config['allow_avatar_remote_upload'] && $can_upload) ? true : false,
 							'S_LINK_AVATAR'			=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
-							'S_DISPLAY_GALLERY'		=> ($config['allow_avatar'] && $config['allow_avatar_local']) ? true : false,
 
 							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',

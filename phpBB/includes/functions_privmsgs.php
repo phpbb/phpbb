@@ -1900,7 +1900,7 @@ function set_user_message_limit()
 */
 function get_recipient_strings($pm_by_id)
 {
-	global $user, $db;
+	global $db, $phpbb_root_path, $phpEx, $user;
 
 	$address_list = $recipient_list = $address = array();
 

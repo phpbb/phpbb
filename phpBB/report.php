@@ -118,7 +118,8 @@ else
 
 	if (!$report_data)
 	{
-		trigger_error('PM_NOT_EXIST');
+		$user->add_lang('ucp');
+		trigger_error('NO_MESSAGE');
 	}
 
 	if ($report_data['message_reported'])

@@ -210,9 +210,12 @@
 		<li>[Fix] Do not display links to user/post search if search is disabled. (Bug #50685 - Patch by HardStyle)</li>
 		<li>[Fix] Fix icon alignment for forums with large descriptions in subsilver2. (Bug #50445)</li>
 		<li>[Fix] Correctly display underlined links placed in last line in viewtopic. (Bug #14811 - Patch by primehalo)</li>
+		<li>[Fix] Only check whether forum image exists if forum image is specified. (Bug #51905)</li>
+		<li>[Fix] Fixed database backup and restore with Oracle DBMS.</li>
+		<li>[Fix] Fixed database updater for changes to columns having default value in MSSQL (adding/dropping constraints)</li>
+		<li>[Change] Database updater now supports checking for existing/missing indexes.</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
-		<li>[Change] Add index on log_time to the log table to prevent slowdown on boards with many log entries. (Bug #44665 - Patch by bantu)</li>
 		<li>[Change] Template engine now permits to a limited extent variable includes.</li>
 		<li>[Change] Quote BBCode no longer requires the f_reply permission. (Bug #16079)</li>
 		<li>[Change] Banning/unbanning users now generates an entry in their user notes (Bug #21825 - Patch by nickvergessen)</li>
@@ -243,7 +246,8 @@
 		<li>[Change] Do not take edit post time into account for determining permission to delete last post in topic. (Bug #48615)</li>
 		<li>[Change] Resize oversized Topic icons (Bug #44415)</li>
 		<li>[Change] Banned IPs are now sorted (Bug #43045 - Patch by DavidIQ)</li>
-		<li>[Change] phpBB updater now skips sole whitespace changes. This reduces the chance of conflicts tremendously.</li>
+		<li>[Change] phpBB updater now skips sole whitespace/tab changes while computing differences. This reduces the chance of conflicts tremendously.</li>
+		<li>[Change] phpBB updater now solves common conflicts on it's own. This further reduces the chance of conflicts.</li>
 		<li>[Feature] Add language selection on the registration terms page (Bug #15085 - Patch by leviatan21)</li>
 		<li>[Feature] Backported 3.2 captcha plugins.
 			<ul>
@@ -300,6 +304,7 @@
 		<li>[Feature] Added function to generate Email hash. (Bug #49195)</li>
 		<li>[Feature] Style authors are now able to define the default submit button used for form submission on ENTER keypress on forms using more than one. Prosilver uses this for the posting page(s) and registration screen.</li>
 		<li>[Feature] Ability to specify amount of time user is able to delete his last post in topic.</li>
+		<li>[Feature] Send anonymous statistical information to phpBB on installation and update (optional).</li>
 	</ul>
 	<a name="v304"></a><h3>1.ii. Changes since 3.0.4</h3>
 

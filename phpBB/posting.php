@@ -742,28 +742,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse Attachments - before checksum is calculated
-	if ($mode == 'edit')
-	{
-		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh, false, $post_id, $topic_id);
-		if (sizeof($message_parser->attachment_data))
-		{
-			// Update attachment indicators for post/topic having attachments now, as a precaution if the post does not get stored by submit
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 1
-				WHERE post_id = ' . $post_id;
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 1
-				WHERE topic_id = ' . $topic_id;
-			$db->sql_query($sql);
-		}
-	}
-	else
-	{
-		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
-	}
-
+	$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
@@ -1121,13 +1100,13 @@ if ($submit || $preview || $refresh)
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
-
 			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 			{
 				$captcha->reset();
 			}
+
 			// Check the permissions for post approval. Moderators are not affected.
-			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) || !empty($post_data['force_approved_state']))
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
@@ -1569,17 +1548,18 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			);
 
 			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
+			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)
 			{
-				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_data['username']);
+				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
-				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_data['post_subject'], $post_data['username']);
+				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_data['post_subject'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');

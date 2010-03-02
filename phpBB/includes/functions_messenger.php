@@ -199,7 +199,7 @@ class messenger
 				$template_path .= $template_lang . '/email';
 			}
 
-			$tpl->set_custom_template($template_path, $template_lang . '_email');
+			$tpl->set_custom_template($template_path, $template_lang . '_email', 'email');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
@@ -1134,7 +1134,24 @@ class smtp_class
 		global $user;
 
 		$err_msg = '';
-		$local_host = (function_exists('php_uname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : $user->host;
+
+		// Here we try to determine the *real* hostname (reverse DNS entry preferrably)
+		$local_host = $user->host;
+
+		if (function_exists('php_uname'))
+		{
+			$local_host = php_uname('n');
+
+			// Able to resolve name to IP
+			if (($addr = @gethostbyname($local_host)) !== $local_host)
+			{
+				// Able to resolve IP back to name
+				if (($name = @gethostbyaddr($addr)) !== $addr)
+				{
+					$local_host = $name;
+				}
+			}
+		}
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated

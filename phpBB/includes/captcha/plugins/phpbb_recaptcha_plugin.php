@@ -100,6 +100,8 @@ class phpbb_recaptcha extends phpbb_default_captcha
 					set_config($captcha_var, $value);
 				}
 			}
+
+			add_log('admin', 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)

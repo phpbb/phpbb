@@ -1678,7 +1678,8 @@ else if (!$all_marked_read)
 }
 
 // let's set up quick_reply
-$s_quick_reply = $user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $auth->acl_get('f_reply', $forum_id);
+$s_allowed_reply = ((!$auth->acl_get('f_reply', $forum_id) || ($topic_data['forum_status'] == ITEM_LOCKED) || ($topic_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get('m_edit', $forum_id)) ? false : true;
+$s_quick_reply = $s_allowed_reply && $user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
 
 if ($s_can_vote || $s_quick_reply)
 {
@@ -1704,6 +1705,7 @@ if ($s_can_vote || $s_quick_reply)
 		(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
 		($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
 		($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
+		($topic_data['topic_status'] == ITEM_LOCKED) ? $qr_hidden_fields['lock_topic'] = 1 : true;
 
 		$template->assign_vars(array(
 			'S_QUICK_REPLY'			=> true,
