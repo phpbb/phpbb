@@ -186,7 +186,7 @@ class mcp_reports
 
 				$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
-					'S_CLOSE_ACTION'		=> $this->u_action . '&amp;p=' . $post_id . '&amp;f=' . $forum_id,
+					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],

@@ -74,7 +74,7 @@
 			<!-- ELSEIF draftrow.S_LINK_PM --><br /><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
 			<!-- ELSE --><br /><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
 		</td>
-		<td style="padding: 4px;" align="center"><span class="gen"><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a></td>
+		<td style="padding: 4px;" align="center"><span class="gen"><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a></span></td>
 	</tr>
 	<!-- END draftrow -->
 	</table>
@@ -386,7 +386,10 @@
 	</td>
 </tr>
 </table>
-
+<!-- IF not S_PRIVMSGS -->
+	{S_FORM_TOKEN}
+	</form>
+<!-- ENDIF -->
 <br clear="all" />
 
 <!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
@@ -397,8 +400,7 @@
 <!-- ELSE -->
 
 	<!-- INCLUDE breadcrumbs.html -->
-	{S_FORM_TOKEN}
-	</form>
+
 
 	<!-- IF S_DISPLAY_ONLINE_LIST -->
 		<br clear="all" />

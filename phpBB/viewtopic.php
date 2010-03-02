@@ -445,13 +445,15 @@ if ($start < 0 || $start > $total_posts)
 $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
 // Are we watching this topic?
-$s_watching_topic = $s_watching_topic_img = array();
-$s_watching_topic['link'] = $s_watching_topic['title'] = '';
-$s_watching_topic['is_watching'] = false;
+$s_watching_topic = array(
+	'link'			=> '',
+	'title'			=> '',
+	'is_watching'	=> false,
+);
 
 if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
-	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
+	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
 }
 
 // Bookmarks
@@ -578,7 +580,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 	'S_SINGLE_MODERATOR'	=> (!empty($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id]) > 1) ? false : true,
 	'S_TOPIC_ACTION' 		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start"),
-	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="action">' . $topic_mod . '</select>' : '',
+	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="action" id="quick-mod-select">' . $topic_mod . '</select>' : '',
 	'S_MOD_ACTION' 			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
 
 	'S_VIEWTOPIC'			=> true,
@@ -663,7 +665,7 @@ if (!empty($topic_data['poll_start']))
 
 	if ($update && $s_can_vote)
 	{
-		
+
 		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id))
 		{
 			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
@@ -681,7 +683,7 @@ if (!empty($topic_data['poll_start']))
 			{
 				$message = 'VOTE_CONVERTED';
 			}
- 
+
 			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
 			trigger_error($message);
 		}

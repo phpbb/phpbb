@@ -337,11 +337,16 @@ class acp_icons
 				}
 
 				$icons_updated = 0;
+				$errors = array();
 				foreach ($images as $image)
 				{
-					if (($mode == 'smilies' && ($image_emotion[$image] == '' || $image_code[$image] == '')) ||
-						($action == 'create' && !isset($image_add[$image])))
+					if ($mode == 'smilies' && ($image_emotion[$image] == '' || $image_code[$image] == ''))
 					{
+						$errors[$image] = 'SMILIE_NO_' . (($image_emotion[$image] == '') ? 'EMOTION' : 'CODE');
+					}
+					else if ($action == 'create' && !isset($image_add[$image]))
+					{
+						// skip images where add wasn't checked
 					}
 					else
 					{
@@ -431,13 +436,18 @@ class acp_icons
 					default:
 						$suc_lang = $lang;
 				}
+				$errormsgs = '<br />';
+				foreach ($errors as $img => $error)
+				{
+					$errormsgs .= '<br />' . sprintf($user->lang[$error], $img);
+				}
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang[$suc_lang . '_EDITED'] . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang[$suc_lang . '_EDITED'] . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($user->lang[$suc_lang . '_ADDED'] . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang[$suc_lang . '_ADDED'] . $errormsgs .adm_back_link($this->u_action), $level);
 				}
 
 			break;
@@ -462,7 +472,7 @@ class acp_icons
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') ||
-								(sizeof($data[1]) != 6 && $mode == 'smilies'))
+								((sizeof($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode == 'smilies' ))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}

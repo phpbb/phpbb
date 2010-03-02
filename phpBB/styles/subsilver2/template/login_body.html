@@ -15,7 +15,7 @@
 		<td class="row3" colspan="2" align="center"><span class="gensmall">{LOGIN_EXPLAIN}</span></td>
 	</tr>
 <!-- ENDIF -->
-<tr><!-- IF not S_ADMIN_AUTH -->
+<tr><!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
 	<td class="row1" width="50%">
 		<p class="genmed">{L_LOGIN_INFO}</p>
 
@@ -36,7 +36,7 @@
 		<tr>
 			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_USERNAME}:</b></td>
 			<td><input class="post" type="text" name="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" tabindex="1" />
-				<!-- IF not S_ADMIN_AUTH -->
+				<!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
 					<br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a>
 				<!-- ENDIF -->
 			</td>

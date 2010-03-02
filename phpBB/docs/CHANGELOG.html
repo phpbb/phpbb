@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v300">Changes since 3.0.0</a></li>
 		<li><a href="#v30rc8">Changes since RC-8</a></li>
 		<li><a href="#v30rc7">Changes since RC-7</a></li>
 		<li><a href="#v30rc6">Changes since RC-6</a></li>
@@ -70,7 +71,7 @@
 
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
-
+	
 	<hr />
 
 	<a name="changelog"></a><h2>1. Changelog</h2>
@@ -79,6 +80,75 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+
+	<a name="v300"></a><h3>1.i. Changes since 3.0.0</h3>
+
+	<ul>
+		<li>[Change] Validate birthdays (Bug #15004)</li>
+		<li>[Fix] Allow correct avatar caching for CGI installations. (thanks wildbill)</li>
+		<li>[Fix] Fix disabling of word censor, now possible again</li>
+		<li>[Fix] Allow single quotes in db password to be stored within config.php in installer</li>
+		<li>[Fix] Correctly quote db password for re-display in installer (Bug #16695 / thanks to m313 for reporting too - #s17235)</li>
+		<li>[Fix] Correctly handle empty imageset entries (Bug #16865)</li>
+		<li>[Fix] Correctly check empty subjects/messages (Bug #17915)</li>
+		<li>[Change] Do not check usernames against word censor list. Disallowed usernames is already checked and word censor belong to posts. (Bug #17745)</li>
+		<li>[Fix] Additionally include non-postable forums for moderators forums shown within the teams list. (Bug #17265)</li>
+		<li>[Change] Sped up viewforum considerably (also goes towards mcp_forum)</li>
+		<li>[Fix] Do not split topic list for topics being promoted to announcements after been moved to another forum (Bug #18635)</li>
+		<li>[Fix] Allow editing usernames within database_update on username cleanup (Bug #18415)</li>
+		<li>[Fix] Fixing wrong sync() calls if moving all posts by a member in ACP (Bug #18385)</li>
+		<li>[Fix] Check entered imagemagick path for trailing slash (Bug #18205)</li>
+		<li>[Fix] Use proper title on index for new/unread posts (Bug #13101) - patch provided by Pyramide</li>
+		<li>[Fix] Allow calls to $user->set_cookie() define no cookie time for setting session cookies (Bug #18025)</li>
+		<li>[Fix] Stricter checks on smilie packs (Bug #19675)</li>
+		<li>[Fix] Gracefully return from cancelling pm drafts (Bug #19675)</li>
+		<li>[Fix] Possible login problems with IE7 if browser check is activated (Bug #20135)</li>
+		<li>[Fix] Fix possible database transaction errors if code returns on error and rollback happened (Bug #17025)</li>
+		<li>[Change] Allow numbers in permission names for modifications, as well as uppercase letters for the request_ part (Bug #20125)</li>
+		<li>[Fix] Use HTTP_HOST in favor of SERVER_NAME for determining server url for redirection and installation (Bug #19955)</li>
+		<li>[Fix] Removing s_watching_img from watch_topic_forum() function (Bug #20445)</li>
+		<li>[Fix] Changing order for post review if more than one post affected (Bug #15249)</li>
+		<li>[Fix] Language typos/fixes (Bug #20425, #15719, #15429, #14669, #13479, #20795, #21095, #21405, #21715, #21725, #21755, #21865, #15689)</li>
+		<li>[Fix] Style/Template fixes (Bug #20065, #19405, #19205, #15028, #14934, #14821, #14752, #14497, #13707, #14738, #19725)</li>
+		<li>[Fix] Tiny code fixes (Bug #20165, #20025, #19795, #14804)</li>
+		<li>[Fix] Prepend phpbb_root_path to ranks path for displaying ranks (Bug #19075)</li>
+		<li>[Fix] Allow forum notifications if topic notifications are disabled but forum notifications enabled (Bug #14765)</li>
+		<li>[Fix] Fixing realpath issues for provider returning the passed value instead of disabling it. This fixes issues with confirm boxes for those hosted on Network Solutions for example. (Bug #20435)</li>
+		<li>[Fix] Try to sort last active date on memberlist correctly at least on current page (Bug #18665)</li>
+		<li>[Fix] Handle generation of form tokens when maximum time is set to -1</li>
+		<li>[Fix] Correctly delete unapproved posts without deleting the topic (Bug #15120)</li>
+		<li>[Fix] Respect signature permissions in posting (Bug #16029)</li>
+		<li>[Fix] Users allowed to resign only from open and freely open groups (Bug #19355)</li>
+		<li>[Fix] Assign a last viewed date to converted topics (Bug #16565)</li>
+		<li>[Fix] Many minor and/or cosmetic fixes (Including, but not limited to: #21315, #18575, #18435, #21215)</li>
+		<li>[Feature] New option to hide the entire list of subforums on listforums</li>
+		<li>[Fix] Custom BBCode {EMAIL}-Token usage (Bug #21155)</li>
+		<li>[Fix] Do not rely on parameter returned by unlink() for verifying cache directory write permission (Bug #19565)</li>
+		<li>[Change] Use correct string for filesize (MiB instead of MB for example)</li>
+		<li>[Change] Remove left join for query used to retrieve already assigned users and groups within permission panel (Bug #20235)</li>
+		<li>[Fix] Correctly return sole whitespaces if used with BBCodes (Bug #19535)</li>
+		<li>[Fix] Quote bbcode parsing adding too much closing tags on special conditions (Bug #20735)</li>
+		<li>[Change] Added sanity checks to various ACP settings</li>
+		<li>[Change] Removed minimum form times</li>
+		<li>[Fix] Check topics_per_page value in acp_forums (Bug #15539)</li>
+		<li>[Fix] Custom profile fields with date type should be timezone independend (Bug #15003)</li>
+		<li>[Fix] Fixing some XHTML errors/warnings within the ACP (Bug #22875)</li>
+		<li>[Fix] Warnings if poll title/options exceed maximum characters per post (Bug #22865)</li>
+		<li>[Fix] Do not allow selecting non-authorized groups within memberlist by adjusting URL (Bug #22805 - patch provided by ToonArmy)</li>
+		<li>[Fix] Correctly specify &quot;close report action&quot; (Bug #22685)</li>
+		<li>[Fix] Display &quot;empty password error&quot; within the login box instead of issuing a general error (Bug #22525)</li>
+		<li>[Fix] Clean up who is online code in page_header (Bug #22715, thanks HighwayofLife)</li>
+		<li>[Fix] Pertain select single link on memberlist (Bug #23235 - patch provided by Schumi)</li>
+		<li>[Fix] Allow &amp; and | in local part of email addresses (Bug #22995)</li>
+		<li>[Fix] Do not error out if php_uname function disabled / Authenticating on SMTP Server (Bug #22235 - patch by HoL)</li>
+		<li>[Fix] Correctly obtain to be ignored users within topic/forum notification (Bug #21795 - patch provided by dr.death)</li>
+		<li>[Fix] Correctly update board statistics for attaching orphaned files to existing posts (Bug #20185)</li>
+		<li>[Fix] Do not detect the board URL as a link twice in posts (Bug #19215)</li>
+		<li>[Fix] Set correct error reporting in style.php to avoid blank pages after CSS changes (Bug #23885)</li>
+		<li>[Fix] If pruning users based on last activity, do not include users never logged in before (Bug #18105)</li>
+		<li>[Sec] Only allow searching by email address in memberlist for users having the a_user permission (reported by evil&lt;3)</li>
+		<li>[Sec] Limit private message attachments to be viewable only by the recipient(s)/sender (Report #s23535) - reported by AlleyKat</li>
+	</ul>
 
 	<a name="v30rc8"></a><h3>1.i. Changes since 3.0.RC8</h3>
 

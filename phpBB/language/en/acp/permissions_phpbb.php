@@ -1,6 +1,6 @@
 <?php
 /**
-* acp_permissions (phpBB Permission Set) [English]
+* acp_permissions_phpbb (phpBB Permission Set) [English]
 *
 * @package language
 * @version $Id$
@@ -35,7 +35,7 @@ if (empty($lang) || !is_array($lang))
 
 /**
 *	MODDERS PLEASE NOTE
-*	
+*
 *	You are able to put your permission sets into a separate file too by
 *	prefixing the new file with permissions_ and putting it into the acp
 *	language folder.

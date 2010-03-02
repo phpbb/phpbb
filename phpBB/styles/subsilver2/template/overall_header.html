@@ -8,7 +8,7 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2002-2006 phpBB Group" />
+<meta name="copyright" content="2000, 2002, 2005, 2007 phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 {META}
@@ -151,7 +151,7 @@ function marklist(id, name, state)
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
 						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a><!-- ENDIF -->
-					<!-- ELSE --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
+					<!-- ELSEIF S_REGISTER_ENABLED --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
 			</td>

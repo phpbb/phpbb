@@ -127,6 +127,18 @@ class ucp_groups
 							}
 							list(, $row) = each($row);
 
+							$sql = 'SELECT group_type
+								FROM ' . GROUPS_TABLE . '
+								WHERE group_id = ' . $group_id;
+							$result = $db->sql_query($sql);
+							$group_type = (int) $db->sql_fetchfield('group_type');
+							$db->sql_freeresult($result);
+
+							if ($group_type != GROUP_OPEN && $group_type != GROUP_FREE)
+							{
+								trigger_error($user->lang['CANNOT_RESIGN_GROUP'] . $return_page);
+							}
+
 							if (confirm_box(true))
 							{
 								group_user_del($group_id, $user->data['user_id']);
@@ -697,8 +709,8 @@ class ucp_groups
 
 							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
-							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
-						);
+							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+						));
 
 					break;
 
@@ -1002,6 +1014,8 @@ class ucp_groups
 							{
 								trigger_error($user->lang[$error] . $return_page);
 							}
+
+							trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
@@ -1016,7 +1030,7 @@ class ucp_groups
 							confirm_box(false, sprintf($user->lang['GROUP_CONFIRM_ADD_USER' . ((sizeof($name_ary) == 1) ? '' : 'S')], implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
-						trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
 					break;
 

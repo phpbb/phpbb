@@ -107,6 +107,7 @@ $lang = array_merge($lang, array(
 	'NO_GROUPS_CREATED'			=> 'No groups created yet.',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 	'NO_USERS'					=> 'You haven’t entered any users.',
+	'NO_USERS_ADDED'			=> 'No users were added to the group.',
 
 	'SPECIAL_GROUPS'			=> 'Pre-defined groups',
 	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings.',

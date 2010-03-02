@@ -488,7 +488,8 @@ class custom_profile
 				else if ($day && $month && $year)
 				{
 					global $user;
-					return $user->format_date(mktime(0, 0, 0, $month, $day, $year), $user->lang['DATE_FORMAT'], true);
+					// d/m/y 00:00 GMT isn't necessarily on the same d/m/y in the user's timezone, so add the timezone seconds
+					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + $user->timezone + $user->dst, $user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
@@ -666,7 +667,7 @@ class custom_profile
 		}
 
 		$profile_row['s_year_options'] = '<option value="0"' . ((!$year) ? ' selected="selected"' : '') . '>--</option>';
-		for ($i = $now['year'] - 100; $i <= $now['year']; $i++)
+		for ($i = $now['year'] - 100; $i <= $now['year'] + 100; $i++)
 		{
 			$profile_row['s_year_options'] .= '<option value="' . $i . '"' . (($i == $year) ? ' selected="selected"' : '') . ">$i</option>";
 		}
@@ -871,13 +872,13 @@ class custom_profile
 				}
 				else
 				{
-					$var = request_var($var_name, $profile_row['field_default_value']);
+					$var = request_var($var_name, (int) $profile_row['field_default_value']);
 				}
 			break;
 
 			case FIELD_STRING:
 			case FIELD_TEXT:
-				$var = utf8_normalize_nfc(request_var($var_name, $profile_row['field_default_value'], true));
+				$var = utf8_normalize_nfc(request_var($var_name, (string) $profile_row['field_default_value'], true));
 			break;
 
 			case FIELD_INT:
@@ -887,8 +888,12 @@ class custom_profile
 				}
 				else
 				{
-					$var = request_var($var_name, $profile_row['field_default_value']);
+					$var = request_var($var_name, (int) $profile_row['field_default_value']);
 				}
+			break;
+
+			case FIELD_DROPDOWN:
+				$var = request_var($var_name, (int) $profile_row['field_default_value']);
 			break;
 
 			default:

@@ -478,7 +478,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
 	$message = utf8_normalize_nfc(request_var('message', '', true));
-	
+
 	if ($subject && $message)
 	{
 		if (confirm_box(true))
@@ -512,6 +512,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 				't'			=> $topic_id,
 				'subject'	=> $subject,
 				'message'	=> $message,
+				'attachment_data' => $message_parser->attachment_data,
 				)
 			);
 
@@ -520,12 +521,12 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject || !utf8_clean_string($subject))
+		if (utf8_clean_string($subject) === '')
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
 
-		if (!$message)
+		if (utf8_clean_string($message) === '')
 		{
 			$error[] = $user->lang['TOO_FEW_CHARS'];
 		}
@@ -582,7 +583,7 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$post_data['enable_sig']		= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
+	$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 	if ($config['allow_topic_notify'] && $user->data['is_registered'])
 	{
@@ -620,7 +621,7 @@ if ($submit || $preview || $refresh)
 			$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
 				WHERE topic_id = $topic_id";
 			$db->sql_query($sql);
-			
+
 			$topic_sql = array(
 				'poll_title'		=> '',
 				'poll_start' 		=> 0,
@@ -674,7 +675,7 @@ if ($submit || $preview || $refresh)
 
 	// Check checksum ... don't re-parse message if the same
 	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
-	
+
 	// Parse message
 	if ($update_message)
 	{
@@ -769,7 +770,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$preview && !$refresh && !utf8_clean_string($post_data['post_subject']) && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -1073,7 +1074,7 @@ if (!sizeof($error) && $preview)
 			'S_IS_MULTI_CHOICE'		=> ($post_data['poll_max_options'] > 1) ? true : false,
 
 			'POLL_QUESTION'		=> $parse_poll->message,
-			
+
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
 			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
 		);
@@ -1428,6 +1429,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			$data = array(
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
+				'topic_replies_real'	=> $post_data['topic_replies_real'],
 				'topic_approved'		=> $post_data['topic_approved'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_approved'			=> $post_data['post_approved'],
@@ -1439,7 +1441,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 
 			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
 
-			if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
+			if ($next_post_id === false)
 			{
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title']);
 
@@ -1460,7 +1462,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_MESSAGE', $s_hidden_fields);
+			confirm_box(false, 'DELETE_POST', $s_hidden_fields);
 		}
 	}
 

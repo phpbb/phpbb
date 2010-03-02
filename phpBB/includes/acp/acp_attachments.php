@@ -23,7 +23,7 @@ class acp_attachments
 {
 	var $u_action;
 	var $new_config;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -56,7 +56,7 @@ class acp_attachments
 			case 'ext_groups':
 				$l_title = 'ACP_EXTENSION_GROUPS';
 			break;
-	
+
 			case 'orphan':
 				$l_title = 'ACP_ORPHAN_ATTACHMENTS';
 			break;
@@ -152,7 +152,7 @@ class acp_attachments
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
 						$size_var = request_var($config_name, '');
-						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? ($config_value << 10) : (($size_var == 'mb') ? ($config_value << 20) : $config_value);
 					}
 
 					if ($submit)
@@ -184,7 +184,18 @@ class acp_attachments
 				}
 
 				// We strip eventually manual added convert program, we only want the patch
-				$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
+				if ($this->new_config['img_imagick'])
+				{
+					// Change path separator
+					$this->new_config['img_imagick'] = str_replace('\\', '/', $this->new_config['img_imagick']);
+					$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
+
+					// Check for trailing slash
+					if (substr($this->new_config['img_imagick'], -1) !== '/')
+					{
+						$this->new_config['img_imagick'] .= '/';
+					}
+				}
 
 				$supported_types = get_supported_image_types();
 
@@ -201,7 +212,7 @@ class acp_attachments
 
 				// Secure Download Options - Same procedure as with banning
 				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
-		
+
 				$sql = 'SELECT *
 					FROM ' . SITELIST_TABLE;
 				$result = $db->sql_query($sql);
@@ -271,7 +282,7 @@ class acp_attachments
 						'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
 						)
 					);
-		
+
 					unset($display_vars['vars'][$config_key]);
 				}
 
@@ -323,7 +334,7 @@ class acp_attachments
 								FROM ' . EXTENSIONS_TABLE . '
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$result = $db->sql_query($sql);
-							
+
 							$extension_list = '';
 							while ($row = $db->sql_fetchrow($result))
 							{
@@ -353,7 +364,7 @@ class acp_attachments
 								FROM ' . EXTENSIONS_TABLE . "
 								WHERE extension = '" . $db->sql_escape($add_extension) . "'";
 							$result = $db->sql_query($sql);
-							
+
 							if ($row = $db->sql_fetchrow($result))
 							{
 								$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
@@ -489,7 +500,7 @@ class acp_attachments
 						$allowed_forums	= request_var('allowed_forums', array(0));
 						$allow_in_pm	= (isset($_POST['allow_in_pm'])) ? true : false;
 						$max_filesize	= request_var('max_filesize', 0);
-						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
+						$max_filesize	= ($size_select == 'kb') ? ($max_filesize << 10) : (($size_select == 'mb') ? ($max_filesize << 20) : $max_filesize);
 						$allow_group	= (isset($_POST['allow_group'])) ? true : false;
 
 						if ($max_filesize == $config['max_filesize'])
@@ -592,7 +603,7 @@ class acp_attachments
 								SET group_id = 0
 								WHERE group_id = $group_id";
 							$db->sql_query($sql);
-					
+
 							add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $group_name);
 
 							$cache->destroy('_extensions');
@@ -662,8 +673,7 @@ class acp_attachments
 						}
 
 						$size_format = ($ext_group_row['max_filesize'] >= 1048576) ? 'mb' : (($ext_group_row['max_filesize'] >= 1024) ? 'kb' : 'b');
-
-						$ext_group_row['max_filesize'] = ($ext_group_row['max_filesize'] >= 1048576) ? round($ext_group_row['max_filesize'] / 1048576 * 100) / 100 : (($ext_group_row['max_filesize'] >= 1024) ? round($ext_group_row['max_filesize'] / 1024 * 100) / 100 : $ext_group_row['max_filesize']);
+						$ext_group_row['max_filesize'] = get_formatted_filesize($ext_group_row['max_filesize'], false);
 
 						$img_path = $config['upload_icons_path'];
 
@@ -889,7 +899,7 @@ class acp_attachments
 					$upload_list = array();
 					foreach ($add_files as $attach_id)
 					{
-						if (!in_array($attach_id, array_keys($delete_files)) && !empty($post_ids[$attach_id]))
+						if (!isset($delete_files[$attach_id]) && !empty($post_ids[$attach_id]))
 						{
 							$upload_list[$attach_id] = $post_ids[$attach_id];
 						}
@@ -930,6 +940,7 @@ class acp_attachments
 								AND is_orphan = 1';
 						$result = $db->sql_query($sql);
 
+						$files_added = $space_taken = 0;
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
@@ -969,9 +980,18 @@ class acp_attachments
 								WHERE topic_id = ' . $post_row['topic_id'];
 							$db->sql_query($sql);
 
+							$space_taken += $row['filesize'];
+							$files_added++;
+
 							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
 						}
 						$db->sql_freeresult($result);
+
+						if ($files_added)
+						{
+							set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
+							set_config('num_files', $config['num_files'] + $files_added, true);
+						}
 					}
 				}
 
@@ -989,11 +1009,8 @@ class acp_attachments
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$size_lang = ($row['filesize'] >= 1048576) ? $user->lang['MB'] : (($row['filesize'] >= 1024) ? $user->lang['KB'] : $user->lang['BYTES']);
-					$row['filesize'] = ($row['filesize'] >= 1048576) ? round((round($row['filesize'] / 1048576 * 100) / 100), 2) : (($row['filesize'] >= 1024) ? round((round($row['filesize'] / 1024 * 100) / 100), 2) : $row['filesize']);
-
 					$template->assign_block_vars('orphan', array(
-						'FILESIZE'			=> $row['filesize'] . ' ' . $size_lang,
+						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
 						'FILETIME'			=> $user->format_date($row['filetime']),
 						'REAL_FILENAME'		=> basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
@@ -1039,7 +1056,7 @@ class acp_attachments
 			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
 			ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 		);
-		
+
 		if ($group_id)
 		{
 			$sql = 'SELECT cat_id
@@ -1055,7 +1072,7 @@ class acp_attachments
 		{
 			$cat_type = ATTACHMENT_CATEGORY_NONE;
 		}
-		
+
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		foreach ($types as $type => $mode)
@@ -1075,7 +1092,7 @@ class acp_attachments
 	function group_select($select_name, $default_group = false, $key = '')
 	{
 		global $db, $user;
-			
+
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		$sql = 'SELECT group_id, group_name
@@ -1093,7 +1110,7 @@ class acp_attachments
 		$row['group_id'] = 0;
 		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
-		
+
 		for ($i = 0; $i < sizeof($group_name); $i++)
 		{
 			if ($default_group === false)
@@ -1127,14 +1144,14 @@ class acp_attachments
 		if (empty($magic_home))
 		{
 			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));	
+			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
 
 			$locations = array_merge($path_locations, $locations);
 
 			foreach ($locations as $location)
 			{
 				// The path might not end properly, fudge it
-				if (substr($location, -1, 1) !== '/')
+				if (substr($location, -1) !== '/')
 				{
 					$location .= '/';
 				}
@@ -1341,7 +1358,7 @@ class acp_attachments
 					$db->sql_query($sql);
 				}
 			}
-			
+
 			if (!empty($ip_list_log))
 			{
 				// Update log
@@ -1399,7 +1416,7 @@ class acp_attachments
 	{
 		// Determine size var and adjust the value accordingly
 		$size_var = ($value >= 1048576) ? 'mb' : (($value >= 1024) ? 'kb' : 'b');
-		$value = ($value >= 1048576) ? round($value / 1048576 * 100) / 100 : (($value >= 1024) ? round($value / 1024 * 100) / 100 : $value);
+		$value = get_formatted_filesize($value, false);
 
 		return '<input type="text" id="' . $key . '" size="8" maxlength="15" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}

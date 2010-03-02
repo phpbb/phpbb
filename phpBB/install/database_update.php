@@ -8,9 +8,9 @@
 *
 */
 
-$updates_to_version = '3.0.0';
+$updates_to_version = '3.0.1-RC1';
 
-// Return if we "just include it" to find out for which version the database update is responsuble for
+// Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
 	return;
@@ -473,6 +473,29 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.0 to the next version
+	'3.0.0'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			FORUMS_TABLE			=> array(
+				'display_subforum_list'		=> array('BOOL', 1),
+			),
+			SESSIONS_TABLE			=> array(
+				'session_forum_id'		=> array('UINT', 0),
+			),
+		),
+		'add_index'		=> array(
+			SESSIONS_TABLE			=> array(
+				'session_forum_id'		=> array('session_forum_id'),
+			),
+			GROUPS_TABLE			=> array(
+				'group_legend_name'		=> array('group_legend', 'group_name'),
+			),
+		),
+		'drop_keys'		=> array(
+			GROUPS_TABLE			=> array('group_legend'),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -615,6 +638,9 @@ if (version_compare($current_version, '3.0.RC8', '<='))
 	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
 	$modify_users	= request_var('modify_users', array(0 => ''));
 	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
+
+	// We need this file if someone wants to edit usernames.
+	include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 
 	if (!class_exists('utf_new_normalizer'))
 	{
@@ -1547,6 +1573,34 @@ if (version_compare($current_version, '3.0.RC5', '<='))
 	$no_updates = false;
 }
 
+
+if (version_compare($current_version, '3.0.0', '<='))
+{
+	$sql = 'UPDATE ' . TOPICS_TABLE . "
+		SET topic_last_view_time = topic_last_post_time
+		WHERE topic_last_view_time = 0";
+	_sql($sql, $errored, $error_ary);
+	
+	// Update smiley sizes
+	$smileys = array('icon_e_surprised.gif', 'icon_eek.gif', 'icon_cool.gif', 'icon_lol.gif', 'icon_mad.gif', 'icon_razz.gif', 'icon_redface.gif', 'icon_cry.gif', 'icon_evil.gif', 'icon_twisted.gif', 'icon_rolleyes.gif', 'icon_exclaim.gif', 'icon_question.gif', 'icon_idea.gif', 'icon_arrow.gif', 'icon_neutral.gif', 'icon_mrgreen.gif', 'icon_e_ugeek.gif');
+	foreach ($smileys as $smiley)
+	{
+		if (file_exists($phpbb_root_path . 'images/smilies/' . $smiley))
+		{
+			list($width, $height) = getimagesize($phpbb_root_path . 'images/smilies/' . $smiley);
+			
+			$sql = 'UPDATE ' . SMILIES_TABLE . '
+				SET smiley_width = ' . $width . ', smiley_height = ' . $height . "
+				WHERE smiley_url = '" . $db->sql_escape($smiley) . "'";
+			
+			_sql($sql, $errored, $error_ary);
+		}
+	}
+	
+	// TODO: remove all form token min times
+	
+	$no_updates = false;
+}
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();

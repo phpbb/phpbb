@@ -207,7 +207,7 @@
 		<!-- BEGIN leader -->
 		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
-				<dt><a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{GROUP_COLOR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
+				<dt><a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
 					<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF --></dt>
 				<dd class="option"><span><a href="{leader.U_EDIT}" >{L_EDIT}</a></span></dd>
 				<dd class="option"><span><a href="{leader.U_LIST}">{L_GROUP_LIST}</a></span></dd>

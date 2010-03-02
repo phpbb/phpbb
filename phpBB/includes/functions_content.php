@@ -67,7 +67,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		$sort_dir = key($sort_dir_text);
 	}
 
-	$s_limit_days = '<select name="st">';
+	$s_limit_days = '<select name="st" id="st">';
 	foreach ($limit_days as $day => $text)
 	{
 		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
@@ -75,7 +75,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	}
 	$s_limit_days .= '</select>';
 
-	$s_sort_key = '<select name="sk">';
+	$s_sort_key = '<select name="sk" id="sk">';
 	foreach ($sort_by_text as $key => $text)
 	{
 		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
@@ -83,7 +83,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	}
 	$s_sort_key .= '</select>';
 
-	$s_sort_dir = '<select name="sd">';
+	$s_sort_dir = '<select name="sd" id="sd">';
 	foreach ($sort_dir_text as $key => $value)
 	{
 		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
@@ -382,7 +382,7 @@ function strip_bbcode(&$text, $uid = '')
 
 	$match = get_preg_expression('bbcode_htm');
 	$replace = array('\1', '\1', '\2', '\1', '', '');
-	
+
 	$text = preg_replace($match, $replace, $text);
 }
 
@@ -418,7 +418,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		{
 			$bbcode->bbcode($bitfield);
 		}
-		
+
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
@@ -492,6 +492,7 @@ function generate_text_for_edit($text, $uid, $flags)
 */
 function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
 {
+	$orig_url		= $url . $relative_url;
 	$append			= '';
 	$url			= htmlspecialchars_decode($url);
 	$relative_url	= htmlspecialchars_decode($relative_url);
@@ -558,29 +559,39 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 		break;
 	}
 
+	$short_url = (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+
 	switch ($type)
 	{
 		case MAGIC_URL_LOCAL:
 			$tag			= 'l';
 			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
 			$url			= $url . '/' . $relative_url;
-			$text			= ($relative_url) ? $relative_url : $url;
+			$text			= $relative_url;
+			
+			// this url goes to http://domain.tld/path/to/board/ which
+			// would result in an empty link if treated as local so
+			// don't touch it and let MAGIC_URL_FULL take care of it.
+			if (!$relative_url)
+			{
+				return $orig_url . '/'; // slash is taken away by relative url pattern
+			}
 		break;
 
 		case MAGIC_URL_FULL:
 			$tag	= 'm';
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 		break;
 
 		case MAGIC_URL_WWW:
 			$tag	= 'w';
 			$url	= 'http://' . $url;
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 		break;
 
 		case MAGIC_URL_EMAIL:
 			$tag	= 'e';
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 			$url	= 'mailto:' . $url;
 		break;
 	}
@@ -647,12 +658,21 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 function censor_text($text)
 {
 	static $censors;
-	global $cache;
 
+	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
-		// obtain_word_list is taking care of the users censor option and the board-wide option
-		$censors = $cache->obtain_word_list();
+		global $config, $user, $auth, $cache;
+
+		// We check here if the user is having viewing censors disabled (and also allowed to do so).
+		if (!$user->optionget('viewcensors') && $config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
+		{
+			$censors = array();
+		}
+		else
+		{
+			$censors = $cache->obtain_word_list();
+		}
 	}
 
 	if (sizeof($censors))
@@ -792,7 +812,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$template->destroy_block_vars('_file');
 
 		$block_array = array();
-		
+
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
@@ -813,8 +833,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		}
 
 		$filesize = $attachment['filesize'];
-		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
+		$size_lang = ($filesize >= 1048576) ? $user->lang['MIB'] : (($filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+		$filesize = get_formatted_filesize($filesize, false);
 
 		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 
@@ -1074,7 +1094,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 	{
 		$string = 'Re: ' . $string;
 	}
-	
+
 	if ($append != '' && $stripped)
 	{
 		$string = $string . $append;
@@ -1193,7 +1213,7 @@ class bitfield
 		if (strlen($this->data) >= $byte + 1)
 		{
 			$c = $this->data[$byte];
-	
+
 			// Lookup the ($n % 8)th bit of the byte
 			$bit = 7 - ($n & 7);
 			return (bool) (ord($c) & (1 << $bit));

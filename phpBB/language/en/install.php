@@ -460,7 +460,7 @@ $lang = array_merge($lang, array(
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
-	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently having differences about %1$d from %2$d files collected.<br />Please wait until file collection finished.',
+	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently differences of %1$d of %2$d files have been checked.<br />Please wait until all files are checked.',
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 

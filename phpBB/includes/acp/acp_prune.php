@@ -405,7 +405,15 @@ class acp_prune
 			$where_sql .= ($email) ? ' AND user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
 			$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
 			$where_sql .= ($count !== '') ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
-			$where_sql .= (sizeof($active)) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) : '';
+
+			if (sizeof($active) && $active_select != 'lt')
+			{
+				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
+			}
+			else if (sizeof($active))
+			{
+				$where_sql .= ' AND (user_lastvisit > 0 AND user_lastvisit < ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) . ')';
+			}
 		}
 
 		// Protect the admin, do not prune if no options are given...

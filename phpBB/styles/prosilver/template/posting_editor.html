@@ -4,7 +4,7 @@
 	<!-- IF S_PRIVMSGS and not S_SHOW_DRAFTS -->
 
 		<div class="column1">
-		<!-- IF S_ALLOW_MASS_PM -->
+		<!-- IF not S_ALLOW_MASS_PM -->
 			<!-- IF .to_recipient -->
 				<dl>
 					<dt><label>{L_TO}:</label></dt>
@@ -29,15 +29,17 @@
 					</dd>
 				</dl>
 			<!-- ENDIF -->
+			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
 				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2"></textarea></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
 			</dl>
+			<!-- ENDIF -->
 		<!-- ELSE -->
 			<dl>
-				<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span></dt>
+				<dt><label for="username_list">{L_TO}:</label><!-- IF not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
 				<!-- IF .to_recipient -->
 					<dd>
 						<!-- BEGIN to_recipient -->
@@ -48,7 +50,9 @@
 					</dd>
 				<!-- ENDIF -->
 
+				<!-- IF not S_EDIT_POST -->
 				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
+				<!-- ENDIF -->
 			</dl>
 		<!-- ENDIF -->
 

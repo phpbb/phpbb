@@ -14,6 +14,10 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
+
+// Report all errors, except notices
+error_reporting(E_ALL ^ E_NOTICE);
+
 require($phpbb_root_path . 'config.' . $phpEx);
 
 if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
@@ -116,6 +120,7 @@ if ($id)
 	$sql = 'SELECT *
 		FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 		WHERE imageset_id = ' . $theme['imageset_id'] . "
+		AND image_filename <> '' 
 		AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
 	$result = $db->sql_query($sql, 3600);
 

@@ -199,6 +199,26 @@ function unique_id($extra = 'c')
 }
 
 /**
+* Return formatted string for filesizes
+*/
+function get_formatted_filesize($bytes, $add_size_lang = true)
+{
+	global $user;
+
+	if ($bytes >= pow(2, 20))
+	{
+		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . $user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
+	}
+
+	if ($bytes >= pow(2, 10))
+	{
+		return ($add_size_lang) ? round($bytes / 1024, 2) . ' ' . $user->lang['KIB'] : round($bytes / 1024, 2);
+	}
+
+	return ($add_size_lang) ? ($bytes) . ' ' . $user->lang['BYTES'] : ($bytes);
+}
+
+/**
 * Determine whether we are approaching the maximum execution time. Should be called once
 * at the beginning of the script in which it's used.
 * @return	bool	Either true if the maximum execution time is nearly reached, or false
@@ -287,7 +307,7 @@ function phpbb_hash($password)
 		}
 		$random = substr($random, 0, $count);
 	}
-	
+
 	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
 
 	if (strlen($hash) == 34)
@@ -360,7 +380,7 @@ function _hash_encode64($input, $count, &$itoa64)
 		}
 
 		$output .= $itoa64[($value >> 12) & 0x3f];
-		
+
 		if ($i++ >= $count)
 		{
 			break;
@@ -523,177 +543,175 @@ if (!function_exists('stripos'))
 	}
 }
 
-if (!function_exists('realpath'))
+/**
+* Checks if a path ($path) is absolute or relative
+*
+* @param string $path Path to check absoluteness of
+* @return boolean
+*/
+function is_absolute($path)
 {
-	/**
-	* Checks if a path ($path) is absolute or relative
-	*
-	* @param string $path Path to check absoluteness of
-	* @return boolean
-	*/
-	function is_absolute($path)
+	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
+}
+
+/**
+* @author Chris Smith <chris@project-minerva.org>
+* @copyright 2006 Project Minerva Team
+* @param string $path The path which we should attempt to resolve.
+* @return mixed
+*/
+function phpbb_own_realpath($path)
+{
+	// Now to perform funky shizzle
+
+	// Switch to use UNIX slashes
+	$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+	$path_prefix = '';
+
+	// Determine what sort of path we have
+	if (is_absolute($path))
 	{
-		return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
-	}
+		$absolute = true;
 
-	/**
-	* @author Chris Smith <chris@project-minerva.org>
-	* @copyright 2006 Project Minerva Team
-	* @param string $path The path which we should attempt to resolve.
-	* @return mixed
-	*/
-	function phpbb_realpath($path)
-	{
-		// Now to perform funky shizzle
-
-		// Switch to use UNIX slashes
-		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-		$path_prefix = '';
-
-		// Determine what sort of path we have
-		if (is_absolute($path))
+		if ($path[0] == '/')
 		{
+			// Absolute path, *NIX style
+			$path_prefix = '';
+		}
+		else
+		{
+			// Absolute path, Windows style
+			// Remove the drive letter and colon
+			$path_prefix = $path[0] . ':';
+			$path = substr($path, 2);
+		}
+	}
+	else
+	{
+		// Relative Path
+		// Prepend the current working directory
+		if (function_exists('getcwd'))
+		{
+			// This is the best method, hopefully it is enabled!
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
 			$absolute = true;
-
-			if ($path[0] == '/')
+			if (preg_match('#^[a-z]:#i', $path))
 			{
-				// Absolute path, *NIX style
-				$path_prefix = '';
+				$path_prefix = $path[0] . ':';
+				$path = substr($path, 2);
 			}
 			else
 			{
-				// Absolute path, Windows style
-				// Remove the drive letter and colon
-				$path_prefix = $path[0] . ':';
-				$path = substr($path, 2);
+				$path_prefix = '';
+			}
+		}
+		else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+		{
+			// Warning: If chdir() has been used this will lie!
+			// Warning: This has some problems sometime (CLI can create them easily)
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+			$absolute = true;
+			$path_prefix = '';
+		}
+		else
+		{
+			// We have no way of getting the absolute path, just run on using relative ones.
+			$absolute = false;
+			$path_prefix = '.';
+		}
+	}
+
+	// Remove any repeated slashes
+	$path = preg_replace('#/{2,}#', '/', $path);
+
+	// Remove the slashes from the start and end of the path
+	$path = trim($path, '/');
+
+	// Break the string into little bits for us to nibble on
+	$bits = explode('/', $path);
+
+	// Remove any . in the path, renumber array for the loop below
+	$bits = array_values(array_diff($bits, array('.')));
+
+	// Lets get looping, run over and resolve any .. (up directory)
+	for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
+	{
+		// @todo Optimise
+		if ($bits[$i] == '..' )
+		{
+			if (isset($bits[$i - 1]))
+			{
+				if ($bits[$i - 1] != '..')
+				{
+					// We found a .. and we are able to traverse upwards, lets do it!
+					unset($bits[$i]);
+					unset($bits[$i - 1]);
+					$i -= 2;
+					$max -= 2;
+					$bits = array_values($bits);
+				}
+			}
+			else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
+			{
+				// We have an absolute path trying to descend above the root of the filesystem
+				// ... Error!
+				return false;
+			}
+		}
+	}
+
+	// Prepend the path prefix
+	array_unshift($bits, $path_prefix);
+
+	$resolved = '';
+
+	$max = sizeof($bits) - 1;
+
+	// Check if we are able to resolve symlinks, Windows cannot.
+	$symlink_resolve = (function_exists('readlink')) ? true : false;
+
+	foreach ($bits as $i => $bit)
+	{
+		if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
+		{
+			// Path Exists
+			if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
+			{
+				// Resolved a symlink.
+				$resolved = $link . (($i == $max) ? '' : '/');
+				continue;
 			}
 		}
 		else
 		{
-			// Relative Path
-			// Prepend the current working directory
-			if (function_exists('getcwd'))
-			{
-				// This is the best method, hopefully it is enabled!
-				$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
-				$absolute = true;
-				if (preg_match('#^[a-z]:#i', $path))
-				{
-					$path_prefix = $path[0] . ':';
-					$path = substr($path, 2);
-				}
-				else
-				{
-					$path_prefix = '';
-				}
-			}
-			else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
-			{
-				// Warning: If chdir() has been used this will lie!
-				// Warning: This has some problems sometime (CLI can create them easily)
-				$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
-				$absolute = true;
-				$path_prefix = '';
-			}
-			else
-			{
-				// We have no way of getting the absolute path, just run on using relative ones.
-				$absolute = false;
-				$path_prefix = '.';
-			}
+			// Something doesn't exist here!
+			// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
+			// return false;
 		}
-
-		// Remove any repeated slashes
-		$path = preg_replace('#/{2,}#', '/', $path);
-
-		// Remove the slashes from the start and end of the path
-		$path = trim($path, '/');
-
-		// Break the string into little bits for us to nibble on
-		$bits = explode('/', $path);
-
-		// Remove any . in the path, renumber array for the loop below
-		$bits = array_values(array_diff($bits, array('.')));
-
-		// Lets get looping, run over and resolve any .. (up directory)
-		for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
-		{
-			// @todo Optimise
-			if ($bits[$i] == '..' )
-			{
-				if (isset($bits[$i - 1]))
-				{
-					if ($bits[$i - 1] != '..')
-					{
-						// We found a .. and we are able to traverse upwards, lets do it!
-						unset($bits[$i]);
-						unset($bits[$i - 1]);
-						$i -= 2;
-						$max -= 2;
-						$bits = array_values($bits);
-					}
-				}
-				else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
-				{
-					// We have an absolute path trying to descend above the root of the filesystem
-					// ... Error!
-					return false;
-				}
-			}
-		}
-
-		// Prepend the path prefix
-		array_unshift($bits, $path_prefix);
-
-		$resolved = '';
-
-		$max = sizeof($bits) - 1;
-
-		// Check if we are able to resolve symlinks, Windows cannot.
-		$symlink_resolve = (function_exists('readlink')) ? true : false;
-
-		foreach ($bits as $i => $bit)
-		{
-			if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
-			{
-				// Path Exists
-				if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
-				{
-					// Resolved a symlink.
-					$resolved = $link . (($i == $max) ? '' : '/');
-					continue;
-				}
-			}
-			else
-			{
-				// Something doesn't exist here!
-				// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
-				// return false;
-			}
-			$resolved .= $bit . (($i == $max) ? '' : '/');
-		}
-
-		// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
-		// because we must be inside that basedir, the question is where...
-		// @internal The slash in is_dir() gets around an open_basedir restriction
-		if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
-		{
-			return false;
-		}
-
-		// Put the slashes back to the native operating systems slashes
-		$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
-
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($resolved, -1) == DIRECTORY_SEPARATOR)
-		{
-			return substr($resolved, 0, -1);
-		}
-
-		return $resolved; // We got here, in the end!
+		$resolved .= $bit . (($i == $max) ? '' : '/');
 	}
+
+	// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
+	// because we must be inside that basedir, the question is where...
+	// @internal The slash in is_dir() gets around an open_basedir restriction
+	if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
+	{
+		return false;
+	}
+
+	// Put the slashes back to the native operating systems slashes
+	$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
+
+	// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
+	if (substr($resolved, -1) == DIRECTORY_SEPARATOR)
+	{
+		return substr($resolved, 0, -1);
+	}
+
+	return $resolved; // We got here, in the end!
 }
-else
+
+if (!function_exists('realpath'))
 {
 	/**
 	* A wrapper for realpath
@@ -701,15 +719,32 @@ else
 	*/
 	function phpbb_realpath($path)
 	{
-		$path = realpath($path);
+		return phpbb_own_realpath($path);
+	}
+}
+else
+{
+	/**
+	* A wrapper for realpath
+	*/
+	function phpbb_realpath($path)
+	{
+		$realpath = realpath($path);
 
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($path, -1) == DIRECTORY_SEPARATOR)
+		// Strangely there are provider not disabling realpath but returning strange values. :o
+		// We at least try to cope with them.
+		if ($realpath === $path || $realpath === false)
 		{
-			return substr($path, 0, -1);
+			return phpbb_own_realpath($path);
 		}
 
-		return $path;
+		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
+		if (substr($realpath, -1) == DIRECTORY_SEPARATOR)
+		{
+			$realpath = substr($realpath, 0, -1);
+		}
+
+		return $realpath;
 	}
 }
 
@@ -836,7 +871,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
-	
+
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
 				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
 
@@ -1129,7 +1164,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 		{
 			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
 		}
-			
+
 		$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
 
 		foreach ($topic_ids as $topic_id)
@@ -1177,7 +1212,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$last_read[$row['topic_id']] = $row['mark_time'];
 		}
 		$db->sql_freeresult($result);
-	
+
 		$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
 		if (sizeof($topic_ids))
@@ -1188,7 +1223,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 					AND forum_id " .
 					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
 			$result = $db->sql_query($sql);
-		
+
 			$mark_time = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -1359,7 +1394,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
+				if (!isset($check_forum[base_convert($row['topic_id'], 10, 36)]))
 				{
 					$unread = true;
 					break;
@@ -1459,7 +1494,7 @@ function tracking_unserialize($string, $max_depth = 3)
 					break;
 				}
 			break;
-			
+
 			case 2:
 				switch ($string[$i])
 				{
@@ -1477,7 +1512,7 @@ function tracking_unserialize($string, $max_depth = 3)
 					break;
 				}
 			break;
-			
+
 			case 3:
 				switch ($string[$i])
 				{
@@ -1501,7 +1536,7 @@ function tracking_unserialize($string, $max_depth = 3)
 	{
 		die('Invalid data supplied');
 	}
-	
+
 	return $level;
 }
 
@@ -1719,7 +1754,7 @@ function generate_board_url($without_script_path = false)
 {
 	global $config, $user;
 
-	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+	$server_name = $user->host;
 	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
 
 	// Forcing server vars is the only way to specify/override the protocol
@@ -1743,7 +1778,11 @@ function generate_board_url($without_script_path = false)
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
 	{
-		$url .= ':' . $server_port;
+		// HTTP HOST can carry a port number...
+		if (strpos($server_name, ':') === false)
+		{
+			$url .= ':' . $server_port;
+		}
 	}
 
 	if (!$without_script_path)
@@ -1984,7 +2023,7 @@ function build_url($strip_vars = false)
 				unset($query[$strip]);
 			}
 		}
-	
+
 		// Glue the remaining parts together... already urlencoded
 		foreach ($query as $key => $value)
 		{
@@ -2041,9 +2080,8 @@ function add_form_key($form_name)
 * @param int $timespan The maximum acceptable age for a submitted form in seconds. Defaults to the config setting.
 * @param string $return_page The address for the return link
 * @param bool $trigger If true, the function will triger an error when encountering an invalid form
-* @param int $minimum_time The minimum acceptable age for a submitted form in seconds
 */
-function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false, $minimum_time = false)
+function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false)
 {
 	global $config, $user;
 
@@ -2052,11 +2090,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		// we enforce a minimum value of half a minute here.
 		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
 	}
-	if ($minimum_time === false)
-	{
-		$minimum_time = (int) $config['form_token_mintime'];
-	}
-	
+
 	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
 	{
 		$creation_time	= abs(request_var('creation_time', 0));
@@ -2064,10 +2098,10 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 
 		$diff = (time() - $creation_time);
 
-		if (($diff >= $minimum_time) && (($diff <= $timespan) || $timespan == -1))
+		if (($diff <= $timespan) || $timespan === -1)
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-			
+
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
 			if ($key === $token)
 			{
@@ -2304,7 +2338,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// Something failed, determine what...
 		if ($result['status'] == LOGIN_BREAK)
 		{
-			trigger_error($result['error_msg'], E_USER_ERROR);
+			trigger_error($result['error_msg']);
 		}
 
 		// Special cases... determine
@@ -2365,7 +2399,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
-				
+
 			break;
 		}
 	}
@@ -2419,7 +2453,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
 
-	page_header($user->lang['LOGIN']);
+	page_header($user->lang['LOGIN'], false);
 
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
@@ -2502,7 +2536,7 @@ function login_forum_box($forum_data)
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
 	);
-	
+
 	page_footer();
 }
 
@@ -2601,10 +2635,10 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = substr($value, 1, sizeof($value)-2);
 		}
-	
+
 		$parsed_items[$key] = $value;
 	}
-	
+
 	return $parsed_items;
 }
 
@@ -2631,13 +2665,13 @@ function add_log()
 		'log_operation'	=> $action,
 		'log_data'		=> $data,
 	);
-	
+
 	switch ($mode)
 	{
 		case 'admin':
 			$sql_ary['log_type'] = LOG_ADMIN;
 		break;
-		
+
 		case 'mod':
 			$sql_ary += array(
 				'log_type'	=> LOG_MOD,
@@ -2656,7 +2690,7 @@ function add_log()
 		case 'critical':
 			$sql_ary['log_type'] = LOG_CRITICAL;
 		break;
-		
+
 		default:
 			return false;
 	}
@@ -2737,7 +2771,7 @@ function get_preg_expression($mode)
 	switch ($mode)
 	{
 		case 'email':
-			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*[a-z]+';
+			return '(?:[a-z0-9\'\.\-_\+\|]|&amp;)+@[a-z0-9\-]+\.(?:[a-z0-9\-]+\.)*[a-z]+';
 		break;
 
 		case 'bbcode_htm':
@@ -2962,14 +2996,14 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<head>';
 			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
 			echo '<title>' . $msg_title . '</title>';
-			echo '<style type="text/css">' . "\n" . '<!--' . "\n";
+			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
 			echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
 			echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
 			echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
 			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } ';
 			echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
-			echo "\n" . '//-->' . "\n";
+			echo "\n" . '/* ]]> */' . "\n";
 			echo '</style>';
 			echo '</head>';
 			echo '<body id="errorpage">';
@@ -2981,9 +3015,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	<div class="panel">';
 			echo '		<div id="content">';
 			echo '			<h1>' . $msg_title . '</h1>';
-			
+
 			echo '			<div>' . $msg_text . '</div>';
-			
+
 			echo $l_notify;
 
 			echo '		</div>';
@@ -2995,7 +3029,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</div>';
 			echo '</body>';
 			echo '</html>';
-			
+
 			exit_handler();
 		break;
 
@@ -3045,7 +3079,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
-			
+
 			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 			{
 				adm_page_footer();
@@ -3065,6 +3099,209 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 }
 
 /**
+* Queries the session table to get information about online guests
+* @param int $forum_id Limits the search to the forum with this id
+* @return int The number of active distinct guest sessions
+*/
+function obtain_guest_count($forum_id = 0)
+{
+	global $db, $config;
+	
+	if ($forum_id)
+	{
+		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
+	} 
+	else
+	{
+		$reading_sql = '';
+	}
+	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	 
+ 	// Get number of online guests
+
+	if ($db->sql_layer === 'sqlite')
+	{
+		$sql = 'SELECT COUNT(session_ip) as num_guests
+			FROM (
+				SELECT DISTINCT s.session_ip
+				FROM ' . SESSIONS_TABLE . ' s
+				WHERE s.session_user_id = ' . ANONYMOUS . '
+					AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+				$reading_sql .
+			')';
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
+			FROM ' . SESSIONS_TABLE . ' s
+			WHERE s.session_user_id = ' . ANONYMOUS . '
+				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+			$reading_sql;
+	}
+	$result = $db->sql_query($sql, 60);
+	$guests_online = (int) $db->sql_fetchfield('num_guests');
+	$db->sql_freeresult($result);
+	
+	return $guests_online;
+}
+
+/**
+* Queries the session table to get information about online users
+* @param int $forum_id Limits the search to the forum with this id
+* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
+*/
+function obtain_users_online($forum_id = 0)
+{
+	global $db, $config, $user;
+
+	$reading_sql = '';
+	if ($forum_id !== 0)
+	{
+		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
+	}
+
+	$online_users = array(
+		'online_users'			=> array(),
+		'hidden_users'			=> array(),
+		'total_online'			=> 0,
+		'visible_online'		=> 0,
+		'hidden_online'			=> 0,
+		'guests_online'			=> 0,
+	);
+
+	if ($config['load_online_guests'])
+	{
+		$online_users['guests_online'] = obtain_guest_count($forum_id);
+	}
+	
+	// a little discrete magic to cache this for 30 seconds
+	$time = (time() - (intval($config['load_online_time']) * 60)); 
+
+	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
+		FROM ' . SESSIONS_TABLE . ' s
+		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
+			$reading_sql .
+		' AND s.session_user_id <> ' . ANONYMOUS;
+	$result = $db->sql_query($sql, 30); 
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// Skip multiple sessions for one user
+		if (!isset($online_users['online_users'][$row['session_user_id']]))
+		{
+			$online_users['online_users'][$row['session_user_id']] = (int) $row['session_user_id'];
+			if ($row['session_viewonline'])
+			{
+				$online_users['visible_online']++;
+			}
+			else
+			{
+				$online_users['hidden_users'][$row['session_user_id']] = (int) $row['session_user_id'];
+				$online_users['hidden_online']++;
+			}
+		}
+	}
+	$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
+	$db->sql_freeresult($result);
+	
+	return $online_users;
+}
+
+/**
+* Uses the result of obtain_users_online to generate a localized, readable representation.
+* @param mixed $online_users result of obtain_users_online - array with user_id lists for total, hidden and visible users, and statistics
+* @param int $forum_id Indicate that the data is limited to one forum and not global.
+* @return array An array containing the string for output to the template
+*/
+function obtain_users_online_string($online_users, $forum_id = 0)
+{
+	global $db, $user, $auth;
+
+	$user_online_link = $online_userlist = '';
+
+	if (sizeof($online_users['online_users']))
+	{
+		$sql = 'SELECT username, username_clean, user_id, user_type, user_allow_viewonline, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', $online_users['online_users']) . '
+				ORDER BY username_clean ASC';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			// User is logged in and therefore not a guest
+			if ($row['user_id'] != ANONYMOUS)
+			{
+				if (isset($online_users['hidden_users'][$row['user_id']]))
+				{
+					$row['username'] = '<em>' . $row['username'] . '</em>';
+				}
+
+				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
+				{
+					$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
+					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+
+	if (!$online_userlist)
+	{
+		$online_userlist = $user->lang['NO_ONLINE_USERS'];
+	}
+
+	if ($forum_id === 0)
+	{
+		$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
+	}
+	else
+	{
+		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
+		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
+	}
+
+	// Build online listing
+	$vars_online = array(
+		'ONLINE'	=> array('total_online', 'l_t_user_s'),
+		'REG'		=> array('visible_online', 'l_r_user_s'),
+		'HIDDEN'	=> array('hidden_online', 'l_h_user_s'),
+		'GUEST'		=> array('guests_online', 'l_g_user_s')
+	);
+
+	foreach ($vars_online as $l_prefix => $var_ary)
+	{
+		switch ($online_users[$var_ary[0]])
+		{
+			case 0:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+			break;
+
+			case 1:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
+			break;
+
+			default:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
+			break;
+		}
+	}
+	unset($vars_online);
+
+	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
+	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
+	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
+	$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+
+	return array(
+		'online_userlist'	=> $online_userlist,
+		'l_online_users'	=> $l_online_users,
+	);
+}
+
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true)
@@ -3075,7 +3312,7 @@ function page_header($page_title = '', $display_online_list = true)
 	{
 		return;
 	}
-	
+
 	define('HEADER_INC', true);
 
 	// gzip_compression
@@ -3107,146 +3344,20 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
-		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-		$prev_session_ip = $reading_sql = '';
+		$f = request_var('f', 0);
+		$f = max($f, 0);
+		$online_users = obtain_users_online($f);
+		$user_online_strings = obtain_users_online_string($online_users, $f);
 
-		if (!empty($_REQUEST['f']))
-		{
-			$f = request_var('f', 0);
-
-			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("{$db->any_char}_f_={$f}x{$db->any_char}");
-		}
-
-		// Get number of online guests
-		if (!$config['load_online_guests'])
-		{
-			if ($db->sql_layer === 'sqlite')
-			{
-				$sql = 'SELECT COUNT(session_ip) as num_guests
-					FROM (
-						SELECT DISTINCT s.session_ip
-							FROM ' . SESSIONS_TABLE . ' s
-							WHERE s.session_user_id = ' . ANONYMOUS . '
-								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-								$reading_sql .
-					')';
-			}
-			else
-			{
-				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-					FROM ' . SESSIONS_TABLE . ' s
-					WHERE s.session_user_id = ' . ANONYMOUS . '
-						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-					$reading_sql;
-			}
-			$result = $db->sql_query($sql);
-			$guests_online = (int) $db->sql_fetchfield('num_guests');
-			$db->sql_freeresult($result);
-		}
-
-		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
-			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) .
-				$reading_sql .
-				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-				AND u.user_id = s.session_user_id
-			ORDER BY u.username_clean ASC, s.session_ip ASC';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			// User is logged in and therefore not a guest
-			if ($row['user_id'] != ANONYMOUS)
-			{
-				// Skip multiple sessions for one user
-				if ($row['user_id'] != $prev_user_id)
-				{
-					if ($row['session_viewonline'])
-					{
-						$logged_visible_online++;
-					}
-					else
-					{
-						$row['username'] = '<em>' . $row['username'] . '</em>';
-						$logged_hidden_online++;
-					}
-
-					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
-					{
-						$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
-						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
-					}
-				}
-
-				$prev_user_id = $row['user_id'];
-			}
-			else
-			{
-				// Skip multiple sessions for one user
-				if ($row['session_ip'] != $prev_session_ip)
-				{
-					$guests_online++;
-				}
-			}
-
-			$prev_session_ip = $row['session_ip'];
-		}
-		$db->sql_freeresult($result);
-
-		if (!$online_userlist)
-		{
-			$online_userlist = $user->lang['NO_ONLINE_USERS'];
-		}
-
-		if (empty($_REQUEST['f']))
-		{
-			$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
-		}
-		else
-		{
-			$l_online = ($guests_online == 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
-			$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
-		}
-
-		$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+		$l_online_users = $user_online_strings['l_online_users'];
+		$online_userlist = $user_online_strings['online_userlist'];
+		$total_online_users = $online_users['total_online'];
 
 		if ($total_online_users > $config['record_online_users'])
 		{
 			set_config('record_online_users', $total_online_users, true);
 			set_config('record_online_date', time(), true);
 		}
-
-		// Build online listing
-		$vars_online = array(
-			'ONLINE'	=> array('total_online_users', 'l_t_user_s'),
-			'REG'		=> array('logged_visible_online', 'l_r_user_s'),
-			'HIDDEN'	=> array('logged_hidden_online', 'l_h_user_s'),
-			'GUEST'		=> array('guests_online', 'l_g_user_s')
-		);
-
-		foreach ($vars_online as $l_prefix => $var_ary)
-		{
-			switch (${$var_ary[0]})
-			{
-				case 0:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
-				break;
-
-				case 1:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
-				break;
-
-				default:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
-				break;
-			}
-		}
-		unset($vars_online);
-
-		$l_online_users = sprintf($l_t_user_s, $total_online_users);
-		$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
-		$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
-		$l_online_users .= sprintf($l_g_user_s, $guests_online);
 
 		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date']));
 
@@ -3300,7 +3411,14 @@ function page_header($page_title = '', $display_online_list = true)
 
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-	
+
+	// Send a proper content-language to the output
+	$user_lang = $user->lang['USER_LANG'];
+	if (strpos($user_lang, '-x-') !== false)
+	{
+		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -3333,7 +3451,6 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
 		'UA_POPUP_PM'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup')),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_MEMBERSLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
@@ -3356,7 +3473,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
+		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
@@ -3369,6 +3486,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered'] && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
+		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
@@ -3425,7 +3543,7 @@ function page_footer($run_cron = true)
 				{
 					global $base_memory_usage;
 					$memory_usage -= $base_memory_usage;
-					$memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' ' . $user->lang['MB'] : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' ' . $user->lang['KB'] : $memory_usage . ' ' . $user->lang['BYTES']);
+					$memory_usage = get_formatted_filesize($memory_usage);
 
 					$debug_output .= ' | Memory Usage: ' . $memory_usage;
 				}
@@ -3446,7 +3564,7 @@ function page_footer($run_cron = true)
 	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
 	{
 		$cron_type = '';
-	
+
 		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 		{
 			// Process email queue

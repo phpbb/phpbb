@@ -438,6 +438,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_last_poster_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_last_poster_colour] [varchar] (6) DEFAULT ('') NOT NULL ,
 	[forum_flags] [int] DEFAULT (32) NOT NULL ,
+	[display_subforum_list] [int] DEFAULT (1) NOT NULL ,
 	[display_on_index] [int] DEFAULT (1) NOT NULL ,
 	[enable_indexing] [int] DEFAULT (1) NOT NULL ,
 	[enable_icons] [int] DEFAULT (1) NOT NULL ,
@@ -555,7 +556,7 @@ ALTER TABLE [phpbb_groups] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [group_legend] ON [phpbb_groups]([group_legend]) ON [PRIMARY]
+CREATE  INDEX [group_legend_name] ON [phpbb_groups]([group_legend], [group_name]) ON [PRIMARY]
 GO
 
 
@@ -1152,6 +1153,7 @@ GO
 CREATE TABLE [phpbb_sessions] (
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[session_user_id] [int] DEFAULT (0) NOT NULL ,
+	[session_forum_id] [int] DEFAULT (0) NOT NULL ,
 	[session_last_visit] [int] DEFAULT (0) NOT NULL ,
 	[session_start] [int] DEFAULT (0) NOT NULL ,
 	[session_time] [int] DEFAULT (0) NOT NULL ,
@@ -1176,6 +1178,9 @@ CREATE  INDEX [session_time] ON [phpbb_sessions]([session_time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [session_user_id] ON [phpbb_sessions]([session_user_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [session_forum_id] ON [phpbb_sessions]([session_forum_id]) ON [PRIMARY]
 GO
 
 

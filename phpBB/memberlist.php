@@ -141,10 +141,9 @@ switch ($mode)
 		unset($admin_memberships);
 
 		$sql = 'SELECT forum_id, forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_type = ' . FORUM_POST;
+			FROM ' . FORUMS_TABLE;
 		$result = $db->sql_query($sql);
-		
+
 		$forums = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -881,20 +880,22 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
+		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+
+		if ($auth->acl_get('a_user'))
+		{
+			$sort_key_text['e'] = $user->lang['SORT_EMAIL'];
+			$sort_key_sql['e'] = 'u.user_email';
+		}
 
 		if ($auth->acl_get('u_viewonline'))
 		{
 			$sort_key_text['l'] = $user->lang['SORT_LAST_ACTIVE'];
-		}
-		$sort_key_text['m'] = $user->lang['SORT_RANK'];
-
-		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
-
-		if ($auth->acl_get('u_viewonline'))
-		{
 			$sort_key_sql['l'] = 'u.user_lastvisit';
 		}
+
+		$sort_key_text['m'] = $user->lang['SORT_RANK'];
 		$sort_key_sql['m'] = 'u.user_rank DESC, u.user_posts';
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
@@ -970,7 +971,7 @@ switch ($mode)
 			}
 
 			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
-			$sql_where .= ($email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
+			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
 			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', $db->any_char, $icq)) . ' ' : '';
 			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
 			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
@@ -1188,7 +1189,7 @@ switch ($mode)
 			'sd'			=> array('sd', 'a'),
 			'form'			=> array('form', ''),
 			'field'			=> array('field', ''),
-			'select_single'	=> array('select_single', 0),
+			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
 			'icq'			=> array('icq', ''),
@@ -1238,6 +1239,7 @@ switch ($mode)
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
+			$group_ids = array();
 
 			if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
@@ -1262,9 +1264,15 @@ switch ($mode)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$group_ids[] = $row['group_id'];
 				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
+
+			if ($group_selected !== 0 && !in_array($group_selected, $group_ids))
+			{
+				trigger_error('NO_GROUP');
+			}
 
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
@@ -1280,6 +1288,7 @@ switch ($mode)
 				'IP'		=> $ipdomain,
 
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
+				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,
@@ -1370,7 +1379,8 @@ switch ($mode)
 			if ($sort_key == 'l')
 			{
 				$lesser_than = ($sort_dir == 'a') ? -1 : 1;
-				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
+//				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
+				usort($user_list, create_function('$first, $second', "global \$id_cache; return (\$id_cache[\$first]['last_visit'] == \$id_cache[\$second]['last_visit']) ? 0 : ((\$id_cache[\$first]['last_visit'] < \$id_cache[\$second]['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
 			}
 
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
@@ -1478,9 +1488,9 @@ function show_profile($data)
 	$rank_title = $rank_img = $rank_img_src = '';
 	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
-	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
+	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_user'))
 	{
-		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
+		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_user')) ? '' : 'mailto:' . $data['user_email']);
 	}
 	else
 	{

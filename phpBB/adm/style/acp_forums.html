@@ -203,6 +203,11 @@
 			<dd><select id="forum_status" name="forum_status">{S_STATUS_OPTIONS}</select></dd>
 		</dl>
 		<dl>
+			<dt><label for="display_subforum_list">{L_LIST_SUBFORUMS}:</label><br /><span>{L_LIST_SUBFORUMS_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="display_subforum_list" value="1"<!-- IF S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="display_subforum_list" value="0"<!-- IF not S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		<dl>
 			<dt><label for="display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
@@ -445,7 +450,7 @@
 					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
 						{ICON_MOVE_UP_DISABLED}
 						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW-->
+					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
 						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>
 						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 					<!-- ELSEIF forums.S_LAST_ROW && not forums.S_FIRST_ROW -->

@@ -183,6 +183,26 @@ class acp_search
 				}
 			}
 
+			$search = null;
+			$error = false;
+			if (!$this->init_search($config['search_type'], $search, $error))
+			{
+				if ($updated)
+				{
+					if (method_exists($search, 'config_updated'))
+					{
+						if ($search->config_updated())
+						{
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+					}
+				}
+			}
+			else
+			{
+				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
 		}
 		unset($cfg_array);
@@ -518,9 +538,9 @@ class acp_search
 	function close_popup_js()
 	{
 		return "<script type=\"text/javascript\">\n" .
-			"<!--\n" .
+			"// <![CDATA[\n" .
 			"	close_waitscreen = 1;\n" .
-			"//-->\n" .
+			"// ]]>\n" .
 			"</script>\n";
 	}
 

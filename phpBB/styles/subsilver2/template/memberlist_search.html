@@ -84,8 +84,12 @@
 	<td class="row2"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
 </tr>
 <tr>
+<!-- IF S_EMAIL_SEARCH_ALLOWED -->
 	<td class="row1"><b class="genmed">{L_EMAIL}:</b></td>
 	<td class="row2"><input class="post" type="text" name="email" value="{EMAIL}" /></td>
+<!-- ELSE -->
+	<td colspan="2" class="row1">&nbsp;</td>
+<!-- ENDIF -->
 	<td class="row1"><b class="genmed">{L_AIM}:</b></td>
 	<td class="row2"><input class="post" type="text" name="aim" value="{AIM}" /></td>
 </tr>

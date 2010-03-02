@@ -381,6 +381,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
 	forum_flags INT2 DEFAULT '32' NOT NULL,
+	display_subforum_list INT2 DEFAULT '1' NOT NULL CHECK (display_subforum_list >= 0),
 	display_on_index INT2 DEFAULT '1' NOT NULL CHECK (display_on_index >= 0),
 	enable_indexing INT2 DEFAULT '1' NOT NULL CHECK (enable_indexing >= 0),
 	enable_icons INT2 DEFAULT '1' NOT NULL CHECK (enable_icons >= 0),
@@ -458,7 +459,7 @@ CREATE TABLE phpbb_groups (
 	PRIMARY KEY (group_id)
 );
 
-CREATE INDEX phpbb_groups_group_legend ON phpbb_groups (group_legend);
+CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
 
 /*
 	Table: 'phpbb_icons'
@@ -874,6 +875,7 @@ CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id);
 CREATE TABLE phpbb_sessions (
 	session_id char(32) DEFAULT '' NOT NULL,
 	session_user_id INT4 DEFAULT '0' NOT NULL CHECK (session_user_id >= 0),
+	session_forum_id INT4 DEFAULT '0' NOT NULL CHECK (session_forum_id >= 0),
 	session_last_visit INT4 DEFAULT '0' NOT NULL CHECK (session_last_visit >= 0),
 	session_start INT4 DEFAULT '0' NOT NULL CHECK (session_start >= 0),
 	session_time INT4 DEFAULT '0' NOT NULL CHECK (session_time >= 0),
@@ -889,6 +891,7 @@ CREATE TABLE phpbb_sessions (
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time);
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id);
+CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions (session_forum_id);
 
 /*
 	Table: 'phpbb_sessions_keys'

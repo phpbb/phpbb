@@ -43,14 +43,6 @@ class ucp_register
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
-
-
-		// not so fast, buddy
-		if (($submit && !check_form_key('ucp_register', false, '', false, $config['min_time_reg']))
-			|| (!$submit && !check_form_key('ucp_register_terms', false, '', false, $config['min_time_terms'])))
-		{
-			$agreed = false;
-		}
 		
 		if ($agreed)
 		{
@@ -92,7 +84,7 @@ class ucp_register
 
 		$error = $cp_data = $cp_error = array();
 
-		//
+
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
@@ -103,12 +95,13 @@ class ucp_register
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
 			{
-				// We do not include the password!
+				// We do not include the password
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
 					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'confirm_code'		=> request_var('confirm_code', ''),
+					'confirm_id'		=> request_var('confirm_id', ''),
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
@@ -141,7 +134,6 @@ class ucp_register
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
-					'S_TIME'			=> 1000 * ((int) $config['min_time_terms']),
 					)
 				);
 			}
@@ -200,7 +192,10 @@ class ucp_register
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
-
+			if (!check_form_key('ucp_register'))
+			{
+				$error[] = $user->lang['FORM_INVALID'];
+			}
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
@@ -451,13 +446,32 @@ class ucp_register
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
+
 		if ($config['enable_confirm'])
 		{
-			$str = '';
-			if (!$change_lang)
+			if ($change_lang)
+			{
+				$str = '&amp;change_lang=' . $change_lang;
+				$sql = 'SELECT code
+						FROM ' . CONFIRM_TABLE . "
+						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
+							AND session_id = '" . $db->sql_escape($user->session_id) . "'
+							AND confirm_type = " . CONFIRM_REG;
+				$result = $db->sql_query($sql);
+				if (!$row = $db->sql_fetchrow($result))
+				{
+					$confirm_id = '';
+				}
+				$db->sql_freeresult($result);
+			}
+			else
+			{
+				$str = '';
+			}
+			if (!$change_lang || !$confirm_id)
 			{
 				$user->confirm_gc(CONFIRM_REG);
-				
+					
 				$sql = 'SELECT COUNT(session_id) AS attempts
 					FROM ' . CONFIRM_TABLE . "
 					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
@@ -487,11 +501,6 @@ class ucp_register
 				);
 				$db->sql_query($sql);
 			}
-			else
-			{
-				$str .= '&amp;change_lang=' . $change_lang;
-			}
-
 			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
@@ -529,7 +538,6 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-			'S_TIME'			=> 1000 * ((int) $config['min_time_reg']),
 			)
 		);
 

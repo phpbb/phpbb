@@ -295,6 +295,7 @@ class ucp_profile
 					$data['bday_day'] = request_var('bday_day', $data['bday_day']);
 					$data['bday_month'] = request_var('bday_month', $data['bday_month']);
 					$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+					$data['user_birthday'] = sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 				}
 
 				add_form_key('ucp_profile_info');
@@ -325,6 +326,7 @@ class ucp_profile
 							'bday_day'		=> array('num', true, 1, 31),
 							'bday_month'	=> array('num', true, 1, 12),
 							'bday_year'		=> array('num', true, 1901, gmdate('Y', time()) + 50),
+							'user_birthday' => array('date', true),
 						));
 					}
 
@@ -359,7 +361,7 @@ class ucp_profile
 
 						if ($config['allow_birthdays'])
 						{
-							$sql_ary['user_birthday'] = sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
+							$sql_ary['user_birthday'] = $data['user_birthday'];
 						}
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -592,8 +594,8 @@ class ucp_profile
 					
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),)
-				);
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+				));
 
 				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
 				{

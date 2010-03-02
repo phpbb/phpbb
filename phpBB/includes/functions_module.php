@@ -59,7 +59,7 @@ class p_master
 				WHERE module_class = '" . $db->sql_escape($this->p_class) . "'
 				ORDER BY left_id ASC";
 			$result = $db->sql_query($sql);
-			
+
 			$rows = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -114,7 +114,7 @@ class p_master
 					unset($this->module_cache['modules'][$key]);
 					continue;
 				}
-				
+
 				$right_id = false;
 			}
 
@@ -147,7 +147,7 @@ class p_master
 				{
 					continue;
 				}
-				
+
 				$right_id = false;
 			}
 
@@ -194,7 +194,7 @@ class p_master
 			$custom_func = '_module_' . $row['module_basename'];
 
 			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
-			
+
 			$module_row = array(
 				'depth'		=> $depth,
 
@@ -209,7 +209,7 @@ class p_master
 				'display'	=> (int) $row['module_display'],
 
 				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode'], $row) : '',
-				
+
 				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
@@ -309,7 +309,7 @@ class p_master
 				break;
 
 				default:
-					if (!preg_match('#(?:acl_([a-z_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z_]+))|(?:cfg_([a-z_]+))|(?:request_([a-z_]+))#', $token))
+					if (!preg_match('#(?:acl_([a-z0-9_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z0-9_]+))|(?:cfg_([a-z0-9_]+))|(?:request_([a-zA-Z0-9_]+))#', $token))
 					{
 						$token = '';
 					}
@@ -325,7 +325,7 @@ class p_master
 		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#', '#request_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '!empty($_REQUEST[\'\\1\'])'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '!empty($_REQUEST[\'\\1\'])'), $module_auth) . ');');
 
 		return $is_auth;
 	}
@@ -677,7 +677,7 @@ class p_master
 			}
 
 			// Select first id we can get
-			if (!$current_id && (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id))
+			if (!$current_id && (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id))
 			{
 				$current_id = $item_ary['id'];
 			}
@@ -710,7 +710,7 @@ class p_master
 
 				$tpl_ary = array(
 					'L_TITLE'		=> $item_ary['lang'],
-					'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
+					'S_SELECTED'	=> (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $u_title
 				);
 
@@ -719,7 +719,7 @@ class p_master
 
 			$tpl_ary = array(
 				'L_TITLE'		=> $item_ary['lang'],
-				'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
+				'S_SELECTED'	=> (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id) ? true : false,
 				'U_TITLE'		=> $u_title
 			);
 

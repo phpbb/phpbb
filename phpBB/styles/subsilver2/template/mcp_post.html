@@ -1,7 +1,7 @@
 <!-- INCLUDE mcp_header.html -->
 
 <!-- IF S_MCP_REPORT -->
-	<form method="post" name="mcp_report" action="{U_CLOSE_ACTION}">
+	<form method="post" name="mcp_report" action="{S_CLOSE_ACTION}">
 
 	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
@@ -39,7 +39,7 @@
 	<br clear="all"/>
 <!-- ENDIF -->
 
-<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report_details" action="{U_CLOSE_ACTION}"><!-- ENDIF -->
+<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report_details" action="{S_CLOSE_ACTION}"><!-- ENDIF -->
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 <tr>

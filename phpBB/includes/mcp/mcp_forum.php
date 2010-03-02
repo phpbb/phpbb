@@ -146,8 +146,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
-	$sql = "SELECT t.*$read_tracking_select
-		FROM " . TOPICS_TABLE . " t $read_tracking_join
+	$sql = "SELECT t.topic_id
+		FROM " . TOPICS_TABLE . " t
 		WHERE t.forum_id IN($forum_id, 0)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
@@ -155,10 +155,21 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
 
 	$topic_list = $topic_tracking_info = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$topic_list[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$sql = "SELECT t.*$read_tracking_select
+		FROM " . TOPICS_TABLE . " t $read_tracking_join
+		WHERE " . $db->sql_in_set('t.topic_id', $topic_list);
+
+	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$topic_rows[$row['topic_id']] = $row;
-		$topic_list[] = $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
@@ -181,9 +192,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		}
 	}
 
-	foreach ($topic_rows as $topic_id => $row)
+	foreach ($topic_list as $topic_id)
 	{
 		$topic_title = '';
+
+		$row = &$topic_rows[$topic_id];
 
 		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 

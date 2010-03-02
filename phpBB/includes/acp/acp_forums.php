@@ -132,6 +132,7 @@ class acp_forums
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
+						'display_subforum_list'	=> request_var('display_subforum_list', false),
 						'display_on_index'		=> request_var('display_on_index', false),
 						'forum_topics_per_page'	=> request_var('topics_per_page', 0),
 						'enable_indexing'		=> request_var('enable_indexing', true),
@@ -471,6 +472,7 @@ class acp_forums
 							'forum_rules_link'		=> '',
 							'forum_image'			=> '',
 							'forum_style'			=> 0,
+							'display_subforum_list'	=> true,
 							'display_on_index'		=> false,
 							'forum_topics_per_page'	=> 0,
 							'enable_indexing'		=> true,
@@ -670,6 +672,7 @@ class acp_forums
 					'S_FORUM_CAT'				=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
+					'S_DISPLAY_SUBFORUM_LIST'	=> ($forum_data['display_subforum_list']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
 					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? true : false,
@@ -915,6 +918,13 @@ class acp_forums
 			$forum_data['prune_days'] = $forum_data['prune_viewed'] = $forum_data['prune_freq'] = 0;
 			$errors[] = $user->lang['FORUM_DATA_NEGATIVE'];
 		}
+		
+		$range_test_ary = array(
+			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
+		);
+		validate_range($range_test_ary, $errors);
+
+
 
 		// Set forum flags
 		// 1 = link tracking

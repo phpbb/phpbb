@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* posting [English]
+* acp_posting [English]
 *
 * @package language
 * @version $Id$
@@ -54,7 +54,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_TAG_TOO_LONG'		=> 'The tag name you selected is too long.',
 	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
-	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={SIMPLETEXT1}]{SIMPLETEXT2}[/font]',
+	'BBCODE_USAGE_EXAMPLE'		=> '[highlight={COLOR}]{TEXT}[/highlight]<br /><br />[font={SIMPLETEXT1}]{SIMPLETEXT2}[/font]',
 	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the BBCode. Replace any variable input by the corresponding token (%ssee below%s).',
 
 	'EXAMPLE'						=> 'Example:',
@@ -103,7 +103,7 @@ $lang = array_merge($lang, array(
 	'DISPLAY_POSTING_NO'		=> 'Not on posting page',
 
 
-	
+
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
@@ -162,6 +162,8 @@ $lang = array_merge($lang, array(
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
 	'SMILIES_EDIT'				=> 'Edit smiley',
+	'SMILIE_NO_CODE'			=> 'The smilie “%s”  was ignored, as there was no code entered.',
+	'SMILIE_NO_EMOTION'			=> 'The smilie “%s” was ignored, as there was no emotion entered.',
 	'SMILIES_NONE_EDITED'		=> 'No smilies were updated.',
 	'SMILIES_ONE_EDITED'		=> 'The smiley has been updated successfully.',
 	'SMILIES_EDITED'			=> 'The smilies have been updated successfully.',
@@ -205,7 +207,7 @@ $lang = array_merge($lang, array(
 	'ADD_RANK'				=> 'Add new rank',
 
 	'MUST_SELECT_RANK'		=> 'You must select a rank.',
-	
+
 	'NO_ASSIGNED_RANK'		=> 'No special rank assigned.',
 	'NO_RANK_TITLE'			=> 'You haven’t specified a title for the rank.',
 	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated. You will need to manually reset the rank on these accounts.',
@@ -241,12 +243,12 @@ $lang = array_merge($lang, array(
 	'ACP_REASONS_EXPLAIN'	=> 'Here you can manage the reasons used in reports and denial messages when disapproving posts. There is one default reason (marked with a *) you are not able to remove, this reason is normally used for custom messages if no reason fits.',
 	'ADD_NEW_REASON'		=> 'Add new reason',
 	'AVAILABLE_TITLES'		=> 'Available localised reason titles',
-	
+
 	'IS_NOT_TRANSLATED'			=> 'Reason has <strong>not</strong> been localised.',
 	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <strong>not</strong> been localised. If you want to provide the localised form, specify the correct key from the language files report reasons section.',
 	'IS_TRANSLATED'				=> 'Reason has been localised.',
 	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localised form of the title and description will be used.',
-	
+
 	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
 	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason “Other”.',

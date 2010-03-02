@@ -386,8 +386,8 @@ class filespec
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || $this->filesize == 0))
 		{
-			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-			$max_filesize = ($this->upload->max_filesize >= 1048576) ? round($this->upload->max_filesize / 1048576 * 100) / 100 : (($this->upload->max_filesize >= 1024) ? round($this->upload->max_filesize / 1024 * 100) / 100 : $this->upload->max_filesize);
+			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES'] );
+			$max_filesize = get_formatted_filesize($this->upload->max_filesize, false);
 	
 			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 
@@ -777,8 +777,8 @@ class fileupload
 			break;
 
 			case 2:
-				$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-				$max_filesize = ($this->max_filesize >= 1048576) ? round($this->max_filesize / 1048576 * 100) / 100 : (($this->max_filesize >= 1024) ? round($this->max_filesize / 1024 * 100) / 100 : $this->max_filesize);
+				$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+				$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
 				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 			break;
@@ -813,8 +813,8 @@ class fileupload
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
 		{
-			$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-			$max_filesize = ($this->max_filesize >= 1048576) ? round($this->max_filesize / 1048576 * 100) / 100 : (($this->max_filesize >= 1024) ? round($this->max_filesize / 1024 * 100) / 100 : $this->max_filesize);
+			$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+			$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
 			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 		}

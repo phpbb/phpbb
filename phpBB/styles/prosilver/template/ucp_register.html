@@ -11,24 +11,6 @@
 		document.forms['register'].submit.click();
 	}
 
-	function disable(disabl, name)
-	{
-		document.getElementById(name).disabled = disabl;
-		if (disabl)
-		{
-			document.getElementById(name).className = 'button1 disabled';
-		}
-		else
-		{
-			document.getElementById(name).className = 'button1 enabled';
-		}
-	}
-
-	<!-- IF S_TIME -->
-		onload_functions.push('disable(true, "submit")');
-		setInterval('disable(false, "submit")', {S_TIME});
-	<!-- ENDIF -->
-
 // ]]>
 </script>
 

@@ -115,7 +115,7 @@ $lang = array_merge($lang, array(
 
 	'DEFAULT'					=> 'Default',
 	'DELETE_ROLE'				=> 'Delete role',
-	'DELETE_ROLE_CONFIRM'		=> 'Are you sure you want to remove this role? Items having this role assigned will <strong>not</strong> loose their permission settings.',
+	'DELETE_ROLE_CONFIRM'		=> 'Are you sure you want to remove this role? Items having this role assigned will <strong>not</strong> lose their permission settings.',
 	'DISPLAY_ROLE_ITEMS'		=> 'View items using this role',
 
 	'EDIT_PERMISSIONS'			=> 'Edit permissions',

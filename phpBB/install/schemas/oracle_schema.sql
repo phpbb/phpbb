@@ -505,6 +505,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar2(765) DEFAULT '' ,
 	forum_last_poster_colour varchar2(6) DEFAULT '' ,
 	forum_flags number(4) DEFAULT '32' NOT NULL,
+	display_subforum_list number(1) DEFAULT '1' NOT NULL,
 	display_on_index number(1) DEFAULT '1' NOT NULL,
 	enable_indexing number(1) DEFAULT '1' NOT NULL,
 	enable_icons number(1) DEFAULT '1' NOT NULL,
@@ -606,7 +607,7 @@ CREATE TABLE phpbb_groups (
 )
 /
 
-CREATE INDEX phpbb_groups_group_legend ON phpbb_groups (group_legend)
+CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name)
 /
 
 CREATE SEQUENCE phpbb_groups_seq
@@ -1280,6 +1281,7 @@ CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id)
 CREATE TABLE phpbb_sessions (
 	session_id char(32) DEFAULT '' ,
 	session_user_id number(8) DEFAULT '0' NOT NULL,
+	session_forum_id number(8) DEFAULT '0' NOT NULL,
 	session_last_visit number(11) DEFAULT '0' NOT NULL,
 	session_start number(11) DEFAULT '0' NOT NULL,
 	session_time number(11) DEFAULT '0' NOT NULL,
@@ -1297,6 +1299,8 @@ CREATE TABLE phpbb_sessions (
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time)
 /
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id)
+/
+CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions (session_forum_id)
 /
 
 /*
