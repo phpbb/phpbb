@@ -138,10 +138,12 @@
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><!-- IF LOCATION --><b class="genmed">{LOCATION}</b><!-- ENDIF --></td>
 			</tr>
+			<!-- IF AGE -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE}: </td>
-				<td><!-- IF AGE --><b class="genmed">{AGE}</b><!-- ENDIF --></td>
+				<td><b class="genmed"><!-- IF AGE -->{AGE}<!-- ELSE --> - <!-- ENDIF --></b></td>
 			</tr>
+			<!-- ENDIF -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_OCCUPATION}: </td>
 				<td><!-- IF OCCUPATION --><b class="genmed">{OCCUPATION}</b><!-- ENDIF --></td>

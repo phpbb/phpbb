@@ -78,6 +78,7 @@ $lang = array_merge($lang, array(
 	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
 	'IM_MSNM_CONNECT'		=> 'MSNM is not connected.\nYou have to connect to MSNM to continue.',		
 	'IM_NAME'				=> 'Your Name',
+	'IM_NO_DATA'			=> 'There is no suitable contact information for this user.',
 	'IM_NO_JABBER'			=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.',
 	'IM_RECIPIENT'			=> 'Recipient',
 	'IM_SEND'				=> 'Send message',

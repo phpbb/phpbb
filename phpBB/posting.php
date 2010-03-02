@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -476,12 +476,12 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 		if (confirm_box(true))
 		{
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'		=> $user->data['user_id'],
-				'topic_id'		=> $topic_id,
-				'forum_id'		=> $forum_id,
-				'save_time'		=> $current_time,
-				'draft_subject'	=> $subject,
-				'draft_message'	=> $message)
+				'user_id'		=> (int) $user->data['user_id'],
+				'topic_id'		=> (int) $topic_id,
+				'forum_id'		=> (int) $forum_id,
+				'save_time'		=> (int) $current_time,
+				'draft_subject'	=> (string) $subject,
+				'draft_message'	=> (string) $message)
 			);
 			$db->sql_query($sql);
 
@@ -512,7 +512,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject)
+		if (!$subject || !utf_clean_string($subject))
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
@@ -561,7 +561,7 @@ $solved_captcha = false;
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
-	$post_data['post_subject']		= trim(utf8_normalize_nfc(request_var('subject', '', true)));
+	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
@@ -756,7 +756,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$preview && !$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && !utf8_clean_string($post_data['post_subject']) && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -994,7 +994,7 @@ if ($submit || $preview || $refresh)
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
-				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : $user->lang['POST_APPROVAL_NOTIFY']);
+				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang['POST_APPROVAL_NOTIFY']);
 			}
 			else
 			{
@@ -1070,10 +1070,11 @@ if (!sizeof($error) && $preview)
 		$preview_poll_options = explode('<br />', $parse_poll->message);
 		unset($parse_poll);
 
-		foreach ($preview_poll_options as $option)
+		foreach ($preview_poll_options as $key => $option)
 		{
 			$template->assign_block_vars('poll_option', array(
-				'POLL_OPTION_CAPTION'	=> $option)
+				'POLL_OPTION_CAPTION'	=> $option,
+				'POLL_OPTION_ID'		=> $key + 1)
 			);
 		}
 		unset($preview_poll_options);

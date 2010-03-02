@@ -103,14 +103,14 @@ class acp_forums
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
 						'forum_parents'			=> '',
-						'forum_name'			=> request_var('forum_name', '', true),
+						'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
-						'forum_desc'			=> request_var('forum_desc', '', true),
+						'forum_desc'			=> utf8_normalize_nfc(request_var('forum_desc', '', true)),
 						'forum_desc_uid'		=> '',
 						'forum_desc_options'	=> 7,
 						'forum_desc_bitfield'	=> '',
-						'forum_rules'			=> request_var('forum_rules', '', true),
+						'forum_rules'			=> utf8_normalize_nfc(request_var('forum_rules', '', true)),
 						'forum_rules_uid'		=> '',
 						'forum_rules_options'	=> 7,
 						'forum_rules_bitfield'	=> '',
@@ -163,7 +163,7 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from)
+						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'])
 						{
 							// if we edit a forum delete current permissions first
 							if ($action == 'edit')
@@ -445,7 +445,7 @@ class acp_forums
 							'parent_id'				=> $this->parent_id,
 							'forum_type'			=> FORUM_POST,
 							'forum_status'			=> ITEM_UNLOCKED,
-							'forum_name'			=> request_var('forum_name', '', true),
+							'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
 							'forum_link'			=> '',
 							'forum_link_track'		=> false,
 							'forum_desc'			=> '',
@@ -638,7 +638,7 @@ class acp_forums
 					'S_STATUS_OPTIONS'			=> $statuslist,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
-					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, false, false, false, false),
+					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, ($action == 'edit') ? $forum_data['forum_id'] : false, false, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
@@ -991,6 +991,13 @@ class acp_forums
 
 			if ($row['forum_type'] == FORUM_POST && $row['forum_type'] != $forum_data_sql['forum_type'])
 			{
+				// Has subforums and want to change into a link?
+				if ($row['right_id'] - $row['left_id'] > 1 && $forum_data_sql['forum_type'] == FORUM_LINK)
+				{
+					$errors[] = $user->lang['FORUM_WITH_SUBFORUMS_NOT_TO_LINK'];
+					return $errors;
+				}
+
 				// we're turning a postable forum into a non-postable forum
 				if ($forum_data_sql['type_action'] == 'move')
 				{

@@ -28,21 +28,19 @@
 <!-- IF S_HAS_SUBFORUM -->
 <!-- IF not S_IS_BOT and U_MARK_FORUMS -->
 <ul class="linklist">
-		<li class="rightside"><a href="{U_MARK_FORUMS}">{L_MARK_FORUMS_READ}</a></li>
+	<li class="rightside"><a href="{U_MARK_FORUMS}">{L_MARK_FORUMS_READ}</a></li>
 </ul>
 <!-- ENDIF -->
 	<!-- INCLUDE forumlist_body.html -->
 <!-- ENDIF -->
 
-<!-- IF U_POST_REPLY_TOPIC or S_IS_POSTABLE or PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
+<!-- IF S_DISPLAY_POST_INFO or PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
 	<div class="topic-actions" <!-- IF S_HAS_SUBFORUM -->style="margin-top: 2em;"<!-- ENDIF -->>
 
-	<!-- IF not S_IS_BOT -->
-		<!-- IF U_POST_REPLY_TOPIC or S_IS_POSTABLE -->
-			<div class="buttons">
-				<div class="post-icon"><a href="{U_POST_NEW_TOPIC}" accesskey="n"><span>{L_POST_TOPIC}</span></a></div>
-			</div>
-		<!-- ENDIF -->
+	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
+		<div class="buttons">
+			<div class="post-icon"><a href="{U_POST_NEW_TOPIC}" accesskey="n"><span>{L_POST_TOPIC}</span></a></div>
+		</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
@@ -123,7 +121,7 @@
 	<!-- IF topicrow.S_FIRST_ROW or not topicrow.S_TOPIC_TYPE_SWITCH -->
 		<div class="forumbg<!-- IF topicrow.S_TOPIC_TYPE_SWITCH --> announcement<!-- ENDIF -->">
 		<div class="inner"><span class="corners-top"><span></span></span>
-		<ul class="topiclist topics">
+		<ul class="topiclist">
 			<li class="header">
 				<dl class="icon">
 					<dt><!-- IF S_DISPLAY_ACTIVE -->{L_ACTIVE_TOPICS}<!-- ELSEIF topicrow.S_TOPIC_TYPE_SWITCH and topicrow.S_TOPIC_TYPE gt 1 -->{L_ANNOUNCEMENTS}<!-- ELSE -->{L_TOPICS}<!-- ENDIF --></dt>
@@ -159,17 +157,15 @@
 	<!-- ENDIF -->
 
 <!-- BEGINELSE -->
-	<!-- IF S_IS_POSTABLE -->
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 		<strong>{L_NO_TOPICS}</strong>
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	<!-- ENDIF -->
 <!-- END topicrow -->
 
 <!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
-	<form method="post" action="{S_TOPIC_ACTION}">
+	<form method="post" action="{S_FORUM_ACTION}">
 		<fieldset class="display-options">
 			<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
 			<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
@@ -183,15 +179,15 @@
 
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
 	<div class="topic-actions">
-		<!-- IF S_IS_POSTABLE and not S_IS_BOT -->
+		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
 		<div class="buttons">
-			<div class="post-icon"><a href="{U_POST_NEW_TOPIC}"><span>{L_POST_REPLY}</span></a></div>
+			<div class="post-icon"><a href="{U_POST_NEW_TOPIC}"><span>{L_POST_TOPIC}</span></a></div>
 		</div>
 		<!-- ENDIF -->
 	
 		<!-- IF PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
-			<!-- IF not U_POST_REPLY_TOPIC and TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
+			<!-- IF TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
 			<!-- IF TOTAL_POSTS and not NEWEST_USER --> {TOTAL_POSTS}<!-- ELSEIF TOTAL_TOPICS and not NEWEST_USER --> {TOTAL_TOPICS}<!-- ENDIF -->
 			<!-- IF TOTAL_USERS -->{TOTAL_USERS}<!-- ENDIF -->
 			<!-- IF PAGINATION --> &bull;  <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a>
@@ -208,7 +204,7 @@
 	<p>{LOGGED_IN_USER_LIST}</p>
 <!-- ENDIF -->
 
-<!-- IF S_IS_POSTABLE -->
+<!-- IF S_DISPLAY_POST_INFO -->
 	<h3>{L_FORUM_PERMISSIONS}</h3>
 	<p><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></p>
 <!-- ENDIF -->

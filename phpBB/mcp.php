@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
@@ -78,7 +78,7 @@ $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
 $user_id = request_var('u', 0);
-$username = request_var('username', '', true);
+$username = utf8_normalize_nfc(request_var('username', '', true));
 
 if ($post_id)
 {
@@ -129,14 +129,14 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
-		trigger_error($user->lang['NOT_AUTHORISED']);
+		trigger_error('NOT_AUTHORISED');
 	}
 }
 
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
-	trigger_error($user->lang['NOT_AUTHORISED']);
+	trigger_error('NOT_AUTHORISED');
 }
 
 if ($forum_id)

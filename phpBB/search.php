@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
@@ -30,8 +30,8 @@ $topic_id		= request_var('t', 0);
 $view			= request_var('view', '');
 
 $submit			= request_var('submit', false);
-$keywords		= request_var('keywords', '', true);
-$add_keywords	= request_var('add_keywords', '', true);
+$keywords		= utf8_normalize_nfc(request_var('keywords', '', true));
+$add_keywords	= utf8_normalize_nfc(request_var('add_keywords', '', true));
 $author			= request_var('author', '', true);
 $author_id		= request_var('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
@@ -44,19 +44,21 @@ $sort_days		= request_var('st', 0);
 $sort_key		= request_var('sk', 't');
 $sort_dir		= request_var('sd', 'd');
 
-$return_chars	= request_var('ch', ($topic_id) ? -1 : 200);
+$return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
-	trigger_error($user->lang['NO_SEARCH']);
+	$template->assign_var('S_NO_SEARCH', true);
+	trigger_error('NO_SEARCH');
 }
 
 // Check search load limit
 if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($config['limit_search_load'])))
 {
-	trigger_error($user->lang['NO_SEARCH_TIME']);
+	$template->assign_var('S_NO_SEARCH', true);
+	trigger_error('NO_SEARCH_TIME');
 }
 
 // Check flood limit ... if applicable
@@ -65,7 +67,8 @@ if ($interval && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
-		trigger_error($user->lang['NO_SEARCH_TIME']);
+		$template->assign_var('S_NO_SEARCH', true);
+		trigger_error('NO_SEARCH_TIME');
 	}
 }
 
@@ -121,7 +124,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 		if (!sizeof($author_id_ary))
 		{
-			trigger_error($user->lang['NO_SEARCH_RESULTS']);
+			trigger_error('NO_SEARCH_RESULTS');
 		}
 	}
 
@@ -416,13 +419,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	else if (sizeof($author_id_ary))
 	{
-		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
+		$firstpost_only = ($search_fields === 'firstpost') ? true : false;
+		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
 	if (!sizeof($id_ary) && !$search_id)
 	{
-		trigger_error($user->lang['NO_SEARCH_RESULTS']);
+		trigger_error('NO_SEARCH_RESULTS');
 	}
 
 	$sql_where = '';
@@ -473,7 +477,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
-	$u_search .= ($return_chars != 200) ? '&amp;ch=' . $return_chars : '';
+	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
@@ -995,7 +999,7 @@ unset($pad_store);
 
 if (!$s_forums)
 {
-	trigger_error($user->lang['NO_SEARCH']);
+	trigger_error('NO_SEARCH');
 }
 
 // Number of chars returned
@@ -1006,13 +1010,29 @@ $s_characters .= '<option value="50">50</option>';
 
 for ($i = 100; $i <= 1000 ; $i += 100)
 {
-	$selected = ($i == 200) ? ' selected="selected"' : '';
+	$selected = ($i == 300) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+}
+
+$s_hidden_fields = array('t' => $topic_id);
+
+if ($_SID)
+{
+	$s_hidden_fields['sid'] = $_SID;
+}
+
+if (!empty($_EXTRA_URL))
+{
+	foreach ($_EXTRA_URL as $url_param)
+	{
+		$url_param = explode('=', $url_param, 2);
+		$s_hidden_fields[$url_param[0]] = $url_param[1];
+	}
 }
 
 $template->assign_vars(array(
 	'S_SEARCH_ACTION'		=> "{$phpbb_root_path}search.$phpEx",
-	'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('sid' => $user->session_id, 't' => $topic_id)),
+	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
 	'S_FORUM_OPTIONS'		=> $s_forums,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,

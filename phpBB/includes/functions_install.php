@@ -258,7 +258,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
-	if ($dbms['DRIVER'] != 'sqlite' && $dbname === '')
+	if ($dbms['DRIVER'] != 'sqlite' && $dbms['DRIVER'] != 'oracle' && $dbname === '')
 	{
 		$error[] = $lang['INST_ERR_DB_NO_NAME'];
 		return false;
@@ -324,6 +324,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 			$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
 			$tables = get_tables($db);
+			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 
 			if (sizeof($table_intersect))

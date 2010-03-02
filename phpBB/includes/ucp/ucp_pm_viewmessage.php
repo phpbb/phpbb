@@ -25,7 +25,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
 	{
-		trigger_error('NO_AUTH_READ_REMOVED_MESSAGE');
+		$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
+		$message = $user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
+
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+		trigger_error($message);
 	}
 
 	// Do not allow hold messages to be seen
@@ -199,6 +203,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
+		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')

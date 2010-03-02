@@ -75,8 +75,8 @@ class acp_bbcodes
 				$display_on_posting = request_var('display_on_posting', 0);
 
 				$bbcode_match = request_var('bbcode_match', '');
-				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', '', true));
-				$bbcode_helpline = request_var('bbcode_helpline', '', true);
+				$bbcode_tpl = htmlspecialchars_decode(utf8_normalize_nfc(request_var('bbcode_tpl', '', true)));
+				$bbcode_helpline = utf8_normalize_nfc(request_var('bbcode_helpline', '', true));
 			break;
 		}
 

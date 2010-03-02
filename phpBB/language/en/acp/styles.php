@@ -97,6 +97,7 @@ $lang = array_merge($lang, array(
 	'EDIT_THEME'						=> 'Edit theme',
 	'EDIT_THEME_EXPLAIN'				=> 'Here you can edit the selected theme, changing colours, images, etc.',
 	'EDIT_THEME_STORED_DB'				=> 'The stylesheet file was unwritable so the stylesheet is now stored in the database containing your modification.',
+	'EDIT_THEME_STORE_PARSED'			=> 'The theme requires that its stylesheet is parsed. This is only possible if it’s stored in the database.',
 	'EXPORT'							=> 'Export',
 
 	'FOREGROUND'			=> 'Foreground',

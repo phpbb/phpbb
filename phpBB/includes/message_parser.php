@@ -116,7 +116,7 @@ class bbcode_firstpass extends bbcode
 			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
 			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
 			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
-			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#ie' => "\$this->bbcode_img('\$1\$2')")),
+			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#iUe' => "\$this->bbcode_img('\$1')")),
 			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
 			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#ise' => "\$this->bbcode_underline('\$1')")),
@@ -277,6 +277,20 @@ class bbcode_firstpass extends bbcode
 
 		$in = trim($in);
 		$error = false;
+
+		$in = str_replace(' ', '%20', $in);
+
+		// Checking urls
+		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		{
+			return '[img]' . $in . '[/img]';
+		}
+
+		// Try to cope with a common user error... not specifying a protocol but only a subdomain
+		if (!preg_match('#^[a-z0-9]+://#i', $in))
+		{
+			$in = 'http://' . $in;
+		}
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
@@ -1228,6 +1242,11 @@ class parse_message extends bbcode_firstpass
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				if (empty($row['code']))
+				{
+					continue;
+				}
+
 				// (assertion)
 				$match[] = '(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
@@ -1496,7 +1515,7 @@ class parse_message extends bbcode_firstpass
 
 		if (sizeof($not_orphan))
 		{
-			trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
+			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
 
 		// Regenerate newly uploaded attachments
@@ -1522,7 +1541,7 @@ class parse_message extends bbcode_firstpass
 
 		if (sizeof($orphan))
 		{
-			trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
+			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
 
 		ksort($this->attachment_data);

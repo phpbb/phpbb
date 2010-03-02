@@ -34,6 +34,7 @@ class template
 	var $root = '';
 	var $cachepath = '';
 	var $files = array();
+	var $filename = array();
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
@@ -246,6 +247,7 @@ class template
 							$compile->_tpl_load_file($row['template_filename']);
 							unset($this->compiled_code[$row['template_filename']]);
 							unset($this->files[$row['template_filename']]);
+							unset($this->filename[$row['template_filename']]);
 						}
 					}
 

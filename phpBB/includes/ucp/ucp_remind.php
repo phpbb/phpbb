@@ -61,7 +61,8 @@ class ucp_remind
 			$server_url = generate_board_url();
 
 			$key_len = 54 - strlen($server_url);
-			$key_len = ($key_len < 6) ? 6 : $key_len;
+			$key_len = max(6, $key_len); // we want at least 6
+			$key_len = ($config['max_pass_chars']) ? min($key_len, $config['max_pass_chars']) : $key_len; // we want at most $config['max_pass_chars']
 			$user_actkey = substr(gen_rand_string(10), 0, $key_len);
 			$user_password = gen_rand_string(8);
 

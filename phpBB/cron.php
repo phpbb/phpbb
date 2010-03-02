@@ -12,7 +12,7 @@
 */
 define('IN_PHPBB', true);
 define('IN_CRON', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
@@ -30,7 +30,35 @@ header('Content-length: 43');
 
 echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
-flush();
+// test without flush ;)
+// flush();
+
+// make sure cron doesn't run multiple times in parallel
+if ($config['cron_lock'])
+{
+	// if the other process is running more than an hour already we have to assume it
+	// aborted without cleaning the lock
+	$time = explode(' ', $config['cron_lock']);
+	$time = $time[0];
+
+	if ($time + 3600 >= time())
+	{
+		exit;
+	}
+}
+
+define('CRON_ID', time() . ' ' . unique_id());
+
+$sql = 'UPDATE ' . CONFIG_TABLE . "
+	SET config_value = '" . $db->sql_escape(CRON_ID) . "'
+	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($config['cron_lock']) . "'";
+$db->sql_query($sql);
+
+// another cron process altered the table between script start and UPDATE query so exit
+if ($db->sql_affectedrows() != 1)
+{
+	exit;
+}
 
 /**
 * Run cron-like action
@@ -225,6 +253,11 @@ else
 {
 	garbage_collection();
 }
+
+$sql = 'UPDATE ' . CONFIG_TABLE . "
+	SET config_value = '0'
+	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
+$db->sql_query($sql);
 
 exit;
 

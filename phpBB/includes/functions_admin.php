@@ -365,14 +365,14 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 
 	if (!is_dir($rootdir . $dir))
 	{
-		return false;
+		return $matches;
 	}
 
 	$dh = @opendir($rootdir . $dir);
 
 	if (!$dh)
 	{
-		return false;
+		return $matches;
 	}
 
 	while (($fname = readdir($dh)) !== false)
@@ -1079,8 +1079,8 @@ function update_posted_info(&$topic_ids)
 		foreach ($topic_row as $topic_id)
 		{
 			$sql_ary[] = array(
-				'user_id'		=> $user_id,
-				'topic_id'		=> $topic_id,
+				'user_id'		=> (int) $user_id,
+				'topic_id'		=> (int) $topic_id,
 				'topic_posted'	=> 1,
 			);
 		}
@@ -2244,9 +2244,9 @@ function cache_moderators()
 				foreach ($forum_id_ary as $forum_id => $auth_ary)
 				{
 					$sql_ary[] = array(
-						'forum_id'		=> $forum_id,
-						'user_id'		=> $user_id,
-						'username'		=> $usernames_ary[$user_id],
+						'forum_id'		=> (int) $forum_id,
+						'user_id'		=> (int) $user_id,
+						'username'		=> (string) $usernames_ary[$user_id],
 						'group_id'		=> 0,
 						'group_name'	=> ''
 					);
@@ -2307,11 +2307,11 @@ function cache_moderators()
 				}
 
 				$sql_ary[] = array(
-					'forum_id'		=> $forum_id,
+					'forum_id'		=> (int) $forum_id,
 					'user_id'		=> 0,
 					'username'		=> '',
-					'group_id'		=> $group_id,
-					'group_name'	=> $groupnames_ary[$group_id]
+					'group_id'		=> (int) $group_id,
+					'group_name'	=> (string) $groupnames_ary[$group_id]
 				);
 			}
 		}
@@ -2423,7 +2423,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
-				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
+				// We supress the warning about inappropiate number of passed parameters here due to possible changes within LOG strings from one version to another.
+				$log[$i]['action'] = @vsprintf($log[$i]['action'], $log_data_ary);
 
 				// If within the admin panel we do not censor text out
 				if (defined('IN_ADMIN'))
@@ -2789,6 +2790,17 @@ function get_database_size()
 					$db->sql_freeresult($result);
 				}
 			}
+		break;
+
+		case 'firebird':
+			global $dbname;
+
+			// if it on the local machine, we can get lucky
+			if (file_exists($dbname))
+			{
+				$database_size = filesize($dbname);
+			}
+
 		break;
 
 		case 'sqlite':

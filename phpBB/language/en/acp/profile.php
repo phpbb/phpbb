@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'ALWAYS_TODAY'			=> 'Always the current date',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
-	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons.',
+	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons. A checkbox will only be displayed if it is checked for a given user. In that case the <strong>second</strong> language option will be used. Radio buttons will display regardless of their value.',
 
 	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
@@ -62,7 +62,7 @@ $lang = array_merge($lang, array(
 	'DISPLAY_AT_REGISTER'			=> 'Display at registration screen',
 	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration and able to be changed within the user control panel.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Display profile field',
-	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on topic pages, profiles and the memberlist if this is enabled within the load settings. Only showing within the users profile is enabled by default.',
+	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown in all places allowed within the load settings. Setting this to “no” will hide the field from topic pages, profiles and the memberlist.',
 	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line.',
 
 	'EDIT_DROPDOWN_LANG_EXPLAIN'	=> 'Please note that you are able to change your options text and also able to add new options to the end. It is not advised to add new options between existing options - this could result in wrong options assigned to your users. This can also happen if you remove options in-between. Removing options from the end result in users having assigned this item now reverting back to the default one.',

@@ -134,8 +134,8 @@ class acp_permission_roles
 
 				case 'add':
 
-					$role_name = request_var('role_name', '', true);
-					$role_description = request_var('role_description', '', true);
+					$role_name = utf8_normalize_nfc(request_var('role_name', '', true));
+					$role_description = utf8_normalize_nfc(request_var('role_description', '', true));
 					$auth_settings = request_var('setting', array('' => 0));
 
 					if (!$role_name)
@@ -214,8 +214,8 @@ class acp_permission_roles
 				$options_from = request_var('options_from', 0);
 
 				$role_row = array(
-					'role_name'			=> request_var('role_name', '', true),
-					'role_description'	=> request_var('role_description', '', true),
+					'role_name'			=> utf8_normalize_nfc(request_var('role_name', '', true)),
+					'role_description'	=> utf8_normalize_nfc(request_var('role_description', '', true)),
 					'role_type'			=> $permission_type,
 				);
 

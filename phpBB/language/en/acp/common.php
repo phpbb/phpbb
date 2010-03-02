@@ -296,6 +296,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_DIR_SIZE'			=> 'Avatar directory size',
 
 	'BOARD_STARTED'		=> 'Board started',
+	'BOARD_VERSION'		=> 'Board version',
 
 	'DATABASE_SERVER_INFO'	=> 'Database server',
 	'DATABASE_SIZE'			=> 'Database size',
@@ -401,6 +402,8 @@ $lang = array_merge($lang, array(
 	
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
 	'LOG_ADMIN_AUTH_SUCCESS'	=> '<strong>Successful administration login</strong>',
+
+	'LOG_ATTACHMENTS_DELETED'	=> '<strong>Removed user attachments</strong><br />» %s',
 
 	'LOG_ATTACH_EXT_ADD'		=> '<strong>Added or edited attachment extension</strong><br />» %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<strong>Removed attachment extension</strong><br />» %s',
@@ -523,6 +526,7 @@ $lang = array_merge($lang, array(
 	'LOG_IMAGESET_EDIT_DETAILS'		=> '<strong>Edited imageset details</strong><br />» %s',
 	'LOG_IMAGESET_EDIT'				=> '<strong>Edited imageset</strong><br />» %s',
 	'LOG_IMAGESET_EXPORT'			=> '<strong>Exported imageset</strong><br />» %s',
+	'LOG_IMAGESET_LANG_MISSING'		=> '<strong>Imageset misses “%2$s” localisation</strong><br />» %1$s',
 	'LOG_IMAGESET_LANG_REFRESHED'	=> '<strong>Refreshed “%2$s” localisation of imageset</strong><br />» %1$s',
 	'LOG_IMAGESET_REFRESHED'		=> '<strong>Refreshed imageset</strong><br />» %s',
 

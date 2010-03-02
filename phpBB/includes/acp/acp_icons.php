@@ -189,6 +189,7 @@ class acp_icons
 				$db->sql_freeresult($result);
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
+				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>' . $add_order_list;
 
 				if ($action == 'add')
 				{
@@ -275,16 +276,16 @@ class acp_icons
 				$image_width	= (isset($_POST['width'])) ? request_var('width', array('' => 0)) : array();
 				$image_height	= (isset($_POST['height'])) ? request_var('height', array('' => 0)) : array();
 				$image_add		= (isset($_POST['add_img'])) ? request_var('add_img', array('' => 0)) : array();
-				$image_emotion	= request_var('emotion', array('' => ''), true);
-				$image_code		= request_var('code', array('' => ''), true);
+				$image_emotion	= utf8_normalize_nfc(request_var('emotion', array('' => ''), true));
+				$image_code		= utf8_normalize_nfc(request_var('code', array('' => ''), true));
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
 				if (!empty($_POST['add_additional_code']))
 				{
 					$add_image			= request_var('add_image', '');
-					$add_code			= request_var('add_code', '', true);
-					$add_emotion		= request_var('add_emotion', '', true);
+					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
+					$add_emotion		= utf8_normalize_nfc(request_var('add_emotion', '', true));
 
 					if ($add_image && $add_emotion && $add_code)
 					{
@@ -336,7 +337,7 @@ class acp_icons
 						}
 
 						// Image_order holds the 'new' order value
-						if (!empty($image_order[$image]) && !empty($$image_id[$image]))
+						if (!empty($image_order[$image]))
 						{
 							$img_sql = array_merge($img_sql, array(
 								$fields . '_order'	=>	$image_order[$image])
@@ -363,19 +364,19 @@ class acp_icons
 							}
 						}
 
-						if ($action == 'modify')
+						if ($action == 'modify'  && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
 								SET " . $db->sql_build_array('UPDATE', $img_sql) . " 
 								WHERE {$fields}_id = " . $image_id[$image];
 							$db->sql_query($sql);
 						}
-						else
+						else if ($action !== 'modify')
 						{
 							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
 							$db->sql_query($sql);
 						}
-					}
+ 					}
 				}
 				
 				$cache->destroy('_icons');
@@ -409,7 +410,7 @@ class acp_icons
 					// Make sure the pak_ary is valid
 					foreach ($pak_ary as $pak_entry)
 					{
-						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
+						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
@@ -472,7 +473,7 @@ class acp_icons
 					foreach ($pak_ary as $pak_entry)
 					{
 						$data = array();
-						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
+						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))

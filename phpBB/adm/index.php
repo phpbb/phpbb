@@ -15,7 +15,7 @@ define('ADMIN_START', true);
 define('NEED_SID', true);
 
 // Include files
-$phpbb_root_path = './../';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
@@ -27,12 +27,6 @@ $auth->acl($user->data);
 $user->setup('acp/common');
 // End session management
 
-// Did user forget to login? Give 'em a chance to here ...
-if ($user->data['user_id'] == ANONYMOUS)
-{
-	login_box('', $user->lang['LOGIN_ADMIN'], $user->lang['LOGIN_ADMIN_SUCCESS'], true);
-}
-
 // Have they authenticated (again) as an admin for this session?
 if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 {
@@ -43,7 +37,7 @@ if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 // check specific permissions but this is a catchall
 if (!$auth->acl_get('a_'))
 {
-	trigger_error($user->lang['NO_ADMIN']);
+	trigger_error('NO_ADMIN');
 }
 
 // We define the admin variables now, because the user is now able to use the admin related features...
@@ -147,6 +141,8 @@ function adm_page_header($page_title)
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 	));
 
 	// application/xhtml+xml not used because of IE

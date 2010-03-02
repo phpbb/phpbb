@@ -93,6 +93,11 @@ class acp_language
 
 				$method = request_var('method', '');
 
+				if (!class_exists($method))
+				{
+					trigger_error('Method does not exist.', E_USER_ERROR);
+				}
+
 				$requested_data = call_user_func(array($method, 'data'));
 				foreach ($requested_data as $data => $default)
 				{
@@ -141,8 +146,8 @@ class acp_language
 
 				$sql_ary	= array(
 					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
-					'lang_local_name'		=> request_var('lang_local_name', $row['lang_local_name'], true),
-					'lang_author'			=> request_var('lang_author', $row['lang_author'], true),
+					'lang_local_name'		=> utf8_normalize_nfc(request_var('lang_local_name', $row['lang_local_name'], true)),
+					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
 				);
 
 				$db->sql_query('UPDATE ' . LANG_TABLE . ' 
@@ -201,7 +206,7 @@ class acp_language
 
 				// Get target filename for storage folder
 				$filename = $this->get_filename($row['lang_iso'], $this->language_directory, $this->language_file, true, true);
-				$fp = fopen($phpbb_root_path . $filename, 'wb');
+				$fp = @fopen($phpbb_root_path . $filename, 'wb');
 
 				if (!$fp)
 				{
@@ -271,7 +276,7 @@ class acp_language
 					header('Content-Type: application/octetstream; name="' . $this->language_file . '"');
 					header('Content-disposition: attachment; filename=' . $this->language_file);
 
-					$fp = fopen($phpbb_root_path . $filename, 'rb');
+					$fp = @fopen($phpbb_root_path . $filename, 'rb');
 					while ($buffer = fread($fp, 1024))
 					{
 						echo $buffer;
@@ -329,7 +334,10 @@ class acp_language
 					$transfer->close_session();
 
 					// Remove from storage folder
-					@unlink($phpbb_root_path . 'store/' . $lang_path . $file);
+					if (file_exists($phpbb_root_path . 'store/' . $lang_path . $file))
+					{
+						@unlink($phpbb_root_path . 'store/' . $lang_path . $file);
+					}
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
@@ -406,7 +414,11 @@ class acp_language
 				if (isset($_POST['remove_store']))
 				{
 					$store_filename = $this->get_filename($lang_iso, $this->language_directory, $this->language_file, true, true);
-					@unlink($phpbb_root_path . $store_filename);
+
+					if (file_exists($phpbb_root_path . $store_filename))
+					{
+						@unlink($phpbb_root_path . $store_filename);
+					}
 				}
 
 				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
@@ -788,12 +800,12 @@ class acp_language
 								if (in_array($image_name, $valid_localized))
 								{
 									$sql_ary[] = array(
-										'image_name'		=> $image_name,
-										'image_filename'	=> $image_filename,
-										'image_height'		=> $image_height,
-										'image_width'		=> $image_width,
-										'imageset_id'		=> $imageset_row['imageset_id'],
-										'image_lang'		=> $lang_pack['iso'],
+										'image_name'		=> (string) $image_name,
+										'image_filename'	=> (string) $image_filename,
+										'image_height'		=> (int) $image_height,
+										'image_width'		=> (int) $image_width,
+										'imageset_id'		=> (int) $imageset_row['imageset_id'],
+										'image_lang'		=> (string) $lang_pack['iso'],
 									);
 								}
 							}
@@ -1323,12 +1335,12 @@ $lang = array_merge($lang, array(
 
 		if (!is_array($value))
 		{
-			$entry .= "{$tabs}'{$key}'\t=> '" . $this->prepare_lang_entry($value) . "',\n";
+			$entry .= "{$tabs}'" . $this->prepare_lang_entry($key) . "'\t=> '" . $this->prepare_lang_entry($value) . "',\n";
 		}
 		else
 		{
 			$_tabs = $tabs . "\t";
-			$entry .= "\n{$tabs}'{$key}'\t=> array(\n";
+			$entry .= "\n{$tabs}'" . $this->prepare_lang_entry($key) . "'\t=> array(\n";
 
 			foreach ($value as $_key => $_value)
 			{

@@ -79,12 +79,12 @@ fieldset dd {
 
 /* Specific layout 1 */
 fieldset.fields1 dt {
-	width: 10em;
+	width: 15em;
 	border-right-width: 0;
 }
 
 fieldset.fields1 dd {
-	margin-left: 10em;
+	margin-left: 15em;
 	border-left-width: 0;
 }
 
@@ -294,7 +294,7 @@ fieldset.submit-buttons input {
 input.inputbox	{ width: 85%; }
 input.medium	{ width: 50%; }
 input.narrow	{ width: 25%; }
-input.tiny		{ width: 110px; }
+input.tiny		{ width: 125px; }
 
 textarea.inputbox {
 	width: 85%;

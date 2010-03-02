@@ -34,7 +34,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'TERMS_OF_USE_CONTENT'	=> 'By accessing “%1$s” (hereinafter “we”, “us”, “our”, “%1$s”, “%2$s”), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use “%1$s”. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of “%1$s” after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
 	<br />
-	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://www.gnu.org/licenses/gpl.html">General Public License</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates Internet based discussions and the GPL strictly forbids them in what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
+	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://www.gnu.org/licenses/gpl.html">General Public License</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates internet based discussions, the phpBB Group are not responsible for what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
 	<br />
 	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where “%1$s” is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that “%1$s” have the right to remove, edit, move or close any topic at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither “%1$s” nor phpBB shall be held responsible for any hacking attempt that may lead to the data being compromised.
 	',
@@ -105,6 +105,7 @@ $lang = array_merge($lang, array(
 
 	'CANNOT_EDIT_MESSAGE_TIME'	=> 'You can no longer edit or delete that message.',
 	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder you want to remove.',
+	'CANNOT_MOVE_FROM_SPECIAL'	=> 'Messages can not be moved from the outbox.',
 	'CANNOT_RENAME_FOLDER'		=> 'This folder can not be renamed.',
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
 	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
@@ -161,7 +162,7 @@ $lang = array_merge($lang, array(
 	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll information.',
 	'EMAIL_BANNED_EMAIL'		=> 'The e-mail address you entered is not allowed to be used.',
 	'EMAIL_INVALID_EMAIL'		=> 'The e-mail address you entered is invalid.',
-	'EMAIL_REMIND'				=> 'This must be the e-mail address you supplied when registering.',
+	'EMAIL_REMIND'				=> 'This must be the e-mail address associated with your account. If you have not changed this via your user control panel then it is the e-mail address you registered your account with.',
 	'EMAIL_TAKEN_EMAIL'			=> 'The entered e-mail address is already in use.',
 	'EMPTY_DRAFT'				=> 'You must enter a message to submit your changes.',
 	'EMPTY_DRAFT_TITLE'			=> 'You must enter a draft title.',
@@ -210,7 +211,7 @@ $lang = array_merge($lang, array(
 	'GLOBAL_ANNOUNCEMENT'		=> 'Global announcement',
 
 	'HIDE_ONLINE'				=> 'Hide my online status',
-	'HIDE_ONLINE_EXPLAIN'		=> 'Changing this setting won\'t become effective until your next visit to the board.',
+	'HIDE_ONLINE_EXPLAIN'		=> 'Changing this setting won’t become effective until your next visit to the board.',
 	'HOLD_NEW_MESSAGES'			=> 'Do not accept new messages (New messages will be held back until enough space is available)',
 	'HOLD_NEW_MESSAGES_SHORT'	=> 'New messages will be held back',
 
@@ -288,6 +289,7 @@ $lang = array_merge($lang, array(
 	'NO_BCC_RECIPIENT'			=> 'None',
 	'NO_BOOKMARKS'				=> 'You have no bookmarks.',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks.',
+	'NO_EDIT_READ_MESSAGE'		=> 'Private message cannot be edited because it has already been read.',
 	'NO_EMAIL_USER'				=> 'The e-mail/username information submitted could not be found.',
 	'NO_FOES'					=> 'No foes currently defined',
 	'NO_FRIENDS'				=> 'No friends currently defined',
@@ -304,8 +306,8 @@ $lang = array_merge($lang, array(
 	'NO_RULES_DEFINED'			=> 'No rules defined.',
 	'NO_SAVED_DRAFTS'			=> 'No drafts saved.',
 	'NO_TO_RECIPIENT'			=> 'None',
-	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
-	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
+	'NO_WATCHED_FORUMS'			=> 'You are not subscribed to any forums.',
+	'NO_WATCHED_TOPICS'			=> 'You are not subscribed to any topics.',
 
 	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case and must contain numbers.',
 	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',

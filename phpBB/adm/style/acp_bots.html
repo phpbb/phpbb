@@ -4,7 +4,7 @@
 
 <!-- IF S_EDIT_BOT -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE}</h1>
 
@@ -85,11 +85,11 @@
 	</tbody>
 	</table>
 
-	<fieldset class="quick" style="float: left;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 		<input class="button2" name="add" type="submit" value="{L_BOT_ADD}" />
 	</fieldset>
 
-	<fieldset class="quick" style="float: right;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<select name="action">{S_BOT_OPTIONS}</select>
 		<input class="button2" name="submit" type="submit" value="{L_SUBMIT}" />
 		<p class="small"><a href="#" onclick="marklist('acp_bots', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('acp_bots', 'mark', false);">{L_UNMARK_ALL}</a></p>

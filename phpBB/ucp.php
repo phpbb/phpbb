@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -82,7 +82,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && (!empty($_GET['sid']) && ($_GET['sid'] == $user->session_id)))
+		if ($user->data['user_id'] != ANONYMOUS && isset($_GET['sid']) && !is_array($_GET['sid']) && $_GET['sid'] === $user->session_id)
 		{
 			$user->session_kill();
 			$user->session_begin();

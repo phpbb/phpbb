@@ -58,6 +58,7 @@ class install_update extends module
 	var $new_location;
 	var $latest_version;
 	var $current_version;
+	var $unequal_version;
 
 	// Set to false
 	var $test_update = false;
@@ -73,6 +74,7 @@ class install_update extends module
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
+		$this->unequal_version = false;
 
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
@@ -82,7 +84,7 @@ class install_update extends module
 		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
-		// Special options for conflicts
+		// Special options for conflicts/modified files
 		define('MERGE_NO_MERGE_NEW', 1);
 		define('MERGE_NO_MERGE_MOD', 2);
 		define('MERGE_NEW_FILE', 3);
@@ -125,6 +127,9 @@ class install_update extends module
 
 		// Set custom template again. ;)
 		$template->set_custom_template('../adm/style', 'admin');
+
+		// still, the acp template is never stored in the database
+		$user->theme['template_storedb'] = false;
 
 		// Get current and latest version
 		if (($latest_version = $cache->get('_version_info')) === false)
@@ -170,12 +175,12 @@ class install_update extends module
 		// Check if the update files stored are for the latest version...
 		if ($this->latest_version != $this->update_info['version']['to'])
 		{
-			$template->assign_vars(array(
-				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
-			);
+			$this->unequal_version = true;
 
-			return;
+			$template->assign_vars(array(
+				'S_WARNING'		=> true,
+				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
+			);
 		}
 
 		if ($this->test_update === false)
@@ -239,6 +244,12 @@ class install_update extends module
 					'CURRENT_VERSION'	=> $this->current_version)
 				);
 
+				// Print out version the update package updates to
+				if ($this->unequal_version)
+				{
+					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
+				}
+
 			break;
 
 			case 'update_db':
@@ -251,7 +262,7 @@ class install_update extends module
 				{
 					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
 
-					if ($updates_to_version === $this->latest_version)
+					if ($updates_to_version === $this->update_info['version']['to'])
 					{
 						$valid = true;
 					}
@@ -269,7 +280,7 @@ class install_update extends module
 				// Redirect the user to the database update script with some explanations...
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
-					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
+					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->update_info['version']['to']) ? true : false,
 					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
@@ -430,14 +441,19 @@ class install_update extends module
 						else if (!$recache)
 						{
 							$last_change = $theme['theme_mtime'];
+							$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
 
-							foreach (glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT) as $file)
+							if ($dir)
 							{
-								if ($last_change < @filemtime($file))
+								while (($entry = readdir($dir)) !== false)
 								{
-									$recache = true;
-									break;
+									if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}"))
+									{
+										$recache = true;
+										break;
+									}
 								}
+								closedir($dir);
 							}
 						}
 
@@ -476,9 +492,21 @@ class install_update extends module
 				$this->page_title = 'STAGE_UPDATE_FILES';
 
 				$s_hidden_fields = '';
-				foreach (request_var('conflict', array('' => 0)) as $filename => $merge_option)
+				$conflicts = request_var('conflict', array('' => 0));
+				$modified = request_var('modified', array('' => 0));
+
+				foreach ($conflicts as $filename => $merge_option)
 				{
 					$s_hidden_fields .= '<input type="hidden" name="conflict[' . htmlspecialchars($filename) . ']" value="' . $merge_option . '" />';
+				}
+
+				foreach ($modified as $filename => $merge_option)
+				{
+					if (!$merge_option)
+					{
+						continue;
+					}
+					$s_hidden_fields .= '<input type="hidden" name="modified[' . htmlspecialchars($filename) . ']" value="' . $merge_option . '" />';
 				}
 
 				$no_update = request_var('no_update', array(0 => ''));
@@ -609,6 +637,11 @@ class install_update extends module
 					{
 						$this->page_title = 'SELECT_FTP_SETTINGS';
 
+						if (!class_exists($method))
+						{
+							trigger_error('Method does not exist.', E_USER_ERROR);
+						}
+
 						$requested_data = call_user_func(array($method, 'data'));
 						foreach ($requested_data as $data => $default)
 						{
@@ -645,6 +678,7 @@ class install_update extends module
 
 				$update_list = $cache->get('_update_list');
 				$conflicts = request_var('conflict', array('' => 0));
+				$modified = request_var('modified', array('' => 0));
 
 				if ($update_list === false)
 				{
@@ -672,6 +706,28 @@ class install_update extends module
 					$conflicts = $new_conflicts;
 				}
 
+				// Build list for modifications
+				if (sizeof($modified))
+				{
+					$modified_filenames = array();
+					foreach ($update_list['modified'] as $files)
+					{
+						$modified_filenames[] = $files['filename'];
+					}
+
+					$new_modified = array();
+					foreach ($modified as $filename => $diff_method)
+					{
+						if (in_array($filename, $modified_filenames))
+						{
+							$new_modified[$filename] = $diff_method;
+						}
+					}
+
+					$modified = $new_modified;
+				}
+
+				// Check number of conflicting files, they need to be equal. For modified files the number can differ
 				if (sizeof($update_list['conflict']) != sizeof($conflicts))
 				{
 					trigger_error($user->lang['MERGE_SELECT_ERROR'], E_USER_ERROR);
@@ -729,10 +785,25 @@ class install_update extends module
 
 							case 'modified':
 
-								$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+								$option = (isset($modified[$file_struct['filename']])) ? $modified[$file_struct['filename']] : 0;
 
-								$contents = implode("\n", $diff->merged_output());
-								unset($diff);
+								switch ($option)
+								{
+									case MERGE_NO_MERGE_NEW:
+										$contents = file_get_contents($this->new_location . $original_filename);
+									break;
+
+									case MERGE_NO_MERGE_MOD:
+										$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+									break;
+
+									default:
+										$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+
+										$contents = implode("\n", $diff->merged_output());
+										unset($diff);
+									break;
+								}
 
 								if ($update_mode == 'download')
 								{
@@ -921,7 +992,25 @@ class install_update extends module
 			break;
 
 			case 'modified':
-				$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $original_file, $this->new_location . $file);
+				$option = request_var('op', 0);
+
+				switch ($option)
+				{
+					case MERGE_NO_MERGE_NEW:
+					case MERGE_NO_MERGE_MOD:
+
+						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : $phpbb_root_path . $file);
+
+						$template->assign_var('S_DIFF_NEW_FILE', true);
+						$diff_mode = 'inline';
+						$this->page_title = 'VIEWING_FILE_CONTENTS';
+
+					break;
+
+					default:
+						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $original_file, $this->new_location . $file);
+					break;
+				}
 			break;
 
 			case 'not_modified':
@@ -1234,6 +1323,7 @@ class install_update extends module
 		switch ($mode)
 		{
 			case 'version_info':
+				global $phpbb_root_path, $phpEx;
 				$info = get_remote_file('www.phpbb.com', '/updatecheck', '30x.txt', $errstr, $errno);
 
 				if ($info !== false)

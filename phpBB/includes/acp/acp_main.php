@@ -18,7 +18,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -151,6 +151,12 @@ class acp_main
 						$result = $db->sql_query($sql);
 						set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
+						
+						if (!function_exists('update_last_username'))
+						{
+							include($phpbb_root_path . "includes/functions_user.$phpEx");
+						}
+						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
 					break;
@@ -161,15 +167,15 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-							FROM ' . POSTS_TABLE . '
-							WHERE post_postcount = 1
-							GROUP BY poster_id';
+						$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
+							FROM ' . USERS_TABLE . ' u
+							LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1)
+							GROUP BY u.user_id';
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
 						{
-							$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
+							$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}");
 						}
 						$db->sql_freeresult($result);
 
@@ -245,8 +251,8 @@ class acp_main
 								foreach ($topic_row as $topic_id)
 								{
 									$sql_ary[] = array(
-										'user_id'		=> $user_id,
-										'topic_id'		=> $topic_id,
+										'user_id'		=> (int) $user_id,
+										'topic_id'		=> (int) $topic_id,
 										'topic_posted'	=> 1,
 									);
 								}
@@ -375,6 +381,7 @@ class acp_main
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
+			'BOARD_VERSION'		=> $config['version'],
 
 			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),

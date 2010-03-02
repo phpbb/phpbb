@@ -227,7 +227,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 logs
 	if ($module->loaded('logs'))
 	{
-		$forum_list = get_forum_list(array('m_', 'a_'));
+		$forum_list = get_forum_list('m_');
 
 		if (!empty($forum_list))
 		{

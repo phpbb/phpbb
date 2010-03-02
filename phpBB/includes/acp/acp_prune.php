@@ -307,7 +307,7 @@ class acp_prune
 					'mode'			=> $mode,
 					'prune'			=> 1,
 
-					'users'			=> request_var('users', ''),
+					'users'			=> request_var('users', '', true),
 					'username'		=> request_var('username', '', true),
 					'email'			=> request_var('email', ''),
 					'joined_select'	=> request_var('joined_select', ''),

@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
@@ -316,7 +316,11 @@ switch ($mode)
 
 		if (!$row)
 		{
-			trigger_error('NO_USER_DATA');
+			trigger_error('NO_USER');
+		}
+		else if (empty($row[$sql_field]))
+		{
+			trigger_error('IM_NO_DATA');
 		}
 
 		// Post data grab actions
@@ -328,7 +332,7 @@ switch ($mode)
 					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = trim(request_var('message', '', true));
+					$message = utf8_normalize_nfc(request_var('message', '', true));
 
 					if (empty($message))
 					{
@@ -586,7 +590,7 @@ switch ($mode)
 			);
 		}
 
-		// Now generate page tilte
+		// Now generate page title
 		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
 		$template_html = 'memberlist_view.html';
 
@@ -665,7 +669,7 @@ switch ($mode)
 			{
 				if (!$auth->acl_get('f_read', $row['forum_id']))
 				{
-					trigger_error($user->lang['SORRY_AUTH_READ']);
+					trigger_error('SORRY_AUTH_READ');
 				}
 
 				if (!$auth->acl_get('f_email', $row['forum_id']))
@@ -678,7 +682,7 @@ switch ($mode)
 				// If global announcement, we need to check if the user is able to at least read and email in one forum...
 				if (!$auth->acl_getf_global('f_read'))
 				{
-					trigger_error($user->lang['SORRY_AUTH_READ']);
+					trigger_error('SORRY_AUTH_READ');
 				}
 
 				if (!$auth->acl_getf_global('f_email'))
@@ -694,11 +698,11 @@ switch ($mode)
 
 		$error = array();
 
-		$name		= request_var('name', '', true);
+		$name		= utf8_normalize_nfc(request_var('name', '', true));
 		$email		= request_var('email', '');
 		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= request_var('subject', '', true);
-		$message	= request_var('message', '', true);
+		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
+		$message	= utf8_normalize_nfc(request_var('message', '', true));
 		$cc			= (isset($_POST['cc_email'])) ? true : false;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -1240,7 +1244,7 @@ switch ($mode)
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS'	=> $s_find_active_time,
 				'S_GROUP_SELECT'		=> $s_group_select,
-				'S_SEARCH_ACTION'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
+				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
 			);
 		}
 
@@ -1440,7 +1444,7 @@ function show_profile($data)
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline'])) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['session_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	else
 	{
@@ -1458,7 +1462,7 @@ function show_profile($data)
 
 	$age = '';
 
-	if ($data['user_birthday'])
+	if ($config['allow_birthdays'] && $data['user_birthday'])
 	{
 		list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $data['user_birthday']));
 

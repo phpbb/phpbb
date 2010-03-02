@@ -12,7 +12,7 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
@@ -77,14 +77,21 @@ if (isset($_GET['e']) && !$user->data['is_registered'])
 }
 
 // Permissions check
-if (!$auth->acl_gets('f_list', 'f_read', $forum_id))
+if (!$auth->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'] && !$auth->acl_get('f_read', $forum_id)))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		trigger_error($user->lang['SORRY_AUTH_READ']);
+		trigger_error('SORRY_AUTH_READ');
 	}
 
 	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+}
+
+// Forum is passworded ... check whether access has been granted to this
+// user this session, if not show login box
+if ($forum_data['forum_password'])
+{
+	login_forum_box($forum_data);
 }
 
 // Is this forum a link? ... User got here either because the
@@ -101,13 +108,6 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	}
 
 	redirect($forum_data['forum_link']);
-}
-
-// Forum is passworded ... check whether access has been granted to this
-// user this session, if not show login box
-if ($forum_data['forum_password'])
-{
-	login_forum_box($forum_data);
 }
 
 // Build navigation links
@@ -275,7 +275,10 @@ $template->assign_vars(array(
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
+	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
+
 	'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+	'S_USER_CAN_POST'		=> ($auth->acl_get('f_post', $forum_id)) ? true : false,
 	'S_DISPLAY_ACTIVE'		=> $s_display_active,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -290,7 +293,7 @@ $template->assign_vars(array(
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 
 	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
-	'U_POST_NEW_TOPIC'	=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id),
+	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param&amp;start=$start"),
 	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;mark=topics") : '',
 ));

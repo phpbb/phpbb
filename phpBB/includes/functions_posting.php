@@ -757,7 +757,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data)
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], false, ($attach_row['is_orphan']) ? $user->session_id : false);
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
 
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
@@ -1368,8 +1368,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] .= 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
-				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
+				$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
+				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
 			}
 
 			$update_sql = update_post_information('forum', $forum_id, true);
@@ -1392,7 +1392,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
@@ -1406,7 +1406,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		case 'delete_last_post':
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$update_sql = update_post_information('forum', $forum_id, true);
@@ -1451,7 +1451,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
@@ -2231,7 +2231,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			// salvation, a post is found! jam it into the forums table
+			// salvation, a post is found! jam it into the topics table
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_id = ' . (int) $row['post_id'];
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $row['post_time'];
@@ -2276,6 +2276,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 	}
 
+	// Committing the transaction before updating search index
+	$db->sql_transaction('commit');
+
+	// Delete draft if post was loaded...
+	$draft_id = request_var('draft_loaded', 0);
+	if ($draft_id)
+	{
+		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
+			WHERE draft_id = $draft_id
+				AND user_id = {$user->data['user_id']}";
+		$db->sql_query($sql);
+	}
+
 	// Index message contents
 	if ($update_message && $data['enable_indexing'])
 	{
@@ -2303,16 +2316,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
-	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
-	if ($draft_id)
-	{
-		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-			WHERE draft_id = $draft_id
-				AND user_id = {$user->data['user_id']}";
-		$db->sql_query($sql);
-	}
-
 	// Topic Notification, do not change if moderator is changing other users posts...
 	if ($user->data['user_id'] == $poster_id)
 	{
@@ -2330,8 +2333,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_query($sql);
 		}
 	}
-
-	$db->sql_transaction('commit');
 
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{

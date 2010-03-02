@@ -570,10 +570,15 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 	}
+	else if (isset($_POST['confirm']))
+	{
+		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+	}
 
 	if (!$to_forum_id || $additional_msg)
 	{
 		unset($_POST['confirm']);
+		unset($_REQUEST['confirm_key']);
 	}
 
 	if (confirm_box(true))
@@ -964,10 +969,15 @@ function mcp_fork_topic($topic_ids)
 			}
 		}
 	}
+	else if (isset($_POST['confirm']))
+	{
+		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+	}
 
-	if (!$to_forum_id || $additional_msg)
+	if ($additional_msg)
 	{
 		unset($_POST['confirm']);
+		unset($_REQUEST['confirm_key']);
 	}
 
 	if (confirm_box(true))
@@ -1132,9 +1142,9 @@ function mcp_fork_topic($topic_ids)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql_ary[] = array(
-					'topic_id'		=> $new_topic_id,
-					'user_id'		=> $row['user_id'],
-					'notify_status'	=> $row['notify_status'],
+					'topic_id'		=> (int) $new_topic_id,
+					'user_id'		=> (int) $row['user_id'],
+					'notify_status'	=> (int) $row['notify_status'],
 				);
 			}
 			$db->sql_freeresult($result);

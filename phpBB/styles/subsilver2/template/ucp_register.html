@@ -22,7 +22,7 @@
 
 <!-- IF ERROR -->
 	<tr>
-		<td class="row3" colspan="2" align="center"><span class="gensmall" style="color:red">{ERROR}</td>
+		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</td>
 	</tr>
 <!-- ENDIF -->
 
@@ -72,7 +72,7 @@
 			<!-- IF profile_fields.S_REQUIRED --><b>*</b><!-- ENDIF -->
 			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span class="gensmall">{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF -->
 		</td>
-		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall" style="color:red">{profile_fields.ERROR}</span><!-- ENDIF --></td>
+		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall error">{profile_fields.ERROR}</span><!-- ENDIF --></td>
 	</tr>
 <!-- END profile_fields -->
 

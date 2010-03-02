@@ -760,7 +760,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 	}
 
 	if (sizeof($move_msg_ids) && !in_array($dest_folder, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX)) && 
-		!in_array($cur_folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX)) && $cur_folder_id != $dest_folder)
+		!in_array($cur_folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)) && $cur_folder_id != $dest_folder)
 	{
 		// We have to check the destination folder ;)
 		if ($dest_folder != PRIVMSGS_INBOX)
@@ -832,6 +832,10 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 				$db->sql_query($sql);
 			}
 		}
+	} 
+	else if (in_array($cur_folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)))
+	{
+		trigger_error('CANNOT_MOVE_SPECIAL');
 	}
 
 	return $num_moved;
@@ -864,6 +868,17 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	if ($user->data['user_id'] == $user_id)
 	{
 		$user->data['user_unread_privmsg']--;
+
+		// Try to cope with previous wrong conversions...
+		if ($user->data['user_unread_privmsg'] < 0)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . " 
+				SET user_unread_privmsg = 0
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+
+			$user->data['user_unread_privmsg'] = 0;
+		}
 	}
 }
 

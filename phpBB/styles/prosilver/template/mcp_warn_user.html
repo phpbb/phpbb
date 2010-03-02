@@ -17,7 +17,7 @@
 		<div class="column2">
 			<dl class="details">
 				<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-				<!-- IF RANK_IMG --><dt>{L_RANK}:</dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
 				<dt>{L_JOINED}:</dt><dd>{JOINED}</dd>
 				<dt>{L_TOTAL_POSTS}:</dt><dd>{POSTS}</dd>
 				<dt>{L_WARNINGS}: </dt><dd>{WARNINGS}</dd>

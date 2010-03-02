@@ -48,7 +48,7 @@ class acp_database
 
 						if (!sizeof($table))
 						{
-							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -165,7 +165,7 @@ class acp_database
 						$tables = get_tables($db);
 						foreach ($tables as $table_name)
 						{
-							if (strlen($table_prefix) === 0 || strpos($table_name, $table_prefix) === 0)
+							if (strlen($table_prefix) === 0 || stripos($table_name, $table_prefix) === 0)
 							{
 								$template->assign_block_vars('tables', array(
 									'TABLE'	=> $table_name
@@ -343,7 +343,7 @@ class acp_database
 											{
 												if ($sub === false)
 												{
-													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action));
+													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
 												}
 												pg_put_line($db->db_connect_id, $sub . "\n");
 											}

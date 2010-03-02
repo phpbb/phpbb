@@ -66,10 +66,6 @@ a.sendemail {
 	width: 22px;
 }
 
-a.sendemail:hover {
-	background-position: 0 -18px;
-}
-
 a.fontsize {
 	background-image: none;
 	background-position: 0 -1px;

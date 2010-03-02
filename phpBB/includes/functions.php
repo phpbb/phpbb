@@ -577,7 +577,7 @@ if (!function_exists('realpath'))
 			$bits = explode('/', $path);
 
 			// Remove any . in the path, renumber array for the loop below
-			$bits = array_keys(array_diff($bits, array('.')));
+			$bits = array_values(array_diff($bits, array('.')));
 
 			// Lets get looping, run over and resolve any .. (up directory)
 			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
@@ -789,6 +789,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 	
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
+				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
+
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
@@ -846,8 +848,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				foreach ($sql_insert as $f_id)
 				{
 					$sql_ary[] = array(
-						'user_id'	=> $user->data['user_id'],
-						'forum_id'	=> $f_id,
+						'user_id'	=> (int) $user->data['user_id'],
+						'forum_id'	=> (int) $f_id,
 						'mark_time'	=> time()
 					);
 				}
@@ -882,7 +884,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
 			}
 
+			if (isset($tracking['tf']) && empty($tracking['tf']))
+			{
+				unset($tracking['tf']);
+			}
+
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+
 			unset($tracking);
 		}
 
@@ -909,10 +918,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_return_on_error(true);
 
 				$sql_ary = array(
-					'user_id'		=> $user->data['user_id'],
-					'topic_id'		=> $topic_id,
+					'user_id'		=> (int) $user->data['user_id'],
+					'topic_id'		=> (int) $topic_id,
 					'forum_id'		=> (int) $forum_id,
-					'mark_time'		=> ($post_time) ? $post_time : time(),
+					'mark_time'		=> ($post_time) ? (int) $post_time : time(),
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -977,6 +986,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
 		}
 
 		return;
@@ -995,8 +1005,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$db->sql_return_on_error(true);
 
 			$sql_ary = array(
-				'user_id'		=> $use_user_id,
-				'topic_id'		=> $topic_id,
+				'user_id'		=> (int) $use_user_id,
+				'topic_id'		=> (int) $topic_id,
 				'topic_posted'	=> 1
 			);
 
@@ -1241,11 +1251,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			if (!isset($tracking_topics) || !sizeof($tracking_topics))
-			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
-			}
+			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
 			{
@@ -1300,6 +1307,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
 			$unread = false;
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
@@ -2235,7 +2243,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
@@ -2387,7 +2394,7 @@ function get_context($text, $words, $length = 400)
 			{
 				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
 				{
-					$pos = strpos($text, $match[1]);
+					$pos = utf8_strpos($text, $match[1]);
 					if ($pos !== false)
 					{
 						$word_indizes[] = $pos;
@@ -2410,21 +2417,21 @@ function get_context($text, $words, $length = 400)
 			$final_text_index = -1;
 
 			// cycle through every character in the original text
-			for ($i = $word_indizes[$word], $n = strlen($text); $i < $n; $i++)
+			for ($i = $word_indizes[$word], $n = utf8_strlen($text); $i < $n; $i++)
 			{
 				// if the current position is the start of one of the words then append $sequence_length characters to the final text
 				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
 				{
 					if ($final_text_index < $i - $sequence_length - 1)
 					{
-						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', substr($text, $i - $sequence_length, $sequence_length));
+						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', utf8_substr($text, $i - $sequence_length, $sequence_length));
 					}
 					else
 					{
 						// if the final text is already nearer to the current word than $sequence_length we only append the text
 						// from its current index on and distribute the unused length to all other sequenes
 						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
-						$final_text .= substr($text, $final_text_index + 1, $i - $final_text_index - 1);
+						$final_text .= utf8_substr($text, $final_text_index + 1, $i - $final_text_index - 1);
 					}
 					$final_text_index = $i - 1;
 
@@ -2436,17 +2443,17 @@ function get_context($text, $words, $length = 400)
 				if ($j > 0)
 				{
 					// add the character to the final text and increment the sequence counter
-					$final_text .= $text[$i];
+					$final_text .= utf8_substr($text, $i, 1);
 					$final_text_index++;
 					$j++;
 
 					// if this is a whitespace then check whether we are done with this sequence
-					if ($text[$i] == ' ')
+					if (utf8_substr($text, $i, 1) == ' ')
 					{
 						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
 						if ($i + 4 < $n)
 						{
-							if (($j > $sequence_length && $word >= $wordnum) || strlen($final_text) > $length)
+							if (($j > $sequence_length && $word >= $wordnum) || utf8_strlen($final_text) > $length)
 							{
 								$final_text .= ' ...';
 								break;
@@ -2472,7 +2479,7 @@ function get_context($text, $words, $length = 400)
 
 	if (!sizeof($words) || !sizeof($word_indizes))
 	{
-		return (strlen($text) >= $length + 3) ? substr($text, 0, $length) . '...' : $text;
+		return (utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text;
 	}
 }
 
@@ -4117,7 +4124,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'UA_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&mode=popup', false),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_MEMBERSLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_VIEWONLINE'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
@@ -4134,6 +4141,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
+		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
@@ -4168,79 +4176,6 @@ function page_header($page_title = '', $display_online_list = true)
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
-
-	// Once used, we do not want to have the whole theme data twice in memory...
-	if ($user->theme['theme_storedb'])
-	{
-		// Parse Theme Data
-		$replace = array(
-			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
-			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
-			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
-			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
-			'{T_STYLESHEET_NAME}'		=> $user->theme['theme_name'],
-			'{S_USER_LANG}'				=> $user->data['user_lang']
-		);
-
-		$user->theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $user->theme['theme_data']);
-
-		$matches = array();
-		if (strpos($user->theme['theme_data'], '{IMG_') !== false)
-		{
-			preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $user->theme['theme_data'], $matches);
-
-			$imgs = $find = $replace = array();
-			if (isset($matches[0]) && sizeof($matches[0]))
-			{
-				foreach ($matches[1] as $i => $img)
-				{
-					$img = strtolower($img);
-					if (!isset($img_array[$img]))
-					{
-						continue;
-					}
-
-					if (!isset($imgs[$img]))
-					{
-						$img_data = &$img_array[$img];
-						$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
-						$imgs[$img] = array(
-							'src'		=> $phpbb_root_path . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . $imgsrc,
-							'width'		=> $img_data['image_width'],
-							'height'	=> $img_data['image_height'],
-						);
-					}
-
-					switch ($matches[2][$i])
-					{
-						case 'SRC':
-							$replace[] = $imgs[$img]['src'];
-						break;
-						
-						case 'WIDTH':
-							$replace[] = $imgs[$img]['width'];
-						break;
-			
-						case 'HEIGHT':
-							$replace[] = $imgs[$img]['height'];
-						break;
-
-						default:
-							continue;
-					}
-					$find[] = $matches[0][$i];
-				}
-
-				if (sizeof($find))
-				{
-					$user->theme['theme_data'] = str_replace($find, $replace, $user->theme['theme_data']);
-				}
-			}
-		}
-
-		$template->assign_var('T_THEME_DATA', $user->theme['theme_data']);
-		$user->theme['theme_data'] = '';
-	}
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
@@ -4294,11 +4229,11 @@ function page_footer($run_cron = true)
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", '', true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
-	if (!defined('IN_CRON') && $run_cron)
+	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
 	{
 		$cron_type = '';
 	

@@ -15,7 +15,7 @@ define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 /**#@-*/
 
-$phpbb_root_path = './../';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Report all errors, except notices
@@ -105,14 +105,14 @@ else
 // Try to override some limits - maybe it helps some...
 @set_time_limit(0);
 $mem_limit = @ini_get('memory_limit');
-if (!empty($mem_limit ))
+if (!empty($mem_limit))
 {
 	$unit = strtolower(substr($mem_limit, -1, 1));
-	$mem_limit = (int)$mem_limit;
+	$mem_limit = (int) $mem_limit;
 	if ($unit == 'k')
 	{
 		$mem_limit = floor($mem_limit/1024);
-	} 
+	}
 	else if ($unit == 'g')
 	{
 		$mem_limit *= 1024;
@@ -127,7 +127,7 @@ else
 {
 	$mem_limit = '128M';
 }
-@ini_set('memory_limit', $mem_limit );
+@ini_set('memory_limit', $mem_limit);
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -224,6 +224,9 @@ $config = array(
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
+
+// the acp template is never stored in the database
+$user->theme['template_storedb'] = false;
 
 $install = new module();
 
@@ -721,7 +724,7 @@ class module
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
+			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
 			{
 				continue;
 			}

@@ -191,7 +191,7 @@ class mcp_warn
 		$post_id = request_var('p', 0);
 		$forum_id = request_var('f', 0);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = request_var('warning', '', true);
+		$warning = utf8_normalize_nfc(request_var('warning', '', true));
 
 		$sql = 'SELECT u.*, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
@@ -203,19 +203,19 @@ class mcp_warn
 
 		if (!$user_row)
 		{
-			trigger_error($user->lang['NO_POST']);
+			trigger_error('NO_POST');
 		}
 
 		// There is no point issuing a warning to ignored users (ie anonymous and bots)
 		if ($user_row['user_type'] == USER_IGNORE)
 		{
-			trigger_error($user->lang['CANNOT_WARN_ANONYMOUS']);
+			trigger_error('CANNOT_WARN_ANONYMOUS');
 		}
 
 		// Prevent someone from warning themselves
 		if ($user_row['user_id'] == $user->data['user_id'])
 		{
-			trigger_error($user->lang['CANNOT_WARN_SELF']);
+			trigger_error('CANNOT_WARN_SELF');
 		}
 
 		// Check if there is already a warning for this post to prevent multiple
@@ -229,7 +229,7 @@ class mcp_warn
 
 		if ($row)
 		{
-			trigger_error($user->lang['ALREADY_WARNED']);
+			trigger_error('ALREADY_WARNED');
 		}
 
 		$user_id = $user_row['user_id'];
@@ -306,7 +306,7 @@ class mcp_warn
 		$user_id = request_var('u', 0);
 		$username = request_var('username', '', true);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = request_var('warning', '', true);
+		$warning = utf8_normalize_nfc(request_var('warning', '', true));
 
 		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 
@@ -325,7 +325,7 @@ class mcp_warn
 		// Prevent someone from warning themselves
 		if ($user_row['user_id'] == $user->data['user_id'])
 		{
-			trigger_error($user->lang['CANNOT_WARN_SELF']);
+			trigger_error('CANNOT_WARN_SELF');
 		}
 
 		$user_id = $user_row['user_id'];

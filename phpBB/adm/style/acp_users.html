@@ -28,7 +28,7 @@
 
 <!-- ELSEIF S_SELECT_FORUM -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_USER_ADMIN}</h1>
 
@@ -52,7 +52,7 @@
 
 <!-- ELSE -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_USER_ADMIN} :: {MANAGED_USERNAME}</h1>
 
@@ -207,7 +207,7 @@
 
 <!-- ELSEIF S_PERMISSIONS -->
 
-	<div style="float: right;">
+	<div style="float: {S_CONTENT_FLOW_END};">
 		<a href="{U_USER_PERMISSIONS}">&raquo; {L_SET_USERS_PERMISSIONS}</a><br />
 		<a href="{U_USER_FORUM_PERMISSIONS}">&raquo; {L_SET_USERS_FORUM_PERMISSIONS}</a>
 	</div>

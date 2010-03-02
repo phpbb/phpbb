@@ -26,7 +26,9 @@ class messenger
 	*/
 	function messenger($use_queue = true)
 	{
-		$this->use_queue = $use_queue;
+		global $config;
+
+		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
 	}
 
@@ -287,6 +289,7 @@ class messenger
 		if ($config['email_package_size'] && $this->use_queue && !empty($this->queue))
 		{
 			$this->queue->save();
+			return;
 		}
 	}
 
@@ -819,7 +822,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	$smtp->add_backtrace('Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port']);
 
 	// Ok we have error checked as much as we can to this point let's get on it already.
-	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
+	ob_start();
+	$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20);
+	$error_contents = ob_get_clean();
+
+	if (!$smtp->socket)
 	{
 		if ($errstr)
 		{
@@ -827,6 +834,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 		}
 
 		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+		$err_msg .= ($error_contents) ? '<br /><br />' . htmlspecialchars($error_contents) : '';
 		return false;
 	}
 

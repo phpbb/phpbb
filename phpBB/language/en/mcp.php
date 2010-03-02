@@ -362,7 +362,7 @@ $lang = array_merge($lang, array(
 			'WAREZ'		=> 'The post contains links to illegal or pirated software.',
 			'SPAM'		=> 'The reported post has the only purpose to advertise for a website or another product.',
 			'OFF_TOPIC'	=> 'The reported post is off topic.',
-			'OTHER'		=> 'The reported post does not fit into any other category, please use the description field.',
+			'OTHER'		=> 'The reported post does not fit into any other category, please use the further information field.',
 		)
 	),
 ));

@@ -18,12 +18,14 @@
 			</td>
 			<td align="{S_CONTENT_FLOW_END}" nowrap="nowrap">
 				<!-- IF S_VIEW_MESSAGE -->
-					<form name="movepm" method="post" action="{S_PM_ACTION}" style="margin:0px">
-						<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
-						<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
-						<input type="hidden" name="p" value="{MSG_ID}" />
-						<select name="dest_folder">{S_TO_FOLDER_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="move_pm" value="{L_MOVE_TO_FOLDER}" />
-					</form>
+					<!-- IF not S_SPECIAL_FOLDER -->
+						<form name="movepm" method="post" action="{S_PM_ACTION}" style="margin:0px">
+							<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
+							<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+							<input type="hidden" name="p" value="{MSG_ID}" />
+							<select name="dest_folder">{S_TO_FOLDER_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="move_pm" value="{L_MOVE_TO_FOLDER}" />
+						</form>
+					<!-- ENDIF -->
 				<!-- ELSE -->
 					<form name="sortmsg" method="post" action="{S_PM_ACTION}" style="margin:0px">
 						<span class="gensmall">{L_DISPLAY_MESSAGES}:</span> {S_SELECT_SORT_DAYS} <span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR} <input class="btnlite" type="submit" name="sort" value="{L_GO}" />

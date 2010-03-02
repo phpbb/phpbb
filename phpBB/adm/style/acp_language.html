@@ -4,7 +4,7 @@
 
 <!-- IF S_SELECT_METHOD -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_SELECT_DOWNLOAD_FORMAT}</h1>
 
@@ -26,7 +26,7 @@
 
 <!-- ELSEIF S_DETAILS -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_LANGUAGE_PACK_DETAILS}</h1>
 
@@ -107,12 +107,12 @@
 	<form id="lang_entries" method="post" action="{U_ENTRY_ACTION}">
 
 	<!-- IF S_FROM_STORE -->
-		<fieldset class="quick" style="float: left;">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			<input type="submit" name="remove_store" value="{L_REMOVE_FROM_STORAGE_FOLDER}" class="button2" /> 
 		</fieldset>
 	<!-- ENDIF -->
 
-	<fieldset class="quick" style="float: right;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<select name="language_file">{S_LANG_OPTIONS}</select>&nbsp;<input type="submit" class="button2" name="change" value="{L_SELECT}" />
 	</fieldset>
 
@@ -166,7 +166,7 @@
 
 <!-- ELSEIF S_UPLOAD -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_UPLOAD_SETTINGS}</h1>
 

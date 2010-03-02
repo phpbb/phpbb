@@ -349,12 +349,12 @@ class acp_profile
 					}
 
 					$field_row = array_merge($default_values[$field_type], array(
-						'field_ident'		=> request_var('field_ident', ''),
+						'field_ident'		=> utf8_clean_string(request_var('field_ident', '', true)),
 						'field_required'	=> 0,
 						'field_hide'		=> 0,
 						'field_no_view'		=> 0,
 						'field_show_on_reg'	=> 0,
-						'lang_name'			=> '',
+						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
 					);
@@ -381,10 +381,10 @@ class acp_profile
 					$exclude[1][] = 'lang_options';
 				}
 
-				$cp->vars['field_ident']		= request_var('field_ident', $field_row['field_ident']);
-				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name'], true);
-				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
-				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
+				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
+				$cp->vars['lang_name']			= utf8_normalize_nfc(request_var('lang_name', $field_row['lang_name'], true));
+				$cp->vars['lang_explain']		= utf8_normalize_nfc(request_var('lang_explain', $field_row['lang_explain'], true));
+				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
 
 				// Field option...
 				if (isset($_REQUEST['field_option']))
@@ -409,11 +409,11 @@ class acp_profile
 				// A boolean field expects an array as the lang options
 				if ($field_type == FIELD_BOOL)
 				{
-					$options = request_var('lang_options', array(''), true);
+					$options = utf8_normalize_nfc(request_var('lang_options', array(''), true));
 				}
 				else
 				{
-					$options = request_var('lang_options', '', true);
+					$options = utf8_normalize_nfc(request_var('lang_options', '', true));
 				}
 
 				// If the user has submitted a form with options (i.e. dropdown field)
@@ -441,13 +441,13 @@ class acp_profile
 				// step 2
 				foreach ($exclude[2] as $key)
 				{
-					$var = request_var($key, $field_row[$key], true);
+					$var = utf8_normalize_nfc(request_var($key, $field_row[$key], true));
 
 					// Manipulate the intended variables a little bit if needed
 					if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
 					{
 						// Get the number of options if this key is 'field_maxlen'
-						$var = sizeof(explode("\n", request_var('lang_options', '', true)));
+						$var = sizeof(explode("\n", utf8_normalize_nfc(request_var('lang_options', '', true))));
 					}
 					else if ($field_type == FIELD_TEXT && $key == 'field_length')
 					{
@@ -491,6 +491,11 @@ class acp_profile
 								list($cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']) = explode('-', $var);
 							}
 						}	
+					} 
+					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					{
+						// Get the number of options if this key is 'field_maxlen'
+						$var = request_var('field_default_value', 0);
 					}
 
 					$cp->vars[$key] = $var;
@@ -534,7 +539,7 @@ class acp_profile
 		
 				foreach ($exclude[3] as $key)
 				{
-					$cp->vars[$key] = request_var($key, array(0 => ''), true);
+					$cp->vars[$key] = utf8_normalize_nfc(request_var($key, array(0 => ''), true));
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{
@@ -542,7 +547,7 @@ class acp_profile
 					}
 					else if ($key == 'l_lang_options' && $field_type == FIELD_BOOL)
 					{
-						$cp->vars[$key] = request_var($key, array(0 => array('')), true);
+						$cp->vars[$key] = utf8_normalize_nfc(request_var($key, array(0 => array('')), true));
 					}
 					else if ($key == 'l_lang_options' && is_array($cp->vars[$key]))
 					{
@@ -631,10 +636,25 @@ class acp_profile
 							$cp->vars['columns'] = request_var('columns', 0);
 							$_new_key_ary[$key] = $cp->vars['rows'] . '|' . $cp->vars['columns'];
 						}
-						if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
+						else if ($field_type == FIELD_DATE && $key == 'field_default_value')
 						{
-							$_new_key_ary[$key] = request_var($key, array(array('')), true);
+							$always_now = request_var('always_now', 0);
 
+							if ($always_now)
+							{
+								$_new_key_ary[$key] = 'now';
+							}
+							else if (isset($_REQUEST['field_default_value_day']))
+							{
+								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
+								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
+								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
+								$_new_key_ary[$key]  = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+							}
+						}
+						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
+						{
+							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
 						}
 						else
 						{
@@ -644,7 +664,7 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
 							}
 						}
 					}
@@ -744,7 +764,7 @@ class acp_profile
 						
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
+							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
 						);
 
 						// Build options based on profile type
@@ -915,11 +935,10 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
-				
+				$value = ($action == 'create') ? utf8_normalize_nfc(request_var('l_' . $field, array(0 => ''), true)) : $cp->vars['l_' . $field];
 				if ($field == 'lang_options')
 				{
-					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
+					$var = (!isset($cp->vars['l_lang_options'][$lang_id]) || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['l_lang_options'][$lang_id];
 					
 					switch ($field_type)
 					{
@@ -934,10 +953,10 @@ class acp_profile
 						break;
 
 						case 'optionfield':
-
+							$value = ((isset($value[$lang_id])) ? ((is_array($value[$lang_id])) ?  implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var));
 							$lang_options[$lang_id]['fields'][$field] = array(
 								'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . ((isset($value[$lang_id])) ? implode("\n", $value[$lang_id]) : implode("\n", $var)) . '</textarea></dd>'
+								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . $value . '</textarea></dd>'
 							);
 						break;
 					}
@@ -1087,17 +1106,23 @@ class acp_profile
 		}
 
 		// These are always arrays because the key is the language id...
-		$cp->vars['l_lang_name']			= request_var('l_lang_name', array(0 => ''), true);
-		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', array(0 => ''), true);
-		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => ''), true);
+		$cp->vars['l_lang_name']			= utf8_normalize_nfc(request_var('l_lang_name', array(0 => ''), true));
+		$cp->vars['l_lang_explain']			= utf8_normalize_nfc(request_var('l_lang_explain', array(0 => ''), true));
+		$cp->vars['l_lang_default_value']	= utf8_normalize_nfc(request_var('l_lang_default_value', array(0 => ''), true));
+
 		if ($field_type != FIELD_BOOL)
 		{
-			$cp->vars['l_lang_options']			= request_var('l_lang_options', array(0 => ''), true);
+			$cp->vars['l_lang_options']			= utf8_normalize_nfc(request_var('l_lang_options', array(0 => ''), true));
 		}
 		else
 		{
+			/**
+			* @todo check if this line is correct...
 			$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => array('')), true);
+			*/
+			$cp->vars['l_lang_options']	= utf8_normalize_nfc(request_var('l_lang_options', array(0 => array('')), true));
 		}
+
 		if ($cp->vars['lang_options'])
 		{
 			if (!is_array($cp->vars['lang_options']))

@@ -78,17 +78,21 @@ $lang = array_merge($lang, array(
 		'user_group'	=> 'Users &amp; Groups',
 	),
 
+	// With defining 'global' here we are able to specify what is printed out if the permission is within the global scope.
 	'permission_type'	=> array(
 		'u_'			=> 'User permissions',
 		'a_'			=> 'Admin permissions',
 		'm_'			=> 'Moderator permissions',
 		'f_'			=> 'Forum permissions',
+		'global'		=> array(
+			'm_'			=> 'Global moderator permissions',
+		),
 	),
 ));
 
 // User Permissions
 $lang = array_merge($lang, array(
-	'acl_u_viewprofile'	=> array('lang' => 'Can view profiles', 'cat' => 'profile'),
+	'acl_u_viewprofile'	=> array('lang' => 'Can view profiles, memberlist and online list', 'cat' => 'profile'),
 	'acl_u_chgname'		=> array('lang' => 'Can change username', 'cat' => 'profile'),
 	'acl_u_chgpasswd'	=> array('lang' => 'Can change password', 'cat' => 'profile'),
 	'acl_u_chgemail'	=> array('lang' => 'Can change e-mail address', 'cat' => 'profile'),
@@ -175,8 +179,8 @@ $lang = array_merge($lang, array(
 	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'topic_actions'),
 
 	'acl_m_info'	=> array('lang' => 'Can view post details', 'cat' => 'misc'),
-	'acl_m_warn'	=> array('lang' => 'Can issue warnings', 'cat' => 'misc'), // This moderator setting is only global (and not local)
-	'acl_m_ban'		=> array('lang' => 'Can manage bans', 'cat' => 'misc'), // This moderator setting is only global (and not local)
+	'acl_m_warn'	=> array('lang' => 'Can issue warnings<br /><em>This setting is only assigned globally. It is not forum based.</em>', 'cat' => 'misc'), // This moderator setting is only global (and not local)
+	'acl_m_ban'		=> array('lang' => 'Can manage bans<br /><em>This setting is only assigned globally. It is not forum based.</em>', 'cat' => 'misc'), // This moderator setting is only global (and not local)
 ));
 
 // Admin Permissions
@@ -196,7 +200,7 @@ $lang = array_merge($lang, array(
 	'acl_a_bbcode'		=> array('lang' => 'Can define BBCode tags', 'cat' => 'posting'),
 	'acl_a_attach'		=> array('lang' => 'Can alter attachment related settings', 'cat' => 'posting'),
 
-	'acl_a_user'		=> array('lang' => 'Can manage users', 'cat' => 'user_group'),
+	'acl_a_user'		=> array('lang' => 'Can manage users<br /><em>This also includes seeing the users browser agent within the viewonline list.</em>', 'cat' => 'user_group'),
 	'acl_a_userdel'		=> array('lang' => 'Can delete/prune users', 'cat' => 'user_group'),
 	'acl_a_group'		=> array('lang' => 'Can manage groups', 'cat' => 'user_group'),
 	'acl_a_groupadd'	=> array('lang' => 'Can add new groups', 'cat' => 'user_group'),

@@ -1,15 +1,16 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-$updates_to_version = '3.0.RC3';
+$updates_to_version = '3.0.RC4';
 
+// Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
 	return;
@@ -20,7 +21,7 @@ if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 
-$phpbb_root_path = './../';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Report all errors, except notices
@@ -83,6 +84,8 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
+
+$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 
 $sql = "SELECT config_value
 	FROM " . CONFIG_TABLE . "
@@ -334,11 +337,53 @@ $database_update_info = array(
 	),
 	// Changes from 3.0.RC2 to the next version
 	'3.0.RC2'			=> array(
-		// Remove the following keys
+		// Change the following columns
 		'change_columns'		=> array(
 			BANLIST_TABLE	=> array(
 				'ban_reason'		=> array('VCHAR_UNI', ''),
 				'ban_give_reason'	=> array('VCHAR_UNI', ''),
+			),
+		),
+	),
+	// Changes from 3.0.RC3 to the next version
+	'3.0.RC3'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			BANLIST_TABLE				=> array(
+				'ban_reason'		=> array('VCHAR_UNI', ''),
+				'ban_give_reason'	=> array('VCHAR_UNI', ''),
+			),
+			STYLES_TABLE				=> array(
+				'style_id'			=> array('USINT', 0),
+				'template_id'		=> array('USINT', 0),
+				'theme_id'			=> array('USINT', 0),
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_TABLE		=> array(
+				'template_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_DATA_TABLE	=> array(
+				'template_id'		=> array('USINT', 0),
+			),
+			STYLES_THEME_TABLE			=> array(
+				'theme_id'			=> array('USINT', 0),
+			),
+			STYLES_IMAGESET_TABLE		=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			USERS_TABLE	=> array(
+				'user_style'		=> array('USINT', 0),
+			),
+			FORUMS_TABLE				=> array(
+				'forum_style'		=> array('USINT', 0),
+			),
+			GROUPS_TABLE			=> array(
+				'group_avatar_type'		=> array('TINT:2', 0),
+				'group_avatar_width'	=> array('USINT', 0),
+				'group_avatar_height'	=> array('USINT', 0),
 			),
 		),
 	),
@@ -427,7 +472,6 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
 
@@ -447,6 +491,450 @@ else
 {
 	// If not called from the update script, we will actually remove the traces
 	$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+}
+
+// Checks/Operations that have to be completed prior to starting the update itself
+$exit = false;
+if (version_compare($current_version, '3.0.RC3', '<='))
+{
+	// Define missing language entries...
+	if (!isset($lang['CLEANING_USERNAMES']))
+	{
+		$lang = array_merge($lang, array(
+			'CLEANING_USERNAMES'		=> 'Cleaning usernames',
+			'LONG_SCRIPT_EXECUTION'		=> 'Please note that this can take a while... Please do not stop the script.',
+			'CHANGE_CLEAN_NAMES'		=> 'The method used to make sure a username is not used by multiple users has been changed. There are some users which have the same name when compared with the new method. You have to delete or rename these users to make sure that each name is only used by one user before you can proceed.',
+			'USER_ACTIVE'				=> 'Active user',
+			'USER_INACTIVE'				=> 'Inactive user',
+			'BOT'						=> 'Spider/Robot',
+			'UPDATE_REQUIRES_FILE'		=> 'The updater requires that the following file is present: %s',
+
+			'DELETE_USER_REMOVE'		=> 'Delete user and remove posts',
+			'DELETE_USER_RETAIN'		=> 'Delete user but keep posts',
+			'EDIT_USERNAME'				=> 'Edit username',
+			'KEEP_OLD_NAME'				=> 'Keep username',
+			'NEW_USERNAME'				=> 'New username',
+		));
+	}
+?>
+	</p><br /><br />
+
+	<h1><?php echo $lang['CLEANING_USERNAMES']; ?></h1>
+
+	<br />
+
+<?php
+	flush();
+
+	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
+	$modify_users	= request_var('modify_users', array(0 => ''));
+	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
+
+	// the admin decided to change some usernames
+	if (sizeof($modify_users) && $submit)
+	{
+		$sql = 'SELECT user_id, username, user_type
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_keys($modify_users));
+		$result = $db->sql_query($sql);
+
+		$users = 0;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$users++;
+			$user_id = (int) $row['user_id'];
+
+			if (isset($modify_users[$user_id]))
+			{
+				$row['action'] = $modify_users[$user_id];
+				$modify_users[$user_id] = $row;
+			}
+		}
+		$db->sql_freeresult($result);
+
+		// only if all ids really existed
+		if (sizeof($modify_users) == $users)
+		{
+			$user->data['user_id'] = ANONYMOUS;
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			foreach ($modify_users as $user_id => $row)
+			{
+				switch ($row['action'])
+				{
+					case 'edit':
+						if (isset($new_usernames[$user_id]))
+						{
+							$data = array('username' => utf8_normalize_nfc($new_usernames[$user_id]));
+							// Need to update config, forum, topic, posting, messages, etc.
+							if ($data['username'] != $row['username'])
+							{
+								$check_ary = array('username' => array(
+									array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+									array('username'),
+								));
+								// need a little trick for this to work properly
+								$user->data['username_clean'] = utf8_clean_string($data['username']) . 'a';
+								$errors = validate_data($data, $check_ary);
+
+								if ($errors)
+								{
+									include($phpbb_root_path . 'language/' . $language . '/ucp.' . $phpEx);
+									echo '<div class="errorbox">';
+									foreach ($errors as $error)
+									{
+										echo '<p>' . $lang[$error] . '</p>';
+									}
+									echo '</div>';
+								}
+
+								if (!$errors)
+								{
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', array(
+												'username' => $data['username'],
+												'username_clean' => utf8_clean_string($data['username'])
+											)) . '
+										WHERE user_id = ' . $user_id;
+									$db->sql_query($sql);
+
+									add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $row['username'], $data['username']);
+									user_update_name($row['username'], $data['username']);
+								}
+							}
+						}
+					break;
+
+					case 'delete_retain':
+					case 'delete_remove':
+						if ($user_id != ANONYMOUS && $row['user_type'] != USER_FOUNDER)
+						{
+							user_delete(substr($row['action'], 7), $user_id, $row['username']);
+							add_log('admin', 'LOG_USER_DELETED', $row['username']);
+						}
+					break;
+				}
+			}
+		}
+	}
+?>
+
+	<p><?php echo $lang['LONG_SCRIPT_EXECUTION']; ?></p>
+	<p><?php echo $lang['PROGRESS']; ?> :: <strong>
+
+<?php
+	flush();
+
+	// after RC3 a different utf8_clean_string function is used, this requires that
+	// the unique column username_clean is recalculated, during this recalculation
+	// duplicates might be created. Since the column has to be unique such usernames
+	// must not exist. We need identify them and let the admin decide what to do
+	// about them.
+	$sql = 'SELECT user_id, username, username_clean
+		FROM ' . USERS_TABLE . '
+		ORDER BY user_id ASC';
+	$result = $db->sql_query($sql);
+
+	$colliding_users = $found_names = array();
+	$echos = 0;
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// Calculate the new clean name. If it differs from the old one we need
+		// to make sure there is no collision
+		$clean_name = utf8_new_clean_string($row['username']);
+
+		if ($clean_name != $row['username_clean'])
+		{
+			// Check if there would be a collission, if not put it up for changing
+			$user_id = (int) $row['user_id'];
+
+			// If this clean name was not the result of another user already ...
+			if (!isset($found_names[$clean_name]))
+			{
+				// then we need to figure out whether there are any other users
+				// who already had this clean name with the old version
+				$sql = 'SELECT user_id, username
+					FROM ' . USERS_TABLE . '
+					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'';
+				$result2 = $db->sql_query($sql);
+
+				$user_ids = array($user_id);
+				while ($row = $db->sql_fetchrow($result2))
+				{
+					// For not trimmed entries this could happen, yes. ;)
+					if ($row['user_id'] == $user_id)
+					{
+						continue;
+					}
+
+					// Make sure this clean name will still be the same with the
+					// new function. If it is, then we have to add it to the list
+					// of user ids for this clean name
+					if (utf8_new_clean_string($row['username']) == $clean_name)
+					{
+						$user_ids[] = (int) $row['user_id'];
+					}
+				}
+				$db->sql_freeresult($result2);
+
+				// if we already found a collision save it
+				if (sizeof($user_ids) > 1)
+				{
+					$colliding_users[$clean_name] = $user_ids;
+					$found_names[$clean_name] = true;
+				}
+				else
+				{
+					// otherwise just mark this name as found
+					$found_names[$clean_name] = $user_id;
+				}
+			}
+			// Else, if we already found the username
+			else
+			{
+				// If the value in the found_names lookup table is only true ...
+				if ($found_names[$clean_name] === true)
+				{
+					// then the actual data was already added to $colliding_users
+					// and we only need to append the user_id
+					$colliding_users[$clean_name][] = $user_id;
+				}
+				else
+				{
+					// otherwise it still keeps the first user_id for this name
+					// and we need to move the data to $colliding_users, and set
+					// the value in the found_names lookup table to true, so
+					// following users will directly be appended to $colliding_users
+					$colliding_users[$clean_name] = array($found_names[$clean_name], $user_id);
+					$found_names[$clean_name] = true;
+				}
+			}
+		}
+
+		if (($echos % 1000) == 0)
+		{
+			echo '.';
+			flush();
+		}
+		$echos++;
+	}
+	$db->sql_freeresult($result);
+
+	// now retrieve all information about the users and let the admin decide what to do
+	if (sizeof($colliding_users))
+	{
+		$exit = true;
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include($phpbb_root_path . 'language/' . $language . '/memberlist.' . $phpEx);
+		include($phpbb_root_path . 'language/' . $language . '/acp/users.' . $phpEx);
+
+		// link a few things to the correct place so we don't get any problems
+		$user->lang = &$lang;
+		$user->data['user_id'] = ANONYMOUS;
+		$user->date_format = $config['default_dateformat'];
+
+		// a little trick to get all user_ids
+		$user_ids = call_user_func_array('array_merge', array_values($colliding_users));
+
+		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time >= ' . (time() - $config['session_length']) . '
+				AND ' . $db->sql_in_set('session_user_id', $user_ids) . '
+			GROUP BY session_user_id';
+		$result = $db->sql_query($sql);
+
+		$session_times = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$session_times[$row['session_user_id']] = $row['session_time'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', $user_ids);
+		$result = $db->sql_query($sql);
+
+		$users = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (isset($session_times[$row['user_id']]))
+			{
+				$row['session_time'] = $session_times[$row['user_id']];
+			}
+			else
+			{
+				$row['session_time'] = 0;
+			}
+			$users[(int) $row['user_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+		unset($session_times);
+
+		// now display a table with all users, some information about them and options
+		// for the admin: keep name, change name (with text input) or delete user
+		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
+?>
+</strong></p><br /><br />
+
+<p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
+<form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
+
+
+<?php
+		foreach ($colliding_users as $clean_name => $user_ids)
+		{
+?>
+	<fieldset class="tabulated">
+		<table>
+			<caption><?php echo sprintf($lang['COLLIDING_CLEAN_USERNAME'], $clean_name); ?></caption>
+			<thead>
+				<tr>
+					<th><?php echo $lang['RANK']; ?> <?php echo $lang['USERNAME']; ?></th>
+					<th><?php echo $lang['POSTS']; ?></th>
+					<th><?php echo $lang['INFORMATION']; ?></th>
+					<th><?php echo $lang['JOINED']; ?></th>
+					<th><?php echo $lang['LAST_ACTIVE']; ?></th>
+					<th><?php echo $lang['ACTION']; ?></th>
+					<th><?php echo $lang['NEW_USERNAME']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
+			foreach ($user_ids as $i => $user_id)
+			{
+				$row = $users[$user_id];
+				
+				$rank_title = $rank_img = '';
+				get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
+
+				$last_visit = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
+
+				$info = '';
+				switch ($row['user_type'])
+				{
+					case USER_INACTIVE:
+						$info .= $lang['USER_INACTIVE'];
+					break;
+
+					case USER_IGNORE:
+						$info .= $lang['BOT'];
+					break;
+
+					case USER_FOUNDER:
+						$info .= $lang['FOUNDER'];
+					break;
+
+					default:
+						$info .= $lang['USER_ACTIVE'];
+				}
+
+				if ($user_id == ANONYMOUS)
+				{
+					$info = $lang['GUEST'];
+				}
+?>
+				<tr class="bg<?php echo ($i % 2) + 1; ?>">
+					<td>
+						<span class="rank-img"><?php echo ($rank_img) ? $rank_img : $rank_title; ?></span><br />
+						<?php echo get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']); ?>
+					</td>
+					<td class="posts"><?php echo $row['user_posts']; ?></td>
+					<td class="info"><?php echo $info; ?></td>
+					<td><?php echo $user->format_date($row['user_regdate']) ?></td>
+					<td><?php echo (empty($last_visit)) ? ' - ' : $user->format_date($last_visit); ?>&nbsp;</td>
+					<td>
+						<label><input type="radio" class="radio" id="keep_user_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="keep" checked="checked" /> <?php echo $lang['KEEP_OLD_NAME']; ?></label><br />
+						<label><input type="radio" class="radio" id="edit_user_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="edit" /> <?php echo $lang['EDIT_USERNAME']; ?></label><br />
+<?php
+				// some users must not be deleted
+				if ($user_id != ANONYMOUS && $row['user_type'] != USER_FOUNDER)
+				{
+?>
+						<label><input type="radio" class="radio" id="delete_user_retain_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="delete_retain" /> <?php echo $lang['DELETE_USER_RETAIN']; ?></label><br />
+						<label><input type="radio" class="radio" id="delete_user_remove_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="delete_remove" /> <?php echo $lang['DELETE_USER_REMOVE']; ?></label>
+<?php
+				}
+?>
+					</td>
+					<td>
+						<input id="new_username_<?php echo $user_id; ?>" type="text" name="new_usernames[<?php echo $user_id; ?>]" value="<?php echo $row['username']; ?>" />
+					</td>
+				</tr>
+<?php
+			}
+?>
+			</tbody>
+		</table>
+	</fieldset>
+<?php
+		}
+?>
+		<p class="quick">
+			<input class="button2" id="resolve_conflicts" type="submit" name="resolve_conflicts" value="<?php echo $lang['SUBMIT']; ?>" />
+		</p>
+	</form>
+<?php
+	}
+	else if (sizeof($found_names))
+	{
+		$sql = 'SELECT user_id, username, username_clean
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_values($found_names));
+		$result = $db->sql_query($sql);
+
+		$found_names = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$clean_name = utf8_new_clean_string($row['username']);
+
+			if ($clean_name != $row['username_clean'])
+			{
+				$user_id = (int) $row['user_id'];
+				$found_names[$user_id] = $clean_name;
+
+				// impossible unique clean name
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET username_clean = '  {$user_id}'
+					WHERE user_id = {$user_id}";
+				$db->sql_query($sql);
+			}
+		}
+		$db->sql_freeresult($result);
+
+		foreach ($found_names as $user_id => $clean_name)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET username_clean = \'' . $db->sql_escape($clean_name) . '\'
+				WHERE user_id = ' . $user_id;
+			$db->sql_query($sql);
+		}
+	}
+	unset($found_names);
+	unset($colliding_users);
+}
+
+if ($exit)
+{
+?>
+
+					</div>
+				</div>
+			<span class="corners-bottom"><span></span></span>
+		</div>
+		</div>
+	</div>
+
+	<div id="page-footer">
+		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+	</div>
+</div>
+
+</body>
+</html>
+
+<?php
+	exit;
 }
 
 // Schema updates
@@ -651,13 +1139,15 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 		{
 			continue;
 		}
+
 		$new_code = str_replace('&amp;', '&', $code);
 		$new_code = str_replace('&lt;', '<', $new_code);
 		$new_code = str_replace('&gt;', '>', $new_code);
 		$new_code = utf8_htmlspecialchars($new_code);
+
 		$sql = 'UPDATE ' . SMILIES_TABLE . ' 
 			SET code = \'' . $db->sql_escape($new_code) . '\'
-			WHERE smiley_id = ' . (int)$id;
+			WHERE smiley_id = ' . (int) $id;
 		$db->sql_query($sql);
 	}
 
@@ -668,6 +1158,97 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 		sql_index_drop($map_dbms, 'ath_opt_id', ACL_ROLES_DATA_TABLE);
 		sql_create_index($map_dbms, 'ath_op_id', ACL_ROLES_DATA_TABLE, array('auth_option_id'));
 	}
+
+	$no_updates = false;
+}
+
+if (version_compare($current_version, '3.0.RC3', '<='))
+{
+	if ($map_dbms === 'postgres')
+	{
+		$sql = "SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));';
+		_sql($sql, $errored, $error_ary);
+	}
+
+	// we check for:
+	// ath_opt_id
+	// ath_op_id
+	// ACL_ROLES_DATA_TABLE_ath_opt_id
+	// we want ACL_ROLES_DATA_TABLE_ath_op_id
+
+	$table_index_fix = array(
+		ACL_ROLES_DATA_TABLE => array(
+			'ath_opt_id'							=> 'ath_op_id',
+			'ath_op_id'								=> 'ath_op_id',
+			ACL_ROLES_DATA_TABLE . '_ath_opt_id'	=> 'ath_op_id'
+		),
+		STYLES_IMAGESET_DATA_TABLE => array(
+			'i_id'									=> 'i_d',
+			'i_d'									=> 'i_d',
+			STYLES_IMAGESET_DATA_TABLE . '_i_id'	=> 'i_d'
+		)
+	);
+
+	// we need to create some indicies...
+	$needed_creation = array();
+
+	foreach ($table_index_fix as $table_name => $index_info)
+	{
+		$index_list = sql_list_fake($map_dbms, $table_name);
+		foreach ($index_info as $bad_index => $good_index)
+		{
+			if (in_array($bad_index, $index_list))
+			{
+				// mysql is actually OK, it won't get a hand in this crud
+				switch ($map_dbms)
+				{
+					// last version, mssql had issues with index removal
+					case 'mssql':
+						$sql = 'DROP INDEX ' . $table_name . '.' . $bad_index;
+						_sql($sql, $errored, $error_ary);
+					break;
+
+					// last version, firebird, oracle, postgresql and sqlite all got bad index names
+					// we got kinda lucky, tho: they all support the same syntax
+					case 'firebird':
+					case 'oracle':
+					case 'postgres':
+					case 'sqlite':
+						$sql = 'DROP INDEX ' . $bad_index;
+						_sql($sql, $errored, $error_ary);
+					break;
+				}
+
+				// If the good index already exist we do not need to create it again...
+				if (($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41') && $bad_index == $good_index)
+				{
+				}
+				else
+				{
+					$needed_creation[$table_name][$good_index] = 1;
+				}
+			}
+		}
+	}
+
+	$new_index_defs = array('ath_op_id' => array('auth_option_id'), 'i_d' => array('imageset_id'));
+
+	foreach ($needed_creation as $bad_table => $index_repair_list)
+	{
+		foreach ($index_repair_list as $new_index => $garbage)
+		{
+			sql_create_index($map_dbms, $new_index, $bad_table, $new_index_defs[$new_index]);
+			$no_updates = false;
+		}
+	}
+
+	// Make sure empty smiley codes do not exist
+	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
+		WHERE code = ''";
+	_sql($sql, $errored, $error_ary);
+
+	set_config('allow_birthdays', '1');
+	set_config('cron_lock', '0', true);
 
 	$no_updates = false;
 }
@@ -750,12 +1331,12 @@ else
 }
 
 // Add database update to log
-
-$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
 $cache->purge();
+
+exit;
 
 ?>
 
@@ -848,18 +1429,142 @@ function column_exists($dbms, $table, $column_name)
 {
 	global $db;
 
-	$db->sql_return_on_error(true);
+	switch ($dbms)
+	{
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = "SHOW COLUMNS
+				FROM $table";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['Field']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$sql = "SELECT $column_name FROM $table";
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+		// PostgreSQL has a way of doing this in a much simpler way but would
+		// not allow us to support all versions of PostgreSQL
+		case 'postgres':
+			$sql = "SELECT a.attname
+				FROM pg_class c, pg_attribute a
+				WHERE c.relname = '{$table}'
+					AND a.attnum > 0
+					AND a.attrelid = c.oid";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['attname']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$error = ($db->sql_error_triggered) ? true : false;
+		// same deal with PostgreSQL, we must perform more complex operations than
+		// we technically could
+		case 'mssql':
+			$sql = "SELECT c.name
+				FROM syscolumns c
+				LEFT JOIN sysobjects o (ON c.id = o.id)
+				WHERE o.name = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['name']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$db->sql_return_on_error(false);
+		case 'oracle':
+			$sql = "SELECT column_name
+				FROM user_tab_columns
+				WHERE table_name = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['column_name']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	return (!$error) ? true : false;
+		case 'firebird':
+			$sql = "SELECT RDB\$FIELD_NAME as FNAME
+				FROM RDB\$RELATION_FIELDS
+				WHERE RDB\$RELATION_NAME = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['fname']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
+
+		// ugh, SQLite
+		case 'sqlite':
+			$sql = "SELECT sql
+				FROM sqlite_master 
+				WHERE type = 'table' 
+					AND name = '{$table}'";
+			$result = $db->sql_query($sql);
+
+			if (!$result)
+			{
+				return false;
+			}
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+			$cols = trim($matches[1]);
+			$col_array = preg_split('/,(?![\s\w]+\))/m', $cols);
+
+			foreach ($col_array as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				if ($entities[0] == 'PRIMARY')
+				{
+					continue;
+				}
+
+				if (strtolower($entities[0]) == $column_name)
+				{
+					return true;
+				}
+			}
+			return false;
+		break;
+	}
 }
 
 /**
@@ -926,6 +1631,8 @@ function prepare_column_data($dbms, $column_data)
 
 	$sql = '';
 
+	$return_array = array();
+
 	switch ($dbms)
 	{
 		case 'firebird':
@@ -949,7 +1656,8 @@ function prepare_column_data($dbms, $column_data)
 		case 'mssql':
 			$sql .= " {$column_type} ";
 
-			if (!is_null($column_data[1]))
+			// we do not support MSSQL DEFAULTs for the near future
+			/*if (!is_null($column_data[1]))
 			{
 				// For hexadecimal values do not use single quotes
 				if (strpos($column_data[1], '0x') === 0)
@@ -960,7 +1668,7 @@ function prepare_column_data($dbms, $column_data)
 				{
 					$sql .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
 				}
-			}
+			}*/
 
 			$sql .= 'NOT NULL';
 		break;
@@ -1000,14 +1708,23 @@ function prepare_column_data($dbms, $column_data)
 		break;
 
 		case 'postgres':
+			$return_array['column_type'] = $column_type;
+			$return_array['null'] = 'NOT NULL';
+
+			if (!is_null($column_data[1]))
+			{
+				$return_array['default'] = $column_data[1];
+			}
+
 			$sql .= " {$column_type} ";
+			$sql .= 'NOT NULL ';
 
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
-			$sql .= 'NOT NULL';
 
 			// Unsigned? Then add a CHECK contraint
 			if (in_array($orig_column_type, $unsigned_types))
 			{
+				$return_array['constraint'] = "CHECK ({$column_name} >= 0)";
 				$sql .= " CHECK ({$column_name} >= 0)";
 			}
 		break;
@@ -1029,9 +1746,9 @@ function prepare_column_data($dbms, $column_data)
 		break;
 	}
 
-	return array(
-		'column_type_sql'		=> $sql,
-	);
+	$return_array['column_type_sql'] = $sql;
+
+	return $return_array;
 }
 
 /**
@@ -1238,7 +1955,7 @@ function sql_index_drop($dbms, $index_name, $table_name)
 	switch ($dbms)
 	{
 		case 'mssql':
-			$sql = 'DROP INDEX ' . $table_name . '\.' . $index_name . ' ON ' . $table_name;
+			$sql = 'DROP INDEX ' . $table_name . '.' . $index_name;
 			_sql($sql, $errored, $error_ary);
 		break;
 
@@ -1350,10 +2067,14 @@ function sql_create_unique_index($dbms, $index_name, $table_name, $column)
 	{
 		case 'firebird':
 		case 'postgres':
-		case 'mysql_40':
-		case 'mysql_41':
 		case 'oracle':
 		case 'sqlite':
+			$sql = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
 			$sql = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1374,10 +2095,14 @@ function sql_create_index($dbms, $index_name, $table_name, $column)
 	{
 		case 'firebird':
 		case 'postgres':
-		case 'mysql_40':
-		case 'mysql_41':
 		case 'oracle':
 		case 'sqlite':
+			$sql = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
 			$sql = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1418,11 +2143,11 @@ function sql_list_index($dbms, $table_name)
 		switch ($dbms)
 		{
 			case 'firebird':
-				$sql = "SELECT LOWER(RDB$INDEX_NAME) as index_name
-					FROM RDB$INDICES
-					WHERE RDB$RELATION_NAME = " . strtoupper($table_name) . "
-						AND RDB$UNIQUE_FLAG IS NULL
-						AND RDB$FOREIGN_KEY IS NULL";
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = " . strtoupper($table_name) . "
+						AND RDB\$UNIQUE_FLAG IS NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
 				$col = 'index_name';
 			break;
 
@@ -1440,8 +2165,7 @@ function sql_list_index($dbms, $table_name)
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
-					FROM ' . $table_name .'
-					WHERE Non_unique = 1';
+					FROM ' . $table_name;
 				$col = 'Key_name';
 			break;
 
@@ -1461,6 +2185,105 @@ function sql_list_index($dbms, $table_name)
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique'])
+			{
+				continue;
+			}
+
+			switch ($dbms)
+			{
+				case 'firebird':
+				case 'oracle':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
+			}
+
+			$index_array[] = $row[$col];
+		}
+		$db->sql_freeresult($result);
+	}
+
+	return array_map('strtolower', $index_array);
+}
+
+// This is totally fake, never use it
+// it exists only to mend bad update functions introduced
+// * UNIQUE indices
+// * PRIMARY keys
+function sql_list_fake($dbms, $table_name)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	$index_array = array();
+
+	if ($dbms == 'mssql')
+	{
+		$sql = "EXEC sp_statistics '$table_name'";
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['TYPE'] == 3)
+			{
+				$index_array[] = $row['INDEX_NAME'];
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		switch ($dbms)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = " . strtoupper($table_name) . "
+						AND RDB\$UNIQUE_FLAG IS NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisunique != 't')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name
+					FROM user_indexes
+					WHERE table_name = '" . $table_name . "'
+						AND generated = 'N'";
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_info('" . $table_name . "');";
+				$col = 'name';
+			break;
+		}
+
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique'])
+			{
+				continue;
+			}
+
 			$index_array[] = $row[$col];
 		}
 		$db->sql_freeresult($result);
@@ -1504,16 +2327,62 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'postgres':
-			$default_pos = strpos($column_data['column_type_sql'], ' DEFAULT');
+			$sql = 'ALTER TABLE ' . $table_name . ' ';
 
-			if ($default_pos === false)
+			$sql_array = array();
+			$sql_array[] = 'ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type'];
+
+			if ($column_data['null'] == 'NOT NULL')
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type_sql'];
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
 			}
 			else
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . substr($column_data['column_type_sql'], 0, $default_pos) . ', ALTER COLUMN ' . $column_name . ' SET ' . substr($column_data['column_type_sql'], $default_pos + 1);
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
 			}
+
+			if (isset($column_data['default']))
+			{
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . " SET DEFAULT '" . $column_data['default'] . "'";
+			}
+
+			// we don't want to double up on constraints if we change different number data types
+			if (isset($column_data['constraint']))
+			{
+				$constraint_sql = "SELECT consrc as constraint_data
+							FROM pg_constraint, pg_class bc
+							WHERE conrelid = bc.oid
+								AND bc.relname = '{$table_name}'
+								AND NOT EXISTS (
+									SELECT *
+										FROM pg_constraint as c, pg_inherits as i
+										WHERE i.inhrelid = pg_constraint.conrelid
+											AND c.conname = pg_constraint.conname
+											AND c.consrc = pg_constraint.consrc
+											AND c.conrelid = i.inhparent
+								)";
+
+				$constraint_exists = false;
+
+				$result = $db->sql_query($constraint_sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (trim($row['constraint_data']) == trim($column_data['constraint']))
+					{
+						$constraint_exists = true;
+						break;
+					}
+				}
+				$db->sql_freeresult($result);
+
+				if (!$constraint_exists)
+				{
+					$sql_array[] = "ADD '" . $column_data['constraint'] . "'";
+				}
+			}
+
+			$sql .= implode(', ', $sql_array);
+
 			_sql($sql, $errored, $error_ary);
 		break;
 
@@ -1568,6 +2437,40 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 		break;
 	}
+}
+
+function utf8_new_clean_string($text)
+{
+	static $homographs = array();
+	static $utf8_case_fold_nfkc = '';
+	if (empty($homographs))
+	{
+		global $phpbb_root_path, $phpEx;
+		if (!function_exists('utf8_case_fold_nfkc') || !file_exists($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx))
+		{
+			if (!file_exists($phpbb_root_path . 'install/data/confusables.' . $phpEx))
+			{
+				global $lang;
+				trigger_error(sprintf($lang['UPDATE_REQUIRES_FILE'], $phpbb_root_path . 'install/data/confusables.' . $phpEx), E_USER_ERROR);
+			}
+			$homographs = include($phpbb_root_path . 'install/data/confusables.' . $phpEx);
+			$utf8_case_fold_nfkc = 'utf8_new_case_fold_nfkc';
+		}
+		else
+		{
+			$homographs = include($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx);
+			$utf8_case_fold_nfkc = 'utf8_case_fold_nfkc';
+		}
+	}
+
+	$text = $utf8_case_fold_nfkc($text);
+	$text = strtr($text, $homographs);
+	// Other control characters
+	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
+
+	// we can use trim here as all the other space characters should have been turned
+	// into normal ASCII spaces by now
+	return trim($text);
 }
 
 ?>

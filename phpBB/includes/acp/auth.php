@@ -469,13 +469,16 @@ class auth_admin extends auth
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
 
-				foreach ($content_array as $ug_id => $ug_array)
+				@reset($content_array);
+				while (list($ug_id, $ug_array) = each($content_array))
 				{
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
 					$s_role_options = '';
-					foreach ($roles as $role_id => $role_row)
+
+					@reset($roles);
+					while (list($role_id, $role_row) = each($roles))
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
@@ -489,10 +492,29 @@ class auth_admin extends auth
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
+					if (!$current_role_id && $mode != 'view')
+					{
+						$s_custom_permissions = false;
+
+						foreach ($ug_array as $key => $value)
+						{
+							if ($value['S_NEVER'] || $value['S_YES'])
+							{
+								$s_custom_permissions = true;
+								break;
+							}
+						}
+					}
+					else
+					{
+						$s_custom_permissions = false;
+					}
+
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> $ug_names_ary[$ug_id],
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'UG_ID'				=> $ug_id,
+						'S_CUSTOM'			=> $s_custom_permissions,
 						'FORUM_ID'			=> $forum_id)
 					);
 
@@ -556,10 +578,29 @@ class auth_admin extends auth
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
+					if (!$current_role_id && $mode != 'view')
+					{
+						$s_custom_permissions = false;
+
+						foreach ($forum_array as $key => $value)
+						{
+							if ($value['S_NEVER'] || $value['S_YES'])
+							{
+								$s_custom_permissions = true;
+								break;
+							}
+						}
+					}
+					else
+					{
+						$s_custom_permissions = false;
+					}
+
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 						'S_ROLE_OPTIONS'	=> $s_role_options,
+						'S_CUSTOM'			=> $s_custom_permissions,
 						'UG_ID'				=> $ug_id,
 						'FORUM_ID'			=> $forum_id)
 					);
@@ -591,13 +632,14 @@ class auth_admin extends auth
 			ORDER BY left_id';
 		$result = $db->sql_query($sql);
 
-		$forum_names = array(0 => '');
+		// If the role is used globally, then reflect that
+		$forum_names = (isset($hold_ary[0])) ? array(0 => '') : array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_names[$row['forum_id']] = $row['forum_name'];
 		}
 		$db->sql_freeresult($result);
-
+ 
 		foreach ($forum_names as $forum_id => $forum_name)
 		{
 			$auth_ary = $hold_ary[$forum_id];
@@ -723,7 +765,7 @@ class auth_admin extends auth
 			foreach ($option_ary as $option)
 			{
 				$sql_ary[] = array(
-					'auth_option'	=> $option,
+					'auth_option'	=> (string) $option,
 					'is_global'		=> ($type == 'global' || $type == 'local_global') ? 1 : 0,
 					'is_local'		=> ($type == 'local' || $type == 'local_global') ? 1 : 0
 				);
@@ -779,7 +821,7 @@ class auth_admin extends auth
 		}
 
 		// Remove current auth options...
-		$auth_option_ids = array();
+		$auth_option_ids = array((int)$any_option_id);
 		foreach ($auth as $auth_option => $auth_setting)
 		{
 			$auth_option_ids[] = (int) $this->option_ids[$auth_option];
@@ -788,7 +830,7 @@ class auth_admin extends auth
 		$sql = "DELETE FROM $table
 			WHERE $forum_sql
 				AND $ug_id_sql
-				AND auth_option_id IN ($any_option_id, " . implode(', ', $auth_option_ids) . ')';
+				AND " . $db->sql_in_set('auth_option_id', $auth_option_ids);
 		$db->sql_query($sql);
 
 		// Remove those having a role assigned... the correct type of course...
@@ -837,7 +879,7 @@ class auth_admin extends auth
 						'forum_id'			=> (int) $forum,
 						'auth_option_id'	=> 0,
 						'auth_setting'		=> 0,
-						'auth_role_id'		=> $role_id
+						'auth_role_id'		=> (int) $role_id,
 					);
 				}
 			}
@@ -918,7 +960,7 @@ class auth_admin extends auth
 		{
 			$sql_ary[] = array(
 				'role_id'			=> (int) $role_id,
-				'auth_option_id'	=> $this->option_ids[$flag],
+				'auth_option_id'	=> (int) $this->option_ids[$flag],
 				'auth_setting'		=> ACL_NEVER
 			);
 		}

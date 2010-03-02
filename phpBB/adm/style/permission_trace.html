@@ -2,7 +2,7 @@
 
 <div style="background-color: #fff; padding: 10px; margin-top: 10px;" class="permissions">
 
-	<!-- IF U_BACK --><a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a><!-- ENDIF -->
+	<!-- IF U_BACK --><a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a><!-- ENDIF -->
 
 	<h3>{L_TRACE_FOR}: {PERMISSION_USERNAME} / <!-- IF FORUM_NAME -->{FORUM_NAME} / <!-- ENDIF -->{PERMISSION} </h3>
 
@@ -41,6 +41,13 @@
 		<td>{trace.INFORMATION}</td>
 	</tr>
 	<!-- END trace -->
+	<tr class="row2">
+		<td style="white-space: nowrap;"><strong>{L_TRACE_RESULT}</strong></td>
+		<td colspan="2" style="text-align: center;" class="<!-- IF S_RESULT_NEVER -->never<!-- ELSEIF S_RESULT_YES -->yes<!-- ELSE -->no<!-- ENDIF -->">
+		<!-- IF S_RESULT_NEVER -->{L_ACL_NEVER}<!-- ELSEIF S_RESULT_YES -->{L_ACL_YES}<!-- ELSE -->{L_ACL_NO}<!-- ENDIF -->
+		</td>
+		<td>{L_RESULTING_PERMISSION}</td>
+	</tr>
 	</tbody>
 	</table>
 

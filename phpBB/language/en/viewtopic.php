@@ -101,7 +101,6 @@ $lang = array_merge($lang, array(
 	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
 
-	'WROTE'					=> 'wrote',
 ));
 
 ?>

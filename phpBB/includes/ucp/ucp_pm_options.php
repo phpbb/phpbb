@@ -60,7 +60,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
-		$folder_name = request_var('foldername', '', true);
+		$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
 		
 		if ($folder_name)
 		{
@@ -104,7 +104,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Rename folder
 	if (isset($_POST['rename_folder']))
 	{
-		$new_folder_name = request_var('new_folder_name', '', true);
+		$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
 		$rename_folder_id= request_var('rename_folder_id', 0);
 
 		if (!$new_folder_name)

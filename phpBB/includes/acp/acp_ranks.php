@@ -35,7 +35,7 @@ class acp_ranks
 		{
 			case 'save':
 				
-				$rank_title = request_var('title', '', true);
+				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
 				$min_posts = ($special_rank) ? 0 : request_var('min_posts', 0);
 				$rank_image = request_var('rank_image', '');
@@ -143,11 +143,12 @@ class acp_ranks
 				$db->sql_freeresult($result);
 
 				$imglist = filelist($phpbb_root_path . $config['ranks_path'], '');
-
 				$edit_img = $filename_list = '';
 
 				foreach ($imglist as $path => $img_ary)
 				{
+					sort($img_ary);
+
 					foreach ($img_ary as $img)
 					{
 						$img = $path . $img; 
@@ -202,7 +203,7 @@ class acp_ranks
 
 		$sql = 'SELECT *
 			FROM ' . RANKS_TABLE . '
-			ORDER BY rank_min ASC, rank_special ASC, rank_title ASC';
+			ORDER BY rank_special DESC, rank_min ASC, rank_title ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

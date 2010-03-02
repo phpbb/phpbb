@@ -62,7 +62,7 @@ $lang = array_merge($lang, array(
 	'ENABLE_TOPIC_ICONS'			=> 'Enable topic icons',
 
 	'FORUM_ADMIN'						=> 'Forum administration',
-	'FORUM_ADMIN_EXPLAIN'				=> 'In phpBB3 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
+	'FORUM_ADMIN_EXPLAIN'				=> 'In phpBB3 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum. <strong>You need to copy or set appropriate permissions for newly created forums to have them displayed.</strong>',
 	'FORUM_AUTO_PRUNE'					=> 'Enable auto-pruning',
 	'FORUM_AUTO_PRUNE_EXPLAIN'			=> 'Prunes the forum of topics, set the frequency/age parameters below.',
 	'FORUM_CREATED'						=> 'Forum created successfully.',
@@ -102,6 +102,8 @@ $lang = array_merge($lang, array(
 	'FORUM_TYPE'						=> 'Forum type',
 	'FORUM_UPDATED'						=> 'Forum information updated successfully.',
 
+	'FORUM_WITH_SUBFORUMS_NOT_TO_LINK'		=> 'You want to change a postable forum having subforums to a link. Please move all subforums out of this forum before you proceed, because after changing to a link you are no longer able to see the subforums currently connected to this forum.',
+
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
 	'LINK'					=> 'Link',
@@ -126,7 +128,7 @@ $lang = array_merge($lang, array(
 	'PRUNE_STICKY'				=> 'Prune stickies',
 	'PRUNE_OLD_POLLS'			=> 'Prune old polls',
 	'PRUNE_OLD_POLLS_EXPLAIN'	=> 'Removes topics with polls not voted in for post age days.',
-	
+
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
 
 	'SYNC_IN_PROGRESS'			=> 'Synchronizing forum',

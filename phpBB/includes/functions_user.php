@@ -368,40 +368,47 @@ function user_delete($mode, $user_id, $post_username = false)
 				$post_username = $user->lang['GUEST'];
 			}
 
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
-				WHERE forum_last_poster_id = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
-				WHERE poster_id = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_edit_user = ' . ANONYMOUS . "
-				WHERE post_edit_user = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
-				WHERE topic_poster = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
-				WHERE topic_last_poster_id = $user_id";
-			$db->sql_query($sql);
-
-			// Since we change every post by this author, we need to count this amount towards the anonymous user
-
-			// Update the post count for the anonymous user
-			if ($user_row['user_posts'])
+			// If the user is inactive and newly registered we assume no posts from this user being there...
+			if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_posts = user_posts + ' . $user_row['user_posts'] . '
-					WHERE user_id = ' . ANONYMOUS;
+			}
+			else
+			{
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+					WHERE forum_last_poster_id = $user_id";
 				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+					WHERE poster_id = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_edit_user = ' . ANONYMOUS . "
+					WHERE post_edit_user = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+					WHERE topic_poster = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+					WHERE topic_last_poster_id = $user_id";
+				$db->sql_query($sql);
+
+				// Since we change every post by this author, we need to count this amount towards the anonymous user
+
+				// Update the post count for the anonymous user
+				if ($user_row['user_posts'])
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_posts = user_posts + ' . $user_row['user_posts'] . '
+						WHERE user_id = ' . ANONYMOUS;
+					$db->sql_query($sql);
+				}
 			}
 		break;
 
@@ -671,7 +678,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 			else
 			{
-				trigger_error($user->lang['LENGTH_BAN_INVALID']);
+				trigger_error('LENGTH_BAN_INVALID');
 			}
 		}
 	}
@@ -723,11 +730,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						$clean_name = utf8_clean_string($username);
 						if ($clean_name == $user->data['username_clean'])
 						{
-							trigger_error($user->lang['CANNOT_BAN_YOURSELF']);
+							trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
 						}
 						if (in_array($clean_name, $founder_names))
 						{
-							trigger_error($user->lang['CANNOT_BAN_FOUNDER']);
+							trigger_error('CANNOT_BAN_FOUNDER', E_USER_WARNING);
 						}
 						$sql_usernames[] = $clean_name;
 					}
@@ -736,7 +743,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				// Make sure we have been given someone to ban
 				if (!sizeof($sql_usernames))
 				{
-					trigger_error($user->lang['NO_USER_SPECIFIED']);
+					trigger_error('NO_USER_SPECIFIED');
 				}
 
 				$sql = 'SELECT user_id
@@ -759,13 +766,13 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				{
 					do
 					{
-						$banlist_ary[] = $row['user_id'];
+						$banlist_ary[] = (int) $row['user_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 				}
 				else
 				{
-					trigger_error($user->lang['NO_USERS']);
+					trigger_error('NO_USERS');
 				}
 				$db->sql_freeresult($result);
 			}
@@ -842,7 +849,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				else if (preg_match('#^\*$#', trim($ban_item)))
 				{
 					// Ban all IPs
-					$banlist_ary[] = "*";
+					$banlist_ary[] = '*';
 				}
 				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
 				{
@@ -952,11 +959,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		{
 			$sql_ary[] = array(
 				$type				=> $ban_entry,
-				'ban_start'			=> $current_time,
-				'ban_end'			=> $ban_end,
-				'ban_exclude'		=> $ban_exclude,
-				'ban_reason'		=> $ban_reason,
-				'ban_give_reason'	=> $ban_give_reason,
+				'ban_start'			=> (int) $current_time,
+				'ban_end'			=> (int) $ban_end,
+				'ban_exclude'		=> (int) $ban_exclude,
+				'ban_reason'		=> (string) $ban_reason,
+				'ban_give_reason'	=> (string) $ban_give_reason,
 			);
 		}
 		
@@ -1277,7 +1284,7 @@ function validate_username($username, $allowed_username = false)
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
-	if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
 	{
 		$pcre = true;
 	}
@@ -1296,12 +1303,12 @@ function validate_username($username, $allowed_username = false)
 
 		case 'USERNAME_ALPHA_ONLY':
 			$pcre = true;
-			$regex = '[A-Za-z]+';
+			$regex = '[A-Za-z0-9]+';
 		break;
 
 		case 'USERNAME_ALPHA_SPACERS':
 			$pcre = true;
-			$regex = '[A-Za-z-\]_+ ]+';
+			$regex = '[A-Za-z0-9-[\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
@@ -1388,7 +1395,7 @@ function validate_username($username, $allowed_username = false)
 
 	foreach ($bad_usernames as $bad_username)
 	{
-		if (preg_match('#^' . $bad_username . '#', $clean_username))
+		if (preg_match('#^' . $bad_username . '$#', $clean_username))
 		{
 			return 'USERNAME_DISALLOWED';
 		}
@@ -1428,7 +1435,7 @@ function validate_password($password)
 	$pcre = $mbstring = false;
 
 	// generic UTF-8 character types supported?
-	if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
@@ -1493,7 +1500,7 @@ function validate_password($password)
 	{
 		foreach ($chars as $char)
 		{
-			if (!mb_ereg_match($char, $password))
+			if (mb_ereg($char, $password) === false)
 			{
 				return 'INVALID_CHARS';
 			}
@@ -1813,13 +1820,13 @@ function avatar_remote($data, &$error)
 	}
 
 	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($data['remotelink'])) === false)
+	if (($image_data = @getimagesize($data['remotelink'])) === false && (empty($data['width']) || empty($data['height'])))
 	{
 		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
 
-	if ($image_data[0] < 2 || $image_data[1] < 2)
+	if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];
 		return false;
@@ -1839,7 +1846,7 @@ function avatar_remote($data, &$error)
 	$types = fileupload::image_types();
 	$extension = strtolower(filespec::get_extension($data['remotelink']));
 
-	if (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]]))
+	if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
 	{
 		if (!isset($types[$image_data[2]]))
 		{
@@ -2389,7 +2396,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 			if (sizeof($user_ary))
 			{
-				group_set_user_default($group_id, $user_ary, $sql_ary);
+				group_set_user_default($group_id, $user_ary, $sql_ary, false, true);
 			}
 		}
 
@@ -2567,10 +2574,10 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		foreach ($add_id_ary as $user_id)
 		{
 			$sql_ary[] = array(
-				'user_id'		=> $user_id,
-				'group_id'		=> $group_id,
-				'group_leader'	=> $leader,
-				'user_pending'	=> $pending,
+				'user_id'		=> (int) $user_id,
+				'group_id'		=> (int) $group_id,
+				'group_leader'	=> (int) $leader,
+				'user_pending'	=> (int) $pending,
 			);
 		}
 
@@ -2886,7 +2893,7 @@ function group_validate_groupname($group_id, $group_name)
 *
 * @private
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false, $same_group = false)
 {
 	global $db;
 
@@ -2923,8 +2930,8 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	{
 		if (isset($group_attributes[$attribute]))
 		{
-			// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
-			if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
+			// If we are about to set an avatar or rank, we will not overwrite with empty, unless we are not actually changing the default group
+			if (!$same_group && (strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
 			{
 				continue;
 			}

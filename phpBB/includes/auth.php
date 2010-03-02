@@ -345,6 +345,37 @@ class auth
 			}
 		}
 
+		// Sometimes, it can happen $hold_ary holding forums which do not exist.
+		// Since this function is not called that often (we are caching the data) we check for this inconsistency.
+		$sql = 'SELECT forum_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary));
+		$result = $db->sql_query($sql);
+
+		$forum_ids = (isset($hold_ary[0])) ? array(0) : array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_ids[] = $row['forum_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Now determine forums which do not exist and remove the unneeded information (for modding purposes it is clearly the wrong place. ;))
+		$missing_forums = array_diff(array_keys($hold_ary), $forum_ids);
+
+		if (sizeof($missing_forums))
+		{
+			foreach ($missing_forums as $forum_id)
+			{
+				unset($hold_ary[$forum_id]);
+			}
+
+			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . ' WHERE ' . $db->sql_in_set('forum_id', $missing_forums);
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . ' WHERE ' . $db->sql_in_set('forum_id', $missing_forums);
+			$db->sql_query($sql);
+		}
+
 		$hold_str = $this->build_bitstring($hold_ary);
 
 		if ($hold_str)

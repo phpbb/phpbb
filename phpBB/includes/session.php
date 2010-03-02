@@ -43,7 +43,7 @@ class session
 		if (!$script_name)
 		{
 			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
-			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, strpos($script_name, '?')) : $script_name;
+			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, $pos) : $script_name;
 			$page_array['failover'] = 1;
 		}
 
@@ -122,7 +122,7 @@ class session
 	*
 	* This is where all session activity begins. We gather various pieces of
 	* information from the client and server. We test to see if a session already
-	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a 
+	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a
 	* new one ... pretty logical heh? We also examine the system load (if we're
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
@@ -132,7 +132,7 @@ class session
 	*/
 	function session_begin($update_session_page = true)
 	{
-		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
+		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -192,6 +192,8 @@ class session
 			$this->session_id = $_SID = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
+
+		$_EXTRA_URL = array();
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
@@ -301,6 +303,7 @@ class session
 
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
+						$this->data['user_lang'] = basename($this->data['user_lang']);
 
 						return true;
 					}
@@ -308,7 +311,7 @@ class session
 				else
 				{
 					// Added logging temporarly to help debug bugs...
-					if (defined('DEBUG_EXTRA'))
+					if (defined('DEBUG_EXTRA') && $this->data['user_id'] != ANONYMOUS)
 					{
 						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
 					}
@@ -319,7 +322,7 @@ class session
 		// If we reach here then no (valid) session exists. So we'll create a new one
 		return $this->session_create();
 	}
-	
+
 	/**
 	* Create a new session
 	*
@@ -354,7 +357,7 @@ class session
 		* check. We loop through the list of bots defined by the admin and
 		* see if we have any useragent and/or IP matches. If we do, this is a
 		* bot, act accordingly
-		*/		
+		*/
 		$bot = false;
 		$active_bots = $cache->obtain_bots();
 
@@ -406,7 +409,7 @@ class session
 		// Else if we've been passed a user_id we'll grab data based on that
 		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
 		{
-			$sql = 'SELECT u.* 
+			$sql = 'SELECT u.*
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
 					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
@@ -431,7 +434,7 @@ class session
 			$db->sql_freeresult($result);
 			$bot = false;
 		}
-	
+
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -564,7 +567,7 @@ class session
 			'session_start'			=> (int) $this->time_now,
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
-			'session_browser'		=> (string) $this->browser,
+			'session_browser'		=> (string) substr($this->browser, 0, 149),
 			'session_forwarded_for'	=> (string) $this->forwarded_for,
 			'session_ip'			=> (string) $this->ip,
 			'session_autologin'		=> ($session_autologin) ? 1 : 0,
@@ -587,7 +590,7 @@ class session
 		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
 			// Limit new sessions in 1 minute period (if required)
-			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
+			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
 				$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
@@ -648,7 +651,7 @@ class session
 			$SID = '?sid=';
 			$_SID = '';
 		}
-		
+
 		return true;
 	}
 
@@ -676,7 +679,7 @@ class session
 		$method = 'logout_' . $method;
 		if (function_exists($method))
 		{
-			$method($this->data);
+			$method($this->data, $new_session);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -823,7 +826,7 @@ class session
 	*
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
 	* are passed to the method pre-existing session data is used. If $return is false
-	* this routine does not return on finding a banned user, it outputs a relevant 
+	* this routine does not return on finding a banned user, it outputs a relevant
 	* message and stops execution.
 	*
 	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs
@@ -976,8 +979,6 @@ class session
 				$this->session_create(ANONYMOUS);
 			}
 
-			// Because we never have a fully working session we need to embed the style
-			$template->assign_var('S_FORCE_EMBED_STYLE', true);
 
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
@@ -1157,7 +1158,7 @@ class session
 		$sql_where = 'session_user_id = ' . (int) $user_id;
 		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
 
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . " 
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE $sql_where";
 		$db->sql_query($sql);
 
@@ -1206,8 +1207,8 @@ class user extends session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
+			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1215,8 +1216,8 @@ class user extends session
 		}
 		else
 		{
-			$this->lang_name = $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
+			$this->lang_name = basename($config['default_lang']);
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1262,9 +1263,10 @@ class user extends session
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
-		if ((include $this->lang_path . "common.$phpEx") === false)
+
+		if ((@include $this->lang_path . "common.$phpEx") === false)
 		{
-			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
+			die('Language file ' . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
 		}
 
 		$this->add_lang($lang_set);
@@ -1284,7 +1286,7 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		$sql = 'SELECT s.style_id, t.*, c.*, i.*
+		$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 			WHERE s.style_id = $style
 				AND t.template_id = s.template_id
@@ -1299,12 +1301,12 @@ class user extends session
 		{
 			$style = $this->data['user_style'] = $config['default_style'];
 
-			$sql = 'UPDATE ' . USERS_TABLE . " 
-				SET user_style = $style 
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_style = $style
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
-			$sql = 'SELECT s.style_id, t.*, c.*, i.*
+			$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
 				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 				WHERE s.style_id = $style
 					AND t.template_id = s.template_id
@@ -1353,7 +1355,7 @@ class user extends session
 			// Match CSS imports
 			$matches = array();
 			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
-	
+
 			if (sizeof($matches))
 			{
 				$content = '';
@@ -1392,7 +1394,7 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
-		$sql = 'SELECT *
+		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
 			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
@@ -1405,6 +1407,7 @@ class user extends session
 			{
 				$localised_images = true;
 			}
+
 			$this->img_array[$row['image_name']] = $row;
 		}
 		$db->sql_freeresult($result);
@@ -1415,9 +1418,9 @@ class user extends session
 			// Attention: this code ignores the image definition list from acp_styles and just takes everything
 			// that the config file contains
 			$sql_ary = array();
-	
+
 			$db->sql_transaction('begin');
-	
+
 			$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 				WHERE imageset_id = ' . $this->theme['imageset_id'] . '
 					AND image_lang = \'' . $db->sql_escape($this->img_lang) . '\'';
@@ -1450,24 +1453,30 @@ class user extends session
 					{
 						$image_name = substr($image_name, 4);
 						$sql_ary[] = array(
-							'image_name'		=> $image_name,
-							'image_filename'	=> $image_filename,
-							'image_height'		=> $image_height,
-							'image_width'		=> $image_width,
-							'imageset_id'		=> $this->theme['imageset_id'],
-							'image_lang'		=> $this->img_lang,
+							'image_name'		=> (string) $image_name,
+							'image_filename'	=> (string) $image_filename,
+							'image_height'		=> (int) $image_height,
+							'image_width'		=> (int) $image_width,
+							'imageset_id'		=> (int) $this->theme['imageset_id'],
+							'image_lang'		=> (string) $this->img_lang,
 						);
 					}
 				}
 			}
-	
-			$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-	
-			$db->sql_transaction('commit');
-	
-			$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-	
-			add_log('admin', 'LOG_IMAGESET_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+				$db->sql_transaction('commit');
+				$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+
+				add_log('admin', 'LOG_IMAGESET_LANG_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
+			}
+			else
+			{
+				$db->sql_transaction('commit');
+				add_log('admin', 'LOG_IMAGESET_LANG_MISSING', $this->theme['imageset_name'], $this->img_lang);
+			}
 		}
 
 		// If this function got called from the error handler we are finished here.
@@ -1504,13 +1513,19 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN'))
 			{
-				header('HTTP/1.1 503 Service Unavailable');
-				trigger_error('BOARD_UNAVAILABLE');
+				// Set board disabled to true to let the admins/mods get the proper notification
+				$config['board_disable'] = '1';
+
+				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+				{
+					header('HTTP/1.1 503 Service Unavailable');
+					trigger_error('BOARD_UNAVAILABLE');
+				}
 			}
 		}
-		
+
 		if (isset($this->data['session_viewonline']))
 		{
 			// Make sure the user is able to hide his session
@@ -1637,9 +1652,9 @@ class user extends session
 				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
-			if ((include($language_filename)) === false)
+			if ((@include $language_filename) === false)
 			{
-				trigger_error("Language file $language_filename couldn't be opened.", E_USER_ERROR);
+				trigger_error('Language file ' . basename($language_filename) . ' couldn\'t be opened.', E_USER_ERROR);
 			}
 		}
 		else if ($use_db)
@@ -1776,7 +1791,7 @@ class user extends session
 			case 'src':
 				return $img_data['src'];
 			break;
-			
+
 			case 'width':
 				return ($width === false) ? $img_data['width'] : $width;
 			break;

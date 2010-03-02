@@ -412,11 +412,11 @@ parse_css_file = {PARSE_CSS_FILE}
 									if (in_array($image_name, $imageset_definitions))
 									{
 										$sql_ary[] = array(
-											'image_name'		=> $image_name,
-											'image_filename'	=> $image_filename,
+											'image_name'		=> (string) $image_name,
+											'image_filename'	=> (string) $image_filename,
 											'image_height'		=> (int) $image_height,
 											'image_width'		=> (int) $image_width,
-											'imageset_id'		=> $style_id,
+											'imageset_id'		=> (int) $style_id,
 											'image_lang'		=> '',
 										);
 									}
@@ -458,12 +458,12 @@ parse_css_file = {PARSE_CSS_FILE}
 											if (in_array($image_name, $imageset_definitions))
 											{
 												$sql_ary[] = array(
-													'image_name'		=> $image_name,
-													'image_filename'	=> $image_filename,
-													'image_height'		=> $image_height,
-													'image_width'		=> $image_width,
-													'imageset_id'		=> $style_id,
-													'image_lang'		=> $row['lang_dir'],
+													'image_name'		=> (string) $image_name,
+													'image_filename'	=> (string) $image_filename,
+													'image_height'		=> (int) $image_height,
+													'image_width'		=> (int) $image_width,
+													'imageset_id'		=> (int) $style_id,
+													'image_lang'		=> (string) $row['lang_dir'],
 												);
 											}
 										}
@@ -670,7 +670,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$template_file	= request_var('template_file', '', true);
+		$template_file	= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -700,7 +700,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// If the template is stored on the filesystem try to write the file else store it in the database
 			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && @is_writable($file))
 			{
-				if (!($fp = fopen($file, 'wb')))
+				if (!($fp = @fopen($file, 'wb')))
 				{
 					trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -1025,7 +1025,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$theme_file	= request_var('template_file', '', true);
+		$theme_file	= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1055,7 +1055,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// If the theme is stored on the filesystem try to write the file else store it in the database
 			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && @is_writable($file))
 			{
-				if (!($fp = fopen($file, 'wb')))
+				if (!($fp = @fopen($file, 'wb')))
 				{
 					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -1351,7 +1351,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			while (($file = readdir($dp)) !== false)
 			{
-				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS')
+				if ($file[0] != '.' && strtoupper($file) != 'CVS' && !is_file($dir . '/' . $file) && !is_link($dir . '/' . $file))
 				{
 					$langs[] = $file;
 				}
@@ -1847,6 +1847,54 @@ parse_css_file = {PARSE_CSS_FILE}
 					'prefix'	=> 'imageset/imageset.cfg'
 				);
 
+				end($data);
+
+				$imageset_root = "{$phpbb_root_path}styles/{$style_row['imageset_path']}/imageset/";
+
+				$dh = @opendir($imageset_root);
+				while (($fname = readdir($dh)) !== false)
+				{
+					if ($fname[0] != '.' && $fname != 'CVS' && is_dir("$imageset_root$fname"))
+					{
+						$files[key($files)]['exclude'] .= ',' . $fname . '/imageset.cfg';
+					}
+				}
+				@closedir($dh);
+
+				$imageset_lang = array();
+
+				$sql = 'SELECT image_filename, image_name, image_height, image_width, image_lang
+					FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+					WHERE imageset_id = $style_id
+						AND image_lang <> ''";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$imageset_lang[$row['image_lang']][$row['image_name']] = $row['image_filename'] . ($row['image_height'] ? '*' . $row['image_height']: '') . ($row['image_width'] ? '*' . $row['image_width']: '');
+				}
+				$db->sql_freeresult($result);
+
+				foreach ($imageset_lang as $lang => $imageset_localized)
+				{
+					$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
+
+					foreach ($this->imageset_keys as $topic => $key_array)
+					{
+						foreach ($key_array as $key)
+						{
+							if (isset($imageset_localized[$key]))
+							{
+								$imageset_cfg .= "\nimg_" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $imageset_localized[$key]);
+							}
+						}
+					}
+
+					$data[] = array(
+						'src'		=> trim($imageset_cfg),
+						'prefix'	=> 'imageset/' . $lang . '/imageset.cfg'
+					);
+				}
+
 				unset($imageset_cfg);
 			}
 
@@ -2016,8 +2064,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($update)
 		{
-			$name = request_var('name', '');
-			$copyright = request_var('copyright', '', true);
+			$name = utf8_normalize_nfc(request_var('name', '', true));
+			$copyright = utf8_normalize_nfc(request_var('copyright', '', true));
 
 			$template_id = request_var('template_id', 0);
 			$theme_id = request_var('theme_id', 0);
@@ -2050,6 +2098,18 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					$error[] = $user->lang['EDIT_' . strtoupper($mode) . '_STORED_DB'];
 					$store_db = 1;
+				}
+
+				// themes which have to be parsed have to go into db
+				if ($mode == 'theme')
+				{
+					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
+
+					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'])
+					{
+						$error[] = $user->lang['EDIT_THEME_STORE_PARSED'];
+						$store_db = 1;
+					}
 				}
 			}
 			
@@ -2344,7 +2404,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			foreach ($file_ary as $file)
 			{
-				if (!($fp = fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
+				if (!($fp = @fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
 				{
 					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
@@ -2417,6 +2477,11 @@ parse_css_file = {PARSE_CSS_FILE}
 		$file_ary = array();
 		while ($file = readdir($dp))
 		{
+			if ($file[0] == '.')
+			{
+				continue;
+			}
+
 			if (is_file($phpbb_root_path . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
 			{
 				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file));
@@ -2635,8 +2700,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		$error = array();
 
 		$style_row = array(
-			$mode . '_name'			=> request_var('name', ''),
-			$mode . '_copyright'	=> request_var('copyright', '', true),
+			$mode . '_name'			=> utf8_normalize_nfc(request_var('name', '', true)),
+			$mode . '_copyright'	=> utf8_normalize_nfc(request_var('copyright', '', true)),
 			'template_id'			=> 0,
 			'theme_id'				=> 0,
 			'imageset_id'			=> 0,

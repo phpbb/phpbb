@@ -55,10 +55,12 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
 
 	'ALLOW_ATTACHMENTS'			=> 'Allow attachments',
+	'ALLOW_BIRTHDAYS'			=> 'Allow birthdays',
+	'ALLOW_BIRTHDAYS_EXPLAIN'	=> 'Allow birthdays to be entered and age being displayed in profiles. Please note the birthday list within the board index is controlled by a separate load setting.',
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
 	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks.',
 	'ALLOW_BBCODE'				=> 'Allow BBCode',
-	'ALLOW_FORUM_NOTIFY'		=> 'Allow forum watching',
+	'ALLOW_FORUM_NOTIFY'		=> 'Allow subscribing to forums',
 	'ALLOW_NAME_CHANGE'			=> 'Allow username changes',
 	'ALLOW_NO_CENSORS'			=> 'Allow disabling of word censoring',
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'Users can choose to disable the automatic word censoring of posts and private messages.',
@@ -71,7 +73,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG_LINKS_EXPLAIN'	=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOW_SIG_SMILIES'			=> 'Allow use of smilies in user signatures',
 	'ALLOW_SMILIES'				=> 'Allow smilies',
-	'ALLOW_TOPIC_NOTIFY'		=> 'Allow topic watching',
+	'ALLOW_TOPIC_NOTIFY'		=> 'Allow subscribing to topics',
 	'BOARD_PM'					=> 'Private messaging',
 	'BOARD_PM_EXPLAIN'			=> 'Enable or disable private messaging for all users.',
 ));
@@ -271,6 +273,7 @@ $lang = array_merge($lang, array(
 	'YES_ANON_READ_MARKING'			=> 'Enable topic marking for guests',
 	'YES_ANON_READ_MARKING_EXPLAIN'	=> 'Stores read/unread status information for guests. If disabled posts are always read for guests.',
 	'YES_BIRTHDAYS'					=> 'Enable birthday listing',
+	'YES_BIRTHDAYS_EXPLAIN'			=> 'If disabled the birthday listing is no longer displayed. To let this setting take effect the birthday feature need to be enabled too.',
 	'YES_JUMPBOX'					=> 'Enable display of jumpbox',
 	'YES_MODERATORS'				=> 'Enable display of moderators',
 	'YES_ONLINE'					=> 'Enable online user listings',
@@ -376,7 +379,7 @@ $lang = array_merge($lang, array(
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
+	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
 
 	'ADMIN_EMAIL'					=> 'Return e-mail address',
 	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all e-mails, the technical contact e-mail address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in e-mails.',
@@ -389,7 +392,7 @@ $lang = array_merge($lang, array(
 	'EMAIL_FUNCTION_NAME'			=> 'E-mail function name',
 	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The e-mail function used to send mails through PHP.',
 	'EMAIL_PACKAGE_SIZE'			=> 'E-mail package size',
-	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of e-mails sent in one package.',
+	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of maximum e-mails sent out in one package. This setting is applied to the internal message queue; set this value to 0 if you have problems with non-delivered notification emails.',
 	'EMAIL_SIG'						=> 'E-mail signature',
 	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all e-mails the board sends.',
 	'ENABLE_EMAIL'					=> 'Enable board-wide e-mails',

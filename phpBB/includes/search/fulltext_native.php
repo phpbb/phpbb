@@ -744,6 +744,7 @@ class fulltext_native extends search_backend
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
 	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
 	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
 	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
@@ -759,7 +760,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -773,6 +774,7 @@ class fulltext_native extends search_backend
 		$search_key = md5(implode('#', array(
 			'',
 			$type,
+			($firstpost_only) ? 'firstpost' : '',
 			'',
 			'',
 			$sort_days,
@@ -797,6 +799,7 @@ class fulltext_native extends search_backend
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
+		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
@@ -850,9 +853,10 @@ class fulltext_native extends search_backend
 					if ($type == 'posts')
 					{
 						$sql = 'SELECT COUNT(p.post_id) as total_results
-							FROM ' . POSTS_TABLE . " p
+							FROM ' . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
 							WHERE $sql_author
 								$sql_topic_id
+								$sql_firstpost
 								$m_approve_fid_sql
 								$sql_fora
 								$sql_time";
@@ -872,6 +876,7 @@ class fulltext_native extends search_backend
 						$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 							WHERE $sql_author
 								$sql_topic_id
+								$sql_firstpost
 								$m_approve_fid_sql
 								$sql_fora
 								AND t.topic_id = p.topic_id
@@ -894,9 +899,10 @@ class fulltext_native extends search_backend
 		if ($type == 'posts')
 		{
 			$sql = "SELECT $select
-				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($topic_id) ? ', ' . TOPICS_TABLE . ' t' : '') . "
+				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($topic_id || $firstpost_only) ? ', ' . TOPICS_TABLE . ' t' : '') . "
 				WHERE $sql_author
 					$sql_topic_id
+					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					$sql_sort_join
@@ -910,6 +916,7 @@ class fulltext_native extends search_backend
 				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
 					$sql_topic_id
+					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					AND t.topic_id = p.topic_id
@@ -1127,7 +1134,7 @@ class fulltext_native extends search_backend
 
 				foreach ($new_words as $word)
 				{
-					$sql_ary[] = array('word_text' => $word, 'word_count' => 0);
+					$sql_ary[] = array('word_text' => (string) $word, 'word_count' => 0);
 				}
 				$db->sql_return_on_error(true);
 				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
@@ -1176,9 +1183,9 @@ class fulltext_native extends search_backend
 
 			if (sizeof($word_ary))
 			{
-				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
-					SELECT $post_id, word_id, $title_match
-					FROM " . SEARCH_WORDLIST_TABLE . '
+				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . ' (post_id, word_id, title_match)
+					SELECT ' . (int) $post_id . ', word_id, ' . (int) $title_match . '
+					FROM ' . SEARCH_WORDLIST_TABLE . '
 					WHERE ' . $db->sql_in_set('word_text', $word_ary);
 				$db->sql_query($sql);
 

@@ -235,7 +235,7 @@ class ucp_main
 
 				if ($config['allow_forum_notify'])
 				{
-					$forbidden_forums = $forbidden_forums = $auth->acl_getf('!f_read', true);
+					$forbidden_forums = $auth->acl_getf('!f_read', true);
 					$forbidden_forums = array_unique(array_keys($forbidden_forums));
 					
 					$sql_array = array(

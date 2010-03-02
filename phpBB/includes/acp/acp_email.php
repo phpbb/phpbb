@@ -30,8 +30,8 @@ class acp_email
 
 		$usernames	= request_var('usernames', '', true);
 		$group_id	= request_var('g', 0);
-		$subject	= request_var('subject', '', true);
-		$message	= request_var('message', '', true);
+		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
+		$message	= utf8_normalize_nfc(request_var('message', '', true));
 
 		// Do the job ...
 		if ($submit)
@@ -178,7 +178,7 @@ class acp_email
 				if ($usernames)
 				{
 					$usernames = explode("\n", $usernames);
-					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', $usernames));
+					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
 				}
 				else
 				{
