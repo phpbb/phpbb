@@ -118,7 +118,7 @@ $lang = array_merge($lang, array(
 	'CHANGE_PASSWORD'			=> 'Change password',
 	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your “%3$s” folder%2$s',
 	'CONFIRMATION'				=> 'Confirmation of registration',
-	'CONFIRM_CHANGES'			=> 'Confirm changes',	
+	'CONFIRM_CHANGES'			=> 'Confirm changes',
 	'CONFIRM_EMAIL'				=> 'Confirm e-mail address',
 	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing your e-mail address.',
 	'CONFIRM_EXPLAIN'			=> 'To prevent automated registrations the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
@@ -378,7 +378,7 @@ $lang = array_merge($lang, array(
 	'SAME_PASSWORD_ERROR'		=> 'The new password you entered is the same as your current password.',
 	'SEARCH_YOUR_POSTS'			=> 'Show your posts',
 	'SEND_PASSWORD'				=> 'Send password',
-	'SENT_AT'					=> 'Sent at',
+	'SENT_AT'					=> 'Sent',			// Used before dates in private messages
 	'SHOW_EMAIL'				=> 'Users can contact me by e-mail',
 	'SIGNATURE_EXPLAIN'			=> 'This is a block of text that can be added to posts you make. There is a %d character limit.',
 	'SIGNATURE_PREVIEW'			=> 'Your signature will appear like this in posts',
@@ -421,7 +421,7 @@ $lang = array_merge($lang, array(
 	'UCP_PREFS_PERSONAL'		=> 'Edit global settings',
 	'UCP_PREFS_POST'			=> 'Edit posting defaults',
 	'UCP_PREFS_VIEW'			=> 'Edit display options',
-	
+
 	'UCP_PM'					=> 'Private messages',
 	'UCP_PM_COMPOSE'			=> 'Compose message',
 	'UCP_PM_DRAFTS'				=> 'Manage PM drafts',

@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v303">Changes since 3.0.3</a></li>
 		<li><a href="#v302">Changes since 3.0.2</a></li>
 		<li><a href="#v301">Changes since 3.0.1</a></li>
 		<li><a href="#v300">Changes since 3.0.0</a></li>
@@ -82,8 +83,39 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+	<a name="v303"></a><h3>1.i. Changes since 3.0.3</h3>
 
-	<a name="v302"></a><h3>1.i. Changes since 3.0.2</h3>
+	<ul>
+		<li>[Fix] Allow mixed-case template directories to be inherited (Bug #36725)</li>
+		<li>[Fix] Regression bug from revision #8908 regarding log display in ACP</li>
+		<li>[Fix] Allow the UCP group management to work for groups with avatars. (Bug #37375)</li>
+		<li>[Fix] Fix header list build for replying oldest PM in PM history (Bug #37275)</li>
+		<li>[Fix] Do not display COPPA group in memberlist find member dialog if COPPA disabled (Bug #37175)</li>
+		<li>[Fix] Do not try to send jabber notifications if no jid entered (Bug #36775)</li>
+		<li>[Fix] Only display special ranks to guests; no longer display normal ranks for guests (Bug #36735)</li>
+		<li>[Fix] Properly treat punctuation marks after local urls (Bug #37055)</li>
+		<li>[Fix] Make searching for members by YIM address work in prosilver</li>
+		<li>[Fix] Tell users to recreate the search index after changing the common word threshold for fulltext_native (Bug #36345)</li>
+		<li>[Fix] Adjusted phpbb_chmod() to always set permissions for group bit.</li>
+		<li>[Fix] Do not increment users post count after post approval if post had been posted in a forum with no post count increasing set (Bug #37865)</li>
+		<li>[Fix] Extend vertical line for last post column if no posts in forum (Bug #37125)</li>
+		<li>[Fix] correctly update last topic/forum information if changing guest usernames through editing posts (Bug #38095)</li>
+		<li>[Fix] fix postcount resync for situations where low and high post ids are higher than step value, resulting in users having 0 posts. (Bug #38195)</li>
+		<li>[Fix] Use a left join for the topics table on search to avoid trouble with FROM syntax on some databases (Bug #37005)</li>
+		<li>[Fix] Do not show 'Forward' button if the user cannot send PM's</li>
+		<li>[Change] Alllow applications to set custom module inclusion path (idea by HoL)</li>
+		<li>[Change] Handle checking for duplicate usernames in chunks (Bug #17285 - Patch by A_Jelly_Doughnut)</li>
+		<li>[Change] Better handling and finer control for custom profile fields visibility options. (Patch by Highway of Life)</li>
+		<li>[Change] Performance increase for format_date() (Bug #37575 - Patch by BartVB)</li>
+		<li>[Change] Changed prosilver date separator from 'on' to '&raquo;'</li>
+		<li>[Change] Performance increase for get_username_string() (Bug #37545 - Patch by BartVB)</li>
+		<li>[Change] Slight performance increase for common parameter calls to append_sid() (Bug #37555 - Patch by BartVB)</li>
+		<li>[Feature] Added 'AGO' setting to relative date strings. For example: posted 14 minutes ago. (Patch by BartVB)</li>
+		<li>[Sec] Fixed an issue where deactivated accounts could be re-activated without the required privileges. (Reported by Jorick)</li>
+		<li>[Sec] Ask for forum password if post within passworded forum quoted in private message. (Reported by nickvergessen)</li>
+	</ul>
+
+	<a name="v302"></a><h3>1.ii. Changes since 3.0.2</h3>
 
 	<ul>
 		<li>[Fix] Correctly set topic starter if first post in topic removed (Bug #30575 - Patch by blueray2048)</li>
@@ -166,6 +198,7 @@
 		<li>[Change] MCP topic view checkboxes now default to unchecked.</li>
 		<li>[Change] Adjust language key <em>SPLIT_AFTER</em> to make the action clearer.</li>
 		<li>[Change] Add links to the post and forum when viewing a report from the MCP. (Bugs #33795, #33805)</li>
+		<li>[Change] Added CSRF protection to GET-only actions like marking forums.</li>
 		<li>[Change] Remove NUL-Bytes directly in request_var() for strings and within the custom DBAL sql_escape() functions (MSSQL, Firebird, Oracle) (reported by AdhostMikeSw)</li>
 
 		<li>[Feature] Allow limited inheritance for template sets.</li>
@@ -181,7 +214,7 @@
 		<li>[Sec Precaution] Stricter validation of the HTTP_HOST header (Thanks to Techie-Micheal et al for pointing out possible issues in derived code)</li>
 	</ul>
 
-	<a name="v301"></a><h3>1.ii. Changes since 3.0.1</h3>
+	<a name="v301"></a><h3>1.iii. Changes since 3.0.1</h3>
 
 	<ul>
 		<li>[Fix] Ability to set permissions on non-mysql dbms (Bug #24955)</li>
@@ -229,7 +262,7 @@
 		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 	</ul>
 
-	<a name="v300"></a><h3>1.iii. Changes since 3.0.0</h3>
+	<a name="v300"></a><h3>1.iv. Changes since 3.0.0</h3>
 
 	<ul>
 		<li>[Change] Validate birthdays (Bug #15004)</li>
@@ -300,7 +333,7 @@
 		<li>[Fix] Find and display colliding usernames correctly when converting from one database to another (Bug #23925)</li>
 	</ul>
 
-	<a name="v30rc8"></a><h3>1.iv. Changes since 3.0.RC8</h3>
+	<a name="v30rc8"></a><h3>1.v. Changes since 3.0.RC8</h3>
 
 	<ul>
 		<li>[Fix] Cleaned usernames contain only single spaces, so &quot;a_name&quot; and &quot;a__name&quot; are treated as the same name (Bug #15634)</li>
@@ -309,7 +342,7 @@
 		<li>[Fix] Call garbage_collection() within database updater to correctly close connections (affects Oracle for example)</li>
 	</ul>
 
-	<a name="v30rc7"></a><h3>1.v. Changes since 3.0.RC7</h3>
+	<a name="v30rc7"></a><h3>1.vi. Changes since 3.0.RC7</h3>
 
 	<ul>
 		<li>[Fix] Fixed MSSQL related bug in the update system</li>
@@ -344,7 +377,7 @@
 		<li>[Fix] No duplication of active topics (Bug #15474)</li>
 	</ul>
 
-	<a name="v30rc6"></a><h3>1.vi. Changes since 3.0.RC6</h3>
+	<a name="v30rc6"></a><h3>1.vii. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -354,7 +387,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.vii. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.viii. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -417,7 +450,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.viii. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.ix. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -468,7 +501,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.ix. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.x. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -577,7 +610,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.x. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.xi. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -602,7 +635,7 @@
 		<li>[Fix] Use our global expression for checking email syntax in memberlist (Bug #12827)</li>
 		<li>[Fix] Correctly retrieve/refresh templates stored in database if using subdirectories within template directory (Bug #12839)</li>
 		<li>[Fix] Correctly translate special group names in ucp_groups.php (Bug #12597)</li>
-		<li>[Fix] Search boxes not loosing session id (changing method from get to post) (Bug #12643)</li>
+		<li>[Fix] Search boxes not losing session id (changing method from get to post) (Bug #12643)</li>
 		<li>[Fix] Make sure the automatic update is also working for those having fsockopen disabled</li>
 		<li>[Fix] Simulate recache of theme data on automatic update finished page - recaching it if css data changed</li>
 		<li>[Feature] Allow dropping in custom &quot;info_[module class]_*.php&quot; files to language/*/mods directory for inclusion into the menu structure without the need to modify phpBB language files for menu placements</li>
@@ -623,7 +656,7 @@
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.xi. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.xii. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>

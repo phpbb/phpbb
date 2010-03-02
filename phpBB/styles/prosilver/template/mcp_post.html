@@ -51,13 +51,13 @@
 		<!-- ENDIF -->
 
 		<h3><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
-		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} {L_POSTED_ON_DATE}  {POST_DATE}</p>
+		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
 
 		<!-- IF S_POST_UNAPPROVED -->
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="rules">
-				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" /> &nbsp; 
+				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" /> &nbsp;
 				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
@@ -70,7 +70,7 @@
 				{REPORTED_IMG} <a href="{U_MCP_REPORT}"><strong>{L_MESSAGE_REPORTED}</strong></a>
 			</p>
 		<!-- ENDIF -->
-		
+
 		<div class="content">
 			{POST_PREVIEW}
 		</div>
@@ -125,7 +125,7 @@
 			</fieldset>
 			</form>
 		<!-- ENDIF -->
-	
+
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
 			<form method="post" id="mcp" action="{U_MCP_ACTION}">
 
@@ -174,7 +174,7 @@
 					<span class="small"><strong>{L_REPORTED_BY}: {usernotes.REPORT_BY} {L_REPORTED_ON_DATE} {usernotes.REPORT_AT}</strong></span>
 					<!-- IF S_CLEAR_ALLOWED --><div class="right-box"><input type="checkbox" name="marknote[]" value="{usernotes.ID}" /></div><!-- ENDIF -->
 					<div class="postbody">{usernotes.ACTION}</div>
-		
+
 					<hr class="dashed" />
 				<!-- END usernotes -->
 
@@ -194,7 +194,7 @@
 			</fieldset>
 
 			<fieldset class="submit-buttons">
-				<input class="button1" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp; 
+				<input class="button1" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;
 				<input class="button2" type="reset" value="{L_RESET}" />
 				{S_FORM_TOKEN}
 			</fieldset>
@@ -214,7 +214,7 @@
 				<span class="small"><strong>{L_REPORTED_BY}: <!-- IF reports.U_REPORTER --><a href="{reports.U_REPORTER}">{reports.REPORTER}</a><!-- ELSE -->{reports.REPORTER}<!-- ENDIF --> {L_REPORTED_ON_DATE} {reports.REPORT_TIME}</strong></span>
 				<p><em>{reports.REASON_TITLE}: {reports.REASON_DESC}</em><!-- IF reports.REPORT_TEXT --><br />{reports.REPORT_TEXT}<!-- ENDIF --></p>
 			<!-- END reports -->
-	
+
 			<span class="corners-bottom"><span></span></span></div>
 		</div>
 	<!-- ENDIF -->

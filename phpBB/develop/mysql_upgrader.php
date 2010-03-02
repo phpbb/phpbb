@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * This file creates SQL statements to upgrade phpBB on MySQL 3.x/4.0.x to 4.1.x/5.x
 *
@@ -127,7 +127,7 @@ foreach ($schema_data as $table_name => $table_data)
 	$line = "ALTER TABLE {$table_name} $newline";
 
 	// Table specific so we don't get overlap
-	$modded_array = array(); 
+	$modded_array = array();
 
 	// Write columns one by one...
 	foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -524,7 +524,7 @@ function get_schema_struct()
 			'forum_desc_uid'		=> array('VCHAR:8', ''),
 			'forum_link'			=> array('VCHAR_UNI', ''),
 			'forum_password'		=> array('VCHAR_UNI:40', ''),
-			'forum_style'			=> array('USINT', 0),
+			'forum_style'			=> array('UINT', 0),
 			'forum_image'			=> array('VCHAR', ''),
 			'forum_rules'			=> array('TEXT_UNI', ''),
 			'forum_rules_link'		=> array('VCHAR_UNI', ''),
@@ -876,6 +876,7 @@ function get_schema_struct()
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
+			'field_show_profile'	=> array('BOOL', 0),
 			'field_hide'			=> array('BOOL', 0),
 			'field_no_view'			=> array('BOOL', 0),
 			'field_active'			=> array('BOOL', 0),
@@ -1056,13 +1057,13 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles'] = array(
 		'COLUMNS'		=> array(
-			'style_id'				=> array('USINT', NULL, 'auto_increment'),
+			'style_id'				=> array('UINT', NULL, 'auto_increment'),
 			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
-			'template_id'			=> array('USINT', 0),
-			'theme_id'				=> array('USINT', 0),
-			'imageset_id'			=> array('USINT', 0),
+			'template_id'			=> array('UINT', 0),
+			'theme_id'				=> array('UINT', 0),
+			'imageset_id'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'style_id',
 		'KEYS'			=> array(
@@ -1075,7 +1076,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_template'] = array(
 		'COLUMNS'		=> array(
-			'template_id'			=> array('USINT', NULL, 'auto_increment'),
+			'template_id'			=> array('UINT', NULL, 'auto_increment'),
 			'template_name'			=> array('VCHAR_UNI:255', ''),
 			'template_copyright'	=> array('VCHAR_UNI', ''),
 			'template_path'			=> array('VCHAR:100', ''),
@@ -1090,7 +1091,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_template_data'] = array(
 		'COLUMNS'		=> array(
-			'template_id'			=> array('USINT', 0),
+			'template_id'			=> array('UINT', 0),
 			'template_filename'		=> array('VCHAR:100', ''),
 			'template_included'		=> array('TEXT', ''),
 			'template_mtime'		=> array('TIMESTAMP', 0),
@@ -1104,7 +1105,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_theme'] = array(
 		'COLUMNS'		=> array(
-			'theme_id'				=> array('USINT', NULL, 'auto_increment'),
+			'theme_id'				=> array('UINT', NULL, 'auto_increment'),
 			'theme_name'			=> array('VCHAR_UNI:255', ''),
 			'theme_copyright'		=> array('VCHAR_UNI', ''),
 			'theme_path'			=> array('VCHAR:100', ''),
@@ -1120,7 +1121,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_imageset'] = array(
 		'COLUMNS'		=> array(
-			'imageset_id'				=> array('USINT', NULL, 'auto_increment'),
+			'imageset_id'				=> array('UINT', NULL, 'auto_increment'),
 			'imageset_name'				=> array('VCHAR_UNI:255', ''),
 			'imageset_copyright'		=> array('VCHAR_UNI', ''),
 			'imageset_path'				=> array('VCHAR:100', ''),
@@ -1133,13 +1134,13 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_imageset_data'] = array(
 		'COLUMNS'		=> array(
-			'image_id'				=> array('USINT', NULL, 'auto_increment'),
+			'image_id'				=> array('UINT', NULL, 'auto_increment'),
 			'image_name'			=> array('VCHAR:200', ''),
 			'image_filename'		=> array('VCHAR:200', ''),
 			'image_lang'			=> array('VCHAR:30', ''),
 			'image_height'			=> array('USINT', 0),
 			'image_width'			=> array('USINT', 0),
-			'imageset_id'			=> array('USINT', 0),
+			'imageset_id'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'		=> 'image_id',
 		'KEYS'				=> array(
@@ -1277,7 +1278,7 @@ function get_schema_struct()
 			'user_timezone'				=> array('DECIMAL', 0),
 			'user_dst'					=> array('BOOL', 0),
 			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
-			'user_style'				=> array('USINT', 0),
+			'user_style'				=> array('UINT', 0),
 			'user_rank'					=> array('UINT', 0),
 			'user_colour'				=> array('VCHAR:6', ''),
 			'user_new_privmsg'			=> array('INT:4', 0),

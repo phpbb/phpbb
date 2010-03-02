@@ -48,20 +48,20 @@
 		<fieldset>
 			<legend>{L_VISIBILITY_OPTION}</legend>
 		<dl>
-			<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label><br /><span>{L_DISPLAY_AT_PROFILE_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="field_option_none" name="field_option" value="none"<!-- IF not S_SHOW_ON_REG and not S_FIELD_REQUIRED and not S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+			<dt><label for="field_show_profile">{L_DISPLAY_AT_PROFILE}:</label><br /><span>{L_DISPLAY_AT_PROFILE_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_profile" name="field_show_profile" value="1"<!-- IF S_SHOW_PROFILE --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
 			<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTER}:</label><br /><span>{L_DISPLAY_AT_REGISTER_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="field_show_on_reg" name="field_option" value="field_show_on_reg"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
+			<dd><input type="checkbox" class="radio" id="field_show_on_reg" name="field_show_on_reg" value="1"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
 			<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="field_required" name="field_option" value="field_required"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
+			<dd><input type="checkbox" class="radio" id="field_required" name="field_required" value="1"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
 			<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="field_hide" name="field_option" value="field_hide"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+			<dd><input type="checkbox" class="radio" id="field_hide" name="field_hide" value="1"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		</fieldset>
 

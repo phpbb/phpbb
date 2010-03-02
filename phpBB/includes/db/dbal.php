@@ -500,19 +500,62 @@ class dbal
 
 				$sql = str_replace('_', ' ', $query) . ' ' . $array['SELECT'] . ' FROM ';
 
-				$table_array = array();
+				// Build table array. We also build an alias array for later checks.
+				$table_array = $aliases = array();
+				$used_multi_alias = false;
+
 				foreach ($array['FROM'] as $table_name => $alias)
 				{
 					if (is_array($alias))
 					{
+						$used_multi_alias = true;
+
 						foreach ($alias as $multi_alias)
 						{
 							$table_array[] = $table_name . ' ' . $multi_alias;
+							$aliases[] = $multi_alias;
 						}
 					}
 					else
 					{
 						$table_array[] = $table_name . ' ' . $alias;
+						$aliases[] = $alias;
+					}
+				}
+
+				// We run the following code to determine if we need to re-order the table array. ;)
+				// The reason for this is that for multi-aliased tables (two equal tables) in the FROM statement the last table need to match the first comparison.
+				// DBMS who rely on this: Oracle, PostgreSQL and MSSQL. For all other DBMS it makes absolutely no difference in which order the table is.
+				if (!empty($array['LEFT_JOIN']) && sizeof($array['FROM']) > 1 && $used_multi_alias !== false)
+				{
+					// Take first LEFT JOIN
+					$join = current($array['LEFT_JOIN']);
+
+					// Determine the table used there (even if there are more than one used, we only want to have one
+					preg_match('/(' . implode('|', $aliases) . ')\.[^\s]+/U', str_replace(array('(', ')', 'AND', 'OR', ' '), '', $join['ON']), $matches);
+
+					// If there is a first join match, we need to make sure the table order is correct
+					if (!empty($matches[1]))
+					{
+						$first_join_match = trim($matches[1]);
+						$table_array = $last = array();
+
+						foreach ($array['FROM'] as $table_name => $alias)
+						{
+							if (is_array($alias))
+							{
+								foreach ($alias as $multi_alias)
+								{
+									($multi_alias === $first_join_match) ? $last[] = $table_name . ' ' . $multi_alias : $table_array[] = $table_name . ' ' . $multi_alias;
+								}
+							}
+							else
+							{
+								($alias === $first_join_match) ? $last[] = $table_name . ' ' . $alias : $table_array[] = $table_name . ' ' . $alias;
+							}
+						}
+
+						$table_array = array_merge($table_array, $last);
 					}
 				}
 
