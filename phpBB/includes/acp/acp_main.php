@@ -287,6 +287,7 @@ class acp_main
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
+						cache_moderators();
 
 						add_log('admin', 'LOG_PURGE_CACHE');
 					break;
@@ -322,7 +323,7 @@ class acp_main
 					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 				}
 			}
-			@closedir($avatar_dir);
+			closedir($avatar_dir);
 
 			// This bit of code translates the avatar directory size into human readable format
 			// Borrowed the code from the PHP.net annoted manual, origanally written by:

@@ -117,6 +117,10 @@ a:active {
 	text-decoration: none;
 }
 
+.install-body p a {
+	font-weight: bold;
+}
+
 /* Main blocks
 ---------------------------------------- */
 #wrap {

@@ -54,8 +54,8 @@
 	<p class="quick" style="margin-top: -15px;">
 		<input type="submit" name="update_details" class="button2" value="{L_SUBMIT}" />
 	</p>
-	</fieldset>
 	{S_FORM_TOKEN}
+	</fieldset>
 	</form>
 
 	<br /><br />
@@ -92,7 +92,7 @@
 		<!-- END missing -->
 		</tbody>
 		</table>
-		{S_FORM_TOKEN}
+		<div>{S_FORM_TOKEN}</div>
 		</form>
 
 		<br /><br />
@@ -157,11 +157,10 @@
 		{TPL}
 	<!-- ENDIF -->
 	<tr>
-		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /></td>
+		<td class="row3" colspan="3" style="text-align: right;">{S_FORM_TOKEN}<input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /></td>
 	</tr>
 	</tbody>
 	</table>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_UPLOAD -->
@@ -198,10 +197,10 @@
 	
 	<fieldset class="quick">
 		{HIDDEN}
+		{S_FORM_TOKEN}
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		<input class="button1" type="submit" name="test_connection" value="{L_TEST_CONNECTION}" />
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->

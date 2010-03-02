@@ -31,7 +31,7 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '1.0.RC7',
+	'version'		=> '1.0.RC8',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
@@ -571,7 +571,7 @@ if (!$get_info)
 				'primary'		=> 'vote_desc.topic_id',
 				'query_first'	=> array('target', $convert->truncate_statement . POLL_VOTES_TABLE),
 
-				array('poll_option_id',			1,									''),
+				array('poll_option_id',			VOTE_CONVERTED,						''),
 				array('topic_id',				'vote_desc.topic_id',				''),
 				array('vote_user_id',			'vote_voters.vote_user_id',			'phpbb_user_id'),
 				array('vote_user_ip',			'vote_voters.vote_user_ip',			'decode_ip'),

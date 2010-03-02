@@ -2674,6 +2674,19 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 {
 	global $db, $user;
 
+	$sql = 'SELECT COUNT(user_id) AS user_count
+		FROM ' . USERS_TABLE . '
+		WHERE user_type = ' . USER_INACTIVE .
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
+	$result = $db->sql_query($sql);
+	$user_count = (int) $db->sql_fetchfield('user_count');
+	$db->sql_freeresult($result);
+
+	if ($offset >= $user_count)
+	{
+		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
+	}
+
 	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
 		FROM ' . USERS_TABLE . '
 		WHERE user_type = ' . USER_INACTIVE .
@@ -2705,16 +2718,8 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	
 		$users[] = $row;
 	}
-	
-	$sql = 'SELECT COUNT(user_id) AS user_count
-		FROM ' . USERS_TABLE . '
-		WHERE user_type = ' . USER_INACTIVE .
-		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
-	$result = $db->sql_query($sql);
-	$user_count = (int) $db->sql_fetchfield('user_count');
-	$db->sql_freeresult($result);
 
-	return;
+	return $offset;
 }
 
 /**
@@ -2775,7 +2780,7 @@ function get_database_size()
 
 					$sql = 'SHOW TABLE STATUS
 						FROM ' . $db_name;
-					$result = $db->sql_query($sql);
+					$result = $db->sql_query($sql, 7200);
 
 					$database_size = 0;
 					while ($row = $db->sql_fetchrow($result))
@@ -2825,7 +2830,7 @@ function get_database_size()
 		case 'mssql_odbc':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query($sql, 7200);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
 		break;
@@ -2867,7 +2872,7 @@ function get_database_size()
 		case 'oracle':
 			$sql = 'SELECT SUM(bytes) as dbsize
 				FROM user_segments';
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query($sql, 7200);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
 		break;

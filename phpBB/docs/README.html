@@ -105,9 +105,9 @@
 	<p>We give support for the following installation types:</p>
 
 	<ul>
-		<li>Updates from phpBB3 RC1 to any higher version</li>
-		<li>Conversions from phpBB 2.0.x to phpBB3 RC1 and higher</li>
-		<li>New installations of phpBB3 RC1 and higher</li>
+		<li>Updates from phpBB3 RC1 to the latest version</li>
+		<li>Conversions from phpBB 2.0.x to the latest version</li>
+		<li>New installations of phpBB3 - always only the latest released version</li>
 	</ul>
 
 		</div>
@@ -136,9 +136,9 @@
 
 	<p>This is the <em>official</em> location for all supported language sets. If you download a package from a 3rd party site you do so with the understanding that we cannot offer support. So please, do not ask for help in these cases!</p>
 
-	<p>Installation of these packages is straightforward, simply download the required language pack and unarchive it into the <samp>languages/</samp> folder. Please ensure you retain the directory structure when doing this! Once uploaded go to the <code>Admin-&gt;System-&gt;Language Packs</code> and install the now appeared new language pack. To install the style image packs you should unarchive the file/s into the styles/subsilver2/imageset directory, again you must retain the directory structure. Once installed the languages will become immediately available.</p>
+	<p>Installation of these packages is straightforward, simply download the required language pack and unarchive it into the <samp>languages/</samp> folder. Please ensure you retain the directory structure when doing this! Once uploaded go to the <code>Admin-&gt;System-&gt;Language Packs</code> and install the now appeared new language pack. To install the style imageset you should download the imageset for your language and unarchive the file/s into the relevant imageset directory (styles/prosilver/imageset or styles/subsilver2/imageset), again you must retain the directory structure. Once installed the imageset will become immediately available.</p>
 
-	<p>If your language is not available please visit our forums where you will find a topic listing translations currently available or in preparation. This topic also gives you information should you wish to volunteer to translate a language not currently listed</p>
+	<p>If your language is not available please visit our forums where you will find a topic listing translations currently available or in preparation. This topic also gives you information should you wish to volunteer to translate a language not currently listed.</p>
 
 	<a name="styles"></a><h3>2.ii. Styles</h3>
 
@@ -149,6 +149,8 @@
 	<p><strong>Please note</strong> that 3rd party styles downloaded for versions of phpBB2 will <strong>not</strong> work in phpBB3.</p>
 
 	<p>Once you have downloaded a style the usual next step is to unarchive (or upload the unarchived contents of) the package into your <samp>styles/</samp> directory. You then need to visit <code>Administration -&gt; Styles</code>, you should see the new style available, click install and it will become available for all your users.</p>
+
+	<p><strong>Please note</strong> that if you create your own style or modify existing ones, please remember to enable the &quot;Recompile stale style components&quot; setting within the <code>Admin-&gt;General-&gt;Load Settings</code> screen. This setting allows the cache to detect changes made to the style and automatically refresh it. If this setting is disabled, you will not see your changes taking effect.</p>
 
 	<a name="mods"></a><h3>2.iii. Modifications</h3>
 
@@ -292,7 +294,7 @@
 	<ul>
 		<li>Conversions may fail to complete on large boards under some hosts</li>
 		<li>Updates may fail to complete on large update sets under some hosts</li>
-		<li>URL redirects are not working correctly under PHP 5.2.4 and certain conditions due to a bug within this PHP version</li>
+		<li>Smilies placed directly after bbcode tags will not get parsed. Smilies always need to be separated by spaces.</li>
 	</ul>
 
 		</div>

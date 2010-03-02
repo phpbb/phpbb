@@ -48,7 +48,11 @@ function initInsertions()
 	{	
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
-		// document.body.focus();
+
+		if (!document.forms[form_name])
+		{
+			document.body.focus();
+		}
 	}
 }
 

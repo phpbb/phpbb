@@ -107,7 +107,7 @@ li.header dl.icon {
 li.header dl.icon dt {
 	/* Tweak for headers alignment when folder icon used */
 	padding-left: 0;
-	padding-right: 44px;
+	padding-right: 50px;
 }
 
 /* Forum list column styles */

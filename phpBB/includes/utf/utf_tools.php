@@ -768,7 +768,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// If nothing works, check if we have a custom transcoder available
-	if (!preg_match('#^[a-z0-9\\-]+$#', $encoding))
+	if (!preg_match('#^[a-z0-9_ \\-]+$#', $encoding))
 	{
 		// Make sure the encoding name is alphanumeric, we don't want it to be abused into loading arbitrary files
 		trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);

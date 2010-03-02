@@ -27,7 +27,7 @@
 		t: '{LA_BBCODE_T_HELP}',
 		tip: '{L_STYLES_TIP}'
 		<!-- BEGIN custom_tags -->
-			,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
+			,cb_{custom_tags.BBCODE_ID}: '{custom_tags.A_BBCODE_HELPLINE}'
 		<!-- END custom_tags -->
 	}
 
@@ -77,7 +77,7 @@
 		<!-- IF .custom_tags -->
 			<br /><br />
 			<!-- BEGIN custom_tags -->
-				<input type="button" class="button2" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')"<!-- ENDIF --> />
+				<input type="button" class="button2" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
 			<!-- END custom_tags -->
 		<!-- ENDIF -->
 
@@ -112,6 +112,6 @@
 	<fieldset class="submit-buttons">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-{S_FORM_TOKEN}
 </form>

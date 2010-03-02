@@ -637,7 +637,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 				}
 			}
-			@closedir($dp);
+			closedir($dp);
 		}
 
 		unset($installed);
@@ -992,6 +992,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
 			
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
+
+			if (!file_exists("{$phpbb_root_path}cache/$filename"))
+			{
+				continue;
+			}
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -1855,15 +1860,17 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				$imageset_root = "{$phpbb_root_path}styles/{$style_row['imageset_path']}/imageset/";
 
-				$dh = @opendir($imageset_root);
-				while (($fname = readdir($dh)) !== false)
+				if ($dh = @opendir($imageset_root))
 				{
-					if ($fname[0] != '.' && $fname != 'CVS' && is_dir("$imageset_root$fname"))
+					while (($fname = readdir($dh)) !== false)
 					{
-						$files[key($files)]['exclude'] .= ',' . $fname . '/imageset.cfg';
+						if ($fname[0] != '.' && $fname != 'CVS' && is_dir("$imageset_root$fname"))
+						{
+							$files[key($files)]['exclude'] .= ',' . $fname . '/imageset.cfg';
+						}
 					}
+					closedir($dh);
 				}
-				@closedir($dh);
 
 				$imageset_lang = array();
 

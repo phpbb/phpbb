@@ -647,12 +647,12 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.reply-icon, .reply-icon a			{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
-.post-icon, .post-icon a				{ background-image: url("{IMG_BUTTON_TOPIC_NEW_SRC}") ;}
-.locked-icon, .locked-icon a			{ background-image: url("{IMG_BUTTON_TOPIC_LOCKED_SRC}"); }
-.pmreply-icon, .pmreply-icon a		{ background-image: url("{IMG_BUTTON_PM_REPLY_SRC}") ;}
-.newpm-icon, .newpm-icon a			{ background-image: url("{IMG_BUTTON_PM_NEW_SRC}") ;}
-.forwardpm-icon, .forwardpm-icon a 	{ background-image: url("{IMG_BUTTON_PM_FORWARD_SRC}") ;}
+.reply-icon span	{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
+.post-icon span		{ background-image: url("{IMG_BUTTON_TOPIC_NEW_SRC}"); }
+.locked-icon span	{ background-image: url("{IMG_BUTTON_TOPIC_LOCKED_SRC}"); }
+.pmreply-icon span	{ background-image: url("{IMG_BUTTON_PM_REPLY_SRC}") ;}
+.newpm-icon span 	{ background-image: url("{IMG_BUTTON_PM_NEW_SRC}") ;}
+.forwardpm-icon span	{ background-image: url("{IMG_BUTTON_PM_FORWARD_SRC}") ;}
 
 a.print {
 	background-image: url("{T_THEME_PATH}/images/icon_print.gif");

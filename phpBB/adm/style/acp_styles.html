@@ -25,9 +25,9 @@
 
 	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
+		{S_FORM_TOKEN}
 	</p>
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_IMAGESET -->
@@ -147,8 +147,8 @@
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_TEMPLATE or S_EDIT_THEME -->
@@ -170,10 +170,9 @@
 		<dt><label for="template_file">{L_FILE}:</label></dt>
 		<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select> <input class="button2" type="submit" value="{L_SELECT}" /></dd>
 	</dl>
+	{S_FORM_TOKEN}
 	</fieldset>
 	<!-- ENDIF -->
-	
-	{S_FORM_TOKEN}
 	</form>
 
 	<!-- IF TEMPLATE_FILE or (S_EDIT_THEME and S_THEME_IN_DB) -->
@@ -253,10 +252,9 @@
 		<fieldset class="submit-buttons">
 			<legend>{L_SUBMIT}</legend>
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 		</fieldset>
-		
-		{S_FORM_TOKEN}
 		</form>
 	<!-- ENDIF -->
 
@@ -301,12 +299,10 @@
 
 	<p class="quick">
 		<span class="small"><a href="#" onclick="marklist('acp_styles', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('acp_styles', 'delete', false); return false;">{L_UNMARK_ALL}</a></span><br />
-
+		{S_FORM_TOKEN}
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_DELETE_MARKED}" />
 	</p>
 	</fieldset>
-
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EXPORT -->
@@ -360,11 +356,12 @@
 	</dl>
 
 	<p class="quick">
+		{S_FORM_TOKEN}
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</p>
 	</fieldset>
 
-	{S_FORM_TOKEN}
+	
 	</form>
 
 <!-- ELSEIF S_FRONTEND -->
@@ -508,9 +505,9 @@
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		{S_FORM_TOKEN}
 	</fieldset>
 	
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

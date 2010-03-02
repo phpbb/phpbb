@@ -34,7 +34,7 @@ function generate_smilies($mode, $forum_id)
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-		
+
 			$user->setup('posting', (int) $row['forum_style']);
 		}
 		else
@@ -1227,7 +1227,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// Now, we are able to really send out notifications
 	if (sizeof($msg_users))
 	{
-		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		$messenger = new messenger();
 
 		$msg_list_ary = array();
@@ -1628,7 +1628,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
 			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
-				$sql_data[POSTS_TABLE]['sql'] = array(
+				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, false);
+
+				$sql_data[POSTS_TABLE]['sql']	= array(
 					'post_edit_time'	=> $current_time,
 					'post_edit_reason'	=> $data['post_edit_reason'],
 					'post_edit_user'	=> (int) $data['post_edit_user'],

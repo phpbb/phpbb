@@ -32,8 +32,8 @@
 		<!-- ENDIF -->
 		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
 		<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->
@@ -60,8 +60,8 @@
 				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" /> &nbsp; 
 				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
+				{S_FORM_TOKEN}
 			</p>
-		{S_FORM_TOKEN}
 			</form>
 		<!-- ENDIF -->
 
@@ -121,8 +121,8 @@
 					<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span>
 				</dd>
 			</dl>
-			</fieldset>
 			{S_FORM_TOKEN}
+			</fieldset>
 			</form>
 		<!-- ENDIF -->
 	
@@ -138,8 +138,8 @@
 					</select> <input class="button2" type="submit" value="{L_SUBMIT}" />
 				</dd>
 			</dl>
-			</fieldset>
 			{S_FORM_TOKEN}
+			</fieldset>
 			</form>
 		<!-- ENDIF -->
 
@@ -196,8 +196,8 @@
 			<fieldset class="submit-buttons">
 				<input class="button1" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp; 
 				<input class="button2" type="reset" value="{L_RESET}" />
+				{S_FORM_TOKEN}
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 
 			<span class="corners-bottom"><span></span></span></div>

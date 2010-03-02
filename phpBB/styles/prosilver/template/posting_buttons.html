@@ -28,26 +28,8 @@
 		e: '{LA_BBCODE_E_HELP}',
 		d: '{LA_BBCODE_D_HELP}'
 		<!-- BEGIN custom_tags -->
-			,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
+			,cb_{custom_tags.BBCODE_ID}: '{custom_tags.A_BBCODE_HELPLINE}'
 		<!-- END custom_tags -->
-	}
-
-	function checkForm()
-	{
-		if (document.getElementById(text_name).value.length < 2 && load_draft == false)
-		{
-			if (!upload)
-			{
-				alert('{LA_EMPTY_MESSAGE}');
-				return false;
-			}
-			upload = false;
-			return true;
-		}
-		else
-		{
-			return true;
-		}
 	}
 
 	var panels = new Array('options-panel', 'attach-panel', 'poll-panel');

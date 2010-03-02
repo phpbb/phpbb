@@ -500,7 +500,7 @@ class phpbb_db_tools
 			case 'mssql':
 				$sql = "SELECT c.name
 					FROM syscolumns c
-					LEFT JOIN sysobjects o (ON c.id = o.id)
+					LEFT JOIN sysobjects o ON c.id = o.id
 					WHERE o.name = '{$table}'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
@@ -709,22 +709,26 @@ class phpbb_db_tools
 
 			case 'mssql':
 				$sql .= " {$column_type} ";
+				$sql_default = " {$column_type} ";
 
-				// we do not support MSSQL DEFAULTs for the near future
-				/*if (!is_null($column_data[1]))
+				// For adding columns we need the default definition
+				if (!is_null($column_data[1]))
 				{
 					// For hexadecimal values do not use single quotes
 					if (strpos($column_data[1], '0x') === 0)
 					{
-						$sql .= 'DEFAULT (' . $column_data[1] . ') ';
+						$sql_default .= 'DEFAULT (' . $column_data[1] . ') ';
 					}
 					else
 					{
-						$sql .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
+						$sql_default .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
 					}
-				}*/
+				}
 
 				$sql .= 'NOT NULL';
+				$sql_default .= 'NOT NULL';
+
+				$return_array['column_type_sql_default'] = $sql_default;
 			break;
 
 			case 'mysql_40':
@@ -828,7 +832,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
-				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
 			case 'mysql_40':

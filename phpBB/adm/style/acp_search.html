@@ -59,9 +59,8 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_INDEX -->
@@ -90,8 +89,8 @@
 				<legend>{L_SUBMIT}</legend>
 				<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');" />&nbsp;
 				<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
+				{S_FORM_TOKEN}
 			</fieldset>
-		{S_FORM_TOKEN}
 		</form>
 	<!-- ELSE -->
 
@@ -141,8 +140,9 @@
 				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
 			<!-- ENDIF -->
 			</p>
-			</fieldset>
 			{S_FORM_TOKEN}
+			</fieldset>
+			
 			</form>
 		<!-- END backend -->
 

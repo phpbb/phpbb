@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v30rc7">Changes since RC-7</a></li>
 		<li><a href="#v30rc6">Changes since RC-6</a></li>
 		<li><a href="#v30rc5">Changes since RC-5</a></li>
 		<li><a href="#v30rc4">Changes since RC-4</a></li>
@@ -78,7 +79,42 @@
 
 		<div class="content">
 
-	<a name="v30rc6"></a><h3>1.i. Changes since 3.0.RC6</h3>
+	<a name="v30rc7"></a><h3>1.i. Changes since 3.0.RC7</h3>
+
+	<ul>
+		<li>[Fix] Fixed MSSQL related bug in the update system</li>
+		<li>[Fix] Display &quot;Return to&quot; links on unwritable forums (Bug #14824)</li>
+		<li>[Fix] Mitigating different realpath() handling between PHP versions (fixing confirm box redirects)</li>
+		<li>[Fix] Fix signature editing - ability to remove signature (Bug #14820)</li>
+		<li>[Fix] Send correct activation key by forcing reactivation for inactive user (Bug #14819)</li>
+		<li>[Fix] Adding correct IP for private messages sent by issuing warnings (Bug #14781)</li>
+		<li>[Fix] Open private message notification (Bug #14773)</li>
+		<li>[Fix] Fixing false new private message indicator (Bug #14627)</li>
+		<li>[Fix] Let newly activated passwords work if users were converted (Bug #14787)</li>
+		<li>[Fix] Quote bbcode fixes. Letting parse quote=&quot;[&quot; and re-allowing whitelisted bbcodes within username portion (Bug #14770)</li>
+		<li>[Fix] Allow alternative text for styled buttons if images turned off, but CSS staying on</li>
+		<li>[Sec] Fix bbcode helpline display for custom bbcodes - this requires style changes for any custom style (Bug #14850)</li>
+		<li>[Fix] Correctly count announcements when filtering forums by date (Bug #14877)</li>
+		<li>[Fix] Allow charset names containing underscores or spaces</li>
+		<li>[Fix] Don't allow previous/next links for non-existing topics (Bug #15039)</li>
+		<li>[Change] Do not assign converted votes to the first option in a vote.</li>
+		<li>[Fix] Use correct RFC 2822 date format in emails (Bug #15042)</li>
+		<li>[Fix] Require founder status for some actions on founder-only groups (Bug #15119)</li>
+		<li>[Fix] Allow changing the &quot;now&quot; option of date CPFs (Bug #15111)</li>
+		<li>[Change] Some improvements to the caching of avatars</li>
+		<li>[Change] Set template recompilation to be disabled by default. All mod and style authors and all those who want to modify their styles should enabled it after installation.</li>
+		<li>[Change] Disable debug mode. All mod and style authors should enable DEBUG and DEBUG_EXTRA.</li>
+		<li>[Fix] Check error reporting level for all error level. This fixes a problem for hosts having manipulated the error handler. (Bug #14831)</li>
+		<li>[Feature] Constant PHPBB_DB_NEW_LINK introduced which can be used to force phpBB to create a new database connection instead of reusing an existing one if the dbms supports it (Bug #14927)</li>
+		<li>[Fix] Automatic URL parsing no longer allows dots in the schema but can parse URLs starting after a dot (Bug #15110)</li>
+		<li>[Fix] Dynamic width for birthday select boxes (Bug #15149)</li>
+		<li>[Fix] Recache Moderators when copying permissions. (Bug #15384)</li>
+		<li>[Fix] Propagate sort options in mcp_forums (Bug #15464)</li>
+		<li>[Change] Do not allow [size=0] bbcodes (font-size of 0)</li>
+		<li>[Fix] No duplication of active topics (Bug #15474)</li>
+	</ul>
+
+	<a name="v30rc6"></a><h3>1.ii. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -88,7 +124,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.ii. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.iii. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -151,7 +187,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.iii. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.iv. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -202,7 +238,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.iv. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.v. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -311,7 +347,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.v. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.vi. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -357,7 +393,7 @@
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.vi. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.vii. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>

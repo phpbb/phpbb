@@ -370,6 +370,11 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Remove reports
 	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE user_id = ' . $user_id);
 
+	if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+	{
+		avatar_delete('user', $user_row);
+	}
+	
 	switch ($mode)
 	{
 		case 'retain':
@@ -659,7 +664,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $cache;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1043,10 +1048,14 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 
+		$cache->destroy('sql', BANLIST_TABLE);
+
 		return true;
 	}
 
-	// There was nothing to ban/exclude
+	// There was nothing to ban/exclude. But destroying the cache because of the removal of stale bans.
+	$cache->destroy('sql', BANLIST_TABLE);
+
 	return false;
 }
 
@@ -1055,7 +1064,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $cache;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1111,6 +1120,8 @@ function user_unban($mode, $ban)
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
+
+	$cache->destroy('sql', BANLIST_TABLE);
 
 	return false;
 }
@@ -1993,31 +2004,38 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		// Collect images
 		$dp = @opendir($path);
 
+		if (!$dp)
+		{
+			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
+		}
+
 		while (($file = readdir($dp)) !== false)
 		{
 			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	
-				$dp2 = @opendir("$path/$file");
-				while (($sub_file = readdir($dp2)) !== false)
+				if ($dp2 = @opendir("$path/$file"))
 				{
-					if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
+					while (($sub_file = readdir($dp2)) !== false)
 					{
-						$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
-							'file'		=> "$file/$sub_file",
-							'filename'	=> $sub_file,
-							'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
-						);
-						$avatar_col_count++;
-						if ($avatar_col_count == $items_per_column)
+						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 						{
-							$avatar_row_count++;
-							$avatar_col_count = 0;
+							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
+								'file'		=> "$file/$sub_file",
+								'filename'	=> $sub_file,
+								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
+							);
+							$avatar_col_count++;
+							if ($avatar_col_count == $items_per_column)
+							{
+								$avatar_row_count++;
+								$avatar_col_count = 0;
+							}
 						}
 					}
+					closedir($dp2);
 				}
-				closedir($dp2);
 			}
 		}
 		closedir($dp);
@@ -2045,7 +2063,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		'S_CAT_OPTIONS'			=> $s_category_options)
 	);
 
-	$avatar_list = $avatar_list[$category];
+	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
 
 	foreach ($avatar_list as $avatar_row_ary)
 	{

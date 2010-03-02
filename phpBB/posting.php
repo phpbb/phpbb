@@ -1131,7 +1131,7 @@ $message_parser->decode_message($post_data['bbcode_uid']);
 
 if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 {
-	$message_parser->message = '[quote="' . $post_data['quote_username'] . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+	$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)

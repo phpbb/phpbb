@@ -1062,8 +1062,15 @@ class custom_profile_admin extends custom_profile
 			'field_length'			=> $this->vars['field_length']
 		);
 
-		$always_now = request_var('always_now', 0);
-		$s_checked = ($always_now || $this->vars['field_default_value'] == 'now') ? true : false;
+		$always_now = request_var('always_now', -1);
+		if ($always_now == -1)
+		{
+			$s_checked = ($this->vars['field_default_value'] == 'now') ? true : false;
+		}
+		else
+		{
+			$s_checked = ($always_now) ? true : false;
+		}
 
 		$options = array(
 			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),

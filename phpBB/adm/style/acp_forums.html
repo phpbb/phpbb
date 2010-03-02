@@ -317,8 +317,8 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_DELETE_FORUM -->
@@ -366,8 +366,8 @@
 	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</p>
-	</fieldset>
 	{S_FORM_TOKEN}
+	</fieldset>
 	</form>
 
 <!-- ELSEIF S_CONTINUE_SYNC -->
@@ -475,8 +475,8 @@
 		{L_SELECT_FORUM}: <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{FORUM_BOX}</select>
 
 		<input class="button2" type="submit" value="{L_GO}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 	<form id="forums" method="post" action="{U_ACTION}">
@@ -486,8 +486,8 @@
 
 		<input type="text" name="forum_name" value="" maxlength="255" />
 		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

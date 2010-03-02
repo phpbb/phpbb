@@ -480,9 +480,9 @@ class acp_profile
 					}
 					else if ($field_type == FIELD_DATE && $key == 'field_default_value')
 					{
-						$always_now = request_var('always_now', 0);
-
-						if ($always_now || $var == 'now')
+						$always_now = request_var('always_now', -1);
+						
+						if ($always_now == 1 || ($always_now === -1 && $var == 'now'))
 						{
 							$now = getdate();
 
