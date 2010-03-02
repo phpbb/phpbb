@@ -98,7 +98,7 @@
 		<li>[Fix] Do not link to user profile in ATOM feed entry if post has been made by the guest user. (Bug #54275)</li>
 		<li>[Fix] Make word censoring case insensitive. (Bug #54265)</li>
 		<li>[Fix] Fulltext-MySQL search for keywords and username at the same time. (Bug #54325)</li>
-		<li>[Fix] Various XHTML and CSS mistakes in prosilver. (Bugs #54705, #55895)</li>
+		<li>[Fix] Various XHTML and CSS mistakes in prosilver and subsilver2. (Bugs #54705, #55895, #57505)</li>
 		<li>[Fix] Correctly show topic ATOM feed link when only post id is specified. (Bug #53025)</li>
 		<li>[Fix] Cleanly handle forum/topic not found in ATOM Feeds. (Bug #54295)</li>
 		<li>[Fix] PHP 5.3 compatibility: Check if function dl() exists before calling it. (Bug #54665)</li>
@@ -141,7 +141,7 @@
 		<li>[Fix] Properly paginate unapproved posts in the MCP. (Bug #56285)</li>
 		<li>[Fix] Do not duplicate previous/next links in pagination text of moderator logs and user notes in MCP for subsilver2. (Bug #55045)</li>
 		<li>[Fix] Do not automatically unsubscribe users from topics, when email and jabber is disabled.</li>
-		<li>[Fix] Don't send activation email when user tries to change email without permission (fix by nrohler). (Bug #56335)</li>
+		<li>[Fix] Don't send activation email when user tries to change email without permission. (Bug #56335 - Fix by nrohler)</li>
 		<li>[Fix] Replace hard coded &quot;px&quot; with translated language-string. (Bug #52495)</li>
 		<li>[Fix] Correctly hover list menu in UCP and MCP for RTL languages. (Bug #49945)</li>
 		<li>[Fix] Correctly orientate quoted text image on RTL languages. (Bug #33745)</li>
@@ -153,6 +153,18 @@
 		<li>[Fix] Fix language string for PM-Reports refering to post-data. (Bug #54745)</li>
 		<li>[Fix] Do not store email templates in database. (Bug #54505)</li>
 		<li>[Fix] Fix javascript bug in the smilies ACP. (Bug #55725)</li>
+		<li>[Fix] Unify BBCode Selection across browsers. (Bug #38765)</li>
+		<li>[Fix] Allow convertors to read in configuration from files. (Bug #57265 - Patch by Dicky)</li>
+		<li>[Fix] Fix problems with firebird by no longer using 'count' as a column alias. (Bug #57455)</li>
+		<li>[Fix] Small language correction for the FAQ page. (Bug #57825)</li>
+		<li>[Fix] Restrict search for language/../iso.txt to folders. (Bug #57795)</li>
+		<li>[Fix] Make user_email_hash() function independent from system's architecture. (Bug #57755)</li>
+		<li>[Fix] Correct behavior of &quot;force_approved_state&quot; when value is false. (Bug #57715)</li>
+		<li>[Fix] Global announcements could not be accessed on a board using Firebird as the database server. (Bug #57525)</li>
+		<li>[Fix] BBCode parser now uses the user object for all settings rather than taking some from the template object (Bug #57365)</li>
+		<li>[Fix] Ensure a database connection is available before logging general errors. (Bug #57975)</li>
+		<li>[Fix] Do not delete unrelated attachments when deleting empty forums. (Bug #57375)</li>
+		<li>[Fix] Update: Store expected resulting file contents in cache and do not suggest further merges if the contents match, also fixes infinite merge loop (Bug #54075)</li>
 		<li>[Change] Move redirect into a hidden field to avoid issues with mod_security. (Bug #54145)</li>
 		<li>[Change] Log activation through inactive users ACP. (Bug #30145)</li>
 		<li>[Change] Send time of last item instead of current time in ATOM Feeds. (Bug #53305)</li>
@@ -171,7 +183,11 @@
 		<li>[Change] Tweak Q&amp;A CAPTCHA garbage collection.</li>
 		<li>[Change] Show a proper preview for the Q&amp;A CAPTCHA. (Bug #56365)</li>
 		<li>[Change] Speed up topic move operation by adding an index for topic_id on the topics track table. (Bug #56545)</li>
+		<li>[Change] Warn users about potentially dangerous BBcodes.</li>
 		<li>[Feature] Ability to use HTTP authentication in ATOM feeds by passing the GET parameter &quot;auth=http&quot;.</li>
+		<li>[Feature] Add INTTEXT token type to custom bbcodes to allow non-ASCII letters in html attributes.</li>
+		<li>[Feature] Add ability to enable quick reply in all forums.</li>
+
 	</ul>
 
 	<a name="v305"></a><h3>1.ii. Changes since 3.0.5</h3>

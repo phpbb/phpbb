@@ -941,11 +941,12 @@ class acp_icons
 	{
 		global $db;
 
-		$sql = "SELECT COUNT(*) AS count
+		$sql = "SELECT COUNT(*) AS item_count
 			FROM $table";
 		$result = $db->sql_query($sql);
-		$item_count = (int) $db->sql_fetchfield('count');
+		$item_count = (int) $db->sql_fetchfield('item_count');
 		$db->sql_freeresult($result);
+
 		return $item_count;
 	}
 }

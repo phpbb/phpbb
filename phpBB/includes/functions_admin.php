@@ -102,7 +102,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 			{
 				$disabled = true;
 			}
-			else if (!$only_acl_post && !$auth->acl_gets(array('a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
+			else if (!$only_acl_post && !$auth->acl_gets(array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
 			{
 				$disabled = true;
 			}
@@ -913,7 +913,13 @@ function delete_attachments($mode, $ids, $resync = true)
 {
 	global $db, $config;
 
-	if (is_array($ids) && sizeof($ids))
+	// 0 is as bad as an empty array
+	if (empty($ids))
+	{
+		return false;
+	}
+
+	if (is_array($ids))
 	{
 		$ids = array_unique($ids);
 		$ids = array_map('intval', $ids);
@@ -921,11 +927,6 @@ function delete_attachments($mode, $ids, $resync = true)
 	else
 	{
 		$ids = array((int) $ids);
-	}
-
-	if (!sizeof($ids))
-	{
-		return false;
 	}
 
 	$sql_where = '';
@@ -3306,6 +3307,26 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 	}
 
 	return $info;
+}
+
+/**
+ * Enables a particular flag in a bitfield column of a given table.
+ *
+ * @param string	$table_name		The table to update
+ * @param string	$column_name	The column containing a bitfield to update
+ * @param int		$flag			The binary flag which is OR-ed with the current column value
+ * @param string	$sql_more		This string is attached to the sql query generated to update the table.
+ *
+ * @return void
+ */
+function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
+{
+	global $db;
+
+	$sql = 'UPDATE ' . $table_name . '
+		SET ' . $column_name . ' = ' . $db->sql_bit_or($column_name, $flag) . '
+		' . $sql_more;
+	$db->sql_query($sql);
 }
 
 ?>

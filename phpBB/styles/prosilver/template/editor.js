@@ -323,8 +323,8 @@ function mozWrap(txtarea, open, close)
 	var s3 = (txtarea.value).substring(selEnd, selLength);
 
 	txtarea.value = s1 + open + s2 + close + s3;
-	txtarea.selectionStart = selEnd + open.length + close.length;
-	txtarea.selectionEnd = txtarea.selectionStart;
+	txtarea.selectionStart = selStart + open.length;
+	txtarea.selectionEnd = selEnd + open.length;
 	txtarea.focus();
 	txtarea.scrollTop = scrollTop;
 

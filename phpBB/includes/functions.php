@@ -556,11 +556,11 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 *
 * @param string $email		Email address
 *
-* @return string			Big Integer
+* @return string			Unsigned Big Integer
 */
 function phpbb_email_hash($email)
 {
-	return crc32(strtolower($email)) . strlen($email);
+	return sprintf('%u', crc32(strtolower($email))) . strlen($email);
 }
 
 /**
@@ -3531,7 +3531,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
-			if (defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT'))
+			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
