@@ -73,7 +73,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_PM_REPORT'			=> 'Allow users to report private messages',
 	'ALLOW_PM_REPORT_EXPLAIN'	=> 'If this setting is enabled, users have the option of reporting a private message they have received or sent to the board’s moderators. These private messages will then be visible in the Moderator Control Panel.',
 	'ALLOW_QUICK_REPLY'			=> 'Allow quick reply',
-	'ALLOW_QUICK_REPLY_EXPLAIN'	=> 'This setting defines if quick reply is enabled or not. If this setting is enabled, forums need to have their quick reply option enabled too.',
+	'ALLOW_QUICK_REPLY_EXPLAIN'	=> 'This switch allows for the quick reply to be disabled board-wide. When enabled, forum specific settings will be used to determine whether the quick reply is displayed in individual forums.',
+	'ALLOW_QUICK_REPLY_BUTTON'	=> 'Submit and enable quick reply in all forums',
 	'ALLOW_SIG'					=> 'Allow signatures',
 	'ALLOW_SIG_BBCODE'			=> 'Allow BBCode in user signatures',
 	'ALLOW_SIG_FLASH'			=> 'Allow use of <code>[FLASH]</code> BBCode tag in user signatures',
@@ -84,7 +85,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_SMILIES'				=> 'Allow smilies',
 	'ALLOW_TOPIC_NOTIFY'		=> 'Allow subscribing to topics',
 	'BOARD_PM'					=> 'Private messaging',
-	'BOARD_PM_EXPLAIN'			=> 'Enable or disable private messaging for all users.',
+	'BOARD_PM_EXPLAIN'			=> 'Enable private messaging for all users.',
 ));
 
 // Avatar Settings
@@ -149,7 +150,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
-	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
+	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic. Setting the value to 0 disables this feature.',
 	'CHAR_LIMIT'					=> 'Maximum characters per post/message',
 	'CHAR_LIMIT_EXPLAIN'			=> 'The number of characters allowed within a post/private message. Set to 0 for unlimited characters.',
 	'DELETE_TIME'					=> 'Limit deleting time',
@@ -246,32 +247,40 @@ $lang = array_merge($lang, array(
 
 // Feeds
 $lang = array_merge($lang, array(
-	'ACP_FEED_MANAGEMENT'				=> 'General Syndication Feeds settings',
-	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This Module makes available various ATOM Feeds, parsing any BBCode in posts to make them readable in external feeds.',
+	'ACP_FEED_MANAGEMENT'				=> 'General syndication feeds settings',
+	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This module makes available various ATOM feeds, parsing any BBCode in posts to make them readable in external feeds.',
 
-	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
-	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
+	'ACP_FEED_GENERAL'					=> 'General feed settings',
+	'ACP_FEED_POST_BASED'				=> 'Post-based feed settings',
+	'ACP_FEED_TOPIC_BASED'				=> 'Topic-based feed settings',
+	'ACP_FEED_SETTINGS_OTHER'			=> 'Other feeds and settings',
+
+	'ACP_FEED_ENABLE'					=> 'Enable feeds',
+	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM feeds for the entire board.<br />Disabling this switches off all feeds, no matter how the options below are set.',
 	'ACP_FEED_LIMIT'					=> 'Number of items',
 	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
 
-	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable overall forums feed',
-	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'This feed displays the latest posts from all forums topics.',
-	'ACP_FEED_OVERALL_FORUMS_LIMIT'		=> 'Number of items per page to display in the forums feed',
-
-	'ACP_FEED_OVERALL_TOPIC'			=> 'Enable overall topics feed',
-	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the “All Topics” feed',
-	'ACP_FEED_OVERALL_TOPIC_LIMIT'		=> 'Number of items per page to display in the topics feed',
-	'ACP_FEED_FORUM'					=> 'Enable Per-Forum Feeds',
-	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum new posts.',
-	'ACP_FEED_TOPIC'					=> 'Enable Per-Topic Feeds',
+	'ACP_FEED_OVERALL'					=> 'Enable board-wide feed',
+	'ACP_FEED_OVERALL_EXPLAIN'			=> 'Board-wide new posts.',
+	'ACP_FEED_FORUM'					=> 'Enable per-forum feeds',
+	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum and subforums new posts.',
+	'ACP_FEED_TOPIC'					=> 'Enable per-topic feeds',
 	'ACP_FEED_TOPIC_EXPLAIN'			=> 'Single topics new posts.',
-	'ACP_FEED_NEWS'						=> 'News Feeds',
+
+	'ACP_FEED_TOPICS_NEW'				=> 'Enable new topics feed',
+	'ACP_FEED_TOPICS_NEW_EXPLAIN'		=> 'Enables the “New Topics” feed, which displays the last created topics including the first post.',
+	'ACP_FEED_TOPICS_ACTIVE'			=> 'Enable active topics feed',
+	'ACP_FEED_TOPICS_ACTIVE_EXPLAIN'	=> 'Enables the “Active Topics” feed, which displays the last active topics including the last post.',
+	'ACP_FEED_NEWS'						=> 'News feed',
 	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
 
-	'ACP_FEED_GENERAL'					=> 'General Feed Settings',
+	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable forums feed',
+	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
 
+	'ACP_FEED_HTTP_AUTH'				=> 'Allow HTTP Authentication',
+	'ACP_FEED_HTTP_AUTH_EXPLAIN'		=> 'Enables HTTP authentication, which allows users to receive content that is hidden to guest users by adding the <samp>auth=http</samp> parameter to the feed URL. Please note that some PHP setups require additional changes to the .htaccess file. Instructions can be found in that file.',
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
-	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(Posted by, date and time, Replies, Views)',
+	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(e.g. posted by, date and time, replies, views)',
 	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
 	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
 ));
@@ -383,7 +392,7 @@ $lang = array_merge($lang, array(
 	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
-	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding. Else fill in the password for the above user.  Required for Active Directory Servers. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database or who can view this configuration page.',
+	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding. Else fill in the password for the above user. Required for Active Directory Servers.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database visible to everybody who can access your database or who can view this configuration page.</em>',
 	'LDAP_PORT'						=> 'LDAP server port',
 	'LDAP_PORT_EXPLAIN'				=> 'Optionally you can specify a port which should be used to connect to the LDAP server instead of the default port 389.',
 	'LDAP_SERVER'					=> 'LDAP server name',
@@ -495,7 +504,7 @@ $lang = array_merge($lang, array(
 	'SMTP_DIGEST_MD5'				=> 'DIGEST-MD5',
 	'SMTP_LOGIN'					=> 'LOGIN',
 	'SMTP_PASSWORD'					=> 'SMTP password',
-	'SMTP_PASSWORD_EXPLAIN'			=> 'Only enter a password if your SMTP server requires it.',
+	'SMTP_PASSWORD_EXPLAIN'			=> 'Only enter a password if your SMTP server requires it.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database visible to everybody who can access your database or who can view this configuration page.</em>',
 	'SMTP_PLAIN'					=> 'PLAIN',
 	'SMTP_POP_BEFORE_SMTP'			=> 'POP-BEFORE-SMTP',
 	'SMTP_PORT'						=> 'SMTP server port',
@@ -518,6 +527,7 @@ $lang = array_merge($lang, array(
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',
+	'JAB_PASSWORD_EXPLAIN'		=> '<em><strong>Warning:</strong> This password will be stored as plain text in the database visible to everybody who can access your database or who can view this configuration page.</em>',
 	'JAB_PORT'					=> 'Jabber port',
 	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222.',
 	'JAB_SERVER'				=> 'Jabber server',

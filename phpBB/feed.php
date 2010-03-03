@@ -27,6 +27,15 @@ if (!$config['feed_enable'])
 
 // Start session
 $user->session_begin();
+
+if (!empty($config['feed_http_auth']) && request_var('auth', '') == 'http')
+{
+	phpbb_http_login(array(
+		'auth_message'	=> 'Feed',
+		'viewonline'	=> request_var('viewonline', true),
+	));
+}
+
 $auth->acl($user->data);
 $user->setup();
 
@@ -93,8 +102,8 @@ while ($row = $feed->get_item())
 		'pubdate'		=> feed_format_date($item_time),
 		'link'			=> '',
 		'title'			=> censor_text($title),
-		'category'		=> ($config['feed_item_statistics']) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
-		'category_name'	=> ($config['feed_item_statistics']) ? $row['forum_name'] : '',
+		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
+		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
 		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options)),
 		'statistics'	=> '',
 	);
@@ -188,7 +197,7 @@ foreach ($item_vars as $row)
 	echo '<link href="' . $row['link'] . '"/>' . "\n";
 	echo '<title type="html"><![CDATA[' . $row['title'] . ']]></title>' . "\n\n";
 
-	if (!empty($row['category']))
+	if (!empty($row['category']) && isset($row['category_name']) && $row['category_name'] !== '')
 	{
 		echo '<category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
 	}
@@ -316,7 +325,7 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content = preg_replace('#\<\!\[CDATA\[(.*?)\]\]\>#s', '', $content);
 
 	// Other control characters
-	// $content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
+	$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
 
 	return $content;
 }
@@ -352,12 +361,22 @@ class phpbb_feed_factory
 			break;
 
 			case 'topics':
-				if (!$config['feed_overall_topics'])
+			case 'topics_new':
+				if (!$config['feed_topics_new'])
 				{
 					return false;
 				}
 
 				return new phpbb_feed_topics();
+			break;
+
+			case 'topics_active':
+				if (!$config['feed_topics_active'])
+				{
+					return false;
+				}
+
+				return new phpbb_feed_topics_active();
 			break;
 
 			case 'news':
@@ -380,18 +399,20 @@ class phpbb_feed_factory
 			break;
 
 			default:
-				// Forum and/or topic specified?
-				if ($topic_id && !$config['feed_topic'])
+				if ($topic_id && $config['feed_topic'])
 				{
-					return false;
+					return new phpbb_feed_topic($topic_id);
+				}
+				else if ($forum_id && $config['feed_forum'])
+				{
+					return new phpbb_feed_forum($forum_id);
+				}
+				else if ($config['feed_overall'])
+				{
+					return new phpbb_feed_overall();
 				}
 
-				if ($forum_id && !$topic_id && !$config['feed_forum'])
-				{
-					return false;
-				}
-
-				return new phpbb_feed($forum_id, $topic_id);
+				return false;
 			break;
 		}
 	}
@@ -415,34 +436,9 @@ class phpbb_feed_base
 	var $keys = array();
 
 	/**
-	* An array of excluded forum ids.
-	*/
-	var $excluded_forums_ary = NULL;
-
-	/**
 	* Number of items to fetch. Usually overwritten by $config['feed_something']
 	*/
 	var $num_items = 15;
-
-	/**
-	* boolean to determine if items array is filled or not
-	*/
-	var $items_filled = false;
-
-	/**
-	* array holding items
-	*/
-	var $items = array();
-
-	/**
-	* Default setting for last x days
-	*/
-	var $sort_days = 30;
-
-	/**
-	* Default cache time of entries in seconds
-	*/
-	var $cache_time = 90;
 
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
@@ -459,15 +455,21 @@ class phpbb_feed_base
 	*/
 	function phpbb_feed_base()
 	{
-		global $user;
-
-		// Disable cache if it is not a guest or a bot but a registered user
-		if ($this->cache_time && !empty($user) && $user->data['is_registered'])
-		{
-			$this->cache_time = 0;
-		}
+		global $config;
 
 		$this->set_keys();
+
+		// Allow num_items to be string
+		if (is_string($this->num_items))
+		{
+			$this->num_items = (int) $config[$this->num_items];
+
+			// A precaution
+			if (!$this->num_items)
+			{
+				$this->num_items = 10;
+			}
+		}
 	}
 
 	/**
@@ -513,41 +515,65 @@ class phpbb_feed_base
 		return (isset($this->keys[$key])) ? $this->keys[$key] : NULL;
 	}
 
-	/**
-	* Return array of excluded forums
-	*/
-	function excluded_forums()
+	function get_readable_forums()
 	{
-		if ($this->excluded_forums_ary !== NULL)
+		global $auth;
+		static $forum_ids;
+
+		if (!isset($forum_ids))
 		{
-			return $this->excluded_forums_ary;
+			$forum_ids = array_keys($auth->acl_getf('f_read'));
 		}
 
-		global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
+		return $forum_ids;
+	}
 
-		// Which forums should not be searched ?
-		$this->excluded_forums_ary = array();
+	function get_moderator_approve_forums()
+	{
+		global $auth;
+		static $forum_ids;
 
-		// Exclude excluded forums and forums we cannot read
-		$forum_ids_read = array_keys($auth->acl_getf('f_read', true));
-		$sql_or = (!empty($forum_ids_read)) ? 'OR ' . $db->sql_in_set('forum_id', $forum_ids_read, true) : '';
-
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0') . "
-			$sql_or";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		if (!isset($forum_ids))
 		{
-			$this->excluded_forums_ary[(int) $row['forum_id']] = (int) $row['forum_id'];
+			$forum_ids = array_keys($auth->acl_getf('m_approve'));
 		}
-		$db->sql_freeresult($result);
 
-		// Include passworded forums
-		$this->excluded_forums_ary = array_unique(array_merge($this->excluded_forums_ary, $this->get_passworded_forums()));
+		return $forum_ids;
+	}
 
-		return $this->excluded_forums_ary;
+	function get_excluded_forums()
+	{
+		global $db, $cache;
+		static $forum_ids;
+
+		// Matches acp/acp_board.php
+		$cache_name	= 'feed_excluded_forum_ids';
+
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0');
+			$result = $db->sql_query($sql);
+
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids);
+		}
+
+		return $forum_ids;
+	}
+
+	function is_excluded_forum($forum_id)
+	{
+		$forum_ids = $this->get_excluded_forums();
+
+		return isset($forum_ids[$forum_id]) ? true : false;
 	}
 
 	function get_passworded_forums()
@@ -581,156 +607,446 @@ class phpbb_feed_base
 	function get_item()
 	{
 		global $db, $cache;
+		static $result;
 
-		if (!$this->cache_time)
+		if (!isset($result))
 		{
-			if (empty($this->result))
+			if (!$this->get_sql())
 			{
-				if (!$this->get_sql())
-				{
-					return false;
-				}
-
-				// Query database
-				$sql = $db->sql_build_query('SELECT', $this->sql);
-				$this->result = $db->sql_query_limit($sql, $this->num_items);
+				return false;
 			}
 
-			return $db->sql_fetchrow($this->result);
+			// Query database
+			$sql = $db->sql_build_query('SELECT', $this->sql);
+			$result = $db->sql_query_limit($sql, $this->num_items);
 		}
-		else
+
+		return $db->sql_fetchrow($result);
+	}
+
+	function user_viewprofile($row)
+	{
+		global $phpEx, $user;
+
+		$author_id = (int) $row[$this->get('author_id')];
+
+		if ($author_id == ANONYMOUS)
 		{
-			if (empty($this->items_filled))
-			{
-				// Try to load result set...
-				$cache_filename = substr(get_class($this), strlen('phpbb_'));
+			// Since we cannot link to a profile, we just return GUEST
+			// instead of $row['username']
+			return $user->lang['GUEST'];
+		}
 
-				if (($this->items = $cache->get('_' . $cache_filename)) === false)
-				{
-					$this->items = array();
+		return '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
+	}
+}
 
-					if ($this->get_sql())
-					{
-						// Query database
-						$sql = $db->sql_build_query('SELECT', $this->sql);
-						$result = $db->sql_query_limit($sql, $this->num_items);
+/**
+* Abstract class for post based feeds
+*
+* @package phpBB3
+*/
+class phpbb_feed_post_base extends phpbb_feed_base
+{
+	var $num_items = 'feed_limit_post';
 
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$this->items[] = $row;
-						}
-						$db->sql_freeresult($result);
-					}
+	function set_keys()
+	{
+		$this->set('title',		'post_subject');
+		$this->set('title2',	'topic_title');
 
-					$cache->put('_' . $cache_filename, $this->items, $this->cache_time);
-				}
+		$this->set('author_id',	'user_id');
+		$this->set('creator',	'username');
+		$this->set('date',		'post_time');
+		$this->set('text',		'post_text');
 
-				$this->items_filled = true;
-			}
+		$this->set('bitfield',	'bbcode_bitfield');
+		$this->set('bbcode_uid','bbcode_uid');
 
-			$row = array_shift($this->items);
-			return (!$row) ? false : $row;
+		$this->set('enable_bbcode',		'enable_bbcode');
+		$this->set('enable_smilies',	'enable_smilies');
+		$this->set('enable_magic_url',	'enable_magic_url');
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		global $phpEx, $config, $user;
+
+		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
+
+		if ($config['feed_item_statistics'])
+		{
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time']);
 		}
 	}
 }
 
 /**
-* Default feed class if no mode is specified.
-* This can be the overall site feed or a forum/topic feed.
+* Abstract class for topic based feeds
 *
 * @package phpBB3
 */
-class phpbb_feed extends phpbb_feed_base
+class phpbb_feed_topic_base extends phpbb_feed_base
 {
-	/**
-	* Forum id specified for forum feed.
-	*/
-	var $forum_id = 0;
-
-	/**
-	* Topic id specified for topic feed.
-	*/
-	var $topic_id = 0;
-
-	/**
-	* Constructor.
-	*/
-	function phpbb_feed($forum_id = 0, $topic_id = 0)
-	{
-		global $config;
-
-		// Call parent constructor.
-		parent::phpbb_feed_base();
-
-		$this->forum_id = $forum_id;
-		$this->topic_id = $topic_id;
-
-		$this->sql = array();
-	}
+	var $num_items = 'feed_limit_topic';
 
 	function set_keys()
 	{
-		global $config;
+		$this->set('title',		'topic_title');
+		$this->set('title2',	'forum_name');
 
-		$this->set('title',		'post_subject');
-		$this->set('title2',	'topic_title');
-		$this->set('author_id',	'user_id');
-		$this->set('creator',	'username');
+		$this->set('author_id',	'topic_poster');
+		$this->set('creator',	'topic_first_poster_name');
+		$this->set('date',		'topic_time');
 		$this->set('text',		'post_text');
+
 		$this->set('bitfield',	'bbcode_bitfield');
 		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'post_time');
 
 		$this->set('enable_bbcode',		'enable_bbcode');
 		$this->set('enable_smilies',	'enable_smilies');
 		$this->set('enable_magic_url',	'enable_magic_url');
+	}
 
-		$this->num_items = (int) $config['feed_limit'];
+	function adjust_item(&$item_row, &$row)
+	{
+		global $phpEx, $config, $user;
+
+		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
+
+		if ($config['feed_item_statistics'])
+		{
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('date')])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+		}
+	}
+}
+
+/**
+* Board wide feed (aka overall feed)
+*
+* This will give you the newest {$this->num_items} posts
+* from the whole board.
+*
+* @package phpBB3
+*/
+class phpbb_feed_overall extends phpbb_feed_post_base
+{
+	function get_sql()
+	{
+		global $auth, $db;
+
+		$forum_ids = array_diff($this->get_readable_forums(), $this->get_excluded_forums(), $this->get_passworded_forums());
+		if (empty($forum_ids))
+		{
+			return false;
+		}
+
+		// Add global forum id
+		$forum_ids[] = 0;
+
+		// m_approve forums
+		$fid_m_approve = $this->get_moderator_approve_forums();
+		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', $fid_m_approve) : '';
+
+		// Determine topics with recent activity
+		$sql = 'SELECT topic_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+				AND topic_moved_id = 0
+				AND (topic_approved = 1
+					' . $sql_m_approve . ')
+			ORDER BY topic_last_post_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$topic_ids = array();
+		$min_post_time = 0;
+		while ($row = $db->sql_fetchrow())
+		{
+			$topic_ids[] = (int) $row['topic_id'];
+
+			$min_post_time = (int) $row['topic_last_post_time'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($topic_ids))
+		{
+			return false;
+		}
+
+		// Get the actual data
+		$this->sql = array(
+			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'u.username, u.user_id',
+			'FROM'		=> array(
+				POSTS_TABLE		=> 'p',
+				USERS_TABLE		=> 'u',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE	=> 'f'),
+					'ON'	=> 'f.forum_id = p.forum_id',
+				),
+			),
+			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+							AND (p.post_approved = 1
+								' . str_replace('forum_id', 'p.forum_id', $sql_m_approve) . ')
+							AND p.post_time >= ' . $min_post_time . '
+							AND u.user_id = p.poster_id',
+			'ORDER_BY'	=> 'p.post_time DESC',
+		);
+
+		return true;
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		parent::adjust_item($item_row, $row);
+
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+	}
+}
+
+/**
+* Forum feed
+*
+* This will give you the last {$this->num_items} posts made
+* within a specific forum.
+*
+* @package phpBB3
+*/
+class phpbb_feed_forum extends phpbb_feed_post_base
+{
+	var $forum_id		= 0;
+	var $forum_data		= array();
+
+	function phpbb_feed_forum($forum_id)
+	{
+		parent::phpbb_feed_base();
+
+		$this->forum_id = (int) $forum_id;
+	}
+
+	function open()
+	{
+		global $db, $auth;
+
+		// Check if forum exists
+		$sql = 'SELECT forum_id, forum_name, forum_password, forum_type, forum_options
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $this->forum_id;
+		$result = $db->sql_query($sql);
+		$this->forum_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (empty($this->forum_data))
+		{
+			trigger_error('NO_FORUM');
+		}
+
+		// Forum needs to be postable
+		if ($this->forum_data['forum_type'] != FORUM_POST)
+		{
+			trigger_error('NO_FEED');
+		}
+
+		// Make sure forum is not excluded from feed
+		if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->forum_data['forum_options']))
+		{
+			trigger_error('NO_FEED');
+		}
+
+		// Make sure we can read this forum
+		if (!$auth->acl_get('f_read', $this->forum_id))
+		{
+			trigger_error('SORRY_AUTH_READ');
+		}
+
+		// Make sure forum is not passworded or user is authed
+		if ($this->forum_data['forum_password'])
+		{
+			$forum_ids_passworded = $this->get_passworded_forums();
+
+			if (isset($forum_ids_passworded[$this->forum_id]))
+			{
+				trigger_error('SORRY_AUTH_READ');
+			}
+
+			unset($forum_ids_passworded);
+		}
+	}
+
+	function get_sql()
+	{
+		global $auth, $db;
+
+		$m_approve = ($auth->acl_get('m_approve', $this->forum_id)) ? true : false;
+		$forum_ids = array(0, $this->forum_id);
+
+		// Determine topics with recent activity
+		$sql = 'SELECT topic_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+				AND topic_moved_id = 0
+				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
+			ORDER BY topic_last_post_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$topic_ids = array();
+		$min_post_time = 0;
+		while ($row = $db->sql_fetchrow())
+		{
+			$topic_ids[] = (int) $row['topic_id'];
+
+			$min_post_time = (int) $row['topic_last_post_time'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($topic_ids))
+		{
+			return false;
+		}
+
+		$this->sql = array(
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'u.username, u.user_id',
+			'FROM'		=> array(
+				POSTS_TABLE		=> 'p',
+				USERS_TABLE		=> 'u',
+			),
+			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+							' . ((!$m_approve) ? 'AND p.post_approved = 1' : '') . '
+							AND p.post_time >= ' . $min_post_time . '
+							AND p.poster_id = u.user_id',
+			'ORDER_BY'	=> 'p.post_time DESC',
+		);
+
+		return true;
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		parent::adjust_item($item_row, $row);
+
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+	}
+
+	function get_item()
+	{
+		return ($row = parent::get_item()) ? array_merge($this->forum_data, $row) : $row;
+	}
+}
+
+/**
+* Topic feed for a specific topic
+*
+* This will give you the last {$this->num_items} posts made within this topic.
+*
+* @package phpBB3
+*/
+class phpbb_feed_topic extends phpbb_feed_post_base
+{
+	var $topic_id		= 0;
+	var $forum_id		= 0;
+	var $topic_data		= array();
+
+	function phpbb_feed_topic($topic_id)
+	{
+		parent::phpbb_feed_base();
+
+		$this->topic_id = (int) $topic_id;
 	}
 
 	function open()
 	{
 		global $auth, $db, $user;
 
-		// Topic/Forum feed
-		if ($this->topic_id || $this->forum_id)
+		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
+			FROM ' . TOPICS_TABLE . ' t
+			LEFT JOIN ' . FORUMS_TABLE . ' f
+				ON (f.forum_id = t.forum_id)
+			WHERE t.topic_id = ' . $this->topic_id;
+		$result = $db->sql_query($sql);
+		$this->topic_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (empty($this->topic_data))
 		{
-			if ($this->topic_id)
+			trigger_error('NO_TOPIC');
+		}
+
+		if ($this->topic_data['topic_type'] == POST_GLOBAL)
+		{
+			// We need to find at least one postable forum where feeds are enabled,
+			// that the user can read and maybe also has approve permissions.
+			$in_fid_ary = $this->get_readable_forums();
+
+			if (empty($in_fid_ary))
 			{
-				// Topic feed
-				$sql = 'SELECT t.forum_id, f.forum_options
-					FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
-					WHERE t.topic_id = ' . $this->topic_id . '
-						AND t.forum_id = f.forum_id';
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (empty($row))
-				{
-					trigger_error('NO_TOPIC');
-				}
-
-				$this->forum_id = (int) $row['forum_id'];
+				// User cannot read any forums
+				trigger_error('SORRY_AUTH_READ');
 			}
-			else
-			{
-				// Forum feed
-				$sql = 'SELECT forum_options
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $this->forum_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
 
-				if (empty($row))
+			if (!$this->topic_data['topic_approved'])
+			{
+				// Also require m_approve
+				$in_fid_ary = array_intersect($in_fid_ary, array_keys($auth->acl_getf('m_approve')));
+
+				if (empty($in_fid_ary))
 				{
-					trigger_error('NO_FORUM');
+					trigger_error('SORRY_AUTH_READ');
 				}
+			}
+
+			// Diff excluded forums
+			$in_fid_ary = array_diff($in_fid_ary, $this->get_excluded_forums());
+
+			if (empty($in_fid_ary))
+			{
+				trigger_error('SORRY_AUTH_READ');
+			}
+
+			// Also exclude passworded forums
+			$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
+
+			if (empty($in_fid_ary))
+			{
+				trigger_error('SORRY_AUTH_READ');
+			}
+
+			$sql = 'SELECT forum_id, left_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_type = ' . FORUM_POST . '
+					AND ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				ORDER BY left_id ASC';
+			$result = $db->sql_query_limit($sql, 1);
+			$this->forum_data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (empty($this->forum_data))
+			{
+				// No forum found.
+				trigger_error('SORRY_AUTH_READ');
+			}
+
+			unset($in_fid_ary);
+		}
+		else
+		{
+			$this->forum_id = (int) $this->topic_data['forum_id'];
+
+			// Make sure topic is either approved or user authed
+			if (!$this->topic_data['topic_approved'] && !$auth->acl_get('m_approve', $this->forum_id))
+			{
+				trigger_error('SORRY_AUTH_READ');
 			}
 
 			// Make sure forum is not excluded from feed
-			if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']))
+			if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->topic_data['forum_options']))
 			{
 				trigger_error('NO_FEED');
 			}
@@ -741,186 +1057,88 @@ class phpbb_feed extends phpbb_feed_base
 				trigger_error('SORRY_AUTH_READ');
 			}
 
-			// Disable caching
-			$this->cache_time = 0;
+			// Make sure forum is not passworded or user is authed
+			if ($this->topic_data['forum_password'])
+			{
+				$forum_ids_passworded = $this->get_passworded_forums();
+
+				if (isset($forum_ids_passworded[$this->forum_id]))
+				{
+					trigger_error('SORRY_AUTH_READ');
+				}
+
+				unset($forum_ids_passworded);
+			}
 		}
 	}
 
-	/**
-	* Get SQL query for fetching items
-	*/
 	function get_sql()
 	{
-		global $db;
+		global $auth, $db;
 
-		$post_ids = array();
-
-		// Search for topics in last X days
-		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
-
-		// Fetch latest post, grouped by topic...
-		if (!$this->forum_id && !$this->topic_id)
-		{
-			// First of all, the post ids...
-			$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('t.forum_id', $this->excluded_forums(), true) : '';
-
-			$sql = 'SELECT t.topic_last_post_id
-				FROM ' . TOPICS_TABLE . ' t
-				WHERE t.topic_approved = 1
-					AND t.topic_moved_id = 0' .
-					$not_in_fid .
-					$last_post_time_sql . '
-				ORDER BY t.topic_last_post_time DESC';
-			$result = $db->sql_query_limit($sql, $this->num_items);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$post_ids[] = (int) $row['topic_last_post_id'];
-			}
-			$db->sql_freeresult($result);
-		}
-		// Fetch latest posts from forum
-		else if (!$this->topic_id && $this->forum_id)
-		{
-			// Make sure the forum is not listed within the forbidden ones. ;)
-			if (in_array($this->forum_id, $this->excluded_forums()))
-			{
-				return false;
-			}
-
-			// Determine which forums to fetch
-			$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('f2.forum_id', $this->excluded_forums(), true) : '';
-
-			// Determine forum childs...
-			$sql = 'SELECT f2.forum_id
-				FROM ' . FORUMS_TABLE . ' f1, ' . FORUMS_TABLE . ' f2
-				WHERE f1.forum_id = ' . $this->forum_id . '
-					AND (f2.left_id BETWEEN f1.left_id AND f1.right_id' . $not_in_fid . ')';
-			$result = $db->sql_query($sql);
-
-			$forum_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$forum_ids[] = (int) $row['forum_id'];
-			}
-			$db->sql_freeresult($result);
-
-			// Now select from forums...
-			$sql = 'SELECT t.topic_last_post_id
-				FROM ' . TOPICS_TABLE . ' t
-				WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-					AND t.topic_approved = 1
-					AND t.topic_moved_id = 0' .
-					$last_post_time_sql . '
-				ORDER BY t.topic_last_post_time DESC';
-			$result = $db->sql_query_limit($sql, $this->num_items);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$post_ids[] = (int) $row['topic_last_post_id'];
-			}
-			$db->sql_freeresult($result);
-		}
-		// Fetch last posts from specified topic...
-		else if ($this->topic_id)
-		{
-			// non-global announcement
-			if ($this->forum_id && in_array($this->forum_id, $this->excluded_forums()))
-			{
-				return false;
-			}
-
-			$sql = 'SELECT post_id
-				FROM ' . POSTS_TABLE . '
-				WHERE topic_id = ' . $this->topic_id . '
-					AND post_approved = 1
-				ORDER BY post_time DESC';
-			$result = $db->sql_query_limit($sql, $this->num_items);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$post_ids[] = (int) $row['post_id'];
-			}
-			$db->sql_freeresult($result);
-		}
-
-		if (!sizeof($post_ids))
-		{
-			return false;
-		}
-
-		// Now build sql query for obtaining items
 		$this->sql = array(
-			'SELECT'	=>	'f.forum_id, f.forum_name, f.forum_desc_options, ' .
-							't.topic_last_post_time, t.topic_id, t.topic_title, t.topic_time, t.topic_replies, t.topic_views, ' .
-							'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
-				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
 				USERS_TABLE		=> 'u',
 			),
-			'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
-								AND f.forum_id = p.forum_id
-								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id',
+			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
+								' . ($this->forum_id && !$auth->acl_get('m_approve', $this->forum_id) ? 'AND p.post_approved = 1' : '') . '
+								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	function get_item()
 	{
-		global $phpEx, $config;
-
-		$item_row['title'] = (!$this->topic_id) ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
-
-		if ($config['feed_item_statistics'])
-		{
-			global $user;
-
-			$user_link = ($row['user_id'] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : $row['username'];
-
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
-		}
+		return ($row = parent::get_item()) ? array_merge($this->topic_data, $row) : $row;
 	}
 }
 
+/**
+* 'All Forums' feed
+*
+* This will give you a list of all postable forums where feeds are enabled
+* including forum description, topic stats and post stats
+*
+* @package phpBB3
+*/
 class phpbb_feed_forums extends phpbb_feed_base
 {
+	var $num_items	= 0;
+
 	function set_keys()
 	{
-		global $config;
-
 		$this->set('title',		'forum_name');
 		$this->set('text',		'forum_desc');
 		$this->set('bitfield',	'forum_desc_bitfield');
 		$this->set('bbcode_uid','forum_desc_uid');
 		$this->set('date',		'forum_last_post_time');
 		$this->set('options',	'forum_desc_options');
-
-		$this->num_items = (int) $config['feed_overall_forums_limit'];
 	}
 
 	function get_sql()
 	{
-		global $db;
+		global $auth, $db;
 
-		$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('f.forum_id', $this->excluded_forums(), true) : '';
+		$in_fid_ary = array_diff($this->get_readable_forums(), $this->get_excluded_forums());
+		if (empty($in_fid_ary))
+		{
+			return false;
+		}
 
 		// Build SQL Query
 		$this->sql = array(
-			'SELECT'	=> 'f.*',
+			'SELECT'	=> 'f.forum_id, f.left_id, f.forum_name, f.forum_last_post_time,
+							f.forum_desc, f.forum_desc_bitfield, f.forum_desc_uid, f.forum_desc_options,
+							f.forum_topics, f.forum_posts',
 			'FROM'		=> array(FORUMS_TABLE => 'f'),
 			'WHERE'		=> 'f.forum_type = ' . FORUM_POST . '
-								AND (f.forum_last_post_id > 0' . $not_in_fid . ')',
-			'ORDER_BY'	=> 'f.left_id',
+							AND ' . $db->sql_in_set('f.forum_id', $in_fid_ary),
+			'ORDER_BY'	=> 'f.left_id ASC',
 		);
 
 		return true;
@@ -942,178 +1160,175 @@ class phpbb_feed_forums extends phpbb_feed_base
 	}
 }
 
-class phpbb_feed_news extends phpbb_feed_base
+/**
+* News feed
+*
+* This will give you {$this->num_items} first posts
+* of all topics in the selected news forums.
+*
+* @package phpBB3
+*/
+class phpbb_feed_news extends phpbb_feed_topic_base
 {
-	/**
-	* Longer cache time for the news feed
-	*/
-	var $cache_time = 180;
-
-	function set_keys()
+	function get_news_forums()
 	{
-		global $config;
+		global $db, $cache;
+		static $forum_ids;
 
-		$this->set('title',		'topic_title');
-		$this->set('title2',	'forum_name');
-		$this->set('author_id',	'topic_poster');
-		$this->set('creator',	'topic_first_poster_name');
-		$this->set('text',		'post_text');
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'topic_time');
+		// Matches acp/acp_board.php
+		$cache_name	= 'feed_news_forum_ids';
 
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+			$result = $db->sql_query($sql);
 
-		$this->num_items = (int) $config['feed_overall_forums_limit'];
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids);
+		}
+
+		return $forum_ids;
 	}
 
 	function get_sql()
 	{
 		global $auth, $config, $db;
 
-		// Get passworded forums
-		$forum_ids_passworded = $this->get_passworded_forums();
-
-		// Get news forums...
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
-		$result = $db->sql_query($sql);
-
-		$in_fid_ary = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_id = (int) $row['forum_id'];
-
-			// Passworded forum
-			if (isset($forum_ids_passworded[$forum_id]))
-			{
-				continue;
-			}
-
-			// Make sure we can read this forum
-			if (!$auth->acl_get('f_read', $forum_id))
-			{
-				continue;
-			}
-
-			$in_fid_ary[] = (int) $row['forum_id'];
-		}
-		$db->sql_freeresult($result);
-
-		if (!sizeof($in_fid_ary))
+		// Determine forum ids
+		$in_fid_ary = array_intersect($this->get_news_forums(), $this->get_readable_forums());
+		if (empty($in_fid_ary))
 		{
 			return false;
 		}
 
-		// Build SQL Query
-		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
-							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
-			'FROM'		=> array(
-				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
-				POSTS_TABLE		=> 'p',
-			),
-			'WHERE'		=> $db->sql_in_set('t.forum_id', $in_fid_ary) . '
-							AND f.forum_id = t.forum_id
-							AND p.post_id = t.topic_first_post_id
-							AND t.topic_moved_id = 0',
-			'ORDER_BY'	=> 't.topic_time DESC',
-		);
-
-		return true;
-	}
-
-	function adjust_item(&$item_row, &$row)
-	{
-		global $phpEx, $config;
-
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
-
-		if ($config['feed_item_statistics'])
+		$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
+		if (empty($in_fid_ary))
 		{
-			global $user;
-
-			$user_link = ($row[$this->get('author_id')] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>' : $row[$this->get('creator')];
-
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+			return false;
 		}
-	}
-}
 
-class phpbb_feed_topics extends phpbb_feed_base
-{
-	function set_keys()
-	{
-		global $config;
+		// Add global forum
+		$in_fid_ary[] = 0;
 
-		$this->set('title',		'topic_title');
-		$this->set('title2',	'forum_name');
-		$this->set('author_id',	'topic_poster');
-		$this->set('creator',	'topic_first_poster_name');
-		$this->set('text',		'post_text');
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'topic_time');
-
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
-
-		$this->num_items = (int) $config['feed_overall_topics_limit'];
-	}
-
-	function get_sql()
-	{
-		global $db, $config;
-
-		$post_ids = array();
-		$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('t.forum_id', $this->excluded_forums(), true) : '';
-
-		// Search for topics in last x days
-		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
-
-		// Last x topics from all forums, with first post from topic...
-		$sql = 'SELECT t.topic_first_post_id
-			FROM ' . TOPICS_TABLE . ' t
-			WHERE t.topic_approved = 1
-				AND t.topic_moved_id = 0' .
-				$not_in_fid .
-				$last_post_time_sql . '
-			ORDER BY t.topic_last_post_time DESC';
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_first_post_id, topic_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+			ORDER BY topic_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
+		$post_ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$post_ids[] = (int) $row['topic_first_post_id'];
 		}
 		$db->sql_freeresult($result);
 
-		if (!sizeof($post_ids))
+		if (empty($post_ids))
 		{
 			return false;
 		}
 
 		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
+			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
 				POSTS_TABLE		=> 'p',
 			),
-			'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
-								AND f.forum_id = p.forum_id
-								AND t.topic_id = p.topic_id',
-			'ORDER_BY'	=> 't.topic_last_post_time DESC',
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'p.forum_id = f.forum_id',
+				),
+			),
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
+		);
+
+		return true;
+	}
+}
+
+/**
+* New Topics feed
+*
+* This will give you the last {$this->num_items} created topics
+* including the first post.
+*
+* @package phpBB3
+*/
+class phpbb_feed_topics extends phpbb_feed_topic_base
+{
+	function get_sql()
+	{
+		global $db, $config;
+
+		$forum_ids_read = $this->get_readable_forums();
+		if (empty($forum_ids_read))
+		{
+			return false;
+		}
+
+		$in_fid_ary = array_diff($forum_ids_read, $this->get_excluded_forums(), $this->get_passworded_forums());
+		if (empty($in_fid_ary))
+		{
+			return false;
+		}
+
+		// Add global forum
+		$in_fid_ary[] = 0;
+
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_first_post_id, topic_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+			ORDER BY topic_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$post_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_ids[] = (int) $row['topic_first_post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
+
+		$this->sql = array(
+			'SELECT'	=> 'f.forum_id, f.forum_name,
+							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+				POSTS_TABLE		=> 'p',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'p.forum_id = f.forum_id',
+				),
+			),
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
 		return true;
@@ -1121,21 +1336,137 @@ class phpbb_feed_topics extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		global $phpEx, $config;
+		parent::adjust_item($item_row, $row);
 
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+	}
+}
 
-		if ($config['feed_item_statistics'])
+/**
+* Active Topics feed
+*
+* This will give you the last {$this->num_items} topics
+* with replies made withing the last {$this->sort_days} days
+* including the last post.
+*
+* @package phpBB3
+*/
+class phpbb_feed_topics_active extends phpbb_feed_topic_base
+{
+	var $sort_days = 7;
+
+	function set_keys()
+	{
+		parent::set_keys();
+
+		$this->set('author_id',	'topic_last_poster_id');
+		$this->set('creator',	'topic_last_poster_name');
+		$this->set('date',		'topic_last_post_time');
+		$this->set('text',		'post_text');
+	}
+
+	function get_sql()
+	{
+		global $db, $config;
+
+		$forum_ids_read = $this->get_readable_forums();
+		if (empty($forum_ids_read))
 		{
-			global $user;
-
-			$user_link = ($row[$this->get('author_id')] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>' : $row[$this->get('creator')];
-
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+			return false;
 		}
+
+		$in_fid_ary = array_intersect($forum_ids_read, $this->get_forum_ids());
+		$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
+		if (empty($in_fid_ary))
+		{
+			return false;
+		}
+
+		// Add global forum
+		$in_fid_ary[] = 0;
+
+		// Search for topics in last X days
+		$last_post_time_sql = ($this->sort_days) ? ' AND topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
+
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_last_post_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+				' . $last_post_time_sql . '
+			ORDER BY topic_last_post_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$post_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_ids[] = (int) $row['topic_last_post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
+
+		$this->sql = array(
+			'SELECT'	=> 'f.forum_id, f.forum_name,
+							t.topic_id, t.topic_title, t.topic_replies, t.topic_views,
+							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+				POSTS_TABLE		=> 'p',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'p.forum_id = f.forum_id',
+				),
+			),
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
+		);
+
+		return true;
+	}
+
+	function get_forum_ids()
+	{
+		global $db, $cache;
+		static $forum_ids;
+
+		$cache_name	= 'feed_topic_active_forum_ids';
+
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_type = ' . FORUM_POST . '
+					AND ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
+					AND ' . $db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
+			$result = $db->sql_query($sql);
+
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids, 180);
+		}
+
+		return $forum_ids;
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		parent::adjust_item($item_row, $row);
+
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
 	}
 }
 

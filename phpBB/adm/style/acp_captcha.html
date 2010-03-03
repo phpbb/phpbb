@@ -22,6 +22,10 @@
 	<dd><input id="max_reg_attempts" type="text" size="4" maxlength="4" name="max_reg_attempts" value="{REG_LIMIT}" /></dd>
 </dl>
 <dl>
+	<dt><label for="max_login_attempts">{L_MAX_LOGIN_ATTEMPTS}:</label><br /><span>{L_MAX_LOGIN_ATTEMPTS_EXPLAIN}</span></dt>
+	<dd><input id="max_login_attempts" type="text" size="4" maxlength="4" name="max_login_attempts" value="{MAX_LOGIN_ATTEMPTS}" /></dd>
+</dl>
+<dl>
 	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}:</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>

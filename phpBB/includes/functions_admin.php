@@ -66,8 +66,6 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 {
 	global $db, $user, $auth;
 
-	$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
-
 	// This query is identical to the jumpbox one
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, forum_flags, forum_options, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -98,17 +96,20 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		$right = $row['right_id'];
 		$disabled = false;
 
-		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
+		if (!$ignore_acl && $auth->acl_get('f_list', $row['forum_id']))
 		{
-			// List permission?
-			if ($auth->acl_get('f_list', $row['forum_id']))
+			if ($only_acl_post && !$auth->acl_get('f_post', $row['forum_id']) || (!$auth->acl_get('m_approve', $row['forum_id']) && !$auth->acl_get('f_noapprove', $row['forum_id'])))
 			{
 				$disabled = true;
 			}
-			else
+			else if (!$only_acl_post && !$auth->acl_gets(array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
 			{
-				continue;
+				$disabled = true;
 			}
+		}
+		else if (!$ignore_acl)
+		{
+			continue;
 		}
 
 		if (
@@ -912,7 +913,13 @@ function delete_attachments($mode, $ids, $resync = true)
 {
 	global $db, $config;
 
-	if (is_array($ids) && sizeof($ids))
+	// 0 is as bad as an empty array
+	if (empty($ids))
+	{
+		return false;
+	}
+
+	if (is_array($ids))
 	{
 		$ids = array_unique($ids);
 		$ids = array_map('intval', $ids);
@@ -920,11 +927,6 @@ function delete_attachments($mode, $ids, $resync = true)
 	else
 	{
 		$ids = array((int) $ids);
-	}
-
-	if (!sizeof($ids))
-	{
-		return false;
 	}
 
 	$sql_where = '';
@@ -3040,6 +3042,7 @@ function get_database_size()
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 			$result = $db->sql_query($sql, 7200);
@@ -3305,6 +3308,26 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 	}
 
 	return $info;
+}
+
+/**
+ * Enables a particular flag in a bitfield column of a given table.
+ *
+ * @param string	$table_name		The table to update
+ * @param string	$column_name	The column containing a bitfield to update
+ * @param int		$flag			The binary flag which is OR-ed with the current column value
+ * @param string	$sql_more		This string is attached to the sql query generated to update the table.
+ *
+ * @return void
+ */
+function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
+{
+	global $db;
+
+	$sql = 'UPDATE ' . $table_name . '
+		SET ' . $column_name . ' = ' . $db->sql_bit_or($column_name, $flag) . '
+		' . $sql_more;
+	$db->sql_query($sql);
 }
 
 ?>

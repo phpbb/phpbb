@@ -329,6 +329,7 @@ $lang = array_merge($lang, array(
 	'SPLIT_TOPIC_BEYOND_CONFIRM'		=> 'Are you sure you want to split this topic at the selected post?',
 	'SPLIT_TOPIC_EXPLAIN'				=> 'Using the form below you can split a topic in two, either by selecting the posts individually or by splitting at a selected post.',
 
+	'THIS_PM_IP'				=> 'IP for this private message',
 	'THIS_POST_IP'				=> 'IP for this post',
 	'TOPICS_APPROVED_SUCCESS'	=> 'The selected topics have been approved.',
 	'TOPICS_DELETED_SUCCESS'	=> 'The selected topics have been successfully removed from the database.',

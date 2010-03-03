@@ -87,9 +87,9 @@ class phpbb_captcha_qa
 			}
 			$db->sql_freeresult($result);
 		}
-
-		// okay, if there is a confirm_id, we try to load that confirm's state
-		if (!strlen($this->confirm_id) || !$this->load_answer())
+	
+		// okay, if there is a confirm_id, we try to load that confirm's state. If not, we try to find one
+		if (!$this->load_answer() && (!$this->load_confirm_id() || !$this->load_answer()))
 		{
 			// we have no valid confirm ID, better get ready to ask something
 			$this->select_question();
@@ -137,14 +137,14 @@ class phpbb_captcha_qa
 			return false;
 		}
 
-		$sql = 'SELECT COUNT(question_id) as count
+		$sql = 'SELECT COUNT(question_id) AS question_count
 			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
 			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		return ((bool) $row['count']);
+		return ((bool) $row['question_count']);
 	}
 
 	/**
@@ -214,6 +214,22 @@ class phpbb_captcha_qa
 	*/
 	function get_demo_template()
 	{
+		global $config, $db, $template;
+
+		if ($this->is_available())
+		{
+			$sql = 'SELECT question_text
+				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+			$result = $db->sql_query_limit($sql, 1);
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$template->assign_vars(array(
+					'QA_CONFIRM_QUESTION'		=> $row['question_text'],
+				));
+			}
+			$db->sql_freeresult($result);
+		}
 		return 'captcha_qa_acp_demo.html';
 	}
 
@@ -237,11 +253,11 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function garbage_collect($type)
+	function garbage_collect($type = 0)
 	{
 		global $db, $config;
 
-		$sql = 'SELECT DISTINCT c.session_id
+		$sql = 'SELECT c.confirm_id
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
 			LEFT JOIN ' . SESSIONS_TABLE . ' s
 				ON (c.session_id = s.session_id)
@@ -255,14 +271,14 @@ class phpbb_captcha_qa
 
 			do
 			{
-				$sql_in[] = (string) $row['session_id'];
+				$sql_in[] = (string) $row['confirm_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			if (sizeof($sql_in))
 			{
 				$sql = 'DELETE FROM ' . CAPTCHA_QA_CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('session_id', $sql_in);
+					WHERE ' . $db->sql_in_set('confirm_id', $sql_in);
 				$db->sql_query($sql);
 			}
 		}
@@ -393,7 +409,6 @@ class phpbb_captcha_qa
 	{
 		global $db, $user;
 
-
 		if (!sizeof($this->question_ids))
 		{
 			return false;
@@ -458,6 +473,32 @@ class phpbb_captcha_qa
 		$this->load_answer();
 	}
 
+
+	/**
+	* See if there is already an entry for the current session.
+	*/
+	function load_confirm_id()
+	{
+		global $db, $user;
+
+		$sql = 'SELECT confirm_id
+			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . " 
+			WHERE 
+				session_id = '" . $db->sql_escape($user->session_id) . "'
+				AND lang_iso = '" . $db->sql_escape($this->question_lang) . "'
+				AND confirm_type = " . $this->type;
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($row)
+		{
+			$this->confirm_id = $row['confirm_id'];
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	* Look up everything we need and populate the instance variables.
 	*/
@@ -465,7 +506,7 @@ class phpbb_captcha_qa
 	{
 		global $db, $user;
 		
-		if (!sizeof($this->question_ids))
+		if (!strlen($this->confirm_id) || !sizeof($this->question_ids))
 		{
 			return false;
 		}
@@ -617,21 +658,28 @@ class phpbb_captcha_qa
 		}
 		else if ($question_id && $action == 'delete')
 		{
-			if (confirm_box(true))
+			if ($this->get_class_name() !== $config['captcha_plugin'] || !$this->acp_is_last($question_id))
 			{
-				$this->acp_delete_question($question_id);
+				if (confirm_box(true))
+				{
+					$this->acp_delete_question($question_id);
 
-				trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+					trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'question_id'		=> $question_id,
+						'action'			=> $action,
+						'configure'			=> 1,
+						'select_captcha'	=> $this->get_class_name(),
+						))
+					);
+				}
 			}
 			else
 			{
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-					'question_id'		=> $question_id,
-					'action'			=> $action,
-					'configure'			=> 1,
-					'select_captcha'	=> $this->get_class_name(),
-					))
-				);
+				trigger_error($user->lang['QA_LAST_QUESTION'] . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 		else
@@ -711,7 +759,7 @@ class phpbb_captcha_qa
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 	}
@@ -941,6 +989,33 @@ class phpbb_captcha_qa
 		$db->sql_freeresult($result);
 
 		return $langs;
+	}
+	
+	
+	
+	/**
+	*  See if there is a question other than the one we have
+	*/
+	function acp_is_last($question_id)
+	{
+		global $config, $db;
+
+		if ($question_id)
+		{
+			$sql = 'SELECT question_id
+				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'
+					AND  question_id <> " .  (int) $question_id;
+			$result = $db->sql_query_limit($sql, 1);
+			$question = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$question)
+			{
+				return true;
+			}
+			return false;
+		}
 	}
 }
 

@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.6';
+$updates_to_version = '3.0.8-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -885,18 +885,32 @@ function database_update_info()
 				),
 			),
 		),
-		// Changes from 3.0.6-RC1 to 3.0.6-RC2
-		'3.0.6-RC1'		=> array(
-			'drop_keys'		=> array(
-				LOG_TABLE			=> array('log_time'),
-			),
-		),
+
+		// No changes from 3.0.6-RC1 to 3.0.6-RC2
+		'3.0.6-RC1'		=> array(),
 		// No changes from 3.0.6-RC2 to 3.0.6-RC3
 		'3.0.6-RC2'		=> array(),
 		// No changes from 3.0.6-RC3 to 3.0.6-RC4
 		'3.0.6-RC3'		=> array(),
 		// No changes from 3.0.6-RC4 to 3.0.6
 		'3.0.6-RC4'		=> array(),
+
+		// Changes from 3.0.6 to 3.0.7-RC1
+		'3.0.6'		=> array(
+			'drop_keys'		=> array(
+				LOG_TABLE			=> array('log_time'),
+			),
+			'add_index'		=> array(
+				TOPICS_TRACK_TABLE	=> array(
+					'topic_id'		=> array('topic_id'),
+				),
+			),
+		),
+
+		// No changes from 3.0.7-RC1 to 3.0.7-RC2
+		'3.0.7-RC1'		=> array(),
+		// No changes from 3.0.7-RC2 to 3.0.7
+		'3.0.7-RC2'		=> array(),
 	);
 }
 
@@ -1569,6 +1583,65 @@ function change_database_data(&$no_updates, $version)
 		// No changes from 3.0.6-RC4 to 3.0.6
 		case '3.0.6-RC4':
 		break;
+
+		// Changes from 3.0.6 to 3.0.7-RC1
+		case '3.0.6':
+
+			// ATOM Feeds
+			set_config('feed_overall', '1');
+			set_config('feed_http_auth', '0');
+			set_config('feed_limit_post', (string) (isset($config['feed_limit']) ? (int) $config['feed_limit'] : 15));
+			set_config('feed_limit_topic', (string) (isset($config['feed_overall_topics_limit']) ? (int) $config['feed_overall_topics_limit'] : 10));
+			set_config('feed_topics_new', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+			set_config('feed_topics_active', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+
+			// Delete all text-templates from the template_data
+			$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
+				WHERE template_filename ' . $db->sql_like_expression($db->any_char . '.txt');
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
+		break;
+
+		// Changes from 3.0.7-RC1 to 3.0.7-RC2
+		case '3.0.7-RC1':
+
+			$sql = 'SELECT user_id, user_email, user_email_hash
+				FROM ' . USERS_TABLE . '
+				WHERE user_type <> ' . USER_IGNORE . "
+					AND user_email <> ''";
+			$result = $db->sql_query($sql);
+
+			$i = 0;
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// Snapshot of the phpbb_email_hash() function
+				// We cannot call it directly because the auto updater updates the DB first. :/
+				$user_email_hash = sprintf('%u', crc32(strtolower($row['user_email']))) . strlen($row['user_email']);
+
+				if ($user_email_hash != $row['user_email_hash'])
+				{
+					$sql_ary = array(
+						'user_email_hash'	=> $user_email_hash,
+					);
+
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . (int) $row['user_id'];
+					_sql($sql, $errored, $error_ary, ($i % 100 == 0));
+
+					++$i;
+				}
+			}
+			$db->sql_freeresult($result);
+
+			$no_updates = false;
+
+		break;
+
+		// No changes from 3.0.7-RC2 to 3.0.7
+		case '3.0.7-RC2':
+		break;
 	}
 }
 
@@ -1715,7 +1788,37 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-
+		
+		'mssqlnative'	=> array(
+			'INT:'		=> '[int]',
+			'BINT'		=> '[float]',
+			'UINT'		=> '[int]',
+			'UINT:'		=> '[int]',
+			'TINT:'		=> '[int]',
+			'USINT'		=> '[int]',
+			'BOOL'		=> '[int]',
+			'VCHAR'		=> '[varchar] (255)',
+			'VCHAR:'	=> '[varchar] (%d)',
+			'CHAR:'		=> '[char] (%d)',
+			'XSTEXT'	=> '[varchar] (1000)',
+			'STEXT'		=> '[varchar] (3000)',
+			'TEXT'		=> '[varchar] (8000)',
+			'MTEXT'		=> '[text]',
+			'XSTEXT_UNI'=> '[varchar] (100)',
+			'STEXT_UNI'	=> '[varchar] (255)',
+			'TEXT_UNI'	=> '[varchar] (4000)',
+			'MTEXT_UNI'	=> '[text]',
+			'TIMESTAMP'	=> '[int]',
+			'DECIMAL'	=> '[float]',
+			'DECIMAL:'	=> '[float]',
+			'PDECIMAL'	=> '[float]',
+			'PDECIMAL:'	=> '[float]',
+			'VCHAR_UNI'	=> '[varchar] (255)',
+			'VCHAR_UNI:'=> '[varchar] (%d)',
+			'VCHAR_CI'	=> '[varchar] (255)',
+			'VARBINARY'	=> '[varchar] (255)',
+		),
+		
 		'oracle'	=> array(
 			'INT:'		=> 'number(%d)',
 			'BINT'		=> 'number(20)',
@@ -1817,7 +1920,7 @@ class updater_db_tools
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
 	* @var array
 	*/
-	var $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
+	var $supported_dbms = array('firebird', 'mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
 
 	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
@@ -1861,6 +1964,10 @@ class updater_db_tools
 			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
+			break;
+			
+			case 'mssqlnative':
+				$this->sql_layer = 'mssqlnative';
 			break;
 
 			default:
@@ -2294,6 +2401,7 @@ class updater_db_tools
 			// same deal with PostgreSQL, we must perform more complex operations than
 			// we technically could
 			case 'mssql':
+			case 'mssqlnative':
 				$sql = "SELECT c.name
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
@@ -2397,7 +2505,7 @@ class updater_db_tools
 	*/
 	function sql_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql')
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
 			$result = $this->db->sql_query($sql);
@@ -2502,7 +2610,7 @@ class updater_db_tools
 	*/
 	function sql_unique_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql')
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
 			$result = $this->db->sql_query($sql);
@@ -2741,6 +2849,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$sql .= " {$column_type} ";
 				$sql_default = " {$column_type} ";
 
@@ -2890,6 +2999,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
@@ -2907,7 +3017,29 @@ class updater_db_tools
 
 			case 'postgres':
 				// Does not support AFTER, only through temporary table
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+
+				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+				}
+				else
+				{
+					// old versions cannot add columns with default and null information
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type'] . ' ' . $column_data['constraint'];
+
+					if (isset($column_data['null']))
+					{
+						if ($column_data['null'] == 'NOT NULL')
+						{
+							$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET NOT NULL';
+						}
+					}
+
+					if (isset($column_data['default']))
+					{
+						$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
+					}
+				}
 			break;
 
 			case 'sqlite':
@@ -2992,6 +3124,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 
@@ -3086,6 +3219,7 @@ class updater_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
 			break;
 
@@ -3122,6 +3256,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
 				$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
 				$sql .= '[' . implode("],\n\t\t[", $column) . ']';
@@ -3215,6 +3350,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
 			break;
 		}
@@ -3244,6 +3380,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
 			break;
 		}
@@ -3276,6 +3413,7 @@ class updater_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))

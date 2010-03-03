@@ -473,7 +473,7 @@ class fulltext_mysql extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[$field];
+			$id_ary[] = (int) $row[$field];
 		}
 		$db->sql_freeresult($result);
 
@@ -650,7 +650,7 @@ class fulltext_mysql extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[$field];
+			$id_ary[] = (int) $row[$field];
 		}
 		$db->sql_freeresult($result);
 

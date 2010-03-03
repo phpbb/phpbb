@@ -10,7 +10,7 @@ Username: {USERNAME}
 Board URL: {U_BOARD}
 ----------------------------
 
-Your account is currently inactive and will need to be approved by an administrator before you can log in. Another email will be sent when this has occured.
+Your account is currently inactive and will need to be approved by an administrator before you can log in. Another email will be sent when this has occurred.
 
 Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.
 

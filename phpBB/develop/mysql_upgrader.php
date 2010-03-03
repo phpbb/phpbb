@@ -1237,6 +1237,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> array('user_id', 'topic_id'),
 		'KEYS'			=> array(
+			'topic_id'			=> array('INDEX', 'topic_id'),
 			'forum_id'			=> array('INDEX', 'forum_id'),
 		),
 	);

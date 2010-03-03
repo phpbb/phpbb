@@ -379,6 +379,13 @@ hr {
 
 /* Links
  ------------ */
+
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+.rtl a {
+	direction: rtl;
+	unicode-bidi: embed;
+}
+
 a:link {
 	color: #006597;
 	text-decoration: none;

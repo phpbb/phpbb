@@ -1263,6 +1263,7 @@ CREATE TABLE phpbb_topics_track (
 
 ALTER TABLE phpbb_topics_track ADD PRIMARY KEY (user_id, topic_id);;
 
+CREATE INDEX phpbb_topics_track_topic_id ON phpbb_topics_track(topic_id);;
 CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track(forum_id);;
 
 # Table: 'phpbb_topics_posted'

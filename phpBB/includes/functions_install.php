@@ -23,7 +23,14 @@ function can_load_dll($dll)
 {
 	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
 	// as the installer doesn't understand that the extension has a prerequisite.
-	if ($dll == 'sqlite' && version_compare(PHP_VERSION, '5.0.0', '>=') && !extension_loaded('pdo'))
+	//
+	// On top of this sometimes the SQLite extension is compiled for a different version of PDO
+	// by some Linux distributions which causes phpBB to bomb out with a blank page.
+	//
+	// Net result we'll disable automatic inclusion of SQLite support
+	//
+	// See: r9618 and #56105
+	if ($dll == 'sqlite')
 	{
 		return false;
 	}
@@ -88,6 +95,16 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
+		'mssqlnative'		=> array(
+			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'sqlsrv',
+			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssqlnative',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),			
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -213,6 +230,7 @@ function get_tables($db)
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$sql = "SELECT name
 				FROM sysobjects
 				WHERE type='U'";
@@ -306,6 +324,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$prefix_length = 90;
 		break;
 

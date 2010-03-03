@@ -240,6 +240,7 @@ class install_update extends module
 				// Make sure the update list is destroyed.
 				$cache->destroy('_update_list');
 				$cache->destroy('_diff_files');
+				$cache->destroy('_expected_files');
 			break;
 
 			case 'version_check':
@@ -312,7 +313,14 @@ class install_update extends module
 
 			case 'file_check':
 
-				// Make sure the previous file collection is no longer valid...
+				// retrieve info on what changes should have already been made to the files.
+				$expected_files = $cache->get('_expected_files');
+				if (!$expected_files)
+				{
+					$expected_files = array();
+				}
+
+				// Now make sure the previous file collection is no longer valid...
 				$cache->destroy('_diff_files');
 
 				$this->page_title = 'STAGE_FILE_CHECK';
@@ -349,7 +357,7 @@ class install_update extends module
 
 				if ($get_new_list)
 				{
-					$this->get_update_structure($update_list);
+					$this->get_update_structure($update_list, $expected_files);
 					$cache->put('_update_list', $update_list);
 
 					// Refresh the page if we are still not finished...
@@ -383,6 +391,8 @@ class install_update extends module
 						'NO_UPDATE_FILES'		=> implode(', ', array_map('htmlspecialchars', $update_list['no_update'])))
 					);
 				}
+
+				$new_expected_files = array();
 
 				// Now assign the list to the template
 				foreach ($update_list as $status => $filelist)
@@ -419,28 +429,37 @@ class install_update extends module
 
 						$diff_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
 
-						$template->assign_block_vars($status, array(
-							'STATUS'			=> $status,
+						if (isset($file_struct['as_expected']) && $file_struct['as_expected'])
+						{
+							$new_expected_files[$file_struct['filename']] = $expected_files[$file_struct['filename']];
+						}
+						else
+						{
+							$template->assign_block_vars($status, array(
+								'STATUS'			=> $status,
 
-							'FILENAME'			=> $filename,
-							'DIR_PART'			=> $dir_part,
-							'FILE_PART'			=> $file_part,
-							'NUM_CONFLICTS'		=> (isset($file_struct['conflicts'])) ? $file_struct['conflicts'] : 0,
+								'FILENAME'			=> $filename,
+								'DIR_PART'			=> $dir_part,
+								'FILE_PART'			=> $file_part,
+								'NUM_CONFLICTS'		=> (isset($file_struct['conflicts'])) ? $file_struct['conflicts'] : 0,
 
-							'S_CUSTOM'			=> ($file_struct['custom']) ? true : false,
-							'S_BINARY'			=> $s_binary,
-							'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
+								'S_CUSTOM'			=> ($file_struct['custom']) ? true : false,
+								'S_BINARY'			=> $s_binary,
+								'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
 
-							'U_SHOW_DIFF'		=> $diff_url,
-							'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? $user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
+								'U_SHOW_DIFF'		=> $diff_url,
+								'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? $user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
 
-							'U_VIEW_MOD_FILE'		=> $diff_url . '&amp;op=' . MERGE_MOD_FILE,
-							'U_VIEW_NEW_FILE'		=> $diff_url . '&amp;op=' . MERGE_NEW_FILE,
-							'U_VIEW_NO_MERGE_MOD'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_MOD,
-							'U_VIEW_NO_MERGE_NEW'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_NEW,
-						));
+								'U_VIEW_MOD_FILE'		=> $diff_url . '&amp;op=' . MERGE_MOD_FILE,
+								'U_VIEW_NEW_FILE'		=> $diff_url . '&amp;op=' . MERGE_NEW_FILE,
+								'U_VIEW_NO_MERGE_MOD'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_MOD,
+								'U_VIEW_NO_MERGE_NEW'	=> $diff_url . '&amp;op=' . MERGE_NO_MERGE_NEW,
+							));
+						}
 					}
 				}
+
+				$cache->put('_expected_files', $new_expected_files);
 
 				$all_up_to_date = true;
 				foreach ($update_list as $status => $filelist)
@@ -617,6 +636,7 @@ class install_update extends module
 				// Before we do anything, let us diff the files and store the raw file information "somewhere"
 				$get_files = false;
 				$file_list = $cache->get('_diff_files');
+				$expected_files = $cache->get('_expected_files');
 
 				if ($file_list === false || $file_list['status'] != -1)
 				{
@@ -632,6 +652,11 @@ class install_update extends module
 						);
 					}
 
+					if (!isset($expected_files) || $expected_files === false)
+					{
+						$expected_files = array();
+					}
+
 					$processed = 0;
 					foreach ($update_list as $status => $files)
 					{
@@ -645,6 +670,7 @@ class install_update extends module
 							// Skip this file if the user selected to not update it
 							if (in_array($file_struct['filename'], $no_update))
 							{
+								$expected_files[$file_struct['filename']] = false;
 								continue;
 							}
 
@@ -676,6 +702,15 @@ class install_update extends module
 								return;
 							}
 
+							if (file_exists($phpbb_root_path . $file_struct['filename']))
+							{
+								$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+								if (isset($expected_files[$file_struct['filename']]) && md5($contents) == $expected_files[$file_struct['filename']])
+								{
+									continue;
+								}
+							}
+
 							$original_filename = ($file_struct['custom']) ? $file_struct['original'] : $file_struct['filename'];
 
 							switch ($status)
@@ -702,6 +737,7 @@ class install_update extends module
 										break;
 									}
 
+									$expected_files[$file_struct['filename']] = md5($contents);
 									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
 									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
 
@@ -747,6 +783,7 @@ class install_update extends module
 										break;
 									}
 
+									$expected_files[$file_struct['filename']] = md5($contents);
 									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
 									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
 
@@ -757,6 +794,7 @@ class install_update extends module
 							}
 						}
 					}
+					$cache->put('_expected_files', $expected_files);
 				}
 
 				$file_list['status'] = -1;
@@ -1217,7 +1255,7 @@ class install_update extends module
 	/**
 	* Collect all file status infos we need for the update by diffing all files
 	*/
-	function get_update_structure(&$update_list)
+	function get_update_structure(&$update_list, $expected_files)
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
@@ -1303,7 +1341,7 @@ class install_update extends module
 			else
 			{
 				// not modified?
-				$this->make_update_diff($update_list, $file, $file);
+				$this->make_update_diff($update_list, $file, $file, $expected_files);
 			}
 
 			$num_bytes_processed += (file_exists($this->new_location . $file)) ? filesize($this->new_location . $file) : 100 * 1024;
@@ -1344,15 +1382,32 @@ class install_update extends module
 	/**
 	* Compare files for storage in update_list
 	*/
-	function make_update_diff(&$update_list, $original_file, $file, $custom = false)
+	function make_update_diff(&$update_list, $original_file, $file, $expected_files, $custom = false)
 	{
 		global $phpbb_root_path, $user;
 
-		$update_ary = array('filename' => $file, 'custom' => $custom);
+		$update_ary = array('filename' => $file, 'custom' => $custom, 'as_expected' => false);
 
 		if ($custom)
 		{
 			$update_ary['original'] = $original_file;
+		}
+
+		if (file_exists($phpbb_root_path . $file))
+		{
+			$content = file_get_contents($phpbb_root_path . $file);
+
+			if (isset($expected_files[$file]) && // the user already selected what to do with this file
+				($expected_files[$file] === false || // the user wanted this file to stay the same, so just assume it's alright
+				$expected_files[$file] === md5($content)))
+			{
+				// the file contains what it was supposed to contain after the merge
+				$update_ary['as_expected'] = true;
+				$update_ary['was_ignored'] = ($expected_files[$file] === false);
+				$update_list['up_to_date'][] = $update_ary;
+
+				return;
+			}
 		}
 
 		// we only want to know if the files are successfully merged and newlines could result in errors (duplicate addition of lines and such things)
@@ -1364,7 +1419,7 @@ class install_update extends module
 		{
 			$tmp = array(
 				'file1'		=> file_get_contents($this->new_location . $original_file),
-				'file2'		=> file_get_contents($phpbb_root_path . $file),
+				'file2'		=> $content,
 			);
 
 			// We need to diff the contents here to make sure the file is really the one we expect
@@ -1403,7 +1458,7 @@ class install_update extends module
 		{
 			$tmp = array(
 				'file1'		=> file_get_contents($this->old_location . $original_file),
-				'file2'		=> file_get_contents($phpbb_root_path . $file),
+				'file2'		=> $content,
 			);
 
 			// We need to diff the contents here to make sure the file is really the one we expect
@@ -1414,7 +1469,7 @@ class install_update extends module
 
 			$tmp = array(
 				'file1'		=> file_get_contents($this->new_location . $original_file),
-				'file2'		=> file_get_contents($phpbb_root_path . $file),
+				'file2'		=> $content,
 			);
 
 			$diff = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);

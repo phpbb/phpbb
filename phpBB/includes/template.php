@@ -90,7 +90,7 @@ class template
 	* Set custom template location (able to use directory outside of phpBB)
 	* @access public
 	*/
-	function set_custom_template($template_path, $template_name, $template_mode = 'template')
+	function set_custom_template($template_path, $template_name, $fallback_template_path = false)
 	{
 		global $phpbb_root_path, $user;
 
@@ -103,12 +103,24 @@ class template
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
 
-		// As the template-engine is used for more than the template (emails, etc.), we should not set $user->theme in all cases, but only on the real template.
-		if ($template_mode == 'template')
+		if ($fallback_template_path !== false)
 		{
-			$user->theme['template_storedb'] = false;
-			$user->theme['template_inherits_id'] = false;
+			if (substr($fallback_template_path, -1) == '/')
+			{
+				$fallback_template_path = substr($fallback_template_path, 0, -1);
+			}
+
+			$this->inherit_root = $fallback_template_path;
+			$this->orig_tpl_inherits_id = true;
 		}
+		else
+		{
+			$this->orig_tpl_inherits_id = false;
+		}
+
+		// the database does not store the path or name of a custom template
+		// so there is no way we can properly store custom templates there
+		$this->orig_tpl_storedb = false;
 
 		$this->_rootref = &$this->_tpldata['.'][0];
 
@@ -253,6 +265,12 @@ class template
 		{
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
+
+		// reload these settings to have the values they had when this object was initialised
+		// using set_template or set_custom_template, they might otherwise have been overwritten
+		// by other template class instances in between.
+		$user->theme['template_storedb'] = $this->orig_tpl_storedb;
+		$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;

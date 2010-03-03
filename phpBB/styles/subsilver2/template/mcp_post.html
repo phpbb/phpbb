@@ -58,7 +58,7 @@
 </tr>
 <!-- IF S_CAN_VIEWIP -->
 	<tr>
-		<td class="row1"><b class="gen">{L_THIS_POST_IP}: </b></td>
+		<td class="row1"><b class="gen"><!-- IF S_PM -->{L_THIS_PM_IP}<!-- ELSE -->{L_THIS_POST_IP}<!-- ENDIF -->: </b></td>
 		<td class="row2"><span class="gen">
 			<!-- IF U_WHOIS -->
 				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)

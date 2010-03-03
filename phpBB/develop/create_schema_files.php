@@ -266,7 +266,8 @@ foreach ($supported_dbms as $dbms)
 
 		case 'mssql':
 			$line = "/*\n\n \$I" . "d: $\n\n*/\n\n";
-			$line .= "BEGIN TRANSACTION\nGO\n\n";
+			// no need to do this, no transaction support for schema changes
+			//$line .= "BEGIN TRANSACTION\nGO\n\n";
 		break;
 
 		case 'oracle':
@@ -749,7 +750,8 @@ foreach ($supported_dbms as $dbms)
 	switch ($dbms)
 	{
 		case 'mssql':
-			$line = "\nCOMMIT\nGO\n\n";
+			// No need to do this, no transaction support for schema changes
+			//$line = "\nCOMMIT\nGO\n\n";
 		break;
 
 		case 'sqlite':
@@ -1747,6 +1749,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> array('user_id', 'topic_id'),
 		'KEYS'			=> array(
+			'topic_id'			=> array('INDEX', 'topic_id'),
 			'forum_id'			=> array('INDEX', 'forum_id'),
 		),
 	);
