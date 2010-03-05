@@ -522,7 +522,7 @@ class phpbb_feed_base
 
 		if (!isset($forum_ids))
 		{
-			$forum_ids = array_keys($auth->acl_getf('f_read'));
+			$forum_ids = array_keys($auth->acl_getf('f_read', true));
 		}
 
 		return $forum_ids;
