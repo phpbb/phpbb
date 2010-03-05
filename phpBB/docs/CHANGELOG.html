@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v307">Changes since 3.0.7-PL1</a></li>
 		<li><a href="#v307">Changes since 3.0.7</a></li>
 		<li><a href="#v306">Changes since 3.0.6</a></li>
 		<li><a href="#v305">Changes since 3.0.5</a></li>
@@ -88,7 +89,7 @@
 
 		<div class="content">
 
-	<a name="v307"></a><h3>1.i. Changes since 3.0.7</h3>
+	<a name="v307-pl1"></a><h3>1.i. Changes since 3.0.7-PL1</h3>
 
 	<ul>
 		<li>[Fix] Correctly sort database backup file list by date on database restore page. (Bug #57385)</li>
@@ -100,6 +101,12 @@
 		<li>[Fix] Minor language fixes. (Bug #54855)</li>
 		<li>[Fix] Parsing urls in signatures properly uses config settings. (Bug #57105)</li>
 		<li>[Feature] Support for Microsoft's Native SQL Server Driver for PHP (Bug #57055 - Patch by Chris Pucci at Microsoft)</li>
+	</ul>
+
+	<a name="v307"></a><h3>1.i. Changes since 3.0.7</h3>
+
+	<ul>
+		<li>[Sec] Do not expose forum content of forums with ACL entries but no actual permission in ATOM Feeds. (Bug #58595)</li>
 	</ul>
 
 	<a name="v306"></a><h3>1.ii. Changes since 3.0.6</h3>
