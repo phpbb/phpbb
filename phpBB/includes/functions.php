@@ -114,7 +114,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 					{
 						$_v = null;
 					}
-					set_var($_k, $_k, $sub_key_type);
+					set_var($_k, $_k, $sub_key_type, $multibyte);
 					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
 				}
 			}

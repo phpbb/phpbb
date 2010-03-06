@@ -14,7 +14,7 @@ find . > FILELIST.$$
 grep -sv FILELIST FILELIST.$$ > FILELIST2.$$
 grep -sv $(basename $0) FILELIST2.$$ > FILELIST.$$
 grep -sv "^\.$" FILELIST.$$ > FILELIST2.$$
-file -f FILELIST2.$$  |grep text | sed -e 's/^\([^\:]*\)\:.*$/\1/' > FILELIST
+file -f FILELIST2.$$  |grep text | grep -v icon_textbox_search.gif | sed -e 's/^\([^\:]*\)\:.*$/\1/' > FILELIST
 file -f FILELIST2.$$  |grep -sv text | sed -e 's/^\([^\:]*\)\:.*$/Not Modifying file: \1/'
 rm FILELIST2.$$
 rm FILELIST.$$
