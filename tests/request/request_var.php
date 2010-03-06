@@ -215,7 +215,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 					'abc' => array()
 				)
 			),
-			/* 3-dimensional (not supported atm!
+			// 3-dimensional (not supported atm!
 			array(
 				// input:
 				array(
@@ -260,7 +260,6 @@ class phpbb_request_request_var_test extends phpbb_test_case
 					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
 				)
 			),
-			*/
 		);
 	}
 
