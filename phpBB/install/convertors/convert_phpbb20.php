@@ -32,7 +32,7 @@ unset($dbpasswd);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.0.7',
+	'phpbb_version'	=> '3.0.7-PL1',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -83,7 +83,7 @@ $tables = array(
 * 	'table_format'	=>	'file',
 * 	'filename'	=>	'NAME OF FILE', // If the file is not in the root directory, the path needs to be added with no leading slash
 * 	'array_name' => 'NAME OF ARRAY', // Only used if the configuration file stores the setting in an array.
-* 	'settings'		=>	array( 
+* 	'settings'		=>	array(
 *        'board_email' => 'SUPPORT_EMAIL', // target config name => source target name
 * 	)
 * );
