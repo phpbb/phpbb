@@ -39,7 +39,7 @@ class session
 	*
 	* @param string $root_path current root path (phpbb_root_path)
 	*/
-	function extract_current_page($root_path)
+	static function extract_current_page($root_path)
 	{
 		$page_array = array();
 
