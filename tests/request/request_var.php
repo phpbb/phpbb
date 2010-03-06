@@ -8,6 +8,9 @@
 */
 
 require_once 'test_framework/framework.php';
+require_once '../phpBB/includes/request/request_interface.php';
+require_once '../phpBB/includes/request/deactivated_super_global.php';
+require_once '../phpBB/includes/request/request.php';
 require_once '../phpBB/includes/functions.php';
 
 class phpbb_request_request_var_test extends phpbb_test_case

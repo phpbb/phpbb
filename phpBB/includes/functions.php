@@ -19,121 +19,53 @@ if (!defined('IN_PHPBB'))
 // Common global functions
 
 /**
-* set_var
+* Wrapper function of phpbb_request::variable which exists for backwards compatability.
+* See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
+* documentation of this function's use.
 *
-* Set variable, used by {@link request_var the request_var function}
+* @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
+* 										If the value is an array this may be an array of indizes which will give
+* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+* 										then specifying array("var", 1) as the name will return "a".
+* 										If you pass an instance of {@link phpbb_request_interface phpbb_request_interface}
+* 										as this parameter it will overwrite the current request class instance. If you do
+* 										not do so, it will create its own instance (but leave superglobals enabled).
+* @param	mixed			$default	A default value that is returned if the variable was not set.
+* 										This function will always return a value of the same type as the default.
+* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+* @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
+* 										phpbb_request_interface::variable for backwards compatability reasons.
 *
-* @access private
-*/
-function set_var(&$result, $var, $type, $multibyte = false)
-{
-	settype($var, $type);
-	$result = $var;
-
-	if ($type == 'string')
-	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
-
-		if (!empty($result))
-		{
-			// Make sure multibyte characters are wellformed
-			if ($multibyte)
-			{
-				if (!preg_match('/^./u', $result))
-				{
-					$result = '';
-				}
-			}
-			else
-			{
-				// no multibyte, allow only ASCII (0-127)
-				$result = preg_replace('/[\x80-\xFF]/', '?', $result);
-			}
-		}
-
-		$result = (STRIP) ? stripslashes($result) : $result;
-	}
-}
-
-/**
-* request_var
-*
-* Used to get passed variable
+* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+* 					the same as that of $default. If the variable is not set $default is returned.
 */
 function request_var($var_name, $default, $multibyte = false, $cookie = false)
 {
-	if (!$cookie && isset($_COOKIE[$var_name]))
+	// This is all just an ugly hack to add "Dependency Injection" to a function
+	// the only real code is the function call which maps this function to a method.
+	static $request = null;
+
+	if ($var_name instanceof phpbb_request_interface)
 	{
-		if (!isset($_GET[$var_name]) && !isset($_POST[$var_name]))
-		{
-			return (is_array($default)) ? array() : $default;
-		}
-		$_REQUEST[$var_name] = isset($_POST[$var_name]) ? $_POST[$var_name] : $_GET[$var_name];
+		$request = $var_name;
 	}
 
-	$super_global = ($cookie) ? '_COOKIE' : '_REQUEST';
-	if (!isset($GLOBALS[$super_global][$var_name]) || is_array($GLOBALS[$super_global][$var_name]) != is_array($default))
+	// no request class set, create a temporary one ourselves to keep backwards compatability
+	if ($request === null)
 	{
-		return (is_array($default)) ? array() : $default;
-	}
-
-	$var = $GLOBALS[$super_global][$var_name];
-	if (!is_array($default))
-	{
-		$type = gettype($default);
+		$tmp_request = new phpbb_request();
+		// enable super globals, so the magically created request class does not
+		// make super globals inaccessible everywhere outside this function.
+		$tmp_request->enable_super_globals();
 	}
 	else
 	{
-		list($key_type, $type) = each($default);
-		$type = gettype($type);
-		$key_type = gettype($key_type);
-		if ($type == 'array')
-		{
-			reset($default);
-			$default = current($default);
-			list($sub_key_type, $sub_type) = each($default);
-			$sub_type = gettype($sub_type);
-			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
-			$sub_key_type = gettype($sub_key_type);
-		}
+		// otherwise use the static injected instance
+		$tmp_request = $request;
 	}
 
-	if (is_array($var))
-	{
-		$_var = $var;
-		$var = array();
-
-		foreach ($_var as $k => $v)
-		{
-			set_var($k, $k, $key_type);
-			if ($type == 'array' && is_array($v))
-			{
-				foreach ($v as $_k => $_v)
-				{
-					if (is_array($_v))
-					{
-						$_v = null;
-					}
-					set_var($_k, $_k, $sub_key_type, $multibyte);
-					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
-				}
-			}
-			else
-			{
-				if ($type == 'array' || is_array($v))
-				{
-					$v = null;
-				}
-				set_var($var[$k], $v, $type, $multibyte);
-			}
-		}
-	}
-	else
-	{
-		set_var($var, $var, $type, $multibyte);
-	}
-
-	return $var;
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);
 }
 
 /**
