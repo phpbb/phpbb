@@ -502,8 +502,8 @@ class compress_tar extends compress
 	function compress_tar($mode, $file, $type = '')
 	{
 		$type = (!$type) ? $file : $type;
-		$this->isgz = (strpos($type, '.tar.gz') !== false || strpos($type, '.tgz') !== false) ? true : false;
-		$this->isbz = (strpos($type, '.tar.bz2') !== false) ? true : false;
+		$this->isgz = preg_match('#(\.tar\.gz|\.tgz)$#', $type);
+		$this->isbz = preg_match('#\.tar\.bz2$#', $type);
 
 		$this->mode = &$mode;
 		$this->file = &$file;

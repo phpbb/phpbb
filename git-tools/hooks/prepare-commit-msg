@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# A hook to add [$branch] to the beginning of a commit message
+# if certain conditions are met.
+#
+# This is a prepare-commit-msg hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/prepare-commit-msg \\
+#   .git/hooks/prepare-commit-msg
+#
+# Make sure it is executable.
+
+# strip off ref: refs/heads/
+branch="$(cat $GIT_DIR/HEAD | sed 's/ref: refs\/heads\///g')"
+
+# * only run when normal commit is made (without -m or -F;
+#   not a merge, etc.)
+# * also make sure the branch name begins with bug/
+if [ "$2" = "" ] && [ $(echo "$branch" | grep -e '^bug/') ]; then
+	echo "[$branch] $(cat $1)" > "$1"
+fi
