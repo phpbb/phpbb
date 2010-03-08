@@ -18,7 +18,7 @@ branch="$(cat $GIT_DIR/HEAD | sed 's/ref: refs\/heads\///g')"
 
 # * only run when normal commit is made (without -m or -F;
 #   not a merge, etc.)
-# * also make sure the branch name begins with bug/
-if [ "$2" = "" ] && [ $(echo "$branch" | grep -e '^bug/') ]; then
+# * also make sure the branch name begins with bug/ or feature/
+if [ "$2" = "" ] && [ $(echo "$branch" | grep -e '^\(bug\|feature\)/') ]; then
 	echo "[$branch] $(cat $1)" > "$1"
 fi
