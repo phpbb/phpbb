@@ -994,7 +994,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 			if (!$this->topic_data['topic_approved'])
 			{
 				// Also require m_approve
-				$in_fid_ary = array_intersect($in_fid_ary, array_keys($auth->acl_getf('m_approve', true)));
+				$in_fid_ary = array_intersect($in_fid_ary, $this->get_moderator_approve_forums());
 
 				if (empty($in_fid_ary))
 				{
