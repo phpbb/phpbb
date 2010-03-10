@@ -195,6 +195,9 @@ require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
+require($phpbb_root_path . 'includes/request/deactivated_super_global.' . $phpEx);
+require($phpbb_root_path . 'includes/request/request_interface.' . $phpEx);
+require($phpbb_root_path . 'includes/request/request.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
@@ -206,6 +209,7 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Instantiate some basic classes
+$request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
 $template	= new template();
@@ -214,6 +218,9 @@ $db			= new $sql_db();
 
 $class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
 $class_loader->register();
+
+// make sure request_var uses this request instance
+request_var($request, 0); // "dependency injection" for a function
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false);
