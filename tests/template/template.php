@@ -2,10 +2,6 @@
 /**
 *
 * @package testing
-<<<<<<< HEAD
-* @version $Id$
-=======
->>>>>>> develop-olympus
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -21,29 +17,12 @@ class phpbb_template_template_test extends phpbb_test_case
 	private $template_path;
 
 	// Keep the contents of the cache for debugging?
-<<<<<<< HEAD
 	const PRESERVE_CACHE = false;
 
 	private function display($handle)
 	{
 		ob_start();
 		$this->assertTrue($this->template->display($handle, false));
-=======
-	const PRESERVE_CACHE = true;
-
-	private function display($handle)
-	{
-		// allow the templates to throw notices
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
-		ob_start();
-		$this->assertTrue($this->template->display($handle, false));
-
-		// reset error level
-		error_reporting($error_level);
-
->>>>>>> develop-olympus
 		return self::trim_template_result(ob_get_clean());
 	}
 
@@ -132,11 +111,7 @@ class phpbb_template_template_test extends phpbb_test_case
 				array('S_VALUE' => true),
 				array(),
 				array(),
-<<<<<<< HEAD
-				'1',
-=======
 				"1\n0",
->>>>>>> develop-olympus
 			),
 			array(
 				'if.html',
@@ -178,24 +153,15 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array('loop' => array(array(), array()), 'loop.block' => array(array()), 'block' => array(array(), array())),
 				array(),
-<<<<<<< HEAD
-				"loop\nloop\nloop\nloop\n\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
-=======
 				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
->>>>>>> develop-olympus
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'))),
 				array(),
-<<<<<<< HEAD
-				"first\n0\n0\n1\nx\nset\nlast",
-			),
-=======
 				"first\n0\nx\nset\nlast",
 			),/* no nested top level loops
->>>>>>> develop-olympus
 			array(
 				'loop_vars.html',
 				array(),
@@ -209,54 +175,34 @@ class phpbb_template_template_test extends phpbb_test_case
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array(),
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast\n0\n\n1\nlast inner\ninner loop",
-<<<<<<< HEAD
-			),
-=======
 			),*/
->>>>>>> develop-olympus
 			array(
 				'loop_advanced.html',
 				array(),
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
-<<<<<<< HEAD
-				"101234561\n101234561\n101234561\n1234561\n1\n101\n234\n10\n561\n561",
-=======
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
->>>>>>> develop-olympus
 			),
 			array(
 				'define.html',
 				array(),
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-<<<<<<< HEAD
-				"xyz\nabc\n\n00\n11\n22\n33\n44\n55\n66\n\n144\n144",
-=======
 				"xyz\nabc",
->>>>>>> develop-olympus
 			),
 			array(
 				'expressions.html',
 				array(),
 				array(),
 				array(),
-<<<<<<< HEAD
-				trim(str_repeat("pass\n", 40)),
-=======
 				trim(str_repeat("pass", 39)),
->>>>>>> develop-olympus
 			),
 			array(
 				'php.html',
 				array(),
 				array(),
 				array(),
-<<<<<<< HEAD
-				'<!-- echo "test"; -->',
-=======
 				'',
->>>>>>> develop-olympus
 			),
 			array(
 				'include.html',
@@ -271,29 +217,14 @@ class phpbb_template_template_test extends phpbb_test_case
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array('loop'),
 				'',
-<<<<<<< HEAD
-			),
-=======
 			),/* no top level nested loops
->>>>>>> develop-olympus
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array('loop.inner'),
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
-<<<<<<< HEAD
-			),
-			array(
-				'loop_expressions.html',
-				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array(), array(), array(), array(), array(), array())),
-				array(),
-				"on\non\non\non\noff\noff\noff\noff\non\non\non\non\n\noff\noff\noff\non\non\non\noff\noff\noff\non\non\non",
-			),
-=======
 			),*/
->>>>>>> develop-olympus
 			array(
 				'lang.html',
 				array(),
@@ -407,10 +338,7 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	/**
 	* @dataProvider template_data
-<<<<<<< HEAD
-=======
 	*/
->>>>>>> develop-olympus
 	public function test_assign_display($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
 		$this->template->set_filenames(array(
@@ -452,20 +380,12 @@ class phpbb_template_template_test extends phpbb_test_case
 
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
-<<<<<<< HEAD
-*/
-/*
-	public function test_includephp()
-	{
-		phpbb::$config['tpl_allow_php'] = true;
-=======
 
 	public function test_includephp()
 	{
 		$this->markTestIncomplete('Include PHP test file paths are broken');
 
 		$GLOBALS['config']['tpl_allow_php'] = true;
->>>>>>> develop-olympus
 
 		$cache_file = $this->template->cachepath . 'includephp.html.' . PHP_EXT;
 
@@ -479,15 +399,9 @@ class phpbb_template_template_test extends phpbb_test_case
 
 		chdir($cwd);
 
-<<<<<<< HEAD
-		phpbb::$config['tpl_allow_php'] = false;
-	}
-*/
-=======
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
->>>>>>> develop-olympus
 	public static function alter_block_array_data()
 	{
 		return array(
@@ -721,16 +635,11 @@ EOT
 
 	/**
 	* @dataProvider alter_block_array_data
-<<<<<<< HEAD
-	public function test_alter_block_array($alter_block, array $vararray, $key, $mode, $expect, $description)
-	{
-=======
 	*/
 	public function test_alter_block_array($alter_block, array $vararray, $key, $mode, $expect, $description)
 	{
 		$this->markTestIncomplete('Alter Block Test is broken');
 
->>>>>>> develop-olympus
 		$this->template->set_filenames(array('test' => 'loop_nested.html'));
 
 		// @todo Change this
@@ -750,10 +659,5 @@ EOT
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
 		$this->assertEquals($expect, $this->display('test'), $description);
 	}
-<<<<<<< HEAD
-	*/
-}
-=======
 }
 
->>>>>>> develop-olympus
