@@ -543,15 +543,20 @@ class phpbb_feed_base
 
 	function is_moderator_approve_forum($forum_id)
 	{
-		$forum_ids = $this->get_moderator_approve_forums();
+		static $forum_ids;
+
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_flip($this->get_moderator_approve_forums());
+		}
 
 		if (!$forum_id)
 		{
 			// Global announcement, your a moderator in any forum than it's okay.
-			return (sizeof($forum_ids) > 0) ? true : false;
+			return (!empty($forum_ids)) ? true : false;
 		}
 
-		return (in_array($forum_id, $forum_ids)) ? true : false;
+		return (isset($forum_ids[$forum_id])) ? true : false;
 	}
 
 	function get_excluded_forums()
