@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -112,6 +111,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 		);
 	}
 */
+
 	public static function request_variables()
 	{
 		return array(
@@ -262,3 +262,4 @@ class phpbb_request_request_var_test extends phpbb_test_case
 	}
 
 }
+

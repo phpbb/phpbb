@@ -3,20 +3,18 @@
 
 {loop.S_ROW_COUNT}
 
-{loop.S_ROW_NUM}
-
-{loop.S_NUM_ROWS}
-
 {loop.VARIABLE}
 
 <!-- IF loop.VARIABLE -->set<!-- ENDIF -->
 
-<!-- IF loop.S_LAST_ROW -->last<!-- ENDIF -->
+<!-- IF loop.S_LAST_ROW -->
+last
+<!-- ENDIF -->
 <!-- BEGIN inner -->
 
-{inner.S_ROW_NUM}
+{inner.S_ROW_COUNT}
 
-<!-- IF inner.S_LAST_ROW and inner.S_ROW_NUM and inner.S_NUM_ROWS -->last inner<!-- ENDIF -->
+<!-- IF inner.S_LAST_ROW and inner.S_ROW_COUNT and inner.S_NUM_ROWS -->last inner<!-- ENDIF -->
 
 <!-- END inner -->
 <!-- END loop -->

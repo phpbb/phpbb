@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -41,3 +40,4 @@ if (PHPUnit_MAIN_METHOD == 'phpbb_utf_all_tests::main')
 {
 	phpbb_utf_all_tests::main();
 }
+

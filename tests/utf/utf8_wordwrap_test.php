@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -82,3 +81,4 @@ class phpbb_utf_utf8_wordwrap_test extends phpbb_test_case
 		$this->assertEquals($expected, $phpbb_utf8_wordwrap, 'Checking UTF-8 cutting long words');
 	}
 }
+

@@ -2,7 +2,6 @@
 /**
 *
 * @package testing
-* @version $Id$
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -30,3 +29,4 @@ class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
 		$this->assertEquals($output, utf8_clean_string($input), $label);
 	}
 }
+
