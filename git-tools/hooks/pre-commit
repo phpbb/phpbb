@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# A hook to disallow php syntax errors to be committed
+# by running php -l (lint) on them. It requires php-cli
+# to be installed.
+#
+# This is a pre-commit hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/pre-commit \\
+#   .git/hooks/pre-commit
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+error=0
+
+# get a list of staged .php files, omitting file removals
+IFS=" "
+for file in $(git diff --cached --name-status $against | grep -v -E '^D' | cut -f2 | grep -E '\.php$')
+do
+	# store lint result in a temp file
+	tempfile="/tmp/$(basename $0).$$.tmp"
+	if ! php -l "$file" >/dev/null 2>"$tempfile"
+	then
+		error=1
+		cat "$tempfile"
+	fi
+	rm -f "$tempfile"
+done
+unset IFS
+
+if [ $error -eq 1 ]
+then
+	exit 1
+fi
