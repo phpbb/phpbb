@@ -365,8 +365,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
 
-		'WHERE'		=> 't.forum_id IN (' . $forum_id . ', 0)
-			AND t.topic_type IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ')',
+		'WHERE'		=> '(t.forum_id = ' . $forum_id . '
+			AND t.topic_type = ' . POST_ANNOUNCE . ') OR t.topic_type = ' . POST_GLOBAL,
 
 		'ORDER_BY'	=> 't.topic_time DESC',
 	));
