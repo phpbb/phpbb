@@ -63,32 +63,19 @@ class ucp_main
 				$folder = 'global_read';
 				$folder_new = 'global_unread';
 
-				// Get cleaned up list... return only those forums not having the f_read permission
-				$forum_ary = $auth->acl_getf('!f_read', true);
+				// Get cleaned up list... return only those forums having the f_read permission
+				$forum_ary = $auth->acl_getf('f_read', true);
 				$forum_ary = array_unique(array_keys($forum_ary));
-
-				// Determine first forum the user is able to read into - for global announcement link
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_type = ' . FORUM_POST;
-
-				if (sizeof($forum_ary))
-				{
-					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
-				}
-				$result = $db->sql_query_limit($sql, 1);
-				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
-				$db->sql_freeresult($result);
 
 				$sql = "SELECT t.* $sql_select
 					FROM $sql_from
-					WHERE t.forum_id = 0
-						AND t.topic_type = " . POST_GLOBAL . '
+					WHERE t.topic_type = " . POST_GLOBAL . '
+						AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
 					ORDER BY t.topic_last_post_time DESC';
 
 				$topic_list = $rowset = array();
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
-				if ($g_forum_id)
+				if (!empty($forum_ary))
 				{
 					$result = $db->sql_query($sql);
 
@@ -158,10 +145,10 @@ class ucp_main
 						'S_UNREAD'			=> $unread_topic,
 
 						'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
+						'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-						'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-						'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id"))
+						'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
+						'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"))
 					);
 				}
 
@@ -805,9 +792,8 @@ class ucp_main
 				'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
 				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
-				'S_GLOBAL_TOPIC'	=> (!$forum_id) ? true : false,
 
-				'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
+				'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id")),
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
 				'TOPIC_TITLE'		=> censor_text($row['topic_title']),

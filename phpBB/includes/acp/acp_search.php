@@ -397,9 +397,8 @@ class acp_search
 							$i = 0;
 							while ($row = ($buffer ? $rows[$i++] : $db->sql_fetchrow($result)))
 							{
-								// Indexing enabled for this forum or global announcement?
-								// Global announcements get indexed by default.
-								if (!$row['forum_id'] || (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']]))
+								// Indexing enabled for this forum
+								if (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']])
 								{
 									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 								}

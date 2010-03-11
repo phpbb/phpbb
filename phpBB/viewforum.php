@@ -359,6 +359,10 @@ if ($user->data['is_registered'])
 
 if ($forum_data['forum_type'] == FORUM_POST)
 {
+	// Get global announcement forums
+	$g_forum_ary = $auth->acl_getf('f_read', true);
+	$g_forum_ary = array_unique(array_keys($g_forum_ary));
+
 	// Obtain announcements ... removed sort ordering, sort by time in all cases
 	$sql = $db->sql_build_query('SELECT', array(
 		'SELECT'	=> $sql_array['SELECT'],
@@ -366,7 +370,9 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
 
 		'WHERE'		=> '(t.forum_id = ' . $forum_id . '
-			AND t.topic_type = ' . POST_ANNOUNCE . ') OR t.topic_type = ' . POST_GLOBAL,
+				AND t.topic_type = ' . POST_ANNOUNCE . ') OR
+			(' . $db->sql_in_set('t.forum_id', $g_forum_ary) . '
+				AND t.topic_type = ' . POST_GLOBAL . ')',
 
 		'ORDER_BY'	=> 't.topic_time DESC',
 	));

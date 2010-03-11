@@ -485,16 +485,13 @@ function mcp_move_topic($topic_ids)
 
 			$topic_posts_added += $topic_info['topic_replies'];
 
-			if ($topic_info['topic_type'] != POST_GLOBAL)
-			{
-				$topics_removed++;
-				$topic_posts_removed += $topic_info['topic_replies'];
+			$topics_removed++;
+			$topic_posts_removed += $topic_info['topic_replies'];
 
-				if ($topic_info['topic_approved'])
-				{
-					$topics_authed_removed++;
-					$topic_posts_removed++;
-				}
+			if ($topic_info['topic_approved'])
+			{
+				$topics_authed_removed++;
+				$topic_posts_removed++;
 			}
 		}
 
@@ -531,15 +528,6 @@ function mcp_move_topic($topic_ids)
 			// Get the list of forums to resync, add a log entry
 			$forum_ids[] = $row['forum_id'];
 			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name'], $forum_data['forum_name']);
-
-			// If we have moved a global announcement, we need to correct the topic type
-			if ($row['topic_type'] == POST_GLOBAL)
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_type = ' . POST_ANNOUNCE . '
-					WHERE topic_id = ' . (int) $row['topic_id'];
-				$db->sql_query($sql);
-			}
 
 			// Leave a redirection if required and only if the topic is visible to users
 			if ($leave_shadow && $row['topic_approved'] && $row['topic_type'] != POST_GLOBAL)

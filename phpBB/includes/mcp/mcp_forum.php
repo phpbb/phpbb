@@ -150,10 +150,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
-	$sql = "SELECT t.topic_id
-		FROM " . TOPICS_TABLE . " t
-		WHERE t.forum_id IN($forum_id, 0)
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+	$sql = 'SELECT t.topic_id
+		FROM ' . TOPICS_TABLE . ' t
+		WHERE t.forum_id = ' . $forum_id . '
+			' . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
