@@ -12,6 +12,8 @@
 # ln -s ../../git-tools/hooks/pre-commit \\
 #   .git/hooks/pre-commit
 
+PHP_BIN=php
+
 # necessary check for initial commit
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
@@ -27,12 +29,10 @@ error=0
 IFS=" "
 for file in $(git diff --cached --name-status $against | grep -v -E '^D' | cut -f2 | grep -E '\.php$')
 do
-	# store lint result in a temp file
-	tempfile=$(mktemp -t "$(basename $0).XXXXXX")
-	if ! php -l "$file" >/dev/null 2>"$tempfile"
+	# hide output, but show errors
+	if ! $PHP_BIN -l "$file" >/dev/null
 	then
 		error=1
-		cat "$tempfile"
 	fi
 done
 unset IFS
