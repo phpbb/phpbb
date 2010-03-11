@@ -188,11 +188,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		if ($config['load_db_lastread'])
 		{
-			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']));
 		}
 		else
 		{
-			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list);
 		}
 	}
 

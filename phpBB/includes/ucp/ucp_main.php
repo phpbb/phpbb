@@ -57,6 +57,10 @@ class ucp_main
 					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
 						AND tt.user_id = ' . $user->data['user_id'] . ')';
 					$sql_select .= ', tt.mark_time';
+
+					$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id
+						AND ft.user_id = ' . $user->data['user_id'] . ')';
+					$sql_select .= ', ft.mark_time AS forum_mark_time';
 				}
 
 				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
@@ -87,15 +91,34 @@ class ucp_main
 					$db->sql_freeresult($result);
 				}
 
-				$topic_tracking_info = array();
+				$topic_forum_list = array();
+				foreach ($rowset as $t_id => $row)
+				{
+					if (isset($forum_tracking_info[$row['forum_id']]))
+					{
+						$row['forum_mark_time'] = $forum_tracking_info[$row['forum_id']];
+					}
+
+					$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
+					$topic_forum_list[$row['forum_id']]['topics'][] = (int) $t_id;
+				}
+
+				$topic_tracking_info = $tracking_topics = array();
 				if ($config['load_db_lastread'])
 				{
-					$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, false, $topic_list);
+					foreach ($topic_forum_list as $f_id => $topic_row)
+					{
+						$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']));
+					}
 				}
 				else
 				{
-					$topic_tracking_info = get_complete_topic_tracking(0, $topic_list, $topic_list);
+					foreach ($topic_forum_list as $f_id => $topic_row)
+					{
+						$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics']);
+					}
 				}
+				unset($topic_forum_list);
 
 				foreach ($topic_list as $topic_id)
 				{
@@ -737,14 +760,14 @@ class ucp_main
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
-				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), ($f_id == 0) ? $global_announce_list : false);
+				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']));
 			}
 		}
 		else
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
-				$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics'], $global_announce_list);
+				$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics']);
 			}
 		}
 

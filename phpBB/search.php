@@ -719,11 +719,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			{
 				if ($user->data['is_registered'] && $config['load_db_lastread'])
 				{
-					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
+					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']));
 				}
 				else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 				{
-					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
+					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list']);
 
 					if (!$user->data['is_registered'])
 					{

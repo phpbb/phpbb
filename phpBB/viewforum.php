@@ -324,7 +324,7 @@ $template->assign_vars(array(
 $icons = $cache->obtain_icons();
 
 // Grab all topic data
-$rowset = $announcement_list = $topic_list = $global_announce_list = array();
+$rowset = $announcement_list = $topic_list = $global_announce_forums = array();
 
 $sql_array = array(
 	'SELECT'	=> 't.*',
@@ -383,16 +383,38 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		$rowset[$row['topic_id']] = $row;
 		$announcement_list[] = $row['topic_id'];
 
-		if ($row['topic_type'] == POST_GLOBAL)
-		{
-			$global_announce_list[$row['topic_id']] = true;
-		}
-		else
+		if ($forum_id == $row['forum_id'])
 		{
 			$topics_count--;
 		}
+		else
+		{
+			$global_announce_forums[] = $row['forum_id'];
+		}
 	}
 	$db->sql_freeresult($result);
+}
+
+$forum_tracking_info = array();
+
+if ($user->data['is_registered'])
+{
+	$forum_tracking_info[$forum_id] = $forum_data['mark_time'];
+
+	if (!empty($global_announce_forums) && $config['load_db_lastread'])
+	{
+		$sql = 'SELECT forum_id, mark_time
+			FROM ' . FORUMS_TRACK_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $global_announce_forums) . '
+				AND user_id = ' . $user->data['user_id'];
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_tracking_info[$row['forum_id']] = $row['mark_time'];
+		}
+		$db->sql_freeresult($result);
+	}
 }
 
 // If the user is trying to reach late pages, start searching from the end
@@ -552,45 +574,44 @@ if (sizeof($topic_list))
 	$mark_forum_read = true;
 	$mark_time_forum = 0;
 
-	// Active topics?
-	if ($s_display_active && sizeof($active_forum_ary))
+	// Generate topic forum list...
+	$topic_forum_list = array();
+	foreach ($rowset as $t_id => $row)
 	{
-		// Generate topic forum list...
-		$topic_forum_list = array();
-		foreach ($rowset as $t_id => $row)
+		if (isset($forum_tracking_info[$row['forum_id']]))
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
-			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
+			$row['forum_mark_time'] = $forum_tracking_info[$row['forum_id']];
 		}
 
-		if ($config['load_db_lastread'] && $user->data['is_registered'])
-		{
-			foreach ($topic_forum_list as $f_id => $topic_row)
-			{
-				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), false);
-			}
-		}
-		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
-		{
-			foreach ($topic_forum_list as $f_id => $topic_row)
-			{
-				$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics'], false);
-			}
-		}
-
-		unset($topic_forum_list);
+		$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
+		$topic_forum_list[$row['forum_id']]['topics'][] = (int) $t_id;
 	}
-	else
+
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		foreach ($topic_forum_list as $f_id => $topic_row)
+		{
+			$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']));
+		}
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		foreach ($topic_forum_list as $f_id => $topic_row)
+		{
+			$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics']);
+		}
+	}
+
+	unset($topic_forum_list);
+
+	if (!$s_display_active)
 	{
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $rowset, array($forum_id => $forum_data['mark_time']), $global_announce_list);
 			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : $user->data['user_lastmark'];
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, $global_announce_list);
-
 			if (!$user->data['is_registered'])
 			{
 				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
