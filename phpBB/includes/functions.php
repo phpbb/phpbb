@@ -49,6 +49,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 	if ($var_name instanceof phpbb_request_interface)
 	{
 		$request = $var_name;
+		return;
 	}
 
 	// no request class set, create a temporary one ourselves to keep backwards compatability
