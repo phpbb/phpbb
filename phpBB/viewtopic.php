@@ -1732,15 +1732,15 @@ if ($s_can_vote || $s_quick_reply)
 // We overwrite $_REQUEST['f'] if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
-if (empty($_REQUEST['f']))
+if (!request_var('f', 0))
 {
-	$_REQUEST['f'] = $forum_id;
+	$request->overwrite('f', $forum_id);
 }
 
 // We need to do the same with the topic_id. See #53025.
-if (empty($_REQUEST['t']) && !empty($topic_id))
+if (!request_var('t', 0) && !empty($topic_id))
 {
-	$_REQUEST['t'] = $topic_id;
+	$request->overwrite('t', $topic_id);
 }
 
 // Output the page
