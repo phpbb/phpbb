@@ -10,15 +10,25 @@
 #
 # ln -s ../../git-tools/hooks/prepare-commit-msg \\
 #   .git/hooks/prepare-commit-msg
-#
-# Make sure it is executable.
 
-# strip off ref: refs/heads/
-branch="$(cat $GIT_DIR/HEAD | sed 's/ref: refs\/heads\///g')"
+# get branch name
+branch="$(git symbolic-ref HEAD)"
 
+# exit if no branch name is present
+# (eg. detached HEAD)
+if [ $? -ne 0 ]
+then
+	exit
+fi
+
+# strip off refs/heads/
+branch="$(echo "$branch" | sed "s/refs\/heads\///g")"
+
+# add [branchname] to commit message
 # * only run when normal commit is made (without -m or -F;
 #   not a merge, etc.)
 # * also make sure the branch name begins with bug/ or feature/
-if [ "$2" = "" ] && [ $(echo "$branch" | grep -e '^\(bug\|feature\)/') ]; then
-	echo "[$branch] $(cat $1)" > "$1"
+if [ "$2" = "" ] && [ $(echo "$branch" | grep -e "^\(bug\|feature\)/") ]
+then
+	echo "[$branch] $(cat "$1")" > "$1"
 fi
