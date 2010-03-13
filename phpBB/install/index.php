@@ -171,10 +171,11 @@ require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 $class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 $class_loader->register();
-$request = new phpbb_request();
+
+$request = new phpbb_request(new phpbb_type_cast_helper());
 
 // make sure request_var uses this request instance
-request_var($request, 0); // "dependency injection" for a function
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));

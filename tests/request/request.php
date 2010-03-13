@@ -10,13 +10,13 @@
 
 require_once 'test_framework/framework.php';
 require_once '../phpBB/includes/request/type_cast_helper_interface.php';
-require_once '../phpBB/includes/request/type_cast_helper.php';
 require_once '../phpBB/includes/request/request_interface.php';
 require_once '../phpBB/includes/request/deactivated_super_global.php';
 require_once '../phpBB/includes/request/request.php';
 
 class phpbb_request_test extends phpbb_test_case
 {
+	private $type_cast_helper;
 	private $request;
 
 	protected function setUp()
@@ -28,7 +28,9 @@ class phpbb_request_test extends phpbb_test_case
 		$_REQUEST['test'] = 3;
 		$_GET['unset'] = '';
 
-		$this->request = new phpbb_request();
+		$this->type_cast_helper = $this->getMock('phpbb_type_cast_helper_interface');
+
+		$this->request = new phpbb_request($this->type_cast_helper);
 	}
 
 	public function test_toggle_super_globals()

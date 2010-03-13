@@ -66,6 +66,8 @@ require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
+require($phpbb_root_path . 'includes/request/type_cast_helper_interface.' . $phpEx);
+require($phpbb_root_path . 'includes/request/type_cast_helper.' . $phpEx);
 require($phpbb_root_path . 'includes/request/deactivated_super_global.' . $phpEx);
 require($phpbb_root_path . 'includes/request/request_interface.' . $phpEx);
 require($phpbb_root_path . 'includes/request/request.' . $phpEx);
@@ -95,13 +97,13 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-$request = new phpbb_request();
+$request = new phpbb_request(new phpbb_type_cast_helper());
 $user = new user();
 $cache = new cache();
 $db = new $sql_db();
 
 // make sure request_var uses this request instance
-request_var($request, 0); // "dependency injection" for a function
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
