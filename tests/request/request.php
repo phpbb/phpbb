@@ -9,6 +9,8 @@
 */
 
 require_once 'test_framework/framework.php';
+require_once '../phpBB/includes/request/type_cast_helper_interface.php';
+require_once '../phpBB/includes/request/type_cast_helper.php';
 require_once '../phpBB/includes/request/request_interface.php';
 require_once '../phpBB/includes/request/deactivated_super_global.php';
 require_once '../phpBB/includes/request/request.php';
@@ -60,16 +62,6 @@ class phpbb_request_test extends phpbb_test_case
 	{
 		$this->assertTrue($this->request->is_set_post('test'));
 		$this->assertFalse($this->request->is_set_post('unset'));
-	}
-
-	public function test_addslashes_recursively()
-	{
-		$data = array('some"string' => array('that"' => 'really"', 'needs"' => '"escaping'));
-		$expected = array('some\\"string' => array('that\\"' => 'really\\"', 'needs\\"' => '\\"escaping'));
-
-		phpbb_request::addslashes_recursively($data);
-
-		$this->assertEquals($expected, $data);
 	}
 
 	public function test_variable_names()

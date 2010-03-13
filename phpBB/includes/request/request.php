@@ -28,7 +28,7 @@ class phpbb_request implements phpbb_request_interface
 	/**
 	* @var	array	The names of super global variables that this class should protect if super globals are disabled.
 	*/
-	protected static $super_globals = array(
+	protected $super_globals = array(
 		phpbb_request_interface::POST => '_POST',
 		phpbb_request_interface::GET => '_GET',
 		phpbb_request_interface::REQUEST => '_REQUEST',
@@ -51,26 +51,26 @@ class phpbb_request implements phpbb_request_interface
 	protected $input;
 
 	/**
-	* @var	string	Whether slashes need to be stripped from input
+	* @var	phpbb_type_cast_helper_interface	An instance of a type cast helper providing convenience methods for type conversions.
 	*/
-	protected $strip;
+	protected $type_cast_helper;
 
 	/**
 	* Initialises the request class, that means it stores all input data in {@link $input input}
 	* and then calls {@link phpbb_deactivated_super_global phpbb_deactivated_super_global}
 	*/
-	public function __construct()
+	public function __construct(phpbb_type_cast_helper_interface $type_cast_helper = null, $disable_super_globals = true)
 	{
-		if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+		if ($type_cast_helper)
 		{
-			$this->strip = false;
+			$this->type_cast_helper = $type_cast_helper;
 		}
 		else
 		{
-			$this->strip = (@get_magic_quotes_gpc()) ? true : false;
+			$this->type_cast_helper = new phpbb_type_cast_helper();
 		}
 
-		foreach (self::$super_globals as $const => $super_global)
+		foreach ($this->super_globals as $const => $super_global)
 		{
 			$this->input[$const] = isset($GLOBALS[$super_global]) ? $GLOBALS[$super_global] : array();
 		}
@@ -79,7 +79,10 @@ class phpbb_request implements phpbb_request_interface
 		$this->original_request = $this->input[phpbb_request_interface::REQUEST];
 		$this->input[phpbb_request_interface::REQUEST] = $this->input[phpbb_request_interface::POST] + $this->input[phpbb_request_interface::GET];
 
-		$this->disable_super_globals();
+		if ($disable_super_globals)
+		{
+			$this->disable_super_globals();
+		}
 	}
 
 	/**
@@ -100,7 +103,7 @@ class phpbb_request implements phpbb_request_interface
 	{
 		if (!$this->super_globals_disabled)
 		{
-			foreach (self::$super_globals as $const => $super_global)
+			foreach ($this->super_globals as $const => $super_global)
 			{
 				unset($GLOBALS[$super_global]);
 				$GLOBALS[$super_global] = new phpbb_deactivated_super_global($this, $super_global, $const);
@@ -118,7 +121,7 @@ class phpbb_request implements phpbb_request_interface
 	{
 		if ($this->super_globals_disabled)
 		{
-			foreach (self::$super_globals as $const => $super_global)
+			foreach ($this->super_globals as $const => $super_global)
 			{
 				$GLOBALS[$super_global] = $this->input[$const];
 			}
@@ -126,34 +129,6 @@ class phpbb_request implements phpbb_request_interface
 			$GLOBALS['_REQUEST'] = $this->original_request;
 
 			$this->super_globals_disabled = false;
-		}
-	}
-
-	/**
-	* Recursively applies addslashes to a variable.
-	*
-	* @param	mixed	&$var	Variable passed by reference to which slashes will be added.
-	*/
-	public static function addslashes_recursively(&$var)
-	{
-		if (is_string($var))
-		{
-			$var = addslashes($var);
-		}
-		else if (is_array($var))
-		{
-			$var_copy = $var;
-			$var = array();
-			foreach ($var_copy as $key => $value)
-			{
-				if (is_string($key))
-				{
-					$key = addslashes($key);
-				}
-				$var[$key] = $value;
-
-				self::addslashes_recursively($var[$key]);
-			}
 		}
 	}
 
@@ -172,15 +147,12 @@ class phpbb_request implements phpbb_request_interface
 	*/
 	public function overwrite($var_name, $value, $super_global = phpbb_request_interface::REQUEST)
 	{
-		if (!isset(self::$super_globals[$super_global]))
+		if (!isset($this->super_globals[$super_global]))
 		{
 			return;
 		}
 
-		if ($this->strip)
-		{
-			self::addslashes_recursively($value);
-		}
+		$this->type_cast_helper->add_magic_quotes($value);
 
 		// setting to null means unsetting
 		if ($value === null)
@@ -188,114 +160,22 @@ class phpbb_request implements phpbb_request_interface
 			unset($this->input[$super_global][$var_name]);
 			if (!$this->super_globals_disabled())
 			{
-				unset($GLOBALS[self::$super_globals[$super_global]][$var_name]);
+				unset($GLOBALS[$this->super_globals[$super_global]][$var_name]);
 			}
 		}
 		else
 		{
 			$this->input[$super_global][$var_name] = $value;
-			if (!self::super_globals_disabled())
+			if (!$this->super_globals_disabled())
 			{
-				$GLOBALS[self::$super_globals[$super_global]][$var_name] = $value;
+				$GLOBALS[$this->super_globals[$super_global]][$var_name] = $value;
 			}
 		}
 
-		if (!self::super_globals_disabled())
+		if (!$this->super_globals_disabled())
 		{
-			unset($GLOBALS[self::$super_globals[$super_global]][$var_name]);
-			$GLOBALS[self::$super_globals[$super_global]][$var_name] = $value;
-		}
-	}
-
-	/**
-	* Set variable $result to a particular type.
-	*
-	* @param mixed	&$result	The variable to fill
-	* @param mixed	$var		The contents to fill with
-	* @param mixed	$type		The variable type. Will be used with {@link settype()}
-	* @param bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
-	* 							Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
-	*/
-	public function set_var(&$result, $var, $type, $multibyte = false)
-	{
-		settype($var, $type);
-		$result = $var;
-
-		if ($type == 'string')
-		{
-			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
-
-			if (!empty($result))
-			{
-				// Make sure multibyte characters are wellformed
-				if ($multibyte)
-				{
-					if (!preg_match('/^./u', $result))
-					{
-						$result = '';
-					}
-				}
-				else
-				{
-					// no multibyte, allow only ASCII (0-127)
-					$result = preg_replace('/[\x80-\xFF]/', '?', $result);
-				}
-			}
-
-			$result = ($this->strip) ? stripslashes($result) : $result;
-		}
-	}
-
-	/**
-	* Recursively sets a variable to a given type using {@link set_var set_var}
-	* This function is only used from within {@link phpbb_request::variable phpbb_request::variable}.
-	*
-	* @param	string	$var		The value which shall be sanitised (passed by reference).
-	* @param	mixed	$default	Specifies the type $var shall have.
-	* 								If it is an array and $var is not one, then an empty array is returned.
-	* 								Otherwise var is cast to the same type, and if $default is an array all
-	* 								keys and values are cast recursively using this function too.
-	* @param	bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
-	* 								Default is false, causing all bytes outside the ASCII range (0-127) to
-	* 								be replaced with question marks.
-	*/
-	protected function recursive_set_var(&$var, $default, $multibyte)
-	{
-		if (is_array($var) !== is_array($default))
-		{
-			$var = (is_array($default)) ? array() : $default;
-			return;
-		}
-
-		if (!is_array($default))
-		{
-			$type = gettype($default);
-			$this->set_var($var, $var, $type, $multibyte);
-		}
-		else
-		{
-			// make sure there is at least one key/value pair to use get the
-			// types from
-			if (empty($default))
-			{
-				$var = array();
-				return;
-			}
-
-			list($default_key, $default_value) = each($default);
-			$value_type = gettype($default_value);
-			$key_type = gettype($default_key);
-
-			$_var = $var;
-			$var = array();
-
-			foreach ($_var as $k => $v)
-			{
-				$this->set_var($k, $k, $key_type, $multibyte, $multibyte);
-
-				$this->recursive_set_var($v, $default_value, $multibyte);
-				$this->set_var($var[$k], $v, $value_type, $multibyte);
-			}
+			unset($GLOBALS[$this->super_globals[$super_global]][$var_name]);
+			$GLOBALS[$this->super_globals[$super_global]][$var_name] = $value;
 		}
 	}
 
@@ -356,7 +236,7 @@ class phpbb_request implements phpbb_request_interface
 			}
 		}
 
-		self::recursive_set_var($var, $default, $multibyte);
+		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
 
 		return $var;
 	}
