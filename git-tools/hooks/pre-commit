@@ -25,12 +25,35 @@ fi
 
 error=0
 
-# get a list of staged .php files, omitting file removals
-IFS=" "
-for file in $(git diff --cached --name-status $against | grep -v -E '^D' | cut -f2 | grep -E '\.php$')
+IFS=$'\n'
+# get a list of staged files
+for line in $(git diff-index --cached --full-index $against)
 do
-	# hide output, but show errors
-	if ! $PHP_BIN -l "$file" >/dev/null
+	# split needed values
+	sha=$(echo $line | cut -d' ' -f4)
+	temp=$(echo $line | cut -d' ' -f5)
+	status=$(echo $temp | cut -d'	' -f1)
+	filename=$(echo $temp | cut -d'	' -f2)
+
+	# file extension
+	ext=$(echo $filename | sed 's/^.*\.//')
+
+	# only check files with php extension
+	if [ $ext != "php" ]
+	then
+		continue
+	fi
+
+	# do not check deleted files
+	if [ $status = "D" ]
+	then
+		continue
+	fi
+
+	# check the staged file content for syntax errors
+	# using php -l (lint)
+	git cat-file -p $sha | $PHP_BIN -l >/dev/null
+	if [ $? -ne 0 ]
 	then
 		error=1
 	fi
