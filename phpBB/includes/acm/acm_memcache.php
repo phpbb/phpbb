@@ -37,6 +37,12 @@ if (!defined('PHPBB_ACM_MEMCACHE_HOST'))
 	define('PHPBB_ACM_MEMCACHE_HOST', 'localhost');
 }
 
+if (!defined('PHPBB_ACM_MEMCACHE'))
+{
+	//can define multiple servers with host1/port1,host2/port2 format
+	define('PHPBB_ACM_MEMCACHE', PHPBB_ACM_MEMCACHE_HOST . '/' . PHPBB_ACM_MEMCACHE_PORT);
+}
+
 /**
 * ACM for Memcached
 * @package acm
@@ -54,7 +60,11 @@ class acm extends acm_memory
 		parent::acm_memory();
 
 		$this->memcache = new Memcache;
-		$this->memcache->connect(PHPBB_ACM_MEMCACHE_HOST, PHPBB_ACM_MEMCACHE_PORT);
+		foreach(explode(',', PHPBB_ACM_MEMCACHE) as $u)
+		{
+			$parts = explode('/', $u);
+			$this->memcache->addServer(trim($parts[0]), trim($parts[1]));
+		}
 		$this->flags = (PHPBB_ACM_MEMCACHE_COMPRESS) ? MEMCACHE_COMPRESSED : 0;
 	}
 
