@@ -407,7 +407,7 @@ class acp_forums
 						$exclude_forums[] = $row['forum_id'];
 					}
 
-					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
+					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, true, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}
@@ -416,7 +416,7 @@ class acp_forums
 					$this->page_title = 'CREATE_FORUM';
 
 					$forum_id = $this->parent_id;
-					$parents_list = make_forum_select($this->parent_id, false, false, false, false);
+					$parents_list = make_forum_select($this->parent_id, false, true, false, false);
 
 					// Fill forum data with default values
 					if (!$update)

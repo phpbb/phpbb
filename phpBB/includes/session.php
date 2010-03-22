@@ -608,6 +608,12 @@ class session
 		}
 		else
 		{
+			// Bot user, if they have a SID in the Request URI we need to get rid of it
+			// otherwise they'll index this page with the SID, duplicate content oh my!
+			if (isset($_GET['sid']))
+			{
+				redirect(build_url(array('sid')));
+			}
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
