@@ -23,13 +23,16 @@ class phpbb_test_case_helpers
 		if (!file_exists('test_config.php'))
 		{
 			trigger_error("You have to create a test_config.php like this:
-<?php
+\"<?php
 $dbms = 'mysqli';
 $dbhost = 'localhost';
 $dbport = '';
 $dbname = 'database';
 $dbuser = 'user';
-$dbpasswd = 'password';", E_USER_ERROR);
+$dbpasswd = 'password';
+\"
+
+NOTE: The database is dropped and recreated with the phpbb-db-schema! Do NOT specify a database with important data.", E_USER_ERROR);
 		}
 		include('test_config.php');
 
