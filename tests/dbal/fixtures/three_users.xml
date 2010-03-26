@@ -11,5 +11,9 @@
 			<value>2</value>
 			<value>foobar</value>
 		</row>
+		<row>
+			<value>3</value>
+			<value>bertie</value>
+		</row>
 	</table>
 </dataset>
