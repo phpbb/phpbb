@@ -19,6 +19,57 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
+	function get_dbms_data($dbms)
+	{
+		$available_dbms = array(
+			'firebird'	=> array(
+				'SCHEMA'		=> 'firebird',
+				'DELIM'			=> ';;',
+			),
+			'mysqli'	=> array(
+				'SCHEMA'		=> 'mysql_41',
+				'DELIM'			=> ';',
+			),
+			'mysql'		=> array(
+				'SCHEMA'		=> 'mysql',
+				'DELIM'			=> ';',
+			),
+			'mssql'		=> array(
+				'SCHEMA'		=> 'mssql',
+				'DELIM'			=> 'GO',
+			),
+			'mssql_odbc'=>	array(
+				'SCHEMA'		=> 'mssql',
+				'DELIM'			=> 'GO',
+			),
+			'mssqlnative'		=> array(
+				'SCHEMA'		=> 'mssql',
+				'DELIM'			=> 'GO',
+			),			
+			'oracle'	=>	array(
+				'SCHEMA'		=> 'oracle',
+				'DELIM'			=> '/',
+			),
+			'postgres' => array(
+				'SCHEMA'		=> 'postgres',
+				'DELIM'			=> ';',
+			),
+			'sqlite'		=> array(
+				'SCHEMA'		=> 'sqlite',
+				'DELIM'			=> ';',
+			),
+		);
+
+		if (isset($available_dbms[$dbms]))
+		{
+			return $available_dbms[$dbms];
+		}
+		else
+		{
+			trigger_error('Database unsupported', E_USER_ERROR);
+		}
+	}
+
 	function split_sql_file($sql, $delimiter)
 	{
 		$sql = str_replace("\r" , '', $sql);
@@ -62,7 +113,23 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
 
-			$sql_query = $this->split_sql_file(file_get_contents('../phpBB/install/schemas/mysql_41_schema.sql'), ';');
+			$dbms_data = $this->get_dbms_data($database_config['dbms']);
+			if ($database_config['dbms'] == 'mysql')
+			{
+				$pdo->exec('SELECT VERSION() AS version');
+				$row = $sth->fetch(PDO::FETCH_ASSOC);
+				if (version_compare($row['version'], '4.1.3', '>='))
+				{
+					$dbms_data['SCHEMA'] .= '_41';
+				}
+				else
+				{
+					$dbms_data['SCHEMA'] .= '_40';
+				}
+				unset($row);
+			}
+
+			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $dbms_data['DELIM']);
 
 			foreach ($sql_query as $sql)
 			{

@@ -246,12 +246,14 @@ class phpbb_dbal_test extends phpbb_database_test_case
 			array('user_id', '', true, true, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))),
-			array('user_id', array(), false, false, false, true),
 			array('user_id', array(), false, true, array()),
-			array('user_id', array(), true, false, false, true),
 			array('user_id', array(), true, true, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))),
+
+			// These here would throw errors and therefor $result should be false.
+			array('user_id', array(), false, false, false, true),
+			array('user_id', array(), true, false, false, true),
 		);
 	}
 
@@ -274,7 +276,48 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		if ($catch_error)
 		{
-			$db->sql_return_on_error(falsee);
+			$db->sql_return_on_error(false);
+		}
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+
+	public static function build_array_data()
+	{
+		return array(
+			array(array('username_clean' => 'barfoo'), array(array('username_clean' => 'barfoo'))),
+			array(array('username_clean' => 'barfoo', 'user_id' => 1), array(array('username_clean' => 'barfoo'))),
+			array(array('username_clean' => 'barfoo', 'user_id' => 2), array()),
+
+			// These here would throw errors and therefor $result should be false.
+			array(array(), false, true),
+			array('no_array', false, true),
+			array(0, false, true),
+		);
+	}
+
+	/**
+	* @dataProvider build_array_data
+	*/
+	public function test_build_array($assoc_ary, $expected, $catch_error = false)
+	{
+		$db = $this->new_dbal();
+
+		if ($catch_error)
+		{
+			$db->sql_return_on_error(true);
+		}
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			WHERE ' . $db->sql_build_array('SELECT', $assoc_ary) . '
+			ORDER BY user_id ASC');
+
+		if ($catch_error)
+		{
+			$db->sql_return_on_error(false);
 		}
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
