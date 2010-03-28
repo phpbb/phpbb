@@ -4257,7 +4257,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_TOPIC_ID'			=> $topic_id,
 
 		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
-		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => str_replace('&amp;', '&', build_url()))),
+		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
 		'S_ENABLE_FEEDS_OVERALL'	=> ($config['feed_overall']) ? true : false,
