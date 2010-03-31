@@ -117,6 +117,11 @@ define('NOTIFY_EMAIL', 0);
 define('NOTIFY_IM', 1);
 define('NOTIFY_BOTH', 2);
 
+// Notify status
+define('NOTIFY_YES', 0);
+define('NOTIFY_NO', 1);
+
+
 // Email Priority Settings
 define('MAIL_LOW_PRIORITY', 4);
 define('MAIL_NORMAL_PRIORITY', 3);
