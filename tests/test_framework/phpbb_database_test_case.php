@@ -126,8 +126,9 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			if ($database_config['dbms'] == 'mysql')
 			{
-				$pdo->exec('SELECT VERSION() AS version');
+				$sth = $pdo->query('SELECT VERSION() AS version');
 				$row = $sth->fetch(PDO::FETCH_ASSOC);
+
 				if (version_compare($row['version'], '4.1.3', '>='))
 				{
 					$dbms_data['SCHEMA'] .= '_41';
@@ -136,7 +137,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				{
 					$dbms_data['SCHEMA'] .= '_40';
 				}
-				unset($row);
+
+				unset($row, $sth);
 			}
 
 			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $dbms_data['DELIM']);
