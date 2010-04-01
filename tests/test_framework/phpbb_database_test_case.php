@@ -25,38 +25,47 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'firebird'	=> array(
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
+				'PDO'			=> 'firebird',
 			),
 			'mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
+				'PDO'			=> 'mysql',
 			),
 			'mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
+				'PDO'			=> 'mysql',
 			),
 			'mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
+				'PDO'			=> 'odbc',
 			),
 			'mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
+				'PDO'			=> 'odbc',
 			),
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
+				'PDO'			=> 'odbc',
 			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
+				'PDO'			=> 'oci',
 			),
 			'postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
+				'PDO'			=> 'pgsql',
 			),
 			'sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
+				'PDO'			=> 'sqlite',
 			),
 		);
 
@@ -95,13 +104,15 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$this->init_test_case_helpers();
 		$database_config = $this->test_case_helpers->get_database_config();
 
+		$dbms_data = $this->get_dbms_data($database_config['dbms']);
+
 		if ($already_connected)
 		{
-			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
 		}
 		else
 		{
-			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);
+			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);
 
 			try
 			{
@@ -113,7 +124,6 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
 
-			$dbms_data = $this->get_dbms_data($database_config['dbms']);
 			if ($database_config['dbms'] == 'mysql')
 			{
 				$pdo->exec('SELECT VERSION() AS version');
