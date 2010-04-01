@@ -20,16 +20,28 @@ class phpbb_test_case_helpers
 
 	public function get_database_config()
 	{
+		static $show_error = true;
+
 		if (!file_exists('test_config.php'))
 		{
+			if ($show_error)
+			{
+				$show_error = false;
+			}
+			else
+			{
+				$this->test_case->markTestSkipped('Missing test_config.php: See first error.');
+				return;
+			}
+
 			trigger_error("You have to create a test_config.php like this:
 \"<?php
-$dbms = 'mysqli';
-$dbhost = 'localhost';
-$dbport = '';
-$dbname = 'database';
-$dbuser = 'user';
-$dbpasswd = 'password';
+\$dbms = 'mysqli';
+\$dbhost = 'localhost';
+\$dbport = '';
+\$dbname = 'database';
+\$dbuser = 'user';
+\$dbpasswd = 'password';
 \"
 
 NOTE: The database is dropped and recreated with the phpbb-db-schema! Do NOT specify a database with important data.", E_USER_ERROR);
