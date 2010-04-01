@@ -783,8 +783,8 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 							'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
-				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
+				POSTS_TABLE		=> 'p',
 			),
 			'LEFT_JOIN'	=> array(
 				array(
