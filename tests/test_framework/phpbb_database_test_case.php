@@ -45,7 +45,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
-			),			
+			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
@@ -108,7 +108,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				$pdo->exec('DROP DATABASE ' . $database_config['dbname']);
 			}
 			catch (PDOException $e){} // ignore non existent db
-			
+
 			$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
 
 			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
