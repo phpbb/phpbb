@@ -122,7 +122,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
 
-			$pdo = new PDO('mysql:host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
 
 			if ($database_config['dbms'] == 'mysql')
 			{
