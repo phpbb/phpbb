@@ -643,13 +643,13 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			while (($file = readdir($dp)) !== false)
 			{
-				if (!is_dir($phpbb_root_path . 'styles/' . $file))
+				if ($file[0] == '.' || !is_dir($phpbb_root_path . 'styles/' . $file))
 				{
 					continue;
 				}
 
 				$subpath = ($mode != 'style') ? "$mode/" : '';
-				if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+				if (file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 				{
 					if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 					{
