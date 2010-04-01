@@ -33,4 +33,7 @@ if (version_compare(PHPUnit_Runner_Version::id(), '3.3.0', '<'))
 }
 
 require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Extensions/Database/TestCase.php';
+require_once 'test_framework/phpbb_test_case_helpers.php';
 require_once 'test_framework/phpbb_test_case.php';
+require_once 'test_framework/phpbb_database_test_case.php';

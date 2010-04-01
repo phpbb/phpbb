@@ -9,29 +9,19 @@
 
 class phpbb_test_case extends PHPUnit_Framework_TestCase
 {
-	protected $expectedTriggerError = false;
+	protected $test_case_helpers;
+
+	public function init_test_case_helpers()
+	{
+		if (!$this->test_case_helpers)
+		{
+			$this->test_case_helpers = new phpbb_test_case_helpers($this);
+		}
+	}
 
 	public function setExpectedTriggerError($errno, $message = '')
 	{
-		$exceptionName = '';
-		switch ($errno)
-		{
-			case E_NOTICE:
-			case E_STRICT:
-				PHPUnit_Framework_Error_Notice::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Notice';
-			break;
-
-			case E_WARNING:
-				PHPUnit_Framework_Error_Warning::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Warning';
-			break;
-
-			default:
-				$exceptionName = 'PHPUnit_Framework_Error';
-			break;
-		}
-		$this->expectedTriggerError = true;
-		$this->setExpectedException($exceptionName, (string) $message, $errno);
+		$this->init_test_case_helpers();
+		$this->test_case_helpers->setExpectedTriggerError($errno, $message);
 	}
 }
