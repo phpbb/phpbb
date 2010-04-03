@@ -22,6 +22,7 @@ require_once 'request/all_tests.php';
 require_once 'security/all_tests.php';
 require_once 'template/all_tests.php';
 require_once 'text_processing/all_tests.php';
+require_once 'dbal/all_tests.php';
 
 // exclude the test directory from code coverage reports
 PHPUnit_Util_Filter::addDirectoryToFilter('./');
@@ -42,6 +43,7 @@ class phpbb_all_tests
 		$suite->addTest(phpbb_security_all_tests::suite());
 		$suite->addTest(phpbb_template_all_tests::suite());
 		$suite->addTest(phpbb_text_processing_all_tests::suite());
+		$suite->addTest(phpbb_dbal_all_tests::suite());
 
 		return $suite;
 	}
