@@ -24,6 +24,7 @@ else
 fi
 
 error=0
+errors=""
 
 IFS=$'\n'
 # get a list of staged files
@@ -52,15 +53,19 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	git cat-file -p $sha | $PHP_BIN -l >/dev/null
+	result=$(git cat-file -p $sha | $PHP_BIN -l)
 	if [ $? -ne 0 ]
 	then
 		error=1
+		# Swap back in correct filenames
+		errors+=${result//in - on/"$filename"}
 	fi
 done
 unset IFS
 
 if [ $error -eq 1 ]
 then
+	echo -e "PHP Syntax check failed:";
+	echo -e "$errors" | grep "^Parse error:"
 	exit 1
 fi
