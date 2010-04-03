@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # A hook to disallow php syntax errors to be committed
 # by running php -l (lint) on them. It requires php-cli
@@ -53,7 +53,7 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	result=$(git cat-file -p $sha | $PHP_BIN -l)
+	result=$(git cat-file -p $sha | /usr/bin/env $PHP_BIN -l)
 	if [ $? -ne 0 ]
 	then
 		error=1
