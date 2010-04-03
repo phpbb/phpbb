@@ -12,6 +12,7 @@
 # ln -s ../../git-tools/hooks/pre-commit \\
 #   .git/hooks/pre-commit
 
+# NOTE: this is run through /usr/bin/env
 PHP_BIN=php
 
 # necessary check for initial commit
