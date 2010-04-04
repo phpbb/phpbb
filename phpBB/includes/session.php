@@ -983,7 +983,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			if (!class_exists('captcha_factory'))
+			if (!class_exists('phpbb_captcha_factory'))
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
