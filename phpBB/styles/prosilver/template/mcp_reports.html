@@ -54,7 +54,7 @@
 					</dt>
 					<dd class="moderation">
 						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
-						{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span>
+						<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span>
 					</dd>
 					<!-- ENDIF -->
 					<dd class="mark"><input type="checkbox" name="report_id_list[]" value="{postrow.REPORT_ID}" /></dd>
