@@ -1684,6 +1684,51 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			// Delete shadow topics pointing to not existing topics
+			$batch_size = 500;
+
+			// Set of affected forums we have to resync
+			$sync_forum_ids = array();
+
+			do
+			{
+				$sql_array = array(
+					'SELECT'	=> 't1.topic_id, t1.forum_id',
+					'FROM'		=> array(
+						TOPICS_TABLE	=> 't1',
+					),
+					'LEFT_JOIN'	=> array(
+						array(
+							'FROM'	=> array(TOPICS_TABLE	=> 't2'),
+							'ON'	=> 't1.topic_moved_id = t2.topic_id',
+						),
+					),
+					'WHERE'		=> 't1.topic_moved_id <> 0
+								AND t2.topic_id IS NULL',
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_array);
+				$result = $db->sql_query_limit($sql, $batch_size);
+
+				$topic_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_ids[] = (int) $row['topic_id'];
+
+					$sync_forum_ids[(int) $row['forum_id']] = (int) $row['forum_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (!empty($topic_ids))
+				{
+					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+						WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+					$db->sql_query($sql);
+				}
+			}
+			while (sizeof($topic_ids) == $batch_size);
+
+			// Sync the forums we have deleted shadow topics from.
+			sync('forum', 'forum_id', $sync_forum_ids, true, true);
 
 			$no_updates = false;
 		break;
