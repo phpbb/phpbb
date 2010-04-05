@@ -888,8 +888,8 @@ class acp_board
 		$old_tz = $user->timezone;
 		$old_dst = $user->dst;
 
-		$user->timezone = $config['board_timezone'];
-		$user->dst = $config['board_dst'];
+		$user->timezone = $config['board_timezone'] * 3600;
+		$user->dst = $config['board_dst'] * 3600;
 
 		$dateformat_options = '';
 
