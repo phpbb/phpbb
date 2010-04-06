@@ -775,7 +775,18 @@ class fileupload
 		{
 			if ($get_info)
 			{
-				$data .= @fread($fsock, 1024);
+				$block = @fread($fsock, 1024);
+				$filesize += strlen($block);
+
+				if ($this->max_filesize && $filesize > $this->max_filesize)
+				{
+					$max_filesize = get_formatted_filesize($this->max_filesize, false);
+
+					$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+					return $file;
+				}
+
+				$data .= $block;
 			}
 			else
 			{
