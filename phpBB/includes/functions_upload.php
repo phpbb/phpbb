@@ -802,6 +802,18 @@ class fileupload
 					{
 						$upload_ary['type'] = rtrim(str_replace('content-type: ', '', strtolower($line)));
 					}
+					else if ($this->max_filesize && stripos($line, 'content-length: ') !== false)
+					{
+						$length = (int) str_replace('content-length: ', '', strtolower($line));
+
+						if ($length && $length > $this->max_filesize)
+						{
+							$max_filesize = get_formatted_filesize($this->max_filesize, false);
+
+							$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+							return $file;
+						}
+					}
 					else if (stripos($line, '404 not found') !== false)
 					{
 						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
