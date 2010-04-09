@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #
 # A hook to disallow php syntax errors to be committed
 # by running php -l (lint) on them. It requires php-cli
