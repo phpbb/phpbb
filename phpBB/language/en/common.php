@@ -416,6 +416,7 @@ $lang = array_merge($lang, array(
 	'OPTIONS'					=> 'Options',
 
 	'PAGE_OF'				=> 'Page <strong>%1$d</strong> of <strong>%2$d</strong>',
+	'PAGE_TITLE_NUMBER'		=> 'Page %s',
 	'PASSWORD'				=> 'Password',
 	'PIXEL'					=> 'px',
 	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
