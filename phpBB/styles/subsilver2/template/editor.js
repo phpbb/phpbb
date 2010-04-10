@@ -6,6 +6,7 @@
 // Startup variables
 var imageTag = false;
 var theSelection = false;
+var bbcodeEnabled = true;
 
 // Check for Browser & Platform for PC & IE specific bits
 // More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
@@ -250,10 +251,59 @@ function addquote(post_id, username)
 
 	if (theSelection)
 	{
-		insert_text('[quote="' + username + '"]' + theSelection + '[/quote]');
+		if (bbcodeEnabled)
+		{
+			insert_text('[quote="' + username + '"]' + theSelection + '[/quote]');
+		}
+		else
+		{
+			var lines = split_lines(theSelection);
+			for (i = 0; i < lines.length; i++)
+			{
+				insert_text('> ' + lines[i] + '\n');
+			}
+		}
 	}
 
 	return;
+}
+
+
+function split_lines(text)
+{
+	var lines = text.split('\n');
+	var splitLines = new Array();
+	var j = 0;
+	for(i = 0; i < lines.length; i++)
+	{
+		if (lines[i].length <= 80)
+		{
+			splitLines[j] = lines[i];
+			j++;
+		}
+		else
+		{
+			var line = lines[i];
+			do
+			{
+				var splitAt = line.indexOf(' ', 80);
+				
+				if (splitAt == -1)
+				{
+					splitLines[j] = line;
+					j++;
+				}
+				else
+				{
+					splitLines[j] = line.substring(0, splitAt);
+					line = line.substring(splitAt);
+					j++;
+				}
+			}
+			while(splitAt != -1);
+		}
+	}
+	return splitLines;
 }
 
 /**
