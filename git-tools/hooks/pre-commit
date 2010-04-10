@@ -62,7 +62,7 @@ do
 	then
 		error=1
 		# Swap back in correct filenames
-		errors=$(echo "$errors"; echo "$result" |sed -e "s:in - on:in $filename on:g")
+		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
 	fi
 done
 unset IFS
