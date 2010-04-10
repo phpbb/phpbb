@@ -1258,7 +1258,7 @@ if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 
 		$message = $quote_string . $message;
 		$message = str_replace("\n", "\n" . $quote_string, $message);
-		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . " :\n" . $message . "\n";
+		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
 	}
 }
 
