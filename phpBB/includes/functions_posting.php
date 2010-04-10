@@ -1146,7 +1146,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			}
 		}
 
-		unset($rowset[$i]);
+		unset($rowset[$post_list[$i]]);
 	}
 
 	if ($mode == 'topic_review')
