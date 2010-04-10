@@ -196,7 +196,7 @@ function attach_inline(index, filename)
 /**
 * Add quote text to message
 */
-function addquote(post_id, username)
+function addquote(post_id, username, l_wrote)
 {
 	var message_name = 'message_' + post_id;
 	var theSelection = '';
@@ -257,6 +257,7 @@ function addquote(post_id, username)
 		}
 		else
 		{
+			insert_text(username + ' ' + l_wrote + ':' + '\n');
 			var lines = split_lines(theSelection);
 			for (i = 0; i < lines.length; i++)
 			{
