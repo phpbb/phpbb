@@ -314,10 +314,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		}
 		else
 		{
-			if ($answers[1] === 'incorrect-captcha-sol')
-			{
-				return $user->lang['RECAPTCHA_INCORRECT'];
-			}
+			return $user->lang['RECAPTCHA_INCORRECT'];
 		}
 	}
 
