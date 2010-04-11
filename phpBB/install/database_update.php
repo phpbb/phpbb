@@ -913,6 +913,8 @@ function database_update_info()
 		'3.0.7-RC2'		=> array(),
 		// No changes from 3.0.7 to 3.0.7-PL1
 		'3.0.7'		=> array(),
+		// No changes from 3.0.7-PL1 to 3.0.8-RC1
+		'3.0.7-PL1'		=> array(),
 	);
 }
 
@@ -923,7 +925,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $user;
 
 	switch ($version)
 	{
@@ -1647,6 +1649,43 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.7 to 3.0.7-PL1
 		case '3.0.7':
+		break;
+
+		// Changes from 3.0.7-PL1 to 3.0.8-RC1
+		case '3.0.7-PL1':
+			$user->add_lang('acp/attachments');
+			$extension_groups = array(
+				$user->lang['EXT_GROUP_ARCHIVES']			=> 'ARCHIVES',
+				$user->lang['EXT_GROUP_DOCUMENTS']			=> 'DOCUMENTS',
+				$user->lang['EXT_GROUP_DOWNLOADABLE_FILES']	=> 'DOWNLOADABLE_FILES',
+				$user->lang['EXT_GROUP_FLASH_FILES']		=> 'FLASH_FILES',
+				$user->lang['EXT_GROUP_IMAGES']				=> 'IMAGES',
+				$user->lang['EXT_GROUP_PLAIN_TEXT']			=> 'PLAIN_TEXT',
+				$user->lang['EXT_GROUP_QUICKTIME_MEDIA']	=> 'QUICKTIME_MEDIA',
+				$user->lang['EXT_GROUP_REAL_MEDIA']			=> 'REAL_MEDIA',
+				$user->lang['EXT_GROUP_WINDOWS_MEDIA']		=> 'WINDOWS_MEDIA',
+			);
+
+			$sql = 'SELECT group_id, group_name
+				FROM ' . EXTENSION_GROUPS_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (isset($extension_groups[$row['group_name']]))
+				{
+					$sql_ary = array(
+						'group_name'	=> $extension_groups[$row['group_name']],
+					);
+					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE group_id = ' . (int) $row['group_id'];
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+			$db->sql_freeresult($result);
+
+
+			$no_updates = false;
 		break;
 	}
 }

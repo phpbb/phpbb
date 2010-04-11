@@ -586,16 +586,6 @@ $lang = array_merge($lang, array(
 
 	'DEFAULT_INSTALL_POST'			=> 'This is an example post in your phpBB3 installation. Everything seems to be working. You may delete this post if you like and continue to set up your board. During the installation process your first category and your first forum are assigned an appropriate set of permissions for the predefined usergroups administrators, bots, global moderators, guests, registered users and registered COPPA users. If you also choose to delete your first category and your first forum, do not forget to assign permissions for all these usergroups for all new categories and forums you create. It is recommended to rename your first category and your first forum and copy permissions from these while creating new categories and forums. Have fun!',
 
-	'EXT_GROUP_ARCHIVES'			=> 'Archives',
-	'EXT_GROUP_DOCUMENTS'			=> 'Documents',
-	'EXT_GROUP_DOWNLOADABLE_FILES'	=> 'Downloadable Files',
-	'EXT_GROUP_FLASH_FILES'			=> 'Flash Files',
-	'EXT_GROUP_IMAGES'				=> 'Images',
-	'EXT_GROUP_PLAIN_TEXT'			=> 'Plain Text',
-	'EXT_GROUP_QUICKTIME_MEDIA'		=> 'Quicktime Media',
-	'EXT_GROUP_REAL_MEDIA'			=> 'Real Media',
-	'EXT_GROUP_WINDOWS_MEDIA'		=> 'Windows Media',
-
 	'FORUMS_FIRST_CATEGORY'			=> 'Your first category',
 	'FORUMS_TEST_FORUM_DESC'		=> 'Description of your first forum.',
 	'FORUMS_TEST_FORUM_TITLE'		=> 'Your first forum',
