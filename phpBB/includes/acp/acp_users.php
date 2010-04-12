@@ -105,7 +105,7 @@ class acp_users
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 			WHERE u.user_id = ' . $user_id . '
 			ORDER BY s.session_time DESC';
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, 1);
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
@@ -2084,7 +2084,7 @@ class acp_users
 									LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 								WHERE u.user_id = ' . $user_id . '
 								ORDER BY s.session_time DESC';
-							$result = $db->sql_query($sql);
+							$result = $db->sql_query_limit($sql, 1);
 							$user_row = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 						}
