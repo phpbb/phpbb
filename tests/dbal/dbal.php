@@ -350,5 +350,35 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		$db->sql_freeresult($result);
 	}
+
+	public static function delete_data()
+	{
+		return array(
+			array("WHERE config_name = 'test_version'", array(array(
+				'config_name'	=> 'second config',
+				'config_value'	=> '10',
+				'is_dynamic'	=> 0,
+			))),
+			array('', array()),
+		);
+	}
+
+	/**
+	* @dataProvider delete_data
+	*/
+	public function test_delete($where, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('DELETE FROM phpbb_config
+			' . $where);
+
+		$result = $db->sql_query('SELECT *
+			FROM phpbb_config');
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
 }
 
