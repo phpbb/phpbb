@@ -675,7 +675,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
+	$table_ary = array(BOOKMARKS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
 
 	foreach ($table_ary as $table)
 	{
