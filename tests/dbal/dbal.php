@@ -380,5 +380,31 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		$db->sql_freeresult($result);
 	}
+
+	public function test_multiple_insert()
+	{
+		$db = $this->new_dbal();
+
+		$batch_ary = array();
+		$batch_ary[] = array(
+			'config_name'	=> 'batch one',
+			'config_value'	=> 'b1',
+			'is_dynamic'	=> 0,
+		);
+		$batch_ary[] = array(
+			'config_name'	=> 'batch two',
+			'config_value'	=> 'b2',
+			'is_dynamic'	=> 1,
+		);
+
+		$result = $db->sql_multi_insert('phpbb_config', $batch_ary);
+
+		$result = $db->sql_query('SELECT *
+			FROM phpbb_config');
+
+		$this->assertEquals($batch_ary, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
 }
 
