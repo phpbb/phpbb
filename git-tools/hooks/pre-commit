@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #
 # A hook to disallow php syntax errors to be committed
 # by running php -l (lint) on them. It requires php-cli
@@ -27,7 +27,10 @@ fi
 error=0
 errors=""
 
-IFS=$'\n'
+# dash does not support $'\n':
+# http://forum.soft32.com/linux2/Bug-409179-DASH-Settings-IFS-work-properly-ftopict70039.html
+IFS='
+'
 # get a list of staged files
 for line in $(git diff-index --cached --full-index $against)
 do
@@ -59,7 +62,7 @@ do
 	then
 		error=1
 		# Swap back in correct filenames
-		errors+=${result//in - on/"$filename"}
+		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
 	fi
 done
 unset IFS
