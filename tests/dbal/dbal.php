@@ -406,5 +406,47 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		$db->sql_freeresult($result);
 	}
+
+	public static function update_data()
+	{
+		return array(
+			array(array('config_value'	=> '20', 'is_dynamic'	=> 0), " WHERE config_name = 'batch one'", array(array(
+				'config_name'	=> 'batch one',
+				'config_value'	=> '20',
+				'is_dynamic'	=> 0,
+			), array(
+				'config_name'	=> 'batch two',
+				'config_value'	=> 'b2',
+				'is_dynamic'	=> 1,
+			))),
+			array(array('config_value'	=> '0', 'is_dynamic'	=> 1), '', array(array(
+				'config_name'	=> 'batch one',
+				'config_value'	=> '0',
+				'is_dynamic'	=> 1,
+			), array(
+				'config_name'	=> 'batch two',
+				'config_value'	=> '0',
+				'is_dynamic'	=> 1,
+			))),
+		);
+	}
+
+	/**
+	* @dataProvider update_data
+	*/
+	public function test_update($sql_ary, $where, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('UPDATE phpbb_config
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where);
+
+		$result = $db->sql_query('SELECT *
+			FROM phpbb_config');
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
 }
 
