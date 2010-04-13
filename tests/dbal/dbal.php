@@ -316,5 +316,39 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		$db->sql_freeresult($result);
 	}
+
+	public static function build_array_insert_data()
+	{
+		return array(
+			array(array(
+				'config_name'	=> 'test_version',
+				'config_value'	=> '0.0.0',
+				'is_dynamic'	=> 1,
+			)),
+			array(array(
+				'config_name'	=> 'second config',
+				'config_value'	=> '10',
+				'is_dynamic'	=> 0,
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider build_array_insert_data
+	*/
+	public function test_build_array_insert($sql_ary)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary));
+
+		$result = $db->sql_query_limit("SELECT *
+			FROM phpbb_config
+			WHERE config_name = '" . $sql_ary['config_name'] . "'", 1);
+
+		$this->assertEquals($sql_ary, $db->sql_fetchrow($result));
+
+		$db->sql_freeresult($result);
+	}
 }
 
