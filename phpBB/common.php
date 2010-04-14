@@ -239,3 +239,9 @@ foreach ($cache->obtain_hooks() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
+
+if (!$config['use_system_cron'])
+{
+	require($phpbb_root_path . 'includes/cron.' . $phpEx);
+	$cron = new cron();
+}
