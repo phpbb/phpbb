@@ -15,6 +15,7 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'regex/email.php';
 require_once 'regex/ipv4.php';
 require_once 'regex/ipv6.php';
 
@@ -29,6 +30,7 @@ class phpbb_regex_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Regular Expressions');
 
+		$suite->addTestSuite('phpbb_email_test');
 		$suite->addTestSuite('phpbb_ipv4_test');
 		$suite->addTestSuite('phpbb_ipv6_test');
 
