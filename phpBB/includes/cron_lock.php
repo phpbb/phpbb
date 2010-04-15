@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 */
 class cron_lock
 {
+	private $cron_id;
+
 	function lock() {
 		global $config, $db;
 		
@@ -44,10 +46,10 @@ class cron_lock
 			}
 		}
 
-		define('CRON_ID', time() . ' ' . unique_id());
+		$this->cron_id = time() . ' ' . unique_id();
 
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . $db->sql_escape(CRON_ID) . "'
+			SET config_value = '" . $db->sql_escape($this->cron_id) . "'
 			WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($config['cron_lock']) . "'";
 		$db->sql_query($sql);
 
@@ -65,7 +67,7 @@ class cron_lock
 
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '0'
-			WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
+			WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($this->cron_id) . "'";
 		$db->sql_query($sql);
 	}
 }
