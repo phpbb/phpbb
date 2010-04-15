@@ -32,6 +32,24 @@ class prune_all_forums_cron_task extends cron_task_base
 	*/
 	public function run()
 	{
+		global $db;
+		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
+			FROM ' . FORUMS_TABLE . "
+			WHERE enable_prune = 1 and prune_next < " . time();
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['prune_days'])
+			{
+				auto_prune($row['forum_id'], 'posted', $row['forum_flags'], $row['prune_days'], $row['prune_freq']);
+			}
+
+			if ($row['prune_viewed'])
+			{
+				auto_prune($row['forum_id'], 'viewed', $row['forum_flags'], $row['prune_viewed'], $row['prune_freq']);
+			}
+		}
+		$db->sql_freeresult($result);
 	}
 
 	/**
