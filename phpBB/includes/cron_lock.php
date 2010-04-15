@@ -24,9 +24,10 @@ class cron_lock
 {
 	private $cron_id;
 
-	function lock() {
+	function lock()
+	{
 		global $config, $db;
-		
+
 		if (!isset($config['cron_lock']))
 		{
 			set_config('cron_lock', '0', true);
@@ -58,11 +59,12 @@ class cron_lock
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	function unlock() {
+
+	function unlock()
+	{
 		global $db;
 
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
