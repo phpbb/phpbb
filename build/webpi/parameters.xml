@@ -116,12 +116,12 @@
 
 	<parameter
 		name="Database Password"
-		description="Password for your phpBB database. (Minimum 4 characters)"
+		description="Password for your phpBB database. (Must be at least 8 characters, contain at least one lower case letter, one upper case letter and one digit)"
 		tags="New, Password,SQL,  DbUserPassword">
 
 		<parameterValidation
 			type = "RegularExpression"   
-			validationString = "^.{4,}$" /> 
+			validationString = "^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$" />
 
 		<parameterEntry
 			type="TextFile"
