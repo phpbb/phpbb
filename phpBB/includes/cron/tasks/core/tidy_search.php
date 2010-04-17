@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class tidy_sessions_cron_task extends cron_task_base
+class cron_task_core_tidy_sessions extends cron_task_base
 {
 	/**
 	* Runs this cron task.

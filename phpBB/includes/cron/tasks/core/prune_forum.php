@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class prune_forum_cron_task extends cron_task_base implements parametrized_cron_task
+class cron_task_core_prune_forum extends cron_task_base implements parametrized_cron_task
 {
 	/**
 	* Constructor.

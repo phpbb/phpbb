@@ -17,22 +17,19 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Tidy warnings cron task.
-*
-* Will only run when warnings are configured to expire.
+* Tidy cache cron task.
 *
 * @package phpBB3
 */
-class tidy_warnings_cron_task extends cron_task_base
+class cron_task_core_tidy_cache extends cron_task_base
 {
 	/**
 	* Runs this cron task.
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		tidy_warnings();
+		global $cache;
+		$cache->tidy();
 	}
 
 	/**
@@ -40,8 +37,8 @@ class tidy_warnings_cron_task extends cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return !!$config['warnings_expire_days'];
+		global $cache;
+		return method_exists($cache, 'tidy');
 	}
 
 	/**
@@ -51,6 +48,6 @@ class tidy_warnings_cron_task extends cron_task_base
 	public function should_run()
 	{
 		global $config;
-		return $config['warnings_last_gc'] < time() - $config['warnings_gc'];
+		return $config['cache_last_gc'] < time() - $config['cache_gc'];
 	}
 }

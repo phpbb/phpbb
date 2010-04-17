@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class prune_all_forums_cron_task extends cron_task_base
+class cron_task_core_prune_all_forums extends cron_task_base
 {
 	/**
 	* Runs this cron task.
