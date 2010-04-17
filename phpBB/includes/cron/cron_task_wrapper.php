@@ -24,9 +24,23 @@ if (!defined('IN_PHPBB'))
 */
 class cron_task_wrapper
 {
+	/**
+	* Wraps a task $task, which must implement cron_task interface.
+	*/
 	public function __construct($task)
 	{
 		$this->task = $task;
+	}
+
+	/**
+	* Returns whether this task is parametrized.
+	*
+	* Parametrized tasks accept parameters during initialization and must
+	* normally be scheduled with parameters.
+	*/
+	public function is_parametrized()
+	{
+		return $this->task instanceof parametrized_cron_task;
 	}
 
 	/**
@@ -49,12 +63,28 @@ class cron_task_wrapper
 		return preg_replace('/^cron_task_/', '', $class);
 	}
 
+	/**
+	* Returns a url through which this task may be invoked via web.
+	*/
 	public function get_url()
 	{
 		global $phpbb_root_path, $phpEx;
 
 		$name = $this->get_name();
-		$url = append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $name);
+		if ($this->is_parametrized())
+		{
+			$params = $this->task->get_parameters();
+			$extra = '';
+			foreach ($params as $key => $value)
+			{
+				$extra .= '&amp;' . $key . '=' . urlencode($value);
+			}
+		}
+		else
+		{
+			$extra = '';
+		}
+		$url = append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $name . $extra);
 		return $url;
 	}
 

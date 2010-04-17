@@ -38,9 +38,9 @@ function do_cron($run_tasks)
 {
 	global $cron_lock;
 
-	foreach ($run_tasks as $cron_type)
+	foreach ($run_tasks as $task)
 	{
-		$cron->run_task($cron_type);
+		$task->run();
 	}
 
 	// Unloading cache and closing db after having done the dirty work.
@@ -54,7 +54,7 @@ if ($cron_lock->lock())
 	{
 		$use_shutdown_function = false;
 
-		$run_tasks = $cron->find_all_runnable_tasks();
+		$run_tasks = $cron->find_all_ready_tasks();
 	}
 	else
 	{
@@ -62,14 +62,18 @@ if ($cron_lock->lock())
 		$use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 
 		output_image();
-
-		if ($cron->is_valid_task($cron_type) && $cron->is_task_runnable($cron_type))
-		{
-			if ($use_shutdown_function && !$cron->is_task_shutdown_function_compatible($cron_type))
-			{
-				$use_shutdown_function = false;
+		
+		$task = $cron->find_task($cron_type);
+		if ($task) {
+			if ($task->is_parametrized()) {
+				$task->parse_parameters($_GET);
 			}
-			$run_tasks = array($cron_type);
+			if ($task->is_ready()) {
+				if ($use_shutdown_function && !$task->is_shutdown_function_safe()) {
+					$use_shutdown_function = false;
+				}
+				$run_tasks = array($task);
+			}
 		}
 	}
 	if ($use_shutdown_function)
