@@ -27,6 +27,8 @@ if (!defined('IN_PHPBB'))
 */
 class cron_task_core_prune_forum extends cron_task_base implements parametrized_cron_task
 {
+	private $forum_data;
+
 	/**
 	* Constructor.
 	*
@@ -46,22 +48,7 @@ class cron_task_core_prune_forum extends cron_task_base implements parametrized_
 		}
 		else
 		{
-			$forum_id = request_var('f', 0);
-
-			$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
-				FROM ' . FORUMS_TABLE . "
-				WHERE forum_id = $forum_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				// FIXME what to do?
-				break;
-			}
-
-			$this->forum_data = $row;
+			$this->forum_data = null;
 		}
 	}
 
@@ -90,7 +77,7 @@ class cron_task_core_prune_forum extends cron_task_base implements parametrized_
 	public function is_runnable()
 	{
 		global $config;
-		return !$config['use_system_cron'];
+		return !$config['use_system_cron'] && $this->forum_data;
 	}
 
 	/**
@@ -103,10 +90,42 @@ class cron_task_core_prune_forum extends cron_task_base implements parametrized_
 	}
 
 	/**
-	* Returns parameters of this cron task as a query string.
+	* Returns parameters of this cron task as an array.
+	*
+	* The array has one key, f, whose value is id of the forum to be pruned.
 	*/
-	public function get_url_query_string()
+	public function get_parameters()
 	{
-		return 'f=' . $this->forum_data['forum_id'];
+		return array('f' => $this->forum_data['forum_id']);
+	}
+
+	/**
+	* Parses parameters found in $params, which is an array.
+	*
+	* $params may contain user input and is not trusted.
+	*
+	* $params is expected to have a key f whose value is id of the forum to be pruned.
+	*/
+	public function parse_parameters($params)
+	{
+		global $db;
+
+		$this->forum_data = null;
+		if (isset($params['f']))
+		{
+			$forum_id = int($params['f']);
+
+			$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
+				FROM ' . FORUMS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				$this->forum_data = $row;
+			}
+		}
 	}
 }
