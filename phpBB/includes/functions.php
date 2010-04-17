@@ -4611,11 +4611,12 @@ function page_footer($run_cron = true)
 	if ($call_cron)
 	{
 		global $cron;
-		$cron_type = $cron->find_one_runnable_task();
+		$task = $cron->find_one_ready_task();
 
-		if ($cron_type)
+		if ($task)
 		{
-			$template->assign_var('RUN_CRON_TASK', $cron->generate_task_code($cron_type));
+			$url = $task->get_url();
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
 		}
 	}
 

@@ -17,28 +17,19 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Tidy cache cron task.
+* Tidy sessions cron task.
 *
 * @package phpBB3
 */
-class tidy_cache_cron_task extends cron_task_base
+class cron_task_core_tidy_sessions extends cron_task_base
 {
 	/**
 	* Runs this cron task.
 	*/
 	public function run()
 	{
-		global $cache;
-		$cache->tidy();
-	}
-
-	/**
-	* Returns whether this cron task can run, given current board configuration.
-	*/
-	public function is_runnable()
-	{
-		global $cache;
-		return method_exists($cache, 'tidy');
+		global $user;
+		$user->session_gc();
 	}
 
 	/**
@@ -48,6 +39,6 @@ class tidy_cache_cron_task extends cron_task_base
 	public function should_run()
 	{
 		global $config;
-		return $config['cache_last_gc'] < time() - $config['cache_gc'];
+		return $config['session_last_gc'] < time() - $config['session_gc'];
 	}
 }

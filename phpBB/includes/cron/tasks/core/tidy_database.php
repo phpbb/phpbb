@@ -17,19 +17,19 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Tidy sessions cron task.
+* Tidy database cron task.
 *
 * @package phpBB3
 */
-class tidy_sessions_cron_task extends cron_task_base
+class cron_task_core_tidy_database extends cron_task_base
 {
 	/**
 	* Runs this cron task.
 	*/
 	public function run()
 	{
-		global $user;
-		$user->session_gc();
+		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		tidy_database();
 	}
 
 	/**
@@ -39,6 +39,6 @@ class tidy_sessions_cron_task extends cron_task_base
 	public function should_run()
 	{
 		global $config;
-		return $config['session_last_gc'] < time() - $config['session_gc'];
+		return $config['database_last_gc'] < time() - $config['database_gc'];
 	}
 }
