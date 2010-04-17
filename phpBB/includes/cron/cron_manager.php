@@ -101,7 +101,8 @@ class cron_manager
 				include_once($phpbb_root_path . "includes/cron/$mod/$filename.$phpEx");
 				$class = "cron_task_${mod}_${filename}";
 				$object = new $class;
-				$this->tasks[] = $object;
+				$wrapper = new cron_task_wrapper($object);
+				$this->tasks[] = $wrapper;
 			}
 		}
 	}
