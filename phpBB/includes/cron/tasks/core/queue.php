@@ -16,6 +16,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+
 /**
 * Queue cron task. Sends email and jabber messages queued by other scripts.
 *

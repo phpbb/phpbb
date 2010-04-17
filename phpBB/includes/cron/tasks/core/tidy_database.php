@@ -16,6 +16,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+
 /**
 * Tidy database cron task.
 *
