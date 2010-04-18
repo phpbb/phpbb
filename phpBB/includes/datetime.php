@@ -11,7 +11,7 @@
 * phpBB custom extensions to the PHP DateTime class
 * This handles the relative formats phpBB employs
 */
-class phpbb_DateTime extends DateTime
+class phpbb_datetime extends DateTime
 {
 	/**
 	* String used to wrap the date segment which should be replaced by today/tomorrow/yesterday
@@ -29,7 +29,7 @@ class phpbb_DateTime extends DateTime
 	static protected $format_cache = array();
 
 	/**
-	* Constructs a new instance of phpbb_DateTime, expanded to include an argument to inject
+	* Constructs a new instance of phpbb_datetime, expanded to include an argument to inject
 	* the user context and modify the timezone to the users selected timezone if one is not set.
 	*
 	* @param string $time String in a format accepted by strtotime().
