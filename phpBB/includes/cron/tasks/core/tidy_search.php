@@ -28,7 +28,7 @@ if (!class_exists('cron_task_base'))
 *
 * @package phpBB3
 */
-class cron_task_core_tidy_sessions extends cron_task_base
+class cron_task_core_tidy_search extends cron_task_base
 {
 	/**
 	* Runs this cron task.

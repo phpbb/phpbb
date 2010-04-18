@@ -35,11 +35,6 @@ if (!class_exists('cron_task'))
 abstract class cron_task_base implements cron_task
 {
 	/**
-	* Runs this cron task.
-	*/
-	abstract public function run();
-
-	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
 	* For example, a cron task that prunes forums can only run when

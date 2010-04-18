@@ -33,6 +33,7 @@ class cron_task_core_tidy_database extends cron_task_base
 	*/
 	public function run()
 	{
+		global $phpbb_root_path, $phpEx;
 		if (!function_exists('tidy_database'))
 		{
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
