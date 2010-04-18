@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+if (!class_exists('cron_task_base'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+}
 
 /**
 * Tidy warnings cron task.
@@ -33,7 +36,10 @@ class cron_task_core_tidy_warnings extends cron_task_base
 	public function run()
 	{
 		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		if (!function_exists('tidy_warnings'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 		tidy_warnings();
 	}
 

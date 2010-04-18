@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_wrapper.' . $phpEx);
+if (!class_exists('cron_task_wrapper'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_wrapper.' . $phpEx);
+}
 
 /**
 * Cron manager class.
@@ -100,8 +103,11 @@ class cron_manager
 			list($mod, $filename) = $task_file;
 			if ($this->is_valid_name($mod) && $this->is_valid_name($filename))
 			{
-				include_once($phpbb_root_path . "includes/cron/$mod/$filename.$phpEx");
 				$class = "cron_task_${mod}_${filename}";
+				if (!class_exists($class))
+				{
+					include($phpbb_root_path . "includes/cron/$mod/$filename.$phpEx");
+				}
 				$object = new $class;
 				$wrapper = new cron_task_wrapper($object);
 				$this->tasks[] = $wrapper;
