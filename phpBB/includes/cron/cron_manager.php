@@ -61,7 +61,7 @@ class cron_manager
 		{
 			// ignore ., .. and dot directories
 			// todo: change is_dir to account for symlinks
-			if ($entry[0] == '.' || !is_dir($entry))
+			if ($entry[0] == '.' || !is_dir("$tasks_root_path/$entry"))
 			{
 				continue;
 			}
@@ -76,10 +76,13 @@ class cron_manager
 		{
 			$path = $phpbb_root_path . 'includes/cron/tasks/' . $task_dir;
 			$dir = opendir($path);
-			while (($entry = readdir($dir)) !== false && substr($entry, -$ext_length) == $ext)
+			while (($entry = readdir($dir)) !== false)
 			{
-				$task_file = substr($entry, 0, -$ext_length);
-				$task_files[] = array($task_dir, $task_file);
+				if (substr($entry, -$ext_length) == $ext)
+				{
+					$task_file = substr($entry, 0, -$ext_length);
+					$task_files[] = array($task_dir, $task_file);
+				}
 			}
 			closedir($dir);
 		}
@@ -106,7 +109,7 @@ class cron_manager
 				$class = "cron_task_${mod}_${filename}";
 				if (!class_exists($class))
 				{
-					include($phpbb_root_path . "includes/cron/$mod/$filename.$phpEx");
+					include($phpbb_root_path . "includes/cron/tasks/$mod/$filename.$phpEx");
 				}
 				$object = new $class;
 				$wrapper = new cron_task_wrapper($object);
