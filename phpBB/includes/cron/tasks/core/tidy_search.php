@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+if (!class_exists('cron_task_base'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+}
 
 /**
 * Tidy search cron task.
@@ -37,7 +40,10 @@ class cron_task_core_tidy_sessions extends cron_task_base
 		// Select the search method
 		$search_type = basename($config['search_type']);
 
-		include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		if (!class_exists($search_type))
+		{
+			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		}
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;

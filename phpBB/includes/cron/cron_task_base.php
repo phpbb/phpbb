@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
+if (!class_exists('cron_task'))
+{
+	include_once($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
+}
 
 /**
 * Cron task base class. Provides sensible defaults for cron tasks

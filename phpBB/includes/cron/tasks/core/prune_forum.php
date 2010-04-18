@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+if (!class_exists('cron_task_base'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+}
 
 /**
 * Prune one forum cron task.
@@ -60,7 +63,10 @@ class cron_task_core_prune_forum extends cron_task_base implements parametrized_
 	public function run()
 	{
 		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		if (!function_exists('auto_prune'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 
 		if ($this->forum_data['prune_days'])
 		{

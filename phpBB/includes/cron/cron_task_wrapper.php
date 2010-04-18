@@ -16,6 +16,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+// We use parametrized_cron_task in is_parametrized
+if (!interface_exists('cron_task'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
+}
+
 /**
 * Cron task wrapper class.
 * Enhances cron tasks with convenience methods that work identically for all tasks.

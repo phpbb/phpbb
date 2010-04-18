@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+if (!class_exists('cron_task_base'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+}
 
 /**
 * Queue cron task. Sends email and jabber messages queued by other scripts.
@@ -31,7 +34,10 @@ class cron_task_core_queue extends cron_task_base
 	public function run()
 	{
 		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		if (!class_exists('queue'))
+		{
+			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		}
 		$queue = new queue();
 		$queue->process();
 	}

@@ -16,7 +16,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+if (!class_exists('cron_task_base'))
+{
+	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
+}
 
 /**
 * Tidy database cron task.
@@ -30,7 +33,10 @@ class cron_task_core_tidy_database extends cron_task_base
 	*/
 	public function run()
 	{
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		if (!function_exists('tidy_database'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 		tidy_database();
 	}
 
