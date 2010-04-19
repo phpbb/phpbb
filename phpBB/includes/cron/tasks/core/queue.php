@@ -67,6 +67,7 @@ class cron_task_core_queue extends cron_task_base
 	public function is_shutdown_function_safe()
 	{
 		global $config;
+		// A user reported using the mail() function while using shutdown does not work. We do not want to risk that.
 		return !$config['smtp_delivery'];
 	}
 }
