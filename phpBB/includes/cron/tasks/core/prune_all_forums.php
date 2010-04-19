@@ -63,6 +63,6 @@ class cron_task_core_prune_all_forums extends cron_task_base
 	public function is_runnable()
 	{
 		global $config;
-		return !!$config['use_system_cron'];
+		return (bool) $config['use_system_cron'];
 	}
 }
