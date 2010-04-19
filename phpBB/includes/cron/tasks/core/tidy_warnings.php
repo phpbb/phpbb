@@ -49,7 +49,7 @@ class cron_task_core_tidy_warnings extends cron_task_base
 	public function is_runnable()
 	{
 		global $config;
-		return !!$config['warnings_expire_days'];
+		return (bool) $config['warnings_expire_days'];
 	}
 
 	/**
