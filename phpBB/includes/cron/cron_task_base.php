@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 
 if (!class_exists('cron_task'))
 {
-	include_once($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
+	include($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
 }
 
 /**
