@@ -632,6 +632,58 @@ class queue
 	}
 
 	/**
+	* Obtains exclusive lock on queue cache file.
+	* Returns resource representing the lock
+	*/
+	function lock()
+	{
+		// For systems that can't have two processes opening
+		// one file for writing simultaneously
+		if (file_exists($this->cache_file . '.lock'))
+		{
+			$mode = 'rb';
+		}
+		else
+		{
+			$mode = 'wb';
+		}
+		$lock_fp = @fopen($this->cache_file . '.lock', $mode);
+		// Two processes may attempt to create lock file at the same time.
+		// Have the losing process try opening the lock file again for reading
+		// on the assumption that the winning process created it
+		if (!$lock_fp && $mode == 'wb')
+		{
+			// Assign to $mode for the check in chmod below
+			$mode = 'rb';
+			$lock_fp = @fopen($this->cache_file . '.lock', $mode);
+		}
+		if ($lock_fp && $mode == 'wb')
+		{
+			// Only need to set mode when the lock file is written
+			@chmod($this->cache_file . '.lock', 0666);
+		}
+		if ($lock_fp)
+		{
+			@flock($lock_fp, LOCK_EX);
+		}
+		return $lock_fp;
+	}
+
+	/**
+	* Releases lock on queue cache file, using resource obtained from lock()
+	*/
+	function unlock($lock_fp)
+	{
+		// lock() will return null if opening lock file, and thus locking, failed.
+		// Accept null values here so that client code does not need to check them
+		if ($lock_fp)
+		{
+			@flock($lock_fp, LOCK_UN);
+			fclose($lock_fp);
+		}
+	}
+
+	/**
 	* Process queue
 	* Using lock file
 	*/
@@ -639,23 +691,15 @@ class queue
 	{
 		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
+		$lock_fp = $this->lock();
+
 		set_config('last_queue_run', time(), true);
 
-		// Delete stale lock file
-		if (file_exists($this->cache_file . '.lock') && !file_exists($this->cache_file))
+		if (!file_exists($this->cache_file) || filemtime($this->cache_file) > time() - $config['queue_interval'])
 		{
-			@unlink($this->cache_file . '.lock');
+			$this->unlock($lock_fp);
 			return;
 		}
-
-		if (!file_exists($this->cache_file) || (file_exists($this->cache_file . '.lock') && filemtime($this->cache_file) > time() - $config['queue_interval']))
-		{
-			return;
-		}
-
-		$fp = @fopen($this->cache_file . '.lock', 'wb');
-		fclose($fp);
-		@chmod($this->cache_file . '.lock', 0777);
 
 		include($this->cache_file);
 
@@ -713,6 +757,7 @@ class queue
 				break;
 
 				default:
+					$this->unlock($lock_fp);
 					return;
 			}
 
@@ -738,8 +783,6 @@ class queue
 
 						if (!$result)
 						{
-							@unlink($this->cache_file . '.lock');
-
 							messenger::error('EMAIL', $err_msg);
 							continue 2;
 						}
@@ -783,16 +826,14 @@ class queue
 		{
 			if ($fp = @fopen($this->cache_file, 'wb'))
 			{
-				@flock($fp, LOCK_EX);
 				fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");
-				@flock($fp, LOCK_UN);
 				fclose($fp);
 
 				phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
 			}
 		}
 
-		@unlink($this->cache_file . '.lock');
+		$this->unlock($lock_fp);
 	}
 
 	/**
@@ -804,6 +845,8 @@ class queue
 		{
 			return;
 		}
+
+		$lock_fp = $this->lock();
 
 		if (file_exists($this->cache_file))
 		{
@@ -824,13 +867,13 @@ class queue
 
 		if ($fp = @fopen($this->cache_file, 'w'))
 		{
-			@flock($fp, LOCK_EX);
 			fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->data), true) . ");\n\n?>");
-			@flock($fp, LOCK_UN);
 			fclose($fp);
 
 			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
 		}
+
+		$this->unlock($lock_fp);
 	}
 }
 
