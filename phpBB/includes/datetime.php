@@ -87,32 +87,27 @@ class phpbb_datetime extends DateTime
 				$midnight = clone $now;
 				$midnight->setTime(0, 0, 0);
 
-				$midnight = $midnight->getTimestamp();
-				$gmepoch = $this->getTimestamp();
+				$midnight	= $midnight->getTimestamp();
+				$timestamp	= $this->getTimestamp();
 
-				if (!($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
+				if ($timestamp > $midnight + 86400)
 				{
-					$day = false;
+					$day = 'TOMORROW';
+				}
+				else if ($timestamp > $midnight)
+				{
+					$day = 'TODAY';
+				}
+				else if ($timestamp > $midnight - 86400)
+				{
+					$day = 'YESTERDAY';
+				}
 
-					if ($gmepoch > $midnight + 86400)
-					{
-						$day = 'TOMORROW';
-					}
-					else if ($gmepoch > $midnight)
-					{
-						$day = 'TODAY';
-					}
-					else if ($gmepoch > $midnight - 86400)
-					{
-						$day = 'YESTERDAY';
-					}
+				if ($day !== false)
+				{
+					$format = self::_format_cache($format, $this->_user);
 
-					if ($day !== false)
-					{
-						$format = self::_format_cache($format, $this->_user);
-
-						return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->_user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
-					}
+					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->_user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
 				}
 			}
 		}
