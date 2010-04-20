@@ -1574,20 +1574,26 @@ class user extends session
 	{
 		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
+		// @todo Move this to a better location
+		if (!class_exists('phpbb_datetime'))
+		{
+			global $phpbb_root_path, $phpEx;
+
+			require "{$phpbb_root_path}includes/datetime.$phpEx";
+		}
+
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 
 			$this->date_format = $this->data['user_dateformat'];
-			$this->timezone = $this->data['user_timezone'] * 3600;
-			$this->dst = $this->data['user_dst'] * 3600;
+			$this->timezone = $this->data['user_timezone'];
 		}
 		else
 		{
 			$this->lang_name = basename($config['default_lang']);
 			$this->date_format = $config['default_dateformat'];
-			$this->timezone = $config['board_timezone'] * 3600;
-			$this->dst = $config['board_dst'] * 3600;
+			$this->timezone = $config['board_timezone'];
 
 			/**
 			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
@@ -1625,6 +1631,14 @@ class user extends session
 			}
 			*/
 		}
+
+		if (is_numeric($this->timezone))
+		{
+			// Might still be numeric by chance
+			$this->timezone = sprintf('Etc/GMT%+d', ($this->timezone + ($this->data['user_id'] != ANONYMOUS ? $this->data['user_dst'] : $config['board_dst'])));
+		}
+
+		$this->timezone = new DateTimeZone($this->timezone);
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
@@ -2072,70 +2086,17 @@ class user extends session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		static $midnight;
-		static $date_cache;
+		static $utc;
 
-		$format = (!$format) ? $this->date_format : $format;
-		$now = time();
-		$delta = $now - $gmepoch;
-
-		if (!isset($date_cache[$format]))
+		if (!isset($utc))
 		{
-			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
-			$date_cache[$format] = array(
-				'is_short'		=> strpos($format, '|'),
-				'format_short'	=> substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
-				'format_long'	=> str_replace('|', '', $format),
-				'lang'			=> $this->lang['datetime'],
-			);
-
-			// Short representation of month in format? Some languages use different terms for the long and short format of May
-			if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
-			{
-				$date_cache[$format]['lang']['May'] = $this->lang['datetime']['May_short'];
-			}
+			$utc = new DateTimeZone('UTC');
 		}
 
-		// Zone offset
-		$zone_offset = $this->timezone + $this->dst;
+		$time = new phpbb_DateTime("@$gmepoch", $utc, $this);
+		$time->setTimezone($this->tz);
 
-		// Show date <= 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
-		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
-		if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
-		{
-			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
-		}
-
-		if (!$midnight)
-		{
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $zone_offset));
-			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $zone_offset;
-		}
-
-		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
-		{
-			$day = false;
-
-			if ($gmepoch > $midnight + 86400)
-			{
-				$day = 'TOMORROW';
-			}
-			else if ($gmepoch > $midnight)
-			{
-				$day = 'TODAY';
-			}
-			else if ($gmepoch > $midnight - 86400)
-			{
-				$day = 'YESTERDAY';
-			}
-
-			if ($day !== false)
-			{
-				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $zone_offset), $date_cache[$format]['lang']));
-			}
-		}
-
-		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $zone_offset), $date_cache[$format]['lang']);
+		return $time->format($format, $forcedate);
 	}
 
 	/**
