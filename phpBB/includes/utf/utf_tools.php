@@ -1712,49 +1712,94 @@ function utf8_case_fold_nfc($text, $option = 'full')
 	return $text;
 }
 
-/**
-* A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
-* to be in NFC (Normalization Form Composition).
-*
-* @param	mixed	$strings	a string or an array of strings to normalize
-* @return	mixed				the normalized content, preserving array keys if array given.
-*/
-function utf8_normalize_nfc($strings)
+if (!extension_loaded('intl'))
 {
-	if (empty($strings))
+	/**
+	* A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
+	* to be in NFC (Normalization Form Composition).
+	*
+	* @param	mixed	$strings	a string or an array of strings to normalize
+	* @return	mixed				the normalized content, preserving array keys if array given.
+	*/
+	function utf8_normalize_nfc($strings)
 	{
-		return $strings;
-	}
-
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
-	if (!is_array($strings))
-	{
-		utf_normalizer::nfc($strings);
-	}
-	else if (is_array($strings))
-	{
-		foreach ($strings as $key => $string)
+		if (empty($strings))
 		{
-			if (is_array($string))
+			return $strings;
+		}
+
+		if (!class_exists('utf_normalizer'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		}
+
+		if (!is_array($strings))
+		{
+			utf_normalizer::nfc($strings);
+		}
+		else if (is_array($strings))
+		{
+			foreach ($strings as $key => $string)
 			{
-				foreach ($string as $_key => $_string)
+				if (is_array($string))
 				{
-					utf_normalizer::nfc($strings[$key][$_key]);
+					foreach ($string as $_key => $_string)
+					{
+						utf_normalizer::nfc($strings[$key][$_key]);
+					}
+				}
+				else
+				{
+					utf_normalizer::nfc($strings[$key]);
 				}
 			}
-			else
+		}
+
+		return $strings;
+	}
+}
+else
+{
+	/**
+	* wrapper around PHP's native normalizer from intl
+	* previously a PECL extension, included in the core since PHP 5.3.0
+	* http://php.net/manual/en/normalizer.normalize.php
+	*
+	* @param	mixed	$strings	a string or an array of strings to normalize
+	* @return	mixed				the normalized content, preserving array keys if array given.
+	*/
+	function utf8_normalize_nfc($strings)
+	{
+		if (empty($strings))
+		{
+			return $strings;
+		}
+
+		if (!is_array($strings))
+		{
+			$strings = Normalizer::normalize($strings);
+		}
+		if (is_array($strings))
+		{
+			foreach ($strings as $key => $string)
 			{
-				utf_normalizer::nfc($strings[$key]);
+				if (is_array($string))
+				{
+					foreach ($string as $_key => $_string)
+					{
+						$strings[$key][$_key] = Normalizer::normalize($strings[$key][$_key]);
+					}
+				}
+				else
+				{
+					$strings[$key] = Normalizer::normalize($strings[$key]);
+				}
 			}
 		}
-	}
 
-	return $strings;
+		return $strings;
+	}
 }
 
 /**
