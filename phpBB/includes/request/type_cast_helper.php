@@ -103,6 +103,11 @@ class phpbb_type_cast_helper implements phpbb_type_cast_helper_interface
 		{
 			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
 
+			if ($multibyte)
+			{
+				$result = utf8_normalize_nfc($result);
+			}
+
 			if (!empty($result))
 			{
 				// Make sure multibyte characters are wellformed
