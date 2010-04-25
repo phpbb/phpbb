@@ -1863,6 +1863,10 @@ function change_database_data(&$no_updates, $version)
 		// No changes from 3.0.8-RC1 to 3.0.8
 		case '3.0.8-RC1':
 		break;
+
+		case '3.0.9-dev':
+			set_config('use_system_cron', 0);
+		break;
 	}
 }
 
