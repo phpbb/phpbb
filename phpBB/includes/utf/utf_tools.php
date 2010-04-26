@@ -1778,9 +1778,13 @@ else
 
 		if (!is_array($strings))
 		{
-			$strings = Normalizer::normalize($strings);
+			if (Normalizer::isNormalized($strings))
+			{
+				return $strings;
+			}
+			return Normalizer::normalize($strings);
 		}
-		if (is_array($strings))
+		else
 		{
 			foreach ($strings as $key => $string)
 			{
@@ -1788,11 +1792,19 @@ else
 				{
 					foreach ($string as $_key => $_string)
 					{
+						if (Normalizer::isNormalized($strings[$key][$_key]))
+						{
+							continue;
+						}
 						$strings[$key][$_key] = Normalizer::normalize($strings[$key][$_key]);
 					}
 				}
 				else
 				{
+					if (Normalizer::isNormalized($strings[$key]))
+					{
+						continue;
+					}
 					$strings[$key] = Normalizer::normalize($strings[$key]);
 				}
 			}
