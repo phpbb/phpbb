@@ -142,6 +142,8 @@ $lang = array_merge($lang, array(
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded.',
 	'PHP_SIZE_NA'				=> 'The attachment’s file size is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'PHP_SIZE_OVERRUN'			=> 'The attachment’s file size is too large, the maximum upload size is %1$d %2$s.<br />Please note this is set in php.ini and cannot be overridden.',
+	'PHP_POST_NA'				=> 'Nothing was submitted. If you tried uploading an attachment, it was too large and prevented the rest of the form from being processed. Please use the "Back" button in your browser to return to the previous page and try uploading a smaller attachment.<br /><br />Could not determine the maximum size defined by PHP in php.ini.<br /><br />If you are an administrator, please note that you must set <a href="http://php.net/manual/en/ini.core.php#ini.post-max-size">memory_limit, post_max_size and upload_max_filesize</a> to sufficiently large values to allow large file uploads.',
+	'PHP_POST_OVERRUN'			=> 'Nothing was submitted. If you tried uploading an attachment, it was too large and prevented the rest of the form from being processed. Please use the "Back" button in your browser to return to the previous page and try uploading a smaller attachment.<br /><br />The maximum upload size is %1$d %2$s. Please note this is set in php.ini and cannot be overridden.<br /><br />If you are an administrator, please note that you must set <a href="http://php.net/manual/en/ini.core.php#ini.post-max-size">memory_limit, post_max_size and upload_max_filesize</a> to sufficiently large values to allow large file uploads.',
 	'PLACE_INLINE'				=> 'Place inline',
 	'POLL_DELETE'				=> 'Delete poll',
 	'POLL_FOR'					=> 'Run poll for',

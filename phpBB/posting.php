@@ -655,6 +655,31 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+// Check for post submissions exceeding post_max_size.
+// In such event php clears $_POST and $_FILES.
+// Clearing of $_POST is unfortunate as typically user uploads a huge attachment and without it,
+// remainder of submission would fit in $_POST just fine.
+// Inform users that their submission did not make it.
+// See http://php.net/manual/en/ini.core.php#ini.post-max-size for documentation
+// and http://www.phpbb.com/bugs/phpbb3/58405 for discussion
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
+{
+	$max_filesize = @ini_get('upload_max_filesize');
+	$unit = 'MB';
+
+	if (!empty($max_filesize))
+	{
+		$unit = strtolower(substr($max_filesize, -1, 1));
+		$max_filesize = (int) $max_filesize;
+
+		$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+	}
+
+	$error[] = (empty($max_filesize)) ? $user->lang['PHP_POST_NA'] : sprintf($user->lang['PHP_POST_OVERRUN'], $max_filesize, $user->lang[$unit]);
+
+	// This will close upload progress popup
+	$_POST['add_file'] = true;
+}
 
 if ($submit || $preview || $refresh)
 {
