@@ -518,6 +518,14 @@ foreach ($compress_programs as $extension => $compress_command)
 	$package->run_command('md5sum ./release_files/' . $package->get('release_filename') . '.' . $extension . ' > ./release_files/' . $package->get('release_filename') . '.' . $extension . '.md5');
 }
 
+// Microsoft Web PI packaging
+$package->begin_status('Packaging phpBB for Microsoft WebPI');
+$file = './release_files/' . $package->get('release_filename') . '.webpi.zip';
+$package->run_command("rm -v $file");
+$package->run_command('cp -p ./release_files/' . $package->get('release_filename') . ".zip $file");
+$package->run_command('cd ./../webpi && ' . $compress_programs['zip'] . " ./../new_version/$file *");
+$package->run_command("md5sum $file  > $file.md5");
+
 // verify results
 chdir($package->locations['root']);
 $package->begin_status('********** Verifying packages **********');
