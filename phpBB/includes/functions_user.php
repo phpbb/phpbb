@@ -2284,7 +2284,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 /**
 * Uploading/Changing user avatar
 */
-function avatar_process_user(&$error, $custom_userdata = false)
+function avatar_process_user(&$error, $custom_userdata = false, $can_upload = null)
 {
 	global $config, $phpbb_root_path, $auth, $user, $db;
 
@@ -2323,7 +2323,10 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	$avatar_select = basename(request_var('avatar_select', ''));
 
 	// Can we upload?
-	$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+	if (is_null($can_upload))
+	{
+		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+	}
 
 	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
 	{

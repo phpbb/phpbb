@@ -1706,7 +1706,7 @@ class acp_users
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
-					if (avatar_process_user($error, $user_row))
+					if (avatar_process_user($error, $user_row, $can_upload))
 					{
 						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
 					}
