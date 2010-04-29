@@ -926,5 +926,3 @@ class fulltext_postgres extends search_backend
 		);
 	}
 }
-
-?>
