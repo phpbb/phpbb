@@ -66,7 +66,8 @@ class fulltext_postgres extends search_backend
 			}
 
 
-			if (!$this->tsearch_builtin) {
+			if (!$this->tsearch_builtin)
+			{
 				$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
 			}
 		}
@@ -86,7 +87,8 @@ class fulltext_postgres extends search_backend
 			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'];
 		}
 
-		if (!$this->tsearch_builtin) {
+		if (!$this->tsearch_builtin)
+		{
 			$sql = "SELECT c.relname
 				  FROM pg_catalog.pg_class c
 				 WHERE c.relkind = 'r'
@@ -446,7 +448,7 @@ class fulltext_postgres extends search_backend
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(', ', $author_ary) . ')';
-		
+
 		if (sizeof($author_ary) && $author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
@@ -460,7 +462,7 @@ class fulltext_postgres extends search_backend
 		{
 			$sql_author = '';
 		}
-		
+
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
@@ -576,7 +578,7 @@ class fulltext_postgres extends search_backend
 		}
 
 		$id_ary = array();
-		
+
 		// Create some display specific sql strings
 		if ($author_name)
 		{
@@ -625,7 +627,7 @@ class fulltext_postgres extends search_backend
 		{
 			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
-		
+
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
