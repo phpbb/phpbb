@@ -1755,15 +1755,15 @@ function validate_jabber($jid)
 		return false;
 	}
 
-	$seperator_pos = strpos($jid, '@');
+	$separator_pos = strpos($jid, '@');
 
-	if ($seperator_pos === false)
+	if ($separator_pos === false)
 	{
 		return 'WRONG_DATA';
 	}
 
-	$username = substr($jid, 0, $seperator_pos);
-	$realm = substr($jid, $seperator_pos + 1);
+	$username = substr($jid, 0, $separator_pos);
+	$realm = substr($jid, $separator_pos + 1);
 
 	if (strlen($username) == 0 || strlen($realm) < 3)
 	{
