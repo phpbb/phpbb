@@ -65,7 +65,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
-				'PDO'			=> 'sqlite',
+				'PDO'			=> 'sqlite2',
 			),
 		);
 
@@ -79,7 +79,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
-	function split_sql_file($sql, $delimiter)
+	function split_sql_file($sql, $delimiter, $dbms)
 	{
 		$sql = str_replace("\r" , '', $sql);
 		$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
@@ -92,6 +92,21 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		if (empty($end_data))
 		{
 			unset($data[key($data)]);
+		}
+
+		if ($dbms == 'sqlite')
+		{
+			// trim # off query to satisfy sqlite
+			foreach ($data as $i => $query)
+			{
+				$lines = explode("\n", $query);
+				foreach ($lines as $j => $line)
+				if (strpos($line, '#') === 0)
+				{
+					unset($lines[$j]);
+				}
+				$data[$i] = implode("\n", $lines);
+			}
 		}
 
 		return $data;
@@ -108,21 +123,42 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		if ($already_connected)
 		{
-			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+			if ($database_config['dbms'] == 'sqlite')
+			{
+				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
+			}
+			else
+			{
+				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+			}
 		}
 		else
 		{
-			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);
-
-			try
+			if ($database_config['dbms'] == 'sqlite')
 			{
-				$pdo->exec('DROP DATABASE ' . $database_config['dbname']);
+				// delete existing database
+				if (file_exists($database_config['dbhost']))
+				{
+					unlink($database_config['dbhost']);
+				}
+
+				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
 			}
-			catch (PDOException $e){} // ignore non existent db
+			else
+			{
+				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);try
+				{
+					$pdo->exec('DROP DATABASE ' . $database_config['dbname']);
+				}
+				catch (PDOException $e){} // ignore non existent db
 
-			$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
+				$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
 
-			$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+			}
+
+			// good for debug
+			// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 			if ($database_config['dbms'] == 'mysql')
 			{
@@ -141,7 +177,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				unset($row, $sth);
 			}
 
-			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $dbms_data['DELIM']);
+			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $dbms_data['DELIM'], $database_config['dbms']);
 
 			foreach ($sql_query as $sql)
 			{
