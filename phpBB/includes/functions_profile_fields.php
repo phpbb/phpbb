@@ -366,6 +366,7 @@ class custom_profile
 			case 'sqlite':
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssqlnative':
 				$right_delim = ']';
 				$left_delim = '[';
 			break;
