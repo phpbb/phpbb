@@ -394,6 +394,7 @@ class acp_database
 
 								case 'mssql':
 								case 'mssql_odbc':
+								case 'mssqlnative':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
