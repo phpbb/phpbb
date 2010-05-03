@@ -1155,6 +1155,7 @@ if ($auth->acl_get('a_search'))
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$sql = 'SELECT search_time, search_keywords
 				FROM ' . SEARCH_RESULTS_TABLE . '
 				WHERE DATALENGTH(search_keywords) > 0

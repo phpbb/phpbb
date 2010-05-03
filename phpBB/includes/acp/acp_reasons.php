@@ -233,6 +233,7 @@ class acp_reasons
 						// Standard? What's that?
 						case 'mssql':
 						case 'mssql_odbc':
+						case 'mssqlnative':
 							// Change the reports using this reason to 'other'
 							$sql = "DECLARE @ptrval binary(16)
 
