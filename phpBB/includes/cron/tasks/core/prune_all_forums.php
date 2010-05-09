@@ -37,7 +37,13 @@ class cron_task_core_prune_all_forums extends cron_task_base
 	*/
 	public function run()
 	{
-		global $db;
+		global $phpbb_root_path, $phpEx, $db;
+		
+		if (!function_exists('auto_prune'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
 		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 			FROM ' . FORUMS_TABLE . "
 			WHERE enable_prune = 1 and prune_next < " . time();
