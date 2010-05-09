@@ -48,25 +48,37 @@ function do_cron($run_tasks)
 	garbage_collection();
 }
 
+// Thanks to various fatal errors and lack of try/finally, it is quite easy to leave
+// the cron lock locked, especially when working on cron-related code.
+//
+// Attempt to alleviate the problem by doing setup outside of the lock as much as possible.
+//
+// If DEBUG_EXTRA is defined and cron lock cannot be obtained, a message will be printed.
+
+if ($config['use_system_cron'])
+{
+	$use_shutdown_function = false;
+
+	include($phpbb_root_path . 'includes/cron/cron_manager.' . $phpEx);
+	$cron = new cron_manager;
+}
+else
+{
+	$cron_type = request_var('cron_type', '');
+	$use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
+
+	output_image();
+}
+
 $cron_lock = new cron_lock;
 if ($cron_lock->lock())
 {
 	if ($config['use_system_cron'])
 	{
-		$use_shutdown_function = false;
-
-		include($phpbb_root_path . 'includes/cron/cron_manager.' . $phpEx);
-		$cron = new cron_manager;
-
 		$run_tasks = $cron->find_all_ready_tasks();
 	}
 	else
 	{
-		$cron_type = request_var('cron_type', '');
-		$use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
-
-		output_image();
-
 		// If invalid task is specified, empty $run_tasks is passed to do_cron which then does nothing
 		$run_tasks = array();
 		$task = $cron->find_task($cron_type);
@@ -93,5 +105,12 @@ if ($cron_lock->lock())
 	else
 	{
 		do_cron($run_tasks);
+	}
+}
+else
+{
+	if (defined('DEBUG_EXTRA'))
+	{
+		echo "Could not obtain cron lock.";
 	}
 }
