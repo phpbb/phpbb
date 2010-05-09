@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!class_exists('cron_task'))
+if (!interface_exists('cron_task'))
 {
 	include($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
 }
