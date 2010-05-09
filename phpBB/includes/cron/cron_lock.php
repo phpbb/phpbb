@@ -63,6 +63,11 @@ class cron_lock
 		return true;
 	}
 
+	/**
+	* Releases cron lock.
+	*
+	* Attempting to release a cron lock that is already released is harmless.
+	*/
 	function unlock()
 	{
 		global $db;
