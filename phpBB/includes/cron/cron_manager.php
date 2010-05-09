@@ -168,13 +168,23 @@ class cron_manager
 		return null;
 	}
 
+	/**
+	* Creates an instance of parametrized cron task $name with args $args.
+	*
+	* $name is the task name, which is the same as cron task class name.
+	* $args will be passed to the task class's constructor.
+	* The constructed task is wrapped with cron task wrapper before being returned.
+	*/
 	function instantiate_task($name, $args)
 	{
 		$task = $this->find_task($name);
 		if ($task)
 		{
-			$class = get_class($task);
+			// task here is actually an instance of cron task wrapper
+			$class = $task->get_name();
 			$task = new $class($args);
+			// need to wrap the new task too
+			$task = new cron_task_wrapper($task);
 		}
 		return $task;
 	}
