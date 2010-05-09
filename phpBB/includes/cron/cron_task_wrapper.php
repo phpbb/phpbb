@@ -61,12 +61,11 @@ class cron_task_wrapper
 	}
 
 	/**
-	* Returns the name of wrapped task.
+	* Returns the name of wrapped task. It is the same as the wrapped class's class name.
 	*/
 	public function get_name()
 	{
-		$class = get_class($this->task);
-		return preg_replace('/^cron_task_/', '', $class);
+		return get_class($this->task);
 	}
 
 	/**
