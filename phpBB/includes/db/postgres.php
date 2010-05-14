@@ -76,7 +76,14 @@ class dbal_postgres extends dbal
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
+		if ($this->persistency)
+		{
+			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
+		}
+		else
+		{
+			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
+		}
 
 		if ($this->db_connect_id)
 		{
