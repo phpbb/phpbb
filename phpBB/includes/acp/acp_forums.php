@@ -1705,6 +1705,9 @@ class acp_forums
 					)
 				);
 
+				// Amount of rows we select and delete in one iteration.
+				$batch_size = 500;
+
 				foreach ($tables_ary as $field => $tables)
 				{
 					$start = 0;
@@ -1714,7 +1717,7 @@ class acp_forums
 						$sql = "SELECT $field
 							FROM " . POSTS_TABLE . '
 							WHERE forum_id = ' . $forum_id;
-						$result = $db->sql_query_limit($sql, 500, $start);
+						$result = $db->sql_query_limit($sql, $batch_size, $start);
 
 						$ids = array();
 						while ($row = $db->sql_fetchrow($result))
@@ -1733,7 +1736,7 @@ class acp_forums
 							}
 						}
 					}
-					while ($row);
+					while (sizeof($ids) == $batch_size);
 				}
 				unset($ids);
 
