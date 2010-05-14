@@ -3409,13 +3409,14 @@ function phpbb_checkdnsrr($host, $type = '')
 {
 	$type = (!$type) ? 'MX' : $type;
 
-	if (DIRECTORY_SEPARATOR == '\\')
+	// Call checkdnsrr() if available. This is also the case on Windows with PHP 5.3 or later.
+	if (function_exists('checkdnsrr'))
 	{
-		if (!function_exists('exec'))
-		{
-			return NULL;
-		}
-
+		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+		return checkdnsrr($host . '.', $type);
+	}
+	else if (DIRECTORY_SEPARATOR == '\\' && function_exists('exec'))
+	{
 		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
 		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host) . '.', $output);
 
@@ -3440,11 +3441,6 @@ function phpbb_checkdnsrr($host, $type = '')
 		}
 
 		return false;
-	}
-	else if (function_exists('checkdnsrr'))
-	{
-		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
-		return (checkdnsrr($host . '.', $type)) ? true : false;
 	}
 
 	return NULL;
