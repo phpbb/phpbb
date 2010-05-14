@@ -105,7 +105,7 @@ class acp_users
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 			WHERE u.user_id = ' . $user_id . '
 			ORDER BY s.session_time DESC';
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, 1);
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
@@ -1550,6 +1550,31 @@ class acp_users
 							WHERE user_id = $user_id";
 						$db->sql_query($sql);
 
+						// Check if user has an active session
+						if ($user_row['session_id'])
+						{
+							// We'll update the session if user_allow_viewonline has changed and the user is a bot
+							// Or if it's a regular user and the admin set it to hide the session
+							if ($user_row['user_allow_viewonline'] != $sql_ary['user_allow_viewonline'] && $user_row['user_type'] == USER_IGNORE
+								|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
+							{
+								// We also need to check if the user has the permission to cloak.
+								$user_auth = new auth();
+								$user_auth->acl($user_row);
+
+								$session_sql_ary = array(
+									'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
+								);
+
+								$sql = 'UPDATE ' . SESSIONS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
+									WHERE session_user_id = $user_id";
+								$db->sql_query($sql);
+
+								unset($user_auth);
+							}
+						}
+
 						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
@@ -2084,7 +2109,7 @@ class acp_users
 									LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 								WHERE u.user_id = ' . $user_id . '
 								ORDER BY s.session_time DESC';
-							$result = $db->sql_query($sql);
+							$result = $db->sql_query_limit($sql, 1);
 							$user_row = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 						}
