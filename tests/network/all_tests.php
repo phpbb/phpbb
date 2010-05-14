@@ -15,6 +15,8 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'network/checkdnsrr.php';
+
 class phpbb_network_all_tests
 {
 	public static function main()
@@ -25,6 +27,8 @@ class phpbb_network_all_tests
 	public static function suite()
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Network Functions');
+
+		$suite->addTestSuite('phpbb_network_checkdnsrr_test');
 
 		return $suite;
 	}
