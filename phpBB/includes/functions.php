@@ -3621,6 +3621,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$user->setup();
 			}
 
+			if ($msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
+			{
+				header("HTTP/1.x 404 Not Found");
+			}
+
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 
