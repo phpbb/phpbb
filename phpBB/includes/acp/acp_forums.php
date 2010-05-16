@@ -169,7 +169,7 @@ class acp_forums
 						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
-					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', true);
+					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', false);
 
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
@@ -407,7 +407,7 @@ class acp_forums
 						$exclude_forums[] = $row['forum_id'];
 					}
 
-					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, true, false, false);
+					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}
@@ -416,7 +416,7 @@ class acp_forums
 					$this->page_title = 'CREATE_FORUM';
 
 					$forum_id = $this->parent_id;
-					$parents_list = make_forum_select($this->parent_id, false, true, false, false);
+					$parents_list = make_forum_select($this->parent_id, false, false, false, false);
 
 					// Fill forum data with default values
 					if (!$update)
@@ -639,7 +639,8 @@ class acp_forums
 					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL) ? true : false,
 					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE) ? true : false,
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
-					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
+					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_POST) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : true,
+					'S_ENABLE_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_CAT) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,

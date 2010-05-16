@@ -5,6 +5,11 @@
 </h3>
 
 <div id="topicreview">
+	<script type="text/javascript">
+	// <![CDATA[
+		bbcodeEnabled = {S_BBCODE_ALLOWED};
+	// ]]>
+	</script>
 	<!-- BEGIN history_row -->
 	<div class="post <!-- IF history_row.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 		<div class="inner"><span class="corners-top"><span></span></span>
@@ -12,7 +17,7 @@
 		<div class="postbody" id="pr{history_row.MSG_ID}">
 			<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
 			<ul class="profile-icons">
-				<li class="quote-icon"><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}');"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}"><span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span></a></li>
+				<li class="quote-icon"><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{L_WROTE}');"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}"><span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span></a></li>
 			</ul>
 			<!-- ENDIF -->
 
