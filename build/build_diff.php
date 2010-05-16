@@ -43,7 +43,6 @@ if (!$package_changed_files)
 		run_command("mkdir $location/save/{$s_name}");
 		run_command("mkdir $location/save/{$s_name}/language");
 		run_command("mkdir $location/save/{$s_name}/prosilver");
-		run_command("mkdir $location/save/{$s_name}/subsilver2");
 	}
 }
 
@@ -52,7 +51,6 @@ if (!$package_changed_files)
 {
 	build_code_changes('language');
 	build_code_changes('prosilver');
-	build_code_changes('subsilver2');
 }
 
 // Package code changes
@@ -85,7 +83,7 @@ if (!$echo_changes)
 }
 
 /**
-* $output_format can be: language, prosilver and subsilver2
+* $output_format can be: language or prosilver
 */
 function build_code_changes($output_format)
 {
@@ -120,7 +118,6 @@ function build_code_changes($output_format)
 	$titles = array(
 		'language'		=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' Language Pack Changes',
 		'prosilver'		=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' prosilver Changes',
-		'subsilver2'	=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' subsilver2 Changes',
 	);
 
 	$data['header'] = array(
@@ -179,13 +176,6 @@ These are the ' . $titles[$output_format] . ' summed up into a little Mod. These
 
 			case 'prosilver':
 				if (strpos($filename, 'styles/prosilver/') !== 0)
-				{
-					continue 2;
-				}
-			break;
-
-			case 'subsilver2':
-				if (strpos($filename, 'styles/subsilver2/') !== 0)
 				{
 					continue 2;
 				}
