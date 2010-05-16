@@ -670,15 +670,7 @@ function set_modified_headers($stamp, $browser)
 	{
 		if ($last_load !== false && $last_load >= $stamp)
 		{
-			if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
-			{
-				// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
-				header('Status: 304 Not Modified', true, 304);
-			}
-			else
-			{
-				header('HTTP/1.0 304 Not Modified', true, 304);
-			}
+			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
 			header('Pragma: public');
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));

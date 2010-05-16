@@ -2578,6 +2578,27 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 	return $url;
 }
 
+function send_status_line($code, $message)
+{
+	if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
+	{
+		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
+		header("Status: $code $message", true, $code);
+	}
+	else
+	{
+		if (isset($_SERVER['HTTP_VERSION']))
+		{
+			$version = $_SERVER['HTTP_VERSION'];
+		}
+		else
+		{
+			$version = 'HTTP/1.0';
+		}
+		header("$version $code $message", true, $code);
+	}
+}
+
 //Form validation
 
 
@@ -3623,7 +3644,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if ($msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
 			{
-				header("HTTP/1.x 404 Not Found");
+				send_status_line(404, 'Not Found');
 			}
 
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
