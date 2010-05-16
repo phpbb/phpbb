@@ -191,24 +191,31 @@ class acp_users
 							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
-						if (confirm_box(true))
+						if ($delete_type)
 						{
-							user_delete($delete_type, $user_id, $user_row['username']);
+							if (confirm_box(true))
+							{
+								user_delete($delete_type, $user_id, $user_row['username']);
 
-							add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
-							trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
+								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
+								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
+							}
+							else
+							{
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+									'u'				=> $user_id,
+									'i'				=> $id,
+									'mode'			=> $mode,
+									'action'		=> $action,
+									'update'		=> true,
+									'delete'		=> 1,
+									'delete_type'	=> $delete_type))
+								);
+							}
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-								'u'				=> $user_id,
-								'i'				=> $id,
-								'mode'			=> $mode,
-								'action'		=> $action,
-								'update'		=> true,
-								'delete'		=> 1,
-								'delete_type'	=> $delete_type))
-							);
+							trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 					}
 
