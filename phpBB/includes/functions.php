@@ -2578,6 +2578,26 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 	return $url;
 }
 
+/**
+* Outputs correct status line header.
+*
+* Depending on php sapi one of the two following forms is used:
+*
+* Status: 404 Not Found
+*
+* HTTP/1.x 404 Not Found
+*
+* HTTP version is taken from HTTP_VERSION environment variable,
+* and defaults to 1.0.
+*
+* Sample usage:
+*
+* send_status_line(404, 'Not Found');
+*
+* @param int $code HTTP status code
+* @param string $message Message for the status code
+* @return void
+*/
 function send_status_line($code, $message)
 {
 	if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
