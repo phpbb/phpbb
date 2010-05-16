@@ -72,7 +72,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth;
+		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -119,7 +119,17 @@ class install_update extends module
 		$user->session_begin();
 		$auth->acl($user->data);
 
-		$user->setup('install');
+		// Overwrite user's language with the selected one.
+		// Config needs to be changed to ensure that guests also get the selected language.
+		$config_default_lang = $config['default_lang'];
+		$config['default_lang'] = $language;
+		$user->data['user_lang'] = $language;
+
+		$user->setup(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+
+		// Reset the default_lang
+		$config['default_lang'] = $config_default_lang;
+		unset($config_default_lang);
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
@@ -132,6 +142,14 @@ class install_update extends module
 
 		// still, the acp template is never stored in the database
 		$user->theme['template_storedb'] = false;
+
+		$template->assign_vars(array(
+			'S_USER_LANG'			=> $user->lang['USER_LANG'],
+			'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+			'S_CONTENT_ENCODING'	=> 'UTF-8',
+			'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		));
 
 		// Get current and latest version
 		if (($latest_version = $cache->get('_version_info')) === false)
@@ -234,7 +252,7 @@ class install_update extends module
 
 				$template->assign_vars(array(
 					'S_INTRO'		=> true,
-					'U_ACTION'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=version_check"),
+					'U_ACTION'		=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=version_check"),
 				));
 
 				// Make sure the update list is destroyed.
@@ -250,8 +268,8 @@ class install_update extends module
 					'S_UP_TO_DATE'		=> $up_to_date,
 					'S_VERSION_CHECK'	=> true,
 
-					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
-					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
 
 					'LATEST_VERSION'	=> $this->latest_version,
 					'CURRENT_VERSION'	=> $this->current_version)
@@ -305,8 +323,8 @@ class install_update extends module
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->update_info['version']['to']) ? true : false,
 					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
-					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
-					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
 				));
 
 			break;
@@ -363,7 +381,7 @@ class install_update extends module
 					// Refresh the page if we are still not finished...
 					if ($update_list['status'] != -1)
 					{
-						$refresh_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check");
+						$refresh_url = append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check");
 						meta_refresh(2, $refresh_url);
 
 						$template->assign_vars(array(
@@ -427,7 +445,7 @@ class install_update extends module
 							$file_part = $filename;
 						}
 
-						$diff_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
+						$diff_url = append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
 
 						if (isset($file_struct['as_expected']) && $file_struct['as_expected'])
 						{
@@ -475,9 +493,9 @@ class install_update extends module
 					'S_FILE_CHECK'			=> true,
 					'S_ALL_UP_TO_DATE'		=> $all_up_to_date,
 					'S_VERSION_UP_TO_DATE'	=> $up_to_date,
-					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
-					'U_UPDATE_ACTION'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"),
+					'U_UPDATE_ACTION'		=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files"),
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_db"),
 				));
 
 				if ($all_up_to_date)
@@ -690,7 +708,7 @@ class install_update extends module
 									$params[] = 'download=1';
 								}
 
-								$redirect_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;" . implode('&amp;', $params));
+								$redirect_url = append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files&amp;" . implode('&amp;', $params));
 								meta_refresh(3, $redirect_url);
 
 								$template->assign_vars(array(
@@ -831,7 +849,7 @@ class install_update extends module
 
 						$template->assign_vars(array(
 							'S_DOWNLOAD_FILES'		=> true,
-							'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
+							'U_ACTION'				=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files"),
 							'RADIO_BUTTONS'			=> $radio_buttons,
 							'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 						);
@@ -945,8 +963,8 @@ class install_update extends module
 
 							'S_FTP_UPLOAD'		=> true,
 							'UPLOAD_METHOD'		=> $method,
-							'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'U_DOWNLOAD_METHOD'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;download=1"),
+							'U_ACTION'			=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files"),
+							'U_DOWNLOAD_METHOD'	=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=update_files&amp;download=1"),
 							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 						));
 
@@ -1079,7 +1097,7 @@ class install_update extends module
 
 					$template->assign_vars(array(
 						'S_UPLOAD_SUCCESS'	=> true,
-						'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"))
+						'U_ACTION'			=> append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check"))
 					);
 					return;
 				}
