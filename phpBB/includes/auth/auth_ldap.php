@@ -74,7 +74,7 @@ function init_ldap()
 
 	if ($search === false)
 	{
-		return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+		return $user->lang['LDAP_SEARCH_FAILED'];
 	}
 
 	$result = @ldap_get_entries($ldap, $search);
