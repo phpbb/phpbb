@@ -1201,8 +1201,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
 		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
 			AND w.user_id NOT IN ($sql_ignore_users)
-			AND w.notify_status = 0
-			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+			AND w.notify_status = " . NOTIFY_YES . '
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 			AND u.user_id = w.user_id';
 	$result = $db->sql_query($sql);
 
@@ -1234,8 +1234,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
 				AND fw.user_id NOT IN ($sql_ignore_users)
-				AND fw.notify_status = 0
-				AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+				AND fw.notify_status = " . NOTIFY_YES . '
+				AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
 
@@ -1344,8 +1344,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!empty($update_notification['topic']))
 	{
-		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
-			SET notify_status = 1
+		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_NO . "
 			WHERE topic_id = $topic_id
 				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
 		$db->sql_query($sql);
@@ -1353,8 +1353,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!empty($update_notification['forum']))
 	{
-		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
-			SET notify_status = 1
+		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_NO . "
 			WHERE forum_id = $forum_id
 				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
 		$db->sql_query($sql);
