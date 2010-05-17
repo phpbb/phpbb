@@ -59,7 +59,7 @@ class phpbb_default_captcha
 	{
 		global $user;
 
-		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
+		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 
 		// compute $seed % 0x7fffffff
@@ -235,7 +235,7 @@ class phpbb_default_captcha
 	{
 		global $db, $user;
 
-		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
+		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->confirm_id = md5(unique_id($user->ip));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 		$this->solved = 0;
@@ -259,7 +259,7 @@ class phpbb_default_captcha
 	{
 		global $db, $user;
 
-		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
+		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 		$this->solved = 0;
 		// compute $seed % 0x7fffffff
@@ -281,7 +281,7 @@ class phpbb_default_captcha
 	{
 		global $db, $user;
 
-		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
+		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 		$this->solved = 0;
 		// compute $seed % 0x7fffffff
