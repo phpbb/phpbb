@@ -2600,7 +2600,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 */
 function send_status_line($code, $message)
 {
-	if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
+	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
 		header("Status: $code $message", true, $code);
