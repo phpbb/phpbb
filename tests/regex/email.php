@@ -10,7 +10,7 @@
 require_once 'test_framework/framework.php';
 require_once '../phpBB/includes/functions.php';
 
-class phpbb_email_test extends phpbb_test_case
+class phpbb_regex_email_test extends phpbb_test_case
 {
 	protected $regex;
 
