@@ -3662,7 +3662,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$user->setup();
 			}
 
-			if ($msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
+			if ($msg_text == 'ERROR_NO_ATTACHMENT' || $msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
 			{
 				send_status_line(404, 'Not Found');
 			}
