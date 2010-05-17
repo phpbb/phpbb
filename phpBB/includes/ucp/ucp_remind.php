@@ -82,7 +82,7 @@ class ucp_remind
 			$user_password = gen_rand_string(max(8, rand((int) $config['min_pass_chars'], (int) $config['max_pass_chars'])));
 
 			// For the activation key a random length between 6 and 10 will do.
-			$user_actkey = gen_rand_string(rand(6, 10));
+			$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
 				SET user_newpasswd = '" . $db->sql_escape(phpbb_hash($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'

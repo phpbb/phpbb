@@ -314,10 +314,7 @@ class acp_users
 
 								$server_url = generate_board_url();
 
-								$user_actkey = gen_rand_string(10);
-								$key_len = 54 - (strlen($server_url));
-								$key_len = ($key_len > 6) ? $key_len : 6;
-								$user_actkey = substr($user_actkey, 0, $key_len);
+								$user_actkey = gen_rand_string(mt_rand(6, 10));
 								$email_template = ($user_row['user_type'] == USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
 
 								if ($user_row['user_type'] == USER_NORMAL)
