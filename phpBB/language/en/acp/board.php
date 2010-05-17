@@ -375,6 +375,7 @@ $lang = array_merge($lang, array(
 	'YES_POST_MARKING_EXPLAIN'		=> 'Indicates whether user has posted to a topic.',
 	'YES_READ_MARKING'				=> 'Enable server-side topic marking',
 	'YES_READ_MARKING_EXPLAIN'		=> 'Stores read/unread status information in the database rather than a cookie.',
+	'YES_UNREADS'					=> 'Enable search of unread posts',
 ));
 
 // Auth settings

@@ -61,10 +61,18 @@ if ($search_id == 'egosearch')
 	}
 }
 
-// Search for unread posts needs user to be logged in if topics tracking for guests is disabled
-if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
+// Search for unread posts needs to be allowed and user to be logged in if topics tracking for guests is disabled
+if ($search_id == 'unreadposts')
 {
-	login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	if (!$config['load_unreads_search'])
+	{
+		$template->assign_var('S_NO_SEARCH', true);
+		trigger_error('NO_SEARCH_UNREADS');
+	}
+	else if (!$config['load_anon_lastread'] && !$user->data['is_registered'])
+	{
+		login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	}
 }
 
 // Is user able to search? Has search been disabled?
