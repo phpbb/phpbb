@@ -330,20 +330,32 @@ function user_add($user_row, $cp_data = false)
 
 /**
 * Remove User
+* @param $mode Either 'retain' or 'remove'
 */
-function user_delete($mode, $user_id, $post_username = false)
+function user_delete($mode, $user_ids, $retain_username = true)
 {
 	global $cache, $config, $db, $user, $auth;
 	global $phpbb_root_path, $phpEx;
 
+	$db->sql_transaction('begin');
+
+	$user_rows = array();
+	if (!is_array($user_ids))
+	{
+		$user_ids = array($user_ids);
+	}
+
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('user_id', $user_ids);
 	$result = $db->sql_query($sql);
-	$user_row = $db->sql_fetchrow($result);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_rows[$row['user_id']] = $row;
+	}
 	$db->sql_freeresult($result);
 
-	if (!$user_row)
+	if (!$user_rows)
 	{
 		return false;
 	}
@@ -351,7 +363,8 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
 		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
-		WHERE r.user_id = ' . $user_id . '
+		WHERE ' . $db->sql_in_set('r.user_id', $user_ids) . //r.user_id = ' . $user_id . '
+			'
 			AND p.post_id = r.post_id';
 	$result = $db->sql_query($sql);
 
@@ -405,135 +418,157 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	// Remove reports
-	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE user_id = ' . $user_id);
+	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $user_ids));
 
-	if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+	// Some things need to be done in the loop (if the query changes based
+	// on which user is currently being deleted)
+	$added_guest_posts = 0;
+	foreach ($user_rows as $user_id => $user_row)
 	{
-		avatar_delete('user', $user_row);
+		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+		{
+			avatar_delete('user', $user_row);
+		}
+
+		// Decrement number of users if this user is active
+		if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
+		{
+			set_config_count('num_users', -1, true);
+		}
+
+		switch ($mode)
+		{
+			case 'retain':
+				if ($retain_username === false)
+				{
+					$post_username = $user->lang['GUEST'];
+				}
+				else
+				{
+					$post_username = $user_row['username'];
+				}
+
+				// If the user is inactive and newly registered we assume no posts from the user, and save the queries
+				if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
+				{
+				}
+				else
+				{
+					// When we delete these users and retain the posts, we must assign all the data to the guest user
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+						WHERE forum_last_poster_id = $user_id";
+					$db->sql_query($sql);
+
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+						WHERE poster_id = $user_id";
+					$db->sql_query($sql);
+
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+						WHERE topic_poster = $user_id";
+					$db->sql_query($sql);
+
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+						WHERE topic_last_poster_id = $user_id";
+					$db->sql_query($sql);
+
+					// Since we change every post by this author, we need to count this amount towards the anonymous user
+
+					if ($user_row['user_posts'])
+					{
+						$added_guest_posts += $user_row['user_posts'];
+					}
+				}
+			break;
+
+			case 'remove':
+				// there is nothing variant specific to deleting posts
+			break;
+		}
 	}
 
-	switch ($mode)
+	// Now do the invariant tasks
+	// all queries performed in one call of this function are in a single transaction
+	// so this is kosher
+	if ($mode == 'retain')
 	{
-		case 'retain':
+		// Assign more data to the Anonymous user
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET poster_id = ' . ANONYMOUS . '
+			WHERE ' . $db->sql_in_set('poster_id', $user_ids);
+		$db->sql_query($sql);
 
-			$db->sql_transaction('begin');
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET post_edit_user = ' . ANONYMOUS . '
+			WHERE ' . $db->sql_in_set('post_edit_user', $user_ids);
+		$db->sql_query($sql);
 
-			if ($post_username === false)
-			{
-				$post_username = $user->lang['GUEST'];
-			}
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_posts = user_posts + ' . $added_guest_posts . '
+			WHERE user_id = ' . ANONYMOUS;
+		$db->sql_query($sql);
+	}
+	else if ($mode == 'remove')
+	{
+		if (!function_exists('delete_posts'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 
-			// If the user is inactive and newly registered we assume no posts from this user being there...
-			if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
-			{
-			}
-			else
-			{
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
-					WHERE forum_last_poster_id = $user_id";
-				$db->sql_query($sql);
+		// Find any topics whose only posts are being deleted, and remove them from the topics table
+		$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
+			FROM ' . POSTS_TABLE . '
+			WHERE ' . $db->sql_in_set('poster_id', $user_ids) . '
+			GROUP BY topic_id';
+		$result = $db->sql_query($sql);
 
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
-					WHERE poster_id = $user_id";
-				$db->sql_query($sql);
+		$topic_id_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+		}
+		$db->sql_freeresult($result);
 
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_edit_user = ' . ANONYMOUS . "
-					WHERE post_edit_user = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
-					WHERE topic_poster = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
-					WHERE topic_last_poster_id = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-					SET poster_id = ' . ANONYMOUS . "
-					WHERE poster_id = $user_id";
-				$db->sql_query($sql);
-
-				// Since we change every post by this author, we need to count this amount towards the anonymous user
-
-				// Update the post count for the anonymous user
-				if ($user_row['user_posts'])
-				{
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_posts = user_posts + ' . $user_row['user_posts'] . '
-						WHERE user_id = ' . ANONYMOUS;
-					$db->sql_query($sql);
-				}
-			}
-
-			$db->sql_transaction('commit');
-
-		break;
-
-		case 'remove':
-
-			if (!function_exists('delete_posts'))
-			{
-				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-			}
-
-			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
-				FROM ' . POSTS_TABLE . "
-				WHERE poster_id = $user_id
-				GROUP BY topic_id";
+		if (sizeof($topic_id_ary))
+		{
+			$sql = 'SELECT topic_id, topic_replies, topic_replies_real
+				FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 			$result = $db->sql_query($sql);
 
-			$topic_id_ary = array();
+			$del_topic_ary = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+				if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+				{
+					$del_topic_ary[] = $row['topic_id'];
+				}
 			}
 			$db->sql_freeresult($result);
 
-			if (sizeof($topic_id_ary))
+			if (sizeof($del_topic_ary))
 			{
-				$sql = 'SELECT topic_id, topic_replies, topic_replies_real
-					FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-				$result = $db->sql_query($sql);
-
-				$del_topic_ary = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
-					{
-						$del_topic_ary[] = $row['topic_id'];
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($del_topic_ary))
-				{
-					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-						WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
-					$db->sql_query($sql);
-				}
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
+				$db->sql_query($sql);
 			}
+		}
 
-			// Delete posts, attachments, etc.
-			delete_posts('poster_id', $user_id);
-
-		break;
+		// actually do the meat of the work if we are deleting all the users' posts
+		// delete_posts can handle any number of IDs in its second argument
+		delete_posts('poster_id', $user_ids);
 	}
-
-	$db->sql_transaction('begin');
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE, PRIVMSGS_FOLDER_TABLE, PRIVMSGS_RULES_TABLE);
 
+	// Delete the miscellaneous (non-post) data for the user
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
-			WHERE user_id = $user_id";
+			WHERE " . $db->sql_in_set('user_id', $user_ids);
 		$db->sql_query($sql);
 	}
 
@@ -541,35 +576,35 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
-		WHERE reportee_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('user_id', $user_ids); //reportee_id = ' . $user_id;
 	$db->sql_query($sql);
 
 	// Change user_id to anonymous for this users triggered events
 	$sql = 'UPDATE ' . LOG_TABLE . '
 		SET user_id = ' . ANONYMOUS . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('user_id', $user_ids); //user_id = ' . $user_id;
 	$db->sql_query($sql);
 
 	// Delete the user_id from the zebra table
 	$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-		WHERE user_id = ' . $user_id . '
-			OR zebra_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('user_id', $user_ids) . //user_id = ' . $user_id . '
+			' OR ' . $db->sql_in_set('zebra_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Delete the user_id from the banlist
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-		WHERE ban_userid = ' . $user_id;
+		WHERE ' . $db->sql_in_set('ban_userid', $user_ids);
 	$db->sql_query($sql);
 
 	// Delete the user_id from the session table
 	$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-		WHERE session_user_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('session_user_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Remove any undelivered mails...
 	$sql = 'SELECT msg_id, user_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
+		WHERE ' . $db->sql_in_set('author_id', $user_ids) . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$result = $db->sql_query($sql);
 
@@ -589,24 +624,24 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
+		WHERE ' . $db->sql_in_set('author_id', $user_id) . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$db->sql_query($sql);
 
 	// Delete all to-information
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('author_id', $user_ids);
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('author_id', $user_id);
 	$db->sql_query($sql);
 
 	foreach ($undelivered_user as $_user_id => $ary)
@@ -626,15 +661,9 @@ function user_delete($mode, $user_id, $post_username = false)
 	$db->sql_transaction('commit');
 
 	// Reset newest user info if appropriate
-	if ($config['newest_user_id'] == $user_id)
+	if (in_array($config['newest_user_id'], $user_ids))
 	{
 		update_last_username();
-	}
-
-	// Decrement number of users if this user is active
-	if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
-	{
-		set_config_count('num_users', -1, true);
 	}
 
 	return false;

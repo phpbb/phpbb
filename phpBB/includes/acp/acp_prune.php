@@ -265,10 +265,7 @@ class acp_prune
 						}
 						else
 						{
-							foreach ($user_ids as $user_id)
-							{
-								user_delete('retain', $user_id, $usernames[$user_id]);
-							}
+							user_delete('retain', $user_ids, true);
 
 							$l_log = 'LOG_PRUNE_USER_DEL_ANON';
 						}
