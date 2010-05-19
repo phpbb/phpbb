@@ -18,6 +18,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'regex/email.php';
 require_once 'regex/ipv4.php';
 require_once 'regex/ipv6.php';
+require_once 'regex/url.php';
 
 class phpbb_regex_all_tests
 {
@@ -33,6 +34,7 @@ class phpbb_regex_all_tests
 		$suite->addTestSuite('phpbb_regex_email_test');
 		$suite->addTestSuite('phpbb_regex_ipv4_test');
 		$suite->addTestSuite('phpbb_regex_ipv6_test');
+		$suite->addTestSuite('phpbb_regex_url_test');
 
 		return $suite;
 	}
