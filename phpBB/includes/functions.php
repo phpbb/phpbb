@@ -3440,26 +3440,110 @@ function short_ipv6($ip, $length)
 /**
 * Wrapper for php's checkdnsrr function.
 *
-* The windows failover is from the php manual
-* Please make sure to check the return value for === true and === false, since NULL could
-* be returned too.
+* @param string $host	Fully-Qualified Domain Name
+* @param string $type	Resource record type to lookup
+*						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
+*						Other types may work or may not work
 *
-* @return true if entry found, false if not, NULL if this function is not supported by this environment
+* @return mixed		true if entry found,
+*					false if entry not found,
+*					null if this function is not supported by this environment
+*
+* Since null can also be returned, you probably want to compare the result
+* with === true or === false,
+*
+* @author bantu
 */
-function phpbb_checkdnsrr($host, $type = '')
+function phpbb_checkdnsrr($host, $type = 'MX')
 {
-	$type = (!$type) ? 'MX' : $type;
-
-	// Call checkdnsrr() if available. This is also the case on Windows with PHP 5.3 or later.
-	if (function_exists('checkdnsrr'))
+	// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+	if (substr($host, -1) == '.')
 	{
-		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
-		return checkdnsrr($host . '.', $type);
+		$host_fqdn = $host;
+		$host = substr($host, 0, -1);
 	}
-	else if (DIRECTORY_SEPARATOR == '\\' && function_exists('exec'))
+	else
 	{
-		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
-		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host) . '.', $output);
+		$host_fqdn = $host . '.';
+	}
+	// $host		has format	some.host.example.com
+	// $host_fqdn	has format	some.host.example.com.
+
+	// If we're looking for an A record we can use gethostbyname()
+	if ($type == 'A' && function_exists('gethostbyname'))
+	{
+		return (@gethostbyname($host_fqdn) == $host_fqdn) ? false : true;
+	}
+
+	// checkdnsrr() is available on Windows since PHP 5.3,
+	// but until 5.3.3 it only works for MX records
+	// See: http://bugs.php.net/bug.php?id=51844
+
+	// Call checkdnsrr() if 
+	// we're looking for an MX record or
+	// we're not on Windows or
+	// we're running a PHP version where #51844 has been fixed
+
+	// checkdnsrr() supports AAAA since 5.0.0
+	// checkdnsrr() supports TXT since 5.2.4
+	if (
+		($type == 'MX' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.3', '>=')) &&
+		($type != 'AAAA' || version_compare(PHP_VERSION, '5.0.0', '>=')) &&
+		($type != 'TXT' || version_compare(PHP_VERSION, '5.2.4', '>=')) &&
+		function_exists('checkdnsrr')
+	)
+	{
+		return checkdnsrr($host_fqdn, $type);
+	}
+
+	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
+	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
+
+	// Call dns_get_record() if 
+	// we're not looking for an AAAA record or
+	// we're not on Windows or
+	// we're running a PHP version where AAAA lookups work reliable
+	if (
+		($type != 'AAAA' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.1', '>=')) &&
+		function_exists('dns_get_record')
+	)
+	{
+		// dns_get_record() expects an integer as second parameter
+		// We have to convert the string $type to the corresponding integer constant.
+		$type_constant = 'DNS_' . $type;
+		$type_param = (defined($type_constant)) ? constant($type_constant) : DNS_ANY;
+
+		// dns_get_record() might throw E_WARNING and return false for records that do not exist
+		$resultset = @dns_get_record($host_fqdn, $type_param);
+
+		if (empty($resultset) || !is_array($resultset))
+		{
+			return false;
+		}
+		else if ($type_param == DNS_ANY)
+		{
+			// $resultset is a non-empty array
+			return true;
+		}
+
+		foreach ($resultset as $result)
+		{
+			if (
+				isset($result['host']) && $result['host'] == $host && 
+				isset($result['type']) && $result['type'] == $type
+			)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// If we're on Windows we can still try to call nslookup via exec() as a last resort
+	if (DIRECTORY_SEPARATOR == '\\' && function_exists('exec'))
+	{
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host_fqdn), $output);
 
 		// If output is empty, the nslookup failed
 		if (empty($output))
@@ -3469,15 +3553,66 @@ function phpbb_checkdnsrr($host, $type = '')
 
 		foreach ($output as $line)
 		{
-			if (!trim($line))
+			$line = trim($line);
+
+			if (empty($line))
 			{
 				continue;
 			}
 
-			// Valid records begin with host name:
-			if (strpos($line, $host) === 0)
+			// Squash tabs and multiple whitespaces to a single whitespace.
+			$line = preg_replace('/\s+/', ' ', $line);
+
+			switch ($type)
 			{
-				return true;
+				case 'MX':
+					if (stripos($line, "$host MX") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'NS':
+					if (stripos($line, "$host nameserver") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'TXT':
+					if (stripos($line, "$host text") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'CNAME':
+					if (stripos($line, "$host canonical name") === 0)
+					{
+						return true;
+					}
+
+				default:
+				case 'A':
+				case 'AAAA':
+					if (!empty($host_matches))
+					{
+						// Second line
+						if (stripos($line, "Address: ") === 0)
+						{
+							return true;
+						}
+						else
+						{
+							$host_matches = false;
+						}
+					}
+					else if (stripos($line, "Name: $host") === 0)
+					{
+						// First line
+						$host_matches = true;
+					}
+				break;
 			}
 		}
 
