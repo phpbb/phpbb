@@ -14,6 +14,7 @@
 					<span class="gensmall">
 						<!-- IF U_PRINT_PM --><a href="{U_PRINT_PM}" title="{L_PRINT_PM}">{L_PRINT_PM}</a><!-- IF U_FORWARD_PM --> | <!-- ENDIF --><!-- ENDIF -->
 						<!-- IF U_FORWARD_PM --><a href="{U_FORWARD_PM}" title="{L_FORWARD_PM}">{L_FORWARD_PM}</a><!-- ENDIF -->
+						<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 --><!-- IF U_PRINT_PM or U_FORWARD_PM --> | <!-- ENDIF --><a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}">{L_REPLY_TO_ALL}</a><!-- ENDIF -->
 					</span>
 				<!-- ENDIF -->
 			</td>
