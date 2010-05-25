@@ -420,6 +420,7 @@ $lang = array_merge($lang, array(
 	'PIXEL'					=> 'px',
 	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
 	'PM'					=> 'PM',
+	'PM_REPORTED'			=> 'Click to view report',
 	'POSTING_MESSAGE'		=> 'Posting message in %s',
 	'POSTING_PRIVATE_MESSAGE'	=> 'Composing private message',
 	'POST'					=> 'Post',
