@@ -190,12 +190,14 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 						$cache->destroy('sql', FORUMS_TABLE);
 
+						$copied_permissions = false;
 						// Copy permissions?
 						if ($forum_perm_from && $forum_perm_from != $forum_data['forum_id'] &&
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
+							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
 						else if (!$this->parent_id && $action != 'edit' && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
@@ -211,13 +213,13 @@ class acp_forums
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 
 						// Redirect to permissions
-						if ($auth->acl_get('a_fauth'))
+						if ($auth->acl_get('a_fauth') && !$copied_permissions)
 						{
 							$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 						}
 
 						// redirect directly to permission settings screen if authed
-						if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
+						if ($action == 'add' && !$copied_permissions && $auth->acl_get('a_fauth'))
 						{
 							meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
 						}
