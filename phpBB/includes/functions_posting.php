@@ -348,7 +348,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	{
 		$topic_type_array = array_merge(array(0 => array(
 			'VALUE'			=> POST_NORMAL,
-			'S_CHECKED'		=> ($topic_type == POST_NORMAL) ? ' checked="checked"' : '',
+			'S_CHECKED'		=> ($cur_topic_type == POST_NORMAL) ? ' checked="checked"' : '',
 			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])),
 
 			$topic_type_array
