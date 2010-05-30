@@ -45,14 +45,7 @@ if (!empty($load_extensions) && function_exists('dl'))
 	}
 }
 
-
-$sid = (isset($_GET['sid']) && !is_array($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
-
-if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
-{
-	$sid = '';
-}
 
 // This is a simple script to grab and output the requested CSS data stored in the DB
 // We include a session_id check to try and limit 3rd party linking ... unless they
@@ -80,6 +73,20 @@ if ($id)
 
 	$config = $cache->obtain_config();
 	$user = false;
+
+	// try to get a session ID from REQUEST array
+	$sid = request_var('sid', '');
+
+	if (!$sid)
+	{
+		// if that failed, then look in the cookies
+		$sid = request_var($config['cookie_name'] . '_sid', '', false, true);
+	}
+
+	if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
+	{
+		$sid = '';
+	}
 
 	if ($sid)
 	{
