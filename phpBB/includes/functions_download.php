@@ -226,6 +226,16 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 		if ($fp !== false)
 		{
+			// Deliver file partially if requested
+			if ($range = http_byte_range($size))
+			{
+				fseek($fp, $range['byte_pos_start']);
+
+				send_status_line(206, 'Partial Content');
+				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
+				header('Content-Length: ' . $range['bytes_requested']);
+			}
+
 			while (!feof($fp))
 			{
 				echo fread($fp, 8192);
@@ -406,4 +416,108 @@ function file_gc()
 	}
 	$db->sql_close();
 	exit;
+}
+
+/**
+* HTTP range support (RFC 2616 Section 14.35)
+*
+* Allows browsers to request partial file content
+* in case a download has been interrupted.
+*
+* A range request can contain multiple ranges,
+* we however only handle the first request and
+* only support requests from a given byte to the end of the file.
+*
+* @param int $filesize		the size of the file in bytes we are about to deliver
+*
+* @return mixed		false if the whole file has to be delivered
+*					associative array on success
+*
+* @author bantu
+*/
+function http_byte_range($filesize)
+{
+	if (!$filesize)
+	{
+		return false;
+	}
+
+	foreach (array($_SERVER, $_ENV) as $global)
+	{
+		if (isset($global['HTTP_RANGE']))
+		{
+			$http_range = $global['HTTP_RANGE'];
+			break;
+		}
+	}
+
+	// Return if no range requested
+	// Make sure range request starts with "bytes="
+	if (empty($http_range) || strpos($http_range, 'bytes=') !== 0)
+	{
+		return false;
+	}
+
+	// Strip leading 'bytes='
+	// Multiple ranges can be separated by a comma
+	foreach (explode(',', substr($http_range, 6)) as $range_string)
+	{
+		$range = explode('-', trim($range_string));
+
+		// "-" is invalid, "0-0" however is valid and means the very first byte.
+		if (sizeof($range) != 2 || $range[0] === '' && $range[1] === '')
+		{
+			continue;
+		}
+
+		if ($range[0] === '')
+		{
+			// Return last $range[1] bytes.
+
+			if (!$range[1])
+			{
+				continue;
+			}
+
+			if ($range[1] >= $filesize)
+			{
+				return false;
+			}
+
+			$first_byte_pos	= $filesize - (int) $range[1];
+			$last_byte_pos	= $filesize - 1;
+		}
+		else
+		{
+			// Return bytes from $range[0] to $range[1]
+
+			$first_byte_pos	= (int) $range[0];
+			$last_byte_pos	= (int) $range[1];
+
+			if ($last_byte_pos && $last_byte_pos < $first_byte_pos)
+			{
+				// The requested range contains 0 bytes.
+				continue;
+			}
+
+			if ($first_byte_pos >= $filesize)
+			{
+				// Requested range not satisfiable
+				return false;
+			}
+
+			// Adjust last-byte-pos if it is absent or greater than the content.
+			if ($range[1] === '' || $last_byte_pos >= $filesize)
+			{
+				$last_byte_pos = $filesize - 1;
+			}
+		}
+
+		return array(
+			'byte_pos_start'	=> $first_byte_pos,
+			'byte_pos_end'		=> $last_byte_pos,
+			'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
+			'bytes_total'		=> $filesize,
+		);
+	}
 }
