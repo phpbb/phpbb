@@ -297,6 +297,7 @@ function user_add($user_row, $cp_data = false)
 			if ($config['new_member_group_default'])
 			{
 				group_user_add($add_group_id, $user_id, false, false, true);
+				$user_row['group_id'] = $add_group_id;
 			}
 			else
 			{
