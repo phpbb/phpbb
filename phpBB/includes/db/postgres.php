@@ -105,13 +105,14 @@ class dbal_postgres extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
-		if (empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
 		{
 			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
 			$row = @pg_fetch_assoc($query_id, null);
@@ -119,7 +120,7 @@ class dbal_postgres extends dbal
 
 			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
 
-			if (!empty($cache))
+			if (!empty($cache) && $use_cache)
 			{
 				$cache->put('pgsql_version', $this->sql_server_version);
 			}
