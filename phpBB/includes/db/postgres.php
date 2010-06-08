@@ -46,7 +46,10 @@ class dbal_postgres extends dbal
 
 		if ($sqlserver)
 		{
-			if (strpos($sqlserver, ':') !== false)
+			// $sqlserver can carry a port separated by : for compatibility reasons
+			// If $sqlserver has more than one : it's probably an IPv6 address.
+			// In this case we only allow passing a port via the $port variable.
+			if (substr_count($sqlserver, ':') === 1)
 			{
 				list($sqlserver, $port) = explode(':', $sqlserver);
 			}
