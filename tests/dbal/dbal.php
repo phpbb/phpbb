@@ -21,10 +21,7 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	{
 		return array(
 			array('phpbb_users', "username_clean = 'bertie'", array(array('username_clean' => 'bertie'))),
-			array('phpbb_users', "username_clean = 'phpBB'", array()),
 			array('phpbb_users', 'username_clean syntax_error', false),
-			array('phpbb_users', 'column_not_exists = 2', false),
-			array('table_not_exists', 'column_not_exists = 2', false),
 		);
 	}
 
@@ -103,7 +100,6 @@ class phpbb_dbal_test extends phpbb_database_test_case
 		return array(
 			array('', array('barfoo', 'foobar', 'bertie')),
 			array('user_id = 2', array('foobar')),
-			array("username_clean = 'bertie'", array('bertie')),
 		);
 	}
 
@@ -138,7 +134,6 @@ class phpbb_dbal_test extends phpbb_database_test_case
 			array(0, 1, array(array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))),
 			array(1, 0, array(array('username_clean' => 'barfoo'))),
-			array(1, 1, array(array('username_clean' => 'foobar'))),
 			array(1, 2, array(array('username_clean' => 'bertie'))),
 			array(2, 0, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'))),
@@ -180,9 +175,6 @@ class phpbb_dbal_test extends phpbb_database_test_case
 			array('bar*', array(array('username_clean' => 'barfoo'))),
 			array('*bar*', array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'))),
-			array('*b*', array(array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'),
-				array('username_clean' => 'bertie'))),
 			array('b*r', array()),
 			array('b*e', array(array('username_clean' => 'bertie'))),
 			array('#b*e', array()),
@@ -220,11 +212,11 @@ class phpbb_dbal_test extends phpbb_database_test_case
 				array('username_clean' => 'foobar'))),
 			array('user_id', 3, true, true, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'))),
-			array('user_id', '3', false, false, array(array('username_clean' => 'bertie'))),
-			array('user_id', '3', false, true, array(array('username_clean' => 'bertie'))),
-			array('user_id', '3', true, false, array(array('username_clean' => 'barfoo'),
+			array('username_clean', 'bertie', false, false, array(array('username_clean' => 'bertie'))),
+			array('username_clean', 'bertie', false, true, array(array('username_clean' => 'bertie'))),
+			array('username_clean', 'bertie', true, false, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'))),
-			array('user_id', '3', true, true, array(array('username_clean' => 'barfoo'),
+			array('username_clean', 'bertie', true, true, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'))),
 			array('user_id', array(3), false, false, array(array('username_clean' => 'bertie'))),
 			array('user_id', array(3), false, true, array(array('username_clean' => 'bertie'))),
@@ -238,12 +230,12 @@ class phpbb_dbal_test extends phpbb_database_test_case
 				array('username_clean' => 'bertie'))),
 			array('user_id', array(1, 3), true, false, array(array('username_clean' => 'foobar'))),
 			array('user_id', array(1, 3), true, true, array(array('username_clean' => 'foobar'))),
-			array('user_id', '', false, false, array()),
-			array('user_id', '', false, true, array()),
-			array('user_id', '', true, false, array(array('username_clean' => 'barfoo'),
+			array('username_clean', '', false, false, array()),
+			array('username_clean', '', false, true, array()),
+			array('username_clean', '', true, false, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))),
-			array('user_id', '', true, true, array(array('username_clean' => 'barfoo'),
+			array('username_clean', '', true, true, array(array('username_clean' => 'barfoo'),
 				array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))),
 			array('user_id', array(), false, true, array()),
@@ -310,10 +302,11 @@ class phpbb_dbal_test extends phpbb_database_test_case
 			$db->sql_return_on_error(true);
 		}
 
-		$result = $db->sql_query('SELECT username_clean
+		$sql = 'SELECT username_clean
 			FROM phpbb_users
 			WHERE ' . $db->sql_build_array('SELECT', $assoc_ary) . '
-			ORDER BY user_id ASC');
+			ORDER BY user_id ASC';
+		$result = $db->sql_query($sql);
 
 		if ($catch_error)
 		{
@@ -324,5 +317,174 @@ class phpbb_dbal_test extends phpbb_database_test_case
 
 		$db->sql_freeresult($result);
 	}
-}
 
+	public static function build_array_insert_data()
+	{
+		return array(
+			array(array(
+				'config_name'	=> 'test_version',
+				'config_value'	=> '0.0.0',
+				'is_dynamic'	=> 1,
+			)),
+			array(array(
+				'config_name'	=> 'second config',
+				'config_value'	=> '10',
+				'is_dynamic'	=> 0,
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider build_array_insert_data
+	*/
+	public function test_build_array_insert($sql_ary)
+	{
+		$db = $this->new_dbal();
+
+		$sql = 'INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary);
+		$result = $db->sql_query($sql);
+
+		$sql = "SELECT *
+			FROM phpbb_config
+			WHERE config_name = '" . $sql_ary['config_name'] . "'";
+		$result = $db->sql_query_limit($sql, 1);
+
+		$this->assertEquals($sql_ary, $db->sql_fetchrow($result));
+
+		$db->sql_freeresult($result);
+	}
+
+	public static function delete_data()
+	{
+		return array(
+			array(
+				"WHERE config_name = 'test_version'",
+				array(
+					array(
+						'config_name'	=> 'second config',
+						'config_value'	=> '10',
+						'is_dynamic'	=> 0,
+					),
+				),
+			),
+			array(
+				'',
+				array(),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider delete_data
+	*/
+	public function test_delete($where, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$sql = 'DELETE FROM phpbb_config
+			' . $where;
+		$result = $db->sql_query($sql);
+
+		$sql = 'SELECT *
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+
+	public function test_multiple_insert()
+	{
+		$db = $this->new_dbal();
+
+		$batch_ary = array(
+			array(
+				'config_name'	=> 'batch one',
+				'config_value'	=> 'b1',
+				'is_dynamic'	=> 0,
+			),
+			array(
+				'config_name'	=> 'batch two',
+				'config_value'	=> 'b2',
+				'is_dynamic'	=> 1,
+			),
+		);
+
+		$result = $db->sql_multi_insert('phpbb_config', $batch_ary);
+
+		$sql = 'SELECT *
+			FROM phpbb_config
+			ORDER BY config_name ASC';
+		$result = $db->sql_query($sql);
+
+		$this->assertEquals($batch_ary, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+
+	public static function update_data()
+	{
+		return array(
+			array(
+				array(
+					'config_value'	=> '20',
+					'is_dynamic'	=> 0,
+				),
+				" WHERE config_name = 'batch one'",
+				array(
+					array(
+						'config_name'	=> 'batch one',
+						'config_value'	=> '20',
+						'is_dynamic'	=> 0,
+					),
+					array(
+						'config_name'	=> 'batch two',
+						'config_value'	=> 'b2',
+						'is_dynamic'	=> 1,
+					),
+				),
+			),
+			array(
+				array(
+					'config_value'	=> '0',
+					'is_dynamic'	=> 1,
+				),
+				'',
+				array(
+					array(
+						'config_name'	=> 'batch one',
+						'config_value'	=> '0',
+						'is_dynamic'	=> 1,
+					),
+					array(
+						'config_name'	=> 'batch two',
+						'config_value'	=> '0',
+						'is_dynamic'	=> 1,
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider update_data
+	*/
+	public function test_update($sql_ary, $where, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$sql = 'UPDATE phpbb_config
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where;
+		$result = $db->sql_query($sql);
+
+		$sql = 'SELECT *
+			FROM phpbb_config
+			ORDER BY config_name ASC';
+		$result = $db->sql_query($sql);
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+}
