@@ -98,7 +98,7 @@ fieldset.fields1 div {
 
 /* Set it back to 0px for the reCaptcha divs: PHPBB3-9587 */
 fieldset.fields1 #recaptcha_widget_div div {
-	margin-bottom: 0px;
+	margin-bottom: 0;
 }
 
 /* Specific layout 2 */
