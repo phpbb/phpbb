@@ -302,10 +302,11 @@ class phpbb_dbal_test extends phpbb_database_test_case
 			$db->sql_return_on_error(true);
 		}
 
-		$result = $db->sql_query('SELECT username_clean
+		$sql = 'SELECT username_clean
 			FROM phpbb_users
 			WHERE ' . $db->sql_build_array('SELECT', $assoc_ary) . '
-			ORDER BY user_id ASC');
+			ORDER BY user_id ASC';
+		$result = $db->sql_query($sql);
 
 		if ($catch_error)
 		{
@@ -340,11 +341,13 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$result = $db->sql_query('INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary));
+		$sql = 'INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary);
+		$result = $db->sql_query($sql);
 
-		$result = $db->sql_query_limit("SELECT *
+		$sql = "SELECT *
 			FROM phpbb_config
-			WHERE config_name = '" . $sql_ary['config_name'] . "'", 1);
+			WHERE config_name = '" . $sql_ary['config_name'] . "'";
+		$result = $db->sql_query_limit($sql, 1);
 
 		$this->assertEquals($sql_ary, $db->sql_fetchrow($result));
 
@@ -354,12 +357,20 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	public static function delete_data()
 	{
 		return array(
-			array("WHERE config_name = 'test_version'", array(array(
-				'config_name'	=> 'second config',
-				'config_value'	=> '10',
-				'is_dynamic'	=> 0,
-			))),
-			array('', array()),
+			array(
+				"WHERE config_name = 'test_version'",
+				array(
+					array(
+						'config_name'	=> 'second config',
+						'config_value'	=> '10',
+						'is_dynamic'	=> 0,
+					),
+				),
+			),
+			array(
+				'',
+				array(),
+			),
 		);
 	}
 
@@ -370,11 +381,13 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$result = $db->sql_query('DELETE FROM phpbb_config
-			' . $where);
+		$sql = 'DELETE FROM phpbb_config
+			' . $where;
+		$result = $db->sql_query($sql);
 
-		$result = $db->sql_query('SELECT *
-			FROM phpbb_config');
+		$sql = 'SELECT *
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 
@@ -385,22 +398,25 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$batch_ary = array();
-		$batch_ary[] = array(
-			'config_name'	=> 'batch one',
-			'config_value'	=> 'b1',
-			'is_dynamic'	=> 0,
-		);
-		$batch_ary[] = array(
-			'config_name'	=> 'batch two',
-			'config_value'	=> 'b2',
-			'is_dynamic'	=> 1,
+		$batch_ary = array(
+			array(
+				'config_name'	=> 'batch one',
+				'config_value'	=> 'b1',
+				'is_dynamic'	=> 0,
+			),
+			array(
+				'config_name'	=> 'batch two',
+				'config_value'	=> 'b2',
+				'is_dynamic'	=> 1,
+			),
 		);
 
 		$result = $db->sql_multi_insert('phpbb_config', $batch_ary);
 
-		$result = $db->sql_query('SELECT *
-			FROM phpbb_config');
+		$sql = 'SELECT *
+			FROM phpbb_config
+			ORDER BY config_name ASC';
+		$result = $db->sql_query($sql);
 
 		$this->assertEquals($batch_ary, $db->sql_fetchrowset($result));
 
@@ -410,24 +426,44 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	public static function update_data()
 	{
 		return array(
-			array(array('config_value'	=> '20', 'is_dynamic'	=> 0), " WHERE config_name = 'batch one'", array(array(
-				'config_name'	=> 'batch one',
-				'config_value'	=> '20',
-				'is_dynamic'	=> 0,
-			), array(
-				'config_name'	=> 'batch two',
-				'config_value'	=> 'b2',
-				'is_dynamic'	=> 1,
-			))),
-			array(array('config_value'	=> '0', 'is_dynamic'	=> 1), '', array(array(
-				'config_name'	=> 'batch one',
-				'config_value'	=> '0',
-				'is_dynamic'	=> 1,
-			), array(
-				'config_name'	=> 'batch two',
-				'config_value'	=> '0',
-				'is_dynamic'	=> 1,
-			))),
+			array(
+				array(
+					'config_value'	=> '20',
+					'is_dynamic'	=> 0,
+				),
+				" WHERE config_name = 'batch one'",
+				array(
+					array(
+						'config_name'	=> 'batch one',
+						'config_value'	=> '20',
+						'is_dynamic'	=> 0,
+					),
+					array(
+						'config_name'	=> 'batch two',
+						'config_value'	=> 'b2',
+						'is_dynamic'	=> 1,
+					),
+				),
+			),
+			array(
+				array(
+					'config_value'	=> '0',
+					'is_dynamic'	=> 1,
+				),
+				'',
+				array(
+					array(
+						'config_name'	=> 'batch one',
+						'config_value'	=> '0',
+						'is_dynamic'	=> 1,
+					),
+					array(
+						'config_name'	=> 'batch two',
+						'config_value'	=> '0',
+						'is_dynamic'	=> 1,
+					),
+				),
+			),
 		);
 	}
 
@@ -438,15 +474,17 @@ class phpbb_dbal_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$result = $db->sql_query('UPDATE phpbb_config
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where);
+		$sql = 'UPDATE phpbb_config
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where;
+		$result = $db->sql_query($sql);
 
-		$result = $db->sql_query('SELECT *
-			FROM phpbb_config');
+		$sql = 'SELECT *
+			FROM phpbb_config
+			ORDER BY config_name ASC';
+		$result = $db->sql_query($sql);
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 
 		$db->sql_freeresult($result);
 	}
 }
-
