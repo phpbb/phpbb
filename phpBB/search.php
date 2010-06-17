@@ -387,18 +387,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
-
-				$unread_list = array();
-				$unread_list = get_unread_topics($user->data['user_id'], $sql_where, $sql_sort);
-
-				if (!empty($unread_list))
-				{
-					$sql = 'SELECT t.topic_id
-						FROM ' . TOPICS_TABLE . ' t
-						WHERE ' . $db->sql_in_set('t.topic_id', array_keys($unread_list)) . "
-						$sql_sort";
-					$field = 'topic_id';
-				}
 			break;
 
 			case 'newposts':
@@ -472,6 +460,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$id_ary[] = (int) $row[$field];
 			}
 			$db->sql_freeresult($result);
+
+			$total_match_count = sizeof($id_ary) + $start;
+			$id_ary = array_slice($id_ary, 0, $per_page);
+		}
+		else if ($search_id == 'unreadposts')
+		{
+			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, 1001 - $start, $start));
 
 			$total_match_count = sizeof($id_ary) + $start;
 			$id_ary = array_slice($id_ary, 0, $per_page);
