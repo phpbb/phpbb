@@ -1660,10 +1660,11 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param string $sql_extra		Extra WHERE SQL statement
 * @param string $sql_sort		ORDER BY SQL sorting statement
 * @param string $sql_limit		Limits the size of unread topics list, 0 for unlimited query
+* @param string $sql_limit_offset  Sets the offset of the first row to search, 0 to search from the start
 *
 * @return array[int][int]		Topic ids as keys, mark_time of topic as value
 */
-function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001)
+function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {
 	global $config, $db, $user;
 
@@ -1709,7 +1710,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 		);
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, $sql_limit);
+		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1742,7 +1743,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			WHERE t.topic_last_post_time > ' . $user_lastmark . "
 			$sql_extra
 			$sql_sort";
-		$result = $db->sql_query_limit($sql, $sql_limit);
+		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
