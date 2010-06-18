@@ -39,7 +39,7 @@ function mcp_front_view($id, $mode, $action)
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
-					AND post_approved = 0';
+					AND post_visibility = ' . ITEM_UNAPPROVED;
 			$result = $db->sql_query($sql);
 			$total = (int) $db->sql_fetchfield('total');
 			$db->sql_freeresult($result);
@@ -60,7 +60,7 @@ function mcp_front_view($id, $mode, $action)
 				$sql = 'SELECT post_id
 					FROM ' . POSTS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
-						AND post_approved = 0
+						AND post_visibility = ' . ITEM_UNAPPROVED . '
 					ORDER BY post_time DESC';
 				$result = $db->sql_query_limit($sql, 5);
 

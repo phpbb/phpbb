@@ -83,7 +83,7 @@ if ($view && !$post_id)
 		$sql = 'SELECT post_id, topic_id, forum_id
 			FROM ' . POSTS_TABLE . "
 			WHERE topic_id = $topic_id
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
+				AND " . topic_visibility::get_visibility_sql('post', $forum_id) . "
 				AND post_time > $topic_last_read
 				AND forum_id = $forum_id
 			ORDER BY post_time ASC";
@@ -137,7 +137,7 @@ if ($view && !$post_id)
 				WHERE forum_id = ' . $row['forum_id'] . "
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-					" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
+					AND" . topic_visibility::get_visibility_sql('topic', $row['forum_id']) . "
 				ORDER BY topic_last_post_time $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
@@ -174,7 +174,7 @@ $sql_array = array(
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
-	$sql_array['SELECT'] .= ', p.post_approved, p.post_time, p.post_id';
+	$sql_array['SELECT'] .= ', p.post_visibility, p.post_time, p.post_id';
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
 }
 
@@ -249,7 +249,7 @@ $forum_id = (int) $topic_data['forum_id'];
 if ($post_id)
 {
 	// are we where we are supposed to be?
-	if (!$topic_data['post_approved'] && !$auth->acl_get('m_approve', $topic_data['forum_id']))
+	if ($topic_data['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $topic_data['forum_id']))
 	{
 		// If post_id was submitted, we try at least to display the topic as a last resort...
 		if ($topic_id)
@@ -277,7 +277,7 @@ if ($post_id)
 		$sql = 'SELECT COUNT(p.post_id) AS prev_posts
 			FROM ' . POSTS_TABLE . " p
 			WHERE p.topic_id = {$topic_data['topic_id']}
-				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '');
+				" . topic_visibility::get_visibility_sql('post', $forum_id, 'p');
 
 		if ($sort_dir == 'd')
 		{
@@ -315,7 +315,13 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
 
-if (!$topic_data['topic_approved'] && !$auth->acl_get('m_approve', $forum_id))
+/* the topic "does not exist":
+* if the topic is unapproved and the user cannot approve it
+* if the topic is deleted and the user cannot restore it
+*  NB: restoring a topic has two cases: moderator restore and poster restore.
+*/
+if (($topic_data['topic_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $forum_id))
+	|| ($topic_data['topic_visibility'] == ITEM_DELETED && (!$auth->acl_get('m_restore', $forum_id) || ($user->data['user_id'] == $topic_data['topic_poster'] && $auth->acl_get('f_restore', $forum_id)))))
 {
 	trigger_error('NO_TOPIC');
 }
@@ -402,7 +408,7 @@ if ($sort_days)
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1');
+			AND " . topic_visibility::get_visibility_sql('post', $forum_id);
 	$result = $db->sql_query($sql);
 	$total_posts = (int) $db->sql_fetchfield('num_posts');
 	$db->sql_freeresult($result);
@@ -938,7 +944,7 @@ $i = $i_total = 0;
 $sql = 'SELECT p.post_id
 	FROM ' . POSTS_TABLE . ' p' . (($join_user_sql[$sort_key]) ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
-		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
+		AND " . topic_visibility::get_visibility_sql('post', $forum_id, 'p.') . "
 		" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
@@ -1020,7 +1026,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$attach_list[] = (int) $row['post_id'];
 
-		if ($row['post_approved'])
+		if ($row['post_visibility'] == ITEM_UNAPPROVED)
 		{
 			$has_attachments = true;
 		}
@@ -1046,7 +1052,7 @@ while ($row = $db->sql_fetchrow($result))
 		// Make sure the icon actually exists
 		'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
 		'post_attachment'	=> $row['post_attachment'],
-		'post_approved'		=> $row['post_approved'],
+		'post_visibility'	=> $row['post_visibility'],
 		'post_reported'		=> $row['post_reported'],
 		'post_username'		=> $row['post_username'],
 		'post_text'			=> $row['post_text'],
@@ -1313,8 +1319,8 @@ if (sizeof($attach_list))
 				$sql = 'SELECT a.post_msg_id as post_id
 					FROM ' . ATTACHMENTS_TABLE . ' a, ' . POSTS_TABLE . " p
 					WHERE p.topic_id = $topic_id
-						AND p.post_approved = 1
-						AND p.topic_id = a.topic_id";
+						AND p.post_visibility = " . ITEM_APPROVED . '
+						AND p.topic_id = a.topic_id';
 				$result = $db->sql_query_limit($sql, 1);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1605,7 +1611,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
-		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
+		'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_APPROVED) ? false : true,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,

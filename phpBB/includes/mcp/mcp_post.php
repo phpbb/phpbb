@@ -185,7 +185,7 @@ function mcp_post_details($id, $mode, $action)
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
-		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
+		'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
 		'S_USER_NOTES'			=> true,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -415,7 +415,7 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// Adjust post counts... only if the post is approved (else, it was not added the users post count anyway)
-	if ($post_info['post_postcount'] && $post_info['post_approved'])
+	if ($post_info['post_postcount'] && $post_info['post_visibility'] == ITEM_APPROVED)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1

@@ -145,8 +145,8 @@ function mcp_topic_view($id, $mode, $action)
 	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
-			p.topic_id = ' . $topic_id . ' ' .
-			((!$auth->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
+			p.topic_id = ' . $topic_id . '
+			AND ' .	topic_visibility::get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
 			AND p.poster_id = u.user_id ' .
 			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;
@@ -227,7 +227,7 @@ function mcp_topic_view($id, $mode, $action)
 			parse_attachments($topic_info['forum_id'], $message, $attachments[$row['post_id']], $update_count);
 		}
 
-		if (!$row['post_approved'])
+		if ($row['post_visibility'] == ITEM_UNAPPROVED)
 		{
 			$has_unapproved_posts = true;
 		}
@@ -249,7 +249,7 @@ function mcp_topic_view($id, $mode, $action)
 			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $topic_info['forum_id'])),
-			'S_POST_UNAPPROVED'	=> (!$row['post_approved'] && $auth->acl_get('m_approve', $topic_info['forum_id'])),
+			'S_POST_UNAPPROVED'	=> ($row['post_visibility'] != ITEM_APPROVED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
@@ -448,7 +448,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 			if ($sort_order_sql[0] == 'u')
 			{
-				$sql = 'SELECT p.post_id, p.forum_id, p.post_approved
+				$sql = 'SELECT p.post_id, p.forum_id, p.post_visibility
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 					WHERE p.topic_id = $topic_id
 						AND p.poster_id = u.user_id
@@ -457,7 +457,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			}
 			else
 			{
-				$sql = 'SELECT p.post_id, p.forum_id, p.post_approved
+				$sql = 'SELECT p.post_id, p.forum_id, p.post_visibility
 					FROM ' . POSTS_TABLE . " p
 					WHERE p.topic_id = $topic_id
 						$limit_time_sql
@@ -470,7 +470,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// If split from selected post (split_beyond), we split the unapproved items too.
-				if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+				if ($row['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 				{
 //					continue;
 				}
@@ -497,10 +497,10 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$icon_id = request_var('icon', 0);
 
 		$sql_ary = array(
-			'forum_id'		=> $to_forum_id,
-			'topic_title'	=> $subject,
-			'icon_id'		=> $icon_id,
-			'topic_approved'=> 1
+			'forum_id'			=> $to_forum_id,
+			'topic_title'		=> $subject,
+			'icon_id'			=> $icon_id,
+			'topic_visibility'	=> 1
 		);
 
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);

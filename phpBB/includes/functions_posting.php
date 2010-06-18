@@ -176,7 +176,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	if ($type != 'topic')
 	{
 		$topic_join = ', ' . TOPICS_TABLE . ' t';
-		$topic_condition = 'AND t.topic_id = p.topic_id AND t.topic_approved = 1';
+		$topic_condition = 'AND t.topic_id = p.topic_id AND t.topic_visibility = ' . ITEM_APPROVED;
 	}
 	else
 	{
@@ -190,7 +190,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_approved = 1";
+				AND p.post_visibility = " . ITEM_APPROVED;
 	}
 	else
 	{
@@ -198,7 +198,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_approved = 1
+				AND p.post_visibility = " . ITEM_APPROVED . "
 			GROUP BY p.{$type}_id";
 	}
 	$result = $db->sql_query($sql);
@@ -993,7 +993,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = 'SELECT p.post_id
 		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
+			AND " . topic_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
@@ -1489,7 +1489,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			delete_topics('topic_id', array($topic_id), false);
 
 			$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
-			$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
+			$sql_data[FORUMS_TABLE] .= ($data['topic_visibility'] == ITEM_APPROVED) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
 
 			$update_sql = update_post_information('forum', $forum_id, true);
 			if (sizeof($update_sql))
@@ -1509,18 +1509,18 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
+			$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
 
 			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "', topic_time = " . (int) $row['post_time'];
 
 			// Decrementing topic_replies here is fine because this case only happens if there is more than one post within the topic - basically removing one "reply"
-			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
 		break;
 
 		case 'delete_last_post':
-			$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
+			$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
 
 			$update_sql = update_post_information('forum', $forum_id, true);
 			if (sizeof($update_sql))
@@ -1529,7 +1529,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
 			}
 
-			$sql_data[TOPICS_TABLE] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[TOPICS_TABLE] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
 
 			$update_sql = update_post_information('topic', $topic_id, true);
 			if (sizeof($update_sql))
@@ -1541,8 +1541,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			{
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
-					WHERE topic_id = $topic_id " .
-						((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
+					WHERE topic_id = $topic_id
+						AND " . topic_visibility::get_visibility_sql('post', $forum_id);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1554,17 +1554,17 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		case 'delete':
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
-				WHERE topic_id = $topic_id " .
-					((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
+				WHERE topic_id = $topic_id
+					AND " . topic_visibility::get_visibility_sql('post', $forum_id) . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
+			$sql_data[FORUMS_TABLE] = ($data['post_visibility'] == ITEM_APPROVED) ? 'forum_posts = forum_posts - 1' : '';
 
-			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
+			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_visibility'] == ITEM_APPROVED) ? ', topic_replies = topic_replies - 1' : '');
 			$next_post_id = (int) $row['post_id'];
 		break;
 	}
@@ -1674,9 +1674,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
 
 	// Retrieve some additional information if not present
-	if ($mode == 'edit' && (!isset($data['post_approved']) || !isset($data['topic_approved']) || $data['post_approved'] === false || $data['topic_approved'] === false))
+	if ($mode == 'edit' && (!isset($data['post_visibility']) || !isset($data['topic_visibility']) || $data['post_visibility'] === false || $data['topic_visibility'] === false))
 	{
-		$sql = 'SELECT p.post_approved, t.topic_type, t.topic_replies, t.topic_replies_real, t.topic_approved
+		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_replies, t.topic_replies_real, t.topic_visibility
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 			WHERE t.topic_id = p.topic_id
 				AND p.post_id = ' . $data['post_id'];
@@ -1684,8 +1684,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$topic_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$data['topic_approved'] = $topic_row['topic_approved'];
-		$data['post_approved'] = $topic_row['post_approved'];
+		$data['topic_visibility'] = $topic_row['topic_visibility'];
+		$data['post_visibility'] = $topic_row['post_visibility'];
 	}
 
 	// This variable indicates if the user is able to post or put into the queue - it is used later for all code decisions regarding approval
@@ -1719,7 +1719,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'icon_id'			=> $data['icon_id'],
 				'poster_ip'			=> $user->ip,
 				'post_time'			=> $current_time,
-				'post_approved'		=> $post_approval,
+				'post_visibility'	=> $post_approval,
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
 				'enable_magic_url'	=> $data['enable_urls'],
@@ -1785,7 +1785,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'forum_id'			=> $data['forum_id'],
 				'poster_id'			=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
-				'post_approved'		=> (!$post_approval) ? 0 : $data['post_approved'],
+				'post_visibility'	=> (!$post_approval) ? 0 : $data['post_visibility'],
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
 				'enable_magic_url'	=> $data['enable_urls'],
@@ -1807,7 +1807,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 	}
 
-	$post_approved = $sql_data[POSTS_TABLE]['sql']['post_approved'];
+	$post_approved = $sql_data[POSTS_TABLE]['sql']['post_visibility'];
 	$topic_row = array();
 
 	// And the topic ladies and gentlemen
@@ -1820,7 +1820,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_view_time'		=> $current_time,
 				'forum_id'					=> $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> $post_approval,
+				'topic_visibility'			=> $post_approval,
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_first_poster_colour'	=> $user->data['user_colour'],
@@ -1897,7 +1897,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id'					=> $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> (!$post_approval) ? 0 : $data['topic_approved'],
+				'topic_visibility'			=> (!$post_approval) ? 0 : $data['topic_visibility'],
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> $username,
 				'topic_type'				=> $topic_type,
@@ -1913,12 +1913,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 
 			// Correctly set back the topic replies and forum posts... only if the topic was approved before and now gets disapproved
-			if (!$post_approval && $data['topic_approved'])
+			if (!$post_approval && $data['topic_visibility'] == ITEM_APPROVED)
 			{
 				// Do we need to grab some topic informations?
 				if (!sizeof($topic_row))
 				{
-					$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
+					$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_visibility
 						FROM ' . TOPICS_TABLE . '
 						WHERE topic_id = ' . $data['topic_id'];
 					$result = $db->sql_query($sql);
@@ -1949,7 +1949,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit_last_post':
 
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
-			if (!$post_approval && $data['post_approved'])
+			if (!$post_approval && $data['post_visibility'] == ITEM_APPROVED)
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
@@ -2173,7 +2173,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	// we need to update the last forum information
 	// only applicable if the topic is approved
-	if ($post_approved || !$data['post_approved'])
+	if ($post_approved || $data['post_visibility'] != ITEM_APPROVED)
 	{
 		// the last post makes us update the forum table. This can happen if...
 		// We make a new topic
@@ -2219,13 +2219,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
 					}
 				}
-				else if ($data['post_approved'] !== $post_approved)
+				else if ($data['post_visibility'] !== $post_approved)
 				{
 					// we need a fresh change of socks, everything has become invalidated
 					$sql = 'SELECT MAX(topic_last_post_id) as last_post_id
 						FROM ' . TOPICS_TABLE . '
 						WHERE forum_id = ' . (int) $data['forum_id'] . '
-							AND topic_approved = 1';
+							AND topic_visibility = ' . ITEM_APPROVED;
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -2290,13 +2290,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 		}
 	}
-	else if (!$data['post_approved'] && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
+	else if (!$data['post_visibility'] == ITEM_APPROVED && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
 	{
 		// like having the rug pulled from under us
 		$sql = 'SELECT MAX(post_id) as last_post_id
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . (int) $data['topic_id'] . '
-				AND post_approved = 1';
+				AND post_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

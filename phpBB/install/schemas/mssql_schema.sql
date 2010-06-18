@@ -1653,5 +1653,3 @@ ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD
 		[zebra_id]
 	)  ON [PRIMARY] 
 GO
-
-

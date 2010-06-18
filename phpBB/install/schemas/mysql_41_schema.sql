@@ -974,5 +974,3 @@ CREATE TABLE phpbb_zebra (
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, zebra_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-

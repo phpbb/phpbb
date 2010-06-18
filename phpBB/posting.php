@@ -86,8 +86,8 @@ switch ($mode)
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
-				AND f.forum_id = t.forum_id" .
-			(($auth->acl_get('m_approve', $forum_id)) ? '' : ' AND t.topic_approved = 1');
+				AND f.forum_id = t.forum_id
+				AND " . topic_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'quote':
@@ -114,8 +114,8 @@ switch ($mode)
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
-				AND f.forum_id = t.forum_id" .
-				(($auth->acl_get('m_approve', $forum_id)) ? '' : ' AND p.post_approved = 1');
+				AND f.forum_id = t.forum_id
+				AND " . topic_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'smilies':
@@ -163,7 +163,7 @@ if (!$post_data)
 
 // Not able to reply to unapproved posts/topics
 // TODO: add more descriptive language key
-if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && !$post_data['topic_approved']) || ($mode == 'quote' && !$post_data['post_approved'])))
+if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && $post_data['topic_visibility'] == ITEM_UNAPPROVED) || ($mode == 'quote' && $post_data['post_visibility'] == ITEM_UNAPPROVED)))
 {
 	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
 }
@@ -1063,8 +1063,8 @@ if ($submit || $preview || $refresh)
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
 
-				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
-				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
+				'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
+				'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
 			);
 
 			if ($mode == 'edit')
@@ -1514,9 +1514,9 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
 				'topic_replies_real'	=> $post_data['topic_replies_real'],
-				'topic_approved'		=> $post_data['topic_approved'],
+				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
-				'post_approved'			=> $post_data['post_approved'],
+				'post_visibility'		=> $post_data['post_visibility'],
 				'post_reported'			=> $post_data['post_reported'],
 				'post_time'				=> $post_data['post_time'],
 				'poster_id'				=> $post_data['poster_id'],

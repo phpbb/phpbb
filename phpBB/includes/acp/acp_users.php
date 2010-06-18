@@ -676,7 +676,7 @@ class acp_users
 										'topic_time'				=> time(),
 										'forum_id' 					=> $new_forum_id,
 										'icon_id'					=> 0,
-										'topic_approved'			=> 1,
+										'topic_visibility'			=> ITEM_APPROVED,
 										'topic_title' 				=> $post_ary['title'],
 										'topic_first_poster_name'	=> $user_row['username'],
 										'topic_type'				=> POST_NORMAL,
@@ -1033,7 +1033,7 @@ class acp_users
 				$sql = 'SELECT COUNT(post_id) as posts_in_queue
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
-						AND post_approved = 0';
+						AND post_visibility = ' . ITEM_UNAPPROVED;
 				$result = $db->sql_query($sql);
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);

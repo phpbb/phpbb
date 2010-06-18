@@ -681,7 +681,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
-				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
+				. (($this->is_moderator_approve_forum($row['forum_id']) && $row['post_visibility'] !== ITEM_APPROVED) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
 		}
 	}
 }
@@ -760,8 +760,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
 				AND topic_moved_id = 0
-				AND (topic_approved = 1
-					' . $sql_m_approve . ')
+				AND ' . topic_visibility::get_visibility_sql_global('topic') . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -783,7 +782,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -796,8 +795,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 				),
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
-							AND (p.post_approved = 1
-								' . str_replace('forum_id', 'p.forum_id', $sql_m_approve) . ')
+							AND ' . topic_visibility::get_visibility_sql('post', array(), 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
@@ -894,7 +892,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE forum_id = ' . $this->forum_id . '
 				AND topic_moved_id = 0
-				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
+				AND ' . topic_visibility::get_visibility_sql('topic', $this->forum_id) . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -914,14 +912,14 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
-							' . ((!$m_approve) ? 'AND p.post_approved = 1' : '') . '
+							AND ' . topic_visibility::get_visibility_sql('post', $this->forum_id, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
@@ -967,7 +965,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 	{
 		global $auth, $db, $user;
 
-		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
+		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_replies, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . FORUMS_TABLE . ' f
 				ON (f.forum_id = t.forum_id)
@@ -1020,14 +1018,14 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		global $auth, $db;
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
-								' . ($this->forum_id && !$auth->acl_get('m_approve', $this->forum_id) ? 'AND p.post_approved = 1' : '') . '
+								AND ' . topic_visibility::get_visibility_sql('post', $this->forum_id, 'p.') . '
 								AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
@@ -1163,7 +1161,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
 				AND topic_moved_id = 0
-				AND topic_approved = 1
+				AND topic_visibility = ' . ITEM_APPROVED . '
 			ORDER BY topic_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -1233,7 +1231,7 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
 				AND topic_moved_id = 0
-				AND topic_approved = 1
+				AND topic_visibility = ' . ITEM_APPROVED .'
 			ORDER BY topic_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -1325,7 +1323,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
 				AND topic_moved_id = 0
-				AND topic_approved = 1
+				AND topic_visibility = ' . ITEM_APPROVED . '
 				' . $last_post_time_sql . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);

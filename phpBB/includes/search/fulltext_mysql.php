@@ -265,7 +265,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	string		$sort_dir			is either a or d representing ASC and DESC
 	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
 	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	array		$m_approve_fid_sql	specifies which types of posts a user may view, based on permissions
 	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
 	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
 	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
@@ -292,7 +292,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
-			implode(',', $m_approve_fid_ary),
+// @TODO			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
 
@@ -354,7 +354,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			break;
 		}
 
-		if (!sizeof($m_approve_fid_ary))
+/*		if (!sizeof($m_approve_fid_ary))
 		{
 			$m_approve_fid_sql = ' AND p.post_approved = 1';
 		}
@@ -366,6 +366,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		{
 			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
+*/
 
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
 		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
@@ -445,7 +446,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	* @param	string		$sort_dir			is either a or d representing ASC and DESC
 	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
 	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	array		$m_approve_fid_sql	specifies which types of posts a user may view, based on permissions
 	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
 	* @param	array		$author_ary			an array of author ids
 	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
@@ -473,7 +474,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
-			implode(',', $m_approve_fid_ary),
+// @TODO			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary),
 			$author_name,
 		)));
@@ -523,7 +524,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			break;
 		}
 
-		if (!sizeof($m_approve_fid_ary))
+/*		if (!sizeof($m_approve_fid_ary))
 		{
 			$m_approve_fid_sql = ' AND p.post_approved = 1';
 		}
@@ -535,6 +536,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		{
 			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $this->db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
+*/
 
 		// If the cache was completely empty count the results
 		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';

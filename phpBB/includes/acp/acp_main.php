@@ -144,14 +144,14 @@ class acp_main
 
 						$sql = 'SELECT COUNT(post_id) AS stat
 							FROM ' . POSTS_TABLE . '
-							WHERE post_approved = 1';
+							WHERE post_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(topic_id) AS stat
 							FROM ' . TOPICS_TABLE . '
-							WHERE topic_approved = 1';
+							WHERE topic_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
@@ -232,7 +232,7 @@ class acp_main
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-									AND post_postcount = 1 AND post_approved = 1
+									AND post_postcount = 1 AND post_visibility = ' . ITEM_APPROVED . '
 								GROUP BY poster_id';
 							$result = $db->sql_query($sql);
 

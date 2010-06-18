@@ -1234,7 +1234,3 @@ CREATE TABLE phpbb_zebra (
 	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0),
 	PRIMARY KEY (user_id, zebra_id)
 );
-
-
-
-COMMIT;

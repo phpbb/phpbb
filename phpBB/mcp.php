@@ -483,7 +483,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 			continue;
 		}
 
-		if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		if ($row['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -619,7 +619,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND topic_approved = 1';
+				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
@@ -635,7 +635,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND post_approved = 1';
+				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
@@ -648,7 +648,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_approved = 0
+					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
 					AND t.topic_id = p.topic_id
 					AND t.topic_first_post_id <> p.post_id';
 
@@ -666,7 +666,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND topic_approved = 0';
+					AND topic_visibility = ' . ITEM_UNAPPROVED;
 
 			if ($min_time)
 			{

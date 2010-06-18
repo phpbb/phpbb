@@ -1363,5 +1363,3 @@ CREATE TABLE phpbb_zebra (
 );;
 
 ALTER TABLE phpbb_zebra ADD PRIMARY KEY (user_id, zebra_id);;
-
-

@@ -1783,5 +1783,3 @@ CREATE TABLE phpbb_zebra (
 	CONSTRAINT pk_phpbb_zebra PRIMARY KEY (user_id, zebra_id)
 )
 /
-
-

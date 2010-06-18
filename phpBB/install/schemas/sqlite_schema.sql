@@ -945,7 +945,3 @@ CREATE TABLE phpbb_zebra (
 	foe INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (user_id, zebra_id)
 );
-
-
-
-COMMIT;

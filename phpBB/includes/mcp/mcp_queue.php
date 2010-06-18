@@ -183,7 +183,7 @@ class mcp_queue
 					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
+					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED) ,
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
@@ -309,7 +309,7 @@ class mcp_queue
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
 						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
-							AND p.post_approved = 0
+							AND p.post_visibility = ' . ITEM_UNAPPROVED . '
 							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
@@ -361,7 +361,7 @@ class mcp_queue
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . " t
 						WHERE " . $db->sql_in_set('forum_id', $forum_list) . "
-							AND topic_approved = 0
+							AND topic_visibility = " . ITEM_UNAPPROVED . "
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -484,7 +484,7 @@ function approve_post($post_id_list, $id, $mode)
 
 		foreach ($post_info as $post_id => $post_data)
 		{
-			if ($post_data['post_approved'])
+			if ($post_data['post_visibility'] == ITEM_APPROVED)
 			{
 				$post_approved_list[] = $post_id;
 				continue;
@@ -544,7 +544,7 @@ function approve_post($post_id_list, $id, $mode)
 		if (sizeof($topic_approve_sql))
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_approved = 1
+				SET topic_visibility = ' . ITEM_APPROVED . '
 				WHERE ' . $db->sql_in_set('topic_id', $topic_approve_sql);
 			$db->sql_query($sql);
 		}
@@ -552,7 +552,7 @@ function approve_post($post_id_list, $id, $mode)
 		if (sizeof($post_approve_sql))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_approved = 1
+				SET post_visibility = ' . ITEM_APPROVED . '
 				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
 			$db->sql_query($sql);
 		}

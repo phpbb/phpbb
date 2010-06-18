@@ -1768,7 +1768,7 @@ function sync_post_count($offset, $limit)
 	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 			FROM ' . POSTS_TABLE . '
 			WHERE post_postcount = 1
-				AND post_approved = 1
+				AND post_visibility = ' . ITEM_APPROVED . '
 			GROUP BY poster_id
 			ORDER BY poster_id';
 	$result = $db->sql_query_limit($sql, $limit, $offset);
@@ -1941,7 +1941,7 @@ function update_dynamic_config()
 
 	$sql = 'SELECT COUNT(post_id) AS stat
 		FROM ' . POSTS_TABLE . '
-		WHERE post_approved = 1';
+		WHERE post_visibility = ' . ITEM_APPROVED;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1950,7 +1950,7 @@ function update_dynamic_config()
 
 	$sql = 'SELECT COUNT(topic_id) AS stat
 		FROM ' . TOPICS_TABLE . '
-		WHERE topic_approved = 1';
+		WHERE topic_visibility = ' . ITEM_APPROVED;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
