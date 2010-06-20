@@ -35,9 +35,9 @@ class acp_php_info
 
 		$this->tpl_name = 'acp_php_info';
 		$this->page_title = 'ACP_PHP_INFO';
-		
+
 		ob_start();
-		@phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
+		phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
 		$phpinfo = ob_get_clean();
 
 		$phpinfo = trim($phpinfo);
