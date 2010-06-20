@@ -87,7 +87,7 @@ switch ($mode)
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id
-				AND " . topic_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . phpbb_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'quote':
@@ -115,7 +115,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . topic_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . phpbb_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'smilies':

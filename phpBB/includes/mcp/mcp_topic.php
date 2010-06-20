@@ -146,7 +146,7 @@ function mcp_topic_view($id, $mode, $action)
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . '
-			AND ' .	topic_visibility::get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
+			AND ' .	phpbb_visibility::get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
 			AND p.poster_id = u.user_id ' .
 			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;

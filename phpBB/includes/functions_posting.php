@@ -993,7 +993,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = 'SELECT p.post_id
 		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			AND " . topic_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
+			AND " . phpbb_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
@@ -1542,7 +1542,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id
-						AND " . topic_visibility::get_visibility_sql('post', $forum_id);
+						AND " . phpbb_visibility::get_visibility_sql('post', $forum_id);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1555,7 +1555,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
-					AND " . topic_visibility::get_visibility_sql('post', $forum_id) . '
+					AND " . phpbb_visibility::get_visibility_sql('post', $forum_id) . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);

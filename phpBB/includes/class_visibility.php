@@ -1,7 +1,35 @@
 <?php
+/**
+*
+* @package phpbb
+* @version $Id$
+* @copyright (c) 2010 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
 
-class topic_visibility
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
 {
+	exit;
+}
+
+/**
+* phpbb_visibility
+* Handle fetching and setting the visibility for topics and posts
+* @package phpbb
+*/
+class phpbb_visibility
+{
+	/**
+	* Create topic/post visibility SQL for a given forum ID
+	* @param $mode string - either "topic" or "post"
+	* @param $forum_id int - current forum ID
+	* @param $table_alias string - Table alias to prefix in SQL queries
+	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	*/
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
 		global $auth, $db, $user;
@@ -31,6 +59,13 @@ class topic_visibility
 		return $clause;
 	}
 
+	/**
+	* Fetch visibility SQL for all forums on the board.
+	* @param $mode string - either "topic" or "post"
+	* @param $exclude_forum_ids - int array - 
+	* @param $table_alias string - Table alias to prefix in SQL queries
+	* @return string with the appropriate combination SQL logic for topic/post_visibility
+	*/
 	public function get_visibility_sql_global($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
 		global $auth, $db, $user;
@@ -70,6 +105,14 @@ class topic_visibility
 		return $where_sql;
 	}
 
+	/**
+	* Description: Allows approving (which is akin to undeleting), unapproving (!) or soft deleting an entire topic.
+	* Calls set_post_visibility as needed.
+	* @param $visibility - int - element of {ITEM_UNAPPROVED, ITEM_APPROVED, ITEM_DELETED}
+	* @param $topic_id - int - topic ID to act on
+	* @param $forum_id - int - forum ID where $topic_id resides
+	* @return bool true = success, false = fail
+	*/
 	public function set_topic_visibility($visibility, $topic_id, $forum_id)
 	{
 		global $db;
@@ -78,30 +121,31 @@ class topic_visibility
 			WHERE topic_id = ' . (int) $topic_id;
 		$db->sql_query($sql);
 
-		if ($visibility != ITEM_APPROVED)
-		{
-			$sql = 'SELECT post_id FROM ' . POSTS_TABLE . '
-				WHERE topic_id = ' . (int) $topic_id;
-			$result = $db->sql_query($sql);
+		// if we're approving, disapproving, or deleteing a topic, assume that
+		// we are adjusting _all_ posts in that topic.
+		$status = self::set_post_visibility($visibility, false, $topic_id, $forum_id, true, true);
 
-			$status = true;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$status = min($status, self::set_post_visibility($visibility, false, $topic_id, $forum_id, true, true));
-			}
-		}
-		else
-		{
-			// TOOD: figure out which posts we actually care about
-			$status = self::set_post_visibility($visibility, 0, false, $forum_id, true, true);
-		}
 
 		return $status;
 	}
 
+	/**
+	* @param $visibility - int - element of {ITEM_UNAPPROVED, ITEM_APPROVED, ITEM_DELETED}
+	* @param $post_id - int - the post ID to act on
+	* @param $topic_id - int - forum where $post_id is found
+	* @param $forum_id - int - forum ID where $topic_id resides
+	* @param $is_starter - bool - is this the first post of the topic
+	* @param $is_latest - bool - is this the last post of the topic
+	*/
 	public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $is_starter, $is_latest)
 	{
 		global $db;
+
+		// if we're changing the starter, we need to change the rest of the topic
+		if ($is_starter && !$is_latest)
+		{
+			return self::set_topic_visibility($visibility, $topic_id, $forum_id);
+		}
 
 		if ($post_id)
 		{
@@ -121,16 +165,11 @@ class topic_visibility
 			WHERE ' . $where_sql;
 		$db->sql_query($sql);
 
+		// Sync the first/last topic information if needed
 		if ($is_starter || $is_latest)
 		{
 			update_post_information('topic', $topic_id, false);
 			update_post_information('forum', $forum_id, false);
-		}
-
-		// if we're changing the starter, we need to change the rest of the topic
-		if ($is_starter && !$is_latest)
-		{
-			self::set_topic_visibility($visibility, $topic_id, $forum_id);
 		}
 	}
 }
