@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# A hook to append PHPBB3-<ticket_id> to ticket/<ticket_id>
+# branches.
+#
+# This is a commit-msg hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/commit-msg \\
+#   .git/hooks/commit-msg
+
+if grep '^\[ticket/' "$1"
+then
+	# get branch name
+	branch="$(git symbolic-ref HEAD)"
+	
+	# strip off refs/heads/ticket
+	ticket_id="$(echo "$branch" | sed "s/refs\/heads\/ticket\///g")"
+	
+	echo >> "$1"
+	echo "PHPBB3-$ticket_id" >> "$1"
+fi
