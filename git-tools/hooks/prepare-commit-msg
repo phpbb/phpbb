@@ -32,3 +32,10 @@ if [ "$2" = "" ]
 then
 	echo "[$branch] $(cat "$1")" > "$1"
 fi
+
+if (echo $branch | grep '^ticket/')
+then
+	ticket_id="$(echo $branch | sed "s/ticket\///g")"
+	echo >> "$1"
+	echo "PHPBB3-$ticket_id" >> "$1"
+fi
