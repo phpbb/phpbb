@@ -1782,7 +1782,7 @@ else
 			{
 				return $strings;
 			}
-			return Normalizer::normalize($strings);
+			return (string) Normalizer::normalize($strings);
 		}
 		else
 		{
@@ -1796,7 +1796,7 @@ else
 						{
 							continue;
 						}
-						$strings[$key][$_key] = Normalizer::normalize($strings[$key][$_key]);
+						$strings[$key][$_key] = (string) Normalizer::normalize($strings[$key][$_key]);
 					}
 				}
 				else
@@ -1805,7 +1805,7 @@ else
 					{
 						continue;
 					}
-					$strings[$key] = Normalizer::normalize($strings[$key]);
+					$strings[$key] = (string) Normalizer::normalize($strings[$key]);
 				}
 			}
 		}
