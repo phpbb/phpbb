@@ -542,6 +542,12 @@ function http_byte_range($filesize)
 			}
 		}
 
+		// We currently do not support range requests that end before the end of the file
+		if ($last_byte_pos != $filesize - 1)
+		{
+			continue;
+		}
+
 		return array(
 			'byte_pos_start'	=> $first_byte_pos,
 			'byte_pos_end'		=> $last_byte_pos,
