@@ -157,6 +157,16 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		trigger_error('UNABLE_TO_DELIVER_FILE');
 	}
 
+	// Make sure the database record for the filesize is correct
+	if ($size > 0 && $size != $attachment['filesize'])
+	{
+		// Update database record
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET filesize = ' . (int) $size . '
+			WHERE attach_id = ' . (int) $attachment['attach_id'];
+		$db->sql_query($sql);
+	}
+
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
