@@ -447,30 +447,49 @@ function file_gc()
 */
 function http_byte_range($filesize)
 {
+	// The range request array;
+	// contains all requested ranges.
+	static $request_array;
+
 	if (!$filesize)
 	{
 		return false;
 	}
 
-	foreach (array($_SERVER, $_ENV) as $global)
+	if (!isset($request_array))
 	{
-		if (isset($global['HTTP_RANGE']))
+		$request_array = false;
+
+		$globals = array(
+			array('_SERVER',	'HTTP_RANGE'),
+			array('_ENV',		'HTTP_RANGE'),
+		);
+
+		foreach ($globals as $array)
 		{
-			$http_range = $global['HTTP_RANGE'];
-			break;
+			$global	= $array[0];
+			$key	= $array[1];
+
+			// Make sure range request starts with "bytes="
+			if (isset($GLOBALS[$global][$key]) && strpos($GLOBALS[$global][$key], 'bytes=') === 0)
+			{
+				// Strip leading 'bytes='
+				// Multiple ranges can be separated by a comma
+				$request_array = explode(',', substr($GLOBALS[$global][$key], 6));
+
+				break;
+			}
 		}
 	}
 
 	// Return if no range requested
-	// Make sure range request starts with "bytes="
-	if (empty($http_range) || strpos($http_range, 'bytes=') !== 0)
+	if (empty($request_array))
 	{
 		return false;
 	}
 
-	// Strip leading 'bytes='
-	// Multiple ranges can be separated by a comma
-	foreach (explode(',', substr($http_range, 6)) as $range_string)
+	// Go through all ranges
+	foreach ($request_array as $range_string)
 	{
 		$range = explode('-', trim($range_string));
 
