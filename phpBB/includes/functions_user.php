@@ -1490,7 +1490,7 @@ function validate_username($username, $allowed_username = false)
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
-	if (@preg_match('/\p{L}/u', 'a') !== false)
+	if (pcre_utf8_support())
 	{
 		$pcre = true;
 	}
@@ -1626,7 +1626,7 @@ function validate_password($password)
 	$pcre = $mbstring = false;
 
 	// generic UTF-8 character types supported?
-	if (@preg_match('/\p{L}/u', 'a') !== false)
+	if (pcre_utf8_support())
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';

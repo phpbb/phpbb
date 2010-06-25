@@ -317,13 +317,7 @@ class acp_bbcodes
 		$bbcode_tpl = trim($bbcode_tpl);
 		$utf8 = strpos($bbcode_match, 'INTTEXT') !== false;
 
-		// make sure we have utf8 support
-		// PHP may not be linked with the bundled PCRE lib and instead with an older version
-		$utf8_pcre_properties = false;
-		if (@preg_match('/\p{L}/u', 'a') !== false)
-		{
-			$utf8_pcre_properties = true;
-		}
+		$utf8_pcre_properties = pcre_utf8_support();
 
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);

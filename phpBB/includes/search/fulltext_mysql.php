@@ -43,7 +43,7 @@ class fulltext_mysql extends search_backend
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
 
 		// PHP may not be linked with the bundled PCRE lib and instead with an older version
-		if (@preg_match('/\p{L}/u', 'a') !== false)
+		if (pcre_utf8_support())
 		{
 			$this->pcre_properties = true;
 		}

@@ -82,7 +82,7 @@ class cache extends acm
 			$result = $db->sql_query($sql);
 
 			$censors = array();
-			$unicode = (@preg_match('/\p{L}/u', 'a') !== false) ? true : false;
+			$unicode = pcre_utf8_support();
 
 			while ($row = $db->sql_fetchrow($result))
 			{
