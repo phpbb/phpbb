@@ -15,6 +15,7 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'class_loader/all_tests.php';
 require_once 'utf/all_tests.php';
 require_once 'request/all_tests.php';
 require_once 'security/all_tests.php';
@@ -38,6 +39,7 @@ class phpbb_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB');
 
+		$suite->addTest(phpbb_class_loader_all_tests::suite());
 		$suite->addTest(phpbb_utf_all_tests::suite());
 		$suite->addTest(phpbb_request_all_tests::suite());
 		$suite->addTest(phpbb_security_all_tests::suite());
