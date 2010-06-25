@@ -394,7 +394,7 @@ function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
 	}
 
 	$output = '$H$';
-	$output .= $itoa64[min($iteration_count_log2 + ((PHP_VERSION >= 5) ? 5 : 3), 30)];
+	$output .= $itoa64[min($iteration_count_log2 + 5, 30)];
 	$output .= _hash_encode64($input, 6, $itoa64);
 
 	return $output;
@@ -480,24 +480,12 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	* consequently in lower iteration counts and hashes that are
 	* quicker to crack (by non-PHP code).
 	*/
-	if (PHP_VERSION >= 5)
+	$hash = md5($salt . $password, true);
+	do
 	{
-		$hash = md5($salt . $password, true);
-		do
-		{
-			$hash = md5($hash . $password, true);
-		}
-		while (--$count);
+		$hash = md5($hash . $password, true);
 	}
-	else
-	{
-		$hash = pack('H*', md5($salt . $password));
-		do
-		{
-			$hash = pack('H*', md5($hash . $password));
-		}
-		while (--$count);
-	}
+	while (--$count);
 
 	$output = substr($setting, 0, 12);
 	$output .= _hash_encode64($hash, 16, $itoa64);
