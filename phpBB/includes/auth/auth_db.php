@@ -69,7 +69,7 @@ function login_db(&$username, &$password)
 	if ($show_captcha)
 	{
 		// Visual Confirmation handling
-		if (!class_exists('phpbb_captcha_factory'))
+		if (!class_exists('phpbb_captcha_factory', false))
 		{
 			global $phpbb_root_path, $phpEx;
 			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
@@ -90,7 +90,7 @@ function login_db(&$username, &$password)
 		{
 			$captcha->reset();
 		}
-		
+
 	}
 
 	// If the password convert flag is set we need to convert it

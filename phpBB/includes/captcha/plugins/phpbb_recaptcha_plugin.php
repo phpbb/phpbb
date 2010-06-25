@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!class_exists('phpbb_default_captcha'))
+if (!class_exists('phpbb_default_captcha', false))
 {
 	// we need the classic captcha code for tracking solutions and attempts
 	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);

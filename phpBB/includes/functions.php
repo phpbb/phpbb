@@ -2840,7 +2840,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 
-	if (!class_exists('phpbb_captcha_factory'))
+	if (!class_exists('phpbb_captcha_factory', false))
 	{
 		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 	}
