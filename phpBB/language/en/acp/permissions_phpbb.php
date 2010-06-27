@@ -156,6 +156,8 @@ $lang = array_merge($lang, array(
 	'acl_f_flash'		=> array('lang' => 'Can use [flash] BBCode tag', 'cat' => 'content'),
 
 	'acl_f_edit'		=> array('lang' => 'Can edit own posts', 'cat' => 'actions'),
+	'acl_f_softdelete'  => array('lang' => 'Can soft delete own posts', 'cat' => 'actions'),
+	'acl_f_restore'		=> array('lang' => 'Can restore own posts', 'cat' => 'actions'),
 	'acl_f_delete'		=> array('lang' => 'Can delete own posts', 'cat' => 'actions'),
 	'acl_f_user_lock'	=> array('lang' => 'Can lock own topics', 'cat' => 'actions'),
 	'acl_f_bump'		=> array('lang' => 'Can bump topics', 'cat' => 'actions'),
@@ -177,11 +179,14 @@ $lang = array_merge($lang, array(
 	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
+	'acl_m_softdelete'	=> array('lang' => 'Can soft delete posts', 'cat' => 'post_actions'),
+	'acl_m_restore'     => array('lang' => 'Can restore deleted posts', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),
 	'acl_m_split'	=> array('lang' => 'Can split topics', 'cat' => 'topic_actions'),
 	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'topic_actions'),
+
 
 	'acl_m_info'	=> array('lang' => 'Can view post details', 'cat' => 'misc'),
 	'acl_m_warn'	=> array('lang' => 'Can issue warnings<br /><em>This setting is only assigned globally. It is not forum based.</em>', 'cat' => 'misc'), // This moderator setting is only global (and not local)

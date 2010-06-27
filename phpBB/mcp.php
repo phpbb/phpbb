@@ -640,6 +640,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		break;
 
 		case 'unapproved_posts':
+		case 'deleted_posts':
+			$visibility_const = ($mode == 'unapproved_posts') ? ITEM_UNAPPROVED : ITEM_DELETED;
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -648,7 +650,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
+					AND p.post_visibility = ' . $visibility_const . '
 					AND t.topic_id = p.topic_id
 					AND t.topic_first_post_id <> p.post_id';
 
@@ -796,7 +798,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 	);
 
-	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
+	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts', 'deleted_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
 		$total = (int) $db->sql_fetchfield('total');

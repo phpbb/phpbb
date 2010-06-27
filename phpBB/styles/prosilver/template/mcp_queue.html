@@ -94,8 +94,13 @@
 
 <!-- IF .postrow -->
 	<fieldset class="display-actions">
+		<!-- IF S_RESTORE -->
+		<input class="button2" type="submit" name="action[disapprove]" value="{L_DELETE}" />&nbsp;
+		<input class="button1" type="submit" name="action[restore]" value="{L_RESTORE}" />
+		<!-- ELSE -->
 		<input class="button2" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" />&nbsp;
 		<input class="button1" type="submit" name="action[approve]" value="{L_APPROVE}" />
+		<!-- ENDIF -->
 		<div><a href="#" onclick="marklist('mcp', 'post_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'post_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
 	</fieldset>
 <!-- ENDIF -->

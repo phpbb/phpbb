@@ -83,6 +83,13 @@
 	</dl>
 	<!-- ENDIF -->
 
+	<!-- IF (S_SOFT_DELETE_ALLOWED and not S_IS_DELETED) or (S_RESTORE_ALLOWED and S_IS_DELETED) -->
+	<dl>
+		<dt><label for="soft_delete">{L_SOFT_DELETE_POST}:</label></dt>
+		<dd><label for="soft_delete"><input type="checkbox" name="soft_delete"{S_SOFT_DELETE_CHECKED} id="soft_delete" /> {L_SOFT_DELETE_POST_EXPLAIN}</label></dd>
+	</dl>
+	<!-- ENDIF -->
+
 	<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<dl>
 		<dt><label for="icon">{L_ICON}:</label></dt>

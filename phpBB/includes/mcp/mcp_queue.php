@@ -46,6 +46,7 @@ class mcp_queue
 		{
 			case 'approve':
 			case 'disapprove':
+			case 'restore':
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 				$post_id_list = request_var('post_id_list', array(0));
@@ -58,6 +59,10 @@ class mcp_queue
 				if ($action == 'approve')
 				{
 					approve_post($post_id_list, 'queue', $mode);
+				}
+				else if ($action == 'restore')
+				{
+// do something
 				}
 				else
 				{
@@ -224,6 +229,16 @@ class mcp_queue
 
 			case 'unapproved_topics':
 			case 'unapproved_posts':
+			case 'deleted_posts':
+				if ($mode == 'deleted_posts')
+				{
+					$m_perm = 'm_restore';
+				}
+				else
+				{
+					$m_perm = 'm_approve';
+				}
+
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
 				$topic_id = request_var('t', 0);
@@ -242,7 +257,7 @@ class mcp_queue
 					$forum_id = $topic_info['forum_id'];
 				}
 
-				$forum_list_approve = get_forum_list('m_approve', false, true);
+				$forum_list_approve = get_forum_list($m_perm, false, true);
 				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
 
 				// Remove forums we cannot read
@@ -277,7 +292,7 @@ class mcp_queue
 				}
 				else
 				{
-					$forum_info = get_forum_data(array($forum_id), 'm_approve');
+					$forum_info = get_forum_data(array($forum_id), $m_perm);
 
 					if (!sizeof($forum_info))
 					{
@@ -304,8 +319,10 @@ class mcp_queue
 
 				$forum_names = array();
 
-				if ($mode == 'unapproved_posts')
+				if ($mode == 'unapproved_posts' || $mode == 'deleted_posts')
 				{
+					$visibility_const = ($mode == 'unapproved_posts') ? ITEM_UNAPPROVED : ITEM_DELETED;
+
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
 						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
@@ -425,13 +442,14 @@ class mcp_queue
 				// Now display the page
 				$template->assign_vars(array(
 					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
-					'L_EXPLAIN'				=> ($mode == 'unapproved_posts') ? $user->lang['MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'] : $user->lang['MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'unapproved_posts') ? $user->lang['MCP_QUEUE_UNAPPROVED_POSTS'] : $user->lang['MCP_QUEUE_UNAPPROVED_TOPICS'],
+					'L_EXPLAIN'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'],
+					'L_TITLE'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode)],
 					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
-					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
+					'S_TOPICS'				=> ($mode == 'unapproved_topics') ? true : false,
+					'S_RESTORE'             => ($mode == 'deleted_posts') ? true : false,
 
 					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
@@ -475,127 +493,7 @@ function approve_post($post_id_list, $id, $mode)
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
 
-		// If Topic -> total_topics = total_topics+1, total_posts = total_posts+1, forum_topics = forum_topics+1, forum_posts = forum_posts+1
-		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
-
-		$total_topics = $total_posts = 0;
-		$topic_approve_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
-		$user_posts_sql = $post_approved_list = array();
-
-		foreach ($post_info as $post_id => $post_data)
-		{
-			if ($post_data['post_visibility'] == ITEM_APPROVED)
-			{
-				$post_approved_list[] = $post_id;
-				continue;
-			}
-
-			$topic_id_list[$post_data['topic_id']] = 1;
-			$forum_id_list[$post_data['forum_id']] = 1;
-
-			// User post update (we do not care about topic or post, since user posts are strictly connected to posts)
-			// But we care about forums where post counts get not increased. ;)
-			if ($post_data['post_postcount'])
-			{
-				$user_posts_sql[$post_data['poster_id']] = (empty($user_posts_sql[$post_data['poster_id']])) ? 1 : $user_posts_sql[$post_data['poster_id']] + 1;
-			}
-
-			// Topic or Post. ;)
-			if ($post_data['topic_first_post_id'] == $post_id)
-			{
-				$total_topics++;
-				$topic_approve_sql[] = $post_data['topic_id'];
-
-				$approve_log[] = array(
-					'type'			=> 'topic',
-					'post_subject'	=> $post_data['post_subject'],
-					'forum_id'		=> $post_data['forum_id'],
-					'topic_id'		=> $post_data['topic_id'],
-				);
-			}
-			else
-			{
-				$approve_log[] = array(
-					'type'			=> 'post',
-					'post_subject'	=> $post_data['post_subject'],
-					'forum_id'		=> $post_data['forum_id'],
-					'topic_id'		=> $post_data['topic_id'],
-				);
-			}
-
-			$total_posts++;
-
-			// Increment by topic_replies if we approve a topic...
-			// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
-			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
-			{
-				$total_posts += $post_data['topic_replies'];
-			}
-
-			$post_approve_sql[] = $post_id;
-		}
-
-		$post_id_list = array_values(array_diff($post_id_list, $post_approved_list));
-		for ($i = 0, $size = sizeof($post_approved_list); $i < $size; $i++)
-		{
-			unset($post_info[$post_approved_list[$i]]);
-		}
-
-		if (sizeof($topic_approve_sql))
-		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_visibility = ' . ITEM_APPROVED . '
-				WHERE ' . $db->sql_in_set('topic_id', $topic_approve_sql);
-			$db->sql_query($sql);
-		}
-
-		if (sizeof($post_approve_sql))
-		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_visibility = ' . ITEM_APPROVED . '
-				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
-			$db->sql_query($sql);
-		}
-
-		unset($topic_approve_sql, $post_approve_sql);
-
-		foreach ($approve_log as $log_data)
-		{
-			add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_APPROVED' : 'LOG_POST_APPROVED', $log_data['post_subject']);
-		}
-
-		if (sizeof($user_posts_sql))
-		{
-			// Try to minimize the query count by merging users with the same post count additions
-			$user_posts_update = array();
-
-			foreach ($user_posts_sql as $user_id => $user_posts)
-			{
-				$user_posts_update[$user_posts][] = $user_id;
-			}
-
-			foreach ($user_posts_update as $user_posts => $user_id_ary)
-			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_posts = user_posts + ' . $user_posts . '
-					WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
-				$db->sql_query($sql);
-			}
-		}
-
-		if ($total_topics)
-		{
-			set_config_count('num_topics', $total_topics, true);
-		}
-
-		if ($total_posts)
-		{
-			set_config_count('num_posts', $total_posts, true);
-		}
-
-		sync('topic', 'topic_id', array_keys($topic_id_list), true);
-		sync('forum', 'forum_id', array_keys($forum_id_list), true, true);
-		unset($topic_id_list, $forum_id_list);
+	    phpbb_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
 
 		$messenger = new messenger();
 

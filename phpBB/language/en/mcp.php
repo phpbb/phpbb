@@ -201,6 +201,8 @@ $lang = array_merge($lang, array(
 	'MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'	=> 'This is a list of all posts which require approving before they will be visible to users.',
 	'MCP_QUEUE_UNAPPROVED_TOPICS'			=> 'Topics awaiting approval',
 	'MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'	=> 'This is a list of all topics which require approving before they will be visible to users.',
+	'MCP_QUEUE_DELETED_POSTS'               => 'Deleted posts',
+	'MCP_QUEUE_DELETED_POSTS_EXPLAIN'       => 'This is a list of all posts which have been soft deleted.  You can restore or permanently delete the posts from this screen.',
 
 	'MCP_VIEW_USER'			=> 'View warnings for a specific user',
 
