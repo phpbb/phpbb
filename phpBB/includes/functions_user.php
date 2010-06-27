@@ -1229,9 +1229,13 @@ function user_unban($mode, $ban)
 }
 
 /**
-* Whois facility
+* Internet Protocol Address Whois
+* RFC3912: WHOIS Protocol Specification
 *
-* @link http://tools.ietf.org/html/rfc3912 RFC3912: WHOIS Protocol Specification
+* @param string $ip		Ip address, either IPv4 or IPv6.
+*
+* @return string		Empty string if not a valid ip address.
+*						Otherwise make_clickable()'ed whois result.
 */
 function user_ipwhois($ip)
 {
