@@ -413,9 +413,7 @@ class session
 
 							$db->sql_return_on_error(true);
 
-							$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-							$result = $db->sql_query($sql);
+							$this->update_session($sql_ary);
 
 							$db->sql_return_on_error(false);
 
@@ -425,9 +423,7 @@ class session
 							{
 								unset($sql_ary['session_forum_id']);
 
-								$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-									WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-								$db->sql_query($sql);
+								$this->update_session($sql_ary);
 							}
 
 							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
@@ -692,9 +688,7 @@ class session
 						$sql_ary['session_forum_id'] = $this->page['forum'];
 					}
 
-					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-					$db->sql_query($sql);
+					$this->update_session($sql_ary);
 
 					// Update the last visit time
 					$sql = 'UPDATE ' . USERS_TABLE . '
@@ -1461,6 +1455,23 @@ class session
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 			SET session_admin = 0
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
+		$db->sql_query($sql);
+	}
+
+	/**
+	* Update the session data
+	*
+	* @param array $session_data associative array of session keys to be updated
+	* @param string $session_id optional session_id, defaults to current user's session_id
+	*/
+	public function update_session($session_data, $session_id = null)
+	{
+		global $db;
+
+		$session_id = ($session_id) ? $session_id : $this->session_id;
+
+		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
+			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
 		$db->sql_query($sql);
 	}
 }
