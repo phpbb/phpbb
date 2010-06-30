@@ -266,7 +266,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$m_approve_fid_sql = ' AND p.post_approved = 1';
 	}
 */
-	$m_approve_fid_sql = ' AND ' . phpbb_visibility::get_visibility_sql_global('post', $ex_fid_ary, 'p.');
+	$m_approve_fid_sql = ' AND ' . phpbb_content_visibility::get_visibility_sql_global('post', $ex_fid_ary, 'p.');
 
 	if ($reset_search_forum)
 	{

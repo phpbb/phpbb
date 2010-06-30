@@ -99,7 +99,7 @@ switch ($mode)
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id
-				AND " . phpbb_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'quote':
@@ -128,7 +128,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . phpbb_visibility::get_visibility_sql('topic', $forum_id, 't.');
+				AND " . phpbb_content_visibility::get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'smilies':
@@ -179,13 +179,6 @@ if (!$post_data)
 if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && $post_data['topic_visibility'] == ITEM_UNAPPROVED) || ($mode == 'quote' && $post_data['post_visibility'] == ITEM_UNAPPROVED)))
 {
 	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
-}
-
-if ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && phpbb_visibility::can_restore($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
-{
-	// don't feel that a confirm_box is needed for this
-	// do not return / trigger_error after this because the post content can also be changed
-	phpbb_visibility::unhide_posts_topics('restore', array($post_id => $post_data), array($post_id));
 }
 
 if ($mode == 'popup')
@@ -891,6 +884,13 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['FORM_INVALID'];
 	}
 
+	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+	{
+		// don't feel that a confirm_box is needed for this
+		// do not return / trigger_error after this because the post content can also be changed
+		phpbb_content_visibility::unhide_posts_topics('restore', array($post_id => $post_data), array($post_id));
+	}
+
 	// Parse subject
 	if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
@@ -1429,8 +1429,8 @@ $template->assign_vars(array(
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_SOFT_DELETE_CHECKED'     => ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_ALLOWED'     => (phpbb_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
-	'S_RESTORE_ALLOWED'         => (phpbb_visibility::can_restore($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_SOFT_DELETE_ALLOWED'     => (phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_RESTORE_ALLOWED'         => (phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
 	'S_IS_DELETED'              => ($post_data['post_visibility'] == POST_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',

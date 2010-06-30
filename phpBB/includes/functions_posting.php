@@ -993,7 +993,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = 'SELECT p.post_id
 		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			AND " . phpbb_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
+			AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
@@ -1466,8 +1466,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 
 	if ($is_soft)
 	{
-		phpbb_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
-		phpbb_visibility::hide_post($forum_id, time(), $sql_data);
+		phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
+		phpbb_content_visibility::hide_post($forum_id, time(), $sql_data);
 	}
 	else
 	{
@@ -1501,8 +1501,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 			if ($is_soft)
 			{
 				$topic_row = array();
-				phpbb_visibility::set_topic_visibility(POST_DELETED, $topic_id, $forum_id);
-				phpbb_visibility::hide_topic($topic_id, $forum_id, $topic_row, $sql_data);
+				phpbb_content_visibility::set_topic_visibility(POST_DELETED, $topic_id, $forum_id);
+				phpbb_content_visibility::hide_topic($topic_id, $forum_id, $topic_row, $sql_data);
 			}
 			else
 			{
@@ -1548,8 +1548,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 		case 'delete_last_post':
 			if ($is_soft)
 			{
-				phpbb_visibility::hide_post($forum_id, time(), $sql_data);
-				phpbb_visibility::set_post_visibility($post_id, $topic_id, $forum_id, false, true);
+				phpbb_content_visibility::hide_post($forum_id, time(), $sql_data);
+				phpbb_content_visibility::set_post_visibility($post_id, $topic_id, $forum_id, false, true);
 			}
 			else
 			{
@@ -1576,7 +1576,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id
-						AND " . phpbb_visibility::get_visibility_sql('post', $forum_id);
+						AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1589,7 +1589,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
-					AND " . phpbb_visibility::get_visibility_sql('post', $forum_id) . '
+					AND " . phpbb_content_visibility::get_visibility_sql('post', $forum_id) . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1949,7 +1949,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... only if the topic was approved before and now gets disapproved
 			if (!$post_approval && $data['topic_visibility'] == ITEM_APPROVED)
 			{
-				phpbb_visibility::hide_topic($data['topic_id'], $data['forum_id'], $topic_row, $sql_data);
+				phpbb_content_visibility::hide_topic($data['topic_id'], $data['forum_id'], $topic_row, $sql_data);
 			}
 
 		break;
@@ -1960,7 +1960,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_visibility'] == ITEM_APPROVED)
 			{
-				//phpbb_visibility::hide_post($forum_id, $current_time, $sql_data);
+				//phpbb_content_visibility::hide_post($forum_id, $current_time, $sql_data);
 				// ^^ hide_post SQL is identical, except that it does not include the ['stat'] sub-array
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';

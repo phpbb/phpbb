@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Handle fetching and setting the visibility for topics and posts
 * @package phpbb
 */
-class phpbb_visibility
+class phpbb_content_visibility
 {
 	/**
 	* Create topic/post visibility SQL for a given forum ID

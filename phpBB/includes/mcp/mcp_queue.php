@@ -493,7 +493,7 @@ function approve_post($post_id_list, $id, $mode)
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
 
-	    phpbb_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
+	    phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
 
 		$messenger = new messenger();
 
