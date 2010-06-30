@@ -48,11 +48,12 @@ class phpbb_visibility
 		$clause = $db->sql_in_set($table_alias . $mode . '_visibility', $status_ary);
 
 		// only allow the user to view deleted posts he himself made
-		if ($auth->acl_get('f_restore', $forum_id))
+		if ($auth->acl_get('f_restore', $forum_id) && !$auth->acl_get('m_restore', $forum_id))
 		{
-			$clause = 'AND (' . $clause . "
+			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
+			$clause = '(' . $clause . "
 				OR ($table_alias{$mode}_visibility = " . ITEM_DELETED . "
-					AND {$table_alias}poster_id = " . $user->data['user_id'] . '))';
+					AND $table_alias$poster_column = " . $user->data['user_id'] . '))';
 
 		}
 
@@ -92,10 +93,12 @@ class phpbb_visibility
 
 		// we also allow the user to view deleted posts he himself made
 		$user_restore_forums = array_diff(array_keys($auth->acl_getf('f_restore', true)), $exclude_forum_ids);
-		if (sizeof($user_restore_forums))
+		if (sizeof($user_restore_forums) && !sizeof($restore_forums))
 		{
+			$poster_column = ($mode == 'topic') ? 'topic_poster' : 'poster_id';
+
 			// specify the poster ID, the visibility type, and the forums we're interested in
-			$where_sql .= " OR ($table_alias{$mode}poster_id = " . $user->data['user_id'] . "
+			$where_sql .= " OR ($table_alias$poster_column = " . $user->data['user_id'] . "
 				AND $table_alias{$mode}_visibility = " . ITEM_DELETED . "
 				AND " . $db->sql_in_set($table_alias . 'forum_id', $user_restore_forums) . ')';
 		}
@@ -187,7 +190,7 @@ class phpbb_visibility
 		{
 			return true;
 		}
-		else if ($auth->acl_get('f_softdelete', $forum_id) && $poster_id == $user->data['poster_id'] && !$post_locked)
+		else if ($auth->acl_get('f_softdelete', $forum_id) && $poster_id == $user->data['user_id'] && !$post_locked)
 		{
 			return true;
 		}
@@ -245,7 +248,7 @@ class phpbb_visibility
 
 		// If this is an edited topic or the first post the topic gets completely disapproved later on...
 		$sql_data[FORUMS_TABLE] = 'forum_topics = forum_topics - 1';
-		$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
+		$sql_data[FORUMS_TABLE] .= ', forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
 
 		set_config_count('num_topics', -1, true);
 		set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
