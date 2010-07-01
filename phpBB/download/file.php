@@ -61,7 +61,7 @@ if (isset($_GET['avatar']))
 	$avatar_group = false;
 	$exit = false;
 
-	if ($filename[0] === 'g')
+	if (isset($filename[0]) && $filename[0] === 'g')
 	{
 		$avatar_group = true;
 		$filename = substr($filename, 1);
