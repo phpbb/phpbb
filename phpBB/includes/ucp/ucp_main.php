@@ -119,7 +119,7 @@ class ucp_main
 					$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
-					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
+					$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
 					if ($row['topic_status'] == ITEM_LOCKED)
 					{
@@ -318,7 +318,7 @@ class ucp_main
 						else
 						{
 							$folder_image = ($unread_forum) ? 'forum_unread' : 'forum_read';
-							$folder_alt = ($unread_forum) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
+							$folder_alt = ($unread_forum) ? 'UNREAD_POSTS' : 'NO_UNREAD_POSTS';
 						}
 
 						// Create last post link information, if appropriate
