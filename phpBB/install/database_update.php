@@ -1685,6 +1685,58 @@ function change_database_data(&$no_updates, $version)
 			$db->sql_freeresult($result);
 
 
+			// add Bing Bot
+			$sql = 'SELECT group_id, group_colour
+				FROM ' . GROUPS_TABLE . "
+				WHERE group_name = 'BOTS'";
+			$result = $db->sql_query($sql);
+			$group_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$group_row)
+			{
+				// default fallback, should never get here
+				$group_row['group_id'] = 6;
+				$group_row['group_colour'] = '9E8DA7';
+			}
+
+			if (!function_exists('user_add'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bot_name = 'Bing [Bot]';
+			$bot_agent = 'bingbot/';
+			$bot_ip = '';
+
+			$user_row = array(
+				'user_type'				=> USER_IGNORE,
+				'group_id'				=> $group_row['group_id'],
+				'username'				=> $bot_name,
+				'user_regdate'			=> time(),
+				'user_password'			=> '',
+				'user_colour'			=> $group_row['group_colour'],
+				'user_email'			=> '',
+				'user_lang'				=> $config['default_lang'],
+				'user_style'			=> $config['default_style'],
+				'user_timezone'			=> 0,
+				'user_dateformat'		=> $config['default_dateformat'],
+				'user_allow_massemail'	=> 0,
+			);
+
+			$user_id = user_add($user_row);
+
+			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'bot_active'	=> 1,
+				'bot_name'		=> (string) $bot_name,
+				'user_id'		=> (int) $user_id,
+				'bot_agent'		=> (string) $bot_agent,
+				'bot_ip'		=> (string) $bot_ip,
+			));
+
+			_sql($sql, $errored, $error_ary);
+			// end Bing Bot addition
+
 			$no_updates = false;
 		break;
 	}
