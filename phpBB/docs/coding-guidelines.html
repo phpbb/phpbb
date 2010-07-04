@@ -696,6 +696,26 @@ switch ($mode)
 }
 	</pre></div>
 
+	<h4>Class Members</h4>
+	<p>Use the explicit visibility qualifiers <code>public</code>, <code>private</code> and <code>protected</code> for all properties instead of <code>var</code>.
+
+	<p>Place the <code>static</code> qualifier before the visibility qualifiers.</p>
+
+	<p class="bad">//Wrong </p>
+	<div class="codebox"><pre>
+var $x;
+private static function f()
+	</pre></div>
+
+	<p class="good">// Right </p>
+	<div class="codebox"><pre>
+public $x;
+static private function f()
+	</pre></div>
+
+	<h4>Constants</h4>
+	<p>Prefer class constants over global constants created with <code>define()</code>.</p>
+
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
 	<h4>Common SQL Guidelines: </h4>
