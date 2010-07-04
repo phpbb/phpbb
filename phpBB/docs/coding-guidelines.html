@@ -62,11 +62,12 @@
 	</li>
 	<li><a href="#code">Code Layout/Guidelines</a>
 	<ol style="list-style-type: lower-roman;">
-		<li><a href="#namingvars">Variable/Function Naming</a></li>
+		<li><a href="#namingvars">Variable/Function/Class Naming</a></li>
 		<li><a href="#codelayout">Code Layout</a></li>
 		<li><a href="#sql">SQL/SQL Layout</a></li>
 		<li><a href="#optimizing">Optimizations</a></li>
 		<li><a href="#general">General Guidelines</a></li>
+		<li><a href="#phprestrictions">Restrictions on the Use of PHP</a></li>
 	</ol>
 	</li>
 	<li><a href="#styling">Styling</a>
@@ -90,7 +91,7 @@
 	<li><a href="#vcs">VCS Guidelines</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#repostruct">Repository structure</a></li>
-		<li><a href="#commitmessage">Commit messages</a></li>
+		<li><a href="#commitmessage">Commit Messages and Repository Rules</a></li>
 	</ol>
 	</li>
 	<li><a href="#changes">Guidelines Changelog</a></li>
@@ -127,7 +128,7 @@
 	<h3>Linefeeds:</h3>
 	<p>Ensure that your editor is saving files in the UNIX (LF) line ending format. This means that lines are terminated with a newline, not with Windows Line endings (CR/LF combo) as they are on Win32 or Classic Mac (CR) Line endings. Any decent editor should be able to do this, but it might not always be the default setting. Know your editor. If you want advice for an editor for your Operating System, just ask one of the developers. Some of them do their editing on Win32.</p>
 
-	<a name="fileheader"></a><h3>1.ii. File Header</h3>
+	<a name="fileheader"></a><h3>1.ii. File Layout</h3>
 
 	<h4>Standard header for new files:</h4>
 	<p>This template of the header must be included at the start of all phpBB files: </p>
@@ -144,6 +145,14 @@
 	</pre></div>
 
 	<p>Please see the <a href="#locations">File Locations section</a> for the correct package name.</p>
+
+	<h4>PHP closing tags</h4>
+
+	<p>A file containg only PHP code should not end with the optional PHP closing tag <strong>?&gt;</strong> to avoid issues with whitespace following it.</p>
+
+	<h4>Newline at end of file</h4>
+
+	<p>All files should end in a newline so the last line does not appear as modified in diffs, when a line is appended to the file.</p>
 
 	<h4>Files containing inline code:</h4>
 
@@ -290,7 +299,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 
 	<p>Please note that these Guidelines applies to all php, html, javascript and css files.</p>
 
-	<a name="namingvars"></a><h3>2.i. Variable/Function Naming</h3>
+	<a name="namingvars"></a><h3>2.i. Variable/Function/Class Naming</h3>
 
 	<p>We will not be using any form of hungarian notation in our naming conventions. Many of us believe that hungarian naming is one of the primary code obfuscation techniques currently in use.</p>
 
@@ -321,6 +330,36 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
+
+	<h4>Class Names:</h4>
+
+	<p>Apart from following the rules for function names, all classes should meet the following conditions:</p>
+	<ul>
+		<li>Every class must be defined in a separate file.</li>
+		<li>The classes have to be located in a subdirectory of <code>includes/</code>.</li>
+		<li>Classnames to be prefixed with <code>phpbb_</code> to avoid name clashes, the filename should not contain the prefix.</li>
+		<li>Class names have to reflect the location of the file they are defined in. The longest list of prefixes, separated by underscores, which is a valid path must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may. If the filename would be empty the last directory name is used for the filename as well.</li>
+		<li>Directories should typically be a singular noun (e.g. <code>dir</code> in the example below, not <code>dirs</code>.</li>
+	</ul>
+
+	<p>So given the following example directory structure you would result in the below listed lookups</p>
+	<div class="codebox"><pre>
+includes/
+  class_name.php
+  dir/
+    class_name.php
+    dir.php
+      subdir/
+        class_name.php
+	</pre></div>
+
+	<div class="codebox"><pre>
+phpbb_class_name            - includes/class_name.php
+phpbb_dir_class_name        - includes/dir/class_name.php
+phpbb_dir                   - includes/dir/dir.php
+phpbb_dir_subdir_class_name - includes/dir/subdir/class_name.php
+	</pre></div>
+
 
 	<h4>Summary:</h4>
 	<p>The basic philosophy here is to not hurt code clarity for the sake of laziness. This has to be balanced by a little bit of common sense, though; <code>print_login_status_for_a_given_user()</code> goes too far, for example -- that function would be better named <code>print_user_login_status()</code>, or just <code>print_login_status()</code>.</p>
@@ -470,6 +509,26 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	</pre></div>
 
 	<p>In SQL Statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL Formatting), else it should be tryed to only use one method - mostly single quotes.</p>
+
+	<h4>Commas after every array element:</h4>
+	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line</p>
+
+	<p class="bad">// wrong</p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23
+);
+	</pre></div>
+
+	<p class="good">// right </p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23,
+);
+	</pre></div>
+
 
 	<h4>Associative array keys:</h4>
 	<p>In PHP, it's legal to use a literal string as a key to an associative array without quoting that string. We don't want to do this -- the string should always be quoted to avoid confusion. Note that this is only when we're using a literal, not when we're using a variable, examples:</p>
@@ -636,6 +695,26 @@ switch ($mode)
 	break;
 }
 	</pre></div>
+
+	<h4>Class Members</h4>
+	<p>Use the explicit visibility qualifiers <code>public</code>, <code>private</code> and <code>protected</code> for all properties instead of <code>var</code>.
+
+	<p>Place the <code>static</code> qualifier before the visibility qualifiers.</p>
+
+	<p class="bad">//Wrong </p>
+	<div class="codebox"><pre>
+var $x;
+private static function f()
+	</pre></div>
+
+	<p class="good">// Right </p>
+	<div class="codebox"><pre>
+public $x;
+static private function f()
+	</pre></div>
+
+	<h4>Constants</h4>
+	<p>Prefer class constants over global constants created with <code>define()</code>.</p>
 
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
@@ -1042,6 +1121,22 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 	<h4>Exiting</h4>
 
 	<p>Your page should either call <code>page_footer()</code> in the end to trigger output through the template engine and terminate the script, or alternatively at least call the <code>exit_handler()</code>. That call is necessary because it provides a method for external applications embedding phpBB to be called at the end of the script.</p>
+
+	<a name="phprestrictions"></a><h3>2.vi. Restrictions on the Use of PHP</h3>
+
+	<h4>Dynamic code execution:</h4>
+
+	<p>Never execute dynamic PHP code (generated or in a constant string) using any of the following PHP functions:</p>
+
+	<ul>
+		<li><strong>eval</strong></li>
+		<li><strong>create_function</strong></li>
+		<li><strong>preg_replace</strong> with the <strong>e</strong> modifier in the pattern</li>
+	</ul>
+
+	<p>If absolutely necessary a file should be created, and a mechanism for creating this file prior to running phpBB should be provided as a setup process.</p>
+
+	<p>The <strong>e</strong> modifier in <strong>preg_replace</strong> can be replaced by <strong>preg_replace_callback</strong> and objects to encapsulate state that is needed in the callback code.</p>
 
 		</div>
 
@@ -2326,126 +2421,33 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="content">
 
-	<p>The version control system for phpBB3 is subversion. The repository is available at <a href="http://code.phpbb.com/svn/phpbb" title="repository">http://code.phpbb.com/svn/phpbb</a>.</p>
+	<p>The version control system for phpBB3 is git. The repository is available at <a href="http://github.com/phpbb/phpbb3" title="repository">http://github.com/phpbb/phpbb3</a>.</p>
 
 	<a name="repostruct"></a><h3>7.i. Repository Structure</h3>
 
 	<ul>
-		<li><strong>trunk</strong><br />The latest unstable development version with new features etc. Contains the actual board in <code>/trunk/phpBB</code></li>
-		<li><strong>branches</strong><br />Development branches of stable phpBB releases. Copied from <code>/trunk</code> at the time of release.
+		<li><strong>develop</strong><br />The latest unstable development version with new features etc.</li>
+		<li><strong>develop-*</strong><br />Development branches of stable phpBB releases. Branched off of <code>develop</code> at the time of feature freeze.
 			<ul>
-				<li><strong>phpBB3.0</strong><code>/branches/phpBB-3_0_0/phpBB</code><br />Development branch of the stable 3.0 line. Bug fixes are applied here.</li>
-				<li><strong>phpBB2</strong><code>/branches/phpBB-2_0_0/phpBB</code><br />Old phpBB2 development branch.</li>
+				<li><strong>phpBB3.0</strong><code>develop-olympus</code><br />Development branch of the stable 3.0 line. Bug fixes are applied here.</li>
+				<li><strong>phpBB3.1</strong><code>develop-ascraeus</code><br />Development branch of the stable 3.1 line. Bug fixes are applied here.</li>
 			</ul>
 		</li>
-		<li><strong>tags</strong><br />Released versions. Copies of trunk or the respective branch, made at the time of release.
+		<li><strong>master</strong><br />A branch containing all stable phpBB3 release points</li>
+		<li><strong>tags</strong><br />Released versions. Stable ones get merged into the master branch.
 			<ul>
-				<li><code>/tags/release_3_0_BX</code><br />Beta release X of the 3.0 line.</li>
-				<li><code>/tags/release_3_0_RCX</code><br />Release candidate X of the 3.0 line.</li>
-				<li><code>/tags/release_3_0_X-RCY</code><br />Release candidate Y of the stable 3.0.X release.</li>
-				<li><code>/tags/release_3_0_X</code><br />Stable <strong>3.0.X</strong> release.</li>
-				<li><code>/tags/release_2_0_X</code><br />Old stable 2.0.X release.</li>
+				<li><code>release-3.Y-BX</code><br />Beta release X of the 3.Y line.</li>
+				<li><code>release-3.Y-RCX</code><br />Release candidate X of the 3.Y line.</li>
+				<li><code>release-3.Y.Z-RCX</code><br />Release candidate X of the stable 3.Y.Z release.</li>
+				<li><code>release-3.0.X</code><br />Stable <strong>3.0.X</strong> release.</li>
+				<li><code>release-2.0.X</code><br />Old stable 2.0.X release.</li>
 			</ul>
 		</li>
 	</ul>
 
-	<a name="commitmessage"></a><h3>7.ii. Commit Messages</h3>
+	<a name="commitmessage"></a><h3>7.ii. Commit Messages and Reposiory Rules</h3>
 
-	<p>The commit message should contain a brief explanation of all changes made within the commit. Often identical to the changelog entry. A bug ticket can be referenced by specifying the ticket ID with a hash, e.g. #12345. A reference to another revision should simply be prefixed with r, e.g. r12345.</p>
-
-	<p>Junior Developers need to have their patches approved by a development team member first. The commit message must end in a line with the following format:</p>
-
-	<div class="codebox"><pre>
-Authorised by: developer1[, developer2[, ...]]
-	</pre></div>
-
-		</div>
-
-		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
-
-		<span class="corners-bottom"><span></span></span></div>
-	</div>
-
-	<hr />
-
-<a name="changes"></a><h2>8. Guidelines Changelog</h2>
-	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
-
-		<div class="content">
-<h3>Revision 10007</h3>
-
-<ul>
-	<li>Added <a href="#constants">Special Constants</a> section.</li>
-</ul>
-
-<h3>Revision 9817</h3>
-
-<ul>
-	<li>Added VCS section.</li>
-</ul>
-
-<h3>Revision 8732</h3>
-
-<ul>
-	<li>Added cfg files.</li>
-	<li>Added template <a href="#inheritance">inheritance</a>.</li>
-</ul>
-
-<h3>Revision 8596+</h3>
-
-<ul>
-	<li>Removed sql_build_array('MULTI_INSERT'... statements.</li>
-	<li>Added sql_multi_insert() explanation.</li>
-</ul>
-
-<h3>Revision 1.31</h3>
-
-<ul>
-	<li>Added add_form_key and check_form_key. </li>
-</ul>
-
-<h3>Revision 1.24</h3>
-
-<ul>
-	<li>Added <a href="#translation">5. Character Sets and Encodings</a> section to explain the recommended treatment of strings in phpBB.</li>
-</ul>
-
-<h3>Revision 1.16</h3>
-
-<ul>
-	<li>Added <a href="#translation">6. Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a> section to explain expected format and authoring considerations for language packs that are to be created for phpBB.</li>
-</ul>
-
-<h3>Revision 1.11-1.15</h3>
-
-<ul>
-	<li>Various document formatting, spelling, punctuation, grammar bugs.</li>
-</ul>
-
-<h3>Revision 1.9-1.10</h3>
-
-<ul>
-	<li>Added sql_query_limit to <a href="#sql">2.iii. SQL/SQL Layout</a>.</li>
-</ul>
-
-<h3>Revision 1.8</h3>
-
-<ul>
-	<li>Some adjustements to wordings</li>
-	<li>Updated paragraph <a href="#locations">1.iii. File Locations</a> to reflect recent changes</li>
-	<li>Extended paragraph <a href="#codelayout">2.ii. Code Layout</a>.</li>
-	<li>Added sql_in_set and sql_build_query explanation to <a href="#sql">2.iii. SQL/SQL Layout</a>.</li>
-	<li>Updated paragraph <a href="#styling">3. Styling</a>.</li>
-	<li>Updated paragraph <a href="#templating">4. Templating</a> to explain loop checking, loop breaking and other changes we recently made.</li>
-</ul>
-
-<h3>Revision 1.5</h3>
-
-<ul>
-	<li>Changed General function usage paragraph in <a href="#general">2.v. General Guidelines</a></li>
-</ul>
-
+	<p>Information on repository rules, such as commit messages can be found at <a href="http://wiki.phpbb.com/display/DEV/Git" title="phpBB Git Information">http://wiki.phpbb.com/display/DEV/Git</p>.
 
 		</div>
 
