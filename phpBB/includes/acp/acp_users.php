@@ -231,6 +231,11 @@ class acp_users
 								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if ($user_id == ANONYMOUS)
+							{
+								trigger_error($user->lang['CANNOT_BAN_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);

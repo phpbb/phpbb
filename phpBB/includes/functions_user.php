@@ -837,14 +837,15 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
 
-			// Do not allow banning yourself
+			// Do not allow banning yourself, the guest account, or founders.
+			$non_bannable = array($user->data['user_id'], ANONYMOUS);
 			if (sizeof($founder))
 			{
-				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
+				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), $non_bannable), true);
 			}
 			else
 			{
-				$sql .= ' AND user_id <> ' . $user->data['user_id'];
+				$sql .= ' AND ' . $db->sql_in_set('user_id', $non_bannable, true);
 			}
 
 			$result = $db->sql_query($sql);
