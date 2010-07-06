@@ -62,7 +62,7 @@ class mcp_queue
 				}
 				else if ($action == 'restore')
 				{
-// do something
+					restore_post($post_id_list, 'queue', $mode);
 				}
 				else
 				{
@@ -462,6 +462,47 @@ class mcp_queue
 	}
 }
 
+
+/**
+* Approve Post/Topic
+*/
+function restore_post($post_id_list, $id, $mode)
+{
+	global $db, $template, $user, $config;
+	global $phpEx, $phpbb_root_path;
+
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_restore')))
+	{
+		trigger_error('NOT_AUTHORISED');
+	}
+
+	$redirect = request_var('redirect', build_url(array('quickmod')));
+	$redirect = reapply_sid($redirect);
+	$success_msg = '';
+
+	$post_info = get_post_data($post_id_list, 'm_restore');
+
+	phpbb_content_visibility::unhide_posts_topics('restore', $post_info, $post_id_list);
+
+	if (!$success_msg)
+	{
+		redirect($redirect);
+	}
+	else
+	{
+		meta_refresh(3, $redirect);
+
+		// If approving one post, also give links back to post...
+		$add_message = '';
+		if (sizeof($post_id_list) == 1 && !empty($post_url))
+		{
+			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+		}
+
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
+	}
+}
+
 /**
 * Approve Post/Topic
 */
@@ -493,7 +534,7 @@ function approve_post($post_id_list, $id, $mode)
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
 
-	    phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
+		phpbb_content_visibility::unhide_posts_topics('approve', $post_info, $post_id_list);
 
 		$messenger = new messenger();
 
