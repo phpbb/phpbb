@@ -74,11 +74,18 @@ class phpbb_datetime extends DateTime
 		$format		= $format ? $format : $this->_user->date_format;
 		$relative	= (strpos($format, self::RELATIVE_WRAPPER) !== false && !$force_absolute);
 		$now		= new self('now', $this->_user->tz, $this->_user);
-		$delta		= $now->getTimestamp() - $this->getTimestamp();
+
+		$timestamp	= $this->getTimestamp();
+		$now_ts		= $now->getTimeStamp();
+
+		$delta		= $now_ts - $timestamp;
 
 		if ($relative)
 		{
-			if ($delta <= 3600 && ($delta >= -5 || (($now->getTimestamp() / 60) % 60) == (($this->getTimestamp() / 60) % 60)) && isset($this->_user->lang['datetime']['AGO']))
+			// Check the delta is less than or equal to 1 hour
+			// and the delta is either greater than -5 seconds or timestamp and current time are of the same minute (they must be in the same hour already)
+			// finally check that relative dates are supported by the language pack
+			if ($delta <= 3600 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->_user->lang['datetime']['AGO']))
 			{
 				return $this->_user->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 			}
@@ -88,7 +95,6 @@ class phpbb_datetime extends DateTime
 				$midnight->setTime(0, 0, 0);
 
 				$midnight	= $midnight->getTimestamp();
-				$timestamp	= $this->getTimestamp();
 
 				if ($timestamp > $midnight + 86400)
 				{
@@ -107,6 +113,7 @@ class phpbb_datetime extends DateTime
 				{
 					$format = self::_format_cache($format, $this->_user);
 
+					// Format using the short formatting and finally swap out the relative token placeholder with the correct value
 					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->_user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
 				}
 			}
