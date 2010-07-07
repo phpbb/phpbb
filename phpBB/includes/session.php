@@ -2106,6 +2106,21 @@ class user extends session
 	}
 
 	/**
+	* Create a phpbb_datetime object in the context of the current user
+	*
+	* @since 3.1
+	* @param string $time String in a format accepted by strtotime().
+	* @param DateTimeZone $timezone Time zone of the time.
+	* @return phpbb_datetime Date time object linked to the current users locale
+	*/
+	public function create_datetime($time, DateTimeZone $timezone = null)
+	{
+		$timezone = $timezone ? $timezone : $this->tz;
+
+		return new phpbb_datetime($time, $timezone, $this);
+	}
+
+	/**
 	* Get language id currently used by the user
 	*/
 	function get_iso_lang_id()
