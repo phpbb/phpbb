@@ -48,6 +48,7 @@ class phpbb_datetime extends DateTime
 	/**
 	* Returns a UNIX timestamp representation of the date time.
 	*
+	* @internal This method is for backwards compatibility with 5.2, hence why it doesn't use our method naming standards.
 	* @return int UNIX timestamp
 	*/
 	public function getTimestamp()
