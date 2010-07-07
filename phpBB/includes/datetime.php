@@ -73,7 +73,8 @@ class phpbb_datetime extends DateTime
 	public function format($format = '', $force_absolute = false)
 	{
 		$format		= $format ? $format : $this->_user->date_format;
-		$relative	= (strpos($format, self::RELATIVE_WRAPPER) !== false && !$force_absolute);
+		$format		= self::_format_cache($format, $this->_user);
+		$relative	= ($format['is_short'] && !$force_absolute);
 		$now		= new self('now', $this->_user->tz, $this->_user);
 
 		$timestamp	= $this->getTimestamp();
@@ -114,8 +115,6 @@ class phpbb_datetime extends DateTime
 
 				if ($day !== false)
 				{
-					$format = self::_format_cache($format, $this->_user);
-
 					// Format using the short formatting and finally swap out the relative token placeholder with the correct value
 					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->_user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
 				}
