@@ -122,8 +122,6 @@ class phpbb_datetime extends DateTime
 			}
 		}
 
-		$format = self::_format_cache($format, $this->_user);
-
 		return strtr(parent::format($format['format_long']), $format['lang']);
 	}
 
