@@ -24,7 +24,7 @@ class phpbb_datetime extends DateTime
 	protected $_user;
 
 	/**
-	* @var array Date formats are preprocessed by phpBB, to save constact recalculation they are cached.
+	* @var array Date formats are preprocessed by phpBB, to save constant recalculation they are cached.
 	*/
 	static protected $format_cache = array();
 
