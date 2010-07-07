@@ -125,6 +125,16 @@ class phpbb_datetime extends DateTime
 	}
 
 	/**
+	* Magic method to convert DateTime object to string
+	*
+	* @return Formatted date time, according to the users default settings.
+	*/
+	public function __toString()
+	{
+		return $this->format();
+	}
+
+	/**
 	* Pre-processes the specified date format
 	*
 	* @param string $format Output format
