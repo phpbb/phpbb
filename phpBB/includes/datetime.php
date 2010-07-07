@@ -85,9 +85,10 @@ class phpbb_datetime extends DateTime
 		if ($relative)
 		{
 			// Check the delta is less than or equal to 1 hour
+			// and the delta not more than a minute in the past
 			// and the delta is either greater than -5 seconds or timestamp and current time are of the same minute (they must be in the same hour already)
 			// finally check that relative dates are supported by the language pack
-			if ($delta <= 3600 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->_user->lang['datetime']['AGO']))
+			if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->_user->lang['datetime']['AGO']))
 			{
 				return $this->_user->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 			}
