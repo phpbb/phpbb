@@ -97,6 +97,8 @@ class phpbb_datetime extends DateTime
 
 				$midnight	= $midnight->getTimestamp();
 
+				$day = false;
+
 				if ($timestamp > $midnight + 86400)
 				{
 					$day = 'TOMORROW';
