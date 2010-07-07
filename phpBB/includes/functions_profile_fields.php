@@ -555,9 +555,12 @@ class custom_profile
 				else if ($day && $month && $year)
 				{
 					global $user;
-					// Date should display as the same date for every user regardless of timezone, so remove offset
-					// to compensate for the offset added by user::format_date()
-					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) - ($user->timezone + $user->dst), $user->lang['DATE_FORMAT'], true);
+					// Date should display as the same date for every user regardless of timezone
+
+					return $user->create_datetime()
+						->setDate($year, $month, $day)
+						->setTime(0, 0, 0)
+						->format($user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;

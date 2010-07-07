@@ -84,11 +84,12 @@ $legend = implode(', ', $legend);
 $birthday_list = array();
 if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
-	$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
+	$time = $user->create_datetime();
+	$now = phpbb_gmgetdate($time->getTimestamp() + $time->getOffset());
 
 	// Display birthdays of 29th february on 28th february in non-leap-years
 	$leap_year_birthdays = '';
-	if ($now['mday'] == 28 && $now['mon'] == 2 && !$user->format_date(time(), 'L'))
+	if ($now['mday'] == 28 && $now['mon'] == 2 && !$time->format('L'))
 	{
 		$leap_year_birthdays = " OR user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
 	}

@@ -965,7 +965,8 @@ $sql_ary = array(
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
 
-$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
+$now = $user->create_datetime();
+$now = phpbb_gmgetdate($now->getTimestamp() + $now->getOffset());
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built

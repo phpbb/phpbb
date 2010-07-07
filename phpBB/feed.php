@@ -255,7 +255,7 @@ function feed_format_date($time)
 	{
 		global $user;
 
-		$zone_offset = (int) $user->timezone + (int) $user->dst;
+		$zone_offset = $user->create_datetime()->getOffset();
 
 		$sign = ($zone_offset < 0) ? '-' : '+';
 		$time_offset = abs($zone_offset);
