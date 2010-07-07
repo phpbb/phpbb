@@ -1529,7 +1529,6 @@ class user extends session
 	var $theme = array();
 	var $date_format;
 	var $timezone;
-	var $dst;
 
 	var $lang_name = false;
 	var $lang_id = false;
