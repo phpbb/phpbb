@@ -1528,7 +1528,14 @@ class user extends session
 	var $help = array();
 	var $theme = array();
 	var $date_format;
-	var $timezone;
+
+	/**
+	* Users current timezone
+	*
+	* @var DateTimeZone Timezone of the user
+	* @since 3.1
+	*/
+	public $tz;
 
 	var $lang_name = false;
 	var $lang_id = false;
@@ -1586,13 +1593,13 @@ class user extends session
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 
 			$this->date_format = $this->data['user_dateformat'];
-			$this->timezone = $this->data['user_timezone'];
+			$this->tz = $this->data['user_timezone'];
 		}
 		else
 		{
 			$this->lang_name = basename($config['default_lang']);
 			$this->date_format = $config['default_dateformat'];
-			$this->timezone = $config['board_timezone'];
+			$this->tz = $config['board_timezone'];
 
 			/**
 			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
@@ -1631,13 +1638,13 @@ class user extends session
 			*/
 		}
 
-		if (is_numeric($this->timezone))
+		if (is_numeric($this->tz))
 		{
 			// Might still be numeric by chance
-			$this->timezone = sprintf('Etc/GMT%+d', ($this->timezone + ($this->data['user_id'] != ANONYMOUS ? $this->data['user_dst'] : $config['board_dst'])));
+			$this->tz = sprintf('Etc/GMT%+d', ($this->tz + ($this->data['user_id'] != ANONYMOUS ? $this->data['user_dst'] : $config['board_dst'])));
 		}
 
-		$this->timezone = new DateTimeZone($this->timezone);
+		$this->tz = new DateTimeZone($this->tz);
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
