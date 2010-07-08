@@ -1,0 +1,33 @@
+Running Tests
+-------------
+
+Prerequisites
+-------------
+
+PHPUnit
+=======
+
+phpBB unit tests use PHPUnit framework. Version 3.3 or better is required
+to run the tests. PHPUnit prefers to be installed via PEAR; refer to
+http://www.phpunit.de/ for more information.
+
+PHP extensions
+==============
+
+Unit tests use several PHP extensions that board code does not use. Currently
+the following PHP extensions must be installed and enabled to run unit tests:
+
+- ctype
+
+Running
+-------
+
+Once the prerequisites are installed, run the tests from tests directory:
+
+$ phpunit all_tests.php
+
+More Information
+----------------
+
+Further information is available on phpbb wiki:
+http://wiki.phpbb.com/display/DEV/Unit+Tests
