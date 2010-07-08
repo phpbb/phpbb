@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# A hook to check syntax of a phpBB3 commit message, per:
+# * <http://wiki.phpbb.com/display/DEV/Git>
+# * <http://area51.phpbb.com/phpBB/viewtopic.php?p=209919#p209919>
+#
+# This is a commit-msg hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/commit-msg \\
+#   .git/hooks/commit-msg
+
+status=0;
+
+if [ "$(wc --max-line-length "$1" | cut -f1 -d" ")" -gt 80 ]
+then
+	echo "The following lines are greater than 80 characters long:\n";
+
+	grep -nE '.{81,}' "$1";
+
+	status=1;
+fi
+
+exit $status;
