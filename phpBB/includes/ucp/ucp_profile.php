@@ -572,7 +572,7 @@ class ucp_profile
 				{
 					if (check_form_key('ucp_avatar'))
 					{
-						if (avatar_process_user($error))
+						if (avatar_process_user($error, false, $can_upload))
 						{
 							meta_refresh(3, $this->u_action);
 							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');

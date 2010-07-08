@@ -2108,6 +2108,7 @@ class install_install extends module
 		'Alta Vista [Bot]'			=> array('Scooter/', ''),
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
 		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Bing [Bot]'                => array('bingbot/', ''),
 		'Exabot [Bot]'				=> array('Exabot/', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
