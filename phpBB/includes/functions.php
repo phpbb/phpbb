@@ -1071,28 +1071,45 @@ function style_select($default = '', $all = false)
 
 /**
 * Pick a timezone
+* @todo Possible HTML escaping
 */
 function tz_select($default = '', $truncate = false)
 {
 	global $user;
 
-	$tz_select = '';
-	foreach ($user->lang['tz_zones'] as $offset => $zone)
+	static $timezones;
+
+	if (!isset($timezones))
 	{
-		if ($truncate)
+		$timezones = DateTimeZone::listIdentifiers();
+
+		sort($timezones);
+	}
+
+	$tz_select = '';
+
+	foreach ($timezones as $timezone)
+	{
+		if (isset($user->lang['timezones'][$timezone]))
 		{
-			$zone_trunc = truncate_string($zone, 50, 255, false, '...');
+			$title = $label = $user->lang['timezones'][$timezone];
 		}
 		else
 		{
-			$zone_trunc = $zone;
+			// No label, we'll figure one out
+			// @todo rtl languages?
+			$bits = explode('/', strtolower(str_replace('_', ' ', $timezone)));
+
+			$title = $label = ucwords(implode(' - ', $bits));
 		}
 
-		if (is_numeric($offset))
+		if ($truncate)
 		{
-			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option title="' . $zone . '" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
+			$label = truncate_string($label, 50, 255, false, '...');
 		}
+
+		$selected = ($timezone === $default) ? ' selected="selected"' : '';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone . '"' . $selected . '>' . $label . '</option>';
 	}
 
 	return $tz_select;
