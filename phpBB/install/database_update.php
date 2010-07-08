@@ -1683,6 +1683,19 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			// Install modules
+			$modules_to_install = array(
+				'post'					=> array(
+					'base'		=> 'board',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_POST_SETTINGS',
+					'auth'		=> 'acl_a_board',
+					'cat'		=> 'ACP_MESSAGES',
+					'after'		=> array('message', 'ACP_MESSAGE_SETTINGS')
+				),
+			);
+
+			_add_modules($modules_to_install);
 
 			$no_updates = false;
 		break;
