@@ -1098,9 +1098,9 @@ function tz_select($default = '', $truncate = false)
 		{
 			// No label, we'll figure one out
 			// @todo rtl languages?
-			$bits = explode('/', strtolower(str_replace('_', ' ', $timezone)));
+			$bits = explode('/', str_replace('_', ' ', $timezone));
 
-			$title = $label = ucwords(implode(' - ', $bits));
+			$title = $label = implode(' - ', $bits);
 		}
 
 		if ($truncate)
