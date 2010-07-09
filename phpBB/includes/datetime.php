@@ -149,22 +149,22 @@ class phpbb_datetime extends DateTime
 		if (!isset(self::$format_cache[$lang]))
 		{
 			self::$format_cache[$lang] = array();
+		}
 
-			if (!isset(self::$format_cache[$lang][$format]))
+		if (!isset(self::$format_cache[$lang][$format]))
+		{
+			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
+			self::$format_cache[$lang][$format] = array(
+				'is_short'		=> strpos($format, self::RELATIVE_WRAPPER) !== false,
+				'format_short'	=> substr($format, 0, strpos($format, self::RELATIVE_WRAPPER)) . self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER . substr(strrchr($format, self::RELATIVE_WRAPPER), 1),
+				'format_long'	=> str_replace(self::RELATIVE_WRAPPER, '', $format),
+				'lang'			=> $user->lang['datetime'],
+			);
+
+			// Short representation of month in format? Some languages use different terms for the long and short format of May
+			if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
 			{
-				// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
-				self::$format_cache[$lang][$format] = array(
-					'is_short'		=> strpos($format, self::RELATIVE_WRAPPER) !== false,
-					'format_short'	=> substr($format, 0, strpos($format, self::RELATIVE_WRAPPER)) . self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER . substr(strrchr($format, self::RELATIVE_WRAPPER), 1),
-					'format_long'	=> str_replace(self::RELATIVE_WRAPPER, '', $format),
-					'lang'			=> $user->lang['datetime'],
-				);
-
-				// Short representation of month in format? Some languages use different terms for the long and short format of May
-				if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
-				{
-					self::$format_cache[$lang][$format]['lang']['May'] = $user->lang['datetime']['May_short'];
-				}
+				self::$format_cache[$lang][$format]['lang']['May'] = $user->lang['datetime']['May_short'];
 			}
 		}
 
