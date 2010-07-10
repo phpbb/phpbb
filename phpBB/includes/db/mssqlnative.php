@@ -232,18 +232,19 @@ class dbal_mssqlnative extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
-		if (empty($cache) || ($this->sql_server_version = $cache->get('mssql_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('mssql_version')) === false)
 		{
 			$arr_server_info = sqlsrv_server_info($this->db_connect_id);
 			$this->sql_server_version = $arr_server_info['SQLServerVersion'];
 
-			if (!empty($cache))
+			if (!empty($cache) && $use_cache)
 			{
 				$cache->put('mssql_version', $this->sql_server_version);
 			}
