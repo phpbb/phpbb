@@ -50,19 +50,24 @@ class dbal_sqlite extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache if true, it is safe to retrieve the stored value from the cache
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
-		if (empty($cache) || ($this->sql_server_version = $cache->get('sqlite_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('sqlite_version')) === false)
 		{
 			$result = @sqlite_query('SELECT sqlite_version() AS version', $this->db_connect_id);
 			$row = @sqlite_fetch_array($result, SQLITE_ASSOC);
 
 			$this->sql_server_version = (!empty($row['version'])) ? $row['version'] : 0;
-			$cache->put('sqlite_version', $this->sql_server_version);
+
+			if (!empty($cache) && $use_cache)
+			{
+				$cache->put('sqlite_version', $this->sql_server_version);
+			}
 		}
 
 		return ($raw) ? $this->sql_server_version : 'SQLite ' . $this->sql_server_version;

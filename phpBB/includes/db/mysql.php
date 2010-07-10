@@ -96,13 +96,14 @@ class dbal_mysql extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
-		if (empty($cache) || ($this->sql_server_version = $cache->get('mysql_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('mysql_version')) === false)
 		{
 			$result = @mysql_query('SELECT VERSION() AS version', $this->db_connect_id);
 			$row = @mysql_fetch_assoc($result);
@@ -110,7 +111,7 @@ class dbal_mysql extends dbal
 
 			$this->sql_server_version = $row['version'];
 
-			if (!empty($cache))
+			if (!empty($cache) && $use_cache)
 			{
 				$cache->put('mysql_version', $this->sql_server_version);
 			}
