@@ -33,6 +33,27 @@ class phpbb_regex_email_test extends phpbb_test_case
 			//array('"John Doe"@example.com'),
 			//array('Alice@[192.168.2.1]'),		// IPv4
 			//array('Bob@[2001:0db8:85a3:08d3:1319:8a2e:0370:7344]'), // IPv6
+			
+			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+			array('l3tt3rsAndNumb3rs@domain.com'),
+			array('has-dash@domain.com'),
+			array('hasApostrophe.o\'leary@domain.org'),
+			array('uncommonTLD@domain.museum'),
+			array('uncommonTLD@domain.travel'),
+			array('uncommonTLD@domain.mobi'),
+			array('countryCodeTLD@domain.uk'),
+			array('countryCodeTLD@domain.rw'),
+			array('numbersInDomain@911.com'),
+			array('underscore_inLocal@domain.net'),
+			array('IPInsteadOfDomain@127.0.0.1'),
+			array('IPAndPort@127.0.0.1:25'),
+			array('subdomain@sub.domain.com'),
+			array('local@dash-inDomain.com'),
+			array('dot.inLocal@foo.com'),
+			array('a@singleLetterLocal.org'),
+			array('singleLetterDomain@x.org'),
+			array('&amp;*=?^+{}\'~@validCharsInLocal.net'),
+			array('foor@bar.newTLD'),
 		);
 	}
 
@@ -56,6 +77,26 @@ class phpbb_regex_email_test extends phpbb_test_case
 			array('abc,def@example.com'),		// invalid character ,
 			array('abc<def@example.com'),		// invalid character <
 			array('abc>def@example.com'),		// invalid character >
+			
+			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+			array('missingDomain@.com'),
+			array('@missingLocal.org'),
+			array('missingatSign.net'),
+			array('missingDot@com'),
+			array('two@@signs.com'),
+			array('colonButNoPort@127.0.0.1:'),
+			array(''),
+			array('someone-else@127.0.0.1.26'),
+			array('.localStartsWithDot@domain.com'),
+			array('localEndsWithDot.@domain.com'),
+			array('two..consecutiveDots@domain.com'),
+			array('domainStartsWithDash@-domain.com'),
+			array('domainEndsWithDash@domain-.com'),
+			array('numbersInTLD@domain.c0m'),
+			array('missingTLD@domain.'),
+			array('! "#$%(),/;<>[]`|@invalidCharsInLocal.org'),
+			array('invalidCharsInDomain@! "#$%(),/;<>_[]`|.org'),
+			array('local@SecondLevelDomainNamesAreInvalidIfTheyAreLongerThan64Charactersss.org'),
 		);
 	}
 
@@ -70,7 +111,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 	/**
 	* @dataProvider negative_match_data
 	*/
-	public function test_negative_match($address)
+	public function test_negative_match($email)
 	{
 		$this->assertEquals(0, preg_match($this->regex, $email));
 	}
