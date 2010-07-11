@@ -70,7 +70,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 	/**
 	* @dataProvider negative_match_data
 	*/
-	public function test_negative_match($address)
+	public function test_negative_match($email)
 	{
 		$this->assertEquals(0, preg_match($this->regex, $email));
 	}
