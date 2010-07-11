@@ -200,6 +200,12 @@ function addquote(post_id, username, l_wrote)
 	var theSelection = '';
 	var divarea = false;
 
+	if (l_wrote === undefined)
+	{
+		// Backwards compatibility
+		l_wrote = 'wrote';
+	}
+
 	if (document.all)
 	{
 		divarea = document.all[message_name];
