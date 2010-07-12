@@ -157,7 +157,7 @@ do
 		# Successful match, but on which line format
 		case $expect in
 			"header")
-				expecting="empty eof";
+				expecting="empty";
 
 				echo "$line" | grep -Eq "^\[ticket/[0-9]+\]$" && (
 					ticket=$(echo "$line" | sed 's,\[ticket/\([0-9]*\)\].*,\1,');
@@ -174,7 +174,7 @@ do
 				fi
 			;;
 			"description")
-				expecting="description empty eof";
+				expecting="description empty";
 				in_description=1;
 			;;
 			"footer")
