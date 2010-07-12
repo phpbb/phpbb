@@ -87,6 +87,12 @@ do
 		quit $err;
 	fi
 
+	if [ "${expecting#comment}" = "$expecting" ]
+	then
+		# Prefix comments to the expected tokens list
+		expecting="comment $expecting";
+	fi
+
 	debug 2 "Expecting: $expecting";
 
 	# Loop over each of the expected line formats
@@ -121,6 +127,9 @@ do
 				# Should not end up here
 				false
 			;;
+			"comment")
+				echo "$line" | grep -Eq "^#";
+			;;
 			*)
 				echo "Unrecognised token $expect" >&2;
 				quit $err;
@@ -143,7 +152,7 @@ do
 	if [ $result -eq 0 ]
 	then
 		# Have we switched out of description mode?
-		if [ $in_description -eq 1 ] && [ "$expect" != "description" ] && [ "$expect" != "empty" ]
+		if [ $in_description -eq 1 ] && [ "$expect" != "description" ] && [ "$expect" != "empty" ] && [ "$expect" != "comment" ]
 		then
 			# Yes, okay we need to backtrace one line and reanalyse
 			in_description=0;
@@ -185,6 +194,9 @@ do
 				else
 					tickets="$tickets $line";
 				fi
+			;;
+			"comment")
+				# Comments should expect the same thing again
 			;;
 			*)
 				echo "Unrecognised token $expect" >&2;
