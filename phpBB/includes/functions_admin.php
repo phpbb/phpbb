@@ -573,8 +573,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_ids[] = $row['forum_id'];
-		$topic_ids[] = $row['topic_id'];
+		$forum_ids[] = (int) $row['forum_id'];
+		$topic_ids[] = (int) $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
@@ -591,7 +591,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	}
 
 	$sql = 'UPDATE ' . POSTS_TABLE . '
-		SET forum_id = ' . $forum_row['forum_id'] . ", topic_id = $topic_id
+		SET forum_id = ' . (int) $forum_row['forum_id'] . ", topic_id = $topic_id
 		WHERE " . $db->sql_in_set('post_id', $post_ids);
 	$db->sql_query($sql);
 
@@ -602,7 +602,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 
 	if ($auto_sync)
 	{
-		$forum_ids[] = $forum_row['forum_id'];
+		$forum_ids[] = (int) $forum_row['forum_id'];
 
 		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic_attachment', 'topic_id', $topic_ids);
