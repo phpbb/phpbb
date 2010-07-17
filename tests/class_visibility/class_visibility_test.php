@@ -181,14 +181,19 @@ class phpbb_class_visibility_test extends PHPUnit_Framework_TestCase
 		$GLOBALS['auth'] = new phpbb_acl_mock_founder;
 
 		$sql_data = array();
-		phpbb_content_visibility::hide_post(4, 111122211, $sql_data);
+		phpbb_content_visibility::hide_post(4, 111122211, array('topic_replies' => 1), $sql_data);
 		$this->assertEquals(
 			array(FORUMS_TABLE => 'forum_posts = forum_posts - 1',
 				TOPICS_TABLE => 'topic_replies = topic_replies - 1, topic_last_view_time = 111122211',
 				USERS_TABLE => 'user_posts = user_posts - 1'),
 			$sql_data);
+
+		$sql_data = array();
+		phpbb_content_visibility::hide_post(4, 111122211, array('topic_replies' => 0), $sql_data);
+		$this->assertEquals(
+			array(FORUMS_TABLE => 'forum_posts = forum_posts - 1',
+				TOPICS_TABLE => 'topic_last_view_time = 111122211',
+				USERS_TABLE => 'user_posts = user_posts - 1'),
+			$sql_data);
 	}
 }
-
-//$a = new phpbb_class_visibility_test;
-//$a->test_can_soft_delete();

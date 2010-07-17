@@ -30,7 +30,7 @@ class phpbb_content_visibility
 	* @param $table_alias string - Table alias to prefix in SQL queries
 	* @return string with the appropriate combination SQL logic for topic/post_visibility
 	*/
-	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
+	static public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
 		global $auth, $db, $user;
 
@@ -67,7 +67,7 @@ class phpbb_content_visibility
 	* @param $table_alias string - Table alias to prefix in SQL queries
 	* @return string with the appropriate combination SQL logic for topic/post_visibility
 	*/
-	public function get_visibility_sql_global($mode, $exclude_forum_ids = array(), $table_alias = '')
+	static public function get_visibility_sql_global($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
 		global $auth, $db, $user;
 
@@ -116,7 +116,7 @@ class phpbb_content_visibility
 	* @param $forum_id - int - forum ID where $topic_id resides
 	* @return bool true = success, false = fail
 	*/
-	public function set_topic_visibility($visibility, $topic_id, $forum_id)
+	static public function set_topic_visibility($visibility, $topic_id, $forum_id)
 	{
 		global $db;
 
@@ -139,7 +139,7 @@ class phpbb_content_visibility
 	* @param $is_starter - bool - is this the first post of the topic
 	* @param $is_latest - bool - is this the last post of the topic
 	*/
-	public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $is_starter, $is_latest)
+	static public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $is_starter, $is_latest)
 	{
 		global $db;
 
@@ -182,7 +182,7 @@ class phpbb_content_visibility
 	* @param $post_locked - bool - is the post locked?
 	* @return bool
 	*/
-	public function can_soft_delete($forum_id, $poster_id, $post_locked)
+	static function can_soft_delete($forum_id, $poster_id, $post_locked)
 	{
 		global $auth, $user;
 
@@ -228,7 +228,7 @@ class phpbb_content_visibility
 	* @param $sql_data - array - populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	public function hide_topic($topic_id, $forum_id, &$topic_row, &$sql_data)
+	static public function hide_topic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{
 		global $auth, $config, $db;
 
@@ -266,14 +266,27 @@ class phpbb_content_visibility
 	* Notably, we do _not_ need the post ID to do this operation. We're only changing statistic caches
 	* @param $forum_id - int - the forum where the topic resides
 	* @param $current_time - int - passed for consistency instead of calling time() internally
+	* @param $topic_row - array - contains information from the topics table about given topic
 	* @param $sql_data - array - populated with the SQL changes, may be empty at call time
 	* @return void
 	*/
-	public function hide_post($forum_id, $current_time, &$sql_data)
+	static public function hide_post($forum_id, $current_time, $topic_row, &$sql_data)
 	{
 		global $auth, $config, $db;
 
-		$sql_data[TOPICS_TABLE] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
+		// initialize the array if needed (php throws E_NOTICE when .= is used
+		// on a non-existing array element)
+		if (empty($sql_data[TOPICS_TABLE]))
+		{
+			$sql_data[TOPICS_TABLE] = '';
+		}
+
+		if ($topic_row['topic_replies'] > 0)
+		{
+			$sql_data[TOPICS_TABLE] = 'topic_replies = topic_replies - 1,';
+		}
+		$sql_data[TOPICS_TABLE] .= ' topic_last_view_time = ' . $current_time;
+
 		$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 
 		set_config_count('num_posts', -1, true);
@@ -293,7 +306,7 @@ class phpbb_content_visibility
 	* 	the posts/topics in question
 	* @param $post_id_list - array of ints - the set of posts being worked on
 	*/
-	public function unhide_posts_topics($mode, $post_info, $post_id_list)
+	static public function unhide_posts_topics($mode, $post_info, $post_id_list)
 	{
 		global $db, $config;
 
@@ -435,6 +448,15 @@ class phpbb_content_visibility
 		sync('forum', 'forum_id', array_keys($forum_id_list), true, true);
 		unset($topic_id_list, $forum_id_list);
 
-		return true;
+		if ($total_topics)
+		{
+			$success_msg = ($total_topics == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
+		}
+		else
+		{
+			$success_msg = (sizeof($post_id_list) + sizeof($post_approved_list) == 1) ? 'POST_APPROVED_SUCCESS' : 'POSTS_APPROVED_SUCCESS';
+		}
+
+		return $success_msg;
 	}
 }

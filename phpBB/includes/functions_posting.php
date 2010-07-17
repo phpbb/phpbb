@@ -1467,7 +1467,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 	if ($is_soft)
 	{
 		phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, ($data['topic_first_post_id'] == $post_id), ($data['topic_last_post_id'] == $post_id));
-		phpbb_content_visibility::hide_post($forum_id, time(), $sql_data);
+		phpbb_content_visibility::hide_post($forum_id, time(), $data, $sql_data);
 	}
 	else
 	{
@@ -1501,7 +1501,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 			if ($is_soft)
 			{
 				$topic_row = array();
-				phpbb_content_visibility::set_topic_visibility(POST_DELETED, $topic_id, $forum_id);
+				phpbb_content_visibility::set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id);
 				phpbb_content_visibility::hide_topic($topic_id, $forum_id, $topic_row, $sql_data);
 			}
 			else
@@ -1548,8 +1548,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false)
 		case 'delete_last_post':
 			if ($is_soft)
 			{
-				phpbb_content_visibility::hide_post($forum_id, time(), $sql_data);
-				phpbb_content_visibility::set_post_visibility($post_id, $topic_id, $forum_id, false, true);
+				phpbb_content_visibility::hide_post($forum_id, time(), $data, $sql_data);
+				phpbb_content_visibility::set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, false, true);
 			}
 			else
 			{

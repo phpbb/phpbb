@@ -886,9 +886,52 @@ if ($submit || $preview || $refresh)
 
 	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 	{
+		// if this is the first post of the topic, restore the whole topic
+		if ($post_id == $post_data['topic_first_post_id'])
+		{
+			// that means we need to gather data for all posts in the topic, not
+			// just the one being edited
+			$sql = 'SELECT post_id, poster_id, post_subject, post_postcount
+				FROM ' . POSTS_TABLE . '
+				WHERE topic_id = ' . $post_data['topic_id'] . '
+				AND post_visibility = ' . ITEM_DELETED;
+			$result = $db->sql_query($sql);
+
+			$post_ids = array();
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$post_ids[] = $row['post_id'];
+
+				$posts_data[$row['post_id']] = array(
+					// all posts are from the same topic and forum
+					// and are deleted because of the constraints to the query above
+					'topic_id'  => $post_data['topic_id'],
+					'forum_id'  => $post_data['forum_id'],
+					'topic_replies' => $post_data['topic_replies'],
+					'topic_first_post_id' => $post_data['topic_first_post_id'],
+					'post_visibility'   => ITEM_DELETED,
+
+					'poster_id' 	=> $row['poster_id'],
+					'post_subject'  => $row['post_subject'],
+					'post_postcount'=> $row['post_postcount'],
+				);
+			}
+
+			// No direct query is needed, just update the array
+			$post_data['post_visibility'] = $post_data['topic_visibility'] = ITEM_APPROVED;
+		}
+		else
+		{
+			$post_ids = array($post_id);
+			$posts_data = array($post_id => $post_data);
+
+			$post_data['post_visibility'] = ITEM_APPROVED;
+		}
+
 		// don't feel that a confirm_box is needed for this
 		// do not return / trigger_error after this because the post content can also be changed
-		phpbb_content_visibility::unhide_posts_topics('restore', array($post_id => $post_data), array($post_id));
+		phpbb_content_visibility::unhide_posts_topics('restore', $posts_data, $post_ids);
 	}
 
 	// Parse subject
@@ -1429,9 +1472,9 @@ $template->assign_vars(array(
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_SOFT_DELETE_CHECKED'     => ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
-	'S_SOFT_DELETE_ALLOWED'     => (phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_SOFT_DELETE_ALLOWED'     => ($mode == 'edit' && phpbb_content_visibility::can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
 	'S_RESTORE_ALLOWED'         => (phpbb_content_visibility::can_restore($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
-	'S_IS_DELETED'              => ($post_data['post_visibility'] == POST_DELETED) ? true : false,
+	'S_IS_DELETED'              => ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
@@ -1547,6 +1590,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
 				'topic_replies_real'	=> $post_data['topic_replies_real'],
+				'topic_replies'         => $post_data['topic_replies'],
 				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_visibility'		=> $post_data['post_visibility'],
