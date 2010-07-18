@@ -1454,7 +1454,10 @@ class session
 		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '')
 		{
 			$ref = substr($ref, strlen($host));
-			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+
+			//$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+			$server_port_raw = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : getenv('HTTP_HOST');
+			$server_port = (int) substr($server_port_raw, strpos($server_port_raw, ':'));
 
 			if ($server_port !== 80 && $server_port !== 443 && stripos($ref, ":$server_port") === 0)
 			{

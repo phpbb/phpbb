@@ -1030,9 +1030,13 @@ class install_install extends module
 			$server_name = substr($server_name, 0, strpos($server_name, ':'));
 		}
 
+		//$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+		$server_port_raw = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : getenv('HTTP_HOST');
+		$server_port = (int) substr($server_port_raw, strpos($server_port_raw, ':'));
+
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
 		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
-		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
+		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : $server_port;
 		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
 
