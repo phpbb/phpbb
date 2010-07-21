@@ -279,6 +279,24 @@ class session
 
 		foreach ($ips as $ip)
 		{
+			if (function_exists('phpbb_ip_normalise'))
+			{
+				// Normalise IP address
+				$ip = phpbb_ip_normalise($ip);
+
+				if (empty($ip))
+				{
+					// IP address is invalid.
+					break;
+				}
+
+				// IP address is valid.
+				$this->ip = $ip;
+
+				// Skip legacy code.
+				continue;
+			}
+
 			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
 			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 			{
