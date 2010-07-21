@@ -3281,6 +3281,59 @@ function short_ipv6($ip, $length)
 }
 
 /**
+* Normalises an internet protocol address,
+* also checks whether the specified address is valid.
+*
+* IPv4 addresses are returned 'as is'.
+*
+* IPv6 addresses are normalised according to
+*	A Recommendation for IPv6 Address Text Representation
+*	http://tools.ietf.org/html/draft-ietf-6man-text-addr-representation-07
+*
+* @param string $address	IP address
+*
+* @return mixed		false if specified address is not valid,
+*					string otherwise
+*
+* @author bantu
+*/
+function phpbb_ip_normalise($address)
+{
+	$address = trim($address);
+
+	if (empty($address) || !is_string($address))
+	{
+		return false;
+	}
+
+	if (preg_match(get_preg_expression('ipv4'), $address))
+	{
+		return $address;
+	}
+	else if (preg_match(get_preg_expression('ipv6'), $address))
+	{
+		$address = inet_ntop(inet_pton($address));
+
+		if (strpos($address, '::ffff:') === 0)
+		{
+			// IPv4-mapped address
+			$address_ipv4 = substr($address, 7);
+
+			if (preg_match(get_preg_expression('ipv4'), $address_ipv4))
+			{
+				return $address_ipv4;
+			}
+
+			return false;
+		}
+
+		return $address;
+	}
+
+	return false;
+}
+
+/**
 * Wrapper for php's checkdnsrr function.
 *
 * @param string $host	Fully-Qualified Domain Name
