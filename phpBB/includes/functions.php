@@ -3312,7 +3312,7 @@ function phpbb_ip_normalise($address)
 	}
 	else if (preg_match(get_preg_expression('ipv6'), $address))
 	{
-		$address = inet_ntop(inet_pton($address));
+		$address = phpbb_inet_ntop(phpbb_inet_pton($address));
 
 		if (strpos($address, '::ffff:') === 0)
 		{
@@ -3331,6 +3331,37 @@ function phpbb_ip_normalise($address)
 	}
 
 	return false;
+}
+
+/**
+* Wrapper for inet_ntop()
+*
+* Converts a packed internet address to a human readable representation
+* inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+*
+* @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
+*
+* @return mixed		false on failure,
+*					string otherwise
+*/
+function phpbb_inet_ntop($in_addr)
+{
+	return inet_ntop($in_addr);
+}
+
+/**
+* Wrapper for inet_pton()
+*
+* Converts a human readable IP address to its packed in_addr representation
+* inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+*
+* @param string $address	A human readable IPv4 or IPv6 address.
+*
+* @return string	in_addr representation of the given address
+*/
+function phpbb_inet_pton($address)
+{
+	return inet_pton($address);
 }
 
 /**
