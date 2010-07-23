@@ -428,7 +428,7 @@ class mcp_queue
 
 						'POST_ID'		=> $row['post_id'],
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
-						'POST_SUBJECT'	=> $row['post_subject'],
+						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']))
 					);
