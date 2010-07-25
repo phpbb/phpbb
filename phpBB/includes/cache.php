@@ -88,7 +88,14 @@ class cache extends acm
 			{
 				if ($unicode)
 				{
-					$censors['match'][] = '#(?<![\p{Nd}\p{L}_])(' . str_replace('\*', '[\p{Nd}\p{L}_]*?', preg_quote($row['word'], '#')) . ')(?![\p{Nd}\p{L}_])#iu';
+					// Unescape the asterisk to simplify further conversions
+					$row['word'] = str_replace('\*', '*', preg_quote($row['word'], '#'));
+					
+					// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
+					$row['word'] = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*(?=[\p{Nd}\p{L}_])#iu', '#^\*#', '#\*$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $row['word']);
+
+					// Generate the final substitution
+					$censors['match'][] = '#(?<![\p{Nd}\p{L}_-])(' . $row['word'] . ')(?![\p{Nd}\p{L}_-])#iu';
 				}
 				else
 				{
