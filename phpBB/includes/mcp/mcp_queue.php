@@ -691,16 +691,19 @@ function approve_post($post_id_list, $id, $mode)
 	{
 		$show_notify = false;
 
-		foreach ($post_info as $post_data)
+		if ($config['email_enable'] || $config['jab_enable'])
 		{
-			if ($post_data['poster_id'] == ANONYMOUS)
+			foreach ($post_info as $post_data)
 			{
-				continue;
-			}
-			else
-			{
-				$show_notify = true;
-				break;
+				if ($post_data['poster_id'] == ANONYMOUS)
+				{
+					continue;
+				}
+				else
+				{
+					$show_notify = true;
+					break;
+				}
 			}
 		}
 
