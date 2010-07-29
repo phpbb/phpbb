@@ -1751,6 +1751,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		return false;
 	}
 
+	$title = $row['message_subject'];
+
 	$rowset = array();
 	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
@@ -1773,8 +1775,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	}
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
-
-	$title = $row['message_subject'];
 
 	if (sizeof($rowset) == 1 && !$in_post_mode)
 	{
