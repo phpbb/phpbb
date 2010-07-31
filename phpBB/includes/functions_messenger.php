@@ -671,11 +671,18 @@ class queue
 			$package_size = $data_ary['package_size'];
 			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
+			/*
+			* This code is commented out because it causes problems on some web hosts.
+			* The core problem is rather restrictive email sending limits.
+			* This code is nly useful if you have no such restrictions from the
+			* web host and the package size setting is wrong.
+
 			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
 			if (sizeof($data_ary['data']) > $package_size * 2.5)
 			{
 				$num_items = sizeof($data_ary['data']);
 			}
+			*/
 
 			switch ($object)
 			{
