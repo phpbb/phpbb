@@ -3310,27 +3310,8 @@ function phpbb_ip_normalise($address)
 	{
 		return $address;
 	}
-	else if (preg_match(get_preg_expression('ipv6'), $address))
-	{
-		$address = phpbb_inet_ntop(phpbb_inet_pton($address));
 
-		if (strpos($address, '::ffff:') === 0)
-		{
-			// IPv4-mapped address
-			$address_ipv4 = substr($address, 7);
-
-			if (preg_match(get_preg_expression('ipv4'), $address_ipv4))
-			{
-				return $address_ipv4;
-			}
-
-			return false;
-		}
-
-		return $address;
-	}
-
-	return false;
+	return phpbb_inet_ntop(phpbb_inet_pton($address));
 }
 
 /**
