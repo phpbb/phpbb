@@ -3393,7 +3393,8 @@ function phpbb_inet_ntop($in_addr)
 *
 * @param string $address	A human readable IPv4 or IPv6 address.
 *
-* @return string	in_addr representation of the given address
+* @return mixed		false if address is invalid,
+*					in_addr representation of the given address otherwise (string)
 *
 * @author APTX
 */
