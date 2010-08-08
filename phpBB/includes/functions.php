@@ -2519,6 +2519,11 @@ function build_url($strip_vars = false)
 			$key = $arguments[0];
 			unset($arguments[0]);
 
+			if ($key === '')
+			{
+				continue;
+			}
+
 			$query[$key] = implode('=', $arguments);
 		}
 
