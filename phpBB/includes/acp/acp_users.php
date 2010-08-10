@@ -1701,7 +1701,7 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
 				{

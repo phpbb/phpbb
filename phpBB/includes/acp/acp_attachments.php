@@ -1222,7 +1222,7 @@ class acp_attachments
 			return;
 		}
 
-		if (!is_writable($phpbb_root_path . $upload_dir))
+		if (!phpbb_is_writable($phpbb_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;

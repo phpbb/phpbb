@@ -407,7 +407,7 @@ class acm_memory
 	*/
 	function remove_file($filename, $check = false)
 	{
-		if ($check && !@is_writable($this->cache_dir))
+		if ($check && !phpbb_is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
 			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);

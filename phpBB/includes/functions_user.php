@@ -2326,7 +2326,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	// Can we upload?
 	if (is_null($can_upload))
 	{
-		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 	}
 
 	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
