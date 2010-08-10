@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Script to install the git hooks
+# by symlinking them into the .git/hooks directory
+#
+# Usage (from within git-tools/hooks):
+# ./install
+
+dir=$(dirname $0)
+
+for file in $(ls $dir)
+do
+	if [ $file != "install" ] && [ $file != "uninstall" ]
+	then
+		ln -s "../../git-tools/hooks/$file" "$dir/../../.git/hooks/$file"
+	fi
+done
