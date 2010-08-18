@@ -659,6 +659,14 @@ function mcp_move_topic($topic_ids)
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
 
+		if (isset($_POST['move_lock_topics']) && $auth->acl_get('m_lock', $to_forum_id))
+		{
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_status = ' . ITEM_LOCKED . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+			$db->sql_query($sql);
+		}
+
 		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
@@ -756,6 +764,7 @@ function mcp_move_topic($topic_ids)
 		$template->assign_vars(array(
 			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> true,
+			'S_CAN_LOCK_TOPIC'		=> ($auth->acl_get('m_lock', $to_forum_id)) ? true : false,
 			'ADDITIONAL_MSG'		=> $additional_msg)
 		);
 
