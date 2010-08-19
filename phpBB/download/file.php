@@ -31,6 +31,12 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 
 if (isset($_GET['avatar']))
 {
+	if (!defined('E_DEPRECATED'))
+	{
+		define('E_DEPRECATED', 8192);
+	}
+	error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
+
 	require($phpbb_root_path . 'config.' . $phpEx);
 
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
@@ -61,7 +67,7 @@ if (isset($_GET['avatar']))
 	$avatar_group = false;
 	$exit = false;
 
-	if ($filename[0] === 'g')
+	if (isset($filename[0]) && $filename[0] === 'g')
 	{
 		$avatar_group = true;
 		$filename = substr($filename, 1);
