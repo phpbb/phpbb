@@ -670,13 +670,9 @@ legend {
 	position: relative;
 	text-transform: none;
 	line-height: 1.2em;
-	top: 0;
+	top: -.2em;
 	vertical-align: middle;
 }
-
-/* Hide from macIE \*/
-legend { top: -1.2em; }
-/* end */
 
 * html legend {
 	margin: 0 0 -10px -7px;
