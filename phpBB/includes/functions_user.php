@@ -1229,22 +1229,39 @@ function user_unban($mode, $ban)
 }
 
 /**
-* Whois facility
+* Internet Protocol Address Whois
+* RFC3912: WHOIS Protocol Specification
 *
-* @link http://tools.ietf.org/html/rfc3912 RFC3912: WHOIS Protocol Specification
+* @param string $ip		Ip address, either IPv4 or IPv6.
+*
+* @return string		Empty string if not a valid ip address.
+*						Otherwise make_clickable()'ed whois result.
 */
 function user_ipwhois($ip)
 {
-	$ipwhois = '';
-
-	// Check IP
-	// Only supporting IPv4 at the moment...
-	if (empty($ip) || !preg_match(get_preg_expression('ipv4'), $ip))
+	if (empty($ip))
 	{
 		return '';
 	}
 
-	if (($fsk = @fsockopen('whois.arin.net', 43)))
+	if (preg_match(get_preg_expression('ipv4'), $ip))
+	{
+		// IPv4 address
+		$whois_host = 'whois.arin.net.';
+	}
+	else if (preg_match(get_preg_expression('ipv6'), $ip))
+	{
+		// IPv6 address
+		$whois_host = 'whois.sixxs.net.';
+	}
+	else
+	{
+		return '';
+	}
+
+	$ipwhois = '';
+
+	if (($fsk = @fsockopen($whois_host, 43)))
 	{
 		// CRLF as per RFC3912
 		fputs($fsk, "$ip\r\n");
@@ -1257,7 +1274,7 @@ function user_ipwhois($ip)
 
 	$match = array();
 
-	// Test for referrals from ARIN to other whois databases, roll on rwhois
+	// Test for referrals from $whois_host to other whois databases, roll on rwhois
 	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
@@ -1285,7 +1302,7 @@ function user_ipwhois($ip)
 			@fclose($fsk);
 		}
 
-		// Use the result from ARIN if we don't get any result here
+		// Use the result from $whois_host if we don't get any result here
 		$ipwhois = (empty($buffer)) ? $ipwhois : $buffer;
 	}
 
