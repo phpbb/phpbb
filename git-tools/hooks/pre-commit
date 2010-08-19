@@ -27,6 +27,13 @@ fi
 error=0
 errors=""
 
+if ! which $PHP_BIN >/dev/null 2>&1
+then
+	echo "PHP Syntax check failed:"
+	echo "PHP binary does not exist or is not in path: $PHP_BIN"
+	exit 1
+fi
+
 # dash does not support $'\n':
 # http://forum.soft32.com/linux2/Bug-409179-DASH-Settings-IFS-work-properly-ftopict70039.html
 IFS='
