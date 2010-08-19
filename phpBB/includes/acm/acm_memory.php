@@ -407,6 +407,12 @@ class acm_memory
 	*/
 	function remove_file($filename, $check = false)
 	{
+		if (!function_exists('phpbb_is_writable'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions.' . $phpEx);
+		}
+
 		if ($check && !phpbb_is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.

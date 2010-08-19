@@ -78,6 +78,12 @@ class acm
 
 		if (!$this->_write('data_global'))
 		{
+			if (!function_exists('phpbb_is_writable'))
+			{
+				global $phpbb_root_path;
+				include($phpbb_root_path . 'includes/functions.' . $phpEx);
+			}
+
 			// Now, this occurred how often? ... phew, just tell the user then...
 			if (!phpbb_is_writable($this->cache_dir))
 			{
@@ -707,6 +713,12 @@ class acm
 	*/
 	function remove_file($filename, $check = false)
 	{
+		if (!function_exists('phpbb_is_writable'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions.' . $phpEx);
+		}
+
 		if ($check && !phpbb_is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
