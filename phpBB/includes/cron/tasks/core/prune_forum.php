@@ -121,7 +121,7 @@ class cron_task_core_prune_forum extends cron_task_base implements parametrized_
 		$this->forum_data = null;
 		if (isset($params['f']))
 		{
-			$forum_id = intval($params['f']);
+			$forum_id = (int) $params['f'];
 
 			$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 				FROM ' . FORUMS_TABLE . "
