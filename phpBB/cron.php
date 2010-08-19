@@ -36,10 +36,15 @@ function output_image()
 
 function do_cron($run_tasks)
 {
-	global $cron_lock;
+	global $cron_lock, $config;
 
 	foreach ($run_tasks as $task)
 	{
+		if (defined('DEBUG_EXTRA') && $config['use_system_cron'])
+		{
+			echo "[phpBB cron] Running task '{$task->get_name()}'\n";
+		}
+
 		$task->run();
 	}
 
@@ -111,6 +116,6 @@ else
 {
 	if (defined('DEBUG_EXTRA'))
 	{
-		echo "Could not obtain cron lock.";
+		echo "Could not obtain cron lock.\n";
 	}
 }
