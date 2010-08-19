@@ -115,7 +115,7 @@ class phpbb_class_loader
 
 		$dirs = '';
 
-		for ($i = 0; is_dir($path_prefix . $dirs . $parts[$i]) && $i < sizeof($parts); $i++)
+		for ($i = 0, $n = sizeof($parts); $i < $n && is_dir($path_prefix . $dirs . $parts[$i]); $i++)
 		{
 			$dirs .= $parts[$i] . '/';
 		}
