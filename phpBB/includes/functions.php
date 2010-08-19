@@ -195,10 +195,27 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 
 /**
 * Generates an alphanumeric random string of given length
+*
+* @return string
 */
 function gen_rand_string($num_chars = 8)
 {
+	// [a, z] + [0, 9] = 36
+	return strtoupper(base_convert(unique_id(), 16, 36));
+}
+
+/**
+* Generates a user-friendly alphanumeric random string of given length
+* We remove 0 and O so users cannot confuse those in passwords etc.
+*
+* @return string
+*/
+function gen_rand_string_friendly($num_chars = 8)
+{
 	$rand_str = unique_id();
+
+	// Remove Z and Y from the base_convert(), replace 0 with Z and O with Y
+	// [a, z] + [0, 9] - {z, y} = [a, z] + [0, 9] - {0, o} = 34
 	$rand_str = str_replace(array('0', 'O'), array('Z', 'Y'), strtoupper(base_convert($rand_str, 16, 34)));
 
 	return substr($rand_str, 0, $num_chars);

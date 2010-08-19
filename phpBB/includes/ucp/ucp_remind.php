@@ -79,7 +79,7 @@ class ucp_remind
 
 			// Make password at least 8 characters long, make it longer if admin wants to.
 			// gen_rand_string() however has a limit of 12 or 13.
-			$user_password = gen_rand_string(max(8, rand((int) $config['min_pass_chars'], (int) $config['max_pass_chars'])));
+			$user_password = gen_rand_string_friendly(max(8, mt_rand((int) $config['min_pass_chars'], (int) $config['max_pass_chars'])));
 
 			// For the activation key a random length between 6 and 10 will do.
 			$user_actkey = gen_rand_string(mt_rand(6, 10));
