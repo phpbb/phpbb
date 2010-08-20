@@ -2537,7 +2537,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{
 		// Mark this topic as posted to
-		markread('post', $data['forum_id'], $data['topic_id'], $data['post_time']);
+		markread('post', $data['forum_id'], $data['topic_id']);
 	}
 
 	// Mark this topic as read
