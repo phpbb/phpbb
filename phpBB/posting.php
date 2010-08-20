@@ -402,6 +402,16 @@ if ($post_data['poll_start'])
 	$db->sql_freeresult($result);
 }
 
+$original_poll_data = array(
+	'poll_title'		=> $post_data['poll_title'],
+	'poll_length'		=> $post_data['poll_length'],
+	'poll_max_options'	=> $post_data['poll_max_options'],
+	'poll_option_text'	=> implode("\n", $post_data['poll_options']),
+	'poll_start'		=> $post_data['poll_start'],
+	'poll_last_vote'	=> $post_data['poll_last_vote'],
+	'poll_vote_change'	=> $post_data['poll_vote_change'],
+);
+
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
@@ -911,6 +921,22 @@ if ($submit || $preview || $refresh)
 		{
 			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
 		}*/
+	}
+	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
+	{
+		// We have a poll but the editing user is not permitted to create/edit it.
+		// So we just keep the original poll-data.
+		$poll = array_merge($original_poll_data, array(
+			'enable_bbcode'		=> $post_data['enable_bbcode'],
+			'enable_urls'		=> $post_data['enable_urls'],
+			'enable_smilies'	=> $post_data['enable_smilies'],
+			'img_status'		=> $img_status,
+		));
+
+		$message_parser->parse_poll($poll);
+
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 	}
 	else
 	{
