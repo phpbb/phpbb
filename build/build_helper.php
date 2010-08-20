@@ -142,6 +142,15 @@ class build_package
 			),
 			'store'			=> '',
 			'styles'		=> array(
+				'subsilver2'	=> array(
+					'imageset'		=> array(
+						'en'	=> '',
+					),
+					'template'	=> '',
+					'theme'		=> array(
+						'images'	=> '',
+					),
+				),
 				'prosilver'	=> array(
 					'imageset'		=> array(
 						'en'	=> '',

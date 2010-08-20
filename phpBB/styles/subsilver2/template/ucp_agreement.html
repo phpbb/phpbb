@@ -1,0 +1,84 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- IF S_SHOW_COPPA or S_REGISTRATION -->
+
+<!-- IF S_LANG_OPTIONS -->
+<script type="text/javascript">
+// <![CDATA[
+	/**
+	* Change language
+	*/
+	function change_language(lang_iso)
+	{
+		document.forms['register'].change_lang.value = lang_iso;
+		document.forms['register'].submit();
+	}
+
+// ]]>
+</script>
+
+	<form method="post" action="{S_UCP_ACTION}" id="register">
+		<table width="100%" cellspacing="0">
+			<tr>
+				<td class="gensmall" align="{S_CONTENT_FLOW_END}">{L_LANGUAGE}: <select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></td>
+			</tr>
+		</table>
+		{S_HIDDEN_FIELDS}
+	</form>
+<!-- ENDIF -->
+
+	<form method="post" action="{S_UCP_ACTION}">
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th height="25">{SITENAME} - {L_REGISTRATION}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center">
+			<table width="90%" cellspacing="2" cellpadding="2" border="0" align="center">
+			<tr>
+				<!-- IF S_SHOW_COPPA -->
+					<td class="gen" align="center"><br />{L_COPPA_BIRTHDAY}<br /><br /><a href="{U_COPPA_NO}">{L_COPPA_NO}</a> :: <a href="{U_COPPA_YES}">{L_COPPA_YES}</a><br /><br /></td>
+				<!-- ELSE -->
+					<td>
+						<span class="genmed"><br />{L_TERMS_OF_USE}<br /><br /></span>
+						<div align="center">
+							<input class="btnlite" type="submit" id="agreed" name="agreed" value="{L_AGREE}" /><br /><br />
+							<input class="btnlite" type="submit" name="not_agreed" value="{L_NOT_AGREE}" />
+						</div>
+					</td>
+				<!-- ENDIF -->
+			</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+	{S_HIDDEN_FIELDS}
+	{S_FORM_TOKEN}
+	</form>
+
+<!-- ELSEIF S_AGREEMENT -->
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th height="25">{SITENAME} - {AGREEMENT_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center">
+			<table width="90%" cellspacing="2" cellpadding="2" border="0" align="center">
+			<tr>
+				<td>
+					<span class="genmed"><br />{AGREEMENT_TEXT}<br /><br /></span>
+					<div align="center">
+						<a href="{U_BACK}">{L_BACK}</a>
+					</div>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

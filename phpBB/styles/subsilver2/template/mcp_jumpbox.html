@@ -1,0 +1,18 @@
+<!-- Note: no longer in use... -->
+
+<form name="jumpbox" method="post" action="{S_JUMPBOX_ACTION}">
+
+	<span class="gensmall">{L_JUMP_TO}:</span>&nbsp;<select name="f" onChange="if(this.options[this.selectedIndex].value != -1 && this.options[this.selectedIndex].value != document.jumpbox.current_f.value){ document.forms['jumpbox'].submit() }">
+
+<!-- IF S_ENABLE_SELECT_ALL -->
+	<option value="0">{L_ALL_FORUMS}</option>
+<!-- ELSE -->
+	<option value="-1">{L_SELECT_FORUM}</option>
+<!-- ENDIF -->
+
+<!-- BEGIN options -->
+	<option value="{options.VALUE}"<!-- IF options.VALUE eq -1 --> class="disabled-option"<!-- ENDIF -->{options.SELECTED}/>{options.TEXT}</option>
+<!-- BEGINELSE -->
+<!-- END options -->
+</select>&nbsp;<input type="hidden" name="current_f" value="{S_CURRENT_FORUM}" /><input name="jumpbox" class="btnlite" type="submit" value="{L_GO}" onclick="if(document.jumpbox.f.value == -1){return false;}" />
+</form>
