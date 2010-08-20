@@ -24,6 +24,12 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$prefix .= 'includes/';
 
 		$this->assertEquals(
+			'',
+			$class_loader->resolve_path('phpbb_dir'),
+			'Class with same name as a directory is unloadable'
+		);
+
+		$this->assertEquals(
 			$prefix . 'class_name.php',
 			$class_loader->resolve_path('phpbb_class_name'),
 			'Top level class'
