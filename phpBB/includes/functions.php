@@ -201,7 +201,7 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 function gen_rand_string($num_chars = 8)
 {
 	// [a, z] + [0, 9] = 36
-	return strtoupper(base_convert(unique_id(), 16, 36));
+	return substr(strtoupper(base_convert(unique_id(), 16, 36)), 0, $num_chars);
 }
 
 /**
