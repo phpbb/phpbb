@@ -1,0 +1,146 @@
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{S_SEARCH_ACTION}">
+
+<table width="100%" cellspacing="1">
+<tr>
+	<td colspan="2"><span class="titles"><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --></span><br /></td>
+</tr>
+<tr>
+	<td class="genmed"><!-- IF SEARCH_TOPIC -->{L_SEARCHED_TOPIC}: <a href="{U_SEARCH_TOPIC}"><b>{SEARCH_TOPIC}</b></a><br /><!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_SEARCHED_FOR}: <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- ENDIF --><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}: <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
+	<td align="{S_CONTENT_FLOW_END}"><!-- IF SEARCH_IN_RESULTS --><span class="genmed">{L_SEARCH_IN_RESULTS}: </span><input class="post" type="text" name="add_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /><!-- ENDIF --></td>
+</tr>
+</table>
+
+<br clear="all" />
+
+<!-- IF S_SHOW_TOPICS -->
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th width="4%" nowrap="nowrap">&nbsp;</th>
+		<th colspan="2" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+		<th nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+		<th nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
+		<th nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
+	</tr>
+	<!-- BEGIN searchresults -->
+		<tr valign="middle">
+			<td class="row1" width="25" align="center">{searchresults.TOPIC_FOLDER_IMG}</td>
+			<td class="row1" width="25" align="center">
+			<!-- IF searchresults.TOPIC_ICON_IMG -->
+				<img src="{T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}" width="{searchresults.TOPIC_ICON_IMG_WIDTH}" height="{searchresults.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" />
+			<!-- ENDIF -->
+			</td>
+			<td class="row1">
+				<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+				{searchresults.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+				<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
+					<a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
+				<!-- IF searchresults.S_TOPIC_REPORTED -->
+					<a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+				<!-- ENDIF -->
+				<!-- IF searchresults.PAGINATION -->
+					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {searchresults.PAGINATION} ] </p>
+				<!-- ENDIF -->
+				<!-- IF searchresults.S_TOPIC_GLOBAL -->
+					<p class="gensmall">{L_GLOBAL}</p>
+				<!-- ELSE -->
+					<p class="gensmall">{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></p>
+				<!-- ENDIF -->
+			</td>
+			<td class="row2" width="100" align="center"><p class="topicauthor">{searchresults.TOPIC_AUTHOR_FULL}</p></td>
+			<td class="row1" width="50" align="center"><p class="topicdetails">{searchresults.TOPIC_REPLIES}</p></td>
+			<td class="row2" width="50" align="center"><p class="topicdetails">{searchresults.TOPIC_VIEWS}</p></td>
+			<td class="row1" width="120" align="center">
+				<p class="topicdetails">{searchresults.LAST_POST_TIME}</p>
+				<p class="topicdetails">{searchresults.LAST_POST_AUTHOR_FULL}
+					<a href="{searchresults.U_LAST_POST}">{LAST_POST_IMG}</a>
+				</p>
+			</td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr valign="middle">
+			<td colspan="7" class="row3" align="center">{L_NO_SEARCH_RESULTS}</td>
+		</tr>
+	<!-- END searchresults -->
+	<tr>
+		<td class="cat" colspan="7" valign="middle" align="center"><!-- IF S_SELECT_SORT_DAYS or S_SELECT_SORT_KEY --><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY -->&nbsp;<span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}<!-- ENDIF -->&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /><!-- ENDIF --></td>
+	</tr>
+	</table>
+
+<!-- ELSE -->
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
+		<th width="100%" nowrap="nowrap">{L_MESSAGE}</th>
+	</tr>
+
+	<!-- BEGIN searchresults -->
+		<tr class="row2">
+		<!-- IF searchresults.S_IGNORE_POST -->
+			<td class="gensmall" colspan="2" height="25" align="center">{searchresults.L_IGNORE_POST}</td>
+		<!-- ELSE -->
+				<td colspan="2" height="25"><p class="topictitle"><a name="p{searchresults.POST_ID}" id="p{searchresults.POST_ID}"></a>&nbsp;<!-- IF searchresults.FORUM_TITLE -->{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a><!-- ELSE -->{L_GLOBAL}<!-- ENDIF --> &nbsp; {L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a> </p></td>
+			</tr>
+			<tr class="row1">
+				<td width="150" align="center" valign="middle"><b class="postauthor">{searchresults.POST_AUTHOR_FULL}</b></td>
+				<td height="25">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr>
+						<td class="gensmall">
+							<div style="float: {S_CONTENT_FLOW_BEGIN};">
+							<!-- IF searchresults.POST_SUBJECT neq "" -->
+								&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a>
+							<!-- ELSE -->
+								[ <a href="{searchresults.U_VIEW_POST}">{L_JUMP_TO_POST}</a> ]
+							<!-- ENDIF -->
+							</div>
+							<div style="float: {S_CONTENT_FLOW_END};"><b>{L_POSTED}:</b> {searchresults.POST_DATE}&nbsp;</div>
+						</td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<tr class="row1">
+				<td width="150" align="center" valign="top"><br /><span class="postdetails">{L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br />{L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br /><br /></td>
+				<td valign="top">
+					<table width="100%" cellspacing="5">
+					<tr>
+						<td class="postbody">{searchresults.MESSAGE}</td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+		<!-- ENDIF -->
+		<tr>
+			<td class="spacer" colspan="2"><img src="images/spacer.gif" height="1" alt="" /></td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr valign="middle">
+			<td colspan="2" class="row3" align="center">{L_NO_SEARCH_RESULTS}</td>
+		</tr>
+	<!-- END searchresults -->
+	<tr>
+		<td class="cat" colspan="2" align="center"><!-- IF S_SELECT_SORT_KEY --><span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /><!-- ENDIF --></td>
+	</tr>
+	</table>
+<!-- ENDIF -->
+
+</form>
+
+<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};"><span class="nav">{PAGE_NUMBER}</span> [ {SEARCH_MATCHES} ]</div>
+<div class="nav" style="float: {S_CONTENT_FLOW_END};"><!-- INCLUDE pagination.html --></div>
+
+<br clear="all" /><br />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
+
+<!-- INCLUDE overall_footer.html -->

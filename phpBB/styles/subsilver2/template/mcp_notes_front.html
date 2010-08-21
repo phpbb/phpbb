@@ -1,0 +1,22 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" name="mcp" action="{U_POST_ACTION}">
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+<tr>
+	<th colspan="2"align="center">{L_SELECT_USER}</th>
+</tr>
+<tr>
+	<td class="row1" width="40%"><b class="gen">{L_FIND_USERNAME}: </b><br /><span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span></td>
+	<td class="row2"><input type="text" class="post" name="username" size="20" /></td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center"><input type="submit" name="submituser" value="{L_SUBMIT}" class="btnmain" /></td>
+</tr>
+</table>
+{S_FORM_TOKEN}
+</form>
+
+<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->
