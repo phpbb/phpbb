@@ -1316,10 +1316,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	// Recipient Information
 	$recipients = $to = $bcc = array();
 
-	// First of all make sure the subject are having the correct length.
-	// To achieve this without cutting off between special chars we convert to an array and then count the elements.
-	$subject = truncate_string($subject);
-
 	if ($mode != 'edit')
 	{
 		// Build Recipient List
