@@ -46,7 +46,11 @@ function initInsertions()
 	{
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
-		// document.body.focus();
+
+		if (!document.forms[form_name])
+		{
+			document.body.focus();
+		}
 	}
 }
 
@@ -230,6 +234,7 @@ function addquote(post_id, username)
 			theSelection = theSelection.replace(/&lt\;/ig, '<');
 			theSelection = theSelection.replace(/&gt\;/ig, '>');
 			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
 		}
 		else if (document.all)
 		{
@@ -273,8 +278,8 @@ function mozWrap(txtarea, open, close)
 	var s3 = (txtarea.value).substring(selEnd, selLength);
 
 	txtarea.value = s1 + open + s2 + close + s3;
-	txtarea.selectionStart = selEnd + open.length + close.length;
-	txtarea.selectionEnd = txtarea.selectionStart;
+	txtarea.selectionStart = selStart + open.length;
+	txtarea.selectionEnd = selEnd + open.length;
 	txtarea.focus();
 	txtarea.scrollTop = scrollTop;
 
@@ -327,8 +332,8 @@ function colorPalette(dir, width, height)
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"  onmouseout="helpline(\'tip\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<td bgcolor="#' + color + '" style="width: ' + width + 'px; height: ' + height + 'px;">');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

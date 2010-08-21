@@ -1,0 +1,257 @@
+#!/bin/sh
+#
+# A hook to check syntax of a phpBB3 commit message, per:
+# * <http://wiki.phpbb.com/display/DEV/Git>
+# * <http://area51.phpbb.com/phpBB/viewtopic.php?p=209919#p209919>
+#
+# This is a commit-msg hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/commit-msg \\
+#   .git/hooks/commit-msg
+
+config_ns="phpbb.hooks.commit-msg";
+
+if [ "$(git config --bool $config_ns.fatal)" = "false" ]
+then
+	fatal=0;
+else
+	fatal=1;
+fi
+
+debug_level=$(git config --int $config_ns.debug || echo 0);
+
+# Error codes
+ERR_LENGTH=1;
+ERR_HEADER=2;
+ERR_EMPTY=3;
+ERR_DESCRIPTION=4;
+ERR_FOOTER=5;
+ERR_EOF=6;
+ERR_UNKNOWN=42;
+
+debug()
+{
+	local level;
+
+	level=$1;
+	shift;
+
+	if [ $debug_level -ge $level ]
+	then
+		echo $@;
+	fi
+}
+
+quit()
+{
+	if [ $1 -gt 0 ] && [ $1 -ne $ERR_UNKNOWN ] && [ $fatal -eq 0 ]
+	then
+		exit 0;
+	else
+		exit $1;
+	fi
+}
+
+if [ "$(wc --max-line-length "$1" | cut -f1 -d" ")" -gt 80 ]
+then
+	echo "The following lines are greater than 80 characters long:\n" >&2;
+
+	grep -nE '.{81,}' "$1" >&2;
+
+	quit $ERR_LENGTH;
+fi
+
+lines=$(wc --lines "$1" | cut -f1 -d" ");
+expecting=header;
+in_description=0;
+in_empty=0;
+ticket=0;
+branch_regex="[a-z]+[a-z0-9-]*[a-z0-9]+";
+i=1;
+tickets="";
+
+while [ $i -le $lines ]
+do
+	# Grab the line we are studying
+	line=$(head -n$i "$1" | tail -n1);
+
+	debug 1 "==> [$i] $line (description: $in_description, empty: $in_empty)";
+
+	err=$ERR_UNKNOWN;
+
+	if [ -z "$expecting" ]
+	then
+		quit $err;
+	fi
+
+	if [ "${expecting#comment}" = "$expecting" ]
+	then
+		# Prefix comments to the expected tokens list
+		expecting="comment $expecting";
+	fi
+
+	debug 2 "Expecting: $expecting";
+
+	# Loop over each of the expected line formats
+	for expect in $expecting
+	do
+		# Reset the error code each iteration
+		err=$ERR_UNKNOWN;
+
+		# Test for validity of each line format
+		# This is done first so $? contains the result
+		case $expect in
+			"header")
+				err=$ERR_HEADER;
+				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+			;;
+			"empty")
+				err=$ERR_EMPTY;
+				echo "$line" | grep -Eq "^$"
+			;;
+			"description")
+				err=$ERR_DESCRIPTION;
+				# Free flow text, the line length was constrained by the initial check
+				echo "$line" | grep -Eq "^.+$";
+			;;
+			"footer")
+				err=$ERR_FOOTER;
+				# Each ticket is on its own line
+				echo "$line" | grep -Eq "^PHPBB3-[0-9]+$";
+			;;
+			"eof")
+				err=$ERR_EOF;
+				# Should not end up here
+				false
+			;;
+			"comment")
+				echo "$line" | grep -Eq "^#";
+			;;
+			*)
+				echo "Unrecognised token $expect" >&2;
+				quit $err;
+			;;
+		esac
+
+		# Preserve the result of the line check
+		result=$?;
+
+		debug 2 "$expect - '$line' - $result";
+
+		if [ $result -eq 0 ]
+		then
+			# Break out the loop on success
+			# otherwise roll on round and keep looking for a match
+			break;
+		fi
+	done
+
+	if [ $result -eq 0 ]
+	then
+		# Have we switched out of description mode?
+		if [ $in_description -eq 1 ] && [ "$expect" != "description" ] && [ "$expect" != "empty" ] && [ "$expect" != "comment" ]
+		then
+			# Yes, okay we need to backtrace one line and reanalyse
+			in_description=0;
+			i=$(( $i - $in_empty ));
+
+			# Reset the empty counter
+			in_empty=0;
+			continue;
+		fi
+
+		# Successful match, but on which line format
+		case $expect in
+			"header")
+				expecting="empty";
+
+				echo "$line" | grep -Eq "^\[ticket/[0-9]+\]$" && (
+					ticket=$(echo "$line" | sed 's,\[ticket/\([0-9]*\)\].*,\1,');
+				)
+			;;
+			"empty")
+				# Description might have empty lines as spacing
+				expecting="footer description";
+				in_empty=$(($in_empty + 1));
+
+				if [ $in_description -eq 1 ]
+				then
+					expecting="$expecting empty";
+				fi
+			;;
+			"description")
+				expecting="description empty";
+				in_description=1;
+			;;
+			"footer")
+				expecting="footer eof";
+				if [ "$tickets" = "" ]
+				then
+					tickets="$line";
+				else
+					tickets="$tickets $line";
+				fi
+			;;
+			"comment")
+				# Comments should expect the same thing again
+			;;
+			*)
+				echo "Unrecognised token $expect" >&2;
+				quit 254;
+			;;
+		esac
+
+		if [ "$expect" != "empty" ]
+		then
+			in_empty=0;
+		fi
+
+		debug 3 "Now expecting: $expecting";
+	else
+		# None of the expected line formats matched
+		# Guess we'll call it a day here then
+		echo "Syntax error on line $i:" >&2;
+		echo ">> $line" >&2;
+		echo -n "Expecting: " >&2;
+		echo "$expecting" | sed 's/ /, /g' >&2;
+		exit $err;
+	fi
+
+	i=$(( $i + 1 ));
+done
+
+# If EOF is expected exit cleanly
+echo "$expecting" | grep -q "eof" || (
+	# Unexpected EOF, error
+	echo "Unexpected EOF encountered" >&2;
+	quit $ERR_EOF;
+) && (
+	# Do post scan checks
+	if [ ! -z "$tickets" ]
+	then
+		# Check for duplicate tickets
+		dupes=$(echo "$tickets" | sed 's/ /\n/g' | sort | uniq -d);
+
+		if [ ! -z "$dupes" ]
+		then
+			echo "The following tickets are repeated:" >&2;
+			echo "$dupes" | sed 's/ /\n/g;s/^/* /g' >&2;
+			quit $ERR_FOOTER;
+		fi
+	fi
+	# Check the branch ticket is mentioned, doesn't make sense otherwise
+	if [ $ticket -gt 0 ]
+	then
+		echo "$tickets" | grep -Eq "\bPHPBB3-$ticket\b" || (
+			echo "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
+			echo "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
+			quit $ERR_FOOTER;
+		) || exit $?;
+	fi
+	# Got here okay exit to reality
+	exit 0;
+);
+exit $?;

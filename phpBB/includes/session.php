@@ -1831,7 +1831,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !defined('IN_ADMIN'))
 			{
 				// Set board disabled to true to let the admins/mods get the proper notification
 				$config['board_disable'] = '1';

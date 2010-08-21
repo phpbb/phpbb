@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Script to uninstall the git hooks
+#
+# Usage (from within git-tools/hooks):
+# ./uninstall
+
+dir=$(dirname $0)
+
+for file in $(ls $dir)
+do
+	if [ $file != "install" ] && [ $file != "uninstall" ]
+	then
+		rm -f "$dir/../../.git/hooks/$file"
+	fi
+done

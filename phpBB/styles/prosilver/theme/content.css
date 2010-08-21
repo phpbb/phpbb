@@ -298,6 +298,15 @@ div[class].topic-actions {
 	display: none;
 }
 
+/* MCP Post details
+----------------------------------------*/
+#post_details
+{
+	/* This will only work in IE7+, plus the others */
+	overflow: auto;
+	max-height: 300px;
+}
+
 /* Content container styles
 ----------------------------------------*/
 .content {

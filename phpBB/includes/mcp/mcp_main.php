@@ -1048,6 +1048,35 @@ function mcp_fork_topic($topic_ids)
 		$total_posts = 0;
 		$new_topic_id_list = array();
 
+		if ($topic_data['enable_indexing'])
+		{
+			// Select the search method and do some additional checks to ensure it can actually be utilised
+			$search_type = basename($config['search_type']);
+
+			if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
+
+			if (!class_exists($search_type))
+			{
+				include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+			}
+
+			$error = false;
+			$search = new $search_type($error);
+			$search_mode = 'post';
+
+			if ($error)
+			{
+				trigger_error($error);
+			}
+		}
+		else
+		{
+			$search_type = false;
+		}
+
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
 			$sql_ary = array(
@@ -1157,6 +1186,12 @@ function mcp_fork_topic($topic_ids)
 
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
+
+				if ($search_type)
+				{
+					$search->index($search_mode, $sql_ary['post_id'], $sql_ary['post_text'], $sql_ary['post_subject'], $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
+					$search_mode = 'reply'; // After one we index replies
+				}
 
 				// Copy Attachments
 				if ($row['post_attachment'])

@@ -192,6 +192,17 @@ class install_update extends module
 			return;
 		}
 
+		// Check if the update files are actually meant to update from the current version
+		if ($config['version'] != $this->update_info['version']['from'])
+		{
+			$this->unequal_version = true;
+
+			$template->assign_vars(array(
+				'S_ERROR'	=> true,
+				'ERROR_MSG'	=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], $config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']),
+			));
+		}
+
 		// Check if the update files stored are for the latest version...
 		if ($this->latest_version != $this->update_info['version']['to'])
 		{
