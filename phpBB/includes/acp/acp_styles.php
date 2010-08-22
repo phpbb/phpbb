@@ -2531,13 +2531,21 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		// Match CSS imports
 		$matches = array();
-		preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
+		preg_match_all('/@import url\((["\'])(.*)\1\);/i', $stylesheet, $matches);
+
+		// remove commented stylesheets (very simple parser, allows only whitespace
+		// around an @import statement)
+		preg_match_all('#/\*\s*@import url\((["\'])(.*)\1\);\s\*/#i', $stylesheet, $commented);
+		$matches[2] = array_diff($matches[2], $commented[2]);
 
 		if (sizeof($matches))
 		{
 			foreach ($matches[0] as $idx => $match)
 			{
-				$stylesheet = str_replace($match, acp_styles::load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
+				if (isset($matches[2][$idx]))
+				{
+					$stylesheet = str_replace($match, acp_styles::load_css_file($theme_row['theme_path'], $matches[2][$idx]), $stylesheet);
+				}
 			}
 		}
 
