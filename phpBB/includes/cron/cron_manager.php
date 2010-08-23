@@ -123,7 +123,7 @@ class cron_manager
 	*
 	* If several tasks are ready, any one of them could be returned.
 	*/
-	function find_one_ready_task()
+	public function find_one_ready_task()
 	{
 		foreach ($this->tasks as $task)
 		{
@@ -138,7 +138,7 @@ class cron_manager
 	/**
 	* Finds all tasks that are ready to run.
 	*/
-	function find_all_ready_tasks()
+	public function find_all_ready_tasks()
 	{
 		$tasks = array();
 		foreach ($this->tasks as $task)
@@ -156,7 +156,7 @@ class cron_manager
 	*
 	* Web runner uses this method to resolve names to tasks.
 	*/
-	function find_task($name)
+	public function find_task($name)
 	{
 		foreach ($this->tasks as $task)
 		{
@@ -175,7 +175,7 @@ class cron_manager
 	* $args will be passed to the task class's constructor.
 	* The constructed task is wrapped with cron task wrapper before being returned.
 	*/
-	function instantiate_task($name, $args)
+	public function instantiate_task($name, $args)
 	{
 		$task = $this->find_task($name);
 		if ($task)
@@ -189,7 +189,7 @@ class cron_manager
 		return $task;
 	}
 
-	function generate_generic_task_code($cron_type)
+	public function generate_generic_task_code($cron_type)
 	{
 		global $phpbb_root_path, $phpEx;
 		return '<img src="' . $url . '" width="1" height="1" alt="cron" />';
