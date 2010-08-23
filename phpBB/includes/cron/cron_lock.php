@@ -24,7 +24,7 @@ class cron_lock
 {
 	private $cron_id;
 
-	function lock()
+	public function lock()
 	{
 		global $config, $db;
 
@@ -68,7 +68,7 @@ class cron_lock
 	*
 	* Attempting to release a cron lock that is already released is harmless.
 	*/
-	function unlock()
+	public function unlock()
 	{
 		global $db;
 
