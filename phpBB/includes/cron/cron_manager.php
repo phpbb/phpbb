@@ -188,10 +188,4 @@ class cron_manager
 		}
 		return $task;
 	}
-
-	public function generate_generic_task_code($cron_type)
-	{
-		global $phpbb_root_path, $phpEx;
-		return '<img src="' . $url . '" width="1" height="1" alt="cron" />';
-	}
 }
