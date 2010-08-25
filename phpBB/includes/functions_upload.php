@@ -976,7 +976,7 @@ class fileupload
 
 
 	/**
-	* Check for allowed extension
+	* Check for bad content (IE mime-sniffing)
 	*/
 	function valid_content(&$file)
 	{
