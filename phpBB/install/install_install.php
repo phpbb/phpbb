@@ -486,7 +486,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!@is_writable($phpbb_root_path . $dir))
+				if (!phpbb_is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -906,7 +906,7 @@ class install_install extends module
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;

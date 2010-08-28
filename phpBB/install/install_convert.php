@@ -835,7 +835,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !@is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{
