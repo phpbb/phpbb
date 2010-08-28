@@ -2040,23 +2040,18 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				case 'tar':
 					$ext = '.tar';
-					$mimetype = 'x-tar';
-					$compress = 'compress_tar';
 				break;
 
 				case 'zip':
 					$ext = '.zip';
-					$mimetype = 'zip';
 				break;
 
 				case 'tar.gz':
 					$ext = '.tar.gz';
-					$mimetype = 'x-gzip';
 				break;
 
 				case 'tar.bz2':
 					$ext = '.tar.bz2';
-					$mimetype = 'x-bzip2';
 				break;
 
 				default:
