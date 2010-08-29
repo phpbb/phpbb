@@ -15,6 +15,8 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'download/http_byte_range.php';
+
 class phpbb_download_all_tests
 {
 	public static function main()
@@ -25,6 +27,8 @@ class phpbb_download_all_tests
 	public static function suite()
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Download Tests');
+
+		$suite->addTestSuite('phpbb_download_http_byte_range_test');
 
 		return $suite;
 	}
