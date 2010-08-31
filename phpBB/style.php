@@ -55,14 +55,19 @@ $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 if ($id)
 {
 	// Include files
+	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-	$db = new $sql_db();
 	$cache = new cache();
+
+	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+	$class_loader->register();
+
+	$db = new $sql_db();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))

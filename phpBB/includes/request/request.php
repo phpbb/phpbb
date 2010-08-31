@@ -51,15 +51,15 @@ class phpbb_request implements phpbb_request_interface
 	protected $input;
 
 	/**
-	* @var	phpbb_type_cast_helper_interface	An instance of a type cast helper providing convenience methods for type conversions.
+	* @var	phpbb_request_type_cast_helper_interface	An instance of a type cast helper providing convenience methods for type conversions.
 	*/
 	protected $type_cast_helper;
 
 	/**
 	* Initialises the request class, that means it stores all input data in {@link $input input}
-	* and then calls {@link phpbb_deactivated_super_global phpbb_deactivated_super_global}
+	* and then calls {@link phpbb_request_deactivated_super_global phpbb_request_deactivated_super_global}
 	*/
-	public function __construct(phpbb_type_cast_helper_interface $type_cast_helper = null, $disable_super_globals = true)
+	public function __construct(phpbb_request_type_cast_helper_interface $type_cast_helper = null, $disable_super_globals = true)
 	{
 		if ($type_cast_helper)
 		{
@@ -67,7 +67,7 @@ class phpbb_request implements phpbb_request_interface
 		}
 		else
 		{
-			$this->type_cast_helper = new phpbb_type_cast_helper();
+			$this->type_cast_helper = new phpbb_request_type_cast_helper();
 		}
 
 		foreach ($this->super_globals as $const => $super_global)
@@ -97,7 +97,7 @@ class phpbb_request implements phpbb_request_interface
 
 	/**
 	* Disables access of super globals specified in $super_globals.
-	* This is achieved by overwriting the super globals with instances of {@link phpbb_deactivated_super_global phpbb_deactivated_super_global}
+	* This is achieved by overwriting the super globals with instances of {@link phpbb_request_deactivated_super_global phpbb_request_deactivated_super_global}
 	*/
 	public function disable_super_globals()
 	{
@@ -106,7 +106,7 @@ class phpbb_request implements phpbb_request_interface
 			foreach ($this->super_globals as $const => $super_global)
 			{
 				unset($GLOBALS[$super_global]);
-				$GLOBALS[$super_global] = new phpbb_deactivated_super_global($this, $super_global, $const);
+				$GLOBALS[$super_global] = new phpbb_request_deactivated_super_global($this, $super_global, $const);
 			}
 
 			$this->super_globals_disabled = true;

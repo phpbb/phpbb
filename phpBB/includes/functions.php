@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 function set_var(&$result, $var, $type, $multibyte = false)
 {
 	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new phpbb_type_cast_helper();
+	$type_cast_helper = new phpbb_request_type_cast_helper();
 	$type_cast_helper->set_var($result, $var, $type, $multibyte);
 }
 
@@ -70,7 +70,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, p
 	{
 		// false param: enable super globals, so the created request class does not
 		// make super globals inaccessible everywhere outside this function.
-		$tmp_request = new phpbb_request(new phpbb_type_cast_helper(), false);
+		$tmp_request = new phpbb_request(new phpbb_request_type_cast_helper(), false);
 	}
 
 	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);

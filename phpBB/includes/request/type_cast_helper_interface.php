@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_request
 */
-interface phpbb_type_cast_helper_interface
+interface phpbb_request_type_cast_helper_interface
 {
 	/**
 	* Recursively applies addslashes to a variable.

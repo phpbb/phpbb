@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_request
 */
-class phpbb_type_cast_helper implements phpbb_type_cast_helper_interface
+class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_interface
 {
 
 	/**

@@ -66,11 +66,6 @@ require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
-require($phpbb_root_path . 'includes/request/type_cast_helper_interface.' . $phpEx);
-require($phpbb_root_path . 'includes/request/type_cast_helper.' . $phpEx);
-require($phpbb_root_path . 'includes/request/deactivated_super_global.' . $phpEx);
-require($phpbb_root_path . 'includes/request/request_interface.' . $phpEx);
-require($phpbb_root_path . 'includes/request/request.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
@@ -97,9 +92,13 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-$request = new phpbb_request(new phpbb_type_cast_helper());
-$user = new user();
 $cache = new cache();
+
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+$class_loader->register();
+
+$request = new phpbb_request();
+$user = new user();
 $db = new $sql_db();
 
 // make sure request_var uses this request instance

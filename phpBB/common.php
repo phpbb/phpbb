@@ -195,11 +195,6 @@ require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
-require($phpbb_root_path . 'includes/request/type_cast_helper_interface.' . $phpEx);
-require($phpbb_root_path . 'includes/request/type_cast_helper.' . $phpEx);
-require($phpbb_root_path . 'includes/request/deactivated_super_global.' . $phpEx);
-require($phpbb_root_path . 'includes/request/request_interface.' . $phpEx);
-require($phpbb_root_path . 'includes/request/request.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
@@ -210,12 +205,18 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
+// Cache must be loaded before class loader
+$cache = new cache();
+
+// Setup class loader first
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+$class_loader->register();
+
 // Instantiate some basic classes
-$request	= new phpbb_request(new phpbb_type_cast_helper());
+$request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
 $template	= new template();
-$cache		= new cache();
 $db			= new $sql_db();
 
 $class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);

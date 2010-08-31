@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_request
 */
-class phpbb_deactivated_super_global implements ArrayAccess, Countable, IteratorAggregate
+class phpbb_request_deactivated_super_global implements ArrayAccess, Countable, IteratorAggregate
 {
 	/**
 	* @var	string	Holds the name of the superglobal this is replacing.
