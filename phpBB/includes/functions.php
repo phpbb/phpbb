@@ -2698,22 +2698,14 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $request;
 
 	if (isset($_POST['cancel']))
 	{
 		return false;
 	}
 
-	$confirm = false;
-	if (isset($_POST['confirm']))
-	{
-		// language frontier
-		if ($_POST['confirm'] === $user->lang['YES'])
-		{
-			$confirm = true;
-		}
-	}
+	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
 
 	if ($check && $confirm)
 	{

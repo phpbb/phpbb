@@ -136,13 +136,17 @@ switch ($mode)
 
 	case 'delete_cookies':
 
+		global $request;
+
 		// Delete Cookies with dynamic names (do NOT delete poll cookies)
 		if (confirm_box(true))
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($_COOKIE as $cookie_name => $cookie_data)
+			foreach ($request->variable_names(phpbb_request_interface::COOKIE) as $cookie_name)
 			{
+				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_interface::COOKIE);
+
 				// Only delete board cookies, no other ones...
 				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
 				{
