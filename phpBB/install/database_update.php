@@ -880,7 +880,7 @@ function database_update_info()
 					'pm_id'			=> array('pm_id'),
 				),
 				POSTS_TABLE			=> array(
-					'post_username'		=> array('post_username'),
+					'post_username'		=> array('post_username:255'),
 				),
 			),
 		),
@@ -2141,7 +2141,7 @@ class updater_db_tools
 	*	drop_columns: Removing/Dropping columns
 	*	add_primary_keys: adding primary keys
 	*	add_unique_index: adding an unique index
-	*	add_index: adding an index
+	*	add_index: adding an index (can be column:index_size if you need to provide size)
 	*
 	* The values are in this format:
 	*		{TABLE NAME}		=> array(
@@ -3520,6 +3520,12 @@ class updater_db_tools
 	{
 		$statements = array();
 
+		// remove index length unless MySQL4
+		if ('mysql_40' != $this->sql_layer)
+		{
+			$column = preg_replace('#:.*$#', '', $column);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -3530,6 +3536,16 @@ class updater_db_tools
 			break;
 
 			case 'mysql_40':
+				// add index size to definition as required by MySQL4
+				foreach ($column as $i => $col)
+				{
+					if (false !== strpos($col, ':'))
+					{
+						list($col, $index_size) = explode(':', $col);
+						$column[$i] = "$col($index_size)";
+					}
+				}
+			// no break
 			case 'mysql_41':
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
