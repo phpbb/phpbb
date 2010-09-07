@@ -65,7 +65,7 @@ then
 	quit $ERR_LENGTH;
 fi
 
-lines=$(wc --lines "$1" | cut -f1 -d" ");
+lines=$(wc -l "$1" | awk '{ print $1; }');
 expecting=header;
 in_description=0;
 in_empty=0;
