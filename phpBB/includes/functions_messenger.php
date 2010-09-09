@@ -647,25 +647,31 @@ class queue
 		{
 			$mode = 'wb';
 		}
+
 		$lock_fp = @fopen($this->cache_file . '.lock', $mode);
-		// Two processes may attempt to create lock file at the same time.
-		// Have the losing process try opening the lock file again for reading
-		// on the assumption that the winning process created it
-		if (!$lock_fp && $mode == 'wb')
+
+		if ($mode == 'wb')
 		{
-			// Assign to $mode for the check in chmod below
-			$mode = 'rb';
-			$lock_fp = @fopen($this->cache_file . '.lock', $mode);
+			if (!$lock_fp)
+			{
+				// Two processes may attempt to create lock file at the same time.
+				// Have the losing process try opening the lock file again for reading
+				// on the assumption that the winning process created it
+				$mode = 'rb';
+				$lock_fp = @fopen($this->cache_file . '.lock', $mode);
+			}
+			else
+			{
+				// Only need to set mode when the lock file is written
+				@chmod($this->cache_file . '.lock', 0666);
+			}
 		}
-		if ($lock_fp && $mode == 'wb')
-		{
-			// Only need to set mode when the lock file is written
-			@chmod($this->cache_file . '.lock', 0666);
-		}
+
 		if ($lock_fp)
 		{
 			@flock($lock_fp, LOCK_EX);
 		}
+
 		return $lock_fp;
 	}
 
