@@ -432,6 +432,20 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$config_definition['lang']], $validator[$max]);
 				}
+
+				if (strpos($config_name, '_max') !== false)
+				{
+					// Min/max pairs of settings should ensure that min <= max
+					// Replace _max with _min to find the name of the minimum
+					// corresponding configuration variable
+					$min_name = str_replace('_max', '_min', $config_name);
+
+					if (isset($cfg_array[$min_name]) && is_numeric($cfg_array[$min_name]) && $cfg_array[$config_name] < $cfg_array[$min_name])
+					{
+						// A minimum value exists and the maximum value is less than it
+						$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
+					}
+				}
 			break;
 
 			// Absolute path
