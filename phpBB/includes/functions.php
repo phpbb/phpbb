@@ -3753,7 +3753,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			// Do not send 200 OK, but service unavailable on errors
-			header('HTTP/1.1 503 Service Unavailable');
+			send_status_line(503, 'Service Unavailable');
 
 			garbage_collection();
 
@@ -4223,7 +4223,8 @@ function phpbb_http_login($param)
 		}
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
 		{
-			header('HTTP/1.0 401 Unauthorized');
+			send_status_line(401, 'Unauthorized');
+
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
@@ -4235,7 +4236,7 @@ function phpbb_http_login($param)
 	$param['auth_message'] = preg_replace('/[\x80-\xFF]/', '?', $param['auth_message']);
 
 	header('WWW-Authenticate: Basic realm="' . $param['auth_message'] . '"');
-	header('HTTP/1.0 401 Unauthorized');
+	send_status_line(401, 'Unauthorized');
 
 	trigger_error('NOT_AUTHORISED');
 }
