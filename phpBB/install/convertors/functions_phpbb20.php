@@ -1239,9 +1239,9 @@ function phpbb_prepare_message($message)
 	// Already the new user id ;)
 	$user_id = $convert->row['poster_id'];
 
+	$message = str_replace('<br />', "\n", $message);
 	$message = str_replace('<', '&lt;', $message);
 	$message = str_replace('>', '&gt;', $message);
-	$message = str_replace('<br />', "\n", $message);
 
 	// make the post UTF-8
 	$message = phpbb_set_encoding($message);
