@@ -402,15 +402,18 @@ if ($post_data['poll_start'])
 	$db->sql_freeresult($result);
 }
 
-$original_poll_data = array(
-	'poll_title'		=> $post_data['poll_title'],
-	'poll_length'		=> $post_data['poll_length'],
-	'poll_max_options'	=> $post_data['poll_max_options'],
-	'poll_option_text'	=> implode("\n", $post_data['poll_options']),
-	'poll_start'		=> $post_data['poll_start'],
-	'poll_last_vote'	=> $post_data['poll_last_vote'],
-	'poll_vote_change'	=> $post_data['poll_vote_change'],
-);
+if ($mode == 'edit')
+{
+	$original_poll_data = array(
+		'poll_title'		=> $post_data['poll_title'],
+		'poll_length'		=> $post_data['poll_length'],
+		'poll_max_options'	=> $post_data['poll_max_options'],
+		'poll_option_text'	=> implode("\n", $post_data['poll_options']),
+		'poll_start'		=> $post_data['poll_start'],
+		'poll_last_vote'	=> $post_data['poll_last_vote'],
+		'poll_vote_change'	=> $post_data['poll_vote_change'],
+	);
+}
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
@@ -1297,7 +1300,7 @@ $attachment_data = $message_parser->attachment_data;
 $filename_data = $message_parser->filename_data;
 $post_data['post_text'] = $message_parser->message;
 
-if (sizeof($post_data['poll_options']) && $post_data['poll_title'])
+if (sizeof($post_data['poll_options']) || $post_data['poll_title'])
 {
 	$message_parser->message = $post_data['poll_title'];
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
