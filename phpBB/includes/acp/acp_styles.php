@@ -1587,7 +1587,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
-				$sql_select = 'style_name';
+				$sql_select = 'style_name, template_id, theme_id, imageset_id';
 				$sql_where = 'AND style_active = 1';
 			break;
 
@@ -1678,6 +1678,51 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					set_config('default_style', $new_id);
 				}
+
+				// Remove the components
+				$components = array('template', 'theme', 'imageset');
+				foreach ($components as $component)
+				{
+					$new_id = request_var('new_' . $component . '_id', 0);
+					$style_id = $style_row[$component . '_id'];
+
+					if (($new_id == 0) || ($component === 'template' && ($conflicts = $this->check_inheritance($component, $style_id))))
+					{
+						// We can not delete the template, as the selected one is inheriting from this one.
+						continue;
+					}
+
+					if ($component == 'imageset')
+					{
+						$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+							WHERE imageset_id = $style_id";
+						$db->sql_query($sql);
+					}
+
+					switch ($component)
+					{
+						case 'template':
+							$sql_from = STYLES_TEMPLATE_TABLE;
+						break;
+
+						case 'theme':
+							$sql_from = STYLES_THEME_TABLE;
+						break;
+
+						case 'imageset':
+							$sql_from = STYLES_IMAGESET_TABLE;;
+						break;
+					}
+
+					$sql = "DELETE FROM $sql_from
+						WHERE {$component}_id = $style_id";
+					$db->sql_query($sql);
+
+					$sql = 'UPDATE ' . STYLES_TABLE . "
+						SET {$component}_id = $new_id
+						WHERE {$component}_id = $style_id";
+					$db->sql_query($sql);
+				}
 			}
 			else
 			{
@@ -1718,6 +1763,63 @@ parse_css_file = {PARSE_CSS_FILE}
 			'NAME'			=> $style_row[$mode . '_name'],
 			)
 		);
+
+		if ($mode == 'style')
+		{
+			$template->assign_vars(array(
+				'S_DELETE_STYLE'		=> true,
+			));
+
+			$components = array('template', 'theme', 'imageset');
+			foreach ($components as $mode)
+			{
+				$sql_where = '';
+				switch ($mode)
+				{
+					case 'template':
+						$sql_from = STYLES_TEMPLATE_TABLE;
+						$sql_select = 'template_name, template_path, template_storedb';
+						$sql_where = ' AND template_inherits_id <> ' . $style_row[$mode . '_id'];
+					break;
+
+					case 'theme':
+						$sql_from = STYLES_THEME_TABLE;
+						$sql_select = 'theme_name, theme_path, theme_storedb';
+					break;
+
+					case 'imageset':
+						$sql_from = STYLES_IMAGESET_TABLE;
+						$sql_select = 'imageset_name, imageset_path';
+					break;
+				}
+
+				$sql = "SELECT {$mode}_id, {$mode}_name
+					FROM $sql_from
+					WHERE {$mode}_id <> {$style_row[$mode . '_id']}
+						$sql_where
+					ORDER BY {$mode}_name ASC";
+				$result = $db->sql_query($sql);
+
+				$s_options = '<option value="0">' . $user->lang['KEEP_' . strtoupper($mode)] . '</option>';
+
+				$set_default = true;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ($set_default)
+					{
+						$s_options .= '<option value="' . $row[$mode . '_id'] . '" selected="selected">' . $row[$mode . '_name'] . '</option>';
+						$set_default = false;
+					}
+					else
+					{
+						$s_options .= '<option value="' . $row[$mode . '_id'] . '">' . $row[$mode . '_name'] . '</option>';
+					}
+				}
+				$db->sql_freeresult($result);
+
+				$template->assign_var('S_REPLACE_' . strtoupper($mode) . '_OPTIONS', $s_options);
+			}
+		}
 	}
 
 	/**

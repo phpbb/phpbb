@@ -285,10 +285,13 @@ $lang = array_merge($lang, array(
 	'INSTALLED_TEMPLATE'		=> 'Installed templates',
 	'INSTALLED_THEME'			=> 'Installed themes',
 
+	'KEEP_IMAGESET'				=> 'Keep imageset',
+	'KEEP_TEMPLATE'				=> 'Keep template',
+	'KEEP_THEME'				=> 'Keep theme',
+
 	'LINE_SPACING'				=> 'Line spacing',
 	'LOCALISED_IMAGES'			=> 'Localised',
 	'LOCATION_DISABLED_EXPLAIN'	=> 'This setting is inherited and cannot be changed.',
-
 
 	'NO_CLASS'					=> 'Cannot find class in stylesheet.',
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem.',
