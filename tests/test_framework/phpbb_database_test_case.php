@@ -19,7 +19,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
-	function get_dbms_data($dbms)
+	public function get_dbms_data($dbms)
 	{
 		$available_dbms = array(
 			'firebird'	=> array(
@@ -79,10 +79,13 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
-	function split_sql_file($sql, $delimiter, $dbms)
+	// NOTE: This function is not the same as split_sql_file from functions_install
+	public function split_sql_file($sql, $dbms)
 	{
+		$dbms_data = $this->get_dbms_data($dbms);
+
 		$sql = str_replace("\r" , '', $sql);
-		$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
+		$data = preg_split('/' . preg_quote($dbms_data['DELIM'], '/') . '$/m', $sql);
 
 		$data = array_map('trim', $data);
 
@@ -99,13 +102,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			// trim # off query to satisfy sqlite
 			foreach ($data as $i => $query)
 			{
-				$lines = explode("\n", $query);
-				foreach ($lines as $j => $line)
-				if (strpos($line, '#') === 0)
-				{
-					unset($lines[$j]);
-				}
-				$data[$i] = implode("\n", $lines);
+				$data[$i] = preg_replace('/^#.*$/m', "\n", $query);
 			}
 		}
 
@@ -177,7 +174,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				unset($row, $sth);
 			}
 
-			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $dbms_data['DELIM'], $database_config['dbms']);
+			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $database_config['dbms']);
 
 			foreach ($sql_query as $sql)
 			{
