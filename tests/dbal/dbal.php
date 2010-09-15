@@ -244,8 +244,9 @@ class phpbb_dbal_test extends phpbb_database_test_case
 				array('username_clean' => 'bertie'))),
 
 			// These here would throw errors and therefor $result should be false.
-			array('user_id', array(), false, false, false, true),
-			array('user_id', array(), true, false, false, true),
+			// Removing for now because SQLite accepts empty IN() syntax
+			/*array('user_id', array(), false, false, false, true),
+			array('user_id', array(), true, false, false, true),*/
 		);
 	}
 
