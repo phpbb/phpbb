@@ -22,7 +22,32 @@ class phpbb_test_case_helpers
 	{
 		static $show_error = true;
 
-		if (!file_exists('test_config.php'))
+		if (file_exists('test_config.php'))
+		{
+			include('test_config.php');
+
+			return array(
+				'dbms'		=> $dbms,
+				'dbhost'	=> $dbhost,
+				'dbport'	=> $dbport,
+				'dbname'	=> $dbname,
+				'dbuser'	=> $dbuser,
+				'dbpasswd'	=> $dbpasswd,
+			);
+		}
+		else if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+		{
+			// Silently use sqlite
+			return array(
+				'dbms'		=> 'sqlite',
+				'dbhost'	=> 'phpbb_unit_tests.sqlite2', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			);
+		}
+		else
 		{
 			if ($show_error)
 			{
@@ -46,16 +71,6 @@ class phpbb_test_case_helpers
 
 NOTE: The database is dropped and recreated with the phpbb-db-schema! Do NOT specify a database with important data.", E_USER_ERROR);
 		}
-		include('test_config.php');
-
-		return array(
-			'dbms'		=> $dbms,
-			'dbhost'	=> $dbhost,
-			'dbport'	=> $dbport,
-			'dbname'	=> $dbname,
-			'dbuser'	=> $dbuser,
-			'dbpasswd'	=> $dbpasswd,
-		);
 	}
 
 	public function new_dbal()
