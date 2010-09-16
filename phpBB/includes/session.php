@@ -285,6 +285,17 @@ class session
 				break;
 			}
 
+			// Quick check for IPv4-mapped address in IPv6
+			if (stripos($ip, '::ffff:') === 0)
+			{
+				$ipv4 = substr($ip, 7);
+
+				if (preg_match(get_preg_expression('ipv4'), $ipv4))
+				{
+					$ip = $ipv4;
+				}
+			}
+
 			// Use the last in chain
 			$this->ip = $ip;
 		}

@@ -1236,6 +1236,7 @@ class install_install extends module
 		$current_time = time();
 
 		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+		$user_ip = (stripos($user_ip, '::ffff:') === 0) ? substr($user_ip, 7) : $user_ip;
 
 		if ($data['script_path'] !== '/')
 		{
