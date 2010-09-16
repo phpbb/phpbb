@@ -13,14 +13,9 @@ require_once '../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 {
-/*		'BOOL'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => 1),
-		'USINT'	=> array('php_type' => 'int',		'min' => 0, 				'max' => 65535),
-		'UINT'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => (int) 0x7fffffff),
-		'INT'	=> array('php_type' => 'int', 		'min' => (int) 0x80000000, 	'max' => (int) 0x7fffffff),
-		'TINT'	=> array('php_type' => 'int',		'min' => -128,				'max' => 127),
-
-		'VCHAR'	=> array('php_type' => 'string', 	'min' => 0, 				'max' => 255),
-*/
+	/**
+	* Helper function which returns a string in a given length.
+	*/
 	static public function return_string($length)
 	{
 		$string = '';

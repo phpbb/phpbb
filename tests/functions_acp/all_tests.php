@@ -18,6 +18,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'functions_acp/build_cfg_template.php';
 require_once 'functions_acp/build_select.php';
 require_once 'functions_acp/h_radio.php';
+require_once 'functions_acp/validate_config_vars.php';
 require_once 'functions_acp/validate_range.php';
 
 class phpbb_functions_acp_all_tests
@@ -34,6 +35,7 @@ class phpbb_functions_acp_all_tests
 		$suite->addTestSuite('phpbb_functions_acp_build_cfg_template_test');
 		$suite->addTestSuite('phpbb_functions_acp_built_select_test');
 		$suite->addTestSuite('phpbb_functions_acp_h_radio_test');
+		$suite->addTestSuite('phpbb_functions_acp_validate_config_vars_test');
 		$suite->addTestSuite('phpbb_functions_acp_validate_range_test');
 
 		return $suite;

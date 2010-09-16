@@ -300,7 +300,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 }
 
 /**
-* Going through a config array and validate values, writing errors to $error. The validation method  accepts parameters separated by ':' for string and int.
+* Going through a config array and validate values, writing errors to $error. The validation method accepts parameters separated by ':' for string and int.
 * The first parameter defines the type to be used, the second the lower bound and the third the upper bound. Only the type is required.
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
@@ -337,7 +337,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
 				}
-				else if (isset($validator[$max]) && $length > $validator[2])
+				else if (isset($validator[$max]) && $length > $validator[$max])
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
 				}
