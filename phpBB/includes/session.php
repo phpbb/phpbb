@@ -748,7 +748,7 @@ class session
 
 				if ((int) $row['sessions'] > (int) $config['active_sessions'])
 				{
-					header('HTTP/1.1 503 Service Unavailable');
+					send_status_line(503, 'Service Unavailable');
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
@@ -1821,7 +1821,7 @@ class user extends session
 		{
 			if ($this->data['is_bot'])
 			{
-				header('HTTP/1.1 503 Service Unavailable');
+				send_status_line(503, 'Service Unavailable');
 			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
@@ -1840,7 +1840,7 @@ class user extends session
 				{
 					if ($this->data['is_bot'])
 					{
-						header('HTTP/1.1 503 Service Unavailable');
+						send_status_line(503, 'Service Unavailable');
 					}
 					trigger_error('BOARD_UNAVAILABLE');
 				}

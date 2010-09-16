@@ -77,7 +77,7 @@ if (isset($_GET['avatar']))
 	// '==' is not a bug - . as the first char is as bad as no dot at all
 	if (strpos($filename, '.') == false)
 	{
-		header('HTTP/1.0 403 Forbidden');
+		send_status_line(403, 'Forbidden');
 		$exit = true;
 	}
 
@@ -91,7 +91,7 @@ if (isset($_GET['avatar']))
 	if (!$exit && !in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 Forbidden");
+		send_status_line(403, 'Forbidden');
 		$exit = true;
 	}
 
@@ -101,7 +101,7 @@ if (isset($_GET['avatar']))
 		if (!$filename)
 		{
 			// no way such an avatar could exist. They are not following the rules, stop the show.
-			header("HTTP/1.0 403 Forbidden");
+			send_status_line(403, 'Forbidden');
 		}
 		else
 		{
@@ -199,7 +199,7 @@ else
 		$row['forum_id'] = false;
 		if (!$auth->acl_get('u_pm_download'))
 		{
-			header('HTTP/1.0 403 Forbidden');
+			send_status_line(403, 'Forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 
@@ -222,7 +222,7 @@ else
 
 		if (!$allowed)
 		{
-			header('HTTP/1.0 403 Forbidden');
+			send_status_line(403, 'Forbidden');
 			trigger_error('ERROR_NO_ATTACHMENT');
 		}
 	}
@@ -237,7 +237,7 @@ else
 
 if (!download_allowed())
 {
-	header('HTTP/1.0 403 Forbidden');
+	send_status_line(403, 'Forbidden');
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
@@ -383,7 +383,7 @@ function send_avatar_to_browser($file, $browser)
 	}
 	else
 	{
-		header('HTTP/1.0 404 Not Found');
+		send_status_line(404, 'Not Found');
 	}
 }
 

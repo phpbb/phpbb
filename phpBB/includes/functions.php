@@ -3753,7 +3753,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			// Do not send 200 OK, but service unavailable on errors
-			header('HTTP/1.1 503 Service Unavailable');
+			send_status_line(503, 'Service Unavailable');
 
 			garbage_collection();
 
@@ -4223,7 +4223,8 @@ function phpbb_http_login($param)
 		}
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
 		{
-			header('HTTP/1.0 401 Unauthorized');
+			send_status_line(401, 'Unauthorized');
+
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
@@ -4235,7 +4236,7 @@ function phpbb_http_login($param)
 	$param['auth_message'] = preg_replace('/[\x80-\xFF]/', '?', $param['auth_message']);
 
 	header('WWW-Authenticate: Basic realm="' . $param['auth_message'] . '"');
-	header('HTTP/1.0 401 Unauthorized');
+	send_status_line(401, 'Unauthorized');
 
 	trigger_error('NOT_AUTHORISED');
 }
@@ -4464,6 +4465,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_ENABLE_FEEDS_TOPICS'		=> ($config['feed_topics_new']) ? true : false,
 		'S_ENABLE_FEEDS_TOPICS_ACTIVE'	=> ($config['feed_topics_active']) ? true : false,
 		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
+
+		'S_LOAD_UNREADS'			=> ($config['load_unreads_search']) ? true : false,
 
 		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',

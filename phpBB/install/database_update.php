@@ -1795,6 +1795,9 @@ function change_database_data(&$no_updates, $version)
 			// Sync the forums we have deleted shadow topics from.
 			sync('forum', 'forum_id', $sync_forum_ids, true, true);
 
+			// Unread posts search load switch
+			set_config('load_unreads_search', '1');
+
 			$no_updates = false;
 		break;
 	}
