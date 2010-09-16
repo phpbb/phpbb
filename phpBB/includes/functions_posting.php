@@ -2583,7 +2583,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete' && $post_approval)
+	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
