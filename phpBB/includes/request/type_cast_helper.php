@@ -176,7 +176,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 				$this->set_var($k, $k, $key_type, $multibyte, $multibyte);
 
 				$this->recursive_set_var($v, $default_value, $multibyte);
-				$this->set_var($var[$k], $v, $value_type, $multibyte);
+				$var[$k] = $v;
 			}
 		}
 	}

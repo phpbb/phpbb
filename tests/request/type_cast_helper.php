@@ -9,6 +9,7 @@
 */
 
 require_once 'test_framework/framework.php';
+require_once '../phpBB/includes/utf/utf_tools.php';
 require_once '../phpBB/includes/request/type_cast_helper_interface.php';
 require_once '../phpBB/includes/request/type_cast_helper.php';
 
@@ -27,6 +28,26 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$expected = array('some\\"string' => array('that\\"' => 'really\\"', 'needs\\"' => '\\"escaping'));
 
 		$this->type_cast_helper->addslashes_recursively($data);
+
+		$this->assertEquals($expected, $data);
+	}
+
+	public function test_simple_recursive_set_var()
+	{
+		$data = 'eviL<3';
+		$expected = 'eviL&lt;3';
+
+		$this->type_cast_helper->recursive_set_var($data, '', true);
+
+		$this->assertEquals($expected, $data);
+	}
+
+	public function test_nested_recursive_set_var()
+	{
+		$data = array('eviL<3');
+		$expected = array('eviL&lt;3');
+
+		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true);
 
 		$this->assertEquals($expected, $data);
 	}
