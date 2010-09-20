@@ -136,8 +136,6 @@ switch ($mode)
 
 	case 'delete_cookies':
 
-		global $request;
-
 		// Delete Cookies with dynamic names (do NOT delete poll cookies)
 		if (confirm_box(true))
 		{
