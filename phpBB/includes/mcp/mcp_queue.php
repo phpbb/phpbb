@@ -744,6 +744,7 @@ function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
+	global $request;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -778,7 +779,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
 			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
-			unset($_POST['confirm']);
+			$request->overwrite('confirm', null, phpbb_request_interface::POST);
 		}
 		else
 		{
