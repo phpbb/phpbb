@@ -691,7 +691,7 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = ($request->is_array($key)) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
+								$_new_key_ary[$key] = ($field_type == FIELD_BOOL && $key == 'lang_options') ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
 							}
 						}
 					}
