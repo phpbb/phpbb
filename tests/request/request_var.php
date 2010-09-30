@@ -81,11 +81,14 @@ class phpbb_request_var_test extends phpbb_test_case
 	/**
 	* @dataProvider deep_access
 	* Only possible with 3.1.x (later)
+	*/
 	public function test_deep_multi_dim_array_access($path, $default, $expected)
 	{
 		$this->unset_variables('var');
 
-		$_REQUEST['var'] = array(
+		// cannot set $_REQUEST directly because in phpbb_request implementation
+		// $_REQUEST = $_GET + $_POST
+		$_POST['var'] = array(
 			0 => array(
 				'b' => array(
 					true => array(
@@ -115,7 +118,6 @@ class phpbb_request_var_test extends phpbb_test_case
 			array(array('var', 0, 'b', true), array(0 => ''), array(5 => 'c', 6 => 'd')),
 		);
 	}
-*/
 
 	public static function request_variables()
 	{
@@ -217,7 +219,6 @@ class phpbb_request_var_test extends phpbb_test_case
 					'abc' => array()
 				)
 			),
-			// 3-dimensional (not supported atm!
 			array(
 				// input:
 				array(
