@@ -2844,8 +2844,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		$username	= request_var('username', '', true);
-		$autologin	= $request->variable('autologin', false, false, phpbb_request_interface::POST);
-		$viewonline = (int) $request->variable('viewonline', false, false, phpbb_request_interface::POST);
+		$autologin	= $request->is_set_post('autologin');
+		$viewonline = (int) !$request->is_set_post('viewonline');
 		$admin 		= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
