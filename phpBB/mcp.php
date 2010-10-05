@@ -32,7 +32,7 @@ $template->assign_var('S_IN_MCP', true);
 $id = request_var('i', '');
 
 $mode = request_var('mode', array(''));
-$mode = sizeof($mode) ? array_shift($mode) : '';
+$mode = sizeof($mode) ? array_shift($mode) : request_var('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
