@@ -1062,6 +1062,7 @@ function display_user_activity(&$userdata)
 function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
 {
 	global $template, $db, $user, $phpEx, $start, $phpbb_root_path;
+	global $request;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
@@ -1098,7 +1099,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 					trigger_error($message);
 				}
-				if ($_GET['unwatch'] == $mode)
+				if ($request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode)
 				{
 					$is_watching = 0;
 
@@ -1136,7 +1137,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				$token = request_var('hash', '');
 				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 
-				if ($_GET['watch'] == $mode && check_link_hash($token, "{$mode}_$match_id"))
+				if ($request->variable('watch', '', false, phpbb_request_interface::GET) == $mode && check_link_hash($token, "{$mode}_$match_id"))
 				{
 					$is_watching = true;
 
@@ -1162,7 +1163,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if (isset($_GET['unwatch']) && $_GET['unwatch'] == $mode)
+		if ($request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode)
 		{
 			login_box();
 		}

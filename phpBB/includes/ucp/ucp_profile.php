@@ -30,12 +30,13 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		$user->add_lang('posting');
 
-		$preview	= (!empty($_POST['preview'])) ? true : false;
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$preview	= $request->variable('preview', false, false, phpbb_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 

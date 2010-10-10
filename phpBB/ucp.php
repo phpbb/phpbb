@@ -82,7 +82,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && isset($_GET['sid']) && !is_array($_GET['sid']) && $_GET['sid'] === $user->session_id)
+		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
 		{
 			$user->session_kill();
 			$user->session_begin();
@@ -141,8 +141,10 @@ switch ($mode)
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($_COOKIE as $cookie_name => $cookie_data)
+			foreach ($request->variable_names(phpbb_request_interface::COOKIE) as $cookie_name)
 			{
+				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_interface::COOKIE);
+
 				// Only delete board cookies, no other ones...
 				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
 				{

@@ -28,6 +28,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -37,9 +38,9 @@ class ucp_register
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit			= (isset($_POST['submit'])) ? true : false;
+		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
+		$agreed			= (int) $request->variable('agreed', false);
+		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
@@ -63,7 +64,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+					$agreed = ($request->variable('change_lang', false)) ? 0 : $agreed;
 				}
 
 				$user->lang_name = $user_lang = $use_lang;

@@ -711,8 +711,9 @@ class dbal
 	function sql_report($mode, $query = '')
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
+		global $request;
 
-		if (empty($_REQUEST['explain']))
+		if (!$request->variable('explain', false))
 		{
 			return false;
 		}

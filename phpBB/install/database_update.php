@@ -60,6 +60,7 @@ if (!empty($load_extensions) && function_exists('dl'))
 }
 
 // Include files
+require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
@@ -92,9 +93,17 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-$user = new user();
 $cache = new cache();
+
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+$class_loader->register();
+
+$request = new phpbb_request();
+$user = new user();
 $db = new $sql_db();
+
+// make sure request_var uses this request instance
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -1947,7 +1956,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'mssqlnative'	=> array(
 			'INT:'		=> '[int]',
 			'BINT'		=> '[float]',
@@ -1977,7 +1986,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'oracle'	=> array(
 			'INT:'		=> 'number(%d)',
 			'BINT'		=> 'number(20)',
@@ -2124,7 +2133,7 @@ class updater_db_tools
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
-			
+
 			case 'mssqlnative':
 				$this->sql_layer = 'mssqlnative';
 			break;

@@ -15,6 +15,9 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'request/type_cast_helper.php';
+require_once 'request/deactivated_super_global.php';
+require_once 'request/request.php';
 require_once 'request/request_var.php';
 
 class phpbb_request_all_tests
@@ -28,7 +31,10 @@ class phpbb_request_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Request Parameter Handling');
 
-		$suite->addTestSuite('phpbb_request_request_var_test');
+		$suite->addTestSuite('phpbb_type_cast_helper_test');
+		$suite->addTestSuite('phpbb_deactivated_super_global_test');
+		$suite->addTestSuite('phpbb_request_test');
+		$suite->addTestSuite('phpbb_request_var_test');
 
 		return $suite;
 	}
