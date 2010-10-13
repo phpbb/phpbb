@@ -434,21 +434,14 @@ function file_gc()
 * Allows browsers to request partial file content
 * in case a download has been interrupted.
 *
-* A range request can contain multiple ranges,
-* we however only handle the first request and
-* only support requests from a given byte to the end of the file.
-*
 * @param int $filesize		the size of the file in bytes we are about to deliver
 *
 * @return mixed		false if the whole file has to be delivered
 *					associative array on success
-*
-* @author bantu
 */
 function http_byte_range($filesize)
 {
-	// The range request array;
-	// contains all requested ranges.
+	// Only call find_range_request() once.
 	static $request_array;
 
 	if (!$filesize)
@@ -458,36 +451,62 @@ function http_byte_range($filesize)
 
 	if (!isset($request_array))
 	{
-		$request_array = false;
+		$request_array = find_range_request();
+	}
+	
+	return (empty($request_array)) ? false : parse_range_request($request_array, $filesize);
+}
 
-		$globals = array(
-			array('_SERVER',	'HTTP_RANGE'),
-			array('_ENV',		'HTTP_RANGE'),
-		);
+/**
+* Searches for HTTP range request in super globals.
+*
+* @return mixed		false if no request found
+*					array of strings containing the requested ranges otherwise
+*					e.g. array(0 => '0-0', 1 => '123-125')
+*/
+function find_range_request()
+{
+	$globals = array(
+		array('_SERVER',	'HTTP_RANGE'),
+		array('_ENV',		'HTTP_RANGE'),
+	);
 
-		foreach ($globals as $array)
+	foreach ($globals as $array)
+	{
+		$global	= $array[0];
+		$key	= $array[1];
+
+		// Make sure range request starts with "bytes="
+		if (isset($GLOBALS[$global][$key]) && strpos($GLOBALS[$global][$key], 'bytes=') === 0)
 		{
-			$global	= $array[0];
-			$key	= $array[1];
-
-			// Make sure range request starts with "bytes="
-			if (isset($GLOBALS[$global][$key]) && strpos($GLOBALS[$global][$key], 'bytes=') === 0)
-			{
-				// Strip leading 'bytes='
-				// Multiple ranges can be separated by a comma
-				$request_array = explode(',', substr($GLOBALS[$global][$key], 6));
-
-				break;
-			}
+			// Strip leading 'bytes='
+			// Multiple ranges can be separated by a comma
+			return explode(',', substr($GLOBALS[$global][$key], 6));
 		}
 	}
 
-	// Return if no range requested
-	if (empty($request_array))
-	{
-		return false;
-	}
+	return false;
+}
 
+/**
+* Analyses a range request array.
+*
+* A range request can contain multiple ranges,
+* we however only handle the first request and
+* only support requests from a given byte to the end of the file.
+*
+* @param array	$request_array	array of strings containing the requested ranges
+* @param int	$filesize		the full size of the file in bytes that has been requested
+*
+* @return mixed		false if the whole file has to be delivered
+*					associative array on success
+*						byte_pos_start		the first byte position, can be passed to fseek()
+*						byte_pos_end		the last byte position
+*						bytes_requested		the number of bytes requested
+*						bytes_total			the full size of the file
+*/
+function parse_range_request($request_array, $filesize)
+{
 	// Go through all ranges
 	foreach ($request_array as $range_string)
 	{
