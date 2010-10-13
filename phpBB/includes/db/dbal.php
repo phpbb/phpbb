@@ -713,7 +713,7 @@ class dbal
 		global $cache, $starttime, $phpbb_root_path, $user;
 		global $request;
 
-		if (!$request->variable('explain', false))
+		if (is_object($request) && !$request->variable('explain', false))
 		{
 			return false;
 		}
