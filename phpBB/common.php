@@ -219,9 +219,6 @@ $auth		= new auth();
 $template	= new template();
 $db			= new $sql_db();
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
-$class_loader->register();
-
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
