@@ -139,9 +139,11 @@
 
 			<p class="quick">
 			<!-- IF backend.S_INDEXED -->
-				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
+				<input type="hidden" name="action" value="delete" />
+				<input class="button2" type="submit" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
 			<!-- ELSE -->
-				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
+				<input type="hidden" name="action" value="create" />
+				<input class="button2" type="submit" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
 			<!-- ENDIF -->
 			</p>
 			{S_FORM_TOKEN}
