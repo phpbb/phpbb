@@ -1,4 +1,5 @@
+*~
 phpBB/cache/*.php
+phpBB/config.php
 tests/phpbb_unit_tests.sqlite2
 tests/test_config.php
-*~
