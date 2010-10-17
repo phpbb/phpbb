@@ -28,7 +28,14 @@ require_once 'network/all_tests.php';
 require_once 'random/all_tests.php';
 
 // exclude the test directory from code coverage reports
-PHPUnit_Util_Filter::addDirectoryToFilter('./');
+if (version_compare(PHPUnit_Runner_Version::id(), '3.5.0') >= 0)
+{
+	PHP_CodeCoverage_Filter::getInstance()->addDirectoryToBlacklist('./');
+}
+else
+{
+	PHPUnit_Util_Filter::addDirectoryToFilter('./');
+}
 
 class phpbb_all_tests
 {
