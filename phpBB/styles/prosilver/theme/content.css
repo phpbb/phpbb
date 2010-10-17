@@ -307,6 +307,11 @@ div[class].topic-actions {
 	max-height: 300px;
 }
 
+#expand
+{
+	clear: both;
+}
+
 /* Content container styles
 ----------------------------------------*/
 .content {
