@@ -75,4 +75,21 @@
 
 	<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
 
+<script type="text/javascript">
+// <![CDATA[
+	(function()
+	{
+		var elements = document.getElementsByName("keywords");
+		for (var i = 0; i < elements.length; ++i)
+		{
+			if (elements[i].tagName.toLowerCase() == 'input')
+			{
+				elements[i].focus();
+				break;
+			}
+		}
+	})();
+// ]]>
+</script>
+
 <!-- INCLUDE overall_footer.html -->

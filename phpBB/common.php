@@ -123,12 +123,10 @@ if (defined('IN_CRON'))
 	$phpbb_root_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 }
 
-if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
+if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
-	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"{$phpbb_root_path}install/index.$phpEx\">Click here to install phpBB</a></p>");
+	require($phpbb_root_path . 'config.' . $phpEx);
 }
-
-require($phpbb_root_path . 'config.' . $phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
