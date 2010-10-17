@@ -69,6 +69,10 @@ define('LOGIN_ERROR_ATTEMPTS', 13);
 define('LOGIN_ERROR_EXTERNAL_AUTH', 14);
 define('LOGIN_ERROR_PASSWORD_CONVERT', 15);
 
+// Maximum login attempts
+// The value is arbitrary, but it has to fit into the user_login_attempts field.
+define('LOGIN_ATTEMPTS_MAX', 100);
+
 // Group settings
 define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
