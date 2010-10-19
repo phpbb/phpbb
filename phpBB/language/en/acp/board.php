@@ -353,6 +353,7 @@ $lang = array_merge($lang, array(
 	'LIMIT_SESSIONS'				=> 'Limit sessions',
 	'LIMIT_SESSIONS_EXPLAIN'		=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
 	'LOAD_CPF_MEMBERLIST'			=> 'Allow styles to display custom profile fields in memberlist',
+	'LOAD_CPF_PM'					=> 'Display custom profile fields in private messages',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
 	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',

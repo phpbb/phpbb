@@ -69,7 +69,12 @@
 		<dd><strong>{L_POSTS}:</strong> {AUTHOR_POSTS}</dd>
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}:</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}:</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
-		
+
+		<!-- BEGIN custom_fields -->
+			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}:</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+		<!-- END custom_fields -->
+
+
 		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->
 		<dd>
 			<ul class="profile-icons">
