@@ -1697,6 +1697,14 @@ function change_database_data(&$no_updates, $version)
 
 			_add_modules($modules_to_install);
 
+			// update
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload)\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'avatar\'';
+			_sql($sql, $errored, $error_ary);
+
 			// add Bing Bot
 			$sql = 'SELECT group_id, group_colour
 				FROM ' . GROUPS_TABLE . "
