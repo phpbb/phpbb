@@ -85,7 +85,18 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		static $show_error = true;
 
-		if (file_exists('test_config.php'))
+		if (isset($_SERVER['PHPBB_TEST_DBMS']))
+		{
+			return array(
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
+				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
+				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
+				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
+				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
+			);
+		}
+		else if (file_exists('test_config.php'))
 		{
 			include('test_config.php');
 
