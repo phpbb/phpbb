@@ -52,7 +52,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
-				'PDO'			=> 'odbc',
+				'PDO'			=> 'sqlsrv',
 			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
@@ -145,7 +145,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		if ($dbms == 'sqlite')
 		{
-			// trim # off query to satisfy sqlite
+			// remove comment lines starting with # - they are not proper sqlite
+			// syntax and break sqlite2
 			foreach ($data as $i => $query)
 			{
 				$data[$i] = preg_replace('/^#.*$/m', "\n", $query);
@@ -153,6 +154,66 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 
 		return $data;
+	}
+
+	/**
+	* Retrieves a list of all tables from the database.
+	*
+	* @param	PDO $pdo
+	* @param	string $dbms
+	* @return	array(string)
+	*/
+	function get_tables($pdo, $dbms)
+	{
+		switch ($pdo)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$sql = 'SHOW TABLES';
+			break;
+
+			case 'sqlite':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"';
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$sql = "SELECT name
+					FROM sysobjects
+					WHERE type='U'";
+			break;
+
+			case 'postgres':
+				$sql = 'SELECT relname
+					FROM pg_stat_user_tables';
+			break;
+
+			case 'firebird':
+				$sql = 'SELECT rdb$relation_name
+					FROM rdb$relations
+					WHERE rdb$view_source is null
+						AND rdb$system_flag = 0';
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT table_name
+					FROM USER_TABLES';
+			break;
+		}
+
+		$result = $pdo->query($sql);
+
+		$tables = array();
+		while ($row = $result->fetch(PDO::FETCH_NUM))
+		{
+			$tables[] = current($row);
+		}
+
+		return $tables;
 	}
 
 	/**
@@ -165,14 +226,30 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	*								to delete that database.
 	* @return	PDO					The PDO database connection.
 	*/
-	public function new_pdo($config, $dbms, $delete_db)
+	public function new_pdo($config, $dbms, $use_db)
 	{
 		$dsn = $dbms['PDO'] . ':';
 
-		switch ($config['dbms'])
+		switch ($dbms['PDO'])
 		{
-			case 'sqlite':
+			case 'sqlite2':
 				$dsn .= $config['dbhost'];
+			break;
+
+			case 'sqlsrv':
+				// prefix the hostname (or DSN) with Server= so using just (local)\SQLExpress
+				// works for example, further parameters can still be appended using ;x=y
+				$dsn .= 'Server=';
+			// no break -> rest like ODBC
+			case 'odbc':
+				// for ODBC assume dbhost is a suitable DSN
+				// e.g. Driver={SQL Server Native Client 10.0};Server=(local)\SQLExpress;
+				$dsn .= $config['dbhost'];
+
+				if ($use_db)
+				{
+					$dsn .= ';Database=' . $config['dbname'];
+				}
 			break;
 
 			default:
@@ -211,7 +288,18 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				{
 					$pdo->exec('DROP DATABASE ' . $config['dbname']);
 				}
-				catch (PDOException $e){} // ignore non existent db
+				catch (PDOException $e)
+                {
+					// try to delete all tables if dropping the database was not possible.
+					foreach ($this->get_tables() as $table)
+					{
+						try
+						{
+							$pdo->exec('DROP TABLE ' . $table);
+						}
+						catch (PDOException $e){} // ignore non-existent tables
+					}
+                }
 
 				$pdo->exec('CREATE DATABASE ' . $config['dbname']);
 			 break;
