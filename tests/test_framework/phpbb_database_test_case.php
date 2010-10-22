@@ -11,12 +11,14 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 {
 	protected $test_case_helpers;
 
-	public function init_test_case_helpers()
+	public function get_test_case_helpers()
 	{
 		if (!$this->test_case_helpers)
 		{
 			$this->test_case_helpers = new phpbb_test_case_helpers($this);
 		}
+
+		return $this->test_case_helpers;
 	}
 
 	public function get_dbms_data($dbms)
@@ -113,8 +115,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		static $already_connected;
 
-		$this->init_test_case_helpers();
-		$database_config = $this->test_case_helpers->get_database_config();
+		$database_config = $this->get_test_case_helpers()->get_database_config();
 
 		$dbms_data = $this->get_dbms_data($database_config['dbms']);
 
@@ -189,13 +190,11 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function new_dbal()
 	{
-		$this->init_test_case_helpers();
-		return $this->test_case_helpers->new_dbal();
+		return $this->get_test_case_helpers()->new_dbal();
 	}
 
 	public function setExpectedTriggerError($errno, $message = '')
 	{
-		$this->init_test_case_helpers();
-		$this->test_case_helpers->setExpectedTriggerError($errno, $message);
+		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
 	}
 }
