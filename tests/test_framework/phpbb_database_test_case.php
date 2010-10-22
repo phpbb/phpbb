@@ -83,8 +83,6 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function get_database_config()
 	{
-		static $show_error = true;
-
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
 			return array(
@@ -157,76 +155,111 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return $data;
 	}
 
+	/**
+	* Returns a PDO connection for the configured database.
+	*
+	* @param	array	$config		The database configuration
+	* @param	array	$dbms		Information on the used DBMS.
+	* @param	bool	$use_db		Whether the DSN should be tied to a
+	*								particular database making it impossible
+	*								to delete that database.
+	* @return	PDO					The PDO database connection.
+	*/
+	public function new_pdo($config, $dbms, $delete_db)
+	{
+		$dsn = $dbms['PDO'] . ':';
+
+		switch ($config['dbms'])
+		{
+			case 'sqlite':
+				$dsn .= $config['dbhost'];
+			break;
+
+			default:
+				$dsn .= 'host=' . $config['dbhost'];
+
+				if ($use_db)
+				{
+					$dsn .= ';dbname=' . $config['dbname'];
+				}
+			break;
+		}
+
+		$pdo = new PDO($dsn, $config['dbuser'], $config['dbpasswd']);;
+
+		// good for debug
+		// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		return $pdo;
+	}
+
+	private function recreate_db($config, $dbms)
+	{
+		switch ($config['dbms'])
+		{
+			case 'sqlite':
+				if (file_exists($config['dbhost']))
+				{
+					unlink($config['dbhost']);
+				}
+			break;
+
+			default:
+				$pdo = $this->new_pdo($config, $dbms, false);
+
+				try
+				{
+					$pdo->exec('DROP DATABASE ' . $config['dbname']);
+				}
+				catch (PDOException $e){} // ignore non existent db
+
+				$pdo->exec('CREATE DATABASE ' . $config['dbname']);
+			 break;
+		}
+	}
+
+	private function load_schema($pdo, $config, $dbms)
+	{
+		if ($config['dbms'] == 'mysql')
+		{
+			$sth = $pdo->query('SELECT VERSION() AS version');
+			$row = $sth->fetch(PDO::FETCH_ASSOC);
+
+			if (version_compare($row['version'], '4.1.3', '>='))
+			{
+				$dbms['SCHEMA'] .= '_41';
+			}
+			else
+			{
+				$dbms['SCHEMA'] .= '_40';
+			}
+		}
+
+		$sql = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms['SCHEMA']}_schema.sql"), $config['dbms']);
+
+		foreach ($sql as $query)
+		{
+			$pdo->exec($query);
+		}
+	}
+
 	public function getConnection()
 	{
 		static $already_connected;
 
-		$database_config = $this->get_database_config();
+		$config = $this->get_database_config();
+		$dbms = $this->get_dbms_data($config['dbms']);
 
-		$dbms_data = $this->get_dbms_data($database_config['dbms']);
-
-		if ($already_connected)
+		if (!$already_connected)
 		{
-			if ($database_config['dbms'] == 'sqlite')
-			{
-				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
-			}
-			else
-			{
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
-			}
+			$this->recreate_db($config, $dbms);
 		}
-		else
+
+		$pdo = $this->new_pdo($config, $dbms, true);
+
+		if (!$already_connected)
 		{
-			if ($database_config['dbms'] == 'sqlite')
-			{
-				// delete existing database
-				if (file_exists($database_config['dbhost']))
-				{
-					unlink($database_config['dbhost']);
-				}
-
-				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
-			}
-			else
-			{
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);try
-				{
-					$pdo->exec('DROP DATABASE ' . $database_config['dbname']);
-				}
-				catch (PDOException $e){} // ignore non existent db
-
-				$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
-
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
-			}
-
-			// good for debug
-			// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-			if ($database_config['dbms'] == 'mysql')
-			{
-				$sth = $pdo->query('SELECT VERSION() AS version');
-				$row = $sth->fetch(PDO::FETCH_ASSOC);
-
-				if (version_compare($row['version'], '4.1.3', '>='))
-				{
-					$dbms_data['SCHEMA'] .= '_41';
-				}
-				else
-				{
-					$dbms_data['SCHEMA'] .= '_40';
-				}
-
-				unset($row, $sth);
-			}
-
-			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $database_config['dbms']);
-
-			foreach ($sql_query as $sql)
-			{
-				$pdo->exec($sql);
-			}
+			$this->load_schema($pdo, $config, $dbms);
 
 			$already_connected = true;
 		}
