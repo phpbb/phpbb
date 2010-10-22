@@ -81,6 +81,41 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
+	public function get_database_config()
+	{
+		static $show_error = true;
+
+		if (file_exists('test_config.php'))
+		{
+			include('test_config.php');
+
+			return array(
+				'dbms'		=> $dbms,
+				'dbhost'	=> $dbhost,
+				'dbport'	=> $dbport,
+				'dbname'	=> $dbname,
+				'dbuser'	=> $dbuser,
+				'dbpasswd'	=> $dbpasswd,
+			);
+		}
+		else if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+		{
+			// Silently use sqlite
+			return array(
+				'dbms'		=> 'sqlite',
+				'dbhost'	=> 'phpbb_unit_tests.sqlite2', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			);
+		}
+		else
+		{
+			$this->markTestSkipped('Missing test_config.php: See first error.');
+		}
+	}
+
 	// NOTE: This function is not the same as split_sql_file from functions_install
 	public function split_sql_file($sql, $dbms)
 	{
@@ -115,7 +150,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		static $already_connected;
 
-		$database_config = $this->get_test_case_helpers()->get_database_config();
+		$database_config = $this->get_database_config();
 
 		$dbms_data = $this->get_dbms_data($database_config['dbms']);
 
@@ -190,7 +225,16 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function new_dbal()
 	{
-		return $this->get_test_case_helpers()->new_dbal();
+		global $phpbb_root_path, $phpEx;
+
+		$config = $this->get_database_config();
+
+		require_once '../phpBB/includes/db/' . $config['dbms'] . '.php';
+		$dbal = 'dbal_' . $config['dbms'];
+		$db = new $dbal();
+		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+
+		return $db;
 	}
 
 	public function setExpectedTriggerError($errno, $message = '')
