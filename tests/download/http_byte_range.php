@@ -16,15 +16,15 @@ class phpbb_download_http_byte_range_test extends phpbb_test_case
 	{
 		// Missing 'bytes=' prefix
 		$_SERVER['HTTP_RANGE'] = 'bztes=';
-		$this->assertEquals(false, find_range_request());
+		$this->assertEquals(false, phpbb_find_range_request());
 		unset($_SERVER['HTTP_RANGE']);
 
 		$_ENV['HTTP_RANGE'] = 'bztes=';
-		$this->assertEquals(false, find_range_request());
+		$this->assertEquals(false, phpbb_find_range_request());
 		unset($_ENV['HTTP_RANGE']);
 
 		$_SERVER['HTTP_RANGE'] = 'bytes=0-0,123-125';
-		$this->assertEquals(array('0-0', '123-125'), find_range_request());
+		$this->assertEquals(array('0-0', '123-125'), phpbb_find_range_request());
 		unset($_SERVER['HTTP_RANGE']);
 	}
 
@@ -33,7 +33,7 @@ class phpbb_download_http_byte_range_test extends phpbb_test_case
 	*/
 	public function test_parse_range_request($request_array, $filesize, $expected)
 	{
-		$this->assertEquals($expected, parse_range_request($request_array, $filesize));
+		$this->assertEquals($expected, phpbb_parse_range_request($request_array, $filesize));
 	}
 
 	public function parse_range_request_data()

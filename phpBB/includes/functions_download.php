@@ -237,7 +237,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		if ($fp !== false)
 		{
 			// Deliver file partially if requested
-			if ($range = http_byte_range($size))
+			if ($range = phpbb_http_byte_range($size))
 			{
 				fseek($fp, $range['byte_pos_start']);
 
@@ -439,7 +439,7 @@ function file_gc()
 * @return mixed		false if the whole file has to be delivered
 *					associative array on success
 */
-function http_byte_range($filesize)
+function phpbb_http_byte_range($filesize)
 {
 	// Only call find_range_request() once.
 	static $request_array;
@@ -451,10 +451,10 @@ function http_byte_range($filesize)
 
 	if (!isset($request_array))
 	{
-		$request_array = find_range_request();
+		$request_array = phpbb_find_range_request();
 	}
 	
-	return (empty($request_array)) ? false : parse_range_request($request_array, $filesize);
+	return (empty($request_array)) ? false : phpbb_parse_range_request($request_array, $filesize);
 }
 
 /**
@@ -464,7 +464,7 @@ function http_byte_range($filesize)
 *					array of strings containing the requested ranges otherwise
 *					e.g. array(0 => '0-0', 1 => '123-125')
 */
-function find_range_request()
+function phpbb_find_range_request()
 {
 	$globals = array(
 		array('_SERVER',	'HTTP_RANGE'),
@@ -505,7 +505,7 @@ function find_range_request()
 *						bytes_requested		the number of bytes requested
 *						bytes_total			the full size of the file
 */
-function parse_range_request($request_array, $filesize)
+function phpbb_parse_range_request($request_array, $filesize)
 {
 	// Go through all ranges
 	foreach ($request_array as $range_string)
