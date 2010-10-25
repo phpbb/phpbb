@@ -413,12 +413,17 @@ class dbal_mssqlnative extends dbal
 
 		$row = @sqlsrv_fetch_array($query_id, SQLSRV_FETCH_ASSOC);
 
-		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
 		if ($row)
 		{
 			foreach ($row as $key => $value)
 			{
 				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+			}
+
+			// remove helper values from LIMIT queries
+			if (isset($row['line2']))
+			{
+				unset($row['line2'], $row['line3']);
 			}
 		}
 		return $row;
