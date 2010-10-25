@@ -15,7 +15,8 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
-require_once 'dbal/dbal.php';
+require_once 'dbal/select.php';
+require_once 'dbal/write.php';
 
 class phpbb_dbal_all_tests
 {
@@ -28,7 +29,8 @@ class phpbb_dbal_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Database Abstraction Layer');
 
-		$suite->addTestSuite('phpbb_dbal_test');
+		$suite->addTestSuite('phpbb_dbal_select_test');
+		$suite->addTestSuite('phpbb_dbal_write_test');
 
 		return $suite;
 	}

@@ -9,6 +9,8 @@
 
 abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_TestCase
 {
+	private static $already_connected;
+
 	protected $test_case_helpers;
 
 	public function get_test_case_helpers()
@@ -333,23 +335,21 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function getConnection()
 	{
-		static $already_connected;
-
 		$config = $this->get_database_config();
 		$dbms = $this->get_dbms_data($config['dbms']);
 
-		if (!$already_connected)
+		if (!self::$already_connected)
 		{
 			$this->recreate_db($config, $dbms);
 		}
 
 		$pdo = $this->new_pdo($config, $dbms, true);
 
-		if (!$already_connected)
+		if (!self::$already_connected)
 		{
 			$this->load_schema($pdo, $config, $dbms);
 
-			$already_connected = true;
+			self::$already_connected = true;
 		}
 
 		return $this->createDefaultDBConnection($pdo, 'testdb');
