@@ -347,7 +347,8 @@ class dbal_mssqlnative extends dbal
 	{
 		$this->query_result = false;
 
-		if ($offset === false || $offset == 0)
+		// total == 0 means all results - not zero results
+		if ($offset == 0 && $total !== 0)
 		{
 			if (strpos($query, "SELECT") === false)
 			{
@@ -358,13 +359,21 @@ class dbal_mssqlnative extends dbal
 				$query = preg_replace('/SELECT(\s*DISTINCT)?/Dsi', 'SELECT$1 TOP '.$total, $query);
 			}
 		}
-		else
+		else if ($offset > 0)
 		{
 			$query = preg_replace('/SELECT(\s*DISTINCT)?/Dsi', 'SELECT$1 TOP(10000000) ', $query);
 			$query = 'SELECT *
 					FROM (SELECT sub2.*, ROW_NUMBER() OVER(ORDER BY sub2.line2) AS line3
-					FROM (SELECT 1 AS line2, sub1.* FROM (' . $query . ') AS sub1) as sub2) AS sub3
-					WHERE line3 BETWEEN ' . ($offset+1) . ' AND ' . ($offset + $total);
+					FROM (SELECT 1 AS line2, sub1.* FROM (' . $query . ') AS sub1) as sub2) AS sub3';
+
+			if ($total > 0)
+			{
+				$query .= ' WHERE line3 BETWEEN ' . ($offset+1) . ' AND ' . ($offset + $total);
+			}
+			else
+			{
+				$query .= ' WHERE line3 > ' . $offset;
+			}
 		}
 
 		$result = $this->sql_query($query, $cache_ttl);
