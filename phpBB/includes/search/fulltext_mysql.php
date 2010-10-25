@@ -919,6 +919,14 @@ class fulltext_mysql extends search_backend
 			<dt><label>' . $user->lang['FULLTEXT_MYSQL_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MBSTRING_EXPLAIN'] . '</span></dt>
 			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
 		</dl>
+		<dl>
+			<dt><label>' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $config['fulltext_mysql_min_word_len'] . '</dd>
+		</dl>
+		<dl>
+			<dt><label>' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $config['fulltext_mysql_max_word_len'] . '</dd>
+		</dl>
 		';
 
 		// These are fields required in the config table

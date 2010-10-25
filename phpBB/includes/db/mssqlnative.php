@@ -51,7 +51,6 @@ class result_mssqlnative
 		}
 
 		$this->m_row_count = count($this->m_rows);
-		sqlsrv_free_stmt($queryresult);
 	}
 
 	private function array_to_obj($array, &$obj)
@@ -199,6 +198,7 @@ class dbal_mssqlnative extends dbal
 {
 	var $m_insert_id = NULL;
 	var $last_query_text = '';
+	var $query_options = array();
 
 	/**
 	* Connect to server
@@ -308,10 +308,12 @@ class dbal_mssqlnative extends dbal
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @sqlsrv_query($this->db_connect_id, $query)) === false)
+				if (($this->query_result = @sqlsrv_query($this->db_connect_id, $query, array(), $this->query_options)) === false)
 				{
 					$this->sql_error($query);
 				}
+				// reset options for next query
+				$this->query_options = array();
 
 				if (defined('DEBUG_EXTRA'))
 				{
@@ -598,19 +600,27 @@ class dbal_mssqlnative extends dbal
 	* Utility method used to retrieve number of rows
 	* Emulates mysql_num_rows
 	* Used in acp_database.php -> write_data_mssqlnative()
+	* Requires a static or keyset cursor to be definde via
+	* mssqlnative_set_query_options()
 	*/
 	function mssqlnative_num_rows($res)
 	{
 		if ($res !== false)
 		{
-			$row = new result_mssqlnative($res);
-			$num_rows = $row->num_rows();
-			return $num_rows;
+			return sqlsrv_num_rows($res);
 		}
 		else
 		{
 			return false;
 		}
+	}
+	
+	/**
+	* Allows setting mssqlnative specific query options passed to sqlsrv_query as 4th parameter.
+	*/
+	function mssqlnative_set_query_options($options)
+	{
+		$this->query_options = $options;
 	}
 }
 
