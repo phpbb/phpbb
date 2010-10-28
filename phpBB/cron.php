@@ -15,7 +15,6 @@ define('IN_CRON', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/cron/cron_lock.' . $phpEx);
 
 // Do not update users last page entry
 $user->session_begin(false);
@@ -64,8 +63,7 @@ if ($config['use_system_cron'])
 {
 	$use_shutdown_function = false;
 
-	include($phpbb_root_path . 'includes/cron/cron_manager.' . $phpEx);
-	$cron = new cron_manager;
+	$cron = new cron_manager();
 }
 else
 {
@@ -75,7 +73,7 @@ else
 	output_image();
 }
 
-$cron_lock = new cron_lock;
+$cron_lock = new cron_lock();
 if ($cron_lock->lock())
 {
 	if ($config['use_system_cron'])
