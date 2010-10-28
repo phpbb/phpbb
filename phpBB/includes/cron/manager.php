@@ -29,15 +29,15 @@ class cron_manager
 
 	public function __construct()
 	{
-		$task_files = $this->find_cron_task_files();
-		$this->load_tasks($task_files);
+		$task_names = $this->find_cron_task_names();
+		$this->load_tasks($task_names);
 	}
 
 	/**
 	* Finds cron task files.
 	*
 	* A cron task file must follow the naming convention:
-	* includes/cron/tasks/$mod/$name.php.
+	* includes/cron/task/$mod/$name.php.
 	* $mod is core for tasks that are part of phpbb.
 	* Modifications should use their name as $mod.
 	* $name is the name of the cron task.
@@ -45,43 +45,41 @@ class cron_manager
 	*
 	* Todo: consider caching found task file list in global cache.
 	*/
-	public function find_cron_task_files()
+	public function find_cron_task_names()
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$tasks_root_path = $phpbb_root_path . 'includes/cron/task';
-		$dir = opendir($tasks_root_path);
-		$task_dirs = array();
-		while (($entry = readdir($dir)) !== false)
+		$tasks_root_path = $phpbb_root_path . 'includes/cron/task/';
+
+		$task_names = array();
+		$ext = '.' . $phpEx;
+		$ext_length = strlen($ext);
+
+		$dh = opendir($tasks_root_path);
+		while (($mod = readdir($dh)) !== false)
 		{
 			// ignore ., .. and dot directories
 			// todo: change is_dir to account for symlinks
-			if ($entry[0] == '.' || !is_dir("$tasks_root_path/$entry"))
+			if ($mod[0] == '.' || !is_dir($tasks_root_path . $mod))
 			{
 				continue;
 			}
-			$task_dirs[] = $entry;
-		}
-		closedir($dir);
 
-		$ext = '.' . $phpEx;
-		$ext_length = strlen($ext);
-		$task_files = array();
-		foreach ($task_dirs as $task_dir)
-		{
-			$path = $phpbb_root_path . 'includes/cron/tasks/' . $task_dir;
-			$dir = opendir($path);
-			while (($entry = readdir($dir)) !== false)
+			$dh2 = opendir($tasks_root_path . $mod);
+			while (($file = readdir($dh2)) !== false)
 			{
-				if (substr($entry, -$ext_length) == $ext)
+				$task_name = substr($file, 0, -$ext_length);
+				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($mod) && $this->is_valid_name($task_name))
 				{
-					$task_file = substr($entry, 0, -$ext_length);
-					$task_files[] = array($task_dir, $task_file);
+					$full_task_name = $mod . '_' . $task_name;
+					$task_names[] = $full_task_name;
 				}
 			}
-			closedir($dir);
+			closedir($dh2);
 		}
-		return $task_files;
+		closedir($dh);
+
+		return $task_names;
 	}
 
 	/**
@@ -92,24 +90,14 @@ class cron_manager
 		return preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
 	}
 
-	public function load_tasks($task_files)
+	public function load_tasks($task_names)
 	{
-		global $phpbb_root_path, $phpEx;
-
-		foreach ($task_files as $task_file)
+		foreach ($task_names as $task_name)
 		{
-			list($mod, $filename) = $task_file;
-			if ($this->is_valid_name($mod) && $this->is_valid_name($filename))
-			{
-				$class = "cron_task_${mod}_${filename}";
-				if (!class_exists($class))
-				{
-					include($phpbb_root_path . "includes/cron/tasks/$mod/$filename.$phpEx");
-				}
-				$object = new $class;
-				$wrapper = new cron_task_wrapper($object);
+				$class = "cron_task_$task_name";
+				$task = new $class();
+				$wrapper = new cron_task_wrapper($task);
 				$this->tasks[] = $wrapper;
-			}
 		}
 	}
 
