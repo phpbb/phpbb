@@ -49,7 +49,7 @@ class cron_manager
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$tasks_root_path = $phpbb_root_path . 'includes/cron/tasks';
+		$tasks_root_path = $phpbb_root_path . 'includes/cron/task';
 		$dir = opendir($tasks_root_path);
 		$task_dirs = array();
 		while (($entry = readdir($dir)) !== false)
