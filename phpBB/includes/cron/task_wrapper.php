@@ -40,7 +40,7 @@ class phpbb_cron_task_wrapper
 	*/
 	public function is_parametrized()
 	{
-		return $this->task instanceof phpbb_parametrized_cron_task;
+		return $this->task instanceof phpbb_cron_task_parametrized;
 	}
 
 	/**
