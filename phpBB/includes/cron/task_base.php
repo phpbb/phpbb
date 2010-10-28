@@ -16,11 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!interface_exists('cron_task'))
-{
-	include($phpbb_root_path . 'includes/cron/cron_task.' . $phpEx);
-}
-
 /**
 * Cron task base class. Provides sensible defaults for cron tasks
 * and partially implements cron task interface, making writing cron tasks easier.
