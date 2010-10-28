@@ -16,11 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!class_exists('cron_task_base'))
-{
-	include($phpbb_root_path . 'includes/cron/cron_task_base.' . $phpEx);
-}
-
 /**
 * Tidy search cron task.
 *
