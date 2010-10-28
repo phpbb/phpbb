@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class cron_manager
+class phpbb_cron_manager
 {
 	private $tasks = array();
 
@@ -94,9 +94,9 @@ class cron_manager
 	{
 		foreach ($task_names as $task_name)
 		{
-				$class = "cron_task_$task_name";
+				$class = "phpbb_cron_task_$task_name";
 				$task = new $class();
-				$wrapper = new cron_task_wrapper($task);
+				$wrapper = new phpbb_cron_task_wrapper($task);
 				$this->tasks[] = $wrapper;
 		}
 	}
@@ -167,7 +167,7 @@ class cron_manager
 			$class = $task->get_name();
 			$task = new $class($args);
 			// need to wrap the new task too
-			$task = new cron_task_wrapper($task);
+			$task = new phpbb_cron_task_wrapper($task);
 		}
 		return $task;
 	}

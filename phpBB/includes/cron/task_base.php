@@ -27,7 +27,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-abstract class cron_task_base implements cron_task
+abstract class phpbb_cron_task_base implements phpbb_cron_task
 {
 	/**
 	* Returns whether this cron task can run, given current board configuration.

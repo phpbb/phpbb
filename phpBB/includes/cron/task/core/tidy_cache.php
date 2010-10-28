@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class cron_task_core_tidy_cache extends cron_task_base
+class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 {
 	/**
 	* Runs this cron task.

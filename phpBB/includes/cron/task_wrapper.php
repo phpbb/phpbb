@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class cron_task_wrapper
+class phpbb_cron_task_wrapper
 {
 	/**
 	* Wraps a task $task, which must implement cron_task interface.
@@ -40,7 +40,7 @@ class cron_task_wrapper
 	*/
 	public function is_parametrized()
 	{
-		return $this->task instanceof parametrized_cron_task;
+		return $this->task instanceof phpbb_parametrized_cron_task;
 	}
 
 	/**

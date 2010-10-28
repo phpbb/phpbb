@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * Cron task interface
 * @package phpBB3
 */
-interface cron_task
+interface phpbb_cron_task
 {
 	/**
 	* Runs this cron task.
@@ -58,7 +58,7 @@ interface cron_task
 *
 * @package phpBB3
 */
-interface parametrized_cron_task extends cron_task
+interface phpbb_parametrized_cron_task extends cron_task
 {
 	/**
 	* Returns parameters of this cron task as an array.

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * Cron lock class
 * @package phpBB3
 */
-class cron_lock
+class phpbb_cron_lock
 {
 	private $cron_id;
 
