@@ -27,7 +27,7 @@ class phpbb_cron_task_wrapper
 	/**
 	* Wraps a task $task, which must implement cron_task interface.
 	*/
-	public function __construct(cron_task $task)
+	public function __construct(phpbb_cron_task $task)
 	{
 		$this->task = $task;
 	}
