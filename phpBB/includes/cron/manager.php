@@ -34,14 +34,14 @@ class phpbb_cron_manager
 	}
 
 	/**
-	* Finds cron task files.
+	* Finds cron task names.
 	*
 	* A cron task file must follow the naming convention:
 	* includes/cron/task/$mod/$name.php.
 	* $mod is core for tasks that are part of phpbb.
 	* Modifications should use their name as $mod.
 	* $name is the name of the cron task.
-	* Cron task is expected to be a class named cron_task_${mod}_${name}.
+	* Cron task is expected to be a class named phpbb_cron_task_${mod}_${name}.
 	*
 	* Todo: consider caching found task file list in global cache.
 	*/
