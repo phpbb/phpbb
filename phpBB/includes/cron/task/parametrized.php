@@ -37,13 +37,11 @@ interface phpbb_cron_task_parametrized extends phpbb_cron_task
 	public function get_parameters();
 
 	/**
-	* Parses parameters found in $params, which is an array.
+	* Parses parameters found in $request, which is an instance of
+	* phpbb_request_interface.
 	*
-	* $params contains user input and must not be trusted.
-	* In normal operation $params contains the same data that was returned by
-	* get_parameters method. However, a malicious user can supply arbitrary
-	* data in $params.
-	* Cron task must validate all keys and values in $params before using them.
+	* $request contains user input and must not be trusted.
+	* Cron task must validate all data before using it.
 	*/
-	public function parse_parameters($params);
+	public function parse_parameters(phpbb_request_interface $request);
 }
