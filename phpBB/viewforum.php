@@ -196,7 +196,8 @@ if ($forum_data['forum_topics_per_page'])
 if (!$config['use_system_cron'])
 {
 	$task = $cron->instantiate_task('cron_task_core_prune_forum', $forum_data);
-	if ($task && $task->is_ready()) {
+	if ($task && $task->is_ready())
+	{
 		$url = $task->get_url();
 		$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
 	}

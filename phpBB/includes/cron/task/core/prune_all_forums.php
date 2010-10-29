@@ -33,7 +33,7 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 	public function run()
 	{
 		global $phpbb_root_path, $phpEx, $db;
-		
+
 		if (!function_exists('auto_prune'))
 		{
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
