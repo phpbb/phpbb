@@ -39,7 +39,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	* and a database query will be performed to load the necessary information
 	* about the forum.
 	*/
-	public function __construct($forum_data=null)
+	public function __construct($forum_data = null)
 	{
 		global $db;
 		if ($forum_data)
