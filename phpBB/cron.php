@@ -73,7 +73,7 @@ else
 	output_image();
 }
 
-$cron_lock = new cron_lock();
+$cron_lock = new phpbb_cron_lock();
 if ($cron_lock->lock())
 {
 	if ($config['use_system_cron'])
