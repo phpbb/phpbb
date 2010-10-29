@@ -89,7 +89,7 @@ if ($cron_lock->lock())
 		{
 			if ($task->is_parametrized())
 			{
-				$task->parse_parameters($_GET);
+				$task->parse_parameters($request);
 			}
 			if ($task->is_ready())
 			{

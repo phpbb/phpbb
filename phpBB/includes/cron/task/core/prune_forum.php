@@ -103,20 +103,19 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	}
 
 	/**
-	* Parses parameters found in $params, which is an array.
+	* Parses parameters found in $request, which is an instance of
+	* phpbb_request_interface.
 	*
-	* $params may contain user input and is not trusted.
-	*
-	* $params is expected to have a key f whose value is id of the forum to be pruned.
+	* It is expected to have a key f whose value is id of the forum to be pruned.
 	*/
-	public function parse_parameters($params)
+	public function parse_parameters(phpbb_request_interface $request)
 	{
 		global $db;
 
 		$this->forum_data = null;
-		if (isset($params['f']))
+		if ($request->is_set('f'))
 		{
-			$forum_id = (int) $params['f'];
+			$forum_id = $request->variable('f', 0);
 
 			$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 				FROM ' . FORUMS_TABLE . "
