@@ -36,6 +36,7 @@ class phpbb_template_template_test extends phpbb_test_case
 			// reset the error level even when an error occured
 			// PHPUnit turns trigger_error into exceptions as well
 			error_reporting($error_level);
+			ob_end_clean();
 			throw $exception;
 		}
 
