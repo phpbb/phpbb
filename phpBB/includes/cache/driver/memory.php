@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-class acm_memory
+class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 {
 	var $key_prefix;
 
@@ -34,7 +34,7 @@ class acm_memory
 	/**
 	* Set cache path
 	*/
-	function acm_memory()
+	function __construct()
 	{
 		global $phpbb_root_path, $dbname, $table_prefix;
 

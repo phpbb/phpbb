@@ -10,8 +10,6 @@
 
 require_once __DIR__ . '/cache_mock.php';
 
-require_once __DIR__ . '/../../phpBB/includes/class_loader.php';
-
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
 	public function test_resolve_path()
@@ -51,8 +49,16 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 
 	public function test_resolve_cached()
 	{
-		$cache = new phpbb_cache_mock;
-		$cache->put('class_loader', array('phpbb_a_cached_name' => 'a/cached_name'));
+		$cacheMap = array('class_loader' => array('phpbb_a_cached_name' => 'a/cached_name'));
+
+		$cache = $this->getMock('phpbb_cache_driver_interface',
+					array('get', 'put', 'load', 'unload', 'save', 'tidy', 'purge', 'destroy', '_exists',
+						'sql_load', 'sql_save', 'sql_exists', 'sql_fetchrow', 'sql_fetchfield', 'sql_rowseek', 'sql_freeresult'));
+		$cache->expects($this->any())
+			->method('get')
+			->will($this->returnCallback(function($var_name) use ($cacheMap) {
+				return $cacheMap[$var_name];
+			}));
 
 		$prefix = __DIR__ . '/';
 		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);

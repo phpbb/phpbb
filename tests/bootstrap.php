@@ -25,7 +25,24 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
+require_once $phpbb_root_path . 'includes/class_loader.php';
 require_once $phpbb_root_path . 'includes/constants.php';
+
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.php');
+$class_loader->register();
+
+// require at least PHPUnit 3.3.0
+require_once 'PHPUnit/Runner/Version.php';
+if (version_compare(PHPUnit_Runner_Version::id(), '3.3.0', '<'))
+{
+	trigger_error('PHPUnit >= 3.3.0 required');
+}
+
+if (version_compare(PHPUnit_Runner_Version::id(), '3.5.0', '<'))
+{
+	require_once 'PHPUnit/Framework.php';
+	require_once 'PHPUnit/Extensions/Database/TestCase.php';
+}
 
 require_once 'test_framework/phpbb_test_case_helpers.php';
 require_once 'test_framework/phpbb_test_case.php';

@@ -163,14 +163,17 @@ if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/template.' . $phpEx);
-include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
-include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 $class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 $class_loader->register();
+
+// set up caching
+$acm = phpbb_cache_factory::create($acm_type)->get_acm();
+$class_loader->set_acm($acm);
+$cache = new phpbb_cache_service($acm);
 
 $request = new phpbb_request();
 

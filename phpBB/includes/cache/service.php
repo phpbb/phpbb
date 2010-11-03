@@ -17,11 +17,28 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Class for grabbing/handling cached entries, extends acm_file or acm_db depending on the setup
+* Class for grabbing/handling cached entries
 * @package acm
 */
-class cache extends acm
+class phpbb_cache_service
 {
+	private $acm;
+
+	public function __construct(phpbb_cache_driver_interface $acm = null)
+	{
+		$this->set_acm($acm);
+	}
+
+	public function set_acm(phpbb_cache_driver_interface $acm)
+	{
+		$this->acm = $acm;
+	}
+
+	public function __call($method, $arguments)
+	{
+		return call_user_func_array(array($this->acm, $method), $arguments);
+	}
+
 	/**
 	* Get config values
 	*/
@@ -29,7 +46,7 @@ class cache extends acm
 	{
 		global $db;
 
-		if (($config = $this->get('config')) !== false)
+		if (($config = $this->acm->get('config')) !== false)
 		{
 			$sql = 'SELECT config_name, config_value
 				FROM ' . CONFIG_TABLE . '
@@ -61,7 +78,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('config', $cached_config);
+			$this->acm->put('config', $cached_config);
 		}
 
 		return $config;
@@ -75,7 +92,7 @@ class cache extends acm
 	{
 		global $db;
 
-		if (($censors = $this->get('_word_censors')) === false)
+		if (($censors = $this->acm->get('_word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
@@ -90,7 +107,7 @@ class cache extends acm
 				{
 					// Unescape the asterisk to simplify further conversions
 					$row['word'] = str_replace('\*', '*', preg_quote($row['word'], '#'));
-					
+
 					// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
 					$row['word'] = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*(?=[\p{Nd}\p{L}_])#iu', '#^\*#', '#\*$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $row['word']);
 
@@ -106,7 +123,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_word_censors', $censors);
+			$this->acm->put('_word_censors', $censors);
 		}
 
 		return $censors;
@@ -117,7 +134,7 @@ class cache extends acm
 	*/
 	function obtain_icons()
 	{
-		if (($icons = $this->get('_icons')) === false)
+		if (($icons = $this->acm->get('_icons')) === false)
 		{
 			global $db;
 
@@ -137,7 +154,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_icons', $icons);
+			$this->acm->put('_icons', $icons);
 		}
 
 		return $icons;
@@ -148,7 +165,7 @@ class cache extends acm
 	*/
 	function obtain_ranks()
 	{
-		if (($ranks = $this->get('_ranks')) === false)
+		if (($ranks = $this->acm->get('_ranks')) === false)
 		{
 			global $db;
 
@@ -178,7 +195,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_ranks', $ranks);
+			$this->acm->put('_ranks', $ranks);
 		}
 
 		return $ranks;
@@ -193,7 +210,7 @@ class cache extends acm
 	*/
 	function obtain_attach_extensions($forum_id)
 	{
-		if (($extensions = $this->get('_extensions')) === false)
+		if (($extensions = $this->acm->get('_extensions')) === false)
 		{
 			global $db;
 
@@ -237,7 +254,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_extensions', $extensions);
+			$this->acm->put('_extensions', $extensions);
 		}
 
 		// Forum post
@@ -298,7 +315,7 @@ class cache extends acm
 	*/
 	function obtain_bots()
 	{
-		if (($bots = $this->get('_bots')) === false)
+		if (($bots = $this->acm->get('_bots')) === false)
 		{
 			global $db;
 
@@ -337,7 +354,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_bots', $bots);
+			$this->acm->put('_bots', $bots);
 		}
 
 		return $bots;
@@ -358,7 +375,7 @@ class cache extends acm
 
 		foreach ($parsed_items as $key => $parsed_array)
 		{
-			$parsed_array = $this->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
+			$parsed_array = $this->acm->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
 
 			if ($parsed_array === false)
 			{
@@ -384,7 +401,7 @@ class cache extends acm
 				$parsed_array = parse_cfg_file($filename);
 				$parsed_array['filetime'] = @filemtime($filename);
 
-				$this->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
+				$this->acm->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
 			}
 			$parsed_items[$key] = $parsed_array;
 		}
@@ -397,7 +414,7 @@ class cache extends acm
 	*/
 	function obtain_disallowed_usernames()
 	{
-		if (($usernames = $this->get('_disallowed_usernames')) === false)
+		if (($usernames = $this->acm->get('_disallowed_usernames')) === false)
 		{
 			global $db;
 
@@ -412,7 +429,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_disallowed_usernames', $usernames);
+			$this->acm->put('_disallowed_usernames', $usernames);
 		}
 
 		return $usernames;
@@ -425,7 +442,7 @@ class cache extends acm
 	{
 		global $phpbb_root_path, $phpEx;
 
-		if (($hook_files = $this->get('_hooks')) === false)
+		if (($hook_files = $this->acm->get('_hooks')) === false)
 		{
 			$hook_files = array();
 
@@ -444,7 +461,7 @@ class cache extends acm
 				closedir($dh);
 			}
 
-			$this->put('_hooks', $hook_files);
+			$this->acm->put('_hooks', $hook_files);
 		}
 
 		return $hook_files;
