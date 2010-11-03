@@ -9,14 +9,18 @@
 
 abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_TestCase
 {
+	private static $already_connected;
+
 	protected $test_case_helpers;
 
-	public function init_test_case_helpers()
+	public function get_test_case_helpers()
 	{
 		if (!$this->test_case_helpers)
 		{
 			$this->test_case_helpers = new phpbb_test_case_helpers($this);
 		}
+
+		return $this->test_case_helpers;
 	}
 
 	public function get_dbms_data($dbms)
@@ -50,7 +54,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
-				'PDO'			=> 'odbc',
+				'PDO'			=> 'sqlsrv',
 			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
@@ -79,6 +83,50 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
+	public function get_database_config()
+	{
+		if (isset($_SERVER['PHPBB_TEST_DBMS']))
+		{
+			return array(
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
+				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
+				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
+				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
+				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
+			);
+		}
+		else if (file_exists('test_config.php'))
+		{
+			include('test_config.php');
+
+			return array(
+				'dbms'		=> $dbms,
+				'dbhost'	=> $dbhost,
+				'dbport'	=> $dbport,
+				'dbname'	=> $dbname,
+				'dbuser'	=> $dbuser,
+				'dbpasswd'	=> $dbpasswd,
+			);
+		}
+		else if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+		{
+			// Silently use sqlite
+			return array(
+				'dbms'		=> 'sqlite',
+				'dbhost'	=> 'phpbb_unit_tests.sqlite2', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			);
+		}
+		else
+		{
+			$this->markTestSkipped('Missing test_config.php: See first error.');
+		}
+	}
+
 	// NOTE: This function is not the same as split_sql_file from functions_install
 	public function split_sql_file($sql, $dbms)
 	{
@@ -99,7 +147,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		if ($dbms == 'sqlite')
 		{
-			// trim # off query to satisfy sqlite
+			// remove comment lines starting with # - they are not proper sqlite
+			// syntax and break sqlite2
 			foreach ($data as $i => $query)
 			{
 				$data[$i] = preg_replace('/^#.*$/m', "\n", $query);
@@ -109,79 +158,198 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return $data;
 	}
 
-	public function getConnection()
+	/**
+	* Retrieves a list of all tables from the database.
+	*
+	* @param	PDO $pdo
+	* @param	string $dbms
+	* @return	array(string)
+	*/
+	function get_tables($pdo, $dbms)
 	{
-		static $already_connected;
-
-		$this->init_test_case_helpers();
-		$database_config = $this->test_case_helpers->get_database_config();
-
-		$dbms_data = $this->get_dbms_data($database_config['dbms']);
-
-		if ($already_connected)
+		switch ($pdo)
 		{
-			if ($database_config['dbms'] == 'sqlite')
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$sql = 'SHOW TABLES';
+			break;
+
+			case 'sqlite':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"';
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$sql = "SELECT name
+					FROM sysobjects
+					WHERE type='U'";
+			break;
+
+			case 'postgres':
+				$sql = 'SELECT relname
+					FROM pg_stat_user_tables';
+			break;
+
+			case 'firebird':
+				$sql = 'SELECT rdb$relation_name
+					FROM rdb$relations
+					WHERE rdb$view_source is null
+						AND rdb$system_flag = 0';
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT table_name
+					FROM USER_TABLES';
+			break;
+		}
+
+		$result = $pdo->query($sql);
+
+		$tables = array();
+		while ($row = $result->fetch(PDO::FETCH_NUM))
+		{
+			$tables[] = current($row);
+		}
+
+		return $tables;
+	}
+
+	/**
+	* Returns a PDO connection for the configured database.
+	*
+	* @param	array	$config		The database configuration
+	* @param	array	$dbms		Information on the used DBMS.
+	* @param	bool	$use_db		Whether the DSN should be tied to a
+	*								particular database making it impossible
+	*								to delete that database.
+	* @return	PDO					The PDO database connection.
+	*/
+	public function new_pdo($config, $dbms, $use_db)
+	{
+		$dsn = $dbms['PDO'] . ':';
+
+		switch ($dbms['PDO'])
+		{
+			case 'sqlite2':
+				$dsn .= $config['dbhost'];
+			break;
+
+			case 'sqlsrv':
+				// prefix the hostname (or DSN) with Server= so using just (local)\SQLExpress
+				// works for example, further parameters can still be appended using ;x=y
+				$dsn .= 'Server=';
+			// no break -> rest like ODBC
+			case 'odbc':
+				// for ODBC assume dbhost is a suitable DSN
+				// e.g. Driver={SQL Server Native Client 10.0};Server=(local)\SQLExpress;
+				$dsn .= $config['dbhost'];
+
+				if ($use_db)
+				{
+					$dsn .= ';Database=' . $config['dbname'];
+				}
+			break;
+
+			default:
+				$dsn .= 'host=' . $config['dbhost'];
+
+				if ($use_db)
+				{
+					$dsn .= ';dbname=' . $config['dbname'];
+				}
+			break;
+		}
+
+		$pdo = new PDO($dsn, $config['dbuser'], $config['dbpasswd']);;
+
+		// good for debug
+		// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		return $pdo;
+	}
+
+	private function recreate_db($config, $dbms)
+	{
+		switch ($config['dbms'])
+		{
+			case 'sqlite':
+				if (file_exists($config['dbhost']))
+				{
+					unlink($config['dbhost']);
+				}
+			break;
+
+			default:
+				$pdo = $this->new_pdo($config, $dbms, false);
+
+				try
+				{
+					$pdo->exec('DROP DATABASE ' . $config['dbname']);
+				}
+				catch (PDOException $e)
+                {
+					// try to delete all tables if dropping the database was not possible.
+					foreach ($this->get_tables() as $table)
+					{
+						try
+						{
+							$pdo->exec('DROP TABLE ' . $table);
+						}
+						catch (PDOException $e){} // ignore non-existent tables
+					}
+                }
+
+				$pdo->exec('CREATE DATABASE ' . $config['dbname']);
+			 break;
+		}
+	}
+
+	private function load_schema($pdo, $config, $dbms)
+	{
+		if ($config['dbms'] == 'mysql')
+		{
+			$sth = $pdo->query('SELECT VERSION() AS version');
+			$row = $sth->fetch(PDO::FETCH_ASSOC);
+
+			if (version_compare($row['version'], '4.1.3', '>='))
 			{
-				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
+				$dbms['SCHEMA'] .= '_41';
 			}
 			else
 			{
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
+				$dbms['SCHEMA'] .= '_40';
 			}
 		}
-		else
+
+		$sql = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms['SCHEMA']}_schema.sql"), $config['dbms']);
+
+		foreach ($sql as $query)
 		{
-			if ($database_config['dbms'] == 'sqlite')
-			{
-				// delete existing database
-				if (file_exists($database_config['dbhost']))
-				{
-					unlink($database_config['dbhost']);
-				}
+			$pdo->exec($query);
+		}
+	}
 
-				$pdo = new PDO($dbms_data['PDO'] . ':' . $database_config['dbhost']);
-			}
-			else
-			{
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';', $database_config['dbuser'], $database_config['dbpasswd']);try
-				{
-					$pdo->exec('DROP DATABASE ' . $database_config['dbname']);
-				}
-				catch (PDOException $e){} // ignore non existent db
+	public function getConnection()
+	{
+		$config = $this->get_database_config();
+		$dbms = $this->get_dbms_data($config['dbms']);
 
-				$pdo->exec('CREATE DATABASE ' . $database_config['dbname']);
+		if (!self::$already_connected)
+		{
+			$this->recreate_db($config, $dbms);
+		}
 
-				$pdo = new PDO($dbms_data['PDO'] . ':host=' . $database_config['dbhost'] . ';dbname=' . $database_config['dbname'], $database_config['dbuser'], $database_config['dbpasswd']);
-			}
+		$pdo = $this->new_pdo($config, $dbms, true);
 
-			// good for debug
-			// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		if (!self::$already_connected)
+		{
+			$this->load_schema($pdo, $config, $dbms);
 
-			if ($database_config['dbms'] == 'mysql')
-			{
-				$sth = $pdo->query('SELECT VERSION() AS version');
-				$row = $sth->fetch(PDO::FETCH_ASSOC);
-
-				if (version_compare($row['version'], '4.1.3', '>='))
-				{
-					$dbms_data['SCHEMA'] .= '_41';
-				}
-				else
-				{
-					$dbms_data['SCHEMA'] .= '_40';
-				}
-
-				unset($row, $sth);
-			}
-
-			$sql_query = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms_data['SCHEMA']}_schema.sql"), $database_config['dbms']);
-
-			foreach ($sql_query as $sql)
-			{
-				$pdo->exec($sql);
-			}
-
-			$already_connected = true;
+			self::$already_connected = true;
 		}
 
 		return $this->createDefaultDBConnection($pdo, 'testdb');
@@ -189,13 +357,20 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function new_dbal()
 	{
-		$this->init_test_case_helpers();
-		return $this->test_case_helpers->new_dbal();
+		global $phpbb_root_path, $phpEx;
+
+		$config = $this->get_database_config();
+
+		require_once '../phpBB/includes/db/' . $config['dbms'] . '.php';
+		$dbal = 'dbal_' . $config['dbms'];
+		$db = new $dbal();
+		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+
+		return $db;
 	}
 
 	public function setExpectedTriggerError($errno, $message = '')
 	{
-		$this->init_test_case_helpers();
-		$this->test_case_helpers->setExpectedTriggerError($errno, $message);
+		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
 	}
 }
