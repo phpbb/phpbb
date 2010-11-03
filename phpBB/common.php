@@ -187,8 +187,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
@@ -203,12 +201,14 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-// Cache must be loaded before class loader
-$cache = new cache();
-
 // Setup class loader first
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 $class_loader->register();
+
+// set up caching
+$acm = phpbb_cache_factory::create($acm_type)->get_acm();
+$class_loader->set_acm($acm);
+$cache = new phpbb_cache_service($acm);
 
 // Instantiate some basic classes
 $request	= new phpbb_request();

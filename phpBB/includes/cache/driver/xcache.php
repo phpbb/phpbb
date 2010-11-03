@@ -16,12 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Include the abstract base
-if (!class_exists('acm_memory'))
-{
-	require("{$phpbb_root_path}includes/acm/acm_memory.$phpEx");
-}
-
 /**
 * ACM for XCache
 * @package acm
@@ -31,13 +25,13 @@ if (!class_exists('acm_memory'))
 * - xcache.admin.enable_auth = off (or xcache.admin.user and xcache.admin.password set)
 *
 */
-class acm extends acm_memory
+class phpbb_cache_driver_xcache extends phpbb_cache_driver_memory
 {
 	var $extension = 'XCache';
 
-	function acm()
+	function __construct()
 	{
-		parent::acm_memory();
+		parent::__construct();
 
 		if (!function_exists('ini_get') || (int) ini_get('xcache.var_size') <= 0)
 		{
@@ -111,7 +105,7 @@ class acm extends acm_memory
 	* @access protected
 	* @param string $var Cache key
 	* @return bool True if it exists, otherwise false
-	*/	
+	*/
 	function _isset($var)
 	{
 		return xcache_isset($this->key_prefix . $var);
