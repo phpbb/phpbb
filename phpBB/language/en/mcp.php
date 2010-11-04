@@ -211,6 +211,7 @@ $lang = array_merge($lang, array(
 
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to merge the selected posts?',
 	'MERGE_POSTS_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',
+	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.', // it's no longer used for prosilver/subsilver2
 	'MERGE_TOPIC_ID'		=> 'Destination topic identification number',
 	'MERGE_TOPICS'			=> 'Merge topics',
 	'MERGE_TOPICS_CONFIRM'	=> 'Are you sure you want to merge the selected topics?',
