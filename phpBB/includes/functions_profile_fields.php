@@ -879,6 +879,11 @@ class custom_profile
 				$now = getdate();
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
+			else if ($row['field_default_value'] === '' && $row['field_type'] == FIELD_INT)
+			{
+				// We cannot insert an empty string into an integer column.
+				$row['field_default_value'] = NULL;
+			}
 
 			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
