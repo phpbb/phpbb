@@ -233,7 +233,7 @@ $lang = array_merge($lang, array(
 	'PASSWORD_LENGTH'			=> 'Password length',
 	'PASSWORD_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in passwords.',
 	'REG_LIMIT'					=> 'Registration attempts',
-	'REG_LIMIT_EXPLAIN'			=> 'Number of attempts users can make at the confirmation code before being locked out that session.',
+	'REG_LIMIT_EXPLAIN'			=> 'Number of attempts users can make at solving the CAPTCHA before being locked out of that session.',
 	'USERNAME_ALPHA_ONLY'		=> 'Alphanumeric only',
 	'USERNAME_ALPHA_SPACERS'	=> 'Alphanumeric and spacers',
 	'USERNAME_ASCII'			=> 'ASCII (no international unicode)',
@@ -288,7 +288,7 @@ $lang = array_merge($lang, array(
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure CAPTCHA plugins, which implement various ways to reject registration attempts from so-called spambots.',
+	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure CAPTCHA plugins, which are designed to block automated form submissions by spambots.',
 	'AVAILABLE_CAPTCHAS'					=> 'Available plugins',
 	'CAPTCHA_UNAVAILABLE'					=> 'The CAPTCHA cannot be selected as its requirements are not met.',
 	'CAPTCHA_GD'							=> 'GD CAPTCHA',
@@ -320,12 +320,12 @@ $lang = array_merge($lang, array(
 	'CONFIGURE'								=> 'Configure',
 	'CAPTCHA_NO_OPTIONS'					=> 'This CAPTCHA has no configuration options.',
 
-	'VISUAL_CONFIRM_POST'					=> 'Enable visual confirmation for guest postings',
-	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
-	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',
-	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
-	'VISUAL_CONFIRM_REFRESH'				=> 'Enable users to refresh the confirmation image',
-	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request new confirmation codes, if they are unable to solve the VC during registration. Some plugins might not support this option.',
+	'VISUAL_CONFIRM_POST'					=> 'Enable CAPTCHA for guest postings',
+	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires guest users to solve a CAPTCHA to help prevent automated postings.',
+	'VISUAL_CONFIRM_REG'					=> 'Enable CAPTCHA for registrations',
+	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to solve a CAPTCHA to help prevent automated registrations.',
+	'VISUAL_CONFIRM_REFRESH'				=> 'Enable users to refresh the CAPTCHA',
+	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request a new CAPTCHA if they are unable to solve the CAPTCHA during registration. Some plugins might not support this option.',
 ));
 
 // Cookie Settings
@@ -463,7 +463,7 @@ $lang = array_merge($lang, array(
 	'IP_VALID'						=> 'Session IP validation',
 	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; <samp>All</samp> compares the complete address, <samp>A.B.C</samp> the first x.x.x, <samp>A.B</samp> the first x.x, <samp>None</samp> disables checking. On IPv6 addresses <samp>A.B.C</samp> compares the first 4 blocks and <samp>A.B</samp> the first 3 blocks.',
 	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
-	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation).',
+	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally solve the CAPTCHA.',
 	'NO_IP_VALIDATION'				=> 'None',
 	'NO_REF_VALIDATION'				=> 'None',
 	'PASSWORD_TYPE'					=> 'Password complexity',
