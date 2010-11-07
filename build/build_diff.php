@@ -9,16 +9,26 @@
 *
 */
 
-// CONFIG - Begin
-$substitute_old = '3.0.6';
-$substitute_new = '3.0.7-PL1';
-$simple_name_old = 'phpbb306';
-$simple_name_new = 'phpbb307-PL1';
+if ($_SERVER['argc'] != 3)
+{
+	die("Please specify the previous and current version as arguments (e.g. build_diff.php '1.0.2' '1.0.3').");
+}
+
+$old_version = trim($_SERVER['argv'][1]);
+$new_version = trim($_SERVER['argv'][2]);
+
+$substitute_old = $old_version;
+$substitute_new = $new_version;
+$simple_name_old = 'release-' . $old_version;
+$simple_name_new = 'release-' . $new_version;
 $echo_changes = false;
+
+// DO NOT EVER USE THE FOLLOWING! Fix the script to generate proper changes,
+// do NOT manually create them.
+
 // Set this to true to just compress the changes and do not build them again
 // This should be used for building custom modified txt file. ;)
 $package_changed_files = false;
-// CONFIG - End
 
 //$debug_file = 'includes/functions_user.php'; //'styles/prosilver/style.cfg';
 $debug_file = false;
@@ -36,9 +46,6 @@ if (!$package_changed_files)
 {
 	if (!$echo_changes)
 	{
-		// Cleanup...
-		run_command("rm -R $location/save/*");
-
 		// Create directory...
 		run_command("mkdir $location/save/{$s_name}");
 		run_command("mkdir $location/save/{$s_name}/language");
@@ -72,14 +79,14 @@ if (!$echo_changes)
 	foreach ($compress_programs as $extension => $compress_command)
 	{
 		echo "Packaging code changes for $extension\n";
-		run_command("rm ./../../release_files/{$code_changes_filename}.{$extension}");
+		run_command("rm ./../../new_version/release_files/{$code_changes_filename}.{$extension}");
 		flush();
 
 		// Build Package
-		run_command("$compress_command ./../../release_files/{$code_changes_filename}.{$extension} *");
+		run_command("$compress_command ./../../new_version/release_files/{$code_changes_filename}.{$extension} *");
 
 		// Build MD5 Sum
-		run_command("md5sum ./../../release_files/{$code_changes_filename}.{$extension} > ./../../release_files/{$code_changes_filename}.{$extension}.md5");
+		run_command("md5sum ./../../new_version/release_files/{$code_changes_filename}.{$extension} > ./../../new_version/release_files/{$code_changes_filename}.{$extension}.md5");
 		flush();
 	}
 }

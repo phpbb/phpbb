@@ -3,9 +3,11 @@
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
 	<property name="newversion" value="3.0.8" />
-	<property name="oldversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7-PL1" />
+	<property name="prevversion" value="3.0.7-PL1" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6" />
 	<!-- no configuration should be needed beyond this point -->
 
+	<property name="oldversions" value="${olderversions}, ${prevversion}" />
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
@@ -25,6 +27,7 @@
 		<mkdir dir="build/new_version/release_files" />
 		<mkdir dir="build/new_version/update" />
 		<mkdir dir="build/old_versions" />
+		<mkdir dir="build/save" />
 	</target>
 
 	<target name="clean">
@@ -36,6 +39,7 @@
 		<delete dir="build/dependencies" />
 		<delete dir="build/new_version" />
 		<delete dir="build/old_versions" />
+		<delete dir="build/save" />
 	</target>
 
 	<target name="test">
@@ -104,7 +108,8 @@
 	</target>
 
 	<target name="create-package" depends="prepare-new-version,old-version-diffs">
-		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false"/>
+		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
+		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
 	</target>
 
 	<!--
