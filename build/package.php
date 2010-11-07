@@ -42,7 +42,10 @@ if (sizeof($package->old_packages))
 		$package->begin_status('Parsing patch/diff files for phpBB-' . $dest_package_filename . $package->get('new_version_number'));
 
 		// Parse this diff to determine file changes from the checked versions and save them
-		$diff_file_changes[$_package_name] = $package->collect_diff_files($dest_package_filename, $_package_name);
+		$diff_file_changes[$_package_name] = $package->collect_diff_files(
+			$package->get('patch_directory') . '/phpBB-' . $dest_package_filename . $package->get('new_version_number') . '.patch',
+			$_package_name
+		);
 	}
 
 	// Now put those files determined within the correct directories
