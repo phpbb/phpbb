@@ -503,7 +503,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_SERVER'			=> '<strong>Altered server settings</strong>',
 	'LOG_CONFIG_SETTINGS'		=> '<strong>Altered board settings</strong>',
 	'LOG_CONFIG_SIGNATURE'		=> '<strong>Altered signature settings</strong>',
-	'LOG_CONFIG_VISUAL'			=> '<strong>Altered antibot settings</strong>',
+	'LOG_CONFIG_VISUAL'			=> '<strong>Altered anti-spambot settings</strong>',
 
 	'LOG_APPROVE_TOPIC'			=> '<strong>Approved topic</strong><br />» %s',
 	'LOG_BUMP_TOPIC'			=> '<strong>User bumped topic</strong><br />» %s',
