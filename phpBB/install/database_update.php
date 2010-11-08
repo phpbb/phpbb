@@ -925,7 +925,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $user;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
 
 	switch ($version)
 	{
@@ -1653,33 +1653,55 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.0.7-PL1 to 3.0.8-RC1
 		case '3.0.7-PL1':
-			$user->add_lang('acp/attachments');
-			$extension_groups = array(
-				$user->lang['EXT_GROUP_ARCHIVES']			=> 'ARCHIVES',
-				$user->lang['EXT_GROUP_DOCUMENTS']			=> 'DOCUMENTS',
-				$user->lang['EXT_GROUP_DOWNLOADABLE_FILES']	=> 'DOWNLOADABLE_FILES',
-				$user->lang['EXT_GROUP_FLASH_FILES']		=> 'FLASH_FILES',
-				$user->lang['EXT_GROUP_IMAGES']				=> 'IMAGES',
-				$user->lang['EXT_GROUP_PLAIN_TEXT']			=> 'PLAIN_TEXT',
-				$user->lang['EXT_GROUP_QUICKTIME_MEDIA']	=> 'QUICKTIME_MEDIA',
-				$user->lang['EXT_GROUP_REAL_MEDIA']			=> 'REAL_MEDIA',
-				$user->lang['EXT_GROUP_WINDOWS_MEDIA']		=> 'WINDOWS_MEDIA',
-			);
-
-			$sql = 'SELECT group_id, group_name
-				FROM ' . EXTENSION_GROUPS_TABLE;
+			// Update file extension group names to use language strings.
+			$sql = 'SELECT lang_dir
+				FROM ' . LANG_TABLE;
 			$result = $db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			$extension_groups_updated = array();
+			while ($lang_dir = $db->sql_fetchfield('lang_dir'))
 			{
-				if (isset($extension_groups[$row['group_name']]))
+				$lang_dir = basename($lang_dir);
+
+				// The language strings we need are either in language/.../acp/attachments.php
+				// in the update package if we're updating to 3.0.8-RC1 or later,
+				// or they are in language/.../install.php when we're updating from 3.0.7-PL1 or earlier.
+				// On an already updated board, they can also already be in language/.../acp/attachments.php
+				// in the board root.
+				$lang_files = array(
+					"{$phpbb_root_path}install/update/new/language/$lang_dir/acp/attachments.$phpEx",
+					"{$phpbb_root_path}language/$lang_dir/install.$phpEx",
+					"{$phpbb_root_path}language/$lang_dir/acp/attachments.$phpEx",
+				);
+				
+				foreach ($lang_files as $lang_file)
 				{
-					$sql_ary = array(
-						'group_name'	=> $extension_groups[$row['group_name']],
-					);
-					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-						WHERE group_id = ' . (int) $row['group_id'];
-					_sql($sql, $errored, $error_ary);
+					if (!file_exists($lang_file))
+					{
+						continue;
+					}
+
+					$lang = array();
+					include($lang_file);
+
+					foreach($lang as $lang_key => $lang_val)
+					{
+						if (isset($extension_groups_updated[$lang_key]) || strpos($lang_key, 'EXT_GROUP_') !== 0)
+						{
+							continue;
+						}
+
+						$sql_ary = array(
+							'group_name'	=> substr($lang_key, 10), // Strip off 'EXT_GROUP_'
+						);
+
+						$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+							WHERE group_name = '" . $db->sql_escape($lang_val) . "'";
+						_sql($sql, $errored, $error_ary);
+
+						$extension_groups_updated[$lang_key] = true;
+					}
 				}
 			}
 			$db->sql_freeresult($result);
