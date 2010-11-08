@@ -314,7 +314,7 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The plugin as it would look like using the current selection.',
 
 	'CAPTCHA_SELECT'						=> 'Installed plugins',
-	'CAPTCHA_SELECT_EXPLAIN'				=> 'The dropdown holds the plugins recognized by the board. Grey entries are not available right now and might need configuration prior to use.',
+	'CAPTCHA_SELECT_EXPLAIN'				=> 'The dropdown holds the plugins recognised by the board. Grey entries are not available right now and might need configuration prior to use.',
 	'CAPTCHA_CONFIGURE'						=> 'Configure plugins',
 	'CAPTCHA_CONFIGURE_EXPLAIN'				=> 'Change the settings for the selected plugin.',
 	'CONFIGURE'								=> 'Configure',
