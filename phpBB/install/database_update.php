@@ -685,8 +685,7 @@ function _add_modules($modules_to_install)
 				FROM ' . MODULES_TABLE . "
 				WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
 					AND parent_id = {$parent_id}
-					AND left_id BETWEEN {$first_left_id} AND {$module_row['left_id']}
-				ORDER BY left_id";
+					AND left_id BETWEEN {$first_left_id} AND {$module_row['left_id']}";
 			$result = $db->sql_query($sql);
 			$steps = (int) $db->sql_fetchfield('num_modules');
 			$db->sql_freeresult($result);
