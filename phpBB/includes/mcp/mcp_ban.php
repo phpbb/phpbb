@@ -215,5 +215,3 @@ class mcp_ban
 		}
 	}
 }
-
-?>

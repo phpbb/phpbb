@@ -1282,5 +1282,3 @@ function get_recipients($address_list, $num_recipients = 1)
 
 	return $recipient;
 }
-
-?>

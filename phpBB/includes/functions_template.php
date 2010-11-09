@@ -810,5 +810,3 @@ class template_compile
 		return;
 	}
 }
-
-?>

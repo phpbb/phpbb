@@ -2113,5 +2113,3 @@ class install_convert extends module
 		'refresh'			=> array('lang' => 'REFRESH_PAGE',	'type' => 'radio:yes_no', 'explain' => true),
 	);
 }
-
-?>

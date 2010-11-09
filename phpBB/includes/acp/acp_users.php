@@ -2388,5 +2388,3 @@ class acp_users
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
 	}
 }
-
-?>

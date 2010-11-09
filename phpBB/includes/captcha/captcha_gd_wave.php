@@ -841,5 +841,3 @@ class captcha
 		);
 	}
 }
-
-?>

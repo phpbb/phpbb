@@ -134,5 +134,3 @@ class acm extends acm_memory
 		return $this->memcache->delete($this->key_prefix . $var);
 	}
 }
-
-?>

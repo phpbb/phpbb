@@ -316,5 +316,3 @@ class search_backend
 		$db->sql_query($sql);
 	}
 }
-
-?>

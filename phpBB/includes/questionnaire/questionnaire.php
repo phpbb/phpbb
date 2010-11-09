@@ -508,5 +508,3 @@ class phpbb_questionnaire_phpbb_data_provider
 		return $result;
 	}
 }
-
-?>

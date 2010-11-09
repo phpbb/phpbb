@@ -98,5 +98,3 @@ $lang = array_merge($lang, array(
 
 	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid.',
 ));
-
-?>

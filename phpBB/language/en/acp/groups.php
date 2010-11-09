@@ -128,5 +128,3 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users.',
 	'USER_GROUP_LEADER'				=> 'Set as group leader',
 ));
-
-?>

@@ -49,5 +49,3 @@ $template->assign_vars(array(
 $template->display('body');
 
 garbage_collection();
-
-?>

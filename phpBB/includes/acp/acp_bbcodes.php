@@ -472,5 +472,3 @@ class acp_bbcodes
 		);
 	}
 }
-
-?>

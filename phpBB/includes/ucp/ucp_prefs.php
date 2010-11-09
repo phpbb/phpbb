@@ -353,5 +353,3 @@ class ucp_prefs
 		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);
 	}
 }
-
-?>

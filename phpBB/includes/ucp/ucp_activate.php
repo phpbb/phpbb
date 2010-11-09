@@ -139,5 +139,3 @@ class ucp_activate
 		trigger_error($user->lang[$message]);
 	}
 }
-
-?>

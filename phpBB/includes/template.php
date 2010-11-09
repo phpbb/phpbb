@@ -688,5 +688,3 @@ class template
 		include($file);
 	}
 }
-
-?>

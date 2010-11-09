@@ -87,5 +87,3 @@ $lang = array_merge($lang, array(
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',
 ));
-
-?>

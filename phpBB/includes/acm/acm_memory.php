@@ -435,5 +435,3 @@ class acm_memory
 		return true;
 	}
 }
-
-?>

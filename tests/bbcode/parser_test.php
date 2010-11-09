@@ -28,4 +28,3 @@ class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $result, 'Simple nested BBCode first+second pass');
 	}
 }
-?>

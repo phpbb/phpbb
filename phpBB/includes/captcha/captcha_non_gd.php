@@ -388,5 +388,3 @@ class captcha
 		);
 	}
 }
-
-?>

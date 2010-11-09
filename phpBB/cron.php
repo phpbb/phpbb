@@ -283,5 +283,3 @@ function unlock_cron()
 		WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
 	$db->sql_query($sql);
 }
-
-?>

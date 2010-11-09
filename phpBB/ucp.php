@@ -347,5 +347,3 @@ function _module_zebra($mode, &$module_row)
 		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
 	}
 }
-
-?>

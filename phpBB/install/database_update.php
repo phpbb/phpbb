@@ -3805,5 +3805,3 @@ class updater_db_tools
 		return $this->_sql_run_sql($statements);
 	}
 }
-
-?>

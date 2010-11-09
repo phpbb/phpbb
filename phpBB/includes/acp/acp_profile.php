@@ -1625,5 +1625,3 @@ class acp_profile
 		return $sql;
 	}
 }
-
-?>

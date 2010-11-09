@@ -502,5 +502,3 @@ class ucp_register
 		$this->page_title = 'UCP_REGISTRATION';
 	}
 }
-
-?>

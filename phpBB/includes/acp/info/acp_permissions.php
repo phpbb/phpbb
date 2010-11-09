@@ -50,5 +50,3 @@ class acp_permissions_info
 	{
 	}
 }
-
-?>

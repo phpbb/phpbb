@@ -1991,5 +1991,3 @@ function utf8_str_replace($search, $replace, $subject)
 
 	return $subject;
 }
-
-?>

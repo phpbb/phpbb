@@ -2611,5 +2611,3 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	return $url;
 }
-
-?>

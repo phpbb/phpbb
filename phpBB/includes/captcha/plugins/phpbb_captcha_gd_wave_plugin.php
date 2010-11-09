@@ -79,5 +79,3 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
 	}
 }
-
-?>

@@ -33,5 +33,3 @@ class ucp_attachments_info
 	{
 	}
 }
-
-?>

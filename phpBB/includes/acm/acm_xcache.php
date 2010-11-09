@@ -117,5 +117,3 @@ class acm extends acm_memory
 		return xcache_isset($this->key_prefix . $var);
 	}
 }
-
-?>

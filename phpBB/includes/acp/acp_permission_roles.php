@@ -567,5 +567,3 @@ class acp_permission_roles
 		$auth_admin->acl_clear_prefetch();
 	}
 }
-
-?>

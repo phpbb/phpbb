@@ -206,5 +206,3 @@ function login_db(&$username, &$password)
 		'user_row'		=> $row,
 	);
 }
-
-?>

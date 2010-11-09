@@ -33,5 +33,3 @@ class acp_bbcodes_info
 	{
 	}
 }
-
-?>

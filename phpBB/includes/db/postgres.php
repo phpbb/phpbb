@@ -447,5 +447,3 @@ class dbal_postgres extends dbal
 		}
 	}
 }
-
-?>

@@ -735,5 +735,3 @@ class compress_tar extends compress
 		}
 	}
 }
-
-?>

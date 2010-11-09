@@ -951,5 +951,3 @@ class acp_icons
 		return $item_count;
 	}
 }
-
-?>

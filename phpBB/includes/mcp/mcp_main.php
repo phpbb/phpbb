@@ -1314,5 +1314,3 @@ function mcp_fork_topic($topic_ids)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
-
-?>

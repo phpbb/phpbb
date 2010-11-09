@@ -2242,5 +2242,3 @@ class install_install extends module
 		),
 	);
 }
-
-?>

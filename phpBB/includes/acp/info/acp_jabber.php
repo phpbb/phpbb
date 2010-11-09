@@ -33,4 +33,3 @@ class acp_jabber_info
 	{
 	}
 }
-?>

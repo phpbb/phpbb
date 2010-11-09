@@ -152,5 +152,3 @@ class acm
 		return false;
 	}
 }
-
-?>

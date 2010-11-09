@@ -880,5 +880,3 @@ class p_master
 		}
 	}
 }
-
-?>

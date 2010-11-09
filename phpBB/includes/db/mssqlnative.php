@@ -637,5 +637,3 @@ class dbal_mssqlnative extends dbal
 		$this->query_options = $options;
 	}
 }
-
-?>

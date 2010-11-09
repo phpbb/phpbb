@@ -2359,5 +2359,3 @@ class user extends session
 		return true;
 	}
 }
-
-?>

@@ -96,5 +96,3 @@ class phpbb_captcha_factory
 		return $captchas;
 	}
 }
-
-?>

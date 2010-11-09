@@ -80,5 +80,3 @@ class acm extends acm_memory
 		return apc_delete($this->key_prefix . $var);
 	}
 }
-
-?>

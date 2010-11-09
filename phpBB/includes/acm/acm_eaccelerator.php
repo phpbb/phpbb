@@ -117,5 +117,3 @@ class acm extends acm_memory
 		return eaccelerator_rm($this->key_prefix . $var);
 	}
 }
-
-?>

@@ -4619,5 +4619,3 @@ function phpbb_user_session_handler()
 
 	return;
 }
-
-?>
