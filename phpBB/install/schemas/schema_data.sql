@@ -94,7 +94,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
@@ -209,7 +209,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_recipients', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '60');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
