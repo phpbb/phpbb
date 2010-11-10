@@ -1840,6 +1840,17 @@ function change_database_data(&$no_updates, $version)
 			// Unread posts search load switch
 			set_config('load_unreads_search', '1');
 
+			// Reduce queue interval to 60 seconds, email package size to 20
+			if ($config['queue_interval'] == 600)
+			{
+				set_config('queue_interval', '60');
+			}
+
+			if ($config['email_package_size'] == 50)
+			{
+				set_config('email_package_size', '20');
+			}
+
 			$no_updates = false;
 		break;
 	}
