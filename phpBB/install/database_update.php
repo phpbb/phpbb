@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.9-dev';
+$updates_to_version = '3.0.8-RC1';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -477,7 +477,7 @@ else
 
 	<p><?php echo ((isset($lang['INLINE_UPDATE_SUCCESSFUL'])) ? $lang['INLINE_UPDATE_SUCCESSFUL'] : 'The database update was successful. Now you need to continue the update process.'); ?></p>
 
-	<p><a href="<?php echo append_sid("{$phpbb_root_path}install/index.{$phpEx}", "mode=update&amp;sub=file_check&amp;language=$language"); ?>" class="button1"><?php echo (isset($lang['CONTINUE_UPDATE_NOW'])) ? $lang['CONTINUE_UPDATE_NOW'] : 'Continue the update process now'; ?></a></p>
+	<p><a href="<?php echo append_sid("{$phpbb_root_path}install/index.{$phpEx}", "mode=update&amp;sub=file_check&amp;lang=$language"); ?>" class="button1"><?php echo (isset($lang['CONTINUE_UPDATE_NOW'])) ? $lang['CONTINUE_UPDATE_NOW'] : 'Continue the update process now'; ?></a></p>
 
 <?php
 }
@@ -1672,7 +1672,7 @@ function change_database_data(&$no_updates, $version)
 					"{$phpbb_root_path}language/$lang_dir/install.$phpEx",
 					"{$phpbb_root_path}language/$lang_dir/acp/attachments.$phpEx",
 				);
-				
+
 				foreach ($lang_files as $lang_file)
 				{
 					if (!file_exists($lang_file))
@@ -1998,7 +1998,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'mssqlnative'	=> array(
 			'INT:'		=> '[int]',
 			'BINT'		=> '[float]',
@@ -2028,7 +2028,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'oracle'	=> array(
 			'INT:'		=> 'number(%d)',
 			'BINT'		=> 'number(20)',
@@ -2175,7 +2175,7 @@ class updater_db_tools
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
-			
+
 			case 'mssqlnative':
 				$this->sql_layer = 'mssqlnative';
 			break;
