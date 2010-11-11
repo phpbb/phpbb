@@ -190,7 +190,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_SIG'					=> 'Signature',
 	'ACP_USER_WARNINGS'				=> 'Warnings',
 
-	'ACP_VC_SETTINGS'					=> 'Spambot countermeasures',
+	'ACP_VC_SETTINGS'					=> 'Spambot counter measures',
 	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA image preview',
 	'ACP_VERSION_CHECK'					=> 'Check for updates',
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View administrative permissions',
