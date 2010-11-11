@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 	'SITE_NAME'						=> 'Site name',
 	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
 	'SYSTEM_TIMEZONE'				=> 'Guest timezone',
-	'SYSTEM_TIMEZONE_EXPLAIN'			=> 'Timezone to use for displaying times to users who are not logged in (guests, bots). Logged in users set their timezone during registration and can change it in user control panel.',
+	'SYSTEM_TIMEZONE_EXPLAIN'			=> 'Timezone to use for displaying times to users who are not logged in (guests, bots). Logged in users set their timezone during registration and can change it in their user control panel.',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
 	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record.',
 ));
@@ -325,7 +325,7 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_REG'					=> 'Enable spambot countermeasures for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to pass the anti-spambot task to help prevent automated registrations.',
 	'VISUAL_CONFIRM_REFRESH'				=> 'Allow users to refresh the anti-spambot task',
-	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request a new anti-spambot task if they are unable to solve the currunt task during registration. Some plugins might not support this option.',
+	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request a new anti-spambot task if they are unable to solve the current task during registration. Some plugins might not support this option.',
 ));
 
 // Cookie Settings
@@ -394,7 +394,7 @@ $lang = array_merge($lang, array(
 	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
-	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding. Else fill in the password for the above user. Required for Active Directory Servers.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
+	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding,  otherwise fill in the password for the above user. Required for Active Directory Servers.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
 	'LDAP_PORT'						=> 'LDAP server port',
 	'LDAP_PORT_EXPLAIN'				=> 'Optionally you can specify a port which should be used to connect to the LDAP server instead of the default port 389.',
 	'LDAP_SERVER'					=> 'LDAP server name',
