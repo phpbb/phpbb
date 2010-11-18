@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.8-RC1';
+$updates_to_version = '3.0.9-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -1681,7 +1681,7 @@ function change_database_data(&$no_updates, $version)
 					"{$phpbb_root_path}language/$lang_dir/install.$phpEx",
 					"{$phpbb_root_path}language/$lang_dir/acp/attachments.$phpEx",
 				);
-				
+
 				foreach ($lang_files as $lang_file)
 				{
 					if (!file_exists($lang_file))
