@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.8-RC1';
+$updates_to_version = '3.0.8';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -914,6 +914,8 @@ function database_update_info()
 		'3.0.7'		=> array(),
 		// No changes from 3.0.7-PL1 to 3.0.8-RC1
 		'3.0.7-PL1'		=> array(),
+		// No changes from 3.0.8-RC1 to 3.0.8
+		'3.0.8-RC1'		=> array(),
 	);
 }
 
@@ -1672,7 +1674,7 @@ function change_database_data(&$no_updates, $version)
 					"{$phpbb_root_path}language/$lang_dir/install.$phpEx",
 					"{$phpbb_root_path}language/$lang_dir/acp/attachments.$phpEx",
 				);
-				
+
 				foreach ($lang_files as $lang_file)
 				{
 					if (!file_exists($lang_file))
@@ -1852,6 +1854,10 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 		break;
+
+		// No changes from 3.0.8-RC1 to 3.0.8
+		case '3.0.8-RC1':
+		break;
 	}
 }
 
@@ -1998,7 +2004,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'mssqlnative'	=> array(
 			'INT:'		=> '[int]',
 			'BINT'		=> '[float]',
@@ -2028,7 +2034,7 @@ class updater_db_tools
 			'VCHAR_CI'	=> '[varchar] (255)',
 			'VARBINARY'	=> '[varchar] (255)',
 		),
-		
+
 		'oracle'	=> array(
 			'INT:'		=> 'number(%d)',
 			'BINT'		=> 'number(20)',
@@ -2175,7 +2181,7 @@ class updater_db_tools
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
-			
+
 			case 'mssqlnative':
 				$this->sql_layer = 'mssqlnative';
 			break;
