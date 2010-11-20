@@ -9,7 +9,7 @@
 			scope="iisapp"
 			match="phpBB3" />
 	</parameter>
-	
+	<!--ACLs-->
 	<parameter
 		name="aclCache"
 		description="Sets the ACL on the cache/ folder"
@@ -19,7 +19,7 @@
 		<parameterEntry
 			type="ProviderPath"
 			scope="setAcl"
-			match="phpBB3/cache" />
+			match="phpBB3/cache$" />
 	</parameter>
 
 	<parameter
@@ -31,7 +31,7 @@
 		<parameterEntry
 			type="ProviderPath"
 			scope="setAcl"
-			match="phpBB3/files" />
+			match="phpBB3/files$" />
 	</parameter>
 
 	<parameter
@@ -43,7 +43,7 @@
 		<parameterEntry
 			type="ProviderPath"
 			scope="setAcl"
-			match="phpBB3/store" />
+			match="phpBB3/store$" />
 	</parameter>
 
 	<parameter
@@ -55,7 +55,7 @@
 		<parameterEntry
 			type="ProviderPath"
 			scope="setAcl"
-			match="phpBB3/images/avatars/upload" />
+			match="phpBB3/images/avatars/upload$" />
 	</parameter>
 
 	<parameter
@@ -67,43 +67,44 @@
 		<parameterEntry
 			type="ProviderPath"
 			scope="setAcl"
-			match="phpBB3/config.php" />
+			match="phpBB3/config.php$" />
 	</parameter>
 
-	<parameter
-		name="DatabaseServer"
-		description="Enter the database server"
-		defaultValue=".\SQLExpress"
-		tags="SQL, dbServer" >
+	<!-- SQL parameters -->
+	<parameter  name="SQL Database Server"  description="Enter the database server (usually machine name ) "  defaultValue="."  tags="SQL">
 	</parameter>
 
+	<parameter name="SQL DatabaseServer Instance" description="Enter the database instance name" defaultValue="SQLExpress" tags="SQL">
+	</parameter>
+	<!-- Read database server from config.php . Update 'dbhost' in config.php on publish -->
+	<parameter name="SQL Automatic DatabaseServer" defaultValue="dbhost = '{SQL Database Server}\\{SQL DatabaseServer Instance}';" tags="Hidden,SQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbhost\s*=\s*'([^']*)'\s*;" />
+	</parameter>
 	<parameter
-		name="DatabaseName"
-		description="Database name for your application."
-		defaultValue="phpbb"
-		tags="SQL, dbName">
+		name="SQL DatabaseName" description="Database name for your application." defaultValue="phpbb" tags="SQL, dbName">
 
-		<parameterEntry
-			type="TextFile"
-			scope="install/mssql.sql"
-			match="PlaceHolderForDb" />  
+		<parameterEntry type="TextFile" scope="install/mssql.sql" match="PlaceHolderForDb" />   
+	</parameter>
+	<!-- Read database name from config.php . Update 'dbname' in config.php on publish -->
+	<parameter name="SQL Automatic DatabaseName" defaultValue="dbname = '{SQL DatabaseName}';" tags="Hidden,SQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbname\s*=\s*'([^']*)'\s*;" />
 	</parameter>
   
 	<parameter
-		name="DatabaseAdministrator"
+		name="SQL DatabaseAdministrator"
 		description="Database server administartor username."
 		defaultValue="sa"
 		tags="SQL, DbAdminUsername" >
 	</parameter>
 
 	<parameter
-		name="DatabaseAdministratorPassword"
+		name="SQL DatabaseAdministratorPassword"
 		description="Database server administrator password."
 		tags="Password,SQL,DbAdminPassword">
 	</parameter>
 
 	<parameter
-		name="Database Username"
+		name="SQL Database Username"
 		description="Username to access your database."
 		defaultValue="phpbb"
 		tags="SQL, DbUsername">
@@ -113,9 +114,13 @@
 			scope="install/mssql.sql"
 			match="PlaceHolderForUser" />
 	</parameter>
-
+	<!-- Read database user from config.php . Update 'dbuser' in config.php on publish -->
+	<parameter name="SQL Automatic Database User" defaultValue="dbuser = '{SQL Database Username}';" tags="Hidden,SQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbuser\s*=\s*'([^']*)'\s*;" />
+	</parameter>
+  
 	<parameter
-		name="Database Password"
+		name="SQL Database Password"
 		description="Password for your phpBB database. (Must be at least 8 characters, contain at least one lower case letter, one upper case letter and one digit)"
 		tags="New, Password,SQL,  DbUserPassword">
 
@@ -129,10 +134,16 @@
 			match="PlaceHolderForPassword" />
 	</parameter>
 
+	<!-- Read database user password from config.php . Update 'dbpasswd' in config.php on publish -->
+	<parameter name="SQL Automatic Database Password" defaultValue="dbpasswd = '{SQL Database Password}';" tags="Hidden,SQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbpasswd\s*=\s*'([^']*)'\s*;" />
+	</parameter>
+
+	<!-- SQL Connection string -->
 	<parameter
-		name="ConnectionString"
+		name="SQL ConnectionString"
 		description="Automatically sets the connection string for the connection request."
-		defaultValue="Server={DatabaseServer};Database={DatabaseName};uid={DatabaseAdministrator};Pwd={DatabaseAdministratorPassword};"
+		defaultValue="Server={SQL Database Server}\{SQL DatabaseServer Instance};Database={SQL DatabaseName};uid={SQL DatabaseAdministrator};Pwd={SQL DatabaseAdministratorPassword};"
 		tags="Hidden,SQLConnectionString,Validate">
 
 		<parameterEntry
@@ -148,6 +159,7 @@
 		tags="SQL,Hidden">
 	</parameter>
 
+	<!-- MYSQL parameters -->
 	<parameter
 		name="MySQL Database Server"
 		description="Enter the hostname"
@@ -160,8 +172,13 @@
 			match="PlaceHolderForServer" />
 	</parameter>
 
+	<!-- Read database server from config.php . Update 'dbhost' in config.php on publish -->
+	<parameter name="Automatic MySQL DatabaseServer" defaultValue="dbhost = '{MySQL Database Server}';" tags="Hidden,MySQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbhost\s*=\s*'([^']*)'\s*;" />
+	</parameter>
+  
 	<parameter
-		name="Application Database Name"
+		name="MySQL Database Name"
 		description="Database Name for your application."
 		defaultValue="phpbb"
 		tags="MySQL, dbName">
@@ -171,22 +188,13 @@
 			scope="install/mysql.sql"
 			match="PlaceHolderForDb"  />
 	</parameter>
-
-	<parameter
-		name="MySQL Database Administrator"
-		description="Database administrator username."
-		defaultValue="root"
-		tags="MySQL, DbAdminUsername" >
+	<!-- Read database name from config.php . Update 'dbname' in config.php on publish -->
+	<parameter name="Automatic MySQL Database Name" defaultValue="dbname = '{MySQL Database Name}';" tags="Hidden,MySQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbname\s*=\s*'([^']*)'\s*;" />
 	</parameter>
 
 	<parameter
-		name="MySQL Database Administrator Password"
-		description="Database administrator password."
-		tags="Password,MySQL,DbAdminPassword" >
-	</parameter>
-
-	<parameter
-		name="phpBB Database Username"
+		name="MySQL Database Username"
 		description="Username to access your phpBB database."
 		defaultValue="phpbb"
 		tags="MySQL, DbUsername">
@@ -195,6 +203,10 @@
 			type="TextFile"
 			scope="install/mysql.sql"
 			match="PlaceHolderForUser" />
+	</parameter>
+	<!-- Read database user from config.php . Update 'dbuser' in config.php on publish -->
+	<parameter name="Automatic MySQL Database User" defaultValue="dbuser = '{MySQL Database Username}';" tags="Hidden,MySQL">
+		<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbuser\s*=\s*'([^']*)'\s*;" />
 	</parameter>
 
 	<parameter
@@ -210,12 +222,30 @@
 			type="TextFile"
 			scope="install/mysql.sql"
 			match="PlaceHolderForPassword" />
+		</parameter>
+		<!-- Read database password from config.php . Update 'dbpasswd' in config.php on publish -->
+		<parameter name="MySQL Automatic Database Password" defaultValue="dbpasswd = '{MySQL Database Password}';" tags="Hidden,MySQL">
+			<parameterEntry kind="TextFile" scope="\\config\.php$" match="dbpasswd\s*=\s*'([^']*)'\s*;" />
+		</parameter>
+
+	<!-- MySQL admin credentials -->
+	<parameter
+		name="MySQL Database Administrator"
+		description="Database administrator username."
+		defaultValue="root"
+		tags="MySQL, DbAdminUsername" >
+	</parameter>
+	<parameter
+		name="MySQL Database Administrator Password"
+		description="Database administrator password."
+		tags="Password,MySQL,DbAdminPassword" >
 	</parameter>
 
+	<!-- MySQL Connectionstring -->
 	<parameter
 		name="MySQLConnectionString"
 		description="Automatically sets the connection string for the connection request."
-		defaultValue="Server={MySQL Database Server};Database={Application Database Name};uid={MySQL Database Administrator};Pwd={MySQL Database Administrator Password};"
+		defaultValue="Server={MySQL Database Server};Database={MySQL Database Name};uid={MySQL Database Administrator};Pwd={MySQL Database Administrator Password};"
 		tags="Hidden,MySQLConnectionString,Validate">
 
 		<parameterEntry
