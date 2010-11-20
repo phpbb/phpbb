@@ -276,8 +276,8 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	// Add newlines
 	$content = str_replace('<br />', '<br />' . "\n", $content);
 
-	// Relative Path to Absolute path, Windows style
-	$content = str_replace('./', $board_url . '/', $content);
+	// Convert smiley Relative paths to Absolute path, Windows style
+	$content = str_replace($phpbb_root_path . $config['smilies_path'], $board_url . '/' . $config['smilies_path'], $content);
 
 	// Remove "Select all" link and mouse events
 	$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
@@ -535,10 +535,28 @@ class phpbb_feed_base
 
 		if (!isset($forum_ids))
 		{
-			$forum_ids = array_keys($auth->acl_getf('m_approve'));
+			$forum_ids = array_keys($auth->acl_getf('m_approve', true));
 		}
 
 		return $forum_ids;
+	}
+
+	function is_moderator_approve_forum($forum_id)
+	{
+		static $forum_ids;
+
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_flip($this->get_moderator_approve_forums());
+		}
+
+		if (!$forum_id)
+		{
+			// Global announcement, your a moderator in any forum than it's okay.
+			return (!empty($forum_ids)) ? true : false;
+		}
+
+		return (isset($forum_ids[$forum_id])) ? true : false;
 	}
 
 	function get_excluded_forums()
@@ -677,7 +695,8 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		if ($config['feed_item_statistics'])
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time']);
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time'])
+				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
 		}
 	}
 }
@@ -719,8 +738,9 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('date')])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views']
+				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $user->lang['POSTS_UNAPPROVED'] : '');
 		}
 	}
 }
@@ -780,11 +800,11 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
-				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
+				POSTS_TABLE		=> 'p',
 			),
 			'LEFT_JOIN'	=> array(
 				array(
@@ -912,7 +932,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -994,7 +1014,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 			if (!$this->topic_data['topic_approved'])
 			{
 				// Also require m_approve
-				$in_fid_ary = array_intersect($in_fid_ary, array_keys($auth->acl_getf('m_approve')));
+				$in_fid_ary = array_intersect($in_fid_ary, $this->get_moderator_approve_forums());
 
 				if (empty($in_fid_ary))
 				{
@@ -1077,7 +1097,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		global $auth, $db;
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -1241,7 +1261,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
-							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
+							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time,
 							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
@@ -1314,7 +1334,7 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
-							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
+							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time,
 							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
@@ -1412,7 +1432,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
-							t.topic_id, t.topic_title, t.topic_replies, t.topic_views,
+							t.topic_id, t.topic_title, t.topic_replies, t.topic_replies_real, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
 							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(

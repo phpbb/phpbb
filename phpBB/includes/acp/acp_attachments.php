@@ -90,6 +90,7 @@ class acp_attachments
 				$s_assigned_groups = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
+					$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
 					$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
 				}
 				$db->sql_freeresult($result);
@@ -494,6 +495,10 @@ class acp_attachments
 						$sql = 'SELECT group_id
 							FROM ' . EXTENSION_GROUPS_TABLE . "
 							WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($new_group_name)) . "'";
+						if ($group_id)
+						{
+							$sql .= ' AND group_id <> ' . $group_id;
+						}
 						$result = $db->sql_query($sql);
 
 						if ($db->sql_fetchrow($result))
@@ -551,6 +556,7 @@ class acp_attachments
 							$group_id = $db->sql_nextid();
 						}
 
+						$group_name = (isset($user->lang['EXT_GROUP_' . $group_name])) ? $user->lang['EXT_GROUP_' . $group_name] : $group_name;
 						add_log('admin', 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), $group_name);
 					}
 
@@ -858,7 +864,7 @@ class acp_attachments
 						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
 						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",
 
-						'GROUP_NAME'	=> $row['group_name'],
+						'GROUP_NAME'	=> (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'],
 						'CATEGORY'		=> $cat_lang[$row['cat_id']],
 						)
 					);
@@ -1118,6 +1124,7 @@ class acp_attachments
 		$group_name = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
 			$group_name[] = $row;
 		}
 		$db->sql_freeresult($result);
@@ -1215,7 +1222,7 @@ class acp_attachments
 			return;
 		}
 
-		if (!is_writable($phpbb_root_path . $upload_dir))
+		if (!phpbb_is_writable($phpbb_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;

@@ -300,7 +300,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
-			$stats = @getimagesize($in);
+			$stats = @getimagesize(htmlspecialchars_decode($in));
 
 			if ($stats === false)
 			{
@@ -348,6 +348,15 @@ class bbcode_firstpass extends bbcode
 
 		// Do not allow 0-sizes generally being entered
 		if ($width <= 0 || $height <= 0)
+		{
+			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
+		}
+
+		$in = str_replace(' ', '%20', $in);
+
+		// Make sure $in is a URL.
+		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) &&
+			!preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
 		{
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
@@ -1284,6 +1293,7 @@ class parse_message extends bbcode_firstpass
 			{
 				case 'mssql':
 				case 'mssql_odbc':
+				case 'mssqlnative':
 					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';

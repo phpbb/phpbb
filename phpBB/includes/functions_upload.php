@@ -58,8 +58,9 @@ class filespec
 
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = trim(utf8_htmlspecialchars(utf8_basename($upload_ary['name'])));
-		$this->realname = $this->uploadname = (STRIP) ? stripslashes($name) : $name;
+		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
+		$name = trim(utf8_htmlspecialchars(utf8_basename($name)));
+		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
@@ -775,7 +776,18 @@ class fileupload
 		{
 			if ($get_info)
 			{
-				$data .= @fread($fsock, 1024);
+				$block = @fread($fsock, 1024);
+				$filesize += strlen($block);
+
+				if ($this->max_filesize && $filesize > $this->max_filesize)
+				{
+					$max_filesize = get_formatted_filesize($this->max_filesize, false);
+
+					$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+					return $file;
+				}
+
+				$data .= $block;
 			}
 			else
 			{
@@ -790,6 +802,18 @@ class fileupload
 					if (stripos($line, 'content-type: ') !== false)
 					{
 						$upload_ary['type'] = rtrim(str_replace('content-type: ', '', strtolower($line)));
+					}
+					else if ($this->max_filesize && stripos($line, 'content-length: ') !== false)
+					{
+						$length = (int) str_replace('content-length: ', '', strtolower($line));
+
+						if ($length && $length > $this->max_filesize)
+						{
+							$max_filesize = get_formatted_filesize($this->max_filesize, false);
+
+							$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+							return $file;
+						}
 					}
 					else if (stripos($line, '404 not found') !== false)
 					{

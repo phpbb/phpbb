@@ -61,10 +61,18 @@ if ($search_id == 'egosearch')
 	}
 }
 
-// Search for unread posts needs user to be logged in if topics tracking for guests is disabled
-if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
+// Search for unread posts needs to be allowed and user to be logged in if topics tracking for guests is disabled
+if ($search_id == 'unreadposts')
 {
-	login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	if (!$config['load_unreads_search'])
+	{
+		$template->assign_var('S_NO_SEARCH', true);
+		trigger_error('NO_SEARCH_UNREADS');
+	}
+	else if (!$config['load_anon_lastread'] && !$user->data['is_registered'])
+	{
+		login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	}
 }
 
 // Is user able to search? Has search been disabled?
@@ -81,9 +89,10 @@ if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($con
 	trigger_error('NO_SEARCH_TIME');
 }
 
-// Check flood limit ... if applicable
+// It is applicable if the configuration setting is non-zero, and the user cannot
+// ignore the flood setting, and the search is a keyword search.
 $interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
-if ($interval && !$auth->acl_get('u_ignoreflood'))
+if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch')) && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
@@ -387,18 +396,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
-
-				$unread_list = array();
-				$unread_list = get_unread_topics($user->data['user_id'], $sql_where, $sql_sort);
-
-				if (!empty($unread_list))
-				{
-					$sql = 'SELECT t.topic_id
-						FROM ' . TOPICS_TABLE . ' t
-						WHERE ' . $db->sql_in_set('t.topic_id', array_keys($unread_list)) . "
-						$sql_sort";
-					$field = 'topic_id';
-				}
 			break;
 
 			case 'newposts':
@@ -472,6 +469,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$id_ary[] = (int) $row[$field];
 			}
 			$db->sql_freeresult($result);
+
+			$total_match_count = sizeof($id_ary) + $start;
+			$id_ary = array_slice($id_ary, 0, $per_page);
+		}
+		else if ($search_id == 'unreadposts')
+		{
+			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, 1001 - $start, $start));
 
 			$total_match_count = sizeof($id_ary) + $start;
 			$id_ary = array_slice($id_ary, 0, $per_page);
@@ -896,7 +900,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
 					'S_TOPIC_TYPE'			=> $row['topic_type'],
-					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
+					'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
 					'S_UNREAD_TOPIC'		=> $unread_topic,
 
 					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
@@ -1155,6 +1159,7 @@ if ($auth->acl_get('a_search'))
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$sql = 'SELECT search_time, search_keywords
 				FROM ' . SEARCH_RESULTS_TABLE . '
 				WHERE DATALENGTH(search_keywords) > 0

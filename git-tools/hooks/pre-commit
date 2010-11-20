@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# A hook to disallow php syntax errors to be committed
+# by running php -l (lint) on them. It requires php-cli
+# to be installed.
+#
+# This is a pre-commit hook.
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks, example:
+#
+# ln -s ../../git-tools/hooks/pre-commit \\
+#   .git/hooks/pre-commit
+
+# NOTE: this is run through /usr/bin/env
+PHP_BIN=php
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+error=0
+errors=""
+
+if ! which $PHP_BIN >/dev/null 2>&1
+then
+	echo "PHP Syntax check failed:"
+	echo "PHP binary does not exist or is not in path: $PHP_BIN"
+	exit 1
+fi
+
+# dash does not support $'\n':
+# http://forum.soft32.com/linux2/Bug-409179-DASH-Settings-IFS-work-properly-ftopict70039.html
+IFS='
+'
+# get a list of staged files
+for line in $(git diff-index --cached --full-index $against)
+do
+	# split needed values
+	sha=$(echo $line | cut -d' ' -f4)
+	temp=$(echo $line | cut -d' ' -f5)
+	status=$(echo $temp | cut -d'	' -f1)
+	filename=$(echo $temp | cut -d'	' -f2)
+
+	# file extension
+	ext=$(echo $filename | sed 's/^.*\.//')
+
+	# only check files with php extension
+	if [ $ext != "php" ]
+	then
+		continue
+	fi
+
+	# do not check deleted files
+	if [ $status = "D" ]
+	then
+		continue
+	fi
+
+	# check the staged file content for syntax errors
+	# using php -l (lint)
+	result=$(git cat-file -p $sha | /usr/bin/env $PHP_BIN -l 2>/dev/null)
+	if [ $? -ne 0 ]
+	then
+		error=1
+		# Swap back in correct filenames
+		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
+	fi
+done
+unset IFS
+
+if [ $error -eq 1 ]
+then
+	echo -e "PHP Syntax check failed:";
+	echo -e "$errors" | grep "^Parse error:"
+	exit 1
+fi

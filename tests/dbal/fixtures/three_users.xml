@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username_clean</column>
+		<row>
+			<value>1</value>
+			<value>barfoo</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>foobar</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>bertie</value>
+		</row>
+	</table>
+</dataset>

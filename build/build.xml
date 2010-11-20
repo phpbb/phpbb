@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
+	<!-- a few settings for the build -->
+	<property name="newversion" value="3.0.8" />
+	<property name="prevversion" value="3.0.8-RC1" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7-PL1" />
+	<!-- no configuration should be needed beyond this point -->
+
+	<property name="oldversions" value="${olderversions}, ${prevversion}" />
+	<property name="versions" value="${oldversions}, ${newversion}" />
+
+	<!-- These are the main targets which you will probably want to use -->
+	<target name="package" depends="clean,prepare,create-package" />
+	<target name="all" depends="clean,prepare,test,create-package" />
+
+	<target name="prepare">
+		<mkdir dir="build/logs" />
+		<mkdir dir="build/api" />
+		<mkdir dir="build/codebrowser" />
+		<mkdir dir="build/coverage" />
+		<mkdir dir="build/cpd" />
+		<mkdir dir="build/dependencies" />
+		<mkdir dir="build/new_version" />
+		<mkdir dir="build/new_version/files" />
+		<mkdir dir="build/new_version/patches" />
+		<mkdir dir="build/new_version/release_files" />
+		<mkdir dir="build/new_version/update" />
+		<mkdir dir="build/old_versions" />
+		<mkdir dir="build/save" />
+	</target>
+
+	<target name="clean">
+		<delete dir="build/logs" />
+		<delete dir="build/api" />
+		<delete dir="build/codebrowser" />
+		<delete dir="build/coverage" />
+		<delete dir="build/cpd" />
+		<delete dir="build/dependencies" />
+		<delete dir="build/new_version" />
+		<delete dir="build/old_versions" />
+		<delete dir="build/save" />
+	</target>
+
+	<target name="test">
+		<exec dir="tests"
+			command="phpunit --log-junit ../build/logs/phpunit.xml
+			--coverage-clover ../build/logs/clover.xml
+			--coverage-html ../build/coverage
+			phpbb_all_tests all_tests.php"
+			passthru="true" />
+
+
+		<!-- Does not allow changing the working directory to tests/
+			 so this approach does not work for us unfortunately
+		<phpunit codecoverage="true" haltonfailure="true">
+			<formatter todir="build/logs" type="xml"/>
+			<batchtest>
+				<fileset dir="tests">
+					<include name="all_tests.php"/>
+				</fileset>
+			</batchtest>
+		</phpunit>
+		-->
+	</target>
+
+	<target name="old-version-diffs">
+		<foreach list="${oldversions}" param="version" target="old-version-diff" />
+	</target>
+
+	<!-- This target retrieves an old version from the git tag release-${version}
+	     and creates a diff between that release and the new one -->
+	<target name="old-version-diff">
+		<echo msg="Retrieving version ${version}" />
+		<mkdir dir="build/old_versions/release-${version}" />
+
+		<phingcall target="export">
+			<property name="revision" value="release-${version}" />
+			<property name="dir" value="build/old_versions/release-${version}" />
+		</phingcall>
+
+		<phingcall target="clean-diff-dir">
+			<property name="dir" value="build/old_versions/release-${version}" />
+		</phingcall>
+
+		<exec dir="build/old_versions" command="diff -crNEBwd release-${version} release-${newversion} >
+			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
+	</target>
+
+	<target name="prepare-new-version">
+		<!-- select the currently checked out commit (HEAD) for packaging -->
+		<mkdir dir="build/new_version/phpBB3" />
+		<phingcall target="export">
+			<property name="revision" value="HEAD" />
+			<property name="dir" value="build/new_version/phpBB3" />
+		</phingcall>
+
+		<!-- copy into directory for diffs -->
+		<exec dir="build" command="cp -rp new_version/phpBB3 old_versions/release-${newversion}" />
+		<!-- and clean up -->
+		<phingcall target="clean-diff-dir">
+			<property name="dir" value="build/old_versions/release-${newversion}" />
+		</phingcall>
+
+		<!-- create an empty config.php file (not for diffs) -->
+		<touch file="build/new_version/phpBB3/config.php" />
+
+	</target>
+
+	<target name="create-package" depends="prepare-new-version,old-version-diffs">
+		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
+		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
+	</target>
+
+	<!--
+		This target can be called using phingcall to retrieve a clean
+		checkout of a commit from git. It will only export the phpBB directory.
+		The properties revision and dir are required.
+		This target will remove directories that are not needed in distribution
+		and set correct permissions.
+	-->
+	<target name="export">
+		<exec dir="phpBB"
+			command="git archive ${revision} | tar -x -C ../${dir}"
+			checkreturn="true" />
+		<delete file="${dir}/config.php" />
+		<delete dir="${dir}/develop" />
+		<delete dir="${dir}/install/data" />
+
+		<echo msg="Setting permissions for checkout of ${revision} in ${dir}" />
+		<!-- set permissions of all files to 644, directories to 755 -->
+		<exec dir="${dir}" command="find -type f|xargs chmod 644" escape="false" />
+		<exec dir="${dir}" command="find -type d|xargs chmod 755" escape="false" />
+		<!-- set permissions of some directories to 777 -->
+		<chmod mode="0777" file="${dir}/cache" />
+		<chmod mode="0777" file="${dir}/store" />
+		<chmod mode="0777" file="${dir}/files" />
+		<chmod mode="0777" file="${dir}/images/avatars/upload" />
+	</target>
+
+	<target name="clean-diff-dir">
+		<delete dir="${dir}/cache" />
+		<delete dir="${dir}/docs" />
+		<delete dir="${dir}/files" />
+		<delete dir="${dir}/install" />
+		<delete dir="${dir}/store" />
+	</target>
+
+</project>

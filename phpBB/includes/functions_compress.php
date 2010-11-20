@@ -53,13 +53,18 @@ class compress
 			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 
+			/**
+			* Commented out, as adding the folders produces corrupted archives
 			if ($src_path)
 			{
 				$this->data($src_path, '', true, stat("$phpbb_root_path$src"));
 			}
+			*/
 
 			foreach ($filelist as $path => $file_ary)
 			{
+				/**
+				* Commented out, as adding the folders produces corrupted archives
 				if ($path)
 				{
 					// Same as for src_path
@@ -68,6 +73,7 @@ class compress
 
 					$this->data("$src_path$path", '', true, stat("$phpbb_root_path$src$path"));
 				}
+				*/
 
 				foreach ($file_ary as $file)
 				{
@@ -502,8 +508,8 @@ class compress_tar extends compress
 	function compress_tar($mode, $file, $type = '')
 	{
 		$type = (!$type) ? $file : $type;
-		$this->isgz = (strpos($type, '.tar.gz') !== false || strpos($type, '.tgz') !== false) ? true : false;
-		$this->isbz = (strpos($type, '.tar.bz2') !== false) ? true : false;
+		$this->isgz = preg_match('#(\.tar\.gz|\.tgz)$#', $type);
+		$this->isbz = preg_match('#\.tar\.bz2$#', $type);
 
 		$this->mode = &$mode;
 		$this->file = &$file;

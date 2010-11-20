@@ -49,7 +49,7 @@ class acp_groups
 
 
 		// Clear some vars
-		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
 
 		// Grab basic data for group, if group_id is set and exists
@@ -392,6 +392,15 @@ class acp_groups
 						{
 							avatar_delete('group', $group_row, true);
 						}
+					}
+
+					// Validate the length of "Maximum number of allowed recipients per private message" setting.
+					// We use 16777215 as a maximum because it matches MySQL unsigned mediumint maximum value
+					// which is the lowest amongst DBMSes supported by phpBB3
+					if ($max_recipients_error = validate_data($submit_ary, array('max_recipients' => array('num', false, 0, 16777215))))
+					{
+						// Replace "error" string with its real, localised form
+						$error = array_merge($error, array_map(array(&$user, 'lang'), $max_recipients_error));
 					}
 
 					if (!sizeof($error))

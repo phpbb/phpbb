@@ -297,6 +297,7 @@ function user_add($user_row, $cp_data = false)
 			if ($config['new_member_group_default'])
 			{
 				group_user_add($add_group_id, $user_id, false, false, true);
+				$user_row['group_id'] = $add_group_id;
 			}
 			else
 			{
@@ -527,7 +528,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE, PRIVMSGS_FOLDER_TABLE, PRIVMSGS_RULES_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -765,7 +766,8 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]));
+				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
+				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
 			}
 			else
 			{
@@ -836,14 +838,15 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
 
-			// Do not allow banning yourself
+			// Do not allow banning yourself, the guest account, or founders.
+			$non_bannable = array($user->data['user_id'], ANONYMOUS);
 			if (sizeof($founder))
 			{
-				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
+				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), $non_bannable), true);
 			}
 			else
 			{
-				$sql .= ' AND user_id <> ' . $user->data['user_id'];
+				$sql .= ' AND ' . $db->sql_in_set('user_id', $non_bannable, true);
 			}
 
 			$result = $db->sql_query($sql);
@@ -1227,22 +1230,39 @@ function user_unban($mode, $ban)
 }
 
 /**
-* Whois facility
+* Internet Protocol Address Whois
+* RFC3912: WHOIS Protocol Specification
 *
-* @link http://tools.ietf.org/html/rfc3912 RFC3912: WHOIS Protocol Specification
+* @param string $ip		Ip address, either IPv4 or IPv6.
+*
+* @return string		Empty string if not a valid ip address.
+*						Otherwise make_clickable()'ed whois result.
 */
 function user_ipwhois($ip)
 {
-	$ipwhois = '';
-
-	// Check IP
-	// Only supporting IPv4 at the moment...
-	if (empty($ip) || !preg_match(get_preg_expression('ipv4'), $ip))
+	if (empty($ip))
 	{
 		return '';
 	}
 
-	if (($fsk = @fsockopen('whois.arin.net', 43)))
+	if (preg_match(get_preg_expression('ipv4'), $ip))
+	{
+		// IPv4 address
+		$whois_host = 'whois.arin.net.';
+	}
+	else if (preg_match(get_preg_expression('ipv6'), $ip))
+	{
+		// IPv6 address
+		$whois_host = 'whois.sixxs.net.';
+	}
+	else
+	{
+		return '';
+	}
+
+	$ipwhois = '';
+
+	if (($fsk = @fsockopen($whois_host, 43)))
 	{
 		// CRLF as per RFC3912
 		fputs($fsk, "$ip\r\n");
@@ -1255,7 +1275,7 @@ function user_ipwhois($ip)
 
 	$match = array();
 
-	// Test for referrals from ARIN to other whois databases, roll on rwhois
+	// Test for referrals from $whois_host to other whois databases, roll on rwhois
 	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
@@ -1283,7 +1303,7 @@ function user_ipwhois($ip)
 			@fclose($fsk);
 		}
 
-		// Use the result from ARIN if we don't get any result here
+		// Use the result from $whois_host if we don't get any result here
 		$ipwhois = (empty($buffer)) ? $ipwhois : $buffer;
 	}
 
@@ -2283,7 +2303,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 /**
 * Uploading/Changing user avatar
 */
-function avatar_process_user(&$error, $custom_userdata = false)
+function avatar_process_user(&$error, $custom_userdata = false, $can_upload = null)
 {
 	global $config, $phpbb_root_path, $auth, $user, $db;
 
@@ -2322,7 +2342,10 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	$avatar_select = basename(request_var('avatar_select', ''));
 
 	// Can we upload?
-	$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+	if (is_null($can_upload))
+	{
+		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+	}
 
 	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
 	{
@@ -2347,7 +2370,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		}
 		else
 		{
-			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $sql_ary['user_avatar']);
+			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . urldecode($sql_ary['user_avatar']));
 			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
 		}
 	}

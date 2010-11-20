@@ -114,7 +114,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 					{
 						$_v = null;
 					}
-					set_var($_k, $_k, $sub_key_type);
+					set_var($_k, $_k, $sub_key_type, $multibyte);
 					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
 				}
 			}
@@ -175,11 +175,8 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 	switch ($db->sql_layer)
 	{
 		case 'firebird':
-			$sql_update = 'CAST(CAST(config_value as integer) + ' . (int) $increment . ' as VARCHAR(255))';
-		break;
-
 		case 'postgres':
-			$sql_update = 'int4(config_value) + ' . (int) $increment;
+			$sql_update = 'CAST(CAST(config_value as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
 		break;
 
 		// MySQL, SQlite, mssql, mssql_odbc, oracle
@@ -198,11 +195,28 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 
 /**
 * Generates an alphanumeric random string of given length
+*
+* @return string
 */
 function gen_rand_string($num_chars = 8)
 {
+	// [a, z] + [0, 9] = 36
+	return substr(strtoupper(base_convert(unique_id(), 16, 36)), 0, $num_chars);
+}
+
+/**
+* Generates a user-friendly alphanumeric random string of given length
+* We remove 0 and O so users cannot confuse those in passwords etc.
+*
+* @return string
+*/
+function gen_rand_string_friendly($num_chars = 8)
+{
 	$rand_str = unique_id();
-	$rand_str = str_replace('0', 'Z', strtoupper(base_convert($rand_str, 16, 35)));
+
+	// Remove Z and Y from the base_convert(), replace 0 with Z and O with Y
+	// [a, z] + [0, 9] - {z, y} = [a, z] + [0, 9] - {0, o} = 34
+	$rand_str = str_replace(array('0', 'O'), array('Z', 'Y'), strtoupper(base_convert($rand_str, 16, 34)));
 
 	return substr($rand_str, 0, $num_chars);
 }
@@ -704,7 +718,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if (is_readable($filename) && is_writable($filename))
+			if (is_readable($filename) && phpbb_is_writable($filename))
 			{
 				break;
 			}
@@ -714,7 +728,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename)))
+			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || phpbb_is_writable($filename)))
 			{
 				break;
 			}
@@ -724,7 +738,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename)))
+			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || phpbb_is_writable($filename)))
 			{
 				break;
 			}
@@ -1038,7 +1052,7 @@ function phpbb_own_realpath($path)
 	// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
 	// because we must be inside that basedir, the question is where...
 	// @internal The slash in is_dir() gets around an open_basedir restriction
-	if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
+	if (!@file_exists($resolved) || (!@is_dir($resolved . '/') && !is_file($resolved)))
 	{
 		return false;
 	}
@@ -1663,10 +1677,11 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param string $sql_extra		Extra WHERE SQL statement
 * @param string $sql_sort		ORDER BY SQL sorting statement
 * @param string $sql_limit		Limits the size of unread topics list, 0 for unlimited query
+* @param string $sql_limit_offset  Sets the offset of the first row to search, 0 to search from the start
 *
 * @return array[int][int]		Topic ids as keys, mark_time of topic as value
 */
-function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001)
+function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {
 	global $config, $db, $user;
 
@@ -1712,7 +1727,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 		);
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, $sql_limit);
+		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1745,7 +1760,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			WHERE t.topic_last_post_time > ' . $user_lastmark . "
 			$sql_extra
 			$sql_sort";
-		$result = $db->sql_query_limit($sql, $sql_limit);
+		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -2139,8 +2154,8 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 
-	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
-	// They could mimick most of what is within this function
+	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
+	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
 	{
 		if ($phpbb_hook->hook_return(__FUNCTION__))
@@ -2297,6 +2312,8 @@ function redirect($url, $return = false, $disable_cd_check = false)
 {
 	global $db, $cache, $config, $user, $phpbb_root_path;
 
+	$failover_flag = false;
+
 	if (empty($user->lang))
 	{
 		$user->add_lang('common');
@@ -2336,60 +2353,77 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		// Is the uri pointing to the current directory?
-		if ($pathinfo['dirname'] == '.')
+		if (!$disable_cd_check && !file_exists($pathinfo['dirname']))
 		{
-			$url = str_replace('./', '', $url);
+			$url = str_replace('../', '', $url);
+			$pathinfo = pathinfo($url);
 
-			// Strip / from the beginning
-			if ($url && substr($url, 0, 1) == '/')
+			if (!file_exists($pathinfo['dirname']))
 			{
-				$url = substr($url, 1);
+				// fallback to "last known user page"
+				// at least this way we know the user does not leave the phpBB root
+				$url = generate_board_url() . '/' . $user->page['page'];
+				$failover_flag = true;
 			}
+		}
 
-			if ($user->page['page_dir'])
+		if (!$failover_flag)
+		{
+			// Is the uri pointing to the current directory?
+			if ($pathinfo['dirname'] == '.')
 			{
-				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
+				$url = str_replace('./', '', $url);
+
+				// Strip / from the beginning
+				if ($url && substr($url, 0, 1) == '/')
+				{
+					$url = substr($url, 1);
+				}
+
+				if ($user->page['page_dir'])
+				{
+					$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
+				}
+				else
+				{
+					$url = generate_board_url() . '/' . $url;
+				}
 			}
 			else
 			{
+				// Used ./ before, but $phpbb_root_path is working better with urls within another root path
+				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
+				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
+				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
+
+				$root_dirs = array_diff_assoc($root_dirs, $intersection);
+				$page_dirs = array_diff_assoc($page_dirs, $intersection);
+
+				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+
+				// Strip / from the end
+				if ($dir && substr($dir, -1, 1) == '/')
+				{
+					$dir = substr($dir, 0, -1);
+				}
+
+				// Strip / from the beginning
+				if ($dir && substr($dir, 0, 1) == '/')
+				{
+					$dir = substr($dir, 1);
+				}
+
+				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+				// Strip / from the beginning
+				if (substr($url, 0, 1) == '/')
+				{
+					$url = substr($url, 1);
+				}
+
+				$url = (!empty($dir) ? $dir . '/' : '') . $url;
 				$url = generate_board_url() . '/' . $url;
 			}
-		}
-		else
-		{
-			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-			$root_dirs = array_diff_assoc($root_dirs, $intersection);
-			$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-			// Strip / from the end
-			if ($dir && substr($dir, -1, 1) == '/')
-			{
-				$dir = substr($dir, 0, -1);
-			}
-
-			// Strip / from the beginning
-			if ($dir && substr($dir, 0, 1) == '/')
-			{
-				$dir = substr($dir, 1);
-			}
-
-			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-			// Strip / from the beginning
-			if (substr($url, 0, 1) == '/')
-			{
-				$url = substr($url, 1);
-			}
-
-			$url = (!empty($dir) ? $dir . '/' : '') . $url;
-			$url = generate_board_url() . '/' . $url;
 		}
 	}
 
@@ -2502,6 +2536,11 @@ function build_url($strip_vars = false)
 			$key = $arguments[0];
 			unset($arguments[0]);
 
+			if ($key === '')
+			{
+				continue;
+			}
+
 			$query[$key] = implode('=', $arguments);
 		}
 
@@ -2560,6 +2599,47 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 	);
 
 	return $url;
+}
+
+/**
+* Outputs correct status line header.
+*
+* Depending on php sapi one of the two following forms is used:
+*
+* Status: 404 Not Found
+*
+* HTTP/1.x 404 Not Found
+*
+* HTTP version is taken from HTTP_VERSION environment variable,
+* and defaults to 1.0.
+*
+* Sample usage:
+*
+* send_status_line(404, 'Not Found');
+*
+* @param int $code HTTP status code
+* @param string $message Message for the status code
+* @return void
+*/
+function send_status_line($code, $message)
+{
+	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
+	{
+		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
+		header("Status: $code $message", true, $code);
+	}
+	else
+	{
+		if (isset($_SERVER['HTTP_VERSION']))
+		{
+			$version = $_SERVER['HTTP_VERSION'];
+		}
+		else
+		{
+			$version = 'HTTP/1.0';
+		}
+		header("$version $code $message", true, $code);
+	}
 }
 
 //Form validation
@@ -3297,7 +3377,9 @@ function get_preg_expression($mode)
 	switch ($mode)
 	{
 		case 'email':
-			return '(?:[a-z0-9\'\.\-_\+\|]++|&amp;)+@[a-z0-9\-]+\.(?:[a-z0-9\-]+\.)*[a-z]+';
+			// Regex written by James Watts and Francisco Jose Martin Moreno
+			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+			return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
 		break;
 
 		case 'bbcode_htm':
@@ -3319,7 +3401,7 @@ function get_preg_expression($mode)
 		break;
 
 		case 'ipv6':
-			return '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){5}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:))$#i';
+			return '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){0,5}(?:[\dA-F]{1,4}(?::[\dA-F]{1,4})?|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:)|(?:::))$#i';
 		break;
 
 		case 'url':
@@ -3380,25 +3462,110 @@ function short_ipv6($ip, $length)
 /**
 * Wrapper for php's checkdnsrr function.
 *
-* The windows failover is from the php manual
-* Please make sure to check the return value for === true and === false, since NULL could
-* be returned too.
+* @param string $host	Fully-Qualified Domain Name
+* @param string $type	Resource record type to lookup
+*						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
+*						Other types may work or may not work
 *
-* @return true if entry found, false if not, NULL if this function is not supported by this environment
+* @return mixed		true if entry found,
+*					false if entry not found,
+*					null if this function is not supported by this environment
+*
+* Since null can also be returned, you probably want to compare the result
+* with === true or === false,
+*
+* @author bantu
 */
-function phpbb_checkdnsrr($host, $type = '')
+function phpbb_checkdnsrr($host, $type = 'MX')
 {
-	$type = (!$type) ? 'MX' : $type;
-
-	if (DIRECTORY_SEPARATOR == '\\')
+	// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+	if (substr($host, -1) == '.')
 	{
-		if (!function_exists('exec'))
+		$host_fqdn = $host;
+		$host = substr($host, 0, -1);
+	}
+	else
+	{
+		$host_fqdn = $host . '.';
+	}
+	// $host		has format	some.host.example.com
+	// $host_fqdn	has format	some.host.example.com.
+
+	// If we're looking for an A record we can use gethostbyname()
+	if ($type == 'A' && function_exists('gethostbyname'))
+	{
+		return (@gethostbyname($host_fqdn) == $host_fqdn) ? false : true;
+	}
+
+	// checkdnsrr() is available on Windows since PHP 5.3,
+	// but until 5.3.3 it only works for MX records
+	// See: http://bugs.php.net/bug.php?id=51844
+
+	// Call checkdnsrr() if 
+	// we're looking for an MX record or
+	// we're not on Windows or
+	// we're running a PHP version where #51844 has been fixed
+
+	// checkdnsrr() supports AAAA since 5.0.0
+	// checkdnsrr() supports TXT since 5.2.4
+	if (
+		($type == 'MX' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.3', '>=')) &&
+		($type != 'AAAA' || version_compare(PHP_VERSION, '5.0.0', '>=')) &&
+		($type != 'TXT' || version_compare(PHP_VERSION, '5.2.4', '>=')) &&
+		function_exists('checkdnsrr')
+	)
+	{
+		return checkdnsrr($host_fqdn, $type);
+	}
+
+	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
+	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
+
+	// Call dns_get_record() if 
+	// we're not looking for an AAAA record or
+	// we're not on Windows or
+	// we're running a PHP version where AAAA lookups work reliable
+	if (
+		($type != 'AAAA' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.1', '>=')) &&
+		function_exists('dns_get_record')
+	)
+	{
+		// dns_get_record() expects an integer as second parameter
+		// We have to convert the string $type to the corresponding integer constant.
+		$type_constant = 'DNS_' . $type;
+		$type_param = (defined($type_constant)) ? constant($type_constant) : DNS_ANY;
+
+		// dns_get_record() might throw E_WARNING and return false for records that do not exist
+		$resultset = @dns_get_record($host_fqdn, $type_param);
+
+		if (empty($resultset) || !is_array($resultset))
 		{
-			return NULL;
+			return false;
+		}
+		else if ($type_param == DNS_ANY)
+		{
+			// $resultset is a non-empty array
+			return true;
 		}
 
-		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
-		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host) . '.', $output);
+		foreach ($resultset as $result)
+		{
+			if (
+				isset($result['host']) && $result['host'] == $host && 
+				isset($result['type']) && $result['type'] == $type
+			)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// If we're on Windows we can still try to call nslookup via exec() as a last resort
+	if (DIRECTORY_SEPARATOR == '\\' && function_exists('exec'))
+	{
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host_fqdn), $output);
 
 		// If output is empty, the nslookup failed
 		if (empty($output))
@@ -3408,24 +3575,70 @@ function phpbb_checkdnsrr($host, $type = '')
 
 		foreach ($output as $line)
 		{
-			if (!trim($line))
+			$line = trim($line);
+
+			if (empty($line))
 			{
 				continue;
 			}
 
-			// Valid records begin with host name:
-			if (strpos($line, $host) === 0)
+			// Squash tabs and multiple whitespaces to a single whitespace.
+			$line = preg_replace('/\s+/', ' ', $line);
+
+			switch ($type)
 			{
-				return true;
+				case 'MX':
+					if (stripos($line, "$host MX") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'NS':
+					if (stripos($line, "$host nameserver") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'TXT':
+					if (stripos($line, "$host text") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'CNAME':
+					if (stripos($line, "$host canonical name") === 0)
+					{
+						return true;
+					}
+
+				default:
+				case 'A':
+				case 'AAAA':
+					if (!empty($host_matches))
+					{
+						// Second line
+						if (stripos($line, "Address: ") === 0)
+						{
+							return true;
+						}
+						else
+						{
+							$host_matches = false;
+						}
+					}
+					else if (stripos($line, "Name: $host") === 0)
+					{
+						// First line
+						$host_matches = true;
+					}
+				break;
 			}
 		}
 
 		return false;
-	}
-	else if (function_exists('checkdnsrr'))
-	{
-		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
-		return (checkdnsrr($host . '.', $type)) ? true : false;
 	}
 
 	return NULL;
@@ -3540,7 +3753,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			// Do not send 200 OK, but service unavailable on errors
-			header('HTTP/1.1 503 Service Unavailable');
+			send_status_line(503, 'Service Unavailable');
 
 			garbage_collection();
 
@@ -3607,6 +3820,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (empty($user->lang))
 			{
 				$user->setup();
+			}
+
+			if ($msg_text == 'ERROR_NO_ATTACHMENT' || $msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
+			{
+				send_status_line(404, 'Not Found');
 			}
 
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
@@ -4005,7 +4223,8 @@ function phpbb_http_login($param)
 		}
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
 		{
-			header('HTTP/1.0 401 Unauthorized');
+			send_status_line(401, 'Unauthorized');
+
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
@@ -4017,7 +4236,7 @@ function phpbb_http_login($param)
 	$param['auth_message'] = preg_replace('/[\x80-\xFF]/', '?', $param['auth_message']);
 
 	header('WWW-Authenticate: Basic realm="' . $param['auth_message'] . '"');
-	header('HTTP/1.0 401 Unauthorized');
+	send_status_line(401, 'Unauthorized');
 
 	trigger_error('NOT_AUTHORISED');
 }
@@ -4238,7 +4457,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_TOPIC_ID'			=> $topic_id,
 
 		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
-		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => str_replace('&amp;', '&', build_url()))),
+		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
 		'S_ENABLE_FEEDS_OVERALL'	=> ($config['feed_overall']) ? true : false,
@@ -4246,6 +4465,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_ENABLE_FEEDS_TOPICS'		=> ($config['feed_topics_new']) ? true : false,
 		'S_ENABLE_FEEDS_TOPICS_ACTIVE'	=> ($config['feed_topics_active']) ? true : false,
 		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
+
+		'S_LOAD_UNREADS'			=> ($config['load_unreads_search'] && ($config['load_anon_lastread'] || $user->data['is_registered'])) ? true : false,
 
 		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
@@ -4259,7 +4480,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : append_sid("{$phpbb_root_path}style.$phpEx", 'id=' . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'], true, $user->session_id),
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : append_sid("{$phpbb_root_path}style.$phpEx", 'id=' . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang']),
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 
 		'T_THEME_NAME'			=> $user->theme['theme_path'],

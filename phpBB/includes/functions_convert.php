@@ -1025,6 +1025,9 @@ function set_user_options()
 		'bbcode'		=> array('bit' => 8, 'default' => 1),
 		'smilies'		=> array('bit' => 9, 'default' => 1),
 		'popuppm'		=> array('bit' => 10, 'default' => 0),
+		'sig_bbcode'	=> array('bit' => 15, 'default' => 1),
+		'sig_smilies'	=> array('bit' => 16, 'default' => 1),
+		'sig_links'		=> array('bit' => 17, 'default' => 1),
 	);
 
 	$option_field = 0;
@@ -1645,6 +1648,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 
 					case 'mssql':
 					case 'sqlite':
+					case 'mssqlnative':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 					break;
 
@@ -2302,7 +2306,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		}
 	}
 
-	if (!is_writable($path))
+	if (!phpbb_is_writable($path))
 	{
 		@chmod($path, 0777);
 	}
@@ -2337,7 +2341,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!@is_writable($trg_path))
+	if (!phpbb_is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2404,7 +2408,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!@is_writable($trg_path . $dir))
+			if (!phpbb_is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;

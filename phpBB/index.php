@@ -115,10 +115,10 @@ $template->assign_vars(array(
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> $birthday_list,
 
-	'FORUM_IMG'				=> $user->img('forum_read', 'NO_NEW_POSTS'),
-	'FORUM_NEW_IMG'			=> $user->img('forum_unread', 'NEW_POSTS'),
-	'FORUM_LOCKED_IMG'		=> $user->img('forum_read_locked', 'NO_NEW_POSTS_LOCKED'),
-	'FORUM_NEW_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'NO_NEW_POSTS_LOCKED'),
+	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
+	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),
+	'FORUM_LOCKED_IMG'		=> $user->img('forum_read_locked', 'NO_UNREAD_POSTS_LOCKED'),
+	'FORUM_UNREAD_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'UNREAD_POSTS_LOCKED'),
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,

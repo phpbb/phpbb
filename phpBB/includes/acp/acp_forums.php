@@ -169,7 +169,7 @@ class acp_forums
 						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
-					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', true);
+					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', false);
 
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
@@ -190,12 +190,14 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 						$cache->destroy('sql', FORUMS_TABLE);
 
+						$copied_permissions = false;
 						// Copy permissions?
 						if ($forum_perm_from && $forum_perm_from != $forum_data['forum_id'] &&
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
+							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
 						else if (!$this->parent_id && $action != 'edit' && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
@@ -211,13 +213,13 @@ class acp_forums
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 
 						// Redirect to permissions
-						if ($auth->acl_get('a_fauth'))
+						if ($auth->acl_get('a_fauth') && !$copied_permissions)
 						{
 							$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 						}
 
 						// redirect directly to permission settings screen if authed
-						if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
+						if ($action == 'add' && !$copied_permissions && $auth->acl_get('a_fauth'))
 						{
 							meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
 						}
@@ -639,7 +641,8 @@ class acp_forums
 					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL) ? true : false,
 					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE) ? true : false,
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
-					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
+					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_POST) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : true,
+					'S_ENABLE_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_CAT) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
@@ -980,7 +983,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				if ($row['forum_type'] == FORUM_LINK)
@@ -1639,6 +1642,9 @@ class acp_forums
 
 		delete_attachments('topic', $topic_ids, false);
 
+		// Delete shadow topics pointing to topics in this forum
+		delete_topic_shadows($forum_id);
+
 		// Before we remove anything we make sure we are able to adjust the post counts later. ;)
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
@@ -1705,6 +1711,9 @@ class acp_forums
 					)
 				);
 
+				// Amount of rows we select and delete in one iteration.
+				$batch_size = 500;
+
 				foreach ($tables_ary as $field => $tables)
 				{
 					$start = 0;
@@ -1714,7 +1723,7 @@ class acp_forums
 						$sql = "SELECT $field
 							FROM " . POSTS_TABLE . '
 							WHERE forum_id = ' . $forum_id;
-						$result = $db->sql_query_limit($sql, 500, $start);
+						$result = $db->sql_query_limit($sql, $batch_size, $start);
 
 						$ids = array();
 						while ($row = $db->sql_fetchrow($result))
@@ -1733,7 +1742,7 @@ class acp_forums
 							}
 						}
 					}
-					while ($row);
+					while (sizeof($ids) == $batch_size);
 				}
 				unset($ids);
 

@@ -31,6 +31,12 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 
 if (isset($_GET['avatar']))
 {
+	if (!defined('E_DEPRECATED'))
+	{
+		define('E_DEPRECATED', 8192);
+	}
+	error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
+
 	require($phpbb_root_path . 'config.' . $phpEx);
 
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
@@ -42,6 +48,7 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 	$db = new $sql_db();
 	$cache = new cache();
@@ -61,7 +68,7 @@ if (isset($_GET['avatar']))
 	$avatar_group = false;
 	$exit = false;
 
-	if ($filename[0] === 'g')
+	if (isset($filename[0]) && $filename[0] === 'g')
 	{
 		$avatar_group = true;
 		$filename = substr($filename, 1);
@@ -70,7 +77,7 @@ if (isset($_GET['avatar']))
 	// '==' is not a bug - . as the first char is as bad as no dot at all
 	if (strpos($filename, '.') == false)
 	{
-		header('HTTP/1.0 403 Forbidden');
+		send_status_line(403, 'Forbidden');
 		$exit = true;
 	}
 
@@ -84,7 +91,7 @@ if (isset($_GET['avatar']))
 	if (!$exit && !in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 Forbidden");
+		send_status_line(403, 'Forbidden');
 		$exit = true;
 	}
 
@@ -94,7 +101,7 @@ if (isset($_GET['avatar']))
 		if (!$filename)
 		{
 			// no way such an avatar could exist. They are not following the rules, stop the show.
-			header("HTTP/1.0 403 Forbidden");
+			send_status_line(403, 'Forbidden');
 		}
 		else
 		{
@@ -192,7 +199,7 @@ else
 		$row['forum_id'] = false;
 		if (!$auth->acl_get('u_pm_download'))
 		{
-			header('HTTP/1.0 403 Forbidden');
+			send_status_line(403, 'Forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 
@@ -215,7 +222,7 @@ else
 
 		if (!$allowed)
 		{
-			header('HTTP/1.0 403 Forbidden');
+			send_status_line(403, 'Forbidden');
 			trigger_error('ERROR_NO_ATTACHMENT');
 		}
 	}
@@ -230,7 +237,7 @@ else
 
 if (!download_allowed())
 {
-	header('HTTP/1.0 403 Forbidden');
+	send_status_line(403, 'Forbidden');
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
@@ -376,7 +383,7 @@ function send_avatar_to_browser($file, $browser)
 	}
 	else
 	{
-		header('HTTP/1.0 404 Not Found');
+		send_status_line(404, 'Not Found');
 	}
 }
 
@@ -670,15 +677,7 @@ function set_modified_headers($stamp, $browser)
 	{
 		if ($last_load !== false && $last_load >= $stamp)
 		{
-			if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
-			{
-				// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
-				header('Status: 304 Not Modified', true, 304);
-			}
-			else
-			{
-				header('HTTP/1.0 304 Not Modified', true, 304);
-			}
+			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
 			header('Pragma: public');
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));

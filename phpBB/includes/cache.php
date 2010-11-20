@@ -82,11 +82,20 @@ class cache extends acm
 			$result = $db->sql_query($sql);
 
 			$censors = array();
+			$unicode = ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false) ? true : false;
+
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+				if ($unicode)
 				{
-					$censors['match'][] = '#(?<![\p{Nd}\p{L}_])(' . str_replace('\*', '[\p{Nd}\p{L}_]*?', preg_quote($row['word'], '#')) . ')(?![\p{Nd}\p{L}_])#iu';
+					// Unescape the asterisk to simplify further conversions
+					$row['word'] = str_replace('\*', '*', preg_quote($row['word'], '#'));
+					
+					// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
+					$row['word'] = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*(?=[\p{Nd}\p{L}_])#iu', '#^\*#', '#\*$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $row['word']);
+
+					// Generate the final substitution
+					$censors['match'][] = '#(?<![\p{Nd}\p{L}_-])(' . $row['word'] . ')(?![\p{Nd}\p{L}_-])#iu';
 				}
 				else
 				{
@@ -297,6 +306,7 @@ class cache extends acm
 			{
 				case 'mssql':
 				case 'mssql_odbc':
+				case 'mssqlnative':
 					$sql = 'SELECT user_id, bot_agent, bot_ip
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1

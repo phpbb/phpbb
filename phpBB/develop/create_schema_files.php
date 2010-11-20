@@ -266,7 +266,8 @@ foreach ($supported_dbms as $dbms)
 
 		case 'mssql':
 			$line = "/*\n\n \$I" . "d: $\n\n*/\n\n";
-			$line .= "BEGIN TRANSACTION\nGO\n\n";
+			// no need to do this, no transaction support for schema changes
+			//$line .= "BEGIN TRANSACTION\nGO\n\n";
 		break;
 
 		case 'oracle':
@@ -749,7 +750,8 @@ foreach ($supported_dbms as $dbms)
 	switch ($dbms)
 	{
 		case 'mssql':
-			$line = "\nCOMMIT\nGO\n\n";
+			// No need to do this, no transaction support for schema changes
+			//$line = "\nCOMMIT\nGO\n\n";
 		break;
 
 		case 'sqlite':

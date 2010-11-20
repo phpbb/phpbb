@@ -56,10 +56,18 @@ class dbal_oracle extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache forced to false for Oracle
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
+		/**
+		* force $use_cache false.  I didn't research why the caching code below is commented out
+		* but I assume its because the Oracle extension provides a direct method to access it
+		* without a query.
+		*/
+
+		$use_cache = false;
 /*
 		global $cache;
 
@@ -261,6 +269,10 @@ class dbal_oracle extends dbal
 						{
 							$cols = explode(', ', $regs[2]);
 
+/*						The code inside this comment block breaks clob handling, but does allow the
+						database restore script to work.  If you want to allow no posts longer than 4KB
+						and/or need the db restore script, uncomment this.
+
 							preg_match_all('/\'(?:[^\']++|\'\')*+\'|[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
 
 							if (sizeof($cols) !== sizeof($vals))
@@ -310,6 +322,7 @@ class dbal_oracle extends dbal
 
 								$vals = array(0 => $vals);
 							}
+*/
 
 							$inserts = $vals[0];
 							unset($vals);

@@ -46,7 +46,10 @@ class dbal_postgres extends dbal
 
 		if ($sqlserver)
 		{
-			if (strpos($sqlserver, ':') !== false)
+			// $sqlserver can carry a port separated by : for compatibility reasons
+			// If $sqlserver has more than one : it's probably an IPv6 address.
+			// In this case we only allow passing a port via the $port variable.
+			if (substr_count($sqlserver, ':') === 1)
 			{
 				list($sqlserver, $port) = explode(':', $sqlserver);
 			}
@@ -76,7 +79,14 @@ class dbal_postgres extends dbal
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
+		if ($this->persistency)
+		{
+			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
+		}
+		else
+		{
+			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
+		}
 
 		if ($this->db_connect_id)
 		{
@@ -98,13 +108,14 @@ class dbal_postgres extends dbal
 	/**
 	* Version information about used database
 	* @param bool $raw if true, only return the fetched sql_server_version
+	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
 	* @return string sql server version
 	*/
-	function sql_server_info($raw = false)
+	function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
-		if (empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
+		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
 		{
 			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
 			$row = @pg_fetch_assoc($query_id, null);
@@ -112,7 +123,7 @@ class dbal_postgres extends dbal
 
 			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
 
-			if (!empty($cache))
+			if (!empty($cache) && $use_cache)
 			{
 				$cache->put('pgsql_version', $this->sql_server_version);
 			}

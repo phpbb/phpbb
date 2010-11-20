@@ -1,0 +1,20 @@
+<!-- IF S_FALSE -->
+fail
+<!-- ENDIF -->
+<!-- IF S_TRUE -->
+pass
+<!-- ENDIF -->
+<!-- IF S_FALSE -->
+fail
+<!-- ELSEIF S_FALSE and not S_TRUE -->
+fail
+<!-- ELSE -->
+pass
+<!-- ENDIF -->
+<!-- BEGIN empty -->
+fail
+<!-- BEGINELSE -->
+pass
+<!-- END empty -->
+
+<!-- DUMMY var -->

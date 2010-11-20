@@ -83,7 +83,7 @@ class session
 		$query_string = trim(implode('&', $use_args));
 
 		// basenamed page name (for example: index.php)
-		$page_name = basename($script_name);
+		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
 		// current directory within the phpBB root (for example: adm)
@@ -283,6 +283,17 @@ class session
 			{
 				// Just break
 				break;
+			}
+
+			// Quick check for IPv4-mapped address in IPv6
+			if (stripos($ip, '::ffff:') === 0)
+			{
+				$ipv4 = substr($ip, 7);
+
+				if (preg_match(get_preg_expression('ipv4'), $ipv4))
+				{
+					$ip = $ipv4;
+				}
 			}
 
 			// Use the last in chain
@@ -608,6 +619,12 @@ class session
 		}
 		else
 		{
+			// Bot user, if they have a SID in the Request URI we need to get rid of it
+			// otherwise they'll index this page with the SID, duplicate content oh my!
+			if (isset($_GET['sid']))
+			{
+				redirect(build_url(array('sid')));
+			}
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
@@ -742,7 +759,7 @@ class session
 
 				if ((int) $row['sessions'] > (int) $config['active_sessions'])
 				{
-					header('HTTP/1.1 503 Service Unavailable');
+					send_status_line(503, 'Service Unavailable');
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
@@ -977,7 +994,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			if (!class_exists('captcha_factory'))
+			if (!class_exists('phpbb_captcha_factory'))
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
@@ -1815,7 +1832,7 @@ class user extends session
 		{
 			if ($this->data['is_bot'])
 			{
-				header('HTTP/1.1 503 Service Unavailable');
+				send_status_line(503, 'Service Unavailable');
 			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
@@ -1825,7 +1842,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !defined('IN_ADMIN'))
 			{
 				// Set board disabled to true to let the admins/mods get the proper notification
 				$config['board_disable'] = '1';
@@ -1834,7 +1851,7 @@ class user extends session
 				{
 					if ($this->data['is_bot'])
 					{
-						header('HTTP/1.1 503 Service Unavailable');
+						send_status_line(503, 'Service Unavailable');
 					}
 					trigger_error('BOARD_UNAVAILABLE');
 				}
@@ -2128,9 +2145,9 @@ class user extends session
 		// Zone offset
 		$zone_offset = $this->timezone + $this->dst;
 
-		// Show date <= 1 hour ago as 'xx min ago'
+		// Show date <= 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
 		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
-		if ($delta <= 3600 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
+		if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
 		{
 			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 		}

@@ -160,6 +160,36 @@ class phpbb_db_tools
 			'VARBINARY'	=> '[varchar] (255)',
 		),
 
+		'mssqlnative'	=> array(
+			'INT:'		=> '[int]',
+			'BINT'		=> '[float]',
+			'UINT'		=> '[int]',
+			'UINT:'		=> '[int]',
+			'TINT:'		=> '[int]',
+			'USINT'		=> '[int]',
+			'BOOL'		=> '[int]',
+			'VCHAR'		=> '[varchar] (255)',
+			'VCHAR:'	=> '[varchar] (%d)',
+			'CHAR:'		=> '[char] (%d)',
+			'XSTEXT'	=> '[varchar] (1000)',
+			'STEXT'		=> '[varchar] (3000)',
+			'TEXT'		=> '[varchar] (8000)',
+			'MTEXT'		=> '[text]',
+			'XSTEXT_UNI'=> '[varchar] (100)',
+			'STEXT_UNI'	=> '[varchar] (255)',
+			'TEXT_UNI'	=> '[varchar] (4000)',
+			'MTEXT_UNI'	=> '[text]',
+			'TIMESTAMP'	=> '[int]',
+			'DECIMAL'	=> '[float]',
+			'DECIMAL:'	=> '[float]',
+			'PDECIMAL'	=> '[float]',
+			'PDECIMAL:'	=> '[float]',
+			'VCHAR_UNI'	=> '[varchar] (255)',
+			'VCHAR_UNI:'=> '[varchar] (%d)',
+			'VCHAR_CI'	=> '[varchar] (255)',
+			'VARBINARY'	=> '[varchar] (255)',
+		),
+
 		'oracle'	=> array(
 			'INT:'		=> 'number(%d)',
 			'BINT'		=> 'number(20)',
@@ -261,7 +291,7 @@ class phpbb_db_tools
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
 	* @var array
 	*/
-	var $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
+	var $supported_dbms = array('firebird', 'mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
 
 	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
@@ -305,6 +335,10 @@ class phpbb_db_tools
 			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
+			break;
+
+			case 'mssqlnative':
+				$this->sql_layer = 'mssqlnative';
 			break;
 
 			default:
@@ -368,6 +402,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'mssql':
+			case 'mssqlnative':
 				$table_sql = 'CREATE TABLE [' . $table_name . '] (' . "\n";
 			break;
 
@@ -386,6 +421,7 @@ class phpbb_db_tools
 			switch ($this->sql_layer)
 			{
 				case 'mssql':
+				case 'mssqlnative':
 					$columns[] = "\t [{$column_name}] " . $prepared_column['column_type_sql_default'];
 				break;
 
@@ -425,6 +461,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
 				$statements[] = $table_sql;
 			break;
@@ -453,6 +490,7 @@ class phpbb_db_tools
 
 					case 'firebird':
 					case 'mssql':
+					case 'mssqlnative':
 						// We need the data here
 						$old_return_statements = $this->return_statements;
 						$this->return_statements = true;
@@ -573,7 +611,7 @@ class phpbb_db_tools
 	*	drop_columns: Removing/Dropping columns
 	*	add_primary_keys: adding primary keys
 	*	add_unique_index: adding an unique index
-	*	add_index: adding an index
+	*	add_index: adding an index (can be column:index_size if you need to provide size)
 	*
 	* The values are in this format:
 	*		{TABLE NAME}		=> array(
@@ -970,6 +1008,7 @@ class phpbb_db_tools
 			// same deal with PostgreSQL, we must perform more complex operations than
 			// we technically could
 			case 'mssql':
+			case 'mssqlnative':
 				$sql = "SELECT c.name
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
@@ -1187,6 +1226,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$sql .= " {$column_type} ";
 				$sql_default = " {$column_type} ";
 
@@ -1335,6 +1375,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
@@ -1455,6 +1496,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 
@@ -1549,6 +1591,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
 			break;
 
@@ -1652,6 +1695,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
 				$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
 				$sql .= '[' . implode("],\n\t\t[", $column) . ']';
@@ -1745,6 +1789,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
 			break;
 		}
@@ -1759,6 +1804,12 @@ class phpbb_db_tools
 	{
 		$statements = array();
 
+		// remove index length unless MySQL4
+		if ('mysql_40' != $this->sql_layer)
+		{
+			$column = preg_replace('#:.*$#', '', $column);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -1769,11 +1820,22 @@ class phpbb_db_tools
 			break;
 
 			case 'mysql_40':
+				// add index size to definition as required by MySQL4
+				foreach ($column as $i => $col)
+				{
+					if (false !== strpos($col, ':'))
+					{
+						list($col, $index_size) = explode(':', $col);
+						$column[$i] = "$col($index_size)";
+					}
+				}
+			// no break
 			case 'mysql_41':
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
 			break;
 		}
@@ -1791,7 +1853,7 @@ class phpbb_db_tools
 	{
 		$index_array = array();
 
-		if ($this->sql_layer == 'mssql')
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
 			$result = $this->db->sql_query($sql);
@@ -1900,6 +1962,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mssql':
+			case 'mssqlnative':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))

@@ -190,7 +190,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_SIG'					=> 'Signature',
 	'ACP_USER_WARNINGS'				=> 'Warnings',
 
-	'ACP_VC_SETTINGS'					=> 'CAPTCHA module settings',
+	'ACP_VC_SETTINGS'					=> 'Spambot countermeasures',
 	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA image preview',
 	'ACP_VERSION_CHECK'					=> 'Check for updates',
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View administrative permissions',
@@ -503,7 +503,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_SERVER'			=> '<strong>Altered server settings</strong>',
 	'LOG_CONFIG_SETTINGS'		=> '<strong>Altered board settings</strong>',
 	'LOG_CONFIG_SIGNATURE'		=> '<strong>Altered signature settings</strong>',
-	'LOG_CONFIG_VISUAL'			=> '<strong>Altered antibot settings</strong>',
+	'LOG_CONFIG_VISUAL'			=> '<strong>Altered anti-spambot settings</strong>',
 
 	'LOG_APPROVE_TOPIC'			=> '<strong>Approved topic</strong><br />» %s',
 	'LOG_BUMP_TOPIC'			=> '<strong>User bumped topic</strong><br />» %s',

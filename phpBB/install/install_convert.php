@@ -685,7 +685,7 @@ class install_convert extends module
 			// Thanks MySQL, for silently converting...
 			case 'mysql':
 			case 'mysql4':
-				if (version_compare($src_db->sql_server_info(true), '4.1.3', '>='))
+				if (version_compare($src_db->sql_server_info(true, false), '4.1.3', '>='))
 				{
 					$convert->mysql_convert = true;
 				}
@@ -835,7 +835,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !@is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{
@@ -1248,6 +1248,7 @@ class install_convert extends module
 					{
 						case 'mssql':
 						case 'mssql_odbc':
+						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' ON');
 						break;
 					}
@@ -1375,6 +1376,7 @@ class install_convert extends module
 					{
 						case 'mssql':
 						case 'mssql_odbc':
+						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' OFF');
 						break;
 

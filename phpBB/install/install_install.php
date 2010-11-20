@@ -486,7 +486,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!@is_writable($phpbb_root_path . $dir))
+				if (!phpbb_is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -906,7 +906,7 @@ class install_install extends module
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
@@ -1203,6 +1203,7 @@ class install_install extends module
 		{
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssqlnative':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);
 			break;
 
@@ -1235,6 +1236,7 @@ class install_install extends module
 		$current_time = time();
 
 		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+		$user_ip = (stripos($user_ip, '::ffff:') === 0) ? substr($user_ip, 7) : $user_ip;
 
 		if ($data['script_path'] !== '/')
 		{
@@ -1375,7 +1377,7 @@ class install_install extends module
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = 'phpbb_captcha_gd'
 				WHERE config_name = 'captcha_plugin'";
-			
+
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '1'
 				WHERE config_name = 'captcha_gd'";
@@ -2107,6 +2109,7 @@ class install_install extends module
 		'Alta Vista [Bot]'			=> array('Scooter/', ''),
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
 		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Bing [Bot]'                => array('bingbot/', ''),
 		'Exabot [Bot]'				=> array('Exabot/', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),

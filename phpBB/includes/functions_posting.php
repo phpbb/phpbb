@@ -85,10 +85,10 @@ function generate_smilies($mode, $forum_id)
 
 	if ($mode == 'window')
 	{
-		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height
+		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order
 			FROM ' . SMILIES_TABLE . '
 			GROUP BY smiley_url, smiley_width, smiley_height
-			ORDER BY MIN(smiley_order)';
+			ORDER BY min_smiley_order';
 		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $start, 3600);
 	}
 	else
@@ -348,7 +348,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	{
 		$topic_type_array = array_merge(array(0 => array(
 			'VALUE'			=> POST_NORMAL,
-			'S_CHECKED'		=> ($topic_type == POST_NORMAL) ? ' checked="checked"' : '',
+			'S_CHECKED'		=> ($cur_topic_type == POST_NORMAL) ? ' checked="checked"' : '',
 			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])),
 
 			$topic_type_array
@@ -1146,7 +1146,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			}
 		}
 
-		unset($rowset[$i]);
+		unset($rowset[$post_list[$i]]);
 	}
 
 	if ($mode == 'topic_review')
@@ -1201,8 +1201,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
 		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
 			AND w.user_id NOT IN ($sql_ignore_users)
-			AND w.notify_status = 0
-			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+			AND w.notify_status = " . NOTIFY_YES . '
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 			AND u.user_id = w.user_id';
 	$result = $db->sql_query($sql);
 
@@ -1234,8 +1234,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
 				AND fw.user_id NOT IN ($sql_ignore_users)
-				AND fw.notify_status = 0
-				AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+				AND fw.notify_status = " . NOTIFY_YES . '
+				AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
 
@@ -1344,8 +1344,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!empty($update_notification['topic']))
 	{
-		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
-			SET notify_status = 1
+		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_NO . "
 			WHERE topic_id = $topic_id
 				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
 		$db->sql_query($sql);
@@ -1353,8 +1353,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!empty($update_notification['forum']))
 	{
-		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
-			SET notify_status = 1
+		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_NO . "
 			WHERE forum_id = $forum_id
 				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
 		$db->sql_query($sql);
@@ -2537,7 +2537,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{
 		// Mark this topic as posted to
-		markread('post', $data['forum_id'], $data['topic_id'], $data['post_time']);
+		markread('post', $data['forum_id'], $data['topic_id']);
 	}
 
 	// Mark this topic as read
@@ -2583,7 +2583,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete' && $post_approval)
+	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}

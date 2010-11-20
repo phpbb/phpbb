@@ -366,6 +366,7 @@ class custom_profile
 			case 'sqlite':
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssqlnative':
 				$right_delim = ']';
 				$left_delim = '[';
 			break;
@@ -542,8 +543,9 @@ class custom_profile
 				else if ($day && $month && $year)
 				{
 					global $user;
-					// d/m/y 00:00 GMT isn't necessarily on the same d/m/y in the user's timezone, so add the timezone seconds
-					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + $user->timezone + $user->dst, $user->lang['DATE_FORMAT'], true);
+					// Date should display as the same date for every user regardless of timezone, so remove offset
+					// to compensate for the offset added by user::format_date()
+					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) - ($user->timezone + $user->dst), $user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
@@ -875,6 +877,11 @@ class custom_profile
 			{
 				$now = getdate();
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+			}
+			else if ($row['field_default_value'] === '' && $row['field_type'] == FIELD_INT)
+			{
+				// We cannot insert an empty string into an integer column.
+				$row['field_default_value'] = NULL;
 			}
 
 			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];

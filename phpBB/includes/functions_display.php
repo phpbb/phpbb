@@ -396,7 +396,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else
 		{
-			$folder_alt = ($forum_unread) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
+			$folder_alt = ($forum_unread) ? 'UNREAD_POSTS' : 'NO_UNREAD_POSTS';
 		}
 
 		// Create last post link information, if appropriate
@@ -425,7 +425,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = array();
 		foreach ($subforums_list as $subforum)
 		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['NEW_POSTS'] : $user->lang['NO_NEW_POSTS']) . '">' . $subforum['name'] . '</a>';
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['UNREAD_POSTS'] : $user->lang['NO_UNREAD_POSTS']) . '">' . $subforum['name'] . '</a>';
 		}
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
@@ -660,7 +660,7 @@ function topic_generate_pagination($replies, $url)
 		$times = 1;
 		for ($j = 0; $j < $replies + 1; $j += $per_page)
 		{
-			$pagination .= '<a href="' . $url . '&amp;start=' . $j . '">' . $times . '</a>';
+			$pagination .= '<a href="' . $url . ($j == 0 ? '' : '&amp;start=' . $j) . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 5)
 			{
 				$pagination .= ' ... ';
@@ -854,7 +854,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
-		$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
+		$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
 		// Posted image?
 		if (!empty($topic_row['topic_posted']) && $topic_row['topic_posted'])
@@ -969,11 +969,16 @@ function display_user_activity(&$userdata)
 	$forum_ary = array_unique($forum_ary);
 	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
 
+	$fid_m_approve = $auth->acl_getf('m_approve', true);
+	$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', array_keys($fid_m_approve)) : '';
+
 	// Obtain active forum
 	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
+			AND (post_approved = 1
+				$sql_m_approve)
 			$forum_sql
 		GROUP BY forum_id
 		ORDER BY num_posts DESC";
@@ -996,6 +1001,8 @@ function display_user_activity(&$userdata)
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
+			AND (post_approved = 1
+				$sql_m_approve)
 			$forum_sql
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
@@ -1112,10 +1119,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 			{
 				$is_watching = true;
 
-				if ($notify_status)
+				if ($notify_status != NOTIFY_YES)
 				{
 					$sql = 'UPDATE ' . $table_sql . "
-						SET notify_status = 0
+						SET notify_status = " . NOTIFY_YES . "
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
 					$db->sql_query($sql);
@@ -1134,7 +1141,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$is_watching = true;
 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
-						VALUES ($user_id, $match_id, 0)";
+						VALUES ($user_id, $match_id, " . NOTIFY_YES . ')';
 					$db->sql_query($sql);
 					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}

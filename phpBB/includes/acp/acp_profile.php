@@ -1480,6 +1480,7 @@ class acp_profile
 
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssqlnative':
 
 				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
 				$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD [$field_ident] ";

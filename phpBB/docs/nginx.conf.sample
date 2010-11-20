@@ -1,0 +1,70 @@
+# Sample nginx configuration file for phpBB.
+# Global settings have been removed, copy them
+# from your system's nginx.conf.
+# Tested with nginx 0.8.35.
+
+http {
+    # Compression - requires gzip and gzip static modules.
+    gzip on;
+    gzip_static on;
+    gzip_vary on;
+    gzip_http_version 1.1;
+    gzip_min_length 700;
+    gzip_comp_level 6;
+    gzip_disable "MSIE [1-6]\.";
+
+    # Catch-all server for requests to invalid hosts.
+    # Also catches vulnerability scanners probing IP addresses.
+    # Should be first.
+    server {
+        listen 80;
+        server_name bogus;
+        return 444;
+        root /var/empty;
+    }
+
+    # If you have domains with and without www prefix,
+    # redirect one to the other.
+    server {
+        listen 80;
+        server_name myforums.com;
+        rewrite ^(.*)$ http://www.myforums.com$1 permanent;
+    }
+
+    # The actual board domain.
+    server {
+        listen 80;
+        server_name www.myforums.com;
+
+        root /path/to/phpbb;
+
+        location / {
+            # phpbb uses index.htm
+            index index.php index.html index.htm;
+        }
+
+        # Deny access to internal phpbb files.
+        location ~ /(config\.php|common\.php|includes|cache|files|store|images/avatars/upload) {
+            deny all;
+        }
+
+        # Pass the php scripts to fastcgi server specified in upstream declaration.
+        location ~ \.php$ {
+            fastcgi_pass php;
+            # Necessary for php.
+            fastcgi_param SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            # Unmodified fastcgi_params from nginx distribution.
+            include fastcgi_params;
+        }
+
+        # Deny access to version control system directories.
+        location ~ /\.svn|/\.git {
+            deny all;
+        }
+    }
+
+    # If running php as fastcgi, specify php upstream.
+    upstream php {
+        server unix:/tmp/php.sock;
+    }
+}

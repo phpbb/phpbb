@@ -134,7 +134,8 @@ function login_db(&$username, &$password)
 				// increase login attempt count to make sure this cannot be exploited
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_login_attempts = user_login_attempts + 1
-					WHERE user_id = ' . $row['user_id'];
+					WHERE user_id = ' . (int) $row['user_id'] . '
+						AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
 				$db->sql_query($sql);
 
 				return array(
@@ -194,7 +195,8 @@ function login_db(&$username, &$password)
 	// Password incorrect - increase login attempts
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_login_attempts = user_login_attempts + 1
-		WHERE user_id = ' . $row['user_id'];
+		WHERE user_id = ' . (int) $row['user_id'] . '
+			AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
 	$db->sql_query($sql);
 
 	// Give status about wrong password...
