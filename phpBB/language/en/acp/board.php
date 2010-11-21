@@ -325,7 +325,7 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_REG'					=> 'Enable spambot countermeasures for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to pass the anti-spambot task to help prevent automated registrations.',
 	'VISUAL_CONFIRM_REFRESH'				=> 'Allow users to refresh the anti-spambot task',
-	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request a new anti-spambot task if they are unable to solve the currunt task during registration. Some plugins might not support this option.',
+	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request a new anti-spambot task if they are unable to solve the current task during registration. Some plugins might not support this option.',
 ));
 
 // Cookie Settings
