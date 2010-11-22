@@ -152,6 +152,7 @@ else
 @ini_set('memory_limit', $mem_limit);
 
 // Include essential scripts
+require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
@@ -167,6 +168,14 @@ include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader->register();
+
+$request = new phpbb_request();
+
+// make sure request_var uses this request instance
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));

@@ -73,6 +73,7 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $request;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -251,7 +252,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . $phpEx);
 
 		// Make sure we stay at the file check if checking the files again
-		if (!empty($_POST['check_again']))
+		if ($request->variable('check_again', false, false, phpbb_request_interface::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -358,7 +359,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (!empty($_POST['check_again'])) ? false : $cache->get('_update_list');
+				$update_list = ($request->variable('check_again', false, false, phpbb_request_interface::POST)) ? false : $cache->get('_update_list');
 				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date
@@ -714,7 +715,7 @@ class install_update extends module
 							{
 								$cache->put('_diff_files', $file_list);
 
-								if (!empty($_REQUEST['download']))
+								if ($request->variable('download', false))
 								{
 									$params[] = 'download=1';
 								}
@@ -829,7 +830,7 @@ class install_update extends module
 				$file_list['status'] = -1;
 				$cache->put('_diff_files', $file_list);
 
-				if (!empty($_REQUEST['download']))
+				if ($request->variable('download', false))
 				{
 					$this->include_file('includes/functions_compress.' . $phpEx);
 
@@ -963,7 +964,7 @@ class install_update extends module
 								'DATA'		=> $data,
 								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-								'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+								'DEFAULT'	=> $request->variable($data, (string) $default),
 							));
 						}
 

@@ -17,34 +17,13 @@ class phpbb_template_template_test extends phpbb_test_case
 	private $template_path;
 
 	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = true;
+	const PRESERVE_CACHE = false;
 
 	private function display($handle)
 	{
-		// allow the templates to throw notices
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
 		ob_start();
-
-		try
-		{
-			$this->assertTrue($this->template->display($handle, false));
-		}
-		catch (Exception $exception)
-		{
-			// reset the error level even when an error occured
-			// PHPUnit turns trigger_error into exceptions as well
-			error_reporting($error_level);
-			ob_end_clean();
-			throw $exception;
-		}
-
-		$result = self::trim_template_result(ob_get_clean());
-
-		// reset error level
-		error_reporting($error_level);
-		return $result;
+		$this->assertTrue($this->template->display($handle, false));
+		return self::trim_template_result(ob_get_clean());
 	}
 
 	private static function trim_template_result($result)

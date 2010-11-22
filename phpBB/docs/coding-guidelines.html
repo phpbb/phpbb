@@ -62,11 +62,12 @@
 	</li>
 	<li><a href="#code">Code Layout/Guidelines</a>
 	<ol style="list-style-type: lower-roman;">
-		<li><a href="#namingvars">Variable/Function Naming</a></li>
+		<li><a href="#namingvars">Variable/Function/Class Naming</a></li>
 		<li><a href="#codelayout">Code Layout</a></li>
 		<li><a href="#sql">SQL/SQL Layout</a></li>
 		<li><a href="#optimizing">Optimizations</a></li>
 		<li><a href="#general">General Guidelines</a></li>
+		<li><a href="#phprestrictions">Restrictions on the Use of PHP</a></li>
 	</ol>
 	</li>
 	<li><a href="#styling">Styling</a>
@@ -126,7 +127,7 @@
 	<h3>Linefeeds:</h3>
 	<p>Ensure that your editor is saving files in the UNIX (LF) line ending format. This means that lines are terminated with a newline, not with Windows Line endings (CR/LF combo) as they are on Win32 or Classic Mac (CR) Line endings. Any decent editor should be able to do this, but it might not always be the default setting. Know your editor. If you want advice for an editor for your Operating System, just ask one of the developers. Some of them do their editing on Win32.</p>
 
-	<a name="fileheader"></a><h3>1.ii. File Header</h3>
+	<a name="fileheader"></a><h3>1.ii. File Layout</h3>
 
 	<h4>Standard header for new files:</h4>
 	<p>This template of the header must be included at the start of all phpBB files: </p>
@@ -143,6 +144,14 @@
 	</pre></div>
 
 	<p>Please see the <a href="#locations">File Locations section</a> for the correct package name.</p>
+
+	<h4>PHP closing tags</h4>
+
+	<p>A file containg only PHP code should not end with the optional PHP closing tag <strong>?&gt;</strong> to avoid issues with whitespace following it.</p>
+
+	<h4>Newline at end of file</h4>
+
+	<p>All files should end in a newline so the last line does not appear as modified in diffs, when a line is appended to the file.</p>
 
 	<h4>Files containing inline code:</h4>
 
@@ -289,7 +298,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 
 	<p>Please note that these guidelines apply to all php, html, javascript and css files.</p>
 
-	<a name="namingvars"></a><h3>2.i. Variable/Function Naming</h3>
+	<a name="namingvars"></a><h3>2.i. Variable/Function/Class Naming</h3>
 
 	<p>We will not be using any form of hungarian notation in our naming conventions. Many of us believe that hungarian naming is one of the primary code obfuscation techniques currently in use.</p>
 
@@ -320,6 +329,36 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
+
+	<h4>Class Names:</h4>
+
+	<p>Apart from following the rules for function names, all classes should meet the following conditions:</p>
+	<ul>
+		<li>Every class must be defined in a separate file.</li>
+		<li>The classes have to be located in a subdirectory of <code>includes/</code>.</li>
+		<li>Classnames to be prefixed with <code>phpbb_</code> to avoid name clashes, the filename should not contain the prefix.</li>
+		<li>Class names have to reflect the location of the file they are defined in. The longest list of prefixes, separated by underscores, which is a valid path must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may. If the filename would be empty the last directory name is used for the filename as well.</li>
+		<li>Directories should typically be a singular noun (e.g. <code>dir</code> in the example below, not <code>dirs</code>.</li>
+	</ul>
+
+	<p>So given the following example directory structure you would result in the below listed lookups</p>
+	<div class="codebox"><pre>
+includes/
+  class_name.php
+  dir/
+    class_name.php
+    dir.php
+      subdir/
+        class_name.php
+	</pre></div>
+
+	<div class="codebox"><pre>
+phpbb_class_name            - includes/class_name.php
+phpbb_dir_class_name        - includes/dir/class_name.php
+phpbb_dir                   - includes/dir/dir.php
+phpbb_dir_subdir_class_name - includes/dir/subdir/class_name.php
+	</pre></div>
+
 
 	<h4>Summary:</h4>
 	<p>The basic philosophy here is to not hurt code clarity for the sake of laziness. This has to be balanced by a little bit of common sense, though; <code>print_login_status_for_a_given_user()</code> goes too far, for example -- that function would be better named <code>print_user_login_status()</code>, or just <code>print_login_status()</code>.</p>
@@ -469,6 +508,26 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	</pre></div>
 
 	<p>In SQL Statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL Formatting), else it should be tryed to only use one method - mostly single quotes.</p>
+
+	<h4>Commas after every array element:</h4>
+	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line</p>
+
+	<p class="bad">// wrong</p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23
+);
+	</pre></div>
+
+	<p class="good">// right </p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23,
+);
+	</pre></div>
+
 
 	<h4>Associative array keys:</h4>
 	<p>In PHP, it's legal to use a literal string as a key to an associative array without quoting that string. We don't want to do this -- the string should always be quoted to avoid confusion. Note that this is only when we're using a literal, not when we're using a variable, examples:</p>
@@ -635,6 +694,26 @@ switch ($mode)
 	break;
 }
 	</pre></div>
+
+	<h4>Class Members</h4>
+	<p>Use the explicit visibility qualifiers <code>public</code>, <code>private</code> and <code>protected</code> for all properties instead of <code>var</code>.
+
+	<p>Place the <code>static</code> qualifier before the visibility qualifiers.</p>
+
+	<p class="bad">//Wrong </p>
+	<div class="codebox"><pre>
+var $x;
+private static function f()
+	</pre></div>
+
+	<p class="good">// Right </p>
+	<div class="codebox"><pre>
+public $x;
+static private function f()
+	</pre></div>
+
+	<h4>Constants</h4>
+	<p>Prefer class constants over global constants created with <code>define()</code>.</p>
 
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
@@ -1041,6 +1120,22 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 	<h4>Exiting</h4>
 
 	<p>Your page should either call <code>page_footer()</code> in the end to trigger output through the template engine and terminate the script, or alternatively at least call the <code>exit_handler()</code>. That call is necessary because it provides a method for external applications embedding phpBB to be called at the end of the script.</p>
+
+	<a name="phprestrictions"></a><h3>2.vi. Restrictions on the Use of PHP</h3>
+
+	<h4>Dynamic code execution:</h4>
+
+	<p>Never execute dynamic PHP code (generated or in a constant string) using any of the following PHP functions:</p>
+
+	<ul>
+		<li><strong>eval</strong></li>
+		<li><strong>create_function</strong></li>
+		<li><strong>preg_replace</strong> with the <strong>e</strong> modifier in the pattern</li>
+	</ul>
+
+	<p>If absolutely necessary a file should be created, and a mechanism for creating this file prior to running phpBB should be provided as a setup process.</p>
+
+	<p>The <strong>e</strong> modifier in <strong>preg_replace</strong> can be replaced by <strong>preg_replace_callback</strong> and objects to encapsulate state that is needed in the callback code.</p>
 
 		</div>
 

@@ -532,6 +532,7 @@ function mcp_move_topic($topic_ids)
 {
 	global $auth, $user, $db, $template;
 	global $phpEx, $phpbb_root_path;
+	global $request;
 
 	// Here we limit the operation to one forum only
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
@@ -585,8 +586,8 @@ function mcp_move_topic($topic_ids)
 
 	if (!$to_forum_id || $additional_msg)
 	{
-		unset($_POST['confirm']);
-		unset($_REQUEST['confirm_key']);
+		$request->overwrite('confirm', null, phpbb_request_interface::POST);
+		$request->overwrite('confirm_key', null);
 	}
 
 	if (confirm_box(true))
@@ -1037,8 +1038,8 @@ function mcp_fork_topic($topic_ids)
 
 	if ($additional_msg)
 	{
-		unset($_POST['confirm']);
-		unset($_REQUEST['confirm_key']);
+		$request->overwrite('confirm', null, phpbb_request_interface::POST);
+		$request->overwrite('confirm_key', null);
 	}
 
 	if (confirm_box(true))

@@ -636,6 +636,9 @@ GO
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [log_time] ON [phpbb_log]([log_time]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id]) ON [PRIMARY]
 GO
 

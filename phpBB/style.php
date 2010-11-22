@@ -45,6 +45,7 @@ if (!empty($load_extensions) && function_exists('dl'))
 	}
 }
 
+// no $request here because it is not loaded yet
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
 // This is a simple script to grab and output the requested CSS data stored in the DB
@@ -55,14 +56,23 @@ $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 if ($id)
 {
 	// Include files
+	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-	$db = new $sql_db();
 	$cache = new cache();
+
+	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+	$class_loader->register();
+
+	$request	= new phpbb_request();
+	$db = new $sql_db();
+
+	// make sure request_var uses this request instance
+	request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))

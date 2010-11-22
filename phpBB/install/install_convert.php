@@ -586,6 +586,7 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
+		global $request;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -812,7 +813,7 @@ class install_convert extends module
 
 		if (!$current_table && !$skip_rows)
 		{
-			if (empty($_REQUEST['confirm']))
+			if (!$request->variable('confirm', false))
 			{
 				// If avatars / ranks / smilies folders are specified make sure they are writable
 				$bad_folders = array();
@@ -973,7 +974,7 @@ class install_convert extends module
 				));
 
 				return;
-			} // if (empty($_REQUEST['confirm']))
+			} // if (!$request->variable('confirm', false)))
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'		=> true,

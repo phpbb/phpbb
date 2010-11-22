@@ -362,6 +362,7 @@ CREATE TABLE phpbb_log (
 	log_data mediumtext NOT NULL,
 	PRIMARY KEY (log_id),
 	KEY log_type (log_type),
+	KEY log_time (log_time),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
