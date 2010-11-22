@@ -3,7 +3,7 @@
 *
 * @package acm
 * @version $Id$
-* @copyright (c) 2005, 2009 phpBB Group
+* @copyright (c) 2010 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -51,7 +51,9 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		return wincache_ucache_get($this->key_prefix . $var);
+		$success = false;
+		$result = wincache_ucache_get($this->key_prefix . $var, $false);
+		return ($success) ? $result : false;
 	}
 
 	/**
@@ -78,18 +80,6 @@ class acm extends acm_memory
 	function _delete($var)
 	{
 		return wincache_ucache_delete($this->key_prefix . $var);
-	}
-	
-	/**
-	* Check if a cache var exists
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @return bool True if it exists, otherwise false
-	*/	
-	function _isset($var)
-	{
-		return wincache_ucache_exists($this->key_prefix . $var);
 	}
 }
 
