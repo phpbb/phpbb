@@ -1245,6 +1245,15 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
 
+	// if gravatar_force_all is on, we _ignore_ everything about avatars and 
+	// simply set their gravatar as the avatar. 
+	if($config['gravatar_force_all'])
+	{
+		$avatar_img = get_gravatar(md5($user->data['user_email']), $config['gravatar_force_size']);
+
+		return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $config['gravatar_force_size'] . '" height="' . $config['gravatar_force_size'] . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
 		return '';
@@ -1282,14 +1291,48 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 			{
 				return '';
 			}
-			// We're going to ensure that if we are accessing this via HTTPS
-			// we use Gravatar's secure server
-			$avatar_img = ($_SERVER['HTTPS'] === 'on' ? 'https://secure' : 'http://www') . '.gravatar.com/avatar/';
+
+			// We are going to clear out $avatar because get_gravatar returns
+			// the full URI directly 
+			$avatar_img = get_gravatar($avatar, $avatar_width);
+			$avatar = '';
 		break;
 	}
 
 	$avatar_img .= $avatar;
 	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+}
+
+/**
+* Get Gravatar
+*
+* @param string $hash User's gravatar hash (md5 of email)
+* @param int $size Size in px of one side of the gravatar (they are square)
+*
+* @return string Gravatar url
+*/
+function get_gravatar($hash, $size = 80)
+{
+	global $config;
+
+	// Get the ssl or not figured out first
+	$url = ($_SERVER['HTTPS'] === 'on') ? 'https://secure.' : 'http://www.';
+	$url .= '.gravatar.com/avatar/';
+
+	// here comes the $hash and $size portion
+	$url .= $hash . '?s=' . $size;
+
+	if($config['gravatar_rating'])
+	{
+		$url .= '&r=' . urlencode($config['gravatar_rating']);
+	}
+
+	if($config['gravatar_default'])
+	{
+		$url .= '&d=' . urlencode($config['gravatar_default']);
+	}
+
+	return $url;
 }
 
 ?>

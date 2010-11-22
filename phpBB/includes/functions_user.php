@@ -2106,7 +2106,7 @@ function avatar_gravatar($data, &$error)
 	 * storage only the 'slug' portion, the URL portion is applied when displaying
 	 * the gravatar.
 	 */
-	return array(AVATAR_GRAVATAR, md5($user->data['user_email']) . '?s=' . $size, $size, $size);
+	return array(AVATAR_GRAVATAR, md5($user->data['user_email']), $size, $size);
 }
 
 /**
@@ -2298,7 +2298,10 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 			break;
 
 		case AVATAR_GRAVATAR :
-			$avatar = ($_SERVER['HTTPS'] === 'on' ? 'https://secure' : 'http://www') . '.gravatar.com/avatar/' . $avatar;
+			// Note: we actually return in this case. We accecpt whatever 
+			// current_x is and fall back on 80 (Gravatar standard default)
+			$size = ($current_x > 0 && $current_y > 0) ? $current_x : 80;
+			return array($size, $size);
 		break;
 
 		case AVATAR_UPLOAD :
