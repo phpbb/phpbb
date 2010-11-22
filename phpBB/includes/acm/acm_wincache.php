@@ -52,7 +52,7 @@ class acm extends acm_memory
 	function _read($var)
 	{
 		$success = false;
-		$result = wincache_ucache_get($this->key_prefix . $var, $false);
+		$result = wincache_ucache_get($this->key_prefix . $var, $success);
 		return ($success) ? $result : false;
 	}
 
