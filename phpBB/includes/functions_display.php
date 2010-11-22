@@ -1317,7 +1317,7 @@ function get_gravatar($hash, $size = 80)
 
 	// Get the ssl or not figured out first
 	$url = ($_SERVER['HTTPS'] === 'on') ? 'https://secure.' : 'http://www.';
-	$url .= '.gravatar.com/avatar/';
+	$url .= 'gravatar.com/avatar/';
 
 	// here comes the $hash and $size portion
 	$url .= $hash . '?s=' . $size;

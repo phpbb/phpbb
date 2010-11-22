@@ -116,6 +116,12 @@ class ucp_profile
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
 
+						// update gravatar if necessary 
+						if($user->data['user_avatar_type'] == AVATAR_GRAVATAR)
+						{
+							$sql_ary['user_avatar'] = md5($sql_ary['user_email']);
+						}
+
 						if ($auth->acl_get('u_chgname') && $config['allow_namechange'] && $data['username'] != $user->data['username'])
 						{
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $data['username']);

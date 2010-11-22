@@ -125,7 +125,16 @@ class acp_board
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
-						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true)
+						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+
+						'legend2'				=> 'GRAVATAR_SETTINGS',
+						
+						'gravatar_force_all'	=> array('lang' => 'GRAVATAR_FORCE',		'validate' => 'bool',		'type' => 'radio:yes_no',	'explain' => true),
+						'gravatar_default'		=> array('lang' => 'GRAVATAR_DEFAULT',		'validate' => 'string',		'type' => 'text::255',		'explain' => true),
+						'gravatar_rating'		=> array('lang' => 'GRAVATAR_RATING',		'validate' => 'string',		'type' => 'text:4:2',		'explain' => true),
+						'gravatar_force_size'	=> array('lang' => 'GRAVATAR_FORCE_SIZE',	'validate' => 'int::512',	'type' => 'text:4:3',		'explain' => true,	'append' => ' ' . $user->lang['PIXEL']),
+
+						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
