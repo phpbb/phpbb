@@ -614,7 +614,7 @@ class ucp_profile
 				}
 				else if ($config['allow_avatar'])
 				{
-					$avatars_enabled = (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
+					$avatars_enabled = (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']  || $config['allow_avatar_gravatar']))) ? true : false;
 
 					$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
@@ -624,7 +624,8 @@ class ucp_profile
 						'S_UPLOAD_AVATAR_FILE'	=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
 						'S_UPLOAD_AVATAR_URL'	=> ($can_upload && $config['allow_avatar_remote_upload']) ? true : false,
 						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
-						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
+						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false,
+						'S_GRAVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_gravatar']) ? true : false)					
 					);
 				}
 

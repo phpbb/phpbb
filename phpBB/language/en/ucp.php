@@ -474,6 +474,8 @@ $lang = array_merge($lang, array(
 	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
 	'USERNAME_DISALLOWED_USERNAME'	=> 'The username you entered has been disallowed or contains a disallowed word. Please choose a different name.',
+	'USE_GRAVATAR'					=> 'Use Gravatar',
+	'USE_GRAVATAR_EXPLAIN'			=> 'Use the Gravatar linked with the email to this forum account. Visit <a href="http://gravatar.com/">Gravatar.com</a> to get one today.',
 	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
 
 	'VIEW_AVATARS'				=> 'Display avatars',

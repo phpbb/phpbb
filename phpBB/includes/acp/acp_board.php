@@ -119,6 +119,7 @@ class acp_board
 						'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_avatar_gravatar'	=> array('lang' => 'ALLOW_GRAVATAR',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_avatar_remote_upload'=> array('lang' => 'ALLOW_REMOTE_UPLOAD', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),

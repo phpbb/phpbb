@@ -1276,6 +1276,16 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 				return '';
 			}
 		break;
+
+		case AVATAR_GRAVATAR:
+			if (!$config['allow_avatar_gravatar'] && !$ignore_config)
+			{
+				return '';
+			}
+			// We're going to ensure that if we are accessing this via HTTPS
+			// we use Gravatar's secure server
+			$avatar_img = ($_SERVER['HTTPS'] === 'on' ? 'https://secure' : 'http://www') . '.gravatar.com/avatar/';
+		break;
 	}
 
 	$avatar_img .= $avatar;

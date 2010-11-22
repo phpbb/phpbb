@@ -27,7 +27,14 @@
 		</dl>
 	<!-- ENDIF -->
 
-	<!-- IF S_LINK_AVATAR -->
+	<!-- IF S_GRAVATAR -->
+		<dl>
+			<dt><label for="gravatar">{L_USE_GRAVATAR}:</label><br /><span>{L_USE_GRAVATAR_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" name="gravatar" id="gravatar" value="1" /></dd>
+		</dl>
+	<!-- ENDIF -->
+
+	<!-- IF S_LINK_AVATAR or S_GRAVATAR -->
 		<dl>
 			<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
 			<dd><input type="text" name="remotelink" id="remotelink" value="{AVATAR_REMOTE}" class="inputbox" /></dd>

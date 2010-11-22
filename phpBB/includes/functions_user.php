@@ -2072,6 +2072,44 @@ function avatar_remote($data, &$error)
 }
 
 /**
+* Gravatar avatar linking
+*/
+function avatar_gravatar($data, &$error)
+{
+	global $user, $config;
+
+	// Hieght and width, Gravatars are /always/ square, and we are using  80 is
+	// the Gravatar default.
+	$size = ($data['width'] > 0) ? $data['width'] : 80; 
+
+	if ($config['avatar_max_width'] || $config['avatar_max_height'])
+	{
+		if ($size > $config['avatar_max_width'] || $size > $config['avatar_max_height'])
+		{
+			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $size, $size);
+			return false;
+		}
+	}
+
+	if ($config['avatar_min_width'] || $config['avatar_min_height'])
+	{
+		if ($size < $config['avatar_min_width'] || $size < $config['avatar_min_height'])
+		{
+			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $size, $size);
+			return false;
+		}
+	}
+
+	/*
+	 * According to the specifications at http://gravatar.com/site/implement/url,
+	 * md5() of an strtolower()'d and trim()'d email address. This allows the 
+	 * storage only the 'slug' portion, the URL portion is applied when displaying
+	 * the gravatar.
+	 */
+	return array(AVATAR_GRAVATAR, md5($user->data['user_email']) . '?s=' . $size, $size, $size);
+}
+
+/**
 * Avatar upload using the upload class
 */
 function avatar_upload($data, &$error)
@@ -2259,6 +2297,10 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 		case AVATAR_REMOTE :
 			break;
 
+		case AVATAR_GRAVATAR :
+			$avatar = ($_SERVER['HTTPS'] === 'on' ? 'https://secure' : 'http://www') . '.gravatar.com/avatar/' . $avatar;
+		break;
+
 		case AVATAR_UPLOAD :
 			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
 			break;
@@ -2312,6 +2354,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		'remotelink'	=> request_var('remotelink', ''),
 		'width'			=> request_var('width', 0),
 		'height'		=> request_var('height', 0),
+		'usegravatar'	=> request_var('gravatar', 0),
 	);
 
 	$error = validate_data($data, array(
@@ -2319,6 +2362,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		'remotelink'	=> array('string', true, 5, 255),
 		'width'			=> array('string', true, 1, 3),
 		'height'		=> array('string', true, 1, 3),
+		'usegravatar'	=> array('num', true, 0, 1),
 	));
 
 	if (sizeof($error))
@@ -2354,6 +2398,10 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	else if ($data['remotelink'] && $change_avatar && $config['allow_avatar_remote'])
 	{
 		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_remote($data, $error);
+	}
+	else if ($data['usegravatar'] && $change_avatar && $config['allow_avatar_gravatar'])
+	{
+		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_gravatar($data, $error);
 	}
 	else if ($avatar_select && $change_avatar && $config['allow_avatar_local'])
 	{
