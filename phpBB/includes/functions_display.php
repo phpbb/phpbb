@@ -1247,11 +1247,12 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 
 	// if gravatar_force_all is on, we _ignore_ everything about avatars and 
 	// simply set their gravatar as the avatar. 
-	if($config['gravatar_force_all'])
+	if ($config['gravatar_force_all'])
 	{
-		$avatar_img = get_gravatar(md5($user->data['user_email']), $config['gravatar_force_size']);
+		$size = ($user->data['user_avatar_width']) ? $user->data['user_avatar_width'] : $config['gravatar_default_size'];
+		$avatar_img = get_gravatar(md5($user->data['user_email']), $size);
 
-		return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $config['gravatar_force_size'] . '" height="' . $config['gravatar_force_size'] . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+		return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $config['gravatar_default_size'] . '" height="' . $config['gravatar_default_size'] . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 	}
 
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
@@ -1316,18 +1317,18 @@ function get_gravatar($hash, $size = 80)
 	global $config;
 
 	// Get the ssl or not figured out first
-	$url = ($_SERVER['HTTPS'] === 'on') ? 'https://secure.' : 'http://www.';
-	$url .= 'gravatar.com/avatar/';
+	$url = ($_SERVER['HTTPS'] === 'on') ? 'https://secure' : 'http://www';
+	$url .= '.gravatar.com/avatar/';
 
 	// here comes the $hash and $size portion
 	$url .= $hash . '?s=' . $size;
 
-	if($config['gravatar_rating'])
+	if ($config['gravatar_rating'])
 	{
-		$url .= '&r=' . urlencode($config['gravatar_rating']);
+		$url .= '&r=' . urlencode(strtolower($config['gravatar_rating']));
 	}
 
-	if($config['gravatar_default'])
+	if ($config['gravatar_default'])
 	{
 		$url .= '&d=' . urlencode($config['gravatar_default']);
 	}

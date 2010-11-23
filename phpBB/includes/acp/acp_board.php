@@ -131,8 +131,8 @@ class acp_board
 						
 						'gravatar_force_all'	=> array('lang' => 'GRAVATAR_FORCE',		'validate' => 'bool',		'type' => 'radio:yes_no',	'explain' => true),
 						'gravatar_default'		=> array('lang' => 'GRAVATAR_DEFAULT',		'validate' => 'string',		'type' => 'text::255',		'explain' => true),
-						'gravatar_rating'		=> array('lang' => 'GRAVATAR_RATING',		'validate' => 'string',		'type' => 'text:4:2',		'explain' => true),
-						'gravatar_force_size'	=> array('lang' => 'GRAVATAR_FORCE_SIZE',	'validate' => 'int::512',	'type' => 'text:4:3',		'explain' => true,	'append' => ' ' . $user->lang['PIXEL']),
+						'gravatar_rating'		=> array('lang' => 'GRAVATAR_RATING',		'validate' => 'string',		'type' => 'select',		'method' => 'select_gravatar_rating',	'explain' => true),
+						'gravatar_default_size'	=> array('lang' => 'GRAVATAR_DEFAULT_SIZE',	'validate' => 'int::512',	'type' => 'text:4:3',		'explain' => true,	'append' => ' ' . $user->lang['PIXEL']),
 
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)
@@ -994,6 +994,19 @@ class acp_board
 		$cache->destroy('sql', FORUMS_TABLE);
 	}
 
+	function select_gravatar_rating($selected, $key)
+	{
+		// http://en.gravatar.com/site/implement/images/#rating
+		$gravatar_ratings = array('g', 'pg', 'r', 'x');
+
+		$options = '';
+		foreach($gravatar_ratings as $value)
+		{
+			$options .= '<option value="' . $value . '"' . (($value == $selected) ? ' selected="selected"' : '') . '>' . strtoupper($value) . '</option>';
+		}
+
+		return $options;
+	}
 }
 
 ?>

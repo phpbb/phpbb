@@ -884,7 +884,7 @@ class acp_users
 								'user_email_hash'	=> phpbb_email_hash($update_email),
 							);
 
-							if($user_row['user_avatar_type'] == AVATAR_GRAVATAR)
+							if ($user_row['user_avatar_type'] == AVATAR_GRAVATAR)
 							{
 								$sql_ary['user_avatar'] = md5($update_email);
 							}

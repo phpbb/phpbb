@@ -127,7 +127,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_mi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gravatar_force_all', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gravatar_default', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gravatar_rating', 'g');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('gravatar_force_size', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('gravatar_default_size', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
