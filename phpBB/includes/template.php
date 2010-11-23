@@ -252,7 +252,7 @@ class phpbb_template
 	{
 		global $user, $phpbb_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
 		{
 			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
 			{
