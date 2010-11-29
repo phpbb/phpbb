@@ -860,11 +860,21 @@ if ($submit || $preview || $refresh)
 	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-
+		$user->add_lang('ucp');
 		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
-			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];
+		}
+		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
+		{
+			if ($result == 'TOO_SHORT')
+			{
+				$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $config['min_name_chars']);
+			}
+			else
+			{
+				$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $config['max_name_chars']);
+			}
 		}
 	}
 
