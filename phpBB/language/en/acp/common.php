@@ -255,7 +255,7 @@ $lang = array_merge($lang, array(
 	'MOVE_UP'				=> 'Move up',
 
 	'NOTIFY'				=> 'Notification',
-	'NO_ADMIN'				=> 'You are not authorised to administrate this board.',
+	'NO_ADMIN'				=> 'You are not authorised to administer this board.',
 	'NO_EMAILS_DEFINED'		=> 'No valid e-mail addresses found.',
 	'NO_PASSWORD_SUPPLIED'	=> 'You need to enter your password to access the Administration Control Panel.',
 

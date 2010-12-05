@@ -131,7 +131,7 @@ $lang = array_merge($lang, array(
 	'SORT_POST_COUNT'		=> 'Post count',
 
 	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
-	'USER_ADMIN'			=> 'Administrate user',
+	'USER_ADMIN'			=> 'Administer user',
 	'USER_BAN'				=> 'Banning',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
