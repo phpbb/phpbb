@@ -147,5 +147,3 @@ function add_bots($bots)
 		}
 	}
 }
-
-?>

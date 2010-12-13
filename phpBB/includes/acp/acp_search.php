@@ -625,5 +625,3 @@ class acp_search
 		return $error;
 	}
 }
-
-?>

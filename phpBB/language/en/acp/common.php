@@ -738,5 +738,3 @@ $lang = array_merge($lang, array(
 	'LOG_WORD_DELETE'		=> '<strong>Deleted word censor</strong><br />» %s',
 	'LOG_WORD_EDIT'			=> '<strong>Edited word censor</strong><br />» %s',
 ));
-
-?>

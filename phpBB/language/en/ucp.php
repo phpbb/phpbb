@@ -552,5 +552,3 @@ $lang = array_merge($lang, array(
 	'NO_PENDING'	=> 'No pending memberships',
 	'NO_NONMEMBER'	=> 'No non-member groups',
 ));
-
-?>

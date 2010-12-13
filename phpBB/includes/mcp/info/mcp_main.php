@@ -36,5 +36,3 @@ class mcp_main_info
 	{
 	}
 }
-
-?>

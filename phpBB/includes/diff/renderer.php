@@ -856,5 +856,3 @@ class diff_renderer_side_by_side extends diff_renderer
 	}
 
 }
-
-?>

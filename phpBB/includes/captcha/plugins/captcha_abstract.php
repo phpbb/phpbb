@@ -376,5 +376,3 @@ class phpbb_default_captcha
 	}
 
 }
-
-?>

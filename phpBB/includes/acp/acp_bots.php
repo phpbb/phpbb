@@ -414,5 +414,3 @@ class acp_bots
 		return ($row) ? false : true;
 	}
 }
-
-?>

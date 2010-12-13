@@ -993,5 +993,3 @@ function disapprove_post($post_id_list, $id, $mode)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
-
-?>

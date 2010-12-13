@@ -127,5 +127,3 @@ class acp_jabber
 		));
 	}
 }
-
-?>

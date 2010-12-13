@@ -1512,5 +1512,3 @@ class utf_normalizer
 		return $str;
 	}
 }
-
-?>

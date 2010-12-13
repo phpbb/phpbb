@@ -728,5 +728,3 @@ class acm
 		return @unlink($filename);
 	}
 }
-
-?>

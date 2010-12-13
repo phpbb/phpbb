@@ -849,5 +849,3 @@ function show_defined_rules($user_id, $check_lang, $rule_lang, $action_lang, $fo
 	}
 	$db->sql_freeresult($result);
 }
-
-?>

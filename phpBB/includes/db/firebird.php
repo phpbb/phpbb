@@ -522,5 +522,3 @@ class dbal_firebird extends dbal
 		}
 	}
 }
-
-?>

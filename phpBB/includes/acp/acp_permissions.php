@@ -1312,5 +1312,3 @@ class acp_permissions
 		);
 	}
 }
-
-?>

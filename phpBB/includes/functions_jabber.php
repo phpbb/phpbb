@@ -869,5 +869,3 @@ class jabber
 		return $children;
 	}
 }
-
-?>

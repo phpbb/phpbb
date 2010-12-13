@@ -1281,5 +1281,3 @@ class auth_admin extends auth
 		return true;
 	}
 }
-
-?>

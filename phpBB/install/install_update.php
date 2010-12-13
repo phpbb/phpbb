@@ -1796,5 +1796,3 @@ class install_update extends module
 		return $diff;
 	}
 }
-
-?>

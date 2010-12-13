@@ -543,5 +543,3 @@ fclose($fp);
 
 echo '<br>Finished!';
 flush();
-
-?>

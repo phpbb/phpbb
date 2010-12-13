@@ -702,5 +702,3 @@ if ($forum_data['forum_type'] == FORUM_POST && sizeof($topic_list) && $mark_foru
 }
 
 page_footer();
-
-?>

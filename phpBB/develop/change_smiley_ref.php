@@ -58,5 +58,3 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

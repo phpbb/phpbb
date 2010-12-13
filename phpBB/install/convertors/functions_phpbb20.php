@@ -1863,5 +1863,3 @@ function phpbb_check_username_collisions()
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	$db->sql_query($drop_sql);
 }
-
-?>

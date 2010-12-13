@@ -197,5 +197,3 @@ class ucp_attachments
 		$this->page_title = 'UCP_ATTACHMENTS';
 	}
 }
-
-?>

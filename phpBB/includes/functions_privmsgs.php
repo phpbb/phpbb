@@ -1987,5 +1987,3 @@ function get_recipient_strings($pm_by_id)
 
 	return $address_list;
 }
-
-?>

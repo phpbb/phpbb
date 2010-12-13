@@ -1623,5 +1623,3 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 
 	return $result;
 }
-
-?>

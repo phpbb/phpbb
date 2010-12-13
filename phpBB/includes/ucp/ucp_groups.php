@@ -1114,5 +1114,3 @@ class ucp_groups
 		$this->tpl_name = 'ucp_groups_' . $mode;
 	}
 }
-
-?>

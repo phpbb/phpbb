@@ -1061,5 +1061,3 @@ class acp_modules
 		return $this->lang_name($target['module_langname']);
 	}
 }
-
-?>

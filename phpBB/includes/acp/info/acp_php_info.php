@@ -33,5 +33,3 @@ class acp_php_info_info
 	{
 	}
 }
-
-?>

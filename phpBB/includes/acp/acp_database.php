@@ -2455,5 +2455,3 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 
 	return false;
 }
-
-?>

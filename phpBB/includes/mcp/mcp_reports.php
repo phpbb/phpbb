@@ -723,5 +723,3 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
-
-?>

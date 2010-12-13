@@ -161,5 +161,3 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 	}
 
 }
-
-?>

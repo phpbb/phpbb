@@ -1354,5 +1354,3 @@ class bitfield
 		$this->data = $this->data | $bitfield->get_blob();
 	}
 }
-
-?>

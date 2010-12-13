@@ -1456,5 +1456,3 @@ class acp_attachments
 	}
 
 }
-
-?>

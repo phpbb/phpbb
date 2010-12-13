@@ -104,5 +104,3 @@ class acp_disallow
 		);
 	}
 }
-
-?>

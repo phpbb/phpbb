@@ -245,5 +245,3 @@ function validate_session_apache(&$user)
 
 	return false;
 }
-
-?>

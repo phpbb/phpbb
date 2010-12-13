@@ -462,5 +462,3 @@ class acp_prune
 		$db->sql_freeresult($result);
 	}
 }
-
-?>

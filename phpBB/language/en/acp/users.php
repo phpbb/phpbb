@@ -138,5 +138,3 @@ $lang = array_merge($lang, array(
 	'USER_WARNING_LOG_DELETED'		=> 'No information available. Possibly the log entry has been deleted.',
 	'USER_TOOLS'					=> 'Basic tools',
 ));
-
-?>

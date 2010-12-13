@@ -3601,5 +3601,3 @@ function remove_newly_registered($user_id, $user_data = false)
 
 	return $user_data['group_id'];
 }
-
-?>

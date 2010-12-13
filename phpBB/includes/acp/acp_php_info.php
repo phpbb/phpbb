@@ -80,5 +80,3 @@ class acp_php_info
 		$template->assign_var('PHPINFO', $output);
 	}
 }
-
-?>

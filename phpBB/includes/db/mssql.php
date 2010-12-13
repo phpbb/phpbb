@@ -446,5 +446,3 @@ class dbal_mssql extends dbal
 		}
 	}
 }
-
-?>

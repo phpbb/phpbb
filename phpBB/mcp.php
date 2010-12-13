@@ -904,5 +904,3 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
-
-?>

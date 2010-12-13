@@ -274,5 +274,3 @@ define('ZEBRA_TABLE',				$table_prefix . 'zebra');
 
 // Additional tables
 
-
-?>

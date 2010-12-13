@@ -598,5 +598,3 @@ class bbcode
 		return $code;
 	}
 }
-
-?>

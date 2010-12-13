@@ -817,5 +817,3 @@ class module
 		return $user_select;
 	}
 }
-
-?>

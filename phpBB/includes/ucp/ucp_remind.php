@@ -122,5 +122,3 @@ class ucp_remind
 		$this->page_title = 'UCP_REMIND';
 	}
 }
-
-?>

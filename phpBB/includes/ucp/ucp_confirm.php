@@ -46,5 +46,3 @@ class ucp_confirm
 		exit_handler();
 	}
 }
-
-?>

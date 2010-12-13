@@ -41,4 +41,3 @@ if (PHPUnit_MAIN_METHOD == 'phpbb_bbcode_all_tests::main')
 {
 	phpbb_bbcode_all_tests::main();
 }
-?>
