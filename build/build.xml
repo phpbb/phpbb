@@ -12,7 +12,7 @@
 
 	<!-- These are the main targets which you will probably want to use -->
 	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,test,create-package" />
+	<target name="all" depends="clean,prepare,test,docs,create-package" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
@@ -62,6 +62,12 @@
 			</batchtest>
 		</phpunit>
 		-->
+	</target>
+
+	<target name="docs">
+		<exec dir="build"
+			command="phpdoc -c phpdoc-phpbb.ini"
+			passthru="true" />
 	</target>
 
 	<target name="old-version-diffs">
