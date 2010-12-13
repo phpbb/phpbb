@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 
 	'LOGIN_EXPLAIN_EGOSEARCH'	=> 'The board requires you to be registered and logged in to view your own posts.',
 	'LOGIN_EXPLAIN_UNREADSEARCH'=> 'The board requires you to be registered and logged in to view your unread posts.',
+	'LOGIN_EXPLAIN_NEWPOSTS'	=> 'The board requires you to be registered and logged in to view new posts since your last visit.',
 
 	'MAX_NUM_SEARCH_KEYWORDS_REFINE'	=> 'You specified too many words to search for. Please do not enter more than %1$d words.',
 

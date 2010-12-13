@@ -2293,12 +2293,12 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$disable_cd_check && !file_exists($pathinfo['dirname']))
+		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
 		{
 			$url = str_replace('../', '', $url);
 			$pathinfo = pathinfo($url);
 
-			if (!file_exists($pathinfo['dirname']))
+			if (!file_exists($pathinfo['dirname'] . '/'))
 			{
 				// fallback to "last known user page"
 				// at least this way we know the user does not leave the phpBB root
