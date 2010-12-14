@@ -93,10 +93,10 @@ class phpbb_cron_manager
 	{
 		foreach ($task_names as $task_name)
 		{
-				$class = "phpbb_cron_task_$task_name";
-				$task = new $class();
-				$wrapper = new phpbb_cron_task_wrapper($task);
-				$this->tasks[] = $wrapper;
+			$class = "phpbb_cron_task_$task_name";
+			$task = new $class();
+			$wrapper = new phpbb_cron_task_wrapper($task);
+			$this->tasks[] = $wrapper;
 		}
 	}
 
