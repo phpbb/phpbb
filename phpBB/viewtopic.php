@@ -701,9 +701,9 @@ if (!empty($topic_data['poll_start']))
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
 		// the need to delete cookies to mess with results.
-		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
+		if ($request->is_set($config['cookie_name'] . '_poll_' . $topic_id, phpbb_request_interface::COOKIE))
 		{
-			$cur_voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
+			$cur_voted_id = explode(',', $request->variable($config['cookie_name'] . '_poll_' . $topic_id, '', true, phpbb_request_interface::COOKIE));
 			$cur_voted_id = array_map('intval', $cur_voted_id);
 		}
 	}
