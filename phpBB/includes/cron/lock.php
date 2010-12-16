@@ -21,8 +21,20 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_lock
 {
+	/**
+	* Unique identifier for this lock.
+	*
+	* @var string
+	*/
 	private $cron_id;
 
+	/**
+	* Tries to acquire the cron lock by updating 
+	* the 'cron_lock' configuration variable in the database.
+	*
+	* @return bool		true if lock was acquired
+	*					false otherwise
+	*/
 	public function lock()
 	{
 		global $config, $db;
@@ -67,6 +79,8 @@ class phpbb_cron_lock
 	* Releases cron lock.
 	*
 	* Attempting to release a cron lock that is already released is harmless.
+	*
+	* @return void
 	*/
 	public function unlock()
 	{
