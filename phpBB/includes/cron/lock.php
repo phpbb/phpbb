@@ -50,7 +50,8 @@ class phpbb_cron_lock
 
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '" . $db->sql_escape($this->cron_id) . "'
-			WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($config['cron_lock']) . "'";
+			WHERE config_name = 'cron_lock'
+				AND config_value = '" . $db->sql_escape($config['cron_lock']) . "'";
 		$db->sql_query($sql);
 
 		// another cron process altered the table between script start and UPDATE query so exit
@@ -73,7 +74,8 @@ class phpbb_cron_lock
 
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '0'
-			WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($this->cron_id) . "'";
+			WHERE config_name = 'cron_lock'
+				AND config_value = '" . $db->sql_escape($this->cron_id) . "'";
 		$db->sql_query($sql);
 	}
 }
