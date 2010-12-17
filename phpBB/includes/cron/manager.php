@@ -100,11 +100,11 @@ class phpbb_cron_manager
 	*
 	* @param string $name		Name to check
 	*
-	* @return int
+	* @return bool
 	*/
 	public function is_valid_name($name)
 	{
-		return preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
+		return (bool) preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
 	}
 
 	/**
