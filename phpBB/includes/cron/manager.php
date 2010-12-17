@@ -24,8 +24,19 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_manager
 {
+	/**
+	* Set of phpbb_cron_task_wrapper objects.
+	* Array holding all tasks that have been found.
+	*
+	* @var array 
+	*/
 	private $tasks = array();
 
+	/**
+	* Constructor. Loads all available tasks.
+	*
+	* @return void
+	*/
 	public function __construct()
 	{
 		$task_names = $this->find_cron_task_names();
@@ -43,6 +54,8 @@ class phpbb_cron_manager
 	* Cron task is expected to be a class named phpbb_cron_task_${mod}_${name}.
 	*
 	* Todo: consider caching found task file list in global cache.
+	*
+	* @return array		Array of strings
 	*/
 	public function find_cron_task_names()
 	{
@@ -82,13 +95,26 @@ class phpbb_cron_manager
 	}
 
 	/**
-	* Checks whether $name is a valid identifier, and therefore part of valid cron task class name.
+	* Checks whether $name is a valid identifier, and
+	* therefore part of valid cron task class name.
+	*
+	* @param string $name		Name to check
+	*
+	* @return int
 	*/
 	public function is_valid_name($name)
 	{
 		return preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
 	}
 
+	/**
+	* Loads tasks given by name, wraps them
+	* and puts them into $this->tasks.
+	*
+	* @param array $task_names		Array of strings
+	*
+	* @return void
+	*/
 	public function load_tasks($task_names)
 	{
 		foreach ($task_names as $task_name)
@@ -102,8 +128,9 @@ class phpbb_cron_manager
 
 	/**
 	* Finds a task that is ready to run.
-	*
 	* If several tasks are ready, any one of them could be returned.
+	*
+	* @return phpbb_cron_task_wrapper|null
 	*/
 	public function find_one_ready_task()
 	{
@@ -119,6 +146,8 @@ class phpbb_cron_manager
 
 	/**
 	* Finds all tasks that are ready to run.
+	*
+	* @return array		Array of phpbb_cron_task_wrapper
 	*/
 	public function find_all_ready_tasks()
 	{
@@ -135,8 +164,9 @@ class phpbb_cron_manager
 
 	/**
 	* Finds a task by name.
-	*
 	* Web runner uses this method to resolve names to tasks.
+	*
+	* @return array|null		Array of phpbb_cron_task_wrapper
 	*/
 	public function find_task($name)
 	{
@@ -152,10 +182,12 @@ class phpbb_cron_manager
 
 	/**
 	* Creates an instance of parametrized cron task $name with args $args.
-	*
-	* $name is the task name, which is the same as cron task class name.
-	* $args will be passed to the task class's constructor.
 	* The constructed task is wrapped with cron task wrapper before being returned.
+	*
+	* @param string $name		The task name, which is the same as cron task class name.
+	* @param array $args		Will be passed to the task class's constructor.
+	*
+	* @return phpbb_cron_task_wrapper|null
 	*/
 	public function instantiate_task($name, $args)
 	{
