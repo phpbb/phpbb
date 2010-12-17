@@ -33,6 +33,8 @@ abstract class phpbb_cron_task_base implements phpbb_cron_task
 	*
 	* For example, a cron task that prunes forums can only run when
 	* forum pruning is enabled.
+	*
+	* @return bool
 	*/
 	public function is_runnable()
 	{
@@ -42,6 +44,8 @@ abstract class phpbb_cron_task_base implements phpbb_cron_task
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* @return bool
 	*/
 	public function should_run()
 	{
@@ -50,6 +54,8 @@ abstract class phpbb_cron_task_base implements phpbb_cron_task
 
 	/**
 	* Returns whether this cron task can be run in shutdown function.
+	*
+	* @return bool
 	*/
 	public function is_shutdown_function_safe()
 	{
