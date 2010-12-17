@@ -37,6 +37,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	* If $forum_data is not given, forum id will be retrieved via request_var
 	* and a database query will be performed to load the necessary information
 	* about the forum.
+	*
+	* @return void
 	*/
 	public function __construct($forum_data = null)
 	{
@@ -53,6 +55,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 
 	/**
 	* Runs this cron task.
+	*
+	* @return void
 	*/
 	public function run()
 	{
@@ -75,6 +79,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 
 	/**
 	* Returns whether this cron task can run, given current board configuration.
+	*
+	* @return bool
 	*/
 	public function is_runnable()
 	{
@@ -85,6 +91,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* @return bool
 	*/
 	public function should_run()
 	{
@@ -93,8 +101,9 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 
 	/**
 	* Returns parameters of this cron task as an array.
-	*
 	* The array has one key, f, whose value is id of the forum to be pruned.
+	*
+	* @return array
 	*/
 	public function get_parameters()
 	{
@@ -106,6 +115,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	* phpbb_request_interface.
 	*
 	* It is expected to have a key f whose value is id of the forum to be pruned.
+	*
+	* @return void
 	*/
 	public function parse_parameters(phpbb_request_interface $request)
 	{

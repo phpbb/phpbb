@@ -24,6 +24,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 {
 	/**
 	* Runs this cron task.
+	*
+	* @return void
 	*/
 	public function run()
 	{
@@ -38,6 +40,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 
 	/**
 	* Returns whether this cron task can run, given current board configuration.
+	*
+	* @return bool
 	*/
 	public function is_runnable()
 	{
@@ -48,6 +52,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* @return bool
 	*/
 	public function should_run()
 	{
@@ -57,6 +63,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 
 	/**
 	* Returns whether this cron task can be run in shutdown function.
+	*
+	* @return bool
 	*/
 	public function is_shutdown_function_safe()
 	{

@@ -25,6 +25,8 @@ class phpbb_cron_task_wrapper
 {
 	/**
 	* Wraps a task $task, which must implement cron_task interface.
+	*
+	* @return void
 	*/
 	public function __construct(phpbb_cron_task $task)
 	{
@@ -36,6 +38,8 @@ class phpbb_cron_task_wrapper
 	*
 	* Parametrized tasks accept parameters during initialization and must
 	* normally be scheduled with parameters.
+	*
+	* @return bool		Whether or not this task is parametrized.
 	*/
 	public function is_parametrized()
 	{
@@ -47,6 +51,8 @@ class phpbb_cron_task_wrapper
 	*
 	* A task is ready to run when it is runnable according to current configuration
 	* and enough time has passed since it was last run.
+	*
+	* @return bool		Whether the wrapped task is ready to run.
 	*/
 	public function is_ready()
 	{
@@ -55,6 +61,8 @@ class phpbb_cron_task_wrapper
 
 	/**
 	* Returns the name of wrapped task. It is the same as the wrapped class's class name.
+	*
+	* @return string		Class name of wrapped task.
 	*/
 	public function get_name()
 	{
@@ -63,6 +71,8 @@ class phpbb_cron_task_wrapper
 
 	/**
 	* Returns a url through which this task may be invoked via web.
+	*
+	* @return string		URL
 	*/
 	public function get_url()
 	{
@@ -88,6 +98,8 @@ class phpbb_cron_task_wrapper
 
 	/**
 	* Forwards all other method calls to the wrapped task implementation.
+	*
+	* @return mixed
 	*/
 	public function __call($name, $args)
 	{

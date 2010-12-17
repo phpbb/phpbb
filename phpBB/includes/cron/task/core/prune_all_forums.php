@@ -28,6 +28,8 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 {
 	/**
 	* Runs this cron task.
+	*
+	* @return void
 	*/
 	public function run()
 	{
@@ -60,6 +62,8 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 
 	/**
 	* Returns whether this cron task can run, given current board configuration.
+	*
+	* @return bool
 	*/
 	public function is_runnable()
 	{
