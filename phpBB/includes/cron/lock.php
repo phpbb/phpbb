@@ -32,6 +32,11 @@ class phpbb_cron_lock
 	* Tries to acquire the cron lock by updating 
 	* the 'cron_lock' configuration variable in the database.
 	*
+	* As a lock may only be held by one process at a time, lock
+	* acquisition may fail if another process is holding the lock
+	* or if another process obtained the lock but never released it.
+	* Locks are forcibly released after a timeout of 1 hour.
+	*
 	* @return bool		true if lock was acquired
 	*					false otherwise
 	*/
@@ -76,9 +81,13 @@ class phpbb_cron_lock
 	}
 
 	/**
-	* Releases cron lock.
+	* Releases the cron lock.
 	*
-	* Attempting to release a cron lock that is already released is harmless.
+	* The lock must have been previously obtained, that is, lock() call
+	* was issued and returned true.
+	*
+	* Note: Attempting to release a cron lock that is already released,
+	* that is, calling unlock() multiple times, is harmless.
 	*
 	* @return void
 	*/

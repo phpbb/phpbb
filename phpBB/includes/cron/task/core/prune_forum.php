@@ -38,7 +38,7 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	* and a database query will be performed to load the necessary information
 	* about the forum.
 	*
-	* @return void
+	* @param array $forum_data Information about a forum to be pruned.
 	*/
 	public function __construct($forum_data = null)
 	{
@@ -80,6 +80,12 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
+	* This cron task will not run when system cron is utilised, as in
+	* such cases prune_all_forums task would run instead.
+	*
+	* Additionally, this task must be given the forum data, either via
+	* the constructor or parse_parameters method.
+	*
 	* @return bool
 	*/
 	public function is_runnable()
@@ -91,6 +97,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* Forum pruning interval is specified in the forum data.
 	*
 	* @return bool
 	*/
@@ -115,6 +123,8 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	* phpbb_request_interface.
 	*
 	* It is expected to have a key f whose value is id of the forum to be pruned.
+	*
+	* @param phpbb_request_interface $request Request object.
 	*
 	* @return void
 	*/

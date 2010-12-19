@@ -54,6 +54,10 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
+	* Search cron task is runnable in all normal use. It may not be
+	* runnable if the search backend implementation selected in board
+	* configuration does not exist.
+	*
 	* @return bool
 	*/
 	public function is_runnable()
@@ -69,6 +73,9 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* The interval between search tidying is specified in board
+	* configuration.
 	*
 	* @return bool
 	*/

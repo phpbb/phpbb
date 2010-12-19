@@ -55,7 +55,7 @@ class phpbb_cron_manager
 	*
 	* Todo: consider caching found task file list in global cache.
 	*
-	* @return array		Array of strings
+	* @return array		List of task names
 	*/
 	public function find_cron_task_names()
 	{
@@ -128,7 +128,10 @@ class phpbb_cron_manager
 
 	/**
 	* Finds a task that is ready to run.
+	*
 	* If several tasks are ready, any one of them could be returned.
+	*
+	* If no tasks are ready, null is returned.
 	*
 	* @return phpbb_cron_task_wrapper|null
 	*/
@@ -147,7 +150,7 @@ class phpbb_cron_manager
 	/**
 	* Finds all tasks that are ready to run.
 	*
-	* @return array		Array of phpbb_cron_task_wrapper
+	* @return array		List of tasks which are ready to run (wrapped in phpbb_cron_task_wrapper).
 	*/
 	public function find_all_ready_tasks()
 	{
@@ -164,9 +167,13 @@ class phpbb_cron_manager
 
 	/**
 	* Finds a task by name.
+	*
+	* If there is no task with the specified name, null is returned.
+	*
 	* Web runner uses this method to resolve names to tasks.
 	*
-	* @return array|null		Array of phpbb_cron_task_wrapper
+	* @param string				$name Name of the task to look up.
+	* @return phpbb_cron_task	A task corresponding to the given name, or null.
 	*/
 	public function find_task($name)
 	{

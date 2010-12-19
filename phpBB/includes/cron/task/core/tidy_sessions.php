@@ -37,6 +37,9 @@ class phpbb_cron_task_core_tidy_sessions extends phpbb_cron_task_base
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
 	*
+	* The interval between session tidying is specified in board
+	* configuration.
+	*
 	* @return bool
 	*/
 	public function should_run()

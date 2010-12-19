@@ -41,6 +41,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
+	* Queue task is only run if the email queue (file) exists.
+	*
 	* @return bool
 	*/
 	public function is_runnable()
@@ -53,6 +55,8 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
 	*
+	* The interval between queue runs is specified in board configuration.
+	*
 	* @return bool
 	*/
 	public function should_run()
@@ -63,6 +67,11 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 
 	/**
 	* Returns whether this cron task can be run in shutdown function.
+	*
+	* A user reported that using the mail() function during shutdown
+	* function execution does not work. Therefore if email is delivered
+	* via the mail() function (as opposed to SMTP) queue cron task marks
+	* itself shutdown function-unsafe.
 	*
 	* @return bool
 	*/

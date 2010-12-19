@@ -36,6 +36,9 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task can run, given current board configuration.
 	*
+	* Tidy cache cron task runs if the cache implementation in use
+	* supports tidying.
+	*
 	* @return bool
 	*/
 	public function is_runnable()
@@ -47,6 +50,9 @@ class phpbb_cron_task_core_tidy_cache extends phpbb_cron_task_base
 	/**
 	* Returns whether this cron task should run now, because enough time
 	* has passed since it was last run.
+	*
+	* The interval between cache tidying is specified in board
+	* configuration.
 	*
 	* @return bool
 	*/
