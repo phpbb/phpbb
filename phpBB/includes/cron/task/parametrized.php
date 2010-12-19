@@ -44,6 +44,8 @@ interface phpbb_cron_task_parametrized extends phpbb_cron_task
 	* $request contains user input and must not be trusted.
 	* Cron task must validate all data before using it.
 	*
+	* @param phpbb_request_interface $request Request object.
+	*
 	* @return void
 	*/
 	public function parse_parameters(phpbb_request_interface $request);

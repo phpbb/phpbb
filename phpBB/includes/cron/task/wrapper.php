@@ -24,9 +24,11 @@ if (!defined('IN_PHPBB'))
 class phpbb_cron_task_wrapper
 {
 	/**
+	* Constructor.
+	*
 	* Wraps a task $task, which must implement cron_task interface.
 	*
-	* @return void
+	* @param phpbb_cron_task $task The cron task to wrap.
 	*/
 	public function __construct(phpbb_cron_task $task)
 	{
@@ -34,7 +36,7 @@ class phpbb_cron_task_wrapper
 	}
 
 	/**
-	* Returns whether this task is parametrized.
+	* Returns whether the wrapped task is parametrised.
 	*
 	* Parametrized tasks accept parameters during initialization and must
 	* normally be scheduled with parameters.
@@ -72,7 +74,11 @@ class phpbb_cron_task_wrapper
 	/**
 	* Returns a url through which this task may be invoked via web.
 	*
-	* @return string		URL
+	* When system cron is not in use, running a cron task is accomplished
+	* by outputting an image with the url returned by this function as
+	* source.
+	*
+	* @return string		URL through which this task may be invoked.
 	*/
 	public function get_url()
 	{
