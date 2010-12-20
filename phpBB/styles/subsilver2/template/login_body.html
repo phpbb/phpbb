@@ -92,7 +92,7 @@
 // <![CDATA[
 	(function()
 	{
-		var elements = document.getElementsByName("{USERNAME_CREDENTIAL}");
+		var elements = document.getElementsByName("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->");
 		for (var i = 0; i < elements.length; ++i)
 		{
 			if (elements[i].tagName.toLowerCase() == 'input')
