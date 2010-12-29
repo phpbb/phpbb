@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
 // <![CDATA[
-	onload_functions.push('document.getElementById("{USERNAME_CREDENTIAL}").focus();');
+	onload_functions.push('document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();');
 // ]]>
 </script>
 
