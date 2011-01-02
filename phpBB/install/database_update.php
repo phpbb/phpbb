@@ -127,8 +127,11 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
 
-$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
-$user->ip = (stripos($user->ip, '::ffff:') === 0) ? substr($user->ip, 7) : $user->ip;
+$user->ip = '';
+if (!empty($_SERVER['REMOTE_ADDR']))
+{
+	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($_SERVER['REMOTE_ADDR']) : htmlspecialchars($_SERVER['REMOTE_ADDR']);
+}
 
 $sql = "SELECT config_value
 	FROM " . CONFIG_TABLE . "

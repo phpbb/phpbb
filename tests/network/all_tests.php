@@ -16,6 +16,8 @@ require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 require_once 'network/checkdnsrr.php';
+require_once 'network/inet_ntop_pton.php';
+require_once 'network/ip_normalise.php';
 
 class phpbb_network_all_tests
 {
@@ -29,6 +31,8 @@ class phpbb_network_all_tests
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Network Functions');
 
 		$suite->addTestSuite('phpbb_network_checkdnsrr_test');
+		$suite->addTestSuite('phpbb_network_inet_ntop_pton_test');
+		$suite->addTestSuite('phpbb_network_ip_normalise_test');
 
 		return $suite;
 	}
