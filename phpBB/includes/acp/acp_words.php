@@ -95,6 +95,9 @@ class acp_words
 					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
+				// Replace multiple consecutive asterisks with single one as those are not needed
+				$word = preg_replace('#\*{2,}#', '*', $word);
+
 				$sql_ary = array(
 					'word'			=> $word,
 					'replacement'	=> $replacement
