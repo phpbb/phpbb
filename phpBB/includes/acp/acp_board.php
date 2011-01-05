@@ -471,6 +471,15 @@ class acp_board
 				$config_value = $this->new_config['email_function_name'];
 			}
 
+			if ($config_name == 'default_lang' || $config_name == 'default_style')
+			{
+				// Changed?
+				if ($config[$config_name] != $this->new_config[$config_name])
+				{
+					$bot_update = (isset($bot_update)) ? 'both' : $config_name;
+				}
+			}
+
 			if ($submit)
 			{
 				set_config($config_name, $config_value);
@@ -480,6 +489,17 @@ class acp_board
 					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
 				}
 			}
+		}
+
+		// Update bots if the default style or language is changed
+		if (isset($bot_update))
+		{
+			if (!function_exists('set_bot_default_lang_style'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			set_bot_default_lang_style($bot_update);
 		}
 
 		// Store news and exclude ids

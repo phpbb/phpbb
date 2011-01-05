@@ -3657,3 +3657,38 @@ function remove_newly_registered($user_id, $user_data = false)
 
 	return $user_data['group_id'];
 }
+
+/**
+* Function that updates the style and language of the users in the
+* bots group, to the boards default style/language
+* @param  String $mode Defines what to update, this can be
+*                      - default_lang: The style gets checked/updated
+*                      - default_style: The language gets checked/updated
+*                      - both: Check/update both
+* @return void
+*/
+function set_bot_default_lang_style($mode = 'both')
+{
+	global $config, $db;
+
+	$sql_set = array();
+	foreach (array('default_lang', 'default_style') as $option)
+	{
+		if ($mode == $option || $mode == 'both')
+		{
+			$column = ($option == 'default_lang') ? 'user_lang' : 'user_style';
+			$sql_set[$column] = $config[$option];
+		}
+	}
+
+	// Called with non existing mode
+	if (empty($sql_set))
+	{
+		return;
+	}
+
+	// Update the USER_IGNORE
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_set) . '
+		WHERE user_type = ' . USER_IGNORE;
+	$db->sql_query($sql);
+}
