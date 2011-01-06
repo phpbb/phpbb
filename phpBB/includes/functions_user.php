@@ -1422,6 +1422,36 @@ function validate_match($string, $optional = false, $match = '')
 }
 
 /**
+* Validate Language string
+*
+* Tests whether a language string is valid and exists on the disk
+* This is the same criteria used to determine whether to include it or not.
+*
+* @param $lang - The language string to test
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+*/
+function validate_language($lang)
+{
+	global $phpbb_root_path;
+
+	// Note: Two language strings are identical here because the English
+	// version "Language you specified is not valid" is correct for both
+	// cases
+	if (!preg_match('#^[a-z_\-]{2,}$#i', $lang))
+	{
+		return 'WRONG_DATA';
+	}
+
+	if (!file_exists($phpbb_root_path . 'language/' . $lang . '/'))
+	{
+		return 'WRONG_DATA';
+	}
+
+	return false;
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username

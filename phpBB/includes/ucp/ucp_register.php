@@ -210,7 +210,7 @@ class ucp_register
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
 				'tz'				=> array('num', false, -14, 14),
-				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
+				'lang'				=> array('language'),
 			));
 
 			if (!check_form_key('ucp_register'))
