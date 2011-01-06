@@ -20,15 +20,6 @@
     <filter>
         <blacklist>
             <directory>./tests/</directory>
-            <directory>./phpBB/</directory>
         </blacklist>
-        <whitelist>
-            <directory>./phpBB/includes/db/</directory>
-            <file>./phpBB/includes/utf/utf_tools.php</file>
-            <file>./phpBB/includes/functions.php</file>
-            <file>./phpBB/includes/functions_content.php</file>
-            <file>./phpBB/includes/session.php</file>
-            <file>./phpBB/includes/template.php</file>
-        </whitelist>
     </filter>
 </phpunit>
