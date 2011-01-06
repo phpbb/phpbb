@@ -12,6 +12,8 @@ $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
 $table_prefix = '';
 
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 // If we are on PHP >= 6.0.0 we do not need some code
 if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 {
