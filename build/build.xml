@@ -64,8 +64,14 @@
 	</target>
 
 	<target name="docs">
+		<!-- only works if you setup phpdoctor:
+                     git clone https://github.com/peej/phpdoctor.git
+                     and then create an executable phpdoctor in your path containing
+                     #!/bin/sh
+                     php -f /path/to/phpdoctor/phpdoc.php $@
+                -->
 		<exec dir="build"
-			command="phpdoc -c phpdoc-phpbb.ini"
+			command="phpdoctor phpdoc-phpbb.ini"
 			passthru="true" />
 	</target>
 
