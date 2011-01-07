@@ -7,18 +7,7 @@
 *
 */
 
-if (!defined('PHPUnit_MAIN_METHOD'))
-{
-	define('PHPUnit_MAIN_METHOD', 'phpbb_security_all_tests::main');
-}
-
-require_once 'test_framework/framework.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
-
-require_once 'security/extract_current_page.php';
-require_once 'security/redirect.php';
-
-class phpbb_security_all_tests extends PHPUnit_Framework_TestSuite
+abstract class phpbb_security_test_base extends phpbb_test_case
 {
 	/**
 	* Set up the required user object and server variables for the suites
@@ -62,25 +51,4 @@ class phpbb_security_all_tests extends PHPUnit_Framework_TestSuite
 		global $user;
 		$user = NULL;
 	}
-
-	public static function main()
-	{
-		PHPUnit_TextUI_TestRunner::run(self::suite());
-	}
-
-	public static function suite()
-	{
-		// I bet there is a better method calling this... :)
-		$suite = new phpbb_security_all_tests('phpBB Security Fixes');
-
-		$suite->addTestSuite('phpbb_security_extract_current_page_test');
-		$suite->addTestSuite('phpbb_security_redirect_test');
-
-		return $suite;
-	}
-}
-
-if (PHPUnit_MAIN_METHOD == 'phpbb_security_all_tests::main')
-{
-	phpbb_security_all_tests::main();
 }
