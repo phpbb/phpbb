@@ -8,7 +8,6 @@
 */
 
 require_once __DIR__ . '/base.php';
-
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/session.php';
 
