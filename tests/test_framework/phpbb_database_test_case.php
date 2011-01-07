@@ -13,6 +13,21 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	protected $test_case_helpers;
 
+	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->backupStaticAttributesBlacklist += array(
+			'PHP_CodeCoverage' => array('instance'),
+			'PHP_CodeCoverage_Filter' => array('instance'),
+			'PHP_CodeCoverage_Util' => array('ignoredLines', 'templateMethods'),
+			'PHP_Timer' => array('startTimes',),
+			'PHP_Token_Stream' => array('customTokens'),
+			'PHP_Token_Stream_CachingFactory' => array('cache'),
+
+			'phpbb_database_test_case' => array('already_connected'),
+		);
+	}
+
 	public function get_test_case_helpers()
 	{
 		if (!$this->test_case_helpers)
@@ -96,9 +111,9 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
 			);
 		}
-		else if (file_exists('test_config.php'))
+		else if (file_exists(__DIR__ . '/../test_config.php'))
 		{
-			include('test_config.php');
+			include(__DIR__ . '/../test_config.php');
 
 			return array(
 				'dbms'		=> $dbms,
@@ -114,7 +129,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			// Silently use sqlite
 			return array(
 				'dbms'		=> 'sqlite',
-				'dbhost'	=> 'phpbb_unit_tests.sqlite2', // filename
+				'dbhost'	=> __DIR__ . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
 				'dbuser'	=> '',
@@ -325,7 +340,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			}
 		}
 
-		$sql = $this->split_sql_file(file_get_contents("../phpBB/install/schemas/{$dbms['SCHEMA']}_schema.sql"), $config['dbms']);
+		$sql = $this->split_sql_file(file_get_contents(__DIR__ . "/../../phpBB/install/schemas/{$dbms['SCHEMA']}_schema.sql"), $config['dbms']);
 
 		foreach ($sql as $query)
 		{
@@ -361,7 +376,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$config = $this->get_database_config();
 
-		require_once '../phpBB/includes/db/' . $config['dbms'] . '.php';
+		require_once __DIR__ . '/../../phpBB/includes/db/' . $config['dbms'] . '.php';
 		$dbal = 'dbal_' . $config['dbms'];
 		$db = new $dbal();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);

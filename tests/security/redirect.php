@@ -7,12 +7,12 @@
 *
 */
 
-require_once 'test_framework/framework.php';
+require_once __DIR__ . '/base.php';
 
-require_once '../phpBB/includes/functions.php';
-require_once '../phpBB/includes/session.php';
+require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/session.php';
 
-class phpbb_security_redirect_test extends phpbb_test_case
+class phpbb_security_redirect_test extends phpbb_security_test_base
 {
 	public static function provider()
 	{
@@ -22,13 +22,15 @@ class phpbb_security_redirect_test extends phpbb_test_case
 			array('bad://localhost/phpBB/index.php', 'Tried to redirect to potentially insecure url.', false),
 			array('http://www.otherdomain.com/somescript.php', false, 'http://localhost/phpBB'),
 			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'Tried to redirect to potentially insecure url.', false),
-			array('javascript:test', false, 'http://localhost/phpBB/../tests/javascript:test'),
+			array('javascript:test', false, 'http://localhost/phpBB/../javascript:test'),
 			array('http://localhost/phpBB/index.php;url=', 'Tried to redirect to potentially insecure url.', false),
 		);
 	}
 
 	protected function setUp()
 	{
+		parent::setUp();
+		
 		$GLOBALS['config'] = array(
 			'force_server_vars'	=> '0',
 		);

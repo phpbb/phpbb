@@ -8,11 +8,10 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once '../phpBB/includes/request/type_cast_helper_interface.php';
-require_once '../phpBB/includes/request/interface.php';
-require_once '../phpBB/includes/request/deactivated_super_global.php';
-require_once '../phpBB/includes/request/request.php';
+require_once __DIR__ . '/../../phpBB/includes/request/type_cast_helper_interface.php';
+require_once __DIR__ . '/../../phpBB/includes/request/interface.php';
+require_once __DIR__ . '/../../phpBB/includes/request/deactivated_super_global.php';
+require_once __DIR__ . '/../../phpBB/includes/request/request.php';
 
 class phpbb_request_test extends phpbb_test_case
 {

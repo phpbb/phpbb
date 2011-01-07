@@ -8,10 +8,9 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once '../phpBB/includes/utf/utf_tools.php';
-require_once '../phpBB/includes/request/type_cast_helper_interface.php';
-require_once '../phpBB/includes/request/type_cast_helper.php';
+require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
+require_once __DIR__ . '/../../phpBB/includes/request/type_cast_helper_interface.php';
+require_once __DIR__ . '/../../phpBB/includes/request/type_cast_helper.php';
 
 class phpbb_type_cast_helper_test extends phpbb_test_case
 {

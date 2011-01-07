@@ -7,8 +7,7 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once '../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/functions.php';
 
 class phpbb_random_gen_rand_string_test extends phpbb_test_case
 {

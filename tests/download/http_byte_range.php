@@ -7,8 +7,7 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once '../phpBB/includes/functions_download.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_download.php';
 
 class phpbb_download_http_byte_range_test extends phpbb_test_case
 {

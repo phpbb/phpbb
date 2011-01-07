@@ -42,12 +42,11 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="test">
-		<exec dir="tests"
-			command="phpunit --log-junit ../build/logs/phpunit.xml
-			--coverage-clover ../build/logs/clover.xml
-			--coverage-html ../build/coverage
-			phpbb_all_tests all_tests.php"
+	<target name="test" depends="clean,prepare">
+		<exec dir="."
+			command="phpunit --log-junit build/logs/phpunit.xml
+			--coverage-clover build/logs/clover.xml
+			--coverage-html build/coverage"
 			passthru="true" />
 
 

@@ -8,17 +8,15 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once 'class_loader/cache_mock.php';
+require_once __DIR__ . '/cache_mock.php';
 
-require_once '../phpBB/includes/class_loader.php';
-
+require_once __DIR__ . '/../../phpBB/includes/class_loader.php';
 
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
 	public function test_resolve_path()
 	{
-		$prefix = 'class_loader/';
+		$prefix = __DIR__ . '/';
 		$class_loader = new phpbb_class_loader($prefix);
 
 		$prefix .= 'includes/';
@@ -56,7 +54,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$cache = new phpbb_cache_mock;
 		$cache->put('class_loader', array('phpbb_a_cached_name' => 'a/cached_name'));
 
-		$prefix = 'class_loader/';
+		$prefix = __DIR__ . '/';
 		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);
 
 		$prefix .= 'includes/';
