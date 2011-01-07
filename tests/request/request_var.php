@@ -8,6 +8,7 @@
 */
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_request_request_var_test extends phpbb_test_case
 {
