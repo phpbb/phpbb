@@ -82,26 +82,9 @@ class cache extends acm
 			$result = $db->sql_query($sql);
 
 			$censors = array();
-			$unicode = pcre_utf8_support();
-
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($unicode)
-				{
-					// Unescape the asterisk to simplify further conversions
-					$row['word'] = str_replace('\*', '*', preg_quote($row['word'], '#'));
-					
-					// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
-					$row['word'] = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*(?=[\p{Nd}\p{L}_])#iu', '#^\*#', '#\*$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $row['word']);
-
-					// Generate the final substitution
-					$censors['match'][] = '#(?<![\p{Nd}\p{L}_-])(' . $row['word'] . ')(?![\p{Nd}\p{L}_-])#iu';
-				}
-				else
-				{
-					$censors['match'][] = '#(?<!\S)(' . str_replace('\*', '\S*?', preg_quote($row['word'], '#')) . ')(?!\S)#iu';
-				}
-
+				$censors['match'][] = get_censor_preg_expression($row['word']);
 				$censors['replace'][] = $row['replacement'];
 			}
 			$db->sql_freeresult($result);

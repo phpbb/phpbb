@@ -3250,6 +3250,48 @@ function get_preg_expression($mode)
 }
 
 /**
+* Generate regexp for naughty words censoring
+* Depends on whether installed PHP version supports unicode properties
+*
+* @param string	$word	word template to be replaced
+*
+* @return string $preg_expr		regex to use with word censor
+*/
+function get_censor_preg_expression($word)
+{
+	static $unicode = null;
+
+	if (empty($word))
+	{
+		return '';
+	}
+
+	// Check whether PHP version supports unicode properties
+	if (is_null($unicode))
+	{
+		$unicode = pcre_utf8_support();
+	}
+
+	if ($unicode)
+	{
+		// Unescape the asterisk to simplify further conversions
+		$word = str_replace('\*', '*', preg_quote($word, '#'));
+
+		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
+		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
+
+		// Generate the final substitution
+		$preg_expr = '#(?<![\p{Nd}\p{L}_-])(' . $word . ')(?![\p{Nd}\p{L}_-])#iu';
+	}
+	else
+	{
+		$preg_expr = '#(?<!\S)(' . str_replace('\*', '\S*?', preg_quote($word, '#')) . ')(?!\S)#iu';
+	}
+
+	return $preg_expr;
+}
+
+/**
 * Returns the first block of the specified IPv6 address and as many additional
 * ones as specified in the length paramater.
 * If length is zero, then an empty string is returned.
