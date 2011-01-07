@@ -33,9 +33,9 @@ function output_image()
 	// flush();
 }
 
-function do_cron($run_tasks)
+function do_cron($cron_lock, $run_tasks)
 {
-	global $cron_lock, $config;
+	global $config;
 
 	foreach ($run_tasks as $task)
 	{
@@ -73,7 +73,7 @@ else
 	output_image();
 }
 
-$cron_lock = new phpbb_cron_lock();
+$cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
 if ($cron_lock->lock())
 {
 	if ($config['use_system_cron'])
@@ -103,11 +103,11 @@ if ($cron_lock->lock())
 	}
 	if ($use_shutdown_function)
 	{
-		register_shutdown_function('do_cron', $run_tasks);
+		register_shutdown_function('do_cron', $cron_lock, $run_tasks);
 	}
 	else
 	{
-		do_cron($run_tasks);
+		do_cron($cron_lock, $run_tasks);
 	}
 }
 else
