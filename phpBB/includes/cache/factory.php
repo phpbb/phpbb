@@ -22,31 +22,22 @@ if (!defined('IN_PHPBB'))
 class phpbb_cache_factory
 {
 	private $acm_type;
-	
+
 	public function __construct($acm_type)
 	{
 		$this->acm_type = $acm_type;
 	}
-	
-	public function get_acm()
+
+	public function get_driver()
 	{
 		$class_name = 'phpbb_cache_driver_' . $this->acm_type;
 		return new $class_name();
 	}
-	
+
 	public function get_service()
 	{
-		$acm = $this->get_acm();
-		$service = new phpbb_cache_service($acm);
+		$driver = $this->get_driver();
+		$service = new phpbb_cache_service($driver);
 		return $service;
-	}
-	
-	/**
-	* for convenience to allow:
-	* $cache = phpbb_cache_factory::create('file')->get_service();
-	*/
-	public static function create($acm_type)
-	{
-		return new self($acm_type);
 	}
 }

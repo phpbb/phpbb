@@ -33,7 +33,7 @@ class phpbb_class_loader
 {
 	private $phpbb_root_path;
 	private $php_ext;
-	private $acm;
+	private $cache;
 	private $cached_paths = array();
 
 	/**
@@ -42,14 +42,14 @@ class phpbb_class_loader
 	*
 	* @param string $phpbb_root_path phpBB's root directory containing includes/
 	* @param string $php_ext         The file extension for PHP files
-	* @param phpbb_acm_interface $acm An implementation of the phpBB cache interface.
+	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $acm = null)
+	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
-		$this->set_acm($acm);
+		$this->set_cache($cache);
 	}
 
 	/**
@@ -57,13 +57,13 @@ class phpbb_class_loader
 	* the class loader will resolve paths by checking for the existance of every
 	* directory in the class name every time.
 	*
-	* @param phpbb_acm_interface $acm An implementation of the phpBB cache interface.
+	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function set_acm(phpbb_cache_driver_interface $acm = null)
+	public function set_cache(phpbb_cache_driver_interface $cache = null)
 	{
-		if ($acm)
+		if ($cache)
 		{
-			$this->cached_paths = $acm->get('class_loader');
+			$this->cached_paths = $cache->get('class_loader');
 
 			if ($this->cached_paths === false)
 			{
@@ -71,7 +71,7 @@ class phpbb_class_loader
 			}
 		}
 
-		$this->acm = $acm;
+		$this->cache = $cache;
 	}
 
 	/**
@@ -134,10 +134,10 @@ class phpbb_class_loader
 			return false;
 		}
 
-		if ($this->acm)
+		if ($this->cache)
 		{
 			$this->cached_paths[$class] = $relative_path;
-			$this->acm->put('class_loader', $this->cached_paths);
+			$this->cache->put('class_loader', $this->cached_paths);
 		}
 
 		return $path_prefix . $relative_path . $this->php_ext;

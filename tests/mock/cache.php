@@ -2,31 +2,44 @@
 /**
 *
 * @package testing
-* @version $Id$
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-require '../phpBB/includes/cache/driver/interface.php';
-
-class phpbb_cache_mock implements phpbb_cache_driver_interface
+class phpbb_mock_cache implements phpbb_cache_driver_interface
 {
-	private $variables = array();
+	protected $data;
 
-	function get($var_name)
+	public function __construct($data = array())
 	{
-		if (isset($this->variables[$var_name]))
+		$this->data = $data;
+	}
+
+	public function get($var_name)
+	{
+		if (isset($this->data[$var_name]))
 		{
-			return $this->variables[$var_name];
+			return $this->data[$var_name];
 		}
 
 		return false;
 	}
 
-	function put($var_name, $value, $ttl = 0)
+	public function put($var_name, $var, $ttl = 0)
 	{
-		$this->variables[$var_name] = $value;
+		$this->data[$var_name] = $var;
+	}
+
+	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
+	{
+		$test->assertTrue(isset($this->data[$var_name]));
+		$test->assertEquals($data, $this->data[$var_name]);
+	}
+
+	public function check(PHPUnit_Framework_Assert $test, $data)
+	{
+		$test->assertEquals($data, $this->data);
 	}
 
 	function load()
