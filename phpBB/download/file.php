@@ -54,9 +54,9 @@ if (isset($_GET['avatar']))
 	$class_loader->register();
 
 	// set up caching
-	$acm = phpbb_cache_factory::create($acm_type)->get_acm();
-	$class_loader->set_acm($acm);
-	$cache = new phpbb_cache_service($acm);
+	$cache_factory = new phpbb_cache_factory($acm_type);
+	$class_loader->set_cache($cache_factory->get_driver());
+	$cache = $cache_factory->get_service();
 
 	$db = new $sql_db();
 

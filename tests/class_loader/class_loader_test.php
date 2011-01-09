@@ -2,13 +2,12 @@
 /**
 *
 * @package testing
-* @version $Id$
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-require_once __DIR__ . '/cache_mock.php';
+require_once __DIR__ . '/../mock/cache.php';
 
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
@@ -50,15 +49,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	public function test_resolve_cached()
 	{
 		$cacheMap = array('class_loader' => array('phpbb_a_cached_name' => 'a/cached_name'));
-
-		$cache = $this->getMock('phpbb_cache_driver_interface',
-					array('get', 'put', 'load', 'unload', 'save', 'tidy', 'purge', 'destroy', '_exists',
-						'sql_load', 'sql_save', 'sql_exists', 'sql_fetchrow', 'sql_fetchfield', 'sql_rowseek', 'sql_freeresult'));
-		$cache->expects($this->any())
-			->method('get')
-			->will($this->returnCallback(function($var_name) use ($cacheMap) {
-				return $cacheMap[$var_name];
-			}));
+		$cache = new phpbb_mock_cache($cacheMap);
 
 		$prefix = __DIR__ . '/';
 		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);
@@ -76,5 +67,8 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 			$class_loader->resolve_path('phpbb_a_cached_name'),
 			'Class in a directory'
 		);
+
+		$cacheMap['class_loader']['phpbb_dir_class_name'] = 'dir/class_name';
+		$cache->check($this, $cacheMap);
 	}
 }
