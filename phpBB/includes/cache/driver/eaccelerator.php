@@ -16,18 +16,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Include the abstract base
-if (!class_exists('acm_memory'))
-{
-	require("{$phpbb_root_path}includes/acm/acm_memory.$phpEx");
-}
-
 /**
 * ACM for eAccelerator
 * @package acm
 * @todo Missing locks from destroy() talk with David
 */
-class acm extends acm_memory
+class phpbb_cache_driver_eaccelerator extends phpbb_cache_driver_memory
 {
 	var $extension = 'eaccelerator';
 	var $function = 'eaccelerator_get';

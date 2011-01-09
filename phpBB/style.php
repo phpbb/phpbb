@@ -57,18 +57,19 @@ if ($id)
 {
 	// Include files
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-	$cache = new cache();
-
-	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 	$class_loader->register();
 
-	$request	= new phpbb_request();
+	// set up caching
+	$cache_factory = new phpbb_cache_factory($acm_type);
+	$class_loader->set_cache($cache_factory->get_driver());
+	$cache = $cache_factory->get_service();
+
+	$request = new phpbb_request();
 	$db = new $sql_db();
 
 	// make sure request_var uses this request instance
@@ -308,5 +309,3 @@ if ($id)
 	}
 	$db->sql_close();
 }
-
-exit;

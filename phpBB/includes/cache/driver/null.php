@@ -20,12 +20,12 @@ if (!defined('IN_PHPBB'))
 * ACM Null Caching
 * @package acm
 */
-class acm
+class phpbb_cache_driver_null extends phpbb_cache_driver_base
 {
 	/**
 	* Set cache path
 	*/
-	function acm()
+	function __construct()
 	{
 	}
 

@@ -42,8 +42,9 @@ class phpbb_class_loader
 	*
 	* @param string $phpbb_root_path phpBB's root directory containing includes/
 	* @param string $php_ext         The file extension for PHP files
+	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($phpbb_root_path, $php_ext = '.php', $cache = null)
+	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -56,9 +57,9 @@ class phpbb_class_loader
 	* the class loader will resolve paths by checking for the existance of every
 	* directory in the class name every time.
 	*
-	* @param acm $cache An implementation of the phpBB cache interface.
+	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function set_cache($cache = null)
+	public function set_cache(phpbb_cache_driver_interface $cache = null)
 	{
 		if ($cache)
 		{

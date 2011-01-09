@@ -16,12 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Include the abstract base
-if (!class_exists('acm_memory'))
-{
-	require("{$phpbb_root_path}includes/acm/acm_memory.$phpEx");
-}
-
 if (!defined('PHPBB_ACM_MEMCACHE_PORT'))
 {
 	define('PHPBB_ACM_MEMCACHE_PORT', 11211);
@@ -47,17 +41,17 @@ if (!defined('PHPBB_ACM_MEMCACHE'))
 * ACM for Memcached
 * @package acm
 */
-class acm extends acm_memory
+class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 {
 	var $extension = 'memcache';
 
 	var $memcache;
 	var $flags = 0;
 
-	function acm()
+	function __construct()
 	{
 		// Call the parent constructor
-		parent::acm_memory();
+		parent::__construct();
 
 		$this->memcache = new Memcache;
 		foreach(explode(',', PHPBB_ACM_MEMCACHE) as $u)

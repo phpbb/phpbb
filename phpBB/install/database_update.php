@@ -61,8 +61,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
@@ -93,10 +91,13 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-$cache = new cache();
-
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 $class_loader->register();
+
+// set up caching
+$cache_factory = new phpbb_cache_factory($acm_type);
+$class_loader->set_cache($cache_factory->get_driver());
+$cache = $cache_factory->get_service();
 
 $request = new phpbb_request();
 $user = new user();

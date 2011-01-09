@@ -28,7 +28,7 @@ else
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'includes/class_loader.' . $phpEx;
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.php');
 $class_loader->register();
 
 require_once 'test_framework/phpbb_test_case_helpers.php';

@@ -44,15 +44,21 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 
-	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/cache.' . $phpEx);
+	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 
+	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+	$class_loader->register();
+
+	// set up caching
+	$cache_factory = new phpbb_cache_factory($acm_type);
+	$class_loader->set_cache($cache_factory->get_driver());
+	$cache = $cache_factory->get_service();
+
 	$db = new $sql_db();
-	$cache = new cache();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))

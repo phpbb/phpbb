@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * ACM File Based Caching
 * @package acm
 */
-class acm
+class phpbb_cache_driver_file extends phpbb_cache_driver_base
 {
 	var $vars = array();
 	var $var_expires = array();
@@ -33,10 +33,10 @@ class acm
 	/**
 	* Set cache path
 	*/
-	function acm()
+	function __construct($cache_dir = null)
 	{
 		global $phpbb_root_path;
-		$this->cache_dir = $phpbb_root_path . 'cache/';
+		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/';
 	}
 
 	/**
