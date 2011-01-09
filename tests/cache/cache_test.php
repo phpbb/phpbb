@@ -25,9 +25,6 @@ class phpbb_cache_test extends phpbb_test_case
 
 	public function test_cache_driver_file()
 	{
-		global $phpEx;
-		$phpEx = 'txt'; // do not store files as .php
-
 		$driver = new phpbb_cache_driver_file(__DIR__ . '/tmp/');
 		$driver->put('test_key', 'test_value');
 		$driver->save();
