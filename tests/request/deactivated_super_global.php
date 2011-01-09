@@ -8,9 +8,6 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/request/interface.php';
-require_once __DIR__ . '/../../phpBB/includes/request/deactivated_super_global.php';
-
 class phpbb_deactivated_super_global_test extends phpbb_test_case
 {
 	/**

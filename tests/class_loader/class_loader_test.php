@@ -14,6 +14,18 @@ require_once __DIR__ . '/../../phpBB/includes/class_loader.php';
 
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
+	public function setUp()
+	{
+		global $class_loader;
+		$class_loader->unregister();
+	}
+
+	public function tearDown()
+	{
+		global $class_loader;
+		$class_loader->register();
+	}
+
 	public function test_resolve_path()
 	{
 		$prefix = __DIR__ . '/';
