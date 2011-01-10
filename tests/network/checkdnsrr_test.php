@@ -9,6 +9,9 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 
+/**
+* @group slow
+*/
 class phpbb_network_checkdnsrr_test extends phpbb_test_case
 {
 	public function data_provider()

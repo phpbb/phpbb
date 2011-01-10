@@ -2,7 +2,7 @@
 
 <phpunit backupGlobals="true"
          backupStaticAttributes="true"
-         colors="false"
+         colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -16,7 +16,13 @@
             <directory suffix="_test.php">./tests/</directory>
         </testsuite>
     </testsuites>
-    
+
+    <groups>
+        <exclude>
+            <group>slow</group>
+        </exclude>
+    </groups>
+
     <filter>
         <blacklist>
             <directory>./tests/</directory>
