@@ -165,17 +165,9 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = array();
-
-$sql = 'SELECT *
-	FROM ' . CONFIG_TABLE;
-$result = $db->sql_query($sql);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	$config[$row['config_name']] = $row['config_value'];
-}
-$db->sql_freeresult($result);
+$config = new phpbb_config_db($db, $cache_factory->get_driver());
+set_config(null, null, null, $config);
+set_config_count(null, null, null, $config);
 
 // We do not include DB Tools here, because we can not be sure the file is up-to-date ;)
 // Instead, this file defines a clean db_tools version (we are also not able to provide a different file, else the database update will not work standalone)

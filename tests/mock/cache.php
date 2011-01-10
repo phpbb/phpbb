@@ -37,6 +37,11 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 		$test->assertEquals($data, $this->data[$var_name]);
 	}
 
+	public function checkVarUnset(PHPUnit_Framework_Assert $test, $var_name)
+	{
+		$test->assertFalse(isset($this->data[$var_name]));
+	}
+
 	public function check(PHPUnit_Framework_Assert $test, $data)
 	{
 		$test->assertEquals($data, $this->data);
@@ -59,6 +64,7 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	}
 	function destroy($var_name, $table = '')
 	{
+		unset($this->data[$var_name]);
 	}
 	public function _exists($var_name)
 	{

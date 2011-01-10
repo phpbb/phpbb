@@ -70,7 +70,10 @@ if (isset($_GET['avatar']))
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	$config = $cache->obtain_config();
+	$config = new phpbb_config_db($db, $cache_factory->get_driver());
+	set_config(null, null, null, $config);
+	set_config_count(null, null, null, $config);
+
 	$filename = $_GET['avatar'];
 	$avatar_group = false;
 	$exit = false;

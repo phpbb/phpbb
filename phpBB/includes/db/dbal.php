@@ -448,6 +448,28 @@ class dbal
 	}
 
 	/**
+	* Returns SQL string to cast a string expression to an int.
+	*
+	* @param  string $expression An expression evaluating to string
+	* @return string             Expression returning an int
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Returns SQL string to cast an integer expression to a string.
+	*
+	* @param  string $expression An expression evaluating to int
+	* @return string             Expression returning a string
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return $expression;
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on

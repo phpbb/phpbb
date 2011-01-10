@@ -130,16 +130,7 @@ class install_convert extends module
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
-				$sql = 'SELECT *
-					FROM ' . CONFIG_TABLE;
-				$result = $db->sql_query($sql);
-
-				$config = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$config[$row['config_name']] = $row['config_value'];
-				}
-				$db->sql_freeresult($result);
+				$config = new phpbb_config_db($db, new phpbb_cache_driver_null);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
@@ -350,16 +341,7 @@ class install_convert extends module
 		$this->page_title = $lang['STAGE_SETTINGS'];
 
 		// We need to fill the config to let internal functions correctly work
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null);
 
 		$convertor_tag = request_var('tag', '');
 
@@ -597,16 +579,8 @@ class install_convert extends module
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null);
 
 		// Override a couple of config variables for the duration
 		$config['max_quote_depth'] = 0;

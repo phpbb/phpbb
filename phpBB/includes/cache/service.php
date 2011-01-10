@@ -40,51 +40,6 @@ class phpbb_cache_service
 	}
 
 	/**
-	* Get config values
-	*/
-	function obtain_config()
-	{
-		global $db;
-
-		if (($config = $this->acm->get('config')) !== false)
-		{
-			$sql = 'SELECT config_name, config_value
-				FROM ' . CONFIG_TABLE . '
-				WHERE is_dynamic = 1';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$config[$row['config_name']] = $row['config_value'];
-			}
-			$db->sql_freeresult($result);
-		}
-		else
-		{
-			$config = $cached_config = array();
-
-			$sql = 'SELECT config_name, config_value, is_dynamic
-				FROM ' . CONFIG_TABLE;
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!$row['is_dynamic'])
-				{
-					$cached_config[$row['config_name']] = $row['config_value'];
-				}
-
-				$config[$row['config_name']] = $row['config_value'];
-			}
-			$db->sql_freeresult($result);
-
-			$this->acm->put('config', $cached_config);
-		}
-
-		return $config;
-	}
-
-	/**
 	* Obtain list of naughty words and build preg style replacement arrays for use by the
 	* calling script
 	*/

@@ -17,7 +17,11 @@ if (!defined('IN_PHPBB'))
 }
 
 // Common global functions
-
+/**
+* Casts a variable to the given type.
+*
+* @deprecated
+*/
 function set_var(&$result, $var, $type, $multibyte = false)
 {
 	// no need for dependency injection here, if you have the object, call the method yourself!
@@ -30,6 +34,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 * See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
 * documentation of this function's use.
 *
+* @deprecated
 * @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
 * 										If the value is an array this may be an array of indizes which will give
 * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
@@ -78,59 +83,46 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, p
 
 /**
 * Set config value. Creates missing config entry.
+*
+* @deprecated
 */
-function set_config($config_name, $config_value, $is_dynamic = false)
+function set_config($config_name, $config_value, $is_dynamic = false, phpbb_config $set_config = null)
 {
-	global $db, $cache, $config;
+	static $config = null;
 
-	$sql = 'UPDATE ' . CONFIG_TABLE . "
-		SET config_value = '" . $db->sql_escape($config_value) . "'
-		WHERE config_name = '" . $db->sql_escape($config_name) . "'";
-	$db->sql_query($sql);
-
-	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
+	if ($set_config !== null)
 	{
-		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'config_name'	=> $config_name,
-			'config_value'	=> $config_value,
-			'is_dynamic'	=> ($is_dynamic) ? 1 : 0));
-		$db->sql_query($sql);
+		$config = $set_config;
+
+		if (empty($config_name))
+		{
+			return;
+		}
 	}
 
-	$config[$config_name] = $config_value;
-
-	if (!$is_dynamic)
-	{
-		$cache->destroy('config');
-	}
+	$config->set($config_name, $config_value, !$is_dynamic);
 }
 
 /**
 * Set dynamic config value with arithmetic operation.
+*
+* @deprecated
 */
-function set_config_count($config_name, $increment, $is_dynamic = false)
+function set_config_count($config_name, $increment, $is_dynamic = false, phpbb_config $set_config = null)
 {
-	global $db, $cache;
+	static $config = null;
 
-	switch ($db->sql_layer)
+	if ($set_config !== null)
 	{
-		case 'firebird':
-		case 'postgres':
-			$sql_update = 'CAST(CAST(config_value as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
-		break;
+		$config = $set_config;
 
-		// MySQL, SQlite, mssql, mssql_odbc, oracle
-		default:
-			$sql_update = 'config_value + ' . (int) $increment;
-		break;
+		if (empty($config_name))
+		{
+			return;
+		}
 	}
 
-	$db->sql_query('UPDATE ' . CONFIG_TABLE . ' SET config_value = ' . $sql_update . " WHERE config_name = '" . $db->sql_escape($config_name) . "'");
-
-	if (!$is_dynamic)
-	{
-		$cache->destroy('config');
-	}
+	$config->increment($config_name, $increment, !$is_dynamic);
 }
 
 /**
@@ -3546,7 +3538,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// but until 5.3.3 it only works for MX records
 	// See: http://bugs.php.net/bug.php?id=51844
 
-	// Call checkdnsrr() if 
+	// Call checkdnsrr() if
 	// we're looking for an MX record or
 	// we're not on Windows or
 	// we're running a PHP version where #51844 has been fixed
@@ -3566,7 +3558,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
 	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
 
-	// Call dns_get_record() if 
+	// Call dns_get_record() if
 	// we're not looking for an AAAA record or
 	// we're not on Windows or
 	// we're running a PHP version where AAAA lookups work reliable
@@ -3596,7 +3588,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 		foreach ($resultset as $result)
 		{
 			if (
-				isset($result['host']) && $result['host'] == $host && 
+				isset($result['host']) && $result['host'] == $host &&
 				isset($result['type']) && $result['type'] == $type
 			)
 			{

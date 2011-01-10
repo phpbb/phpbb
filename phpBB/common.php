@@ -227,7 +227,9 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('
 unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
+$config = new phpbb_config_db($db, $cache_factory->get_driver());
+set_config(null, null, null, $config);
+set_config_count(null, null, null, $config);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

@@ -1460,17 +1460,8 @@ class install_install extends module
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
 
-		// Fill the config array - it is needed by those functions we call
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null);
 
 		$error = false;
 		$search = new fulltext_native($error);

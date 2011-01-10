@@ -281,9 +281,9 @@ else
 }
 
 // Set some standard variables we want to force
-$config = array(
+$config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
-);
+));
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
