@@ -254,7 +254,7 @@ END;
 	Table: 'phpbb_bbcodes'
 */
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id number(3) DEFAULT '0' NOT NULL,
+	bbcode_id number(4) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar2(16) DEFAULT '' ,
 	bbcode_helpline varchar2(765) DEFAULT '' ,
 	display_on_posting number(1) DEFAULT '0' NOT NULL,
