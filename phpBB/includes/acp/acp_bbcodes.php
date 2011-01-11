@@ -213,7 +213,7 @@ class acp_bbcodes
 							$bbcode_id = NUM_CORE_BBCODES + 1;
 						}
 
-						if ($bbcode_id > 1511)
+						if ($bbcode_id > BBCODE_LIMIT)
 						{
 							trigger_error($user->lang['TOO_MANY_BBCODES'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}

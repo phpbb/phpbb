@@ -916,6 +916,15 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
+
+		// Changes from 3.0.8 to 3.0.9-RC1
+		'3.0.8'			=> array(
+			'change_columns'	=> array(
+				BBCODES_TABLE	=> array(
+					'bbcode_id'	=> array('USINT', 0),
+				),
+			),
+		),
 	);
 }
 
