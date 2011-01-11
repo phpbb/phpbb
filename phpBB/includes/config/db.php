@@ -34,6 +34,12 @@ class phpbb_config_db extends phpbb_config
 	protected $db;
 
 	/**
+	* Name of the database table used for configuration.
+	* @var string
+	*/
+	protected $table;
+
+	/**
 	* Creates a configuration container with a default set of values
 	*
 	* @param dbal                         $db    Database connection
