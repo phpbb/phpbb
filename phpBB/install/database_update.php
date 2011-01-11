@@ -96,8 +96,8 @@ $class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
-$class_loader->set_cache($cache_factory->get_driver());
 $cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 $user = new user();
@@ -165,7 +165,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache_factory->get_driver(), CONFIG_TABLE);
+$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 

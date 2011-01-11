@@ -2,7 +2,6 @@
 /**
 *
 * @package acm
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -22,21 +21,41 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cache_service
 {
-	private $acm;
+	private $driver;
 
-	public function __construct(phpbb_cache_driver_interface $acm = null)
+	/**
+	* Creates a cache service around a cache driver
+	*
+	* @param phpbb_cache_driver_interface $driver The cache driver
+	*/
+	public function __construct(phpbb_cache_driver_interface $driver = null)
 	{
-		$this->set_acm($acm);
+		$this->set_driver($driver);
 	}
 
-	public function set_acm(phpbb_cache_driver_interface $acm)
+	/**
+	* Returns the cache driver used by this cache service.
+	*
+	* @return phpbb_cache_driver_interface The cache driver
+	*/
+	public function get_driver()
 	{
-		$this->acm = $acm;
+		return $this->driver;
+	}
+
+	/**
+	* Replaces the cache driver used by this cache service.
+	*
+	* @param phpbb_cache_driver_interface $driver The cache driver
+	*/
+	public function set_driver(phpbb_cache_driver_interface $driver)
+	{
+		$this->driver = $driver;
 	}
 
 	public function __call($method, $arguments)
 	{
-		return call_user_func_array(array($this->acm, $method), $arguments);
+		return call_user_func_array(array($this->driver, $method), $arguments);
 	}
 
 	/**
@@ -47,7 +66,7 @@ class phpbb_cache_service
 	{
 		global $db;
 
-		if (($censors = $this->acm->get('_word_censors')) === false)
+		if (($censors = $this->driver->get('_word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
@@ -61,7 +80,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_word_censors', $censors);
+			$this->driver->put('_word_censors', $censors);
 		}
 
 		return $censors;
@@ -72,7 +91,7 @@ class phpbb_cache_service
 	*/
 	function obtain_icons()
 	{
-		if (($icons = $this->acm->get('_icons')) === false)
+		if (($icons = $this->driver->get('_icons')) === false)
 		{
 			global $db;
 
@@ -92,7 +111,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_icons', $icons);
+			$this->driver->put('_icons', $icons);
 		}
 
 		return $icons;
@@ -103,7 +122,7 @@ class phpbb_cache_service
 	*/
 	function obtain_ranks()
 	{
-		if (($ranks = $this->acm->get('_ranks')) === false)
+		if (($ranks = $this->driver->get('_ranks')) === false)
 		{
 			global $db;
 
@@ -133,7 +152,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_ranks', $ranks);
+			$this->driver->put('_ranks', $ranks);
 		}
 
 		return $ranks;
@@ -148,7 +167,7 @@ class phpbb_cache_service
 	*/
 	function obtain_attach_extensions($forum_id)
 	{
-		if (($extensions = $this->acm->get('_extensions')) === false)
+		if (($extensions = $this->driver->get('_extensions')) === false)
 		{
 			global $db;
 
@@ -192,7 +211,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_extensions', $extensions);
+			$this->driver->put('_extensions', $extensions);
 		}
 
 		// Forum post
@@ -253,7 +272,7 @@ class phpbb_cache_service
 	*/
 	function obtain_bots()
 	{
-		if (($bots = $this->acm->get('_bots')) === false)
+		if (($bots = $this->driver->get('_bots')) === false)
 		{
 			global $db;
 
@@ -292,7 +311,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_bots', $bots);
+			$this->driver->put('_bots', $bots);
 		}
 
 		return $bots;
@@ -313,7 +332,7 @@ class phpbb_cache_service
 
 		foreach ($parsed_items as $key => $parsed_array)
 		{
-			$parsed_array = $this->acm->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
+			$parsed_array = $this->driver->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
 
 			if ($parsed_array === false)
 			{
@@ -339,7 +358,7 @@ class phpbb_cache_service
 				$parsed_array = parse_cfg_file($filename);
 				$parsed_array['filetime'] = @filemtime($filename);
 
-				$this->acm->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
+				$this->driver->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
 			}
 			$parsed_items[$key] = $parsed_array;
 		}
@@ -352,7 +371,7 @@ class phpbb_cache_service
 	*/
 	function obtain_disallowed_usernames()
 	{
-		if (($usernames = $this->acm->get('_disallowed_usernames')) === false)
+		if (($usernames = $this->driver->get('_disallowed_usernames')) === false)
 		{
 			global $db;
 
@@ -367,7 +386,7 @@ class phpbb_cache_service
 			}
 			$db->sql_freeresult($result);
 
-			$this->acm->put('_disallowed_usernames', $usernames);
+			$this->driver->put('_disallowed_usernames', $usernames);
 		}
 
 		return $usernames;
@@ -380,7 +399,7 @@ class phpbb_cache_service
 	{
 		global $phpbb_root_path, $phpEx;
 
-		if (($hook_files = $this->acm->get('_hooks')) === false)
+		if (($hook_files = $this->driver->get('_hooks')) === false)
 		{
 			$hook_files = array();
 
@@ -399,7 +418,7 @@ class phpbb_cache_service
 				closedir($dh);
 			}
 
-			$this->acm->put('_hooks', $hook_files);
+			$this->driver->put('_hooks', $hook_files);
 		}
 
 		return $hook_files;

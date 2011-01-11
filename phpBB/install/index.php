@@ -172,8 +172,8 @@ $class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory('file');
-$class_loader->set_cache($cache_factory->get_driver());
 $cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 

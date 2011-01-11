@@ -55,8 +55,8 @@ if (isset($_GET['avatar']))
 
 	// set up caching
 	$cache_factory = new phpbb_cache_factory($acm_type);
-	$class_loader->set_cache($cache_factory->get_driver());
 	$cache = $cache_factory->get_service();
+	$class_loader->set_cache($cache->get_driver());
 
 	$db = new $sql_db();
 
@@ -70,7 +70,7 @@ if (isset($_GET['avatar']))
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	$config = new phpbb_config_db($db, $cache_factory->get_driver(), CONFIG_TABLE);
+	$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
