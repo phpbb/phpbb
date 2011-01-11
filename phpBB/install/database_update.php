@@ -165,7 +165,7 @@ include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 $inline_update = (request_var('type', 0)) ? true : false;
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = new phpbb_config_db($db, $cache_factory->get_driver());
+$config = new phpbb_config_db($db, $cache_factory->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 

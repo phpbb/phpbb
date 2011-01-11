@@ -82,7 +82,7 @@ if ($id)
 	}
 	unset($dbpasswd);
 
-	$config = new phpbb_config_db($db, $cache_factory->get_driver());
+	$config = new phpbb_config_db($db, $cache_factory->get_driver(), CONFIG_TABLE);
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
