@@ -35,6 +35,17 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('42', $this->config['bar']);
 	}
 
+	public function test_load_cached()
+	{
+		$cache = new phpbb_mock_cache(array('config' => array('x' => 'y')));
+		$this->config = new phpbb_config_db($this->db, $cache, 'phpbb_config');
+
+		$this->assertTrue(!isset($this->config['foo']));
+		$this->assertEquals('42', $this->config['bar']);
+
+		$this->assertEquals('y', $this->config['x']);
+	}
+
 	public function test_offset_set()
 	{
 		$this->config['foo'] = 'x'; // temporary set

@@ -52,7 +52,11 @@ class phpbb_config_db extends phpbb_config
 				FROM ' . $this->table . '
 				WHERE is_dynamic = 1';
 			$result = $this->db->sql_query($sql);
-			$config += $this->db->sql_fetchrowset($result);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$config[$row['config_name']] = $row['config_value'];
+			}
 			$this->db->sql_freeresult($result);
 		}
 		else
