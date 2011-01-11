@@ -26,7 +26,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 
 		$this->cache = new phpbb_mock_cache;
 		$this->db = $this->new_dbal();
-		$this->config = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$this->config = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 	}
 
 	public function test_load_config()
@@ -40,7 +40,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->config['foo'] = 'x'; // temporary set
 		$this->assertEquals('x', $this->config['foo']);
 
-		$config2 = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 		$this->assertEquals('23', $config2['foo']);
 	}
 
@@ -50,7 +50,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('17', $this->config['foo']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 		$this->cache->checkVar($this, 'config', array('foo' => '17'));
 	}
 
@@ -59,7 +59,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->config->set('bar', '17', false);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23'));
 	}
 
@@ -69,7 +69,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('5', $this->config['foobar']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23', 'foobar' => '5'));
 	}
 
@@ -79,7 +79,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->assertEquals('5', $this->config['foobar']);
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->cache, $this->db, 'phpbb_config');
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
 		$this->cache->checkVar($this, 'config', array('foo' => '23'));
 	}
 

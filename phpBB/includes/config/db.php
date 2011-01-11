@@ -36,11 +36,11 @@ class phpbb_config_db extends phpbb_config
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param phpbb_cache_driver_interface $cache Cache instance
 	* @param dbal                         $db    Database connection
+	* @param phpbb_cache_driver_interface $cache Cache instance
 	* @param string                       $table Configuration table name
 	*/
-	public function __construct(phpbb_cache_driver_interface $cache, dbal $db, $table)
+	public function __construct(dbal $db, phpbb_cache_driver_interface $cache, $table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
