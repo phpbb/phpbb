@@ -33,10 +33,10 @@ class phpbb_cron_manager
 	protected $tasks = array();
 
 	/**
-	* phpBB's root directory.
+	* Directory containing cron tasks
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $task_path;
 
 	/**
 	* PHP file extension
@@ -45,12 +45,23 @@ class phpbb_cron_manager
 	protected $phpEx;
 
 	/**
-	* Constructor. Loads all available tasks.
+	* Cache driver
+	* @var phpbb_cache_driver_interface
 	*/
-	public function __construct($phpbb_root_path, $phpEx)
+	protected $cache;
+
+	/**
+	* Constructor. Loads all available tasks.
+	*
+	* @param string $task_path                   Directory containing cron tasks
+	* @param string $phpEx                       PHP file extension
+	* @param phpbb_cache_driver_interface $cache Cache for task names (optional)
+	*/
+	public function __construct($task_path, $phpEx, phpbb_cache_driver_interface $cache = null)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->task_path = $task_path;
 		$this->phpEx = $phpEx;
+		$this->cache = $cache;
 
 		$task_names = $this->find_cron_task_names();
 		$this->load_tasks($task_names);
@@ -72,17 +83,25 @@ class phpbb_cron_manager
 	*/
 	public function find_cron_task_names()
 	{
-		$task_root_path = $this->phpbb_root_path . 'includes/cron/task/';
+		if ($this->cache)
+		{
+			$task_names = $this->cache->get('_cron_tasks');
+
+			if ($task_names !== false)
+			{
+				return $task_names;
+			}
+		}
 
 		$task_names = array();
 		$ext = '.' . $this->phpEx;
 		$ext_length = strlen($ext);
 
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($task_root_path));
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->task_path));
 
 		foreach ($iterator as $fileinfo)
 		{
-			$file = preg_replace("#^$task_root_path#", '', $fileinfo->getPathname());
+			$file = preg_replace('#^' . preg_quote($this->task_path, '#') . '#', '', $fileinfo->getPathname());
 
 			// skip directories and files direclty in the task root path
 			if ($fileinfo->isFile() && strpos($file, '/') !== false)
@@ -90,9 +109,14 @@ class phpbb_cron_manager
 				$task_name = str_replace('/', '_', substr($file, 0, -$ext_length));
 				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($task_name))
 				{
-					$task_names[] = $task_name;
+					$task_names[] = 'phpbb_cron_task_' . $task_name;
 				}
 			}
+		}
+
+		if ($this->cache)
+		{
+			$this->cache->put('_cron_tasks', $task_names, $ttl = 3600);
 		}
 
 		return $task_names;
@@ -123,8 +147,7 @@ class phpbb_cron_manager
 	{
 		foreach ($task_names as $task_name)
 		{
-			$class = "phpbb_cron_task_$task_name";
-			$task = new $class();
+			$task = new $task_name();
 			$wrapper = new phpbb_cron_task_wrapper($task);
 			$this->tasks[] = $wrapper;
 		}
