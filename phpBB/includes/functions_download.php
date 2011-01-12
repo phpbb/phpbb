@@ -229,6 +229,16 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
+		// We make sure those have to be enabled manually by defining a constant
+		// because of the potential disclosure of full attachment path
+		// in case support for features is absent in the webserver software.
+		if (defined('PHPBB_ENABLE_X_ACCEL_REDIRECT') && PHPBB_ENABLE_X_ACCEL_REDIRECT)
+		{
+			// X-Accel-Redirect - http://wiki.nginx.org/XSendfile
+			header('X-Accel-Redirect: ' . $user->page['root_script_path'] . $upload_dir . '/' . $attachment['physical_filename']);
+			exit;
+		}
+
 		// Try to deliver in chunks
 		@set_time_limit(0);
 
