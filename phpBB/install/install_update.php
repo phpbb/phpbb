@@ -101,17 +101,10 @@ class install_update extends module
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
 
-		$config = array();
-
-		$sql = 'SELECT config_name, config_value
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		// Force template recompile
 		$config['load_tplcompile'] = 1;

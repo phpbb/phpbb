@@ -207,8 +207,8 @@ $class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
-$class_loader->set_cache($cache_factory->get_driver());
 $cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
 $request	= new phpbb_request();
@@ -227,7 +227,9 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('
 unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
+$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+set_config(null, null, null, $config);
+set_config_count(null, null, null, $config);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

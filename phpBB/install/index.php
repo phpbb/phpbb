@@ -172,8 +172,8 @@ $class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory('file');
-$class_loader->set_cache($cache_factory->get_driver());
 $cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 
@@ -281,9 +281,9 @@ else
 }
 
 // Set some standard variables we want to force
-$config = array(
+$config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
-);
+));
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');

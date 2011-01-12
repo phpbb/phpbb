@@ -1460,17 +1460,10 @@ class install_install extends module
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
 
-		// Fill the config array - it is needed by those functions we call
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$error = false;
 		$search = new fulltext_native($error);
@@ -1830,17 +1823,10 @@ class install_install extends module
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
 
-		// Fill the config array - it is needed by those functions we call
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1907,19 +1893,10 @@ class install_install extends module
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
-		// Obtain any submitted data
-		$data = $this->get_submitted_data();
-
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
