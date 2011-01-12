@@ -417,15 +417,28 @@ function set_modified_headers($stamp, $browser)
 	return false;
 }
 
-function file_gc()
+/**
+* Garbage Collection
+*
+* @param bool $exit		Whether to die or not.
+*
+* @return void
+*/
+function file_gc($exit = true)
 {
 	global $cache, $db;
+
 	if (!empty($cache))
 	{
 		$cache->unload();
 	}
+
 	$db->sql_close();
-	exit;
+
+	if ($exit)
+	{
+		exit;
+	}
 }
 
 /**
