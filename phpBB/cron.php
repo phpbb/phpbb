@@ -63,7 +63,7 @@ if ($config['use_system_cron'])
 {
 	$use_shutdown_function = false;
 
-	$cron = new phpbb_cron_manager();
+	$cron = new phpbb_cron_manager($phpbb_root_path, $phpEx);
 }
 else
 {
