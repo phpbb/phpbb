@@ -30,7 +30,7 @@ function output_image()
 	echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
 	// test without flush ;)
-	// flush();
+	flush();
 }
 
 function do_cron($cron_lock, $run_tasks)
