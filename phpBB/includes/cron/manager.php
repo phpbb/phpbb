@@ -28,17 +28,30 @@ class phpbb_cron_manager
 	* Set of phpbb_cron_task_wrapper objects.
 	* Array holding all tasks that have been found.
 	*
-	* @var array 
+	* @var array
 	*/
-	private $tasks = array();
+	protected $tasks = array();
+
+	/**
+	* phpBB's root directory.
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP file extension
+	* @var string
+	*/
+	protected $phpEx;
 
 	/**
 	* Constructor. Loads all available tasks.
-	*
-	* @return void
 	*/
-	public function __construct()
+	public function __construct($phpbb_root_path, $phpEx)
 	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+
 		$task_names = $this->find_cron_task_names();
 		$this->load_tasks($task_names);
 	}
@@ -59,12 +72,10 @@ class phpbb_cron_manager
 	*/
 	public function find_cron_task_names()
 	{
-		global $phpbb_root_path, $phpEx;
-
-		$tasks_root_path = $phpbb_root_path . 'includes/cron/task/';
+		$tasks_root_path = $this->phpbb_root_path . 'includes/cron/task/';
 
 		$task_names = array();
-		$ext = '.' . $phpEx;
+		$ext = '.' . $this->phpEx;
 		$ext_length = strlen($ext);
 
 		$dh = opendir($tasks_root_path);
@@ -115,7 +126,7 @@ class phpbb_cron_manager
 	*
 	* @return void
 	*/
-	public function load_tasks($task_names)
+	public function load_tasks(array $task_names)
 	{
 		foreach ($task_names as $task_name)
 		{
@@ -196,7 +207,7 @@ class phpbb_cron_manager
 	*
 	* @return phpbb_cron_task_wrapper|null
 	*/
-	public function instantiate_task($name, $args)
+	public function instantiate_task($name, array $args)
 	{
 		$task = $this->find_task($name);
 		if ($task)
