@@ -42,7 +42,7 @@ class phpbb_lock_db
 
 	/**
 	* The phpBB configuration
-	* @var array
+	* @var phpbb_config
 	*/
 	private $config;
 
@@ -61,7 +61,7 @@ class phpbb_lock_db
 	* @param	array	$config			The phpBB configuration
 	* @param	dbal	$db				A database connection
 	*/
-	public function __construct($config_name, $config, dbal $db)
+	public function __construct($config_name, phpbb_config $config, dbal $db)
 	{
 		$this->config_name = $config_name;
 		$this->config = $config;
@@ -69,8 +69,8 @@ class phpbb_lock_db
 	}
 
 	/**
-	* Tries to acquire the cron lock by updating
-	* the 'cron_lock' configuration variable in the database.
+	* Tries to acquire the lock by updating
+	* the configuration variable in the database.
 	*
 	* As a lock may only be held by one process at a time, lock
 	* acquisition may fail if another process is holding the lock
@@ -89,13 +89,11 @@ class phpbb_lock_db
 
 		if (!isset($this->config[$this->config_name]))
 		{
-			set_config($this->config_name, '0', true);
-			global $config;
-			$this->config = $config;
+			$this->config->set($this->config_name, '0', false);
 		}
 		$lock_value = $this->config[$this->config_name];
 
-		// make sure cron doesn't run multiple times in parallel
+		// make sure lock cannot be acquired by multiple processes
 		if ($lock_value)
 		{
 			// if the other process is running more than an hour already we have to assume it
@@ -111,33 +109,20 @@ class phpbb_lock_db
 
 		$this->unique_id = time() . ' ' . unique_id();
 
-		$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . $this->db->sql_escape($this->unique_id) . "'
-			WHERE config_name = '" . $this->db->sql_escape($this->config_name) . "'
-				AND config_value = '" . $this->db->sql_escape($lock_value) . "'";
-		$this->db->sql_query($sql);
-
-		if ($this->db->sql_affectedrows())
-		{
-			$this->locked = true;
-		}
-		else
-		{
-			// another cron process altered the table between script start and
-			// UPDATE query so return false
-			$this->locked = false;
-		}
+		// try to update the config value, if it was already modified by another
+		// process we failed to acquire the lock.
+		$this->locked = $this->config->set_atomic($this->config_name, $lock_value, $this->unique_id, false);
 
 		return $this->locked;
 	}
 
 	/**
-	* Releases the cron lock.
+	* Releases the lock.
 	*
 	* The lock must have been previously obtained, that is, lock() call
 	* was issued and returned true.
 	*
-	* Note: Attempting to release a cron lock that is already released,
+	* Note: Attempting to release a lock that is already released,
 	* that is, calling unlock() multiple times, is harmless.
 	*
 	* @return void
@@ -146,12 +131,7 @@ class phpbb_lock_db
 	{
 		if ($this->locked)
 		{
-			$sql = 'UPDATE ' . CONFIG_TABLE . "
-				SET config_value = '0'
-				WHERE config_name = '" . $this->db->sql_escape($this->config_name) . "'
-					AND config_value = '" . $this->db->sql_escape($this->unique_id) . "'";
-			$this->db->sql_query($sql);
-
+			$this->config->set_atomic($this->config_name, $this->unique_id, '0', false);
 			$this->locked = false;
 		}
 	}
