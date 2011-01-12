@@ -17,12 +17,6 @@
         </testsuite>
     </testsuites>
 
-    <groups>
-        <exclude>
-            <group>slow</group>
-        </exclude>
-    </groups>
-
     <filter>
         <blacklist>
             <directory>./tests/</directory>
