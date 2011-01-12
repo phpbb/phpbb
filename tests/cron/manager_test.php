@@ -11,7 +11,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		$this->manager = new phpbb_cron_manager();
+		$this->manager = new phpbb_cron_manager(__DIR__ . '/../../phpBB/', 'php');
 	}
 
 	public function test_manager_finds_shipped_tasks()

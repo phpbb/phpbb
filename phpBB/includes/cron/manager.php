@@ -72,35 +72,28 @@ class phpbb_cron_manager
 	*/
 	public function find_cron_task_names()
 	{
-		$tasks_root_path = $this->phpbb_root_path . 'includes/cron/task/';
+		$task_root_path = $this->phpbb_root_path . 'includes/cron/task/';
 
 		$task_names = array();
 		$ext = '.' . $this->phpEx;
 		$ext_length = strlen($ext);
 
-		$dh = opendir($tasks_root_path);
-		while (($mod = readdir($dh)) !== false)
-		{
-			// ignore ., .. and dot directories
-			// todo: change is_dir to account for symlinks
-			if ($mod[0] == '.' || !is_dir($tasks_root_path . $mod))
-			{
-				continue;
-			}
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($task_root_path));
 
-			$dh2 = opendir($tasks_root_path . $mod);
-			while (($file = readdir($dh2)) !== false)
+		foreach ($iterator as $fileinfo)
+		{
+			$file = preg_replace("#^$task_root_path#", '', $fileinfo->getPathname());
+
+			// skip directories and files direclty in the task root path
+			if ($fileinfo->isFile() && strpos($file, '/') !== false)
 			{
-				$task_name = substr($file, 0, -$ext_length);
-				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($mod) && $this->is_valid_name($task_name))
+				$task_name = str_replace('/', '_', substr($file, 0, -$ext_length));
+				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($task_name))
 				{
-					$full_task_name = $mod . '_' . $task_name;
-					$task_names[] = $full_task_name;
+					$task_names[] = $task_name;
 				}
 			}
-			closedir($dh2);
 		}
-		closedir($dh);
 
 		return $task_names;
 	}
@@ -115,7 +108,7 @@ class phpbb_cron_manager
 	*/
 	public function is_valid_name($name)
 	{
-		return (bool) preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
+		return preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
 	}
 
 	/**
