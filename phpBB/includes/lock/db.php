@@ -55,7 +55,7 @@ class phpbb_lock_db
 	/**
 	* Creates a named released instance of the lock.
 	*
-	* You have to call lock to actually create the lock.
+	* You have to call acquire() to actually create the lock.
 	*
 	* @param	string	$config_name	A config variable to be used for locking
 	* @param	array	$config			The phpBB configuration
