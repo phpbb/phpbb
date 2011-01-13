@@ -32,52 +32,52 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 
 	public function test_new_lock()
 	{
-		$this->assertTrue($this->lock->lock());
+		$this->assertTrue($this->lock->acquire());
 		$this->assertTrue(isset($this->config['test_lock']), 'Lock was created');
 
 		$lock2 = new phpbb_lock_db('test_lock', $this->config, $this->db);
-		$this->assertFalse($lock2->lock());
+		$this->assertFalse($lock2->acquire());
 
-		$this->lock->unlock();
+		$this->lock->release();
 		$this->assertEquals('0', $this->config['test_lock'], 'Lock was released');
 	}
 
 	public function test_expire_lock()
 	{
 		$lock = new phpbb_lock_db('foo_lock', $this->config, $this->db);
-		$this->assertTrue($lock->lock());
+		$this->assertTrue($lock->acquire());
 	}
 
 	public function test_double_lock()
 	{
-		$this->assertTrue($this->lock->lock());
+		$this->assertTrue($this->lock->acquire());
 		$this->assertTrue(isset($this->config['test_lock']), 'Lock was created');
 
 		$value = $this->config['test_lock'];
 
-		$this->assertTrue($this->lock->lock());
-		$this->assertEquals($value, $this->config['test_lock'], 'Second lock was ignored');
+		$this->assertFalse($this->lock->acquire());
+		$this->assertEquals($value, $this->config['test_lock'], 'Second lock failed');
 
-		$this->lock->unlock();
+		$this->lock->release();
 		$this->assertEquals('0', $this->config['test_lock'], 'Lock was released');
 	}
 
 	public function test_double_unlock()
 	{
-		$this->assertTrue($this->lock->lock());
+		$this->assertTrue($this->lock->acquire());
 		$this->assertFalse(empty($this->config['test_lock']), 'First lock is acquired');
 
-		$this->lock->unlock();
+		$this->lock->release();
 		$this->assertEquals('0', $this->config['test_lock'], 'First lock is released');
 
 		$lock2 = new phpbb_lock_db('test_lock', $this->config, $this->db);
-		$this->assertTrue($lock2->lock());
+		$this->assertTrue($lock2->acquire());
 		$this->assertFalse(empty($this->config['test_lock']), 'Second lock is acquired');
 
-		$this->lock->unlock();
+		$this->lock->release();
 		$this->assertFalse(empty($this->config['test_lock']), 'Double release of first lock is ignored');
 
-		$lock2->unlock();
+		$lock2->release();
 		$this->assertEquals('0', $this->config['test_lock'], 'Second lock is released');
 	}
 }
