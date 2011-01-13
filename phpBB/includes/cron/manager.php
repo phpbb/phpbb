@@ -77,8 +77,6 @@ class phpbb_cron_manager
 	* $name is the name of the cron task.
 	* Cron task is expected to be a class named phpbb_cron_task_${mod}_${name}.
 	*
-	* Todo: consider caching found task file list in global cache.
-	*
 	* @return array		List of task names
 	*/
 	public function find_cron_task_names()
@@ -116,7 +114,7 @@ class phpbb_cron_manager
 
 		if ($this->cache)
 		{
-			$this->cache->put('_cron_tasks', $task_names, $ttl = 3600);
+			$this->cache->put('_cron_tasks', $task_names, 3600);
 		}
 
 		return $task_names;
