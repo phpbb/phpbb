@@ -170,21 +170,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
-	/**
-	* Commented out X-Sendfile support. To not expose the physical filename within the header if xsendfile is absent we need to look into methods of checking it's status.
-	*
-	* Try X-Sendfile since it is much more server friendly - only works if the path is *not* outside of the root path...
-	* lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
-	*
-	* Not really ideal, but should work fine...
-	* <code>
-	*	if (strpos($upload_dir, '/') !== 0 && strpos($upload_dir, '../') === false)
-	*	{
-	*		header('X-Sendfile: ' . $filename);
-	*	}
-	* </code>
-	*/
-
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	$is_ie8 = (strpos(strtolower($user->browser), 'msie 8.0') !== false);
 	header('Content-Type: ' . $attachment['mimetype']);
@@ -236,6 +221,14 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		{
 			// X-Accel-Redirect - http://wiki.nginx.org/XSendfile
 			header('X-Accel-Redirect: ' . $user->page['root_script_path'] . $upload_dir . '/' . $attachment['physical_filename']);
+			exit;
+		}
+		else if (defined('PHPBB_ENABLE_X_SENDFILE') && PHPBB_ENABLE_X_SENDFILE && !phpbb_http_byte_range($size))
+		{
+			// X-Sendfile - http://blog.lighttpd.net/articles/2006/07/02/x-sendfile
+			// Lighttpd's X-Sendfile does not support range requests as of 1.4.26
+			// and always requires an absolute path.
+			header('X-Sendfile: ' . dirname(__FILE__) . "/../$upload_dir/{$attachment['physical_filename']}");
 			exit;
 		}
 
