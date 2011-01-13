@@ -80,11 +80,11 @@ class phpbb_lock_db
 	* @return	bool			true if lock was acquired
 	*							false otherwise
 	*/
-	public function lock()
+	public function acquire()
 	{
 		if ($this->locked)
 		{
-			return true;
+			return false;
 		}
 
 		if (!isset($this->config[$this->config_name]))
@@ -119,15 +119,15 @@ class phpbb_lock_db
 	/**
 	* Releases the lock.
 	*
-	* The lock must have been previously obtained, that is, lock() call
+	* The lock must have been previously obtained, that is, acquire() call
 	* was issued and returned true.
 	*
 	* Note: Attempting to release a lock that is already released,
-	* that is, calling unlock() multiple times, is harmless.
+	* that is, calling release() multiple times, is harmless.
 	*
 	* @return void
 	*/
-	public function unlock()
+	public function release()
 	{
 		if ($this->locked)
 		{

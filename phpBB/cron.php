@@ -48,7 +48,7 @@ function do_cron($cron_lock, $run_tasks)
 	}
 
 	// Unloading cache and closing db after having done the dirty work.
-	$cron_lock->unlock();
+	$cron_lock->release();
 	garbage_collection();
 }
 
@@ -74,7 +74,7 @@ else
 }
 
 $cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
-if ($cron_lock->lock())
+if ($cron_lock->acquire())
 {
 	if ($config['use_system_cron'])
 	{
