@@ -29,7 +29,8 @@ function output_image()
 
 	echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
-	// test without flush ;)
+	// Flush here to prevent browser from showing the page as loading while
+	// running cron.
 	flush();
 }
 
@@ -70,6 +71,7 @@ else
 	$cron_type = request_var('cron_type', '');
 	$use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 
+	// Comment this line out for debugging so the page does not return an image.
 	output_image();
 }
 
