@@ -132,7 +132,7 @@ class phpbb_cron_manager
 	*/
 	public function is_valid_name($name)
 	{
-		return preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
+		return (bool) preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
 	}
 
 	/**
