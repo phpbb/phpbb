@@ -9,7 +9,7 @@
 
 if ($argc < 2)
 {
-	show_usage($argv);
+	show_usage();
 }
 
 if (file_exists('.git'))
@@ -18,13 +18,38 @@ if (file_exists('.git'))
 	exit(1);
 }
 
-// Handle arguments
-$scope		= get_arg($argv, 1, '');
-$developer	= get_arg($argv, 2, '');
+function show_usage()
+{
+	$filename = basename(__FILE__);
 
-// Github setup
-$username = 'phpbb';
-$repository = 'phpbb3';
+	echo "$filename adds repositories of a github network as remotes to a local git repository.\n";
+	echo "\n";
+
+	echo "Usage: php $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
+	echo "\n";
+
+	echo "Scopes:\n";
+	echo "  collaborators                 Repositories of people who have push access to the specified repository\n";
+	echo "  contributors                  Repositories of people who have contributed to the specified repository\n";
+	echo "  organisation                  Repositories of members of the organisation at github\n";
+	echo "  network                       All repositories of the whole github network\n";
+	echo "\n";
+
+	echo "Options:\n";
+	echo " -s scope                       See description above (mandatory)\n";
+	echo " -u github_username             Overwrites the github username (optional)\n";
+	echo " -r repository_name             Overwrites the repository name (optional)\n";
+	echo " -m your_github_username        Sets up ssh:// instead of git:// for pushable repositories (optional)\n";
+
+	exit(1);
+}
+
+// Handle arguments
+$opts			= getopt('s:u:r:m:');
+$scope			= get_arg($opts, 's', '');
+$username		= get_arg($opts, 'u', 'phpbb');
+$repository 	= get_arg($opts, 'r', 'phpbb3');
+$developer		= get_arg($opts, 'm', '');
 
 // Get some basic data
 $network		= get_network($username, $repository);
@@ -159,18 +184,9 @@ function get_network($username, $repository)
 	return $usernames;
 }
 
-function show_usage($argv)
+function get_arg($array, $index, $default)
 {
-	printf(
-		"usage: php %s collaborators|organisation|contributors|network [your_github_username]\n",
-		basename($argv[0])
-	);
-	exit(1);
-}
-
-function get_arg($argv, $index, $default)
-{
-	return isset($argv[$index]) ? $argv[$index] : $default;
+	return isset($array[$index]) ? $array[$index] : $default;
 }
 
 function run($cmd)
