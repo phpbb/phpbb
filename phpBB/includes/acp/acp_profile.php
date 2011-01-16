@@ -504,11 +504,11 @@ class acp_profile
 							}
 						}
 					}
-					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					else if ($field_type == FIELD_BOOL && $key == 'field_default_value' && !isset($_REQUEST[$key]) && $submit)
 					{
-						// Get the number of options if this key is 'field_maxlen'
-						$var = request_var('field_default_value', 0);
-					}*/
+						// Set the value to 0 if it is not set on submit
+						$var = 0;
+					}
 					else if ($field_type == FIELD_INT && $key == 'field_default_value')
 					{
 						// Permit an empty string
@@ -675,6 +675,13 @@ class acp_profile
 						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
+						}
+						// Store checkbox default value in a hidden field if it has been set on previous step.
+						// If checkbox was checked before we go to the basic options, we set it to 1.
+						// If we save right on basic options page and default value is not set, we set it to existing one or to 0 otherwise.
+						else if ($field_type == FIELD_BOOL && $key == 'field_default_value' && $cp->vars['field_length'] == 2)
+						{
+							$_new_key_ary[$key] =  (isset($_REQUEST[$key])) ? 1 : ((isset($cp->vars[$key]) && !isset($_REQUEST['step'])) ? $cp->vars[$key] : 0);
 						}
 						else
 						{
