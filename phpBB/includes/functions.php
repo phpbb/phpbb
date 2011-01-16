@@ -3441,11 +3441,6 @@ function get_censor_preg_expression($word, $use_unicode = true)
 {
 	static $unicode_support = null;
 
-	if (empty($word))
-	{
-		return '';
-	}
-
 	// Check whether PHP version supports unicode properties
 	if (is_null($unicode_support))
 	{
