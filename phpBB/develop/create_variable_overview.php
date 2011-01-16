@@ -528,7 +528,7 @@ foreach ($lang_fp as $filepointer)
 
 $html_data .= '
 <br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>

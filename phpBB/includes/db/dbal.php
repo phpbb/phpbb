@@ -790,7 +790,7 @@ class dbal
 							</div>
 						</div>
 						<div id="page-footer">
-							Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+							Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group
 						</div>
 					</div>
 					</body>
