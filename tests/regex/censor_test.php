@@ -31,9 +31,19 @@ class phpbb_regex_censor_test extends phpbb_test_case
 	/**
 	* @dataProvider censor_test_data
 	*/
-	public function test_censor($pattern, $subject)
+	public function test_censor_unicode($pattern, $subject)
 	{
-		$regex = get_censor_preg_expression($pattern);
+		$regex = get_censor_preg_expression($pattern, true);
+
+		$this->assertRegExp($regex, $subject);
+	}
+
+	/**
+	* @dataProvider censor_test_data
+	*/
+	public function test_censor_no_unicode($pattern, $subject)
+	{
+		$regex = get_censor_preg_expression($pattern, false);
 
 		$this->assertRegExp($regex, $subject);
 	}
