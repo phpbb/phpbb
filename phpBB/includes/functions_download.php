@@ -224,8 +224,8 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		header("Content-Length: $size");
 	}
 
-	// Close the db connection before sending the file
-	$db->sql_close();
+	// Close the db connection before sending the file etc.
+	file_gc(false);
 
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
@@ -259,7 +259,8 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 		flush();
 	}
-	file_gc();
+
+	exit;
 }
 
 /**
