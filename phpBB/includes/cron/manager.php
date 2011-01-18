@@ -33,7 +33,9 @@ class phpbb_cron_manager
 	protected $tasks = array();
 
 	/**
-	* Directory containing cron tasks
+	* Path to the root of directory tree with tasks.
+	* For bundled phpBB tasks, this is the path to includes/cron/tasks
+	* under phpBB root.
 	* @var string
 	*/
 	protected $task_path;
@@ -53,9 +55,21 @@ class phpbb_cron_manager
 	/**
 	* Constructor. Loads all available tasks.
 	*
+	* Tasks will be looked up in directory tree rooted at $task_path.
+	* Task classes will be autoloaded and must be named according to
+	* autoloading naming conventions. To load cron tasks shipped with
+	* phpbb, pass $phpbb_root_path . 'includes/cron/task' as $task_path.
+	*
+	* If $cache is given, names of found cron tasks will be cached in it
+	* for one hour. Note that the cron task names are stored without
+	* namespacing; if two different phbb_cron_manager instances are
+	* constructed with different $task_path arguments but the same $cache,
+	* the second instance will use task names found by the first instance.
+	*
 	* @param string $task_path                   Directory containing cron tasks
 	* @param string $phpEx                       PHP file extension
 	* @param phpbb_cache_driver_interface $cache Cache for task names (optional)
+	* @return void
 	*/
 	public function __construct($task_path, $phpEx, phpbb_cache_driver_interface $cache = null)
 	{
