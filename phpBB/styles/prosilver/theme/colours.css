@@ -704,6 +704,59 @@ a.fontsize {
 .info-icon, .info-icon a			{ background-image: url("{IMG_ICON_POST_INFO_SRC}"); }
 .warn-icon, .warn-icon a			{ background-image: url("{IMG_ICON_USER_WARN_SRC}"); } /* Need updated warn icon */
 
+/* Forum icons & Topic icons */
+.global_read													{ background-image: url("{IMG_GLOBAL_READ_SRC}"); }
+.global_read_mine												{ background-image: url("{IMG_GLOBAL_READ_MINE_SRC}"); }
+.global_read_locked												{ background-image: url("{IMG_GLOBAL_READ_LOCKED_SRC}"); }
+.global_read_locked_mine										{ background-image: url("{IMG_GLOBAL_READ_LOCKED_MINE_SRC}"); }
+.global_unread													{ background-image: url("{IMG_GLOBAL_UNREAD_SRC}"); }
+.global_unread_mine												{ background-image: url("{IMG_GLOBAL_UNREAD_MINE_SRC}"); }
+.global_unread_locked											{ background-image: url("{IMG_GLOBAL_UNREAD_LOCKED_SRC}"); }
+.global_unread_locked_mine										{ background-image: url("{IMG_GLOBAL_UNREAD_LOCKED_MINE_SRC}"); }
+
+.announce_read													{ background-image: url("{IMG_ANNOUNCE_READ_SRC}"); }
+.announce_read_mine												{ background-image: url("{IMG_ANNOUNCE_READ_MINE_SRC}"); }
+.announce_read_locked											{ background-image: url("{IMG_ANNOUNCE_READ_LOCKED_SRC}"); }
+.announce_read_locked_mine										{ background-image: url("{IMG_ANNOUNCE_READ_LOCKED_MINE_SRC}"); }
+.announce_unread												{ background-image: url("{IMG_ANNOUNCE_UNREAD_SRC}"); }
+.announce_unread_mine											{ background-image: url("{IMG_ANNOUNCE_UNREAD_MINE_SRC}"); }
+.announce_unread_locked											{ background-image: url("{IMG_ANNOUNCE_UNREAD_LOCKED_SRC}"); }
+.announce_unread_locked_mine									{ background-image: url("{IMG_ANNOUNCE_UNREAD_LOCKED_MINE_SRC}"); }
+
+.forum_link														{ background-image: url("{IMG_FORUM_LINK_SRC}"); }
+.forum_read														{ background-image: url("{IMG_FORUM_READ_SRC}"); }
+.forum_read_locked												{ background-image: url("{IMG_FORUM_READ_LOCKED_SRC}"); }
+.forum_read_subforum											{ background-image: url("{IMG_FORUM_READ_SUBFORUM_SRC}"); }
+.forum_unread													{ background-image: url("{IMG_FORUM_UNREAD_SRC}"); }
+.forum_unread_locked											{ background-image: url("{IMG_FORUM_UNREAD_LOCKED_SRC}"); }
+.forum_unread_subforum											{ background-image: url("{IMG_FORUM_UNREAD_SUBFORUM_SRC}"); }
+
+.sticky_read													{ background-image: url("{IMG_STICKY_READ_SRC}"); }
+.sticky_read_mine												{ background-image: url("{IMG_STICKY_READ_MINE_SRC}"); }
+.sticky_read_locked												{ background-image: url("{IMG_STICKY_READ_LOCKED_SRC}"); }
+.sticky_read_locked_mine										{ background-image: url("{IMG_STICKY_READ_LOCKED_MINE_SRC}"); }
+.sticky_unread													{ background-image: url("{IMG_STICKY_UNREAD_SRC}"); }
+.sticky_unread_mine												{ background-image: url("{IMG_STICKY_UNREAD_MINE_SRC}"); }
+.sticky_unread_locked											{ background-image: url("{IMG_STICKY_UNREAD_LOCKED_SRC}"); }
+.sticky_unread_locked_mine										{ background-image: url("{IMG_STICKY_UNREAD_LOCKED_MINE_SRC}"); }
+
+.topic_moved													{ background-image: url("{IMG_TOPIC_MOVED_SRC}"); }
+.topic_read														{ background-image: url("{IMG_TOPIC_READ_SRC}"); }
+.topic_read_mine												{ background-image: url("{IMG_TOPIC_READ_MINE_SRC}"); }
+.topic_read_hot													{ background-image: url("{IMG_TOPIC_READ_HOT_SRC}"); }
+.topic_read_hot_mine											{ background-image: url("{IMG_TOPIC_READ_HOT_MINE_SRC}"); }
+.topic_read_locked												{ background-image: url("{IMG_TOPIC_READ_LOCKED_SRC}"); }
+.topic_read_locked_mine											{ background-image: url("{IMG_TOPIC_READ_LOCKED_MINE_SRC}"); }
+.topic_unread													{ background-image: url("{IMG_TOPIC_UNREAD_SRC}"); }
+.topic_unread_mine												{ background-image: url("{IMG_TOPIC_UNREAD_MINE_SRC}"); }
+.topic_unread_hot												{ background-image: url("{IMG_TOPIC_UNREAD_HOT_SRC}"); }
+.topic_unread_hot_mine											{ background-image: url("{IMG_TOPIC_UNREAD_HOT_MINE_SRC}"); }
+.topic_unread_locked											{ background-image: url("{IMG_TOPIC_UNREAD_LOCKED_SRC}"); }
+.topic_unread_locked_mine										{ background-image: url("{IMG_TOPIC_UNREAD_LOCKED_MINE_SRC}"); }
+
+.pm_read														{ background-image: url("{IMG_TOPIC_READ_SRC}"); }
+.pm_unread														{ background-image: url("{IMG_TOPIC_UNREAD_SRC}"); }
+
 /*  	
 --------------------------------------------------------------
 Colours and backgrounds for cp.css
