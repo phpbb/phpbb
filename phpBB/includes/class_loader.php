@@ -79,7 +79,10 @@ class phpbb_class_loader
 	*/
 	public function register()
 	{
-		spl_autoload_register(array($this, 'load_class'));
+		if (function_exists('spl_autoload_register'))
+		{
+			spl_autoload_register(array($this, 'load_class'));
+		}
 	}
 
 	/**
@@ -87,7 +90,10 @@ class phpbb_class_loader
 	*/
 	public function unregister()
 	{
-		spl_autoload_unregister(array($this, 'load_class'));
+		if (function_exists('spl_autoload_unregister'))
+		{
+			spl_autoload_unregister(array($this, 'load_class'));
+		}
 	}
 
 	/**
