@@ -10,6 +10,9 @@
 require_once __DIR__ . '/../mock/cache.php';
 require_once __DIR__ . '/task/testmod/dummy_task.php';
 require_once __DIR__ . '/task/testmod/second_dummy_task.php';
+require_once __DIR__ . '/task2/testmod/simple_ready.php';
+require_once __DIR__ . '/task2/testmod/simple_not_runnable.php';
+require_once __DIR__ . '/task2/testmod/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 {
@@ -58,5 +61,23 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 
 		$tasks = $manager->find_all_ready_tasks();
 		$this->assertEquals(1, sizeof($tasks));
+	}
+
+	public function test_manager_finds_only_ready_tasks()
+	{
+		$manager = new phpbb_cron_manager(__DIR__ . '/task2/', 'php');
+		$tasks = $manager->find_all_ready_tasks();
+		$task_names = $this->tasks_to_names($tasks);
+		$this->assertEquals(array('phpbb_cron_task_testmod_simple_ready'), $task_names);
+	}
+
+	private function tasks_to_names($tasks)
+	{
+		$names = array();
+		foreach ($tasks as $task)
+		{
+			$names[] = get_class($task->task);
+		}
+		return $names;
 	}
 }
