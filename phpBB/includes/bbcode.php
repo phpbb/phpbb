@@ -93,13 +93,13 @@ class bbcode
 						${$type}['replace'][] = $replace;
 					}
 
-					if (sizeof($str['search']))
+					if (isset($str) && sizeof($str['search']))
 					{
 						$message = str_replace($str['search'], $str['replace'], $message);
 						$str = array('search' => array(), 'replace' => array());
 					}
 
-					if (sizeof($preg['search']))
+					if (isset($preg) && sizeof($preg['search']))
 					{
 						// we need to turn the entities back into their original form to allow the
 						// search patterns to work properly
@@ -111,6 +111,24 @@ class bbcode
 
 						$message = preg_replace($preg['search'], $preg['replace'], $message);
 						$preg = array('search' => array(), 'replace' => array());
+					}
+
+					if (isset($callback) && sizeof($callback['search']))
+					{
+						// we need to turn the entities back into their original form to allow the
+						// search patterns to work properly
+						if (!$undid_bbcode_specialchars)
+						{
+							$message = str_replace(array('&#58;', '&#46;'), array(':', '.'), $message);
+							$undid_bbcode_specialchars = true;
+						}
+
+						for ($i = 0, $s = sizeof($callback['search']); $i < $s; ++$i)
+						{
+							$message = preg_replace_callback($callback['search'][$i], $callback['replace'][$i], $message);
+						}
+
+						$callback = array('search' => array(), 'replace' => array());
 					}
 				}
 			}
@@ -202,9 +220,9 @@ class bbcode
 						'str' => array(
 							'[/quote:$uid]'	=> $this->bbcode_tpl('quote_close', $bbcode_id)
 						),
-						'preg' => array(
-							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
-						)
+						'callback' => array(
+							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#is'	=> array($this, 'bbcode_second_pass_quote')
+						),
 					);
 				break;
 
@@ -281,8 +299,8 @@ class bbcode
 
 				case 8:
 					$this->bbcode_cache[$bbcode_id] = array(
-						'preg' => array(
-							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'	=> "\$this->bbcode_second_pass_code('\$1', '\$2')",
+						'callback' => array(
+							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#is'	=> array($this, 'bbcode_second_pass_code'),
 						)
 					);
 				break;
@@ -292,7 +310,9 @@ class bbcode
 						'preg' => array(
 							'#(\[\/?(list|\*):[mou]?:?$uid\])[\n]{1}#'	=> "\$1",
 							'#(\[list=([^\[]+):$uid\])[\n]{1}#'			=> "\$1",
-							'#\[list=([^\[]+):$uid\]#e'					=> "\$this->bbcode_list('\$1')",
+						),
+						'callback' => array(
+							'#\[list=([^\[]+):$uid\]#'					=> array($this, 'bbcode_list'),
 						),
 						'str' => array(
 							'[list:$uid]'		=> $this->bbcode_tpl('ulist_open_default', $bbcode_id),
@@ -376,7 +396,7 @@ class bbcode
 						}
 
 						// Replace {L_*} lang strings
-						$bbcode_tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
+						$bbcode_tpl = preg_replace_callback('/{L_([A-Z_]+)}/', array($this, 'replace_lang_tokens_callback'), $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
 						{
@@ -480,7 +500,7 @@ class bbcode
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+		$tpl = preg_replace_callback('/{L_([A-Z_]+)}/', array($this, 'replace_lang_tokens_callback'), $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{
@@ -493,8 +513,9 @@ class bbcode
 	/**
 	* Second parse list bbcode
 	*/
-	function bbcode_list($type)
+	function bbcode_list($match)
 	{
+		$type = $match[1];
 		if ($type == '')
 		{
 			$tpl = 'ulist_open_default';
@@ -542,12 +563,10 @@ class bbcode
 	/**
 	* Second parse quote tag
 	*/
-	function bbcode_second_pass_quote($username, $quote)
+	function bbcode_second_pass_quote($match)
 	{
-		// when using the /e modifier, preg_replace slashes double-quotes but does not
-		// seem to slash anything else
-		$quote = str_replace('\"', '"', $quote);
-		$username = str_replace('\"', '"', $username);
+		$username = $match[1];
+		$quote = $match[2];
 
 		// remove newline at the beginning
 		if ($quote == "\n")
@@ -563,11 +582,10 @@ class bbcode
 	/**
 	* Second parse code tag
 	*/
-	function bbcode_second_pass_code($type, $code)
+	function bbcode_second_pass_code($match)
 	{
-		// when using the /e modifier, preg_replace slashes double-quotes but does not
-		// seem to slash anything else
-		$code = str_replace('\"', '"', $code);
+		$type = $match[1];
+		$code = $match[2];
 
 		switch ($type)
 		{
@@ -596,5 +614,19 @@ class bbcode
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
 
 		return $code;
+	}
+
+	/*
+	* Callback for replacing lang tokens with their values in bbcode_cache_init
+	*/
+	function replace_lang_tokens_callback($match) {
+		if (!empty($user->lang[$match[1]]))
+		{
+			return $user->lang[$match[1]];
+		}
+		else
+		{
+			return ucwords(strtolower(str_replace('_', ' ', $match[1])));
+		}
 	}
 }

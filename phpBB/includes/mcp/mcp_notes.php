@@ -40,6 +40,7 @@ class mcp_notes
 
 		if (is_array($action))
 		{
+			reset($action);
 			list($action, ) = each($action);
 		}
 

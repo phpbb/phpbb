@@ -142,7 +142,7 @@ class acp_bbcodes
 						$db->sql_freeresult($result);
 
 						// Grab the end, interrogate the last closing tag
-						if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
+						if ($info && $info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
 						{
 							trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -388,7 +388,8 @@ class acp_bbcodes
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
 					$repad = $pad + sizeof(array_unique($repad[0]));
-					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\${' . (\$1 + \$pad) . '}'", $replace);
+					$this->_tmp_pad = $pad;
+					$replace = preg_replace_callback('/(?<!\\\\)\$([0-9]+)/', array($this, 'pad_backreference_callback'), $replace);
 					$pad = $repad;
 				}
 
@@ -449,10 +450,10 @@ class acp_bbcodes
 			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$fp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_match);
-		$fp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_replace);
-		$sp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_match);
-		$sp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_replace);
+		$fp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', array($this, "strtolower_callback"), $fp_match);
+		$fp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', array($this, "strtolower_callback"), $fp_replace);
+		$sp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', array($this, "strtolower_callback"), $sp_match);
+		$sp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', array($this, "strtolower_callback"), $sp_replace);
 
 		return array(
 			'bbcode_tag'				=> $bbcode_tag,
@@ -461,5 +462,21 @@ class acp_bbcodes
 			'second_pass_match'			=> $sp_match,
 			'second_pass_replace'		=> $sp_replace
 		);
+	}
+
+	/*
+	* Callback for padding tokens in build_regexp
+	*/
+	function pad_backreference_callback($match)
+	{
+		return '${' . ($match[1] + $this->_tmp_pad) . '}';
+	}
+
+	/*
+	* Callback for lowercasing bbcode tags in build_regexp
+	*/
+	function strtolower_callback($match)
+	{
+		return strtolower($match[0]);
 	}
 }

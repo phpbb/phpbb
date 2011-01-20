@@ -74,6 +74,7 @@ class acp_permissions
 
 		// Set some vars
 		$action = request_var('action', array('' => 0));
+		reset($action);
 		$action = key($action);
 		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
 
