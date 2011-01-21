@@ -384,7 +384,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return $db;
 	}
 
-	public function assertResultEquals($sql, $expected, $message = '')
+	public function assertSqlResultEquals($expected, $sql, $message = '')
 	{
 		$db = $this->new_dbal();
 
