@@ -95,11 +95,13 @@ while ($row = $feed->get_item())
 
 	$title = (isset($row[$feed->get('title')]) && $row[$feed->get('title')] !== '') ? $row[$feed->get('title')] : ((isset($row[$feed->get('title2')])) ? $row[$feed->get('title2')] : '');
 
-	$item_time = (int) $row[$feed->get('date')];
+	$published = ($feed->get('published') !== NULL) ? (int) $row[$feed->get('published')] : 0;
+	$updated = ($feed->get('updated') !== NULL) ? (int) $row[$feed->get('updated')] : 0;
 
 	$item_row = array(
 		'author'		=> ($feed->get('creator') !== NULL) ? $row[$feed->get('creator')] : '',
-		'pubdate'		=> feed_format_date($item_time),
+		'published'		=> ($published > 0) ? feed_format_date($published) : '',
+		'updated'		=> ($updated > 0) ? feed_format_date($updated) : '',
 		'link'			=> '',
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
@@ -113,7 +115,7 @@ while ($row = $feed->get_item())
 
 	$item_vars[] = $item_row;
 
-	$feed_updated_time = max($feed_updated_time, $item_time);
+	$feed_updated_time = max($feed_updated_time, $published, $updated);
 }
 
 // If we do not have any items at all, sending the current time is better than sending no time.
@@ -192,7 +194,16 @@ foreach ($item_vars as $row)
 		echo '<author><name><![CDATA[' . $row['author'] . ']]></name></author>' . "\n";
 	}
 
-	echo '<updated>' . $row['pubdate'] . '</updated>' . "\n";
+	if (!empty($row['published']))
+	{
+		echo '<published>' . $row['published'] . '</published>' . "\n";
+	}
+
+	if (!empty($row['updated']))
+	{
+		echo '<updated>' . $row['updated'] . '</updated>' . "\n";
+	}
+
 	echo '<id>' . $row['link'] . '</id>' . "\n";
 	echo '<link href="' . $row['link'] . '"/>' . "\n";
 	echo '<title type="html"><![CDATA[' . $row['title'] . ']]></title>' . "\n\n";
@@ -675,7 +686,8 @@ class phpbb_feed_post_base extends phpbb_feed_base
 
 		$this->set('author_id',	'user_id');
 		$this->set('creator',	'username');
-		$this->set('date',		'post_time');
+		$this->set('published',	'post_time');
+		$this->set('updated',	'post_edit_time');
 		$this->set('text',		'post_text');
 
 		$this->set('bitfield',	'bbcode_bitfield');
@@ -717,7 +729,8 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 
 		$this->set('author_id',	'topic_poster');
 		$this->set('creator',	'topic_first_poster_name');
-		$this->set('date',		'topic_time');
+		$this->set('published',	'topic_time');
+		$this->set('updated',	'topic_last_post_time');
 		$this->set('text',		'post_text');
 
 		$this->set('bitfield',	'bbcode_bitfield');
@@ -737,7 +750,7 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 		if ($config['feed_item_statistics'])
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('date')])
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('updated')])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views']
 				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $user->lang['POSTS_UNAPPROVED'] : '');
@@ -800,7 +813,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -932,7 +945,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -1097,7 +1110,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 		global $auth, $db;
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.post_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_approved, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
@@ -1136,7 +1149,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 		$this->set('text',		'forum_desc');
 		$this->set('bitfield',	'forum_desc_bitfield');
 		$this->set('bbcode_uid','forum_desc_uid');
-		$this->set('date',		'forum_last_post_time');
+		$this->set('updated',	'forum_last_post_time');
 		$this->set('options',	'forum_desc_options');
 	}
 
@@ -1261,7 +1274,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
-							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time,
+							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
 							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
@@ -1334,7 +1347,7 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
-							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time,
+							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
 							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
@@ -1381,7 +1394,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 
 		$this->set('author_id',	'topic_last_poster_id');
 		$this->set('creator',	'topic_last_poster_name');
-		$this->set('date',		'topic_last_post_time');
+		$this->set('updated',	'topic_last_post_time');
 		$this->set('text',		'post_text');
 	}
 
