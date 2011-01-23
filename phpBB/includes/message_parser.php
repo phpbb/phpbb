@@ -68,7 +68,7 @@ class bbcode_firstpass extends bbcode
 					// it should not demand recompilation
 					if (preg_match($regexp, $this->message))
 					{
-						$this->message = preg_replace($regexp, $replacement, $this->message);
+						$this->message = preg_replace_callback($regexp, $replacement, $this->message);
 						$bitfield->set($bbcode_data['bbcode_id']);
 					}
 				}
@@ -110,19 +110,19 @@ class bbcode_firstpass extends bbcode
 		// order, so it is important to keep [code] in first position and
 		// [quote] in second position.
 		$this->bbcodes = array(
-			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
-			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
-			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
-			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
-			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
-			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#iUe' => "\$this->bbcode_img('\$1')")),
-			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
-			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
-			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#ise' => "\$this->bbcode_underline('\$1')")),
-			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#ise' => "\$this->bbcode_parse_list('\$0')")),
-			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
-			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ie' => "\$this->bbcode_flash('\$1', '\$2', '\$3')"))
+			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#is' => array($this, 'bbcode_code'))),
+			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#is' => array($this, 'bbcode_quote'))),
+			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#is' => array($this, 'bbcode_attachment'))),
+			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#is' => array($this, 'bbcode_strong'))),
+			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#is' => array($this, 'bbcode_italic'))),
+			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iU' => array($this, 'validate_url'))),
+			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#iU' => array($this, 'bbcode_img'))),
+			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#is' => array($this, 'bbcode_size'))),
+			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => array($this, 'bbcode_color'))),
+			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#is' => array($this, 'bbcode_underline'))),
+			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#is' => array($this, 'bbcode_parse_list'))),
+			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#is' => array($this, 'validate_email'))),
+			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#i' => array($this, 'bbcode_flash'))),
 		);
 
 		// Zero the parsed items array
@@ -163,9 +163,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function check_bbcode($bbcode, &$in)
 	{
-		// when using the /e modifier, preg_replace slashes double-quotes but does not
-		// seem to slash anything else
-		$in = str_replace("\r\n", "\n", str_replace('\"', '"', $in));
+		$in = str_replace("\r\n", "\n", $in);
 
 		// Trimming here to make sure no empty bbcodes are parsed accidently
 		if (trim($in) == '')
@@ -192,8 +190,10 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse size tag
 	*/
-	function bbcode_size($stx, $in)
+	function bbcode_size($match)
 	{
+		$stx = $match[1];
+		$in = $match[2];
 		global $user, $config;
 
 		if (!$this->check_bbcode('size', $in))
@@ -220,8 +220,10 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse color tag
 	*/
-	function bbcode_color($stx, $in)
+	function bbcode_color($match)
 	{
+		$stx = $match[1];
+		$in = $match[2];
 		if (!$this->check_bbcode('color', $in))
 		{
 			return $in;
@@ -233,8 +235,9 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse u tag
 	*/
-	function bbcode_underline($in)
+	function bbcode_underline($match)
 	{
+		$in = $match[1];
 		if (!$this->check_bbcode('u', $in))
 		{
 			return $in;
@@ -246,8 +249,9 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse b tag
 	*/
-	function bbcode_strong($in)
+	function bbcode_strong($match)
 	{
+		$in = $match[1];
 		if (!$this->check_bbcode('b', $in))
 		{
 			return $in;
@@ -259,8 +263,9 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse i tag
 	*/
-	function bbcode_italic($in)
+	function bbcode_italic($match)
 	{
+		$in = $match[1];
 		if (!$this->check_bbcode('i', $in))
 		{
 			return $in;
@@ -272,8 +277,9 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse img tag
 	*/
-	function bbcode_img($in)
+	function bbcode_img($match)
 	{
+		$in = $match[1];
 		global $user, $config;
 
 		if (!$this->check_bbcode('img', $in))
@@ -334,8 +340,11 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse flash tag
 	*/
-	function bbcode_flash($width, $height, $in)
+	function bbcode_flash($match)
 	{
+		$width = $match[1];
+		$height = $match[2];
+		$in = $match[3];
 		global $user, $config;
 
 		if (!$this->check_bbcode('flash', $in))
@@ -388,8 +397,10 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Parse inline attachments [ia]
 	*/
-	function bbcode_attachment($stx, $in)
+	function bbcode_attachment($match)
 	{
+		$stx = $match[1];
+		$in = $match[2];
 		if (!$this->check_bbcode('attachment', $in))
 		{
 			return $in;
@@ -471,8 +482,10 @@ class bbcode_firstpass extends bbcode
 	* Parse code tag
 	* Expects the argument to start right after the opening [code] tag and to end with [/code]
 	*/
-	function bbcode_code($stx, $in)
+	function bbcode_code($match)
 	{
+		$stx = $match[1];
+		$in = $match[2];
 		if (!$this->check_bbcode('code', $in))
 		{
 			return $in;
@@ -564,8 +577,9 @@ class bbcode_firstpass extends bbcode
 	* Parse list bbcode
 	* Expects the argument to start with a tag
 	*/
-	function bbcode_parse_list($in)
+	function bbcode_parse_list($match)
 	{
+		$in = $match[0];
 		if (!$this->check_bbcode('list', $in))
 		{
 			return $in;
@@ -715,7 +729,7 @@ class bbcode_firstpass extends bbcode
 		}
 
 		// To let the parser not catch tokens within quote_username quotes we encode them before we start this...
-		$in = preg_replace('#quote=&quot;(.*?)&quot;\]#ie', "'quote=&quot;' . str_replace(array('[', ']', '\\\"'), array('&#91;', '&#93;', '\"'), '\$1') . '&quot;]'", $in);
+		$in = preg_replace_callback('#quote=&quot;(.*?)&quot;\]#i', array($this, 'escape_quote_tokens_callback'), $in);
 
 		$tok = ']';
 		$out = '[';
@@ -1416,7 +1430,7 @@ class parse_message extends bbcode_firstpass
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
-					$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
+					$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', array($this, 'increment_attachment_id_callback'), $this->message);
 
 					$this->filename_data['filecomment'] = '';
 
@@ -1479,7 +1493,8 @@ class parse_message extends bbcode_firstpass
 					}
 
 					unset($this->attachment_data[$index]);
-					$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "(\\1 == \$index) ? '' : ((\\1 > \$index) ? '[attachment=' . (\\1 - 1) . ']\\2[/attachment]' : '\\0')", $this->message);
+					$this->_tmp_attachment_index = $index;
+					$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', array($this, 'decrement_attachment_id_callback'), $this->message);
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
@@ -1518,7 +1533,7 @@ class parse_message extends bbcode_firstpass
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
-						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
+						$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', array($this, 'increment_attachment_id_callback'), $this->message);
 						$this->filename_data['filecomment'] = '';
 					}
 				}
@@ -1685,5 +1700,40 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+	}
+
+	/*
+	* Callback for escaping tokens in quote usernames for bbcode_quote
+	*/
+	function escape_quote_tokens_callback($match)
+	{
+		return 'quote=&quot;' . str_replace(array('[', ']', '\"'), array('&#91;', '&#93;', '"'), $match[1]) . '&quot;]';
+	}
+
+	/*
+	* Callback for incrementing attachment ids for parse_attachment
+	*/
+	function increment_attachment_id_callback($match)
+	{
+		return '[attachment='.($match[1] + 1).']' . $match[2] . '[/attachment]';
+	}
+
+	/*
+	* Callback for decrementing attachment ids for parse_attachment
+	*/
+	function decrement_attachment_id_callback($match)
+	{
+		if ($match[1] == $this->_tmp_attachment_index)
+		{
+			return '';
+		}
+		else if ($match[1] > $this->_tmp_attachment_index)
+		{
+			return '[attachment=' . ($match[1] - 1) . ']' . $match[2] . '[/attachment]';
+		}
+		else
+		{
+			return $match[0];
+		}
 	}
 }
