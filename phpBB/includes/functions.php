@@ -2702,14 +2702,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 {
 	global $request, $user, $db, $template, $phpbb_root_path;
 
-	$confirm_box = new phpbb_confirm_box($request, $user, $db, $template, $phpbb_root_path);
+	$confirm_box = new phpbb_confirm_box(true, $title, $request, $user, $db, $template, $phpbb_root_path);
 	if ($check)
 	{
 		return $confirm_box->check_box();
 	}
 	else
 	{
-		$confirm_box->confirm_box(true, $title, $hidden, $html_body, $u_action);
+		$confirm_box->confirm_box($hidden, $html_body, $u_action);
 	}
 }
 

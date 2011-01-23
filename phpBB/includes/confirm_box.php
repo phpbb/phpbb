@@ -32,8 +32,26 @@ class phpbb_confirm_box
 	
 	private $phpbb_root_path = null;
 	
-	public function __construct(phpbb_request_interface $request, session $user, dbal $db, template $template, $phpbb_root_path)
+	private $unique = null;
+	
+	private $title = null;
+	
+	/**
+	* @param boolean $unique Use unique key or use add_form_key
+	* @param string $title Title/Message used for confirm box.
+	*		message text is _CONFIRM appended to title.
+	*		If title cannot be found in user->lang a default one is displayed
+	*		If title_CONFIRM cannot be found in user->lang the text given is used.
+	* @param phpbb_request_interface $request
+	* @param session $user
+	* @param dbal $db
+	* @param template $template
+	* @param string $phpbb_root_path
+	**/
+	public function __construct($unique, $title, phpbb_request_interface $request, session $user, dbal $db, template $template, $phpbb_root_path)
 	{
+		$this->unique			= $unique;
+		$this->title			= $title;
 		$this->request			= $request;
 		$this->user				= $user;
 		$this->db				= $db;
@@ -42,16 +60,11 @@ class phpbb_confirm_box
 	}
 	/**
 	* Build Confirm box
-	* @param boolean $unique Use unique variable, or add_form_key
-	* @param string $title Title/Message used for confirm box.
-	*		message text is _CONFIRM appended to title.
-	*		If title cannot be found in user->lang a default one is displayed
-	*		If title_CONFIRM cannot be found in user->lang the text given is used.
 	* @param string $hidden Hidden variables
 	* @param string $html_body Template used for confirm box
 	* @param string $u_action Custom form action
 	*/
-	public function confirm_box($unique = true, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
+	public function confirm_box($hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 	{
 		// If activation key already exist, we better do not re-use the key (something very strange is going on...)
 		if ($this->request->variable('confirm_key', ''))
@@ -63,22 +76,17 @@ class phpbb_confirm_box
 		// generate activation key
 		$confirm_key = gen_rand_string(10);	
 		
-		$this->build_template($title, $hidden, $html_body, $u_action, $confirm_key, $unique);
+		$this->build_template($hidden, $html_body, $u_action, $confirm_key);
 	}
 	
 	/**
 	 *
- 	 * @param string $title Title/Message used for confirm box.
-	 *		message text is _CONFIRM appended to title.
-	 *		If title cannot be found in user->lang a default one is displayed
-	 *		If title_CONFIRM cannot be found in user->lang the text given is used.
 	 * @param string $hidden Hidden variables
 	 * @param string $html_body Template used for confirm box
 	 * @param string $u_action Custom form action	 
 	 * @param string $confirm_key Confirm key
-	 * @param boolean $lite Lite box
 	 **/
-	private function build_template($title, $hidden, $html_body, $u_action, $confirm_key, $unique)
+	private function build_template($hidden, $html_body, $u_action, $confirm_key)
 	{	
 		$s_hidden_fields = build_hidden_fields(array(
 			'confirm_uid'	=> $this->user->data['user_id'],
@@ -86,9 +94,9 @@ class phpbb_confirm_box
 			'sid'			=> $this->user->session_id,
 		));
 		
-		if (!$unique)
+		if (!$this->unique)
 		{
-			list($token, $time) = add_form_key($title);
+			list($token, $time) = add_form_key($this->title);
 			
 			$s_hidden_fields .= build_hidden_fields(array(
 				'creation_time' => $time,
@@ -96,13 +104,13 @@ class phpbb_confirm_box
 			));
 		}
 
-		if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+		if (defined('IN_ADMIN') && isset($this->user->data['session_admin']) && $this->user->data['session_admin'])
 		{
-			adm_page_header((!isset($this->user->lang[$title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$title]);
+			adm_page_header((!isset($this->user->lang[$this->title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$this->title]);
 		}
 		else
 		{
-			page_header(((!isset($this->user->lang[$title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$title]), false);
+			page_header(((!isset($this->user->lang[$this->title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$this->title]), false);
 		}
 
 		$this->template->set_filenames(array(
@@ -115,15 +123,15 @@ class phpbb_confirm_box
 		$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 		$this->template->assign_vars(array(
-			'MESSAGE_TITLE'		=> (!isset($this->user->lang[$title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$title],
-			'MESSAGE_TEXT'		=> (!isset($this->user->lang[$title . '_CONFIRM'])) ? $title : $this->user->lang[$title . '_CONFIRM'],
+			'MESSAGE_TITLE'		=> (!isset($this->user->lang[$this->title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$this->title],
+			'MESSAGE_TEXT'		=> (!isset($this->user->lang[$this->title . '_CONFIRM'])) ? $this->title : $this->user->lang[$this->title . '_CONFIRM'],
 
 			'YES_VALUE'			=> $this->user->lang['YES'],
 			'S_CONFIRM_ACTION'	=> $u_action,
 			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 		);
 
-		if ($unique)
+		if ($this->unique)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $this->db->sql_escape($confirm_key) . "'
 				WHERE user_id = " . $this->user->data['user_id'];
@@ -146,11 +154,11 @@ class phpbb_confirm_box
 	 * @param boolean $unique Use unique check or else check_form_key
 	 * @param string $title Title required for check_foru_key
 	 **/
-	public function check_box($unique = true, $title = '')
+	public function check_box()
 	{
-		if (!$unique)
+		if (!$this->unique)
 		{
-			return check_form_key($title);
+			return check_form_key($this->title);
 		}
 		
 		$confirm = ($this->user->lang['YES'] === $this->request->variable('confirm', '', true, phpbb_request_interface::POST));
