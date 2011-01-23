@@ -384,6 +384,17 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return $db;
 	}
 
+	public function assertSqlResultEquals($expected, $sql, $message = '')
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query($sql);
+		$rows = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $rows, $message);
+	}
+
 	public function setExpectedTriggerError($errno, $message = '')
 	{
 		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
