@@ -181,9 +181,6 @@ class auth_admin extends auth
 			$compare_options = array_combine($compare_options, array_fill(1, sizeof($compare_options), $acl_fill));
 		}
 
-		// Defining the user-function here to save some memory
-		$return_acl_fill = create_function('$value', 'return ' . $acl_fill . ';');
-
 		// Actually fill the gaps
 		if (sizeof($hold_ary))
 		{
@@ -197,14 +194,13 @@ class auth_admin extends auth
 					// Not a "fine" solution, but at all it's a 1-dimensional
 					// array_diff_key function filling the resulting array values with zeros
 					// The differences get merged into $hold_ary (all permissions having $acl_fill set)
-					$hold_ary[$ug_id][$id] = array_merge($options,
+					$fill_keys = array_diff(
+						array_keys($compare_options), array_keys($options)
+					);
 
-						array_map($return_acl_fill,
-							array_flip(
-								array_diff(
-									array_keys($compare_options), array_keys($options)
-								)
-							)
+					$hold_ary[$ug_id][$id] = array_merge($options,
+						array_combine($fill_keys,
+							array_fill(0, sizeof($fill_keys), $acl_fill)
 						)
 					);
 				}
