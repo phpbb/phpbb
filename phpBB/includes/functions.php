@@ -2705,7 +2705,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$confirm_box = new phpbb_confirm_box(true, $title, $request, $user, $db, $template, $phpbb_root_path);
 	if ($check)
 	{
-		return $confirm_box->check_box();
+		return $confirm_box->check();
 	}
 	else
 	{

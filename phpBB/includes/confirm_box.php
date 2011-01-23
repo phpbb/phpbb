@@ -2,7 +2,7 @@
 /**
 *
 * @package phpbb_confirmbox
-* @copyright (c) 2010 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
  * Class to generate confirm boxes for certian arrays
  *
  * @package phpbb_confirmbox
- **/
+ */
 class phpbb_confirm_box
 {
 	private $request = null;
@@ -39,25 +39,26 @@ class phpbb_confirm_box
 	/**
 	* @param boolean $unique Use unique key or use add_form_key
 	* @param string $title Title/Message used for confirm box.
-	*		message text is _CONFIRM appended to title.
-	*		If title cannot be found in user->lang a default one is displayed
-	*		If title_CONFIRM cannot be found in user->lang the text given is used.
+	* message text is _CONFIRM appended to title.
+	* If title cannot be found in user->lang a default one is displayed
+	* If title_CONFIRM cannot be found in user->lang the text given is used.
 	* @param phpbb_request_interface $request
 	* @param session $user
 	* @param dbal $db
 	* @param template $template
 	* @param string $phpbb_root_path
-	**/
+	*/
 	public function __construct($unique, $title, phpbb_request_interface $request, session $user, dbal $db, template $template, $phpbb_root_path)
 	{
 		$this->unique			= $unique;
 		$this->title			= $title;
 		$this->request			= $request;
-		$this->user				= $user;
-		$this->db				= $db;
+		$this->user			= $user;
+		$this->db			= $db;
 		$this->template			= $template;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path		= $phpbb_root_path;
 	}
+
 	/**
 	* Build Confirm box
 	* @param string $hidden Hidden variables
@@ -76,20 +77,22 @@ class phpbb_confirm_box
 		// generate activation key
 		$confirm_key = gen_rand_string(10);	
 		
-		$this->build_template($hidden, $html_body, $u_action, $confirm_key);
+		$this->render($hidden, $html_body, $u_action, $confirm_key);
 	}
 	
 	/**
-	 *
+	 * Render the template for the confirm box, including the
+	 * form keys if non unique mode is used
+	 * 
 	 * @param string $hidden Hidden variables
 	 * @param string $html_body Template used for confirm box
 	 * @param string $u_action Custom form action	 
 	 * @param string $confirm_key Confirm key
-	 **/
-	private function build_template($hidden, $html_body, $u_action, $confirm_key)
+	 */
+	private function render($hidden, $html_body, $u_action, $confirm_key)
 	{	
 		$s_hidden_fields = build_hidden_fields(array(
-			'confirm_uid'	=> $this->user->data['user_id'],
+			'confirm_uid'		=> $this->user->data['user_id'],
 			'sess'			=> $this->user->session_id,
 			'sid'			=> $this->user->session_id,
 		));
@@ -153,8 +156,8 @@ class phpbb_confirm_box
 	 * Check if a box is correctly confirmed.
 	 * @param boolean $unique Use unique check or else check_form_key
 	 * @param string $title Title required for check_foru_key
-	 **/
-	public function check_box()
+	 */
+	public function check()
 	{
 		if (!$this->unique)
 		{
@@ -163,7 +166,7 @@ class phpbb_confirm_box
 		
 		$confirm = ($this->user->lang['YES'] === $this->request->variable('confirm', '', true, phpbb_request_interface::POST));
 		
-		if (isset($_POST['cancel']))
+		if ($this->request->is_set_post('cancel'))
 		{
 			return false;
 		}
@@ -188,4 +191,3 @@ class phpbb_confirm_box
 		return false;	
 	}
 }
-
