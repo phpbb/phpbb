@@ -10,7 +10,7 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
-$table_prefix = '';
+$table_prefix = 'phpbb_';
 
 error_reporting(E_ALL & ~E_DEPRECATED);
 

@@ -90,4 +90,9 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	public function sql_freeresult($query_id)
 	{
 	}
+
+	public function obtain_bots()
+	{
+		return isset($this->data['_bots']) ? $this->data['_bots'] : array();
+	}
 }
