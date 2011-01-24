@@ -130,10 +130,13 @@ class phpbb_config_db_test extends phpbb_database_test_case
 	{
 		$this->assertTrue(isset($this->config['foo']));
 		$this->config->delete('foo');
+		$this->cache->checkVarUnset($this, 'foo');
 		$this->assertFalse(isset($this->config['foo']));
 
 		// re-read config and populate cache
-		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
-		$this->cache->checkVarUnset($this, 'foo');
+		$cache2 = new phpbb_mock_cache;
+		$config2 = new phpbb_config_db($this->db, $cache2, 'phpbb_config');
+		$cache2->checkVarUnset($this, 'foo');
+		$this->assertFalse(isset($config2['foo']));
 	}
 }
