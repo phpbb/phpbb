@@ -125,4 +125,11 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->config->increment('foobar', 3);
 		$this->assertEquals(3, $this->config['foobar']);;
 	}
+
+	public function test_delete()
+	{
+		$this->assertTrue(isset($this->config['foo']));
+		$this->config->delete('foo', false);
+		$this->assertFalse(isset($this->config['foo']));
+	}
 }
