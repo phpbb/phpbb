@@ -129,7 +129,11 @@ class phpbb_config_db_test extends phpbb_database_test_case
 	public function test_delete()
 	{
 		$this->assertTrue(isset($this->config['foo']));
-		$this->config->delete('foo', false);
+		$this->config->delete('foo');
 		$this->assertFalse(isset($this->config['foo']));
+
+		// re-read config and populate cache
+		$config2 = new phpbb_config_db($this->db, $this->cache, 'phpbb_config');
+		$this->cache->checkVarUnset($this, 'foo');
 	}
 }

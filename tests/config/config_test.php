@@ -114,7 +114,6 @@ class phpbb_config_test extends phpbb_test_case
 	{
 		$config = new phpbb_config(array('foo' => 'bar'));
 
-		$this->assertTrue(isset($config['foo']));
 		$config->delete('foo');
 		$this->assertFalse(isset($config['foo']));
 	}
