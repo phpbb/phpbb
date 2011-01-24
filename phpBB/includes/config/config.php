@@ -109,18 +109,16 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	* @param  String $key   The configuration option's name
 	* @param  bool   $cache Whether this variable should be cached or if it
 	*                       changes too frequently to be efficiently cached
-	* @return bool          True if the configuration entry was deleted successfully,
-	*                       otherwise false
+	* @return void
 	*/
 	public function delete($key, $cache = true)
 	{
 		if (!isset($this->config[$key]))
 		{
-			return false;
+			return;
 		}
 
 		unset($this->config[$key]);
-		return true;
 	}
 
 	/**
