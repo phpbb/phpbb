@@ -113,11 +113,6 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	*/
 	public function delete($key, $cache = true)
 	{
-		if (!isset($this->config[$key]))
-		{
-			return;
-		}
-
 		unset($this->config[$key]);
 	}
 

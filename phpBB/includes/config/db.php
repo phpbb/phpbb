@@ -100,11 +100,6 @@ class phpbb_config_db extends phpbb_config
 	*/
 	public function delete($key, $cache = true)
 	{
-		if (!isset($this->config[$key]))
-		{
-			return;
-		}
-
 		$sql = 'DELETE FROM ' . $this->table . "
 			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
 		$this->db->sql_query($sql);
