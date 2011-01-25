@@ -7,11 +7,6 @@
 *
 */
 
-if ($argc < 2)
-{
-	show_usage();
-}
-
 function show_usage()
 {
 	$filename = basename(__FILE__);
@@ -40,7 +35,13 @@ function show_usage()
 }
 
 // Handle arguments
-$opts			= getopt('s:u:r:m:d');
+$opts = getopt('s:u:r:m:d');
+
+if (empty($opts))
+{
+	show_usage();
+}
+
 $scope			= get_arg($opts, 's', '');
 $username		= get_arg($opts, 'u', 'phpbb');
 $repository 	= get_arg($opts, 'r', 'phpbb3');
