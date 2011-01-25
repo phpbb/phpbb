@@ -12,12 +12,6 @@ if ($argc < 2)
 	show_usage();
 }
 
-if (file_exists('.git'))
-{
-	echo "[error] git repository already exists\n";
-	exit(1);
-}
-
 function show_usage()
 {
 	$filename = basename(__FILE__);
@@ -58,9 +52,6 @@ run(null, $dry_run);
 $network		= get_network($username, $repository);
 $collaborators	= get_collaborators($username, $repository);
 
-// Clone the blessed repository
-clone_repository($username, $repository, isset($collaborators[$developer]));
-
 switch ($scope)
 {
 	case 'collaborators':
@@ -83,14 +74,20 @@ switch ($scope)
 		show_usage();
 }
 
+if (file_exists('.git'))
+{
+	add_remote($username, $repository, isset($collaborators[$developer]));
+}
+else
+{
+	clone_repository($username, $repository, isset($collaborators[$developer]));
+}
+
+// Skip blessed repository.
+unset($remotes[$username]);
+
 foreach ($remotes as $remote)
 {
-	if ($remote['username'] == $username)
-	{
-		// Skip blessed repository.
-		continue;
-	}
-
 	add_remote($remote['username'], $remote['repository'], $remote['username'] == $developer);
 }
 
@@ -99,12 +96,12 @@ run('git remote update');
 function clone_repository($username, $repository, $pushable = false)
 {
 	$url = get_repository_url($username, $repository, false);
-	run("git clone $url ./");
+	run("git clone $url ./ --origin $username");
 
 	if ($pushable)
 	{
 		$ssh_url = get_repository_url($username, $repository, true);
-		run("git remote set-url --push origin $ssh_url");
+		run("git remote set-url --push $username $ssh_url");
 	}
 }
 
