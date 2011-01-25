@@ -40,16 +40,19 @@ function show_usage()
 	echo " -u github_username             Overwrites the github username (optional)\n";
 	echo " -r repository_name             Overwrites the repository name (optional)\n";
 	echo " -m your_github_username        Sets up ssh:// instead of git:// for pushable repositories (optional)\n";
+	echo " -d                             Outputs the commands instead of running them (optional)\n";
 
 	exit(1);
 }
 
 // Handle arguments
-$opts			= getopt('s:u:r:m:');
+$opts			= getopt('s:u:r:m:d');
 $scope			= get_arg($opts, 's', '');
 $username		= get_arg($opts, 'u', 'phpbb');
 $repository 	= get_arg($opts, 'r', 'phpbb3');
 $developer		= get_arg($opts, 'm', '');
+$dry_run		= !get_arg($opts, 'd', true);
+run(null, $dry_run);
 
 // Get some basic data
 $network		= get_network($username, $repository);
@@ -189,7 +192,20 @@ function get_arg($array, $index, $default)
 	return isset($array[$index]) ? $array[$index] : $default;
 }
 
-function run($cmd)
+function run($cmd, $dry = false)
 {
-	passthru(escapeshellcmd($cmd));
+	static $dry_run;
+
+	if (is_null($cmd))
+	{
+		$dry_run = $dry;
+	}
+	else if (!empty($dry_run))
+	{
+		echo "$cmd\n";
+	}
+	else
+	{
+		passthru(escapeshellcmd($cmd));
+	}
 }
