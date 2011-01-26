@@ -84,6 +84,12 @@ else
 	clone_repository($username, $repository, isset($collaborators[$developer]));
 }
 
+// Add private security repository for developers
+if ($username == 'phpbb' && $repository == 'phpbb3' && isset($collaborators[$developer]))
+{
+	run("git remote add $username-security " . get_repository_url($username, "$repository-security", true));
+}
+
 // Skip blessed repository.
 unset($remotes[$username]);
 
