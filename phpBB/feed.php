@@ -137,6 +137,14 @@ $global_vars = array_merge($global_vars, array(
 
 $feed->close();
 
+// Check if output is necessary
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) >= $feed_updated_time)
+{
+	send_status_line(304, 'Not Modified');
+	garbage_collection();
+	exit_handler();
+}
+
 // Output page
 
 // gzip_compression
