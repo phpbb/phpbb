@@ -138,11 +138,20 @@ $global_vars = array_merge($global_vars, array(
 $feed->close();
 
 // Check if output is necessary
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) >= $feed_updated_time)
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
 {
-	send_status_line(304, 'Not Modified');
-	garbage_collection();
-	exit_handler();
+	// According to RFC2616 3.3.1, dates must be UTC
+	$old_timezone = date_default_timezone_get();
+	date_default_timezone_set('UTC');
+	$if_modified_time = strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE']));
+	date_default_timezone_set($old_timezone);
+
+	if ($if_modified_time >= $feed_updated_time)
+	{
+		send_status_line(304, 'Not Modified');
+		garbage_collection();
+		exit_handler();
+	}
 }
 
 // Output page
