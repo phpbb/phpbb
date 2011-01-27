@@ -11,21 +11,53 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_cache_test extends phpbb_test_case
 {
+	private $cache_dir;
+
+	public function __construct()
+	{
+		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache';
+	}
+
+	protected function setUp()
+	{
+		if (file_exists($this->cache_dir))
+		{
+			// cache directory possibly left after aborted
+			// or failed run earlier
+			$this->remove_cache_dir();
+		}
+		$this->create_cache_dir();
+	}
+
 	protected function tearDown()
 	{
-		$iterator = new DirectoryIterator(dirname(__FILE__) . '/tmp');
+		if (file_exists($this->cache_dir))
+		{
+			$this->remove_cache_dir();
+		}
+	}
+
+	private function create_cache_dir()
+	{
+		mkdir($this->cache_dir);
+	}
+
+	private function remove_cache_dir()
+	{
+		$iterator = new DirectoryIterator($this->cache_dir);
 		foreach ($iterator as $file)
 		{
-			if (is_file(dirname(__FILE__) . '/tmp/' . $file) && $file != '.gitkeep')
+			if ($file != '.' && $file != '..')
 			{
-				unlink(dirname(__FILE__) . '/tmp/' . $file);
+				unlink($this->cache_dir . '/' . $file);
 			}
 		}
+		rmdir($this->cache_dir);
 	}
 
 	public function test_cache_driver_file()
 	{
-		$driver = new phpbb_cache_driver_file(dirname(__FILE__) . '/tmp/');
+		$driver = new phpbb_cache_driver_file($this->cache_dir);
 		$driver->put('test_key', 'test_value');
 		$driver->save();
 
