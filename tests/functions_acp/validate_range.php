@@ -54,8 +54,8 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 			array(array(array('column_type' => 'TINT:-32:64', 'lang' => 'TEST', 'value' => 16))),
 
 			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => ''))),
-			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => phpbb_functions_acp_validate_range_test::return_string(255)))),
-			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => phpbb_functions_acp_validate_range_test::return_string(128)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => self::return_string(255)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => self::return_string(128)))),
 		);
 	}
 
@@ -158,8 +158,8 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	public function validate_range_data_too_long()
 	{
 		return array(
-			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => phpbb_functions_acp_validate_range_test::return_string(256)))),
-			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => phpbb_functions_acp_validate_range_test::return_string(129)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => self::return_string(256)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => self::return_string(129)))),
 		);
 	}
 

@@ -52,9 +52,9 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 				),
 				array(
 					'test_bool'			=> true,
-					'test_string'		=> phpbb_functions_acp_validate_config_vars_test::return_string(255),
-					'test_string_128'	=> phpbb_functions_acp_validate_config_vars_test::return_string(128),
-					'test_string_32_64'	=> phpbb_functions_acp_validate_config_vars_test::return_string(48),
+					'test_string'		=> self::return_string(255),
+					'test_string_128'	=> self::return_string(128),
+					'test_string_32_64'	=> self::return_string(48),
 					'test_int'			=> 128,
 					'test_int_32'		=> 32,
 					'test_int_32_64'	=> 48,
@@ -87,17 +87,17 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 		return array(
 			array(
 				array('test_string_32_64'		=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
-				array('test_string_32_64'	=> phpbb_functions_acp_validate_config_vars_test::return_string(20)),
+				array('test_string_32_64'	=> self::return_string(20)),
 				array('SETTING_TOO_SHORT'),
 			),
 			array(
 				array('test_string'		=> array('lang' => 'TEST_STRING',	'validate' => 'string')),
-				array('test_string'		=> phpbb_functions_acp_validate_config_vars_test::return_string(256)),
+				array('test_string'		=> self::return_string(256)),
 				array('SETTING_TOO_LONG'),
 			),
 			array(
 				array('test_string_32_64'	=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
-				array('test_string_32_64'	=> phpbb_functions_acp_validate_config_vars_test::return_string(65)),
+				array('test_string_32_64'	=> self::return_string(65)),
 				array('SETTING_TOO_LONG'),
 			),
 
