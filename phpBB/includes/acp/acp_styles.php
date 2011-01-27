@@ -1662,7 +1662,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					$new_id = request_var('new_' . $component . '_id', 0);
 					$component_id = $style_row[$component . '_id'];
-					$this->remove_component($component, $component_id, $new_id);
+					$this->remove_component($component, $component_id, $new_id, $style_id);
 				}
 			}
 			else
@@ -1708,20 +1708,32 @@ parse_css_file = {PARSE_CSS_FILE}
 	/**
 	* Remove template/theme/imageset entry from the database
 	*/
-	function remove_component($component, $style_id, $new_id)
+	function remove_component($component, $component_id, $new_id, $style_id = false)
 	{
 		global $db;
 
-		if (($new_id == 0) || ($component === 'template' && ($conflicts = $this->check_inheritance($component, $style_id))))
+		if (($new_id == 0) || ($component === 'template' && ($conflicts = $this->check_inheritance($component, $component_id))))
 		{
-			// We can not delete the template, as the selected one is inheriting from this one.
+			// We can not delete the template, as the user wants to keep the component or an other template is inheriting from this one.
+			return;
+		}
+
+		$component_in_use = array();
+		if ($component != 'style')
+		{
+			$component_in_use = $this->component_in_use($component, $component_id, $style_id);
+		}
+
+		if (($new_id == -1) && !empty($component_in_use))
+		{
+			// We can not delete the component, as it is still in use
 			return;
 		}
 
 		if ($component == 'imageset')
 		{
 			$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
-				WHERE imageset_id = $style_id";
+				WHERE imageset_id = $component_id";
 			$db->sql_query($sql);
 		}
 
@@ -1741,12 +1753,12 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 
 		$sql = "DELETE FROM $sql_from
-			WHERE {$component}_id = $style_id";
+			WHERE {$component}_id = $component_id";
 		$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . STYLES_TABLE . "
 			SET {$component}_id = $new_id
-			WHERE {$component}_id = $style_id";
+			WHERE {$component}_id = $component_id";
 		$db->sql_query($sql);
 	}
 
@@ -1758,27 +1770,9 @@ parse_css_file = {PARSE_CSS_FILE}
 		global $db, $template, $user;
 
 		$component_in_use = array();
-		if (($component != 'style') && $style_id)
+		if ($component != 'style')
 		{
-			$sql = 'SELECT style_id, style_name
-				FROM ' . STYLES_TABLE . "
-				WHERE {$component}_id = {$component_id}
-					AND style_id <> {$style_id}
-				ORDER BY style_name ASC";
-			$result = $db->sql_query($sql);
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$component_in_use[] = $row['style_name'];
-			}
-			$db->sql_freeresult($result);
-
-			if ($component === 'template' && ($conflicts = $this->check_inheritance($component, $component_id)))
-			{
-				foreach ($conflicts as $temp_id => $conflict_data)
-				{
-					$component_in_use[] = $conflict_data['template_name'];
-				}
-			}
+			$component_in_use = $this->component_in_use($component, $component_id, $style_id);
 		}
 
 		$sql_where = '';
@@ -1852,10 +1846,52 @@ parse_css_file = {PARSE_CSS_FILE}
 				$components = array('template', 'theme', 'imageset');
 				foreach ($components as $component)
 				{
-					$this->display_component_options($component, $style_row[$component . '_id'], false, $component_id);
+					$this->display_component_options($component, $style_row[$component . '_id'], false, $component_id, true);
 				}
 			}
 		}
+	}
+
+	/**
+	* Check whether the component is still used by another style or component
+	*/
+	function component_in_use($component, $component_id, $style_id = false)
+	{
+		global $db;
+
+		$component_in_use = array();
+
+		if ($style_id)
+		{
+			$sql = 'SELECT style_id, style_name
+				FROM ' . STYLES_TABLE . "
+				WHERE {$component}_id = {$component_id}
+					AND style_id <> {$style_id}
+				ORDER BY style_name ASC";
+		}
+		else
+		{
+			$sql = 'SELECT style_id, style_name
+				FROM ' . STYLES_TABLE . "
+				WHERE {$component}_id = {$component_id}
+				ORDER BY style_name ASC";
+		}
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$component_in_use[] = $row['style_name'];
+		}
+		$db->sql_freeresult($result);
+
+		if ($component === 'template' && ($conflicts = $this->check_inheritance($component, $component_id)))
+		{
+			foreach ($conflicts as $temp_id => $conflict_data)
+			{
+				$component_in_use[] = $conflict_data['template_name'];
+			}
+		}
+
+		return $component_in_use;
 	}
 
 	/**
