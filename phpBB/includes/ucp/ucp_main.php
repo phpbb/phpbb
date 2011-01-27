@@ -34,6 +34,7 @@ class ucp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		switch ($mode)
 		{
@@ -119,7 +120,7 @@ class ucp_main
 					$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
-					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
+					$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
 					if ($row['topic_status'] == ITEM_LOCKED)
 					{
@@ -287,7 +288,7 @@ class ucp_main
 					}
 					else
 					{
-						$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+						$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
@@ -318,7 +319,7 @@ class ucp_main
 						else
 						{
 							$folder_image = ($unread_forum) ? 'forum_unread' : 'forum_read';
-							$folder_alt = ($unread_forum) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
+							$folder_alt = ($unread_forum) ? 'UNREAD_POSTS' : 'NO_UNREAD_POSTS';
 						}
 
 						// Create last post link information, if appropriate
@@ -435,7 +436,7 @@ class ucp_main
 
 				$edit		= (isset($_REQUEST['edit'])) ? true : false;
 				$submit		= (isset($_POST['submit'])) ? true : false;
-				$draft_id	= ($edit) ? intval($_REQUEST['edit']) : 0;
+				$draft_id	= $request->variable('edit', 0);
 				$delete		= (isset($_POST['delete'])) ? true : false;
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
@@ -831,5 +832,3 @@ class ucp_main
 		}
 	}
 }
-
-?>

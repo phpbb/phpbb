@@ -304,8 +304,8 @@ $lang = array_merge($lang, array(
 	'LOGIN'								=> 'Login',
 	'LOGIN_CHECK_PM'					=> 'Log in to check your private messages.',
 	'LOGIN_CONFIRMATION'				=> 'Confirmation of login',
-	'LOGIN_CONFIRM_EXPLAIN'				=> 'To prevent brute forcing accounts the board requires you to enter a confirmation code after a maximum amount of failed logins. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
-	'LOGIN_ERROR_ATTEMPTS'				=> 'You exceeded the maximum allowed number of login attempts. In addition to your username and password you now also have to enter the confirm code from the image you see below.',
+	'LOGIN_CONFIRM_EXPLAIN'				=> 'To prevent brute forcing accounts the board requires you to enter a confirmation code after a maximum amount of failed logins. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.', // unused
+	'LOGIN_ERROR_ATTEMPTS'				=> 'You exceeded the maximum allowed number of login attempts. In addition to your username and password you now also have to solve the CAPTCHA below.',
 	'LOGIN_ERROR_EXTERNAL_AUTH_APACHE'	=> 'You have not been authenticated by Apache.',
 	'LOGIN_ERROR_PASSWORD'				=> 'You have specified an incorrect password. Please check your password and try again. If you continue to have problems please contact the %sBoard Administrator%s.',
 	'LOGIN_ERROR_PASSWORD_CONVERT'		=> 'It was not possible to convert your password when updating this bulletin board’s software. Please %srequest a new password%s. If you continue to have problems please contact the %sBoard Administrator%s.',
@@ -339,7 +339,7 @@ $lang = array_merge($lang, array(
 	'MODERATORS'			=> 'Moderators',
 	'MONTH'					=> 'Month',
 	'MOVE'					=> 'Move',
-	'MSNM'					=> 'MSNM/WLM',
+	'MSNM'					=> 'WLM',
 
 	'NA'						=> 'N/A',
 	'NEWEST_USER'				=> 'Our newest member <strong>%s</strong>',
@@ -347,8 +347,8 @@ $lang = array_merge($lang, array(
 	'NEW_MESSAGES'				=> 'New messages',
 	'NEW_PM'					=> '<strong>%d</strong> new message',
 	'NEW_PMS'					=> '<strong>%d</strong> new messages',
-	'NEW_POST'					=> 'New post',
-	'NEW_POSTS'					=> 'New posts',
+	'NEW_POST'					=> 'New post',	// Not used anymore
+	'NEW_POSTS'					=> 'New posts',	// Not used anymore
 	'NEXT'						=> 'Next',		// Used in pagination
 	'NEXT_STEP'					=> 'Next',
 	'NEVER'						=> 'Never',
@@ -381,7 +381,7 @@ $lang = array_merge($lang, array(
 	'NO_MODERATORS'				=> 'There are no moderators.',
 	'NO_NEW_MESSAGES'			=> 'No new messages',
 	'NO_NEW_PM'					=> '<strong>0</strong> new messages',
-	'NO_NEW_POSTS'				=> 'No new posts',
+	'NO_NEW_POSTS'				=> 'No new posts',	// Not used anymore
 	'NO_ONLINE_USERS'			=> 'No registered users',
 	'NO_POSTS'					=> 'No posts',
 	'NO_POSTS_TIME_FRAME'		=> 'No posts exist inside this topic for the selected time frame.',
@@ -395,6 +395,7 @@ $lang = array_merge($lang, array(
 	'NO_TOPICS'					=> 'There are no topics or posts in this forum.',
 	'NO_TOPICS_TIME_FRAME'		=> 'No topics exist inside this forum for the selected time frame.',
 	'NO_UNREAD_PM'				=> '<strong>0</strong> unread messages',
+	'NO_UNREAD_POSTS'			=> 'No unread posts',
 	'NO_UPLOAD_FORM_FOUND'		=> 'Upload initiated but no valid file upload form found.',
 	'NO_USER'					=> 'The requested user does not exist.',
 	'NO_USERS'					=> 'The requested users do not exist.',
@@ -417,6 +418,7 @@ $lang = array_merge($lang, array(
 	'OPTIONS'					=> 'Options',
 
 	'PAGE_OF'				=> 'Page <strong>%1$d</strong> of <strong>%2$d</strong>',
+	'PAGE_TITLE_NUMBER'		=> 'Page %s',
 	'PASSWORD'				=> 'Password',
 	'PIXEL'					=> 'px',
 	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
@@ -565,6 +567,9 @@ $lang = array_merge($lang, array(
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
+	
+	'TOO_LARGE'						=> 'The value you entered is too large.',
+	'TOO_LARGE_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too large.',
 
 	'TOO_LONG'						=> 'The value you entered is too long.',
 
@@ -575,7 +580,7 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_INTERESTS'			=> 'The interests you entered is too long.',
 	'TOO_LONG_JABBER'				=> 'The Jabber account name you entered is too long.',
 	'TOO_LONG_LOCATION'				=> 'The location you entered is too long.',
-	'TOO_LONG_MSN'					=> 'The MSNM/WLM name you entered is too long.',
+	'TOO_LONG_MSN'					=> 'The WLM name you entered is too long.',
 	'TOO_LONG_NEW_PASSWORD'			=> 'The password you entered is too long.',
 	'TOO_LONG_OCCUPATION'			=> 'The occupation you entered is too long.',
 	'TOO_LONG_PASSWORD_CONFIRM'		=> 'The password confirmation you entered is too long.',
@@ -597,7 +602,7 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_INTERESTS'			=> 'The interests you entered is too short.',
 	'TOO_SHORT_JABBER'				=> 'The Jabber account name you entered is too short.',
 	'TOO_SHORT_LOCATION'			=> 'The location you entered is too short.',
-	'TOO_SHORT_MSN'					=> 'The MSNM/WLM name you entered is too short.',
+	'TOO_SHORT_MSN'					=> 'The WLM name you entered is too short.',
 	'TOO_SHORT_NEW_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_OCCUPATION'			=> 'The occupation you entered is too short.',
 	'TOO_SHORT_PASSWORD_CONFIRM'	=> 'The password confirmation you entered is too short.',
@@ -607,6 +612,9 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_EMAIL_CONFIRM'		=> 'The e-mail address confirmation you entered is too short.',
 	'TOO_SHORT_WEBSITE'				=> 'The website address you entered is too short.',
 	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
+	
+	'TOO_SMALL'						=> 'The value you entered is too small.',
+	'TOO_SMALL_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too small.',
 
 	'TOPIC'				=> 'Topic',
 	'TOPICS'			=> 'Topics',
@@ -641,6 +649,8 @@ $lang = array_merge($lang, array(
 	'UNREAD_MESSAGES'		=> 'Unread messages',
 	'UNREAD_PM'				=> '<strong>%d</strong> unread message',
 	'UNREAD_PMS'			=> '<strong>%d</strong> unread messages',
+	'UNREAD_POST'			=> 'Unread post',
+	'UNREAD_POSTS'			=> 'Unread posts',
 	'UNWATCHED_FORUMS'			=> 'You are no longer subscribed to the selected forums.',
 	'UNWATCHED_TOPICS'			=> 'You are no longer subscribed to the selected topics.',
 	'UNWATCHED_FORUMS_TOPICS'	=> 'You are no longer subscribed to the selected entries.',
@@ -867,5 +877,3 @@ $lang = array_merge($lang, array(
 	'default_dateformat'	=> 'D M d, Y g:i a', // Mon Jan 01, 2007 1:37 pm
 
 ));
-
-?>

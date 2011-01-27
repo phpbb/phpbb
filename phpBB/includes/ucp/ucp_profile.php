@@ -30,12 +30,13 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		$user->add_lang('posting');
 
-		$preview	= (!empty($_POST['preview'])) ? true : false;
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$preview	= $request->variable('preview', false, false, phpbb_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 
@@ -141,10 +142,7 @@ class ucp_profile
 
 							$server_url = generate_board_url();
 
-							$user_actkey = gen_rand_string(10);
-							$key_len = 54 - (strlen($server_url));
-							$key_len = ($key_len > 6) ? $key_len : 6;
-							$user_actkey = substr($user_actkey, 0, $key_len);
+							$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 							$messenger = new messenger(false);
 
@@ -241,7 +239,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$template->assign_vars(array(
@@ -388,7 +386,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if ($config['allow_birthdays'])
@@ -513,7 +511,7 @@ class ucp_profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$signature_preview = '';
@@ -564,7 +562,7 @@ class ucp_profile
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				add_form_key('ucp_avatar');
 
@@ -584,7 +582,7 @@ class ucp_profile
 						$error[] = 'FORM_INVALID';
 					}
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if (!$config['allow_avatar'] && $user->data['user_avatar_type'])
@@ -645,5 +643,3 @@ class ucp_profile
 		$this->page_title = 'UCP_PROFILE_' . strtoupper($mode);
 	}
 }
-
-?>

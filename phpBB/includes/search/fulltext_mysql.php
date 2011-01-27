@@ -42,13 +42,10 @@ class fulltext_mysql extends search_backend
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
 
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+		// PHP may not be linked with the bundled PCRE lib and instead with an older version
+		if (pcre_utf8_support())
 		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$this->pcre_properties = true;
-			}
+			$this->pcre_properties = true;
 		}
 
 		if (function_exists('mb_ereg'))
@@ -122,7 +119,7 @@ class fulltext_mysql extends search_backend
 
 		if ($terms == 'all')
 		{
-			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
+			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#(^|\s)\+#', '#(^|\s)-#', '#(^|\s)\|#');
 			$replace	= array(' +', ' |', ' -', ' +', ' -', ' |');
 
 			$keywords = preg_replace($match, $replace, $keywords);
@@ -919,6 +916,14 @@ class fulltext_mysql extends search_backend
 			<dt><label>' . $user->lang['FULLTEXT_MYSQL_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MBSTRING_EXPLAIN'] . '</span></dt>
 			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
 		</dl>
+		<dl>
+			<dt><label>' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $config['fulltext_mysql_min_word_len'] . '</dd>
+		</dl>
+		<dl>
+			<dt><label>' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd>' . $config['fulltext_mysql_max_word_len'] . '</dd>
+		</dl>
 		';
 
 		// These are fields required in the config table
@@ -928,5 +933,3 @@ class fulltext_mysql extends search_backend
 		);
 	}
 }
-
-?>

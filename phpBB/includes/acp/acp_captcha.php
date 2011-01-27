@@ -144,5 +144,3 @@ class acp_captcha
 		exit_handler();
 	}
 }
-
-?>

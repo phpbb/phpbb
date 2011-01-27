@@ -423,5 +423,3 @@ class dbal_mssql_odbc extends dbal
 		}
 	}
 }
-
-?>

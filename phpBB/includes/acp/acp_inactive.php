@@ -308,5 +308,3 @@ class acp_inactive
 		$this->page_title = 'ACP_INACTIVE_USERS';
 	}
 }
-
-?>

@@ -352,6 +352,15 @@ class bbcode_firstpass extends bbcode
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
 
+		$in = str_replace(' ', '%20', $in);
+
+		// Make sure $in is a URL.
+		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) &&
+			!preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		{
+			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
+		}
+
 		// Apply the same size checks on flash files as on images
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
@@ -1532,9 +1541,10 @@ class parse_message extends bbcode_firstpass
 	function get_submitted_attachment_data($check_user_id = false)
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
+		global $request;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, phpbb_request_interface::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
@@ -1572,7 +1582,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $not_orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($not_orphan[$row['attach_id']]);
 			}
@@ -1598,7 +1608,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($orphan[$row['attach_id']]);
 			}
@@ -1677,5 +1687,3 @@ class parse_message extends bbcode_firstpass
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
 	}
 }
-
-?>

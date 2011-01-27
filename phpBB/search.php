@@ -47,24 +47,44 @@ $sort_dir		= request_var('sd', 'd');
 $return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
-// We put login boxes for the case if search_id is egosearch or unreadposts
+// We put login boxes for the case if search_id is newposts, egosearch or unreadposts
 // because a guest should be able to log in even if guests search is not permitted
 
-// Egosearch is an author search
-if ($search_id == 'egosearch')
+switch ($search_id)
 {
-	$author_id = $user->data['user_id'];
+	// Egosearch is an author search
+	case 'egosearch':
+		$author_id = $user->data['user_id'];
+		if ($user->data['user_id'] == ANONYMOUS)
+		{
+			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
+		}
+	break;
 
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
-	}
-}
-
-// Search for unread posts needs user to be logged in if topics tracking for guests is disabled
-if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
-{
-	login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	// Search for unread posts needs to be allowed and user to be logged in if topics tracking for guests is disabled
+	case 'unreadposts':
+		if (!$config['load_unreads_search'])
+		{
+			$template->assign_var('S_NO_SEARCH', true);
+			trigger_error('NO_SEARCH_UNREADS');
+		}
+		else if (!$config['load_anon_lastread'] && !$user->data['is_registered'])
+		{
+			login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+		}
+	break;
+	
+	// The "new posts" search uses user_lastvisit which is user based, so it should require user to log in.
+	case 'newposts':
+		if ($user->data['user_id'] == ANONYMOUS)
+		{
+			login_box('', $user->lang['LOGIN_EXPLAIN_NEWPOSTS']);
+		}
+	break;
+	
+	default:
+		// There's nothing to do here for now ;)
+	break;
 }
 
 // Is user able to search? Has search been disabled?
@@ -81,9 +101,10 @@ if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($con
 	trigger_error('NO_SEARCH_TIME');
 }
 
-// Check flood limit ... if applicable
+// It is applicable if the configuration setting is non-zero, and the user cannot
+// ignore the flood setting, and the search is a keyword search.
 $interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
-if ($interval && !$auth->acl_get('u_ignoreflood'))
+if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch')) && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
@@ -631,7 +652,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
@@ -891,7 +912,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
 					'S_TOPIC_TYPE'			=> $row['topic_type'],
-					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
+					'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
 					'S_UNREAD_TOPIC'		=> $unread_topic,
 
 					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
@@ -1189,5 +1210,3 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
-
-?>

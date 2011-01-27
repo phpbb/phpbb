@@ -701,9 +701,9 @@ if (!empty($topic_data['poll_start']))
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
 		// the need to delete cookies to mess with results.
-		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
+		if ($request->is_set($config['cookie_name'] . '_poll_' . $topic_id, phpbb_request_interface::COOKIE))
 		{
-			$cur_voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
+			$cur_voted_id = explode(',', $request->variable($config['cookie_name'] . '_poll_' . $topic_id, '', true, phpbb_request_interface::COOKIE));
 			$cur_voted_id = array_map('intval', $cur_voted_id);
 		}
 	}
@@ -1146,7 +1146,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
-			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
+			if ((!empty($row['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_email'))
 			{
 				$user_cache[$poster_id]['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$poster_id") : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
 			}
@@ -1513,7 +1513,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'EDIT_REASON'		=> $row['post_edit_reason'],
 		'BUMPED_MESSAGE'	=> $l_bumped_by,
 
-		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 		'POST_ICON_IMG'			=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['img'] : '',
 		'POST_ICON_IMG_WIDTH'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
 		'POST_ICON_IMG_HEIGHT'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
@@ -1732,19 +1732,19 @@ if ($s_can_vote || $s_quick_reply)
 // We overwrite $_REQUEST['f'] if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
-if (empty($_REQUEST['f']))
+if (!request_var('f', 0))
 {
-	$_REQUEST['f'] = $forum_id;
+	$request->overwrite('f', $forum_id);
 }
 
 // We need to do the same with the topic_id. See #53025.
-if (empty($_REQUEST['t']) && !empty($topic_id))
+if (!request_var('t', 0) && !empty($topic_id))
 {
-	$_REQUEST['t'] = $topic_id;
+	$request->overwrite('t', $topic_id);
 }
 
 // Output the page
-page_header($user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title'], true, $forum_id);
+page_header($topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : ''), true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
@@ -1752,5 +1752,3 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 page_footer();
-
-?>

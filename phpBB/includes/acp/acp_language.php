@@ -34,6 +34,7 @@ class acp_language
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $safe_mode, $file_uploads;
+		global $request;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -58,7 +59,7 @@ class acp_language
 		if (isset($_POST['missing_file']))
 		{
 			$missing_file = request_var('missing_file', array('' => 0));
-			list($_REQUEST['language_file'], ) = array_keys($missing_file);
+			$request->overwrite('language_file', array_shift(array_keys($missing_file)));
 		}
 
 		$selected_lang_file = request_var('language_file', '|common.' . $phpEx);
@@ -67,6 +68,23 @@ class acp_language
 
 		$this->language_directory = basename($this->language_directory);
 		$this->language_file = basename($this->language_file);
+
+		// detect language file type
+		if ($this->language_directory == 'email')
+		{
+			$language_file_type = 'email';
+			$request_default = '';
+		}
+		else if (strpos($this->language_file, 'help_') === 0)
+		{
+			$language_file_type = 'help';
+			$request_default = array(0 => array(0 => ''));
+		}
+		else
+		{
+			$language_file_type = 'normal';
+			$request_default = array('' => '');
+		}
 
 		$user->add_lang('acp/language');
 		$this->tpl_name = 'acp_language';
@@ -119,7 +137,7 @@ class acp_language
 						'DATA'		=> $data,
 						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+						'DEFAULT'	=> $request->variable($data, (string) $default),
 					));
 				}
 
@@ -130,7 +148,7 @@ class acp_language
 					'method'		=> $method)
 				);
 
-				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
+				$hidden_data .= build_hidden_fields(array('entry' => $request->variable('entry', $request_default, true, phpbb_request_interface::POST)));
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -187,12 +205,9 @@ class acp_language
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if (!$lang_id || empty($_POST['entry']))
-				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				$entry_value = $request->variable('entry', $request_default, true, phpbb_request_interface::POST);
 
-				if ($this->language_directory != 'email' && !is_array($_POST['entry']))
+				if (!$lang_id || !$entry_value)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -291,10 +306,10 @@ class acp_language
 					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
-				if ($this->language_directory == 'email')
+				if ($language_file_type == 'email')
 				{
 					// Email Template
-					$entry = $this->prepare_lang_entry($_POST['entry'], false);
+					$entry = $this->prepare_lang_entry(htmlspecialchars_decode($entry_value), false);
 					fwrite($fp, $entry);
 				}
 				else
@@ -302,13 +317,13 @@ class acp_language
 					$name = (($this->language_directory) ? $this->language_directory . '_' : '') . $this->language_file;
 					$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($name, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $this->language_file_header);
 
-					if (strpos($this->language_file, 'help_') === 0)
+					if ($language_file_type == 'help')
 					{
 						// Help File
 						$header .= '$help = array(' . "\n";
 						fwrite($fp, $header);
 
-						foreach ($_POST['entry'] as $key => $value)
+						foreach ($entry_value as $key => $value)
 						{
 							if (!is_array($value))
 							{
@@ -319,7 +334,7 @@ class acp_language
 
 							foreach ($value as $_key => $_value)
 							{
-								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
+								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry(htmlspecialchars_decode($_value)) . "',\n";
 							}
 
 							$entry .= "\t),\n";
@@ -329,15 +344,15 @@ class acp_language
 						$footer = ");\n\n?>";
 						fwrite($fp, $footer);
 					}
-					else
+					else if ($language_file_type == 'normal')
 					{
 						// Language File
 						$header .= $this->lang_header;
 						fwrite($fp, $header);
 
-						foreach ($_POST['entry'] as $key => $value)
+						foreach ($entry_value as $key => $value)
 						{
-							$entry = $this->format_lang_array($key, $value);
+							$entry = $this->format_lang_array(htmlspecialchars_decode($key), htmlspecialchars_decode($value));
 							fwrite($fp, $entry);
 						}
 
@@ -1454,5 +1469,3 @@ $lang = array_merge($lang, array(
 		return $entry;
 	}
 }
-
-?>

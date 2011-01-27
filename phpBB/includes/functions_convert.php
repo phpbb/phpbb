@@ -1816,6 +1816,7 @@ function add_bots()
 		'Alta Vista [Bot]'			=> array('Scooter/', ''),
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
 		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Bing [Bot]'				=> array('bingbot/', ''),
 		'Exabot [Bot]'				=> array('Exabot/', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
@@ -2306,7 +2307,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		}
 	}
 
-	if (!is_writable($path))
+	if (!phpbb_is_writable($path))
 	{
 		@chmod($path, 0777);
 	}
@@ -2341,7 +2342,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!@is_writable($trg_path))
+	if (!phpbb_is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2408,7 +2409,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!@is_writable($trg_path . $dir))
+			if (!phpbb_is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;
@@ -2468,7 +2469,3 @@ function fill_dateformat($user_dateformat)
 
 	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
 }
-
-
-
-?>

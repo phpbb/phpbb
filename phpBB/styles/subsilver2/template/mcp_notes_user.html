@@ -1,0 +1,125 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" name="mcp" action="{U_POST_ACTION}">
+	
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<tr>
+	<th colspan="2" align="center">{USERNAME}</th>
+</tr>
+<tr> 
+	<td class="row1" align="center">
+		<table cellspacing="1" cellpadding="2" border="0">
+		<tr>
+			<td class="gen" align="center"><b>{USERNAME_FULL}</b></td>
+		</tr>
+		<!-- IF RANK_TITLE -->
+			<tr>
+				<td class="postdetails" align="center">{RANK_TITLE}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF RANK_IMG -->
+			<tr>
+				<td align="center">{RANK_IMG}</td>
+			</tr>
+		<!-- ENDIF -->
+		<tr>
+			<td align="center"><!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></td>
+		</tr>
+		</table>
+	</td>
+	<td class="row1">
+		<table width="100%" cellspacing="1" cellpadding="2" border="0">
+		<tr> 
+			<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_JOINED}: </td>
+			<td width="100%"><b class="gen">{JOINED}</b></td>
+		</tr>
+		<tr> 
+			<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
+			<td><b class="gen">{POSTS}</b></td>
+		</tr>
+		<tr> 
+			<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
+			<td><b class="gen">{WARNINGS}</b></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<br />
+
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<tr>
+	<th colspan="5" align="center">{L_FEEDBACK}</th>
+</tr>
+<!-- IF S_USER_NOTES -->
+
+	<tr align="center">
+		<td colspan="5" class="row3"><span class="gensmall">{L_SEARCH_KEYWORDS}:</span> <input type="text" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="btnlite" name="filter" value="{L_SEARCH}" /></td>
+	</tr>
+	<tr align="center">
+		<td colspan="5" class="row3"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
+	</tr>
+	<tr>
+		<th>{L_REPORT_BY}</th>
+		<th>{L_IP}</th>
+		<th>{L_TIME}</th>
+		<th>{L_ACTION}</th>
+		<th><!-- IF S_CLEAR_ALLOWED -->{L_MARK}<!-- ENDIF --></th>
+	</tr>
+
+	<!-- BEGIN usernotes -->
+		<!-- IF usernotes.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td class="gen">{usernotes.REPORT_BY}</td>
+			<td style="text-align: center;">{usernotes.IP}</td>
+			<td style="text-align: center;">{usernotes.REPORT_AT}</td>
+			<td class="gen">
+				{usernotes.ACTION}
+				<!-- IF usernotes.DATA --><br />&#187; <span class="gensmall">[ {usernotes.DATA} ]</span><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;"><!-- IF S_CLEAR_ALLOWED --><input type="checkbox" class="radio" name="marknote[]" value="{usernotes.ID}" /><!-- ENDIF --></td>
+		</tr>
+	<!-- END usernotes -->
+
+	<!-- IF S_CLEAR_ALLOWED -->
+		<tr>
+			<td class="cat" colspan="5" align="center"><input class="btnlite" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp; <input class="btnlite" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" /></td>
+		</tr>
+	<!-- ENDIF -->
+
+<!-- ELSE -->
+	<tr>
+		<td class="row1" colspan="2" align="center"><span class="gen">{L_NO_FEEDBACK}</span></td>
+	</tr>
+<!-- ENDIF -->
+</table>
+
+<br clear="all" />
+	
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<tr>
+	<th colspan="2" align="center">{L_ADD_FEEDBACK}</th>
+</tr>
+<tr>
+	<td class="row3" align="center" colspan="2"><span class="genmed">{L_ADD_FEEDBACK_EXPLAIN}</span></td>
+</tr>
+<tr>
+	<td colspan="2" class="row1" align="center"><textarea name="usernote" rows="10" cols="76"></textarea></td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
+</tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+	<td class="pagination">{PAGE_NUMBER} [ {TOTAL_REPORTS} ]</td>
+	<td align="{S_CONTENT_FLOW_END}"><span class="pagination"><!-- INCLUDE pagination.html --></span></td>
+</tr>
+</table>
+{S_FORM_TOKEN}
+</form>
+
+<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->

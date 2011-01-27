@@ -658,6 +658,7 @@ class acp_permissions
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
 		global $user, $auth;
+		global $request;
 
 		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
 
@@ -676,18 +677,17 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
-		if (empty($_POST['setting']) || empty($_POST['setting'][$ug_id]) || empty($_POST['setting'][$ug_id][$forum_id]) || !is_array($_POST['setting'][$ug_id][$forum_id]))
+		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
+		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
 		}
 
-		// We obtain and check $_POST['setting'][$ug_id][$forum_id] directly and not using request_var() because request_var()
-		// currently does not support the amount of dimensions required. ;)
-		//		$auth_settings = request_var('setting', array(0 => array(0 => array('' => 0))));
-		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
+		$auth_settings = $settings[$ug_id][$forum_id];
 
 		// Do we have a role we want to set?
-		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+		$roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
+		$assigned_role = (isset($roles[$ug_id][$forum_id])) ? (int) $roles[$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
 		$inherit = request_var('inherit', array(0 => array(0)));
@@ -747,6 +747,7 @@ class acp_permissions
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
 		global $user, $auth;
+		global $request;
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -757,8 +758,8 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
-		$auth_roles = (isset($_POST['role'])) ? $_POST['role'] : array();
+		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
+		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
@@ -1311,5 +1312,3 @@ class acp_permissions
 		);
 	}
 }
-
-?>

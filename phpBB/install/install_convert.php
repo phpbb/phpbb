@@ -130,16 +130,9 @@ class install_convert extends module
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
-				$sql = 'SELECT *
-					FROM ' . CONFIG_TABLE;
-				$result = $db->sql_query($sql);
-
-				$config = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$config[$row['config_name']] = $row['config_value'];
-				}
-				$db->sql_freeresult($result);
+				$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+				set_config(null, null, null, $config);
+				set_config_count(null, null, null, $config);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
@@ -350,16 +343,9 @@ class install_convert extends module
 		$this->page_title = $lang['STAGE_SETTINGS'];
 
 		// We need to fill the config to let internal functions correctly work
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$convertor_tag = request_var('tag', '');
 
@@ -586,6 +572,7 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
+		global $request;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -596,16 +583,10 @@ class install_convert extends module
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		// Override a couple of config variables for the duration
 		$config['max_quote_depth'] = 0;
@@ -812,7 +793,7 @@ class install_convert extends module
 
 		if (!$current_table && !$skip_rows)
 		{
-			if (empty($_REQUEST['confirm']))
+			if (!$request->variable('confirm', false))
 			{
 				// If avatars / ranks / smilies folders are specified make sure they are writable
 				$bad_folders = array();
@@ -835,7 +816,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !@is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{
@@ -973,7 +954,7 @@ class install_convert extends module
 				));
 
 				return;
-			} // if (empty($_REQUEST['confirm']))
+			} // if (!$request->variable('confirm', false)))
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'		=> true,
@@ -2112,5 +2093,3 @@ class install_convert extends module
 		'refresh'			=> array('lang' => 'REFRESH_PAGE',	'type' => 'radio:yes_no', 'explain' => true),
 	);
 }
-
-?>

@@ -58,8 +58,9 @@ class filespec
 
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = trim(utf8_htmlspecialchars(utf8_basename($upload_ary['name'])));
-		$this->realname = $this->uploadname = (STRIP) ? stripslashes($name) : $name;
+		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
+		$name = trim(utf8_htmlspecialchars(utf8_basename($name)));
+		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
@@ -457,7 +458,7 @@ class fileerror extends filespec
 class fileupload
 {
 	var $allowed_extensions = array();
-	var $disallowed_content = array();
+	var $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title'); 
 	var $max_filesize = 0;
 	var $min_width = 0;
 	var $min_height = 0;
@@ -538,7 +539,7 @@ class fileupload
 	{
 		if ($disallowed_content !== false && is_array($disallowed_content))
 		{
-			$this->disallowed_content = $disallowed_content;
+			$this->disallowed_content = array_diff($disallowed_content, array(''));
 		}
 	}
 
@@ -975,7 +976,7 @@ class fileupload
 
 
 	/**
-	* Check for allowed extension
+	* Check for bad content (IE mime-sniffing)
 	*/
 	function valid_content(&$file)
 	{
@@ -988,24 +989,22 @@ class fileupload
 	function image_types()
 	{
 		return array(
-			1 => array('gif'),
-			2 => array('jpg', 'jpeg'),
-			3 => array('png'),
-			4 => array('swf'),
-			5 => array('psd'),
-			6 => array('bmp'),
-			7 => array('tif', 'tiff'),
-			8 => array('tif', 'tiff'),
-			9 => array('jpg', 'jpeg'),
-			10 => array('jpg', 'jpeg'),
-			11 => array('jpg', 'jpeg'),
-			12 => array('jpg', 'jpeg'),
-			13 => array('swc'),
-			14 => array('iff'),
-			15 => array('wbmp'),
-			16 => array('xbm'),
+			IMAGETYPE_GIF		=> array('gif'),
+			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
+			IMAGETYPE_PNG		=> array('png'),
+			IMAGETYPE_SWF		=> array('swf'),
+			IMAGETYPE_PSD		=> array('psd'),
+			IMAGETYPE_BMP		=> array('bmp'),
+			IMAGETYPE_TIFF_II	=> array('tif', 'tiff'),
+			IMAGETYPE_TIFF_MM	=> array('tif', 'tiff'),
+			IMAGETYPE_JPC		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
+			IMAGETYPE_SWC		=> array('swc'),
+			IMAGETYPE_IFF		=> array('iff'),
+			IMAGETYPE_WBMP		=> array('wbmp'),
+			IMAGETYPE_XBM		=> array('xbm'),
 		);
 	}
 }
-
-?>

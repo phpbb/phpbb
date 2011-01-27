@@ -56,7 +56,7 @@ class acp_users
 			$this->page_title = 'WHOIS';
 			$this->tpl_name = 'simple_body';
 
-			$user_ip = request_var('user_ip', '');
+			$user_ip = phpbb_ip_normalise(request_var('user_ip', ''));
 			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
@@ -319,10 +319,7 @@ class acp_users
 
 								$server_url = generate_board_url();
 
-								$user_actkey = gen_rand_string(10);
-								$key_len = 54 - (strlen($server_url));
-								$key_len = ($key_len > 6) ? $key_len : 6;
-								$user_actkey = substr($user_actkey, 0, $key_len);
+								$user_actkey = gen_rand_string(mt_rand(6, 10));
 								$email_template = ($user_row['user_type'] == USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
 
 								if ($user_row['user_type'] == USER_NORMAL)
@@ -924,7 +921,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if ($user_id == $user->data['user_id'])
@@ -1408,7 +1405,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
@@ -1591,7 +1588,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$dateformat_options = '';
@@ -1701,7 +1698,7 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
 				{
@@ -1717,7 +1714,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if (!$config['allow_avatar'] && $user_row['user_avatar_type'])
@@ -1860,7 +1857,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$signature_preview = '';
@@ -2391,5 +2388,3 @@ class acp_users
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
 	}
 }
-
-?>

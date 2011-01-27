@@ -1,0 +1,49 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="pagecontent">
+
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{MESSAGE_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center">
+			<!-- IF ADDITIONAL_MSG -->
+				<span class="gen error">{ADDITIONAL_MSG}</span><br />
+			<!-- ENDIF -->
+			<!-- IF S_NOTIFY_POSTER -->
+				<input type="checkbox" class="radio" name="notify_poster" checked="checked" /><span class="gen"><!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></span><br />
+			<!-- ENDIF -->
+			<!-- IF not S_APPROVE -->
+				<br />
+				<table border="0" width="90%" cellspacing="2" cellpadding="1">
+				<tr>
+					<td class="row1" width="22%"><b class="gen">{L_DISAPPROVE_REASON}:</b></td>
+					<td class="row1" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason --></select></td>
+				</tr>
+				<tr>
+					<td class="row1" valign="top"><span class="gen"><b>{L_MORE_INFO}:</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
+					<td class="row1"><textarea class="post" style="width:500px" name="reason" rows="10" cols="40">{REASON}</textarea></td>
+				</tr>
+				</table>
+				<br />
+			<!-- ENDIF -->
+			<br />{S_HIDDEN_FIELDS}<span class="gen">{MESSAGE_TEXT}</span><br /><br />
+			<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span>
+		</td>
+	</tr>
+	</table>
+	{S_FORM_TOKEN}
+	</form>
+	
+</div>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->

@@ -31,15 +31,8 @@ $template->assign_var('S_IN_MCP', true);
 // Basic parameter data
 $id = request_var('i', '');
 
-if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
-{
-	$mode = request_var('mode', array(''));
-	list($mode, ) = each($mode);
-}
-else
-{
-	$mode = request_var('mode', '');
-}
+$mode = request_var('mode', array(''));
+$mode = sizeof($mode) ? array_shift($mode) : request_var('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
@@ -57,7 +50,7 @@ $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
 $forum_action = request_var('forum_action', '');
-if ($forum_action !== '' && !empty($_POST['sort']))
+if ($forum_action !== '' && $request->variable('sort', false, false, phpbb_request_interface::POST))
 {
 	$action = $forum_action;
 }
@@ -174,7 +167,7 @@ if ($quickmod)
 			// Reset start parameter if we jumped from the quickmod dropdown
 			if (request_var('start', 0))
 			{
-				$_REQUEST['start'] = 0;
+				$request->overwrite('start', 0);
 			}
 
 			$module->set_active('logs', 'topic_logs');
@@ -911,5 +904,3 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
-
-?>

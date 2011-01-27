@@ -27,6 +27,7 @@ if (!defined('IN_PHPBB'))
 function login_db(&$username, &$password)
 {
 	global $db, $config;
+	global $request;
 
 	// do not allow empty password
 	if (!$password)
@@ -96,12 +97,23 @@ function login_db(&$username, &$password)
 	// If the password convert flag is set we need to convert it
 	if ($row['user_pass_convert'])
 	{
+		// enable super globals to get literal value
+		// this is needed to prevent unicode normalization
+		$super_globals_disabled = $request->super_globals_disabled();
+		if ($super_globals_disabled)
+		{
+			$request->enable_super_globals();
+		}
+
 		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
 		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
-		$password_new_format = '';
+		$password_new_format = $request->variable('password', '', true);
 
-		set_var($password_new_format, stripslashes($password_old_format), 'string');
+		if ($super_globals_disabled)
+		{
+			$request->disable_super_globals();
+		}
 
 		if ($password == $password_new_format)
 		{
@@ -134,7 +146,8 @@ function login_db(&$username, &$password)
 				// increase login attempt count to make sure this cannot be exploited
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_login_attempts = user_login_attempts + 1
-					WHERE user_id = ' . $row['user_id'];
+					WHERE user_id = ' . (int) $row['user_id'] . '
+						AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
 				$db->sql_query($sql);
 
 				return array(
@@ -194,7 +207,8 @@ function login_db(&$username, &$password)
 	// Password incorrect - increase login attempts
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_login_attempts = user_login_attempts + 1
-		WHERE user_id = ' . $row['user_id'];
+		WHERE user_id = ' . (int) $row['user_id'] . '
+			AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
 	$db->sql_query($sql);
 
 	// Give status about wrong password...
@@ -204,5 +218,3 @@ function login_db(&$username, &$password)
 		'user_row'		=> $row,
 	);
 }
-
-?>

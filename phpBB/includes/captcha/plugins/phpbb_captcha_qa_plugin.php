@@ -1018,5 +1018,3 @@ class phpbb_captcha_qa
 		}
 	}
 }
-
-?>

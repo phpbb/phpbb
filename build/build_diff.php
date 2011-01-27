@@ -9,16 +9,26 @@
 *
 */
 
-// CONFIG - Begin
-$substitute_old = '3.0.6';
-$substitute_new = '3.0.7-PL1';
-$simple_name_old = 'phpbb306';
-$simple_name_new = 'phpbb307-PL1';
+if ($_SERVER['argc'] != 3)
+{
+	die("Please specify the previous and current version as arguments (e.g. build_diff.php '1.0.2' '1.0.3').");
+}
+
+$old_version = trim($_SERVER['argv'][1]);
+$new_version = trim($_SERVER['argv'][2]);
+
+$substitute_old = $old_version;
+$substitute_new = $new_version;
+$simple_name_old = 'release-' . $old_version;
+$simple_name_new = 'release-' . $new_version;
 $echo_changes = false;
+
+// DO NOT EVER USE THE FOLLOWING! Fix the script to generate proper changes,
+// do NOT manually create them.
+
 // Set this to true to just compress the changes and do not build them again
 // This should be used for building custom modified txt file. ;)
 $package_changed_files = false;
-// CONFIG - End
 
 //$debug_file = 'includes/functions_user.php'; //'styles/prosilver/style.cfg';
 $debug_file = false;
@@ -36,13 +46,11 @@ if (!$package_changed_files)
 {
 	if (!$echo_changes)
 	{
-		// Cleanup...
-		run_command("rm -R $location/save/*");
-
 		// Create directory...
 		run_command("mkdir $location/save/{$s_name}");
 		run_command("mkdir $location/save/{$s_name}/language");
 		run_command("mkdir $location/save/{$s_name}/prosilver");
+		run_command("mkdir $location/save/{$s_name}/subsilver2");
 	}
 }
 
@@ -51,6 +59,7 @@ if (!$package_changed_files)
 {
 	build_code_changes('language');
 	build_code_changes('prosilver');
+	build_code_changes('subsilver2');
 }
 
 // Package code changes
@@ -70,20 +79,20 @@ if (!$echo_changes)
 	foreach ($compress_programs as $extension => $compress_command)
 	{
 		echo "Packaging code changes for $extension\n";
-		run_command("rm ./../../release_files/{$code_changes_filename}.{$extension}");
+		run_command("rm ./../../new_version/release_files/{$code_changes_filename}.{$extension}");
 		flush();
 
 		// Build Package
-		run_command("$compress_command ./../../release_files/{$code_changes_filename}.{$extension} *");
+		run_command("$compress_command ./../../new_version/release_files/{$code_changes_filename}.{$extension} *");
 
 		// Build MD5 Sum
-		run_command("md5sum ./../../release_files/{$code_changes_filename}.{$extension} > ./../../release_files/{$code_changes_filename}.{$extension}.md5");
+		run_command("md5sum ./../../new_version/release_files/{$code_changes_filename}.{$extension} > ./../../new_version/release_files/{$code_changes_filename}.{$extension}.md5");
 		flush();
 	}
 }
 
 /**
-* $output_format can be: language or prosilver
+* $output_format can be: language, prosilver and subsilver2
 */
 function build_code_changes($output_format)
 {
@@ -118,6 +127,7 @@ function build_code_changes($output_format)
 	$titles = array(
 		'language'		=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' Language Pack Changes',
 		'prosilver'		=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' prosilver Changes',
+		'subsilver2'	=> 'phpBB ' . $substitute_old . ' to phpBB ' . $substitute_new . ' subsilver2 Changes',
 	);
 
 	$data['header'] = array(
@@ -176,6 +186,13 @@ These are the ' . $titles[$output_format] . ' summed up into a little Mod. These
 
 			case 'prosilver':
 				if (strpos($filename, 'styles/prosilver/') !== 0)
+				{
+					continue 2;
+				}
+			break;
+
+			case 'subsilver2':
+				if (strpos($filename, 'styles/subsilver2/') !== 0)
 				{
 					continue 2;
 				}
@@ -394,5 +411,3 @@ function run_command($command)
 	$result = trim(`$command`);
 	echo "\n- Command Run: " . $command . "\n";
 }
-
-?>

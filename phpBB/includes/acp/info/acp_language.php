@@ -33,5 +33,3 @@ class acp_language_info
 	{
 	}
 }
-
-?>

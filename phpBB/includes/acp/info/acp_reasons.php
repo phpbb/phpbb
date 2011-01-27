@@ -33,5 +33,3 @@ class acp_reasons_info
 	{
 	}
 }
-
-?>

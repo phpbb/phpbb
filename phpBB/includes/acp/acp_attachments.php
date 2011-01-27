@@ -1222,7 +1222,7 @@ class acp_attachments
 			return;
 		}
 
-		if (!is_writable($phpbb_root_path . $upload_dir))
+		if (!phpbb_is_writable($phpbb_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;
@@ -1235,6 +1235,7 @@ class acp_attachments
 	function perform_site_list()
 	{
 		global $db, $user;
+		global $request;
 
 		if (isset($_REQUEST['securesubmit']))
 		{
@@ -1243,7 +1244,7 @@ class acp_attachments
 			$ip_list = array_unique(explode("\n", $ips));
 			$ip_list_log = implode(', ', $ip_list);
 
-			$ip_exclude = (!empty($_POST['ipexclude'])) ? 1 : 0;
+			$ip_exclude = (int) $request->variable('ipexclude', false, false, phpbb_request_interface::POST);
 
 			$iplist = array();
 			$hostlist = array();
@@ -1455,5 +1456,3 @@ class acp_attachments
 	}
 
 }
-
-?>

@@ -1,0 +1,95 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="pagecontent">
+
+	<form method="get" action="{S_SEARCH_ACTION}">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="4">{L_SEARCH_QUERY}</th>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2" width="50%"><b class="genmed">{L_SEARCH_KEYWORDS}: </b><br /><span class="gensmall">{L_SEARCH_KEYWORDS_EXPLAIN}</span></td>
+		<td class="row2" colspan="2" valign="top"><input type="text" style="width: 300px" class="post" name="keywords" size="30" /><br /><input type="radio" class="radio" name="terms" value="all" checked="checked" /> <span class="genmed">{L_SEARCH_ALL_TERMS}</span><br /><input type="radio" class="radio" name="terms" value="any" /> <span class="genmed">{L_SEARCH_ANY_TERMS}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2"><b class="genmed">{L_SEARCH_AUTHOR}:</b><br /><span class="gensmall">{L_SEARCH_AUTHOR_EXPLAIN}</span></td>
+		<td class="row2" colspan="2" valign="middle"><input type="text" style="width: 300px" class="post" name="author" size="30" /></td>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2"><b class="genmed">{L_SEARCH_FORUMS}: </b><br /><span class="gensmall">{L_SEARCH_FORUMS_EXPLAIN}</span></td>
+		<td class="row2" colspan="2"><select name="fid[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></td>
+	</tr>
+	<tr>
+		<th colspan="4">{L_SEARCH_OPTIONS}</th>
+	</tr>
+	<tr>
+		<td class="row1" width="25%" nowrap="nowrap"><b class="genmed">{L_SEARCH_SUBFORUMS}: </b></td>
+		<td class="row2" width="25%" nowrap="nowrap"><input type="radio" class="radio" name="sc" value="1" checked="checked" /> <span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" class="radio" name="sc" value="0" /> <span class="genmed">{L_NO}</span></td>
+		<td class="row1" width="25%" nowrap="nowrap"><b class="genmed">{L_SEARCH_WITHIN}: </b></td>
+		<td class="row2" width="25%" nowrap="nowrap"><input type="radio" class="radio" name="sf" value="all" checked="checked" /> <span class="genmed">{L_SEARCH_TITLE_MSG}</span><br /><input type="radio" class="radio" name="sf" value="msgonly" /> <span class="genmed">{L_SEARCH_MSG_ONLY}</span> <br /><input type="radio" class="radio" name="sf" value="titleonly" /> <span class="genmed">{L_SEARCH_TITLE_ONLY}</span> <br /><input type="radio" class="radio" name="sf" value="firstpost" /> <span class="genmed">{L_SEARCH_FIRST_POST}</span></td>
+	</tr>
+	<tr>
+		<td class="row1"><b class="genmed">{L_RESULT_SORT}: </b></td>
+		<td class="row2" nowrap="nowrap">{S_SELECT_SORT_KEY}<br /><input type="radio" class="radio" name="sd" value="a" /> <span class="genmed">{L_SORT_ASCENDING}</span><br /><input type="radio" class="radio" name="sd" value="d" checked="checked" /> <span class="genmed">{L_SORT_DESCENDING}</span></td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_DISPLAY_RESULTS}: </b></td>
+		<td class="row2" nowrap="nowrap"><input type="radio" class="radio" name="sr" value="posts" checked="checked" /> <span class="genmed">{L_POSTS}</span>&nbsp;&nbsp;<input type="radio" class="radio" name="sr" value="topics" /> <span class="genmed">{L_TOPICS}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" width="25%"><b class="genmed">{L_RESULT_DAYS}: </b></td>
+		<td class="row2" width="25%" nowrap="nowrap">{S_SELECT_SORT_DAYS}</td>
+		<td class="row1" nowrap="nowrap"><b class="genmed">{L_RETURN_FIRST}: </b></td>
+		<td class="row2" nowrap="nowrap"><select name="ch">{S_CHARACTER_OPTIONS}</select> <span class="genmed">{L_POST_CHARACTERS}</span></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="4" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" name="submit" type="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
+	</tr>
+	</table>
+	
+	</form>
+
+	<br clear="all" />
+
+	<!-- IF .recentsearch -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th colspan="2">{L_RECENT_SEARCHES}</th>
+	</tr>
+	<!-- BEGIN recentsearch -->
+		<!-- IF recentsearch.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
+
+			<td class="genmed" style="padding: 4px;" width="70%"><a href="{recentsearch.U_KEYWORDS}">{recentsearch.KEYWORDS}</a></td>
+			<td class="genmed" style="padding: 4px;" width="30%" align="center">{recentsearch.TIME}</td>
+		</tr>
+	<!-- END recentsearch -->
+	</table>
+
+	<br clear="all" />
+	<!-- ENDIF -->
+
+	</div>
+
+	<!-- INCLUDE breadcrumbs.html -->
+
+	<br clear="all" />
+
+	<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
+
+<script type="text/javascript">
+// <![CDATA[
+	(function()
+	{
+		var elements = document.getElementsByName("keywords");
+		for (var i = 0; i < elements.length; ++i)
+		{
+			if (elements[i].tagName.toLowerCase() == 'input')
+			{
+				elements[i].focus();
+				break;
+			}
+		}
+	})();
+// ]]>
+</script>
+
+<!-- INCLUDE overall_footer.html -->

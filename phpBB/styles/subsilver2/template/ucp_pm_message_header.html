@@ -1,0 +1,34 @@
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td align="{S_CONTENT_FLOW_BEGIN}">
+			<!-- IF TOTAL_MESSAGES -->
+				<table width="100%" cellspacing="1">
+				<tr>
+					<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+					<!-- IF FOLDER_MAX_MESSAGES neq 0 -->
+						<td class="gensmall" nowrap="nowrap" width="100%">&nbsp;[ <b>{FOLDER_CUR_MESSAGES}</b>/{FOLDER_MAX_MESSAGES} {L_MESSAGES} ({FOLDER_PERCENT}%) ]&nbsp;</td>
+					<!-- ELSE -->
+						<td class="gensmall" nowrap="nowrap" width="100%">&nbsp;[ <b>{FOLDER_CUR_MESSAGES}</b> {L_MESSAGES} ]&nbsp;</td>					
+					<!-- ENDIF -->
+				</tr>
+				</table>
+			<!-- ENDIF -->
+	
+			<!-- IF S_VIEW_MESSAGE -->
+				<span class="gensmall">
+				<!-- IF S_DISPLAY_HISTORY -->
+					<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}">{L_VIEW_PREVIOUS_HISTORY}</a> | <!-- ENDIF --><!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}">{L_VIEW_NEXT_HISTORY}</a> | <!-- ENDIF -->
+				<!-- ENDIF --><a href="{U_PREVIOUS_PM}">{L_VIEW_PREVIOUS_PM}</a> | <a href="{U_NEXT_PM}">{L_VIEW_NEXT_PM}</a>&nbsp;
+				</span>
+			<!-- ENDIF -->
+			</td>
+			<td align="{S_CONTENT_FLOW_END}"><!-- INCLUDE pagination.html --></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>

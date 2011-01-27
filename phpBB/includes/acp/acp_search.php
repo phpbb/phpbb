@@ -232,15 +232,7 @@ class acp_search
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		if (isset($_REQUEST['action']) && is_array($_REQUEST['action']))
-		{
-			$action = request_var('action', array('' => false));
-			$action = key($action);
-		}
-		else
-		{
-			$action = request_var('action', '');
-		}
+		$action = request_var('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
 
 		if (isset($_POST['cancel']))
@@ -625,5 +617,3 @@ class acp_search
 		return $error;
 	}
 }
-
-?>

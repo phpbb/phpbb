@@ -98,16 +98,21 @@ function viewableArea(e, itself)
 /**
 * Set display of page element
 * s[-1,0,1] = hide,toggle display,show
+* type = string: inline, block, inline-block or other CSS "display" type
 */
-function dE(n, s)
+function dE(n, s, type)
 {
-	var e = document.getElementById(n);
+	if (!type)
+	{
+		type = 'block';
+	}
 
+	var e = document.getElementById(n);
 	if (!s)
 	{
-		s = (e.style.display == '' || e.style.display == 'block') ? -1 : 1;
+		s = (e.style.display == '' || e.style.display == type) ? -1 : 1;
 	}
-	e.style.display = (s == 1) ? 'block' : 'none';
+	e.style.display = (s == 1) ? type : 'none';
 }
 
 /**

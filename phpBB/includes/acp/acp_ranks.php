@@ -236,5 +236,3 @@ class acp_ranks
 
 	}
 }
-
-?>

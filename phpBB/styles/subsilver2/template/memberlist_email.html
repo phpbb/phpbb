@@ -1,0 +1,73 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="pagecontent">
+
+	<form action="{S_POST_ACTION}" method="post" name="postform">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr> 
+		<th colspan="2">{L_SEND_EMAIL_USER} {USERNAME}</th>
+	</tr>
+	<!-- IF ERROR_MESSAGE -->
+		<tr>
+			<td class="row3" colspan="2" align="center"><span class="error">{ERROR_MESSAGE}</span></td>
+		</tr>
+	<!-- ENDIF -->
+	<!-- IF S_SEND_USER -->
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_RECIPIENT}</b></td>
+			<td class="row2" width="65%"><b class="genmed">{USERNAME}</b></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_SUBJECT}</b></td>
+			<td class="row2"><input class="post" type="text" name="subject" size="50" tabindex="2" value="{SUBJECT}" /></td>
+		</tr>
+	<!-- ELSE -->
+		<tr>
+			<td class="row1" width="35%"><b class="genmed">{L_EMAIL_ADDRESS}</b></td>
+			<td class="row2"><input class="post" type="text" name="email" size="50" maxlength="100" value="{EMAIL}" /></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_REAL_NAME}</b></td>
+			<td class="row2"><input class="post" type="text" name="name" size="50" value="{NAME}" /></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_DEST_LANG}</b><br /><span class="gensmall">{L_DEST_LANG_EXPLAIN}</span></td>
+			<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+		</tr>
+	<!-- ENDIF -->
+	<tr> 
+		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}</b><br /><span class="gensmall">{L_EMAIL_BODY_EXPLAIN}</span></td>
+		<td class="row2"><textarea class="post" name="message" rows="15" cols="76" tabindex="3">{MESSAGE}</textarea></td>
+	</tr>
+	<tr> 
+		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span></td>
+		<td class="row2">
+			<table cellspacing="0" cellpadding="1" border="0">
+			<tr> 
+				<td><input type="checkbox" class="radio" name="cc_email" value="1" checked="checked" /></td>
+				<td class="gen">{L_CC_EMAIL}</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="submit" tabindex="6" name="submit" class="btnmain" value="{L_SEND_EMAIL}" /></td>
+	</tr>
+	</table>
+
+	{S_FORM_TOKEN}
+	
+	</form>
+
+</div>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div style="float: {S_CONTENT_FLOW_END};"><!-- INCLUDE jumpbox.html --></div>
+
+<!-- INCLUDE overall_footer.html -->

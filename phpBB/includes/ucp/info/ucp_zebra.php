@@ -34,5 +34,3 @@ class ucp_zebra_info
 	{
 	}
 }
-
-?>

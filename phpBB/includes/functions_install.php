@@ -555,5 +555,3 @@ function adjust_language_keys_callback($matches)
 		return (!empty($lang[$matches[1]])) ? $db->sql_escape($lang[$matches[1]]) : $db->sql_escape($matches[1]);
 	}
 }
-
-?>

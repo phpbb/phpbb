@@ -123,12 +123,10 @@ if (defined('IN_CRON'))
 	$phpbb_root_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 }
 
-if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
+if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
-	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"{$phpbb_root_path}install/index.$phpEx\">Click here to install phpBB</a></p>");
+	require($phpbb_root_path . 'config.' . $phpEx);
 }
-
-require($phpbb_root_path . 'config.' . $phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -189,8 +187,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
@@ -205,15 +201,24 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
+// Setup class loader first
+$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader->register();
+
+// set up caching
+$cache_factory = new phpbb_cache_factory($acm_type);
+$cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
+
 // Instantiate some basic classes
+$request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
 $template	= new template();
-$cache		= new cache();
 $db			= new $sql_db();
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx, $cache);
-$class_loader->register();
+// make sure request_var uses this request instance
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false);
@@ -222,7 +227,9 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('
 unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
+$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+set_config(null, null, null, $config);
+set_config_count(null, null, null, $config);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
@@ -232,5 +239,3 @@ foreach ($cache->obtain_hooks() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
-
-?>

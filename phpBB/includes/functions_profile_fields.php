@@ -543,8 +543,9 @@ class custom_profile
 				else if ($day && $month && $year)
 				{
 					global $user;
-					// d/m/y 00:00 GMT isn't necessarily on the same d/m/y in the user's timezone, so add the timezone seconds
-					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + $user->timezone + $user->dst, $user->lang['DATE_FORMAT'], true);
+					// Date should display as the same date for every user regardless of timezone, so remove offset
+					// to compensate for the offset added by user::format_date()
+					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) - ($user->timezone + $user->dst), $user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
@@ -609,6 +610,7 @@ class custom_profile
 	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
+		global $request;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
@@ -621,7 +623,7 @@ class custom_profile
 		{
 			if (isset($_REQUEST[$profile_row['field_ident']]))
 			{
-				$value = ($_REQUEST[$profile_row['field_ident']] === '') ? NULL : request_var($profile_row['field_ident'], $default_value);
+				$value = ($request->variable($profile_row['field_ident'], '') === '') ? NULL : $request->variable($profile_row['field_ident'], $default_value);
 			}
 			else
 			{
@@ -877,6 +879,11 @@ class custom_profile
 				$now = getdate();
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
+			else if ($row['field_default_value'] === '' && $row['field_type'] == FIELD_INT)
+			{
+				// We cannot insert an empty string into an integer column.
+				$row['field_default_value'] = NULL;
+			}
 
 			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
@@ -893,6 +900,7 @@ class custom_profile
 	{
 		global $phpbb_root_path, $phpEx;
 		global $config;
+		global $request;
 
 		$var_name = 'pf_' . $profile_row['field_ident'];
 
@@ -937,7 +945,7 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (isset($_REQUEST[$var_name]) && $_REQUEST[$var_name] === '')
+				if (isset($_REQUEST[$var_name]) && $request->variable($var_name, '') === '')
 				{
 					$var = NULL;
 				}
@@ -1140,5 +1148,3 @@ class custom_profile_admin extends custom_profile
 		return $options;
 	}
 }
-
-?>

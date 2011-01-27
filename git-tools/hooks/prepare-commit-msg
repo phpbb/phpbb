@@ -30,5 +30,13 @@ branch="$(echo "$branch" | sed "s/refs\/heads\///g")"
 # * also make sure the branch name begins with bug/ or feature/
 if [ "$2" = "" ]
 then
-	echo "[$branch] $(cat "$1")" > "$1"
+	tail="";
+
+	# Branch is prefixed with 'ticket/', append ticket ID to message
+	if [ "$branch" != "${branch##ticket/}" ];
+	then
+		tail="\n\nPHPBB3-${branch##ticket/}";
+	fi
+
+	echo "[$branch]$tail $(cat "$1")" > "$1"
 fi

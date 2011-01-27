@@ -14,10 +14,6 @@ class build_package
 	var $old_packages;
 	var $versions;
 	var $locations;
-	var $clean_directory_structure;
-	var $files_to_copy;
-	var $files_to_remove;
-	var $remove_from_diff_structure;
 
 	// -c - context diff
 	// -r - compare recursive
@@ -53,11 +49,11 @@ class build_package
 		$this->package_infos = array(
 			'package_name'			=> 'phpBB3',
 			'name_prefix'			=> 'phpbb',
-			'simple_name'			=> 'phpbb' . str_replace('.', '', $_latest),
+			'simple_name'			=> 'release-' . $_latest,
 			'new_version_number'	=> $_latest,
 			'short_version_number'	=> str_replace('.', '', $_latest),
 			'release_filename'		=> 'phpBB-' . $_latest,
-			'last_version'			=> 'phpbb' . str_replace('.', '', $_before),
+			'last_version'			=> 'release-' . $_before,
 			'last_version_number'	=> $_before,
 		);
 
@@ -78,169 +74,13 @@ class build_package
 				continue;
 			}
 
-			$this->old_packages['phpbb' . str_replace('.', '', $package_version)] = $package_version . '_to_';
-		}
-
-		// We need to make sure this is up to date with the latest version
-		$this->clean_directory_structure = array(
-			'adm'		=> array(
-				'images'	=> '',
-				'style'		=> '',
-			),
-			'cache'		=> '',
-			'docs'		=> '',
-			'download'	=> '',
-			'files'		=> '',
-			'images'	=> array(
-				'avatars'	=> array(
-					'gallery'	=> '',
-					'upload'	=> '',
-				),
-				'icons'		=> array(
-					'misc'	=> '',
-					'smile'	=> '',
-				),
-				'ranks'			=> '',
-				'smilies'		=> '',
-				'upload_icons'	=> '',
-			),
-			'includes'		=> array(
-				'acm'		=> '',
-				'acp'		=> array(
-					'info'	=> '',
-				),
-				'auth'		=> '',
-				'captcha'	=> array(
-					'plugins'	=> '',
-				),
-				'diff'		=> '',
-				'db'		=> '',
-				'hooks'		=> '',
-				'mcp'		=> array(
-					'info'	=> '',
-				),
-				'questionnaire' => '',
-				'search'	=> '',
-				'ucp'		=> array(
-					'info'	=> '',
-				),
-				'utf'		=> array(
-					'data'	=> '',
-				),
-			),
-			'install'		=> array(
-				'convertors'=> '',
-				'schemas'	=> '',
-//				'data'		=> '',
-			),
-			'language'		=> array(
-				'en'		=> array(
-					'acp'		=> '',
-					'email'		=> '',
-					'mods'		=> '',
-				),
-			),
-			'store'			=> '',
-			'styles'		=> array(
-				'prosilver'	=> array(
-					'imageset'		=> array(
-						'en'	=> '',
-					),
-					'template'	=> '',
-					'theme'		=> array(
-						'images'	=> '',
-					),
-				),
-			),
-		);
-
-		// Files to remove (not include within package)
-		$this->files_to_remove = array(); //array('includes/utf/data/recode_cjk.php');
-
-		// Files within the main directory to copy - do not include config.php
-		$this->files_to_copy = array(
-			'.htaccess', 'common.php', 'cron.php', 'faq.php', 'feed.php', 'index.php', 'mcp.php', 'memberlist.php', 'posting.php', 'report.php',
-			'search.php', 'style.php', 'ucp.php', 'viewforum.php', 'viewonline.php', 'viewtopic.php'
-		);
-
-		// These files/directories will be removed and not used for creating the patch files
-		$this->remove_from_diff_structure = array(
-			'config.php', 'cache', 'docs', 'files', 'install', 'store', 'develop'
-		);
-
-		// Writeable directories
-		$this->writeable = array('cache', 'store', 'images/avatars/upload', 'files');
-
-		// Fill the rest of the files_to_copy array
-		foreach ($this->clean_directory_structure as $cur_dir => $dir_struct)
-		{
-			$this->_fill_files_to_copy($this->locations['new_version'] . $cur_dir, $cur_dir, $dir_struct);
+			$this->old_packages['release-' . $package_version] = $package_version . '_to_';
 		}
 	}
 
 	function get($var)
 	{
 		return $this->package_infos[$var];
-	}
-
-	function _fill_files_to_copy($directory, $cur_dir, $dir_struct)
-	{
-		$dh = opendir($directory);
-
-		while ($file = readdir($dh))
-		{
-			if (is_file($directory . '/' . $file) && $file != '.' && $file != '..')
-			{
-				$_loc = str_replace($this->locations['new_version'], '', $directory . '/' . $file);
-
-				if (in_array($_loc, $this->files_to_remove))
-				{
-					continue;
-				}
-
-				$this->files_to_copy[] = $cur_dir . '/' . $file;
-			}
-		}
-		closedir($dh);
-
-		if (is_array($dir_struct))
-		{
-			foreach ($dir_struct as $_cur_dir => $_dir_struct)
-			{
-				$this->_fill_files_to_copy($directory . '/' . $_cur_dir, $cur_dir . '/' . $_cur_dir, $_dir_struct);
-			}
-		}
-	}
-
-	function adjust_permissions($directory)
-	{
-		$dh = opendir($directory);
-
-		while ($file = readdir($dh))
-		{
-			if ($file == '.' || $file == '..' || $file == '.svn')
-			{
-				continue;
-			}
-
-			// If file, then 644
-			if (is_file($directory . '/' . $file))
-			{
-				chmod($directory . '/' . $file, 0644);
-			}
-			else if (is_dir($directory . '/' . $file))
-			{
-				$_loc = str_replace($this->package_infos['dest_dir'] . '/', '', $directory . '/' . $file);
-
-				// If directory is within the writeable chmod to 777, else 755
-				$mode = (in_array($_loc, $this->writeable)) ? 0777 : 0755;
-				chmod($directory . '/' . $file, $mode);
-
-				// Now traverse to the directory
-				$this->adjust_permissions($directory . '/' . $file);
-			}
-		}
-		closedir($dh);
 	}
 
 	function begin_status($headline)

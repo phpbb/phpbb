@@ -51,7 +51,6 @@ class result_mssqlnative
 		}
 
 		$this->m_row_count = count($this->m_rows);
-		sqlsrv_free_stmt($queryresult);
 	}
 
 	private function array_to_obj($array, &$obj)
@@ -199,6 +198,7 @@ class dbal_mssqlnative extends dbal
 {
 	var $m_insert_id = NULL;
 	var $last_query_text = '';
+	var $query_options = array();
 
 	/**
 	* Connect to server
@@ -308,10 +308,12 @@ class dbal_mssqlnative extends dbal
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @sqlsrv_query($this->db_connect_id, $query)) === false)
+				if (($this->query_result = @sqlsrv_query($this->db_connect_id, $query, array(), $this->query_options)) === false)
 				{
 					$this->sql_error($query);
 				}
+				// reset options for next query
+				$this->query_options = array();
 
 				if (defined('DEBUG_EXTRA'))
 				{
@@ -347,7 +349,8 @@ class dbal_mssqlnative extends dbal
 	{
 		$this->query_result = false;
 
-		if ($offset === false || $offset == 0)
+		// total == 0 means all results - not zero results
+		if ($offset == 0 && $total !== 0)
 		{
 			if (strpos($query, "SELECT") === false)
 			{
@@ -358,13 +361,21 @@ class dbal_mssqlnative extends dbal
 				$query = preg_replace('/SELECT(\s*DISTINCT)?/Dsi', 'SELECT$1 TOP '.$total, $query);
 			}
 		}
-		else
+		else if ($offset > 0)
 		{
 			$query = preg_replace('/SELECT(\s*DISTINCT)?/Dsi', 'SELECT$1 TOP(10000000) ', $query);
 			$query = 'SELECT *
 					FROM (SELECT sub2.*, ROW_NUMBER() OVER(ORDER BY sub2.line2) AS line3
-					FROM (SELECT 1 AS line2, sub1.* FROM (' . $query . ') AS sub1) as sub2) AS sub3
-					WHERE line3 BETWEEN ' . ($offset+1) . ' AND ' . ($offset + $total);
+					FROM (SELECT 1 AS line2, sub1.* FROM (' . $query . ') AS sub1) as sub2) AS sub3';
+
+			if ($total > 0)
+			{
+				$query .= ' WHERE line3 BETWEEN ' . ($offset+1) . ' AND ' . ($offset + $total);
+			}
+			else
+			{
+				$query .= ' WHERE line3 > ' . $offset;
+			}
 		}
 
 		$result = $this->sql_query($query, $cache_ttl);
@@ -404,12 +415,17 @@ class dbal_mssqlnative extends dbal
 
 		$row = @sqlsrv_fetch_array($query_id, SQLSRV_FETCH_ASSOC);
 
-		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
 		if ($row)
 		{
 			foreach ($row as $key => $value)
 			{
 				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+			}
+
+			// remove helper values from LIMIT queries
+			if (isset($row['line2']))
+			{
+				unset($row['line2'], $row['line3']);
 			}
 		}
 		return $row;
@@ -503,6 +519,7 @@ class dbal_mssqlnative extends dbal
 	{
 		$errors = @sqlsrv_errors(SQLSRV_ERR_ERRORS);
 		$error_message = '';
+		$code = 0;
 
 		if ($errors != null)
 		{
@@ -510,6 +527,7 @@ class dbal_mssqlnative extends dbal
 			{
 				$error_message .= "SQLSTATE: ".$error[ 'SQLSTATE']."\n";
 				$error_message .= "code: ".$error[ 'code']."\n";
+				$code = $error['code'];
 				$error_message .= "message: ".$error[ 'message']."\n";
 			}
 			$this->last_error_result = $error_message;
@@ -519,7 +537,11 @@ class dbal_mssqlnative extends dbal
 		{
 			$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
 		}
-		return $error;
+
+		return array(
+			'message'	=> $error,
+			'code'		=> $code,
+		);
 	}
 
 	/**
@@ -592,20 +614,26 @@ class dbal_mssqlnative extends dbal
 	* Utility method used to retrieve number of rows
 	* Emulates mysql_num_rows
 	* Used in acp_database.php -> write_data_mssqlnative()
+	* Requires a static or keyset cursor to be definde via
+	* mssqlnative_set_query_options()
 	*/
 	function mssqlnative_num_rows($res)
 	{
 		if ($res !== false)
 		{
-			$row = new result_mssqlnative($res);
-			$num_rows = $row->num_rows();
-			return $num_rows;
+			return sqlsrv_num_rows($res);
 		}
 		else
 		{
 			return false;
 		}
 	}
+	
+	/**
+	* Allows setting mssqlnative specific query options passed to sqlsrv_query as 4th parameter.
+	*/
+	function mssqlnative_set_query_options($options)
+	{
+		$this->query_options = $options;
+	}
 }
-
-?>

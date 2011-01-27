@@ -22,7 +22,7 @@ require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 $id 	= request_var('i', '');
 $mode	= request_var('mode', '');
 
-if ($mode == 'login' || $mode == 'logout' || $mode == 'confirm')
+if (in_array($mode, array('login', 'logout', 'confirm', 'sendpassword', 'activate')))
 {
 	define('IN_LOGIN', true);
 }
@@ -82,7 +82,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && isset($_GET['sid']) && !is_array($_GET['sid']) && $_GET['sid'] === $user->session_id)
+		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
 		{
 			$user->session_kill();
 			$user->session_begin();
@@ -141,8 +141,10 @@ switch ($mode)
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($_COOKIE as $cookie_name => $cookie_data)
+			foreach ($request->variable_names(phpbb_request_interface::COOKIE) as $cookie_name)
 			{
+				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_interface::COOKIE);
+
 				// Only delete board cookies, no other ones...
 				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
 				{
@@ -345,5 +347,3 @@ function _module_zebra($mode, &$module_row)
 		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
 	}
 }
-
-?>

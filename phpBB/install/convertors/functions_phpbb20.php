@@ -456,7 +456,7 @@ function phpbb_get_birthday($birthday = '')
 	{
 		$birthday = (int) $birthday;
 
-		if (!$birthday || $birthday == 999999 || ((version_compare(PHP_VERSION, '5.1.0') < 0) && $birthday < 0))
+		if (!$birthday || $birthday == 999999)
 		{
 			return ' 0- 0-   0';
 		}
@@ -1239,9 +1239,9 @@ function phpbb_prepare_message($message)
 	// Already the new user id ;)
 	$user_id = $convert->row['poster_id'];
 
+	$message = str_replace('<br />', "\n", $message);
 	$message = str_replace('<', '&lt;', $message);
 	$message = str_replace('>', '&gt;', $message);
-	$message = str_replace('<br />', "\n", $message);
 
 	// make the post UTF-8
 	$message = phpbb_set_encoding($message);
@@ -1863,5 +1863,3 @@ function phpbb_check_username_collisions()
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	$db->sql_query($drop_sql);
 }
-
-?>

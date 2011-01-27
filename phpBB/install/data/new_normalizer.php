@@ -192,5 +192,3 @@ class utf_new_normalizer
 		return utf_normalizer::recompose($str, $pos, $len, $qc, $decomp_map);
 	}
 }
-
-?>

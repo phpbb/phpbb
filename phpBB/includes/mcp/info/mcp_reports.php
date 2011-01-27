@@ -35,5 +35,3 @@ class mcp_reports_info
 	{
 	}
 }
-
-?>

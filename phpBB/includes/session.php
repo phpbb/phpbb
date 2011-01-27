@@ -130,7 +130,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> (isset($_REQUEST['f']) && $_REQUEST['f'] > 0) ? (int) $_REQUEST['f'] : 0,
+			'forum'				=> request_var('f', 0),
 		);
 
 		return $page_array;
@@ -206,6 +206,7 @@ class session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
+		global $request;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -241,7 +242,7 @@ class session
 			$this->forwarded_for = '';
 		}
 
-		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
+		if ($request->is_set($config['cookie_name'] . '_sid', phpbb_request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', phpbb_request_interface::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
@@ -278,11 +279,40 @@ class session
 
 		foreach ($ips as $ip)
 		{
+			if (function_exists('phpbb_ip_normalise'))
+			{
+				// Normalise IP address
+				$ip = phpbb_ip_normalise($ip);
+
+				if (empty($ip))
+				{
+					// IP address is invalid.
+					break;
+				}
+
+				// IP address is valid.
+				$this->ip = $ip;
+
+				// Skip legacy code.
+				continue;
+			}
+
 			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
 			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 			{
 				// Just break
 				break;
+			}
+
+			// Quick check for IPv4-mapped address in IPv6
+			if (stripos($ip, '::ffff:') === 0)
+			{
+				$ipv4 = substr($ip, 7);
+
+				if (preg_match(get_preg_expression('ipv4'), $ipv4))
+				{
+					$ip = $ipv4;
+				}
 			}
 
 			// Use the last in chain
@@ -307,7 +337,7 @@ class session
 		}
 
 		// Is session_id is set or session_id is set and matches the url param if required
-		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === $_GET['sid'])))
+		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === request_var('sid', ''))))
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -401,9 +431,7 @@ class session
 
 							$db->sql_return_on_error(true);
 
-							$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-							$result = $db->sql_query($sql);
+							$this->update_session($sql_ary);
 
 							$db->sql_return_on_error(false);
 
@@ -413,9 +441,7 @@ class session
 							{
 								unset($sql_ary['session_forum_id']);
 
-								$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-									WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-								$db->sql_query($sql);
+								$this->update_session($sql_ary);
 							}
 
 							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
@@ -680,9 +706,7 @@ class session
 						$sql_ary['session_forum_id'] = $this->page['forum'];
 					}
 
-					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-					$db->sql_query($sql);
+					$this->update_session($sql_ary);
 
 					// Update the last visit time
 					$sql = 'UPDATE ' . USERS_TABLE . '
@@ -748,7 +772,7 @@ class session
 
 				if ((int) $row['sessions'] > (int) $config['active_sessions'])
 				{
-					header('HTTP/1.1 503 Service Unavailable');
+					send_status_line(503, 'Service Unavailable');
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
@@ -1451,6 +1475,23 @@ class session
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
 		$db->sql_query($sql);
 	}
+
+	/**
+	* Update the session data
+	*
+	* @param array $session_data associative array of session keys to be updated
+	* @param string $session_id optional session_id, defaults to current user's session_id
+	*/
+	public function update_session($session_data, $session_id = null)
+	{
+		global $db;
+
+		$session_id = ($session_id) ? $session_id : $this->session_id;
+
+		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
+			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+		$db->sql_query($sql);
+	}
 }
 
 
@@ -1580,11 +1621,12 @@ class user extends session
 		$this->add_lang($lang_set);
 		unset($lang_set);
 
-		if (!empty($_GET['style']) && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
+		$style_request = request_var('style', 0);
+		if ($style_request && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
 		{
 			global $SID, $_EXTRA_URL;
 
-			$style = request_var('style', 0);
+			$style = $style_request;
 			$SID .= '&amp;style=' . $style;
 			$_EXTRA_URL = array('style=' . $style);
 		}
@@ -1821,7 +1863,7 @@ class user extends session
 		{
 			if ($this->data['is_bot'])
 			{
-				header('HTTP/1.1 503 Service Unavailable');
+				send_status_line(503, 'Service Unavailable');
 			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
@@ -1831,7 +1873,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !defined('IN_ADMIN'))
 			{
 				// Set board disabled to true to let the admins/mods get the proper notification
 				$config['board_disable'] = '1';
@@ -1840,7 +1882,7 @@ class user extends session
 				{
 					if ($this->data['is_bot'])
 					{
-						header('HTTP/1.1 503 Service Unavailable');
+						send_status_line(503, 'Service Unavailable');
 					}
 					trigger_error('BOARD_UNAVAILABLE');
 				}
@@ -2347,5 +2389,3 @@ class user extends session
 		return true;
 	}
 }
-
-?>

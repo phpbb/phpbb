@@ -253,5 +253,3 @@ class ucp_zebra
 		$this->page_title = 'UCP_ZEBRA_' . $l_mode;
 	}
 }
-
-?>

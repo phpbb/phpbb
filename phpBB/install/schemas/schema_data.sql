@@ -94,7 +94,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
@@ -168,6 +168,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_onlinetrack', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_unreads_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_user_activity', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
@@ -208,7 +209,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_recipients', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '60');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
@@ -241,7 +242,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.8-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.0.9-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 

@@ -1642,6 +1642,9 @@ class acp_forums
 
 		delete_attachments('topic', $topic_ids, false);
 
+		// Delete shadow topics pointing to topics in this forum
+		delete_topic_shadows($forum_id);
+
 		// Before we remove anything we make sure we are able to adjust the post counts later. ;)
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
@@ -1947,5 +1950,3 @@ class acp_forums
 	}
 
 }
-
-?>

@@ -33,6 +33,3 @@ class acp_email_info
 	{
 	}
 }
-
-
-?>

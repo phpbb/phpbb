@@ -23,6 +23,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
+	global $request;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -34,7 +35,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	if ($merge_select)
 	{
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
+		$request->overwrite('sk', null);
+		$request->overwrite('sd', null);
+		$request->overwrite('sk', null, phpbb_request_interface::POST);
+		$request->overwrite('sd', null, phpbb_request_interface::POST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];
@@ -443,5 +447,3 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
-
-?>

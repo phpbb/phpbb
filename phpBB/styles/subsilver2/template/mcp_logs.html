@@ -1,0 +1,46 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" name="mcp" action="{U_POST_ACTION}">
+	
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<tr>
+	<th>{L_USERNAME}</th>
+	<th>{L_IP}</th>
+	<th>{L_TIME}</th>
+	<th>{L_ACTION}</th>
+	<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
+</tr>
+<!-- IF S_LOGS -->
+
+	<!-- BEGIN log -->
+		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td class="genmed">{log.USERNAME}</td>
+			<td class="genmed" style="text-align: center;">{log.IP}</td>
+			<td class="genmed" style="text-align: center;">{log.DATE}</td>
+			<td class="genmed">{log.ACTION}<br />{log.DATA}</td>
+			<!-- IF S_CLEAR_ALLOWED --><td width="5%" align="center"><input type="checkbox" class="radio" name="mark[]" value="{log.ID}" /></td><!-- ENDIF -->
+		</tr>
+	<!-- END log -->
+	<tr align="center">
+		<td class="row3" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->"><span class="gensmall">{L_SEARCH_KEYWORDS}:</span> <input type="text" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="btnlite" name="filter" value="{L_SEARCH}" /></td>
+	</tr>
+	<tr align="center">
+		<td class="row3" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->"><span class="gensmall">{L_DISPLAY_LOG}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
+	</tr>
+	<!-- IF S_CLEAR_ALLOWED -->
+		<tr>
+			<td class="cat" colspan="5" align="center"><input class="btnlite" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp; <input class="btnlite" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" /></td>
+		</tr>
+	<!-- ENDIF -->
+<!-- ELSE -->
+	<tr>
+		<td class="row1" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+	</tr>
+<!-- ENDIF -->
+</table>
+{S_FORM_TOKEN}
+</form>
+
+<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->

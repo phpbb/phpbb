@@ -1,0 +1,73 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="2" valign="middle">{L_TITLE}</th>
+</tr>
+<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
+	</tr>
+<!-- ENDIF -->
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_IMAGES}:</b></td>
+	<td class="row2"><input type="radio" class="radio" name="images" value="1"<!-- IF S_IMAGES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="images" value="0"<!-- IF not S_IMAGES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_FLASH}:</b></td>
+	<td class="row2"><input type="radio" class="radio" name="flash" value="1"<!-- IF S_FLASH --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="flash" value="0"<!-- IF not S_FLASH --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_SMILIES}:</b></td>
+	<td class="row2"><input type="radio" class="radio" name="smilies" value="1"<!-- IF S_SMILIES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="smilies" value="0"<!-- IF not S_SMILIES --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_SIGS}:</b></td>
+	<td class="row2"><input type="radio" class="radio" name="sigs" value="1"<!-- IF S_SIGS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="sigs" value="0"<!-- IF not S_SIGS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_AVATARS}:</b></td>
+	<td class="row2"><input type="radio" class="radio" name="avatars" value="1"<!-- IF S_AVATARS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="avatars" value="0"<!-- IF not S_AVATARS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+</tr>
+<!-- IF S_CHANGE_CENSORS -->
+	<tr>
+		<td class="row1" width="50%"><b class="genmed">{L_DISABLE_CENSORS}:</b></td>
+		<td class="row2"><input type="radio" class="radio" name="wordcensor" value="1"<!-- IF S_DISABLE_CENSORS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_YES}</span>&nbsp; &nbsp;<input type="radio" class="radio" name="wordcensor" value="0"<!-- IF not S_DISABLE_CENSORS --> checked="checked"<!-- ENDIF --> /><span class="gen">{L_NO}</span></td>
+	</tr>
+<!-- ENDIF -->
+<tr>
+	<td colspan="2" class="spacer"></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_TOPICS_DAYS}:</b></td>
+	<td class="row2">{S_TOPIC_SORT_DAYS}</td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_TOPICS_KEY}:</b></td>
+	<td class="row2">{S_TOPIC_SORT_KEY}</td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_TOPICS_DIR}:</b></td>
+	<td class="row2">{S_TOPIC_SORT_DIR}</td>
+</tr>
+<tr>
+	<td colspan="2" class="spacer"></td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_POSTS_DAYS}:</b></td>
+	<td class="row2">{S_POST_SORT_DAYS}</td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_POSTS_KEY}:</b></td>
+	<td class="row2">{S_POST_SORT_KEY}</td>
+</tr>
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_VIEW_POSTS_DIR}:</b></td>
+	<td class="row2">{S_POST_SORT_DIR}</td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

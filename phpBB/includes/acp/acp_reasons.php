@@ -371,5 +371,3 @@ class acp_reasons
 		$db->sql_freeresult($result);
 	}
 }
-
-?>

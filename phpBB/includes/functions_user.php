@@ -766,7 +766,8 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]));
+				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
+				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
 			}
 			else
 			{
@@ -1229,22 +1230,39 @@ function user_unban($mode, $ban)
 }
 
 /**
-* Whois facility
+* Internet Protocol Address Whois
+* RFC3912: WHOIS Protocol Specification
 *
-* @link http://tools.ietf.org/html/rfc3912 RFC3912: WHOIS Protocol Specification
+* @param string $ip		Ip address, either IPv4 or IPv6.
+*
+* @return string		Empty string if not a valid ip address.
+*						Otherwise make_clickable()'ed whois result.
 */
 function user_ipwhois($ip)
 {
-	$ipwhois = '';
-
-	// Check IP
-	// Only supporting IPv4 at the moment...
-	if (empty($ip) || !preg_match(get_preg_expression('ipv4'), $ip))
+	if (empty($ip))
 	{
 		return '';
 	}
 
-	if (($fsk = @fsockopen('whois.arin.net', 43)))
+	if (preg_match(get_preg_expression('ipv4'), $ip))
+	{
+		// IPv4 address
+		$whois_host = 'whois.arin.net.';
+	}
+	else if (preg_match(get_preg_expression('ipv6'), $ip))
+	{
+		// IPv6 address
+		$whois_host = 'whois.sixxs.net.';
+	}
+	else
+	{
+		return '';
+	}
+
+	$ipwhois = '';
+
+	if (($fsk = @fsockopen($whois_host, 43)))
 	{
 		// CRLF as per RFC3912
 		fputs($fsk, "$ip\r\n");
@@ -1257,7 +1275,7 @@ function user_ipwhois($ip)
 
 	$match = array();
 
-	// Test for referrals from ARIN to other whois databases, roll on rwhois
+	// Test for referrals from $whois_host to other whois databases, roll on rwhois
 	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
@@ -1285,7 +1303,7 @@ function user_ipwhois($ip)
 			@fclose($fsk);
 		}
 
-		// Use the result from ARIN if we don't get any result here
+		// Use the result from $whois_host if we don't get any result here
 		$ipwhois = (empty($buffer)) ? $ipwhois : $buffer;
 	}
 
@@ -1472,7 +1490,7 @@ function validate_username($username, $allowed_username = false)
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+	if (pcre_utf8_support())
 	{
 		$pcre = true;
 	}
@@ -1608,7 +1626,7 @@ function validate_password($password)
 	$pcre = $mbstring = false;
 
 	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+	if (pcre_utf8_support())
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
@@ -1756,15 +1774,15 @@ function validate_jabber($jid)
 		return false;
 	}
 
-	$seperator_pos = strpos($jid, '@');
+	$separator_pos = strpos($jid, '@');
 
-	if ($seperator_pos === false)
+	if ($separator_pos === false)
 	{
 		return 'WRONG_DATA';
 	}
 
-	$username = substr($jid, 0, $seperator_pos);
-	$realm = substr($jid, $seperator_pos + 1);
+	$username = substr($jid, 0, $separator_pos);
+	$realm = substr($jid, $separator_pos + 1);
 
 	if (strlen($username) == 0 || strlen($realm) < 3)
 	{
@@ -2062,7 +2080,7 @@ function avatar_upload($data, &$error)
 
 	// Init upload class
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], explode('|', $config['mime_triggers']));
+	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
 
 	if (!empty($_FILES['uploadfile']['name']))
 	{
@@ -2326,7 +2344,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	// Can we upload?
 	if (is_null($can_upload))
 	{
-		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 	}
 
 	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
@@ -2352,7 +2370,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		}
 		else
 		{
-			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $sql_ary['user_avatar']);
+			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . urldecode($sql_ary['user_avatar']));
 			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
 		}
 	}
@@ -3583,5 +3601,3 @@ function remove_newly_registered($user_id, $user_data = false)
 
 	return $user_data['group_id'];
 }
-
-?>

@@ -1,0 +1,74 @@
+<table class="tablebg" cellspacing="1" width="100%">
+<tr>
+	<td class="cat" colspan="5" align="{S_CONTENT_FLOW_END}"><!-- IF not S_IS_BOT and U_MARK_FORUMS --><a class="nav" href="{U_MARK_FORUMS}">{L_MARK_FORUMS_READ}</a><!-- ENDIF -->&nbsp;</td>
+</tr>
+<tr>
+	<th colspan="2">&nbsp;{L_FORUM}&nbsp;</th>
+	<th width="50">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th width="50">&nbsp;{L_POSTS}&nbsp;</th>
+	<th>&nbsp;{L_LAST_POST}&nbsp;</th>
+</tr>
+<!-- BEGIN forumrow -->
+	<!-- IF forumrow.S_IS_CAT -->
+		<tr>
+			<td class="cat" colspan="2"><h4><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></h4></td>
+			<td class="catdiv" colspan="3">&nbsp;</td>
+		</tr>
+	<!-- ELSEIF forumrow.S_IS_LINK -->
+		<tr>
+			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
+			<td class="row1">
+				<!-- IF forumrow.FORUM_IMAGE -->
+					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}: 5px;">{forumrow.FORUM_IMAGE}</div>
+				<!-- ENDIF -->
+				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
+				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
+			</td>
+			<!-- IF forumrow.CLICKS -->
+				<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
+			<!-- ELSE -->
+				<td class="row2" colspan="3" align="center">&nbsp;</td>
+			<!-- ENDIF -->
+		</tr>
+	<!-- ELSE -->
+		<!-- IF forumrow.S_NO_CAT -->
+			<tr>
+				<td class="cat" colspan="2"><h4>{L_FORUM}</h4></td>
+				<td class="catdiv" colspan="3">&nbsp;</td>
+			</tr>
+		<!-- ENDIF -->
+		<tr>
+			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
+			<td class="row1" width="100%">
+				<!-- IF forumrow.FORUM_IMAGE -->
+					<div style="float: {S_CONTENT_FLOW_BEGIN}; margin-{S_CONTENT_FLOW_END}: 5px;">{forumrow.FORUM_IMAGE}</div>
+				<!-- ENDIF -->
+				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
+				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
+				<!-- IF forumrow.MODERATORS -->
+					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}</p>
+				<!-- ENDIF -->
+				<!-- IF forumrow.SUBFORUMS and forumrow.S_LIST_SUBFORUMS -->
+					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}</p>
+				<!-- ENDIF -->
+			</td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.TOPICS}</p></td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.POSTS}</p></td>
+			<td class="row2" align="center" nowrap="nowrap">
+				<!-- IF forumrow.LAST_POST_TIME -->
+					<p class="topicdetails"><!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a>&nbsp;<!-- ENDIF -->{forumrow.LAST_POST_TIME}</p>
+					<p class="topicdetails">{forumrow.LAST_POSTER_FULL}
+						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
+					</p>
+				<!-- ELSE -->
+					<p class="topicdetails">{L_NO_POSTS}</p>
+				<!-- ENDIF -->
+			</td>
+		</tr>
+	<!-- ENDIF -->
+<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><p class="gensmall">{L_NO_FORUMS}</p></td>
+	</tr>
+<!-- END forumrow -->
+</table>

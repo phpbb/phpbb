@@ -43,5 +43,3 @@ class acp_users_info
 	{
 	}
 }
-
-?>

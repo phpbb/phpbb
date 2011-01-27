@@ -28,6 +28,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -37,9 +38,9 @@ class ucp_register
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit			= (isset($_POST['submit'])) ? true : false;
+		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
+		$agreed			= (int) $request->variable('agreed', false);
+		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
@@ -63,7 +64,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+					$agreed = ($request->variable('change_lang', false)) ? 0 : $agreed;
 				}
 
 				$user->lang_name = $user_lang = $use_lang;
@@ -219,7 +220,7 @@ class ucp_register
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+			$error = array_map(array($user, 'lang'), $error);
 
 			if ($config['enable_confirm'])
 			{
@@ -286,11 +287,7 @@ class ucp_register
 					$config['require_activation'] == USER_ACTIVATION_SELF ||
 					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
 				{
-					$user_actkey = gen_rand_string(10);
-					$key_len = 54 - (strlen($server_url));
-					$key_len = ($key_len < 6) ? 6 : $key_len;
-					$user_actkey = substr($user_actkey, 0, $key_len);
-
+					$user_actkey = gen_rand_string(mt_rand(6, 10));
 					$user_type = USER_INACTIVE;
 					$user_inactive_reason = INACTIVE_REGISTER;
 					$user_inactive_time = time();
@@ -505,5 +502,3 @@ class ucp_register
 		$this->page_title = 'UCP_REGISTRATION';
 	}
 }
-
-?>

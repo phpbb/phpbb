@@ -1,0 +1,72 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="2" valign="middle">{L_TITLE}</th>
+</tr>
+<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
+	</tr>
+<!-- ENDIF -->
+<tr> 
+	<td class="row1" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_UCP_ICQ}: </b></td>
+	<td class="row2"><input class="post" type="text" name="icq" size="30" maxlength="15" value="{ICQ}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_UCP_AIM}: </b></td>
+	<td class="row2"><input class="post" type="text" name="aim" size="30" maxlength="255" value="{AIM}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_UCP_MSNM}: </b></td>
+	<td class="row2"><input class="post" type="text" name="msn" size="30" maxlength="255" value="{MSN}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_UCP_YIM}: </b></td>
+	<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="{YIM}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_UCP_JABBER}: </b></td>
+	<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="{JABBER}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_WEBSITE}: </b></td>
+	<td class="row2"><input class="post" type="text" name="website" size="30" maxlength="255" value="{WEBSITE}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_LOCATION}: </b></td>
+	<td class="row2"><input class="post" type="text" name="location" size="30" maxlength="100" value="{LOCATION}" /></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_OCCUPATION}: </b></td>
+	<td class="row2"><textarea class="post" name="occupation" rows="3" cols="30">{OCCUPATION}</textarea></td>
+</tr>
+<tr> 
+	<td class="row1" width="35%"><b class="genmed">{L_INTERESTS}: </b></td>
+	<td class="row2"><textarea class="post" name="interests" rows="3" cols="30">{INTERESTS}</textarea></td>
+</tr>
+<!-- IF S_BIRTHDAYS_ENABLED -->
+	<tr> 
+		<td class="row1" width="35%"><b class="genmed">{L_BIRTHDAY}: </b><br /><span class="gensmall">{L_BIRTHDAY_EXPLAIN}</span></td>
+		<td class="row2"><span class="genmed">{L_DAY}:</span> <select name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> <span class="genmed">{L_MONTH}:</span> <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> <span class="genmed">{L_YEAR}:</span> <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></td>
+	</tr>
+<!-- ENDIF -->
+<!-- BEGIN profile_fields -->
+	<tr> 
+		<td class="row1" width="35%">
+			<b class="genmed">{profile_fields.LANG_NAME}: </b>
+			<!-- IF profile_fields.S_REQUIRED --><b>*</b><!-- ENDIF -->
+			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span class="gensmall">{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF -->
+		</td>
+		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall error">{profile_fields.ERROR}</span><!-- ENDIF --></td>
+	</tr>
+<!-- END profile_fields -->
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

@@ -48,5 +48,3 @@ class acp_board_info
 	{
 	}
 }
-
-?>

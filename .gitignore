@@ -1,2 +1,10 @@
-phpBB/cache/*.php
 *~
+phpunit.xml
+phpBB/cache/*.php
+phpBB/config.php
+phpBB/files/*
+phpBB/images/avatars/upload/*
+phpBB/store/*
+tests/phpbb_unit_tests.sqlite2
+tests/test_config.php
+tests/utf/data/*.txt

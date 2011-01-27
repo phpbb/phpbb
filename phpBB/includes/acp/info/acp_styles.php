@@ -36,5 +36,3 @@ class acp_styles_info
 	{
 	}
 }
-
-?>

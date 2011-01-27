@@ -247,5 +247,3 @@ class mcp_notes
 	}
 
 }
-
-?>

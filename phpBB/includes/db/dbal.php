@@ -448,6 +448,28 @@ class dbal
 	}
 
 	/**
+	* Returns SQL string to cast a string expression to an int.
+	*
+	* @param  string $expression An expression evaluating to string
+	* @return string             Expression returning an int
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Returns SQL string to cast an integer expression to a string.
+	*
+	* @param  string $expression An expression evaluating to int
+	* @return string             Expression returning a string
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return $expression;
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
@@ -711,8 +733,9 @@ class dbal
 	function sql_report($mode, $query = '')
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
+		global $request;
 
-		if (empty($_REQUEST['explain']))
+		if (is_object($request) && !$request->variable('explain', false))
 		{
 			return false;
 		}
@@ -767,7 +790,7 @@ class dbal
 							</div>
 						</div>
 						<div id="page-footer">
-							Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+							Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group
 						</div>
 					</div>
 					</body>
@@ -901,5 +924,3 @@ class dbal
 * This variable holds the class name to use later
 */
 $sql_db = (!empty($dbms)) ? 'dbal_' . basename($dbms) : 'dbal';
-
-?>

@@ -172,6 +172,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Number of "to" recipients
 	$num_recipients = (int) preg_match_all('/:?(u|g)_([0-9]+):?/', $message_row['to_address'], $match);
 
+	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
+
 	$template->assign_vars(array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -229,6 +231,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 		'S_PM_RECIPIENTS'	=> $num_recipients,
+		'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
@@ -245,7 +248,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
-	if (!isset($_REQUEST['view']) || $_REQUEST['view'] != 'print')
+	if (!isset($_REQUEST['view']) || $request->variable('view', '') != 'print')
 	{
 		// Message History
 		if (message_history($msg_id, $user->data['user_id'], $message_row, $folder))
@@ -309,12 +312,10 @@ function get_user_information($user_id, $user_row)
 
 	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
-	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
+	if ((!empty($user_row['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_email'))
 	{
 		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
 	}
 
 	return $user_row;
 }
-
-?>

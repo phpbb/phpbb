@@ -28,6 +28,7 @@ class acp_icons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang('acp/posting');
 
@@ -338,7 +339,7 @@ class acp_icons
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
-				if (!empty($_POST['add_additional_code']))
+				if ($request->variable('add_additional_code', false, false, phpbb_request_interface::POST))
 				{
 					$add_image			= request_var('add_image', '');
 					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
@@ -354,7 +355,7 @@ class acp_icons
 						$image_width[$add_image] = request_var('add_width', 0);
 						$image_height[$add_image] = request_var('add_height', 0);
 
-						if (!empty($_POST['add_display_on_posting']))
+						if ($request->variable('add_display_on_posting', false, false, phpbb_request_interface::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}
@@ -950,5 +951,3 @@ class acp_icons
 		return $item_count;
 	}
 }
-
-?>

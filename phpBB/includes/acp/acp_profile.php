@@ -30,6 +30,7 @@ class acp_profile
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $request;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -487,7 +488,8 @@ class acp_profile
 							$cp->vars['field_default_value_day'] = $now['mday'];
 							$cp->vars['field_default_value_month'] = $now['mon'];
 							$cp->vars['field_default_value_year'] = $now['year'];
-							$var = $_POST['field_default_value'] = 'now';
+							$var = 'now';
+							$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
 						}
 						else
 						{
@@ -496,7 +498,8 @@ class acp_profile
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$var = $_POST['field_default_value'] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
 							}
 							else
 							{
@@ -688,7 +691,7 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
+								$_new_key_ary[$key] = ($field_type == FIELD_BOOL && $key == 'lang_options') ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
 							}
 						}
 					}
@@ -1622,5 +1625,3 @@ class acp_profile
 		return $sql;
 	}
 }
-
-?>

@@ -163,14 +163,22 @@ if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/template.' . $phpEx);
-include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
-include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 $class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 $class_loader->register();
+
+// set up caching
+$cache_factory = new phpbb_cache_factory('file');
+$cache = $cache_factory->get_service();
+$class_loader->set_cache($cache->get_driver());
+
+$request = new phpbb_request();
+
+// make sure request_var uses this request instance
+request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));
@@ -254,7 +262,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$cache = new cache();
 $template = new template();
 
 // Add own hook handler, if present. :o
@@ -274,9 +281,9 @@ else
 }
 
 // Set some standard variables we want to force
-$config = array(
+$config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
-);
+));
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
@@ -656,7 +663,7 @@ class module
 		echo '		</div>';
 		echo '	</div>';
 		echo '	<div id="page-footer">';
-		echo '		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>';
+		echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group';
 		echo '	</div>';
 		echo '</div>';
 		echo '</body>';
@@ -812,5 +819,3 @@ class module
 		return $user_select;
 	}
 }
-
-?>

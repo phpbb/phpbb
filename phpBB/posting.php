@@ -402,6 +402,19 @@ if ($post_data['poll_start'])
 	$db->sql_freeresult($result);
 }
 
+if ($mode == 'edit')
+{
+	$original_poll_data = array(
+		'poll_title'		=> $post_data['poll_title'],
+		'poll_length'		=> $post_data['poll_length'],
+		'poll_max_options'	=> $post_data['poll_max_options'],
+		'poll_option_text'	=> implode("\n", $post_data['poll_options']),
+		'poll_start'		=> $post_data['poll_start'],
+		'poll_last_vote'	=> $post_data['poll_last_vote'],
+		'poll_vote_change'	=> $post_data['poll_vote_change'],
+	);
+}
+
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
@@ -650,7 +663,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, phpbb_request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -848,10 +861,17 @@ if ($submit || $preview || $refresh)
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
+		$user->add_lang('ucp');
+
 		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
-			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];
+		}
+
+		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
+		{
+			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
+			$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $min_max_amount);
 		}
 	}
 
@@ -911,6 +931,22 @@ if ($submit || $preview || $refresh)
 		{
 			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
 		}*/
+	}
+	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
+	{
+		// We have a poll but the editing user is not permitted to create/edit it.
+		// So we just keep the original poll-data.
+		$poll = array_merge($original_poll_data, array(
+			'enable_bbcode'		=> $post_data['enable_bbcode'],
+			'enable_urls'		=> $post_data['enable_urls'],
+			'enable_smilies'	=> $post_data['enable_smilies'],
+			'img_status'		=> $img_status,
+		));
+
+		$message_parser->parse_poll($poll);
+
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 	}
 	else
 	{
@@ -1271,7 +1307,7 @@ $attachment_data = $message_parser->attachment_data;
 $filename_data = $message_parser->filename_data;
 $post_data['post_text'] = $message_parser->message;
 
-if (sizeof($post_data['poll_options']) && $post_data['poll_title'])
+if (sizeof($post_data['poll_options']) || !empty($post_data['poll_title']))
 {
 	$message_parser->message = $post_data['poll_title'];
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
@@ -1595,5 +1631,3 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 
 	trigger_error('USER_CANNOT_DELETE');
 }
-
-?>

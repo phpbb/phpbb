@@ -34,5 +34,3 @@ class acp_database_info
 	{
 	}
 }
-
-?>

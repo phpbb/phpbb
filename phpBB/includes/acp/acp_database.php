@@ -1007,43 +1007,8 @@ class sqlite_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		global $db;
-		static $proper;
 
-		if (is_null($proper))
-		{
-			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
-		}
-
-		if ($proper)
-		{
-			$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
-		}
-		else
-		{
-			$sql = "SELECT sql
-				FROM sqlite_master
-				WHERE type = 'table'
-					AND name = '" . $table_name . "'";
-			$table_data = sqlite_single_query($db->db_connect_id, $sql);
-			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
-			$table_data = trim($table_data);
-
-			preg_match('#\((.*)\)#s', $table_data, $matches);
-
-			$table_cols = explode(',', trim($matches[1]));
-			foreach ($table_cols as $declaration)
-			{
-				$entities = preg_split('#\s+#', trim($declaration));
-				$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
-
-				// Hit a primary key, those are not what we need :D
-				if (empty($entities[1]) || (strtolower($entities[0]) === 'primary' && strtolower($entities[1]) === 'key'))
-				{
-					continue;
-				}
-				$col_types[$column_name] = $entities[1];
-			}
-		}
+		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
 
 		$sql = "SELECT *
 			FROM $table_name";
@@ -1619,41 +1584,48 @@ class mssql_extractor extends base_extractor
 	function write_data_mssqlnative($table_name)
 	{
 		global $db;
-		$ary_type = $ary_name = $meta_array = array();
+		$ary_type = $ary_name = array();
 		$ident_set = false;
 		$sql_data = '';
 
 		// Grab all of the data from current table.
 		$sql = "SELECT * FROM $table_name";
+		$db->mssqlnative_set_query_options(array('Scrollable' => SQLSRV_CURSOR_STATIC));
 		$result = $db->sql_query($sql);
 
-		$retrieved_data = $db->mssqlnative_num_rows($result); 
+		$retrieved_data = $db->mssqlnative_num_rows($result);
 
-		$meta_array = sqlsrv_field_metadata($result);	
-		$i_num_fields = sqlsrv_num_fields($result);
-	
+		if (!$retrieved_data)
+		{
+			$db->sql_freeresult($result);
+			return;
+		}
+
+		$sql = "SELECT * FROM $table_name";
+		$result_fields = $db->sql_query_limit($sql, 1);
+
+		$row = new result_mssqlnative($result_fields);
+		$i_num_fields = $row->num_fields();
+		
 		for ($i = 0; $i < $i_num_fields; $i++)
 		{
-			$info = $db->mssqlnative_fieldInfo($table_name, $meta_array[$i]['Name']);
-			$ary_type[$i] = $info->type();
-			$ary_name[$i] = $info->name();
+			$ary_type[$i] = $row->field_type($i);
+			$ary_name[$i] = $row->field_name($i);
 		}
+		$db->sql_freeresult($result_fields);
+
+		$sql = "SELECT 1 as has_identity
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+		$result2 = $db->sql_query($sql);
+		$row2 = $db->sql_fetchrow($result2);
 		
-		if ($retrieved_data)
+		if (!empty($row2['has_identity']))
 		{
-			$sql = "SELECT 1 as has_identity
-				FROM INFORMATION_SCHEMA.COLUMNS
-				WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
-			$result2 = $db->sql_query($sql);
-			$row2 = $db->sql_fetchrow($result2);
-			
-			if (!empty($row2['has_identity']))
-			{
-				$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
-				$ident_set = true;
-			}
-			$db->sql_freeresult($result2);
+			$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
+			$ident_set = true;
 		}
+		$db->sql_freeresult($result2);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1664,7 +1636,8 @@ class mssql_extractor extends base_extractor
 			{
 				$str_val = $row[$ary_name[$i]];
 
-				if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
+				// defaults to type number - better quote just to be safe, so check for is_int too
+				if (is_int($ary_type[$i]) || preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 				{
 					$str_quote = '';
 					$str_empty = "''";
@@ -1705,7 +1678,7 @@ class mssql_extractor extends base_extractor
 		}
 		$db->sql_freeresult($result);
 
-		if ($retrieved_data && $ident_set)
+		if ($ident_set)
 		{
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
 		}
@@ -2447,5 +2420,3 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 
 	return false;
 }
-
-?>

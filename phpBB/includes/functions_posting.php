@@ -388,7 +388,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload();
 
-	if ($config['check_attachment_content'])
+	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
@@ -564,26 +564,27 @@ function get_supported_image_types($type = false)
 			switch ($type)
 			{
 				// GIF
-				case 1:
+				case IMAGETYPE_GIF:
 					$new_type = ($format & IMG_GIF) ? IMG_GIF : false;
 				break;
 
 				// JPG, JPC, JP2
-				case 2:
-				case 9:
-				case 10:
-				case 11:
-				case 12:
+				case IMAGETYPE_JPEG:
+				case IMAGETYPE_JPC:
+				case IMAGETYPE_JPEG2000:
+				case IMAGETYPE_JP2:
+				case IMAGETYPE_JPX:
+				case IMAGETYPE_JB2:
 					$new_type = ($format & IMG_JPG) ? IMG_JPG : false;
 				break;
 
 				// PNG
-				case 3:
+				case IMAGETYPE_PNG:
 					$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
 				break;
 
 				// WBMP
-				case 15:
+				case IMAGETYPE_WBMP:
 					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
 			}
@@ -2537,7 +2538,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{
 		// Mark this topic as posted to
-		markread('post', $data['forum_id'], $data['topic_id'], $data['post_time']);
+		markread('post', $data['forum_id'], $data['topic_id']);
 	}
 
 	// Mark this topic as read
@@ -2583,7 +2584,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete' && $post_approval)
+	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
@@ -2610,5 +2611,3 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	return $url;
 }
-
-?>
