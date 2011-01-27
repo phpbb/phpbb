@@ -916,6 +916,8 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
+		// No changes from 3.0.8 to 3.0.9-RC1
+		'3.0.8'		=> array(),
 	);
 }
 
@@ -1857,6 +1859,29 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.8-RC1 to 3.0.8
 		case '3.0.8-RC1':
+		break;
+
+		// Changes from 3.0.8 to 3.0.9-RC1
+		case '3.0.8':
+			// Update file extension group names to use language strings, again.
+			$sql = 'SELECT group_id, group_name
+				FROM ' . EXTENSION_GROUPS_TABLE . '
+				WHERE group_name ' . $db->sql_like_expression('EXT_GROUP_' . $db->any_char);
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary = array(
+					'group_name'	=> substr($row['group_name'], 10), // Strip off 'EXT_GROUP_'
+				);
+
+				$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE group_id = ' . $row['group_id'];
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			$no_updates = false;
 		break;
 	}
 }
