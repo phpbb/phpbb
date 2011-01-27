@@ -660,7 +660,7 @@ function mcp_move_topic($topic_ids)
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
 
-		if (isset($_POST['move_lock_topics']) && $auth->acl_get('m_lock', $to_forum_id))
+		if ($request->is_set_post('move_lock_topics') && $auth->acl_get('m_lock', $to_forum_id))
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_status = ' . ITEM_LOCKED . '
