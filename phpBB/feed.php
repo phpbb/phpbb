@@ -203,6 +203,10 @@ foreach ($item_vars as $row)
 	{
 		echo '<updated>' . $row['updated'] . '</updated>' . "\n";
 	}
+	else if (!empty($row['published']))
+	{
+		echo '<updated>' . $row['published'] . '</updated>' . "\n";
+	}
 
 	echo '<id>' . $row['link'] . '</id>' . "\n";
 	echo '<link href="' . $row['link'] . '"/>' . "\n";
