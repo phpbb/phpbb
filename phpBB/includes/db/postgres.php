@@ -393,7 +393,7 @@ class dbal_postgres extends dbal
 	*/
 	function cast_expr_to_bigint($expression)
 	{
-		return 'CAST(' . $expression . ' as DECIMAL(255, 0))';
+		return 'CAST((' . $expression . ')::text as DECIMAL(255, 0))';
 	}
 
 	/**
