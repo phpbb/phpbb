@@ -46,12 +46,9 @@
 	var onload_functions = new Array();
 	var onunload_functions = new Array();
 
-	<!-- IF S_USER_PM_POPUP -->
-		if ({S_NEW_PM})
-		{
-			var url = '{UA_POPUP_PM}';
-			window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
-		}
+	<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
+		var url = '{UA_POPUP_PM}';
+		window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
 	<!-- ENDIF -->
 
 	/**
