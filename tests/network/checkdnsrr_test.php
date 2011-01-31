@@ -7,7 +7,7 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_network_checkdnsrr_test extends phpbb_test_case
 {
