@@ -319,7 +319,7 @@ if ($post_id)
 			WHERE p1.topic_id = {$topic_data['topic_id']}
 				AND p2.post_id = {$post_id}
 				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
-				AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
+				AND ' . (($sort_dir == 'd') ? 'p1.post_id >= p2.post_id' : 'p1.post_id <= p2.post_id');
 
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
