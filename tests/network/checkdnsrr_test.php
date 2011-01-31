@@ -7,7 +7,7 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 /**
 * @group slow
