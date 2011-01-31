@@ -141,10 +141,7 @@ $feed->close();
 if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
 {
 	// According to RFC2616 3.3.1, dates must be UTC
-	$old_timezone = date_default_timezone_get();
-	date_default_timezone_set('UTC');
-	$if_modified_time = strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE']));
-	date_default_timezone_set($old_timezone);
+	$if_modified_time = feed_parse_time_with_zone($_SERVER['HTTP_IF_MODIFIED_SINCE'], 'UTC');
 
 	if ($if_modified_time >= $feed_updated_time)
 	{
@@ -345,6 +342,50 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
 
 	return $content;
+}
+
+/**
+ * Parse a string into a date in a given time zone.
+ *
+ * The time string is parsed by strtotime, subject to its abilities and
+ * limitations.  The specified time zone is set as the default during parsing,
+ * such that if the string does not specify a time zone it will be interpreted
+ * in the one specified in the parameter.
+ *
+ * @param string $time_string	The time to be parsed, as a string
+ * @param string $timezone		The time zone in which to parse $time_string
+ * @return int					The time value of $time_string parsed in $timezone
+ */
+function feed_parse_time_with_zone($time_string, $timezone)
+{
+	if (function_exists('date_default_timezone_set'))
+	{
+		$old_timezone = date_default_timezone_get();
+		date_default_timezone_set($timezone);
+	}
+	else
+	{
+		$old_timezone = getenv('TZ');
+		if ($old_timezone !== FALSE)
+		{
+			// When date_default_timezone_* do not exist and TZ unset, UTC
+			// Don't unnecessarily put TZ, since it can't be removed (bug 30778)
+			putenv('TZ='.$timezone);
+		}
+	}
+
+	$time = strtotime(trim($time_string));
+
+	if (function_exists('date_default_timezone_set'))
+	{
+		date_default_timezone_set($old_timezone);
+	}
+	else if ($old_timezone !== FALSE)
+	{
+		putenv('TZ='.$old_timezone);
+	}
+
+	return $time;
 }
 
 /**
