@@ -7,25 +7,25 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_cache_test extends phpbb_test_case
 {
 	protected function tearDown()
 	{
-		$iterator = new DirectoryIterator(__DIR__ . '/tmp');
+		$iterator = new DirectoryIterator(dirname(__FILE__) . '/tmp');
 		foreach ($iterator as $file)
 		{
-			if (is_file(__DIR__ . '/tmp/' . $file) && $file != '.gitkeep')
+			if (is_file(dirname(__FILE__) . '/tmp/' . $file) && $file != '.gitkeep')
 			{
-				unlink(__DIR__ . '/tmp/' . $file);
+				unlink(dirname(__FILE__) . '/tmp/' . $file);
 			}
 		}
 	}
 
 	public function test_cache_driver_file()
 	{
-		$driver = new phpbb_cache_driver_file(__DIR__ . '/tmp/');
+		$driver = new phpbb_cache_driver_file(dirname(__FILE__) . '/tmp/');
 		$driver->put('test_key', 'test_value');
 		$driver->save();
 

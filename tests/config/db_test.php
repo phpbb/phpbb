@@ -7,7 +7,7 @@
 *
 */
 
-require_once __DIR__ . '/../mock/cache.php';
+require_once dirname(__FILE__) . '/../mock/cache.php';
 
 class phpbb_config_db_test extends phpbb_database_test_case
 {
@@ -17,7 +17,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(__DIR__ . '/fixtures/config.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
 	public function setUp()
