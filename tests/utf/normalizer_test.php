@@ -7,7 +7,7 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/utf/utf_normalizer.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_normalizer.php';
 
 /**
 * @group slow
@@ -16,8 +16,8 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 {
 	static public function setUpBeforeClass()
 	{
-		self::download('http://www.unicode.org/Public/UNIDATA/NormalizationTest.txt', __DIR__.'/data');
-		self::download('http://www.unicode.org/Public/UNIDATA/UnicodeData.txt', __DIR__.'/data');
+		self::download('http://www.unicode.org/Public/UNIDATA/NormalizationTest.txt', dirname(__FILE__).'/data');
+		self::download('http://www.unicode.org/Public/UNIDATA/UnicodeData.txt', dirname(__FILE__).'/data');
 	}
 
 	public function test_normalizer()
@@ -62,7 +62,7 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 
 		$tested_chars = array();
 
-		$fp = fopen(__DIR__.'/data/NormalizationTest.txt', 'rb');
+		$fp = fopen(dirname(__FILE__).'/data/NormalizationTest.txt', 'rb');
 		while (!feof($fp))
 		{
 			$line = fgets($fp);
@@ -117,7 +117,7 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 	*/
 	public function test_invariants(array $tested_chars)
 	{
-		$fp = fopen(__DIR__.'/data/UnicodeData.txt', 'rb');
+		$fp = fopen(dirname(__FILE__).'/data/UnicodeData.txt', 'rb');
 
 		while (!feof($fp))
 		{

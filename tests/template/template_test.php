@@ -7,8 +7,8 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/template.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/template.php';
 
 class phpbb_template_template_test extends phpbb_test_case
 {
