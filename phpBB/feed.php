@@ -194,18 +194,11 @@ foreach ($item_vars as $row)
 		echo '<author><name><![CDATA[' . $row['author'] . ']]></name></author>' . "\n";
 	}
 
+	echo '<updated>' . ((!empty($row['updated'])) ? $row['updated'] : $row['published']) . '</updated>' . "\n";
+
 	if (!empty($row['published']))
 	{
 		echo '<published>' . $row['published'] . '</published>' . "\n";
-	}
-
-	if (!empty($row['updated']))
-	{
-		echo '<updated>' . $row['updated'] . '</updated>' . "\n";
-	}
-	else if (!empty($row['published']))
-	{
-		echo '<updated>' . $row['published'] . '</updated>' . "\n";
 	}
 
 	echo '<id>' . $row['link'] . '</id>' . "\n";
