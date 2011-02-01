@@ -7,9 +7,8 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once 'functions_acp/user_mock.php';
-require_once '../phpBB/includes/functions_acp.php';
+require_once dirname(__FILE__) . 'user_mock.php';
+require_once dirname(__FILE__) . '../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 {

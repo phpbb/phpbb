@@ -7,9 +7,8 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once 'functions_acp/user_mock.php';
-require_once '../phpBB/includes/functions_acp.php';
+require_once dirname(__FILE__) . 'user_mock.php';
+require_once dirname(__FILE__) . '../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 {
@@ -50,7 +49,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -84,7 +83,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -110,7 +109,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -160,7 +159,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -186,7 +185,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}

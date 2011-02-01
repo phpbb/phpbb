@@ -7,9 +7,8 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once 'functions_acp/user_mock.php';
-require_once '../phpBB/includes/functions_acp.php';
+require_once dirname(__FILE__) . 'user_mock.php';
+require_once dirname(__FILE__) . '../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_h_radio_test extends phpbb_test_case
 {
@@ -115,7 +114,7 @@ class phpbb_functions_acp_h_radio_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang =new phpbb_mock_lang();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, h_radio($name, $input_ary, $input_default, $id, $key));
 	}
