@@ -7,7 +7,7 @@
 *
 */
 
-require_once __DIR__ . '/../mock/cache.php';
+require_once dirname(__FILE__) . '/../mock/cache.php';
 
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
@@ -25,7 +25,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 
 	public function test_resolve_path()
 	{
-		$prefix = __DIR__ . '/';
+		$prefix = dirname(__FILE__) . '/';
 		$class_loader = new phpbb_class_loader($prefix);
 
 		$prefix .= 'includes/';
@@ -63,7 +63,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$cacheMap = array('class_loader' => array('phpbb_a_cached_name' => 'a/cached_name'));
 		$cache = new phpbb_mock_cache($cacheMap);
 
-		$prefix = __DIR__ . '/';
+		$prefix = dirname(__FILE__) . '/';
 		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);
 
 		$prefix .= 'includes/';

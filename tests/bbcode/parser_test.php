@@ -8,8 +8,8 @@
 *
 */
 
-// require_once __DIR__ . '/../../phpBB/includes/bbcode/bbcode_parser_base.php';
-// require_once __DIR__ . '/../../phpBB/includes/bbcode/bbcode_parser.php';
+// require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode/bbcode_parser_base.php';
+// require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode/bbcode_parser.php';
 
 class phpbb_bbcode_parser_test extends PHPUnit_Framework_TestCase
 {
