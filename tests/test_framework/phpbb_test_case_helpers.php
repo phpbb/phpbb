@@ -41,4 +41,13 @@ class phpbb_test_case_helpers
 		$this->expectedTriggerError = true;
 		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
 	}
+
+	public function makedirs($path)
+	{
+		while (!file_exists($path))
+		{
+			$this->makedirs(dirname($path));
+			mkdir($path);
+		}
+	}
 }

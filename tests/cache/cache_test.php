@@ -15,7 +15,7 @@ class phpbb_cache_test extends phpbb_test_case
 
 	public function __construct()
 	{
-		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache';
+		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache/';
 	}
 
 	protected function setUp()
@@ -39,7 +39,7 @@ class phpbb_cache_test extends phpbb_test_case
 
 	private function create_cache_dir()
 	{
-		mkdir($this->cache_dir);
+		$this->get_test_case_helpers()->makedirs($this->cache_dir);
 	}
 
 	private function remove_cache_dir()
