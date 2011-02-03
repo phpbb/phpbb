@@ -42,7 +42,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 			array(array(array('column_type' => 'UINT', 'lang' => 'TEST', 'value' => (int) 0x7fffffff))),
 			array(array(array('column_type' => 'UINT:32:128', 'lang' => 'TEST', 'value' => 35))),
 
-			array(array(array('column_type' => 'INT', 'lang' => 'TEST', 'value' => (int) 0x80000000))),
+			array(array(array('column_type' => 'INT', 'lang' => 'TEST', 'value' => (int) -2147483648))),
 			array(array(array('column_type' => 'INT', 'lang' => 'TEST', 'value' => (int) 0x7fffffff))),
 			array(array(array('column_type' => 'INT:-32:128', 'lang' => 'TEST', 'value' => -28))),
 			array(array(array('column_type' => 'INT:-32:128', 'lang' => 'TEST', 'value' => 35))),
@@ -87,7 +87,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 			array(array(array('column_type' => 'UINT', 'lang' => 'TEST', 'value' => -1))),
 			array(array(array('column_type' => 'UINT:32:128', 'lang' => 'TEST', 'value' => 31))),
 
-			array(array(array('column_type' => 'INT', 'lang' => 'TEST', 'value' => ((int) 0x80000000) - 1))),
+			array(array(array('column_type' => 'INT', 'lang' => 'TEST', 'value' => ((int) -2147483648) - 1))),
 			array(array(array('column_type' => 'INT:32:128', 'lang' => 'TEST', 'value' => 31))),
 			array(array(array('column_type' => 'INT:-32:128', 'lang' => 'TEST', 'value' => -33))),
 
