@@ -85,7 +85,7 @@ class acp_email
 					if ($group_id)
 					{
 						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type
-							FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
+							FROM ' . ((!empty($sql_ban_where)) ? BANLIST_TABLE . ' b, ' : '') . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 							WHERE ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id
@@ -97,7 +97,7 @@ class acp_email
 					else
 					{
 						$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_jabber, u.user_notify_type, u.user_lang
-							FROM (' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u)
+							FROM (' . ((!empty($sql_ban_where)) ? BANLIST_TABLE . ' b, ' : '') . USERS_TABLE . ' u)
 							WHERE u.user_allow_massemail = 1
 								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 								{$sql_ban_where}
