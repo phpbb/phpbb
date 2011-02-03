@@ -69,6 +69,8 @@ class acp_email
 
 			if (!sizeof($error))
 			{
+				$sql_ban_where = (!isset($_REQUEST['mail_banned_flag'])) ? 'AND b.ban_userid != u.user_id' : '';
+
 				if ($usernames)
 				{
 					// If giving usernames the admin is able to email inactive users too...
@@ -83,21 +85,23 @@ class acp_email
 					if ($group_id)
 					{
 						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
+							FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 							WHERE ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id
 								AND u.user_allow_massemail = 1
-								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-							ORDER BY u.user_lang, u.user_notify_type';
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+								{$sql_ban_where}
+							ORDER BY u.user_lang, u.user_notify_type";
 					}
 					else
 					{
-						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang
-							FROM ' . USERS_TABLE . '
-							WHERE user_allow_massemail = 1
-								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-							ORDER BY user_lang, user_notify_type';
+						$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_jabber, u.user_notify_type, u.user_lang
+							FROM (' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u)
+							WHERE u.user_allow_massemail = 1
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+								{$sql_ban_where}
+							ORDER BY u.user_lang, u.user_notify_type";
 					}
 				}
 				$result = $db->sql_query($sql);
