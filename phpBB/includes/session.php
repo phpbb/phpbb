@@ -1966,6 +1966,7 @@ class user extends session
 
 					$key_found = $num;
 				}
+				break;
 			}
 		}
 
