@@ -4191,8 +4191,17 @@ function phpbb_optionset($bit, $set, $data)
 * Converts an HTTP 'full date' to UNIX timestamp
 * See:	http://tools.ietf.org/html/rfc2616#section-3.3.1
 *
-* Note:	This implementation does not support
-*		ANSI C's asctime() format
+* Formats allowed by rfc 2616 are:
+*
+*      Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
+*      Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
+*      Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
+*
+* The asctime format has no timezone information. At least some systems
+* take timezone as an argument to asctime, but the timezone is lost by
+* the time formatted string is produced. Because it is impossible to know
+* what timezone a time in asctime format is in, we do not support the
+* asctime format and return false if a time in asctime format is passed in.
 *
 * @param string	$date		Parameter array, see $param_defaults array.
 *
