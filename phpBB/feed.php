@@ -140,11 +140,18 @@ $global_vars = array_merge($global_vars, array(
 $feed->close();
 
 // Check if output is necessary
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) >= $feed_updated_time)
+// Parse If-Modified-Since Request Header
+// See: http://tools.ietf.org/html/rfc2616#section-14.25
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
 {
-	send_status_line(304, 'Not Modified');
-	garbage_collection();
-	exit_handler();
+	$if_modified_time = phpbb_parse_http_date($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+
+	if ($if_modified_time && $if_modified_time >= $feed_updated_time)
+	{
+		send_status_line(304, 'Not Modified');
+		garbage_collection();
+		exit_handler();
+	}
 }
 
 // Output page
