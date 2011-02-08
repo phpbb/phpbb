@@ -4188,6 +4188,29 @@ function phpbb_optionset($bit, $set, $data)
 }
 
 /**
+* Converts an HTTP 'full date' to UNIX timestamp
+* See:	http://tools.ietf.org/html/rfc2616#section-3.3.1
+*
+* Note:	This implementation does not support
+*		ANSI C's asctime() format
+*
+* @param string	$date		Parameter array, see $param_defaults array.
+*
+* @return int|bool			False on failure,
+*							GMT Unix timestamp otherwise.
+*/
+
+function phpbb_parse_http_date($date)
+{
+	if (substr($date, -3) == 'GMT')
+	{
+		return strtotime($date);
+	}
+
+	return false;
+}
+
+/**
 * Login using http authenticate.
 *
 * @param array	$param		Parameter array, see $param_defaults array.
