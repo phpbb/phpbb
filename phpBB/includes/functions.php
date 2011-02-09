@@ -4208,7 +4208,6 @@ function phpbb_optionset($bit, $set, $data)
 * @return int|bool			False on failure,
 *							GMT Unix timestamp otherwise.
 */
-
 function phpbb_parse_http_date($date)
 {
 	if (substr($date, -3) == 'GMT')
@@ -4217,6 +4216,42 @@ function phpbb_parse_http_date($date)
 	}
 
 	return false;
+}
+
+/**
+* Parses If-Modified-Since HTTP header, returning the UNIX timestamp.
+*
+* The value may be given as $date parameter. If no parameter is given,
+* $_SERVER['HTTP_IF_MODIFIED_SINCE'] will be examined.
+*
+* If a date is supplied via the $date parameter or $_SERVER, and the
+* date is valid, the UNIX timestamp for the date is returned.
+*
+* If there is no date supplied or the date is invalid or does not parse,
+* false is returned.
+*
+* phpbb_parse_http_date is used for date parsing, which does not accept
+* ANSI C asctime-formatted dates.
+*
+* @param string	$date		HTTP 'full date' to parse, or false to use $_SERVER['HTTP_IF_MODIFIED_SINCE'].
+*
+* @return int|bool			False on failure,
+*							GMT Unix timestamp otherwise.
+*/
+function phpbb_parse_if_modified_since($date = false)
+{
+	if ($date === false && isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
+	{
+		$date = trim($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+	}
+
+	if (empty($date))
+	{
+		return false;
+	}
+
+	$if_modified_time = phpbb_parse_http_date($date);
+	return $if_modified_time;
 }
 
 /**

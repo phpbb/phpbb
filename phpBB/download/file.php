@@ -684,7 +684,7 @@ function download_allowed()
 function set_modified_headers($stamp, $browser)
 {
 	// let's see if we have to send the file at all
-	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
+	$last_load = phpbb_parse_if_modified_since();
 	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
 	{
 		if ($last_load !== false && $last_load >= $stamp)

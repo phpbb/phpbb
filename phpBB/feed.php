@@ -142,16 +142,13 @@ $feed->close();
 // Check if output is necessary
 // Parse If-Modified-Since Request Header
 // See: http://tools.ietf.org/html/rfc2616#section-14.25
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
-{
-	$if_modified_time = phpbb_parse_http_date($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+$if_modified_time = phpbb_parse_if_modified_since();
 
-	if ($if_modified_time && $if_modified_time >= $feed_updated_time)
-	{
-		send_status_line(304, 'Not Modified');
-		garbage_collection();
-		exit_handler();
-	}
+if ($if_modified_time && $if_modified_time >= $feed_updated_time)
+{
+	send_status_line(304, 'Not Modified');
+	garbage_collection();
+	exit_handler();
 }
 
 // Output page
