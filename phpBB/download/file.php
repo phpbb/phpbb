@@ -74,7 +74,7 @@ if (isset($_GET['avatar']))
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
-	$filename = $_GET['avatar'];
+	$filename = request_var('avatar', '');
 	$avatar_group = false;
 	$exit = false;
 
