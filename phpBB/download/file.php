@@ -64,7 +64,7 @@ if (isset($_GET['avatar']))
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	$config = $cache->obtain_config();
-	$filename = $_GET['avatar'];
+	$filename = request_var('avatar', '');
 	$avatar_group = false;
 	$exit = false;
 
