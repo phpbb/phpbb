@@ -193,9 +193,14 @@ if ($forum_data['forum_topics_per_page'])
 }
 
 // Do the forum Prune thang - cron type job ...
-if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
+if (!$config['use_system_cron'])
 {
-	$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=prune_forum&amp;f=' . $forum_id) . '" alt="cron" width="1" height="1" />');
+	$task = $cron->instantiate_task('cron_task_core_prune_forum', $forum_data);
+	if ($task && $task->is_ready())
+	{
+		$url = $task->get_url();
+		$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+	}
 }
 
 // Forum rules and subscription info

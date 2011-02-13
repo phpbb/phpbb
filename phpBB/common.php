@@ -239,3 +239,8 @@ foreach ($cache->obtain_hooks() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
+
+if (!$config['use_system_cron'])
+{
+	$cron = new phpbb_cron_manager($phpbb_root_path . 'includes/cron/task', $phpEx, $cache->get_driver());
+}

@@ -4595,7 +4595,7 @@ function page_footer($run_cron = true)
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'])
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
@@ -4616,40 +4616,13 @@ function page_footer($run_cron = true)
 	// Call cron job?
 	if ($call_cron)
 	{
-		$cron_type = '';
+		global $cron;
+		$task = $cron->find_one_ready_task();
 
-		if ($time_now - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		if ($task)
 		{
-			// Process email queue
-			$cron_type = 'queue';
-		}
-		else if (method_exists($cache, 'tidy') && $time_now - $config['cache_gc'] > $config['cache_last_gc'])
-		{
-			// Tidy the cache
-			$cron_type = 'tidy_cache';
-		}
-		else if ($config['warnings_expire_days'] && ($time_now - $config['warnings_gc'] > $config['warnings_last_gc']))
-		{
-			$cron_type = 'tidy_warnings';
-		}
-		else if ($time_now - $config['database_gc'] > $config['database_last_gc'])
-		{
-			// Tidy the database
-			$cron_type = 'tidy_database';
-		}
-		else if ($time_now - $config['search_gc'] > $config['search_last_gc'])
-		{
-			// Tidy the search
-			$cron_type = 'tidy_search';
-		}
-		else if ($time_now - $config['session_gc'] > $config['session_last_gc'])
-		{
-			$cron_type = 'tidy_sessions';
-		}
-
-		if ($cron_type)
-		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
+			$url = $task->get_url();
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
 		}
 	}
 
