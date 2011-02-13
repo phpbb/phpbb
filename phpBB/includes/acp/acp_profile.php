@@ -512,7 +512,7 @@ class acp_profile
 					else if ($field_type == FIELD_INT && $key == 'field_default_value')
 					{
 						// Permit an empty string
-						if (request_var('field_default_value', '') === '')
+						if ($action == 'create' && request_var('field_default_value', '') === '')
 						{
 							$var = '';
 						}
