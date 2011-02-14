@@ -819,6 +819,10 @@ class acp_groups
 			// Invalid mode
 			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
+		else if ($field)
+		{
+			$group_position = new phpbb_group_positions($db, $field);
+		}
 
 		switch ($action)
 		{
@@ -826,26 +830,25 @@ class acp_groups
 				set_config('legend_sort_groupname', request_var('legend_sort_groupname', 0));
 			break;
 
-
 			case 'set_config_teampage':
 				set_config('teampage_forums', request_var('teampage_forums', 0));
 				set_config('teampage_multiple', request_var('teampage_multiple', 0));
 			break;
 
 			case 'add':
-				phpbb_group_positions::add_group($field, $group_id);
+				$group_position->add_group($group_id);
 			break;
 
 			case 'delete':
-				phpbb_group_positions::delete_group($field, $group_id);
+				$group_position->delete_group($group_id);
 			break;
 
 			case 'move_up':
-				phpbb_group_positions::move_up($field, $group_id);
+				$group_position->move_up($group_id);
 			break;
 
 			case 'move_down':
-				phpbb_group_positions::move_down($field, $group_id);
+				$group_position->move_down($group_id);
 			break;
 		}
 

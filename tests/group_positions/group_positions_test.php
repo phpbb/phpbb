@@ -34,7 +34,8 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 
 		$db = $this->new_dbal();
 
-		$this->assertEquals($expected, phpbb_group_positions::get_group_value($field, $group_id));
+		$test_class = new phpbb_group_positions($db, $field);
+		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
 	public static function get_group_count_data()
@@ -54,7 +55,8 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 
 		$db = $this->new_dbal();
 
-		$this->assertEquals($expected, phpbb_group_positions::get_group_count($field));
+		$test_class = new phpbb_group_positions($db, $field);
+		$this->assertEquals($expected, $test_class->get_group_count());
 	}
 
 	public static function add_group_data()
@@ -81,7 +83,8 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		global $db;
 
 		$db = $this->new_dbal();
-		phpbb_group_positions::add_group($field, $group_id);
+		$test_class = new phpbb_group_positions($db, $field);
+		$test_class->add_group($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_teampage, group_legend
 			FROM ' . GROUPS_TABLE . '
@@ -93,20 +96,35 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 	public static function delete_group_data()
 	{
 		return array(
-			array('teampage', 1, array(
+			array('teampage', 1, false, array(
 				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
 				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
 				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
 			)),
-			array('teampage', 2, array(
+			array('teampage', 2, false, array(
 				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
 				array('group_id' => 2, 'group_teampage' => 0, 'group_legend' => 0),
 				array('group_id' => 3, 'group_teampage' => 1, 'group_legend' => 1),
 			)),
-			array('teampage', 3, array(
+			array('teampage', 3, false, array(
 				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
 				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
 				array('group_id' => 3, 'group_teampage' => 0, 'group_legend' => 1),
+			)),
+			array('teampage', 1, true, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
+			)),
+			array('teampage', 2, true, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 1, 'group_legend' => 1),
+			)),
+			array('teampage', 3, true, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
 			)),
 		);
 	}
@@ -114,12 +132,13 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 	/**
 	* @dataProvider delete_group_data
 	*/
-	public function test_delete_group($field, $group_id, $expected)
+	public function test_delete_group($field, $group_id, $skip_group, $expected)
 	{
 		global $db;
 
 		$db = $this->new_dbal();
-		phpbb_group_positions::delete_group($field, $group_id);
+		$test_class = new phpbb_group_positions($db, $field);
+		$test_class->delete_group($group_id, $skip_group);
 
 		$result = $db->sql_query('SELECT group_id, group_teampage, group_legend
 			FROM ' . GROUPS_TABLE . '
@@ -157,7 +176,8 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		global $db;
 
 		$db = $this->new_dbal();
-		phpbb_group_positions::move_up($field, $group_id);
+		$test_class = new phpbb_group_positions($db, $field);
+		$test_class->move_up($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_teampage, group_legend
 			FROM ' . GROUPS_TABLE . '
@@ -195,7 +215,8 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		global $db;
 
 		$db = $this->new_dbal();
-		phpbb_group_positions::move_down($field, $group_id);
+		$test_class = new phpbb_group_positions($db, $field);
+		$test_class->move_down($group_id);
 
 		$result = $db->sql_query('SELECT group_id, group_teampage, group_legend
 			FROM ' . GROUPS_TABLE . '

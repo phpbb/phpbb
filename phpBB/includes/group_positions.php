@@ -31,21 +31,41 @@ class phpbb_group_positions
 	const GROUP_DISABLED = 0;
 
 	/**
-	* Returns the group_{$field} for a given group, if the group exists.
-	* @param string $field name of the field to be selected
-	* @param int $group_id group_id of the group to be selected
-	* @return int position of the group
+	* phpbb-database object
 	*/
-	static function get_group_value($field, $group_id)
-	{
-		global $db;
+	public $db = null;
 
-		$sql = 'SELECT group_' . $field . '
+	/**
+	* Name of the field we want to handle: either 'teampage' or 'legend'
+	*/
+	private $field = '';
+
+	/**
+	* Constructor
+	*/
+	public function __construct ($db, $field)
+	{
+		if (!in_array($field, array('teampage', 'legend')))
+		{
+			
+		}
+		$this->db = $db;
+		$this->field = $field;
+	}
+
+	/**
+	* Returns the group_{$this->field} for a given group, if the group exists.
+	* @param	int		$group_id	group_id of the group to be selected
+	* @return	int					position of the group
+	*/
+	public function get_group_value($group_id)
+	{
+		$sql = 'SELECT group_' . $this->field . '
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_id = ' . (int) $group_id;
-		$result = $db->sql_query($sql);
-		$current_value = $db->sql_fetchfield('group_' . $field);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$current_value = $this->db->sql_fetchfield('group_' . $this->field);
+		$this->db->sql_freeresult($result);
 
 		if ($current_value === false)
 		{
@@ -59,149 +79,144 @@ class phpbb_group_positions
 
 	/**
 	* Get number of groups, displayed on the teampage/legend
-	* @param string $field name of the field to be counted
-	* @return int value of the last group displayed
+	*
+	* @return	int		value of the last group displayed
 	*/
-	static function get_group_count($field)
+	public function get_group_count()
 	{
-		global $db;
-
-		$sql = 'SELECT group_' . $field . '
+		$sql = 'SELECT group_' . $this->field . '
 			FROM ' . GROUPS_TABLE . '
-			ORDER BY group_' . $field . ' DESC';
-		$result = $db->sql_query_limit($sql, 1);
-		$group_count = (int) $db->sql_fetchfield('group_' . $field);
-		$db->sql_freeresult($result);
+			ORDER BY group_' . $this->field . ' DESC';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$group_count = (int) $this->db->sql_fetchfield('group_' . $this->field);
+		$this->db->sql_freeresult($result);
 
 		return $group_count;
 	}
 
 	/**
 	* Addes a group by group_id
-	* @param string $field name of the field the group is added to
-	* @param int $group_id group_id of the group to be added
-	* @return void
+	*
+	* @param	int		$group_id	group_id of the group to be added
+	* @return	void
 	*/
-	static function add_group($field, $group_id)
+	public function add_group($group_id)
 	{
-		$current_value = self::get_group_value($field, $group_id);
+		$current_value = $this->get_group_value($group_id);
 
 		if ($current_value == self::GROUP_DISABLED)
 		{
-			global $db;
-
 			// Group is currently not displayed, add it at the end.
-			$next_value = 1 + self::get_group_count($field, $field);
+			$next_value = 1 + $this->get_group_count();
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = ' . $next_value . '
-				WHERE group_' . $field . ' = ' . self::GROUP_DISABLED . '
+				SET group_' . $this->field . ' = ' . $next_value . '
+				WHERE group_' . $this->field . ' = ' . self::GROUP_DISABLED . '
 					AND group_id = ' . (int) $group_id;
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 		}
 	}
 
 	/**
 	* Deletes a group by group_id
-	* @param string $field name of the field the group is deleted from
-	* @param int $group_id group_id of the group to be deleted
-	* @return void
+	*
+	* @param	int		$group_id		group_id of the group to be deleted
+	* @param	bool	$skip_group		Skip the group itself, to save the query, when you need to update it anyway.
+	* @return	void
 	*/
-	static function delete_group($field, $group_id)
+	public function delete_group($group_id, $skip_group = false)
 	{
-		$current_value = self::get_group_value($field, $group_id);
+		$current_value = $this->get_group_value($group_id);
 
 		if ($current_value != self::GROUP_DISABLED)
 		{
-			global $db;
-
-			$db->sql_transaction('begin');
+			$this->db->sql_transaction('begin');
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = group_' . $field . ' - 1
-				WHERE group_' . $field . ' > ' . $current_value;
-			$db->sql_query($sql);
+				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
+				WHERE group_' . $this->field . ' > ' . $current_value;
+			$this->db->sql_query($sql);
 
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = ' . self::GROUP_DISABLED . '
-				WHERE group_id = ' . (int) $group_id;
-			$db->sql_query($sql);
+			if (!$skip_group)
+			{
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_' . $this->field . ' = ' . self::GROUP_DISABLED . '
+					WHERE group_id = ' . (int) $group_id;
+				$this->db->sql_query($sql);
+			}
 
-			$db->sql_transaction('commit');
+			$this->db->sql_transaction('commit');
 		}
 	}
 
 	/**
 	* Moves a group up by group_id
-	* @param string $field name of the field the group is moved by
-	* @param int $group_id group_id of the group to be moved
-	* @return void
+	*
+	* @param	int		$group_id	group_id of the group to be moved
+	* @return	void
 	*/
-	static function move_up($field, $group_id)
+	public function move_up($group_id)
 	{
-		$current_value = self::get_group_value($field, $group_id);
+		$current_value = $this->get_group_value($group_id);
 
 		// Only move the group, if it is in the list and not already on top.
 		if ($current_value > 1)
 		{
-			global $db;
-
-			$db->sql_transaction('begin');
+			$this->db->sql_transaction('begin');
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = group_' . $field . ' + 1
-				WHERE group_' . $field . ' = ' . ($current_value - 1);
-			$db->sql_query($sql);
+				SET group_' . $this->field . ' = group_' . $this->field . ' + 1
+				WHERE group_' . $this->field . ' = ' . ($current_value - 1);
+			$this->db->sql_query($sql);
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = ' . ($current_value - 1) . '
+				SET group_' . $this->field . ' = ' . ($current_value - 1) . '
 				WHERE group_id = ' . (int) $group_id;
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$db->sql_transaction('commit');
+			$this->db->sql_transaction('commit');
 		}
 	}
 
 	/**
 	* Moves a group down by group_id
-	* @param string $field name of the field the group is moved by
-	* @param int $group_id group_id of the group to be moved
-	* @return void
+	*
+	* @param	int		$group_id	group_id of the group to be moved
+	* @return	void
 	*/
-	static function move_down($field, $group_id)
+	public function move_down($group_id)
 	{
-		$current_value = self::get_group_value($field, $group_id);
+		$current_value = $this->get_group_value($group_id);
 
 		if ($current_value != self::GROUP_DISABLED)
 		{
-			global $db;
-
-			$db->sql_transaction('begin');
+			$this->db->sql_transaction('begin');
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $field . ' = group_' . $field . ' - 1
-				WHERE group_' . $field . ' = ' . ($current_value + 1);
-			$db->sql_query($sql);
+				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
+				WHERE group_' . $this->field . ' = ' . ($current_value + 1);
+			$this->db->sql_query($sql);
 
-			if ($db->sql_affectedrows() == 1)
+			if ($this->db->sql_affectedrows() == 1)
 			{
 				// Only update when we move another one up, otherwise it was the last.
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_' . $field . ' = ' . ($current_value + 1) . '
+					SET group_' . $this->field . ' = ' . ($current_value + 1) . '
 					WHERE group_id = ' . (int) $group_id;
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 			}
 
-			$db->sql_transaction('commit');
+			$this->db->sql_transaction('commit');
 		}
 	}
 
 	/**
 	* Get group type language var
-	* @param int $group_type group_type from the groups-table
-	* @return string name of the language variable for the given group-type.
+	*
+	* @param	int		$group_type	group_type from the groups-table
+	* @return	string				name of the language variable for the given group-type.
 	*/
-	static function group_type_language($group_type)
+	static public function group_type_language($group_type)
 	{
 		switch ($group_type)
 		{
