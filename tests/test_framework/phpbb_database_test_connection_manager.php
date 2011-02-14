@@ -76,7 +76,14 @@ class phpbb_database_test_connection_manager
 			break;
 		}
 
-		$this->pdo = new PDO($dsn, $this->config['dbuser'], $this->config['dbpasswd']);;
+		try
+		{
+			$this->pdo = new PDO($dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+		}
+		catch (PDOException $e)
+		{
+			throw new Exception("Unable do connect to $dsn with error: {$e->getMessage()}");
+		}
 
 		// good for debug
 		// $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -330,7 +337,9 @@ class phpbb_database_test_connection_manager
 		}
 		else
 		{
-			trigger_error('Database unsupported', E_USER_ERROR);
+			$message = 'Supplied dbms is unsupported, must be one of: ';
+			$message .= implode(', ', array_keys($available_dbms));
+			throw new Exception($message);
 		}
 	}
 }
