@@ -821,7 +821,7 @@ class acp_groups
 		}
 		else if ($field)
 		{
-			$group_position = new phpbb_group_positions($db, $field);
+			$group_position = new phpbb_group_positions($db, $field, $this->u_action);
 		}
 
 		switch ($action)

@@ -41,14 +41,22 @@ class phpbb_group_positions
 	private $field = '';
 
 	/**
+	* URI for the adm_back_link when there was an error.
+	*/
+	private $adm_back_link = '';
+
+	/**
 	* Constructor
 	*/
-	public function __construct ($db, $field)
+	public function __construct ($db, $field, $adm_back_link = '')
 	{
+		$this->adm_back_link = $adm_back_link;
+
 		if (!in_array($field, array('teampage', 'legend')))
 		{
-			
+			$this->error('NO_MODE');
 		}
+
 		$this->db = $db;
 		$this->field = $field;
 	}
@@ -70,8 +78,7 @@ class phpbb_group_positions
 		if ($current_value === false)
 		{
 			// Group not found.
-			global $user;
-			trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+			$this->error('NO_GROUP');
 		}
 
 		return (int) $current_value;
@@ -231,5 +238,14 @@ class phpbb_group_positions
 			case GROUP_FREE:
 				return 'GROUP_OPEN';
 		}
+	}
+
+	/**
+	* Error
+	*/
+	public function error($message)
+	{
+		global $user;
+		trigger_error($user->lang[$message] . (($this->adm_back_link) ? adm_back_link($this->adm_back_link) : ''), E_USER_WARNING);
 	}
 }
