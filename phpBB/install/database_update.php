@@ -1868,6 +1868,7 @@ function change_database_data(&$no_updates, $version)
 				FROM ' . EXTENSION_GROUPS_TABLE . '
 				WHERE group_name ' . $db->sql_like_expression('EXT_GROUP_' . $db->any_char);
 			$result = $db->sql_query($sql);
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql_ary = array(
