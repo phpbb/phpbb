@@ -31,14 +31,15 @@ function show_usage()
 	echo " -r repository_name             Overwrites the repository name (optional)\n";
 	echo " -m your_github_username        Sets up ssh:// instead of git:// for pushable repositories (optional)\n";
 	echo " -d                             Outputs the commands instead of running them (optional)\n";
+	echo " -h                             This help text\n";
 
 	exit(1);
 }
 
 // Handle arguments
-$opts = getopt('s:u:r:m:d');
+$opts = getopt('s:u:r:m:dh');
 
-if (empty($opts))
+if (empty($opts) || isset($opts['h']))
 {
 	show_usage();
 }
