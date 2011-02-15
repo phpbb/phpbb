@@ -134,12 +134,21 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	return json_decode(file_get_contents("http://github.com/api/v2/json/$query"));
+	$contents = file_get_contents("http://github.com/api/v2/json/$query");
+	if ($contents === false)
+	{
+		return false;
+	}
+	return json_decode($contents);
 }
 
 function get_contributors($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/contributors");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->contributors as $contributor)
@@ -153,6 +162,10 @@ function get_contributors($username, $repository)
 function get_organisation_members($username)
 {
 	$request = api_request("organizations/$username/public_members");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->users as $member)
@@ -166,6 +179,10 @@ function get_organisation_members($username)
 function get_collaborators($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/collaborators");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->collaborators as $collaborator)
@@ -179,6 +196,10 @@ function get_collaborators($username, $repository)
 function get_network($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/network");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->network as $network)
