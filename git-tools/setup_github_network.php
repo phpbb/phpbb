@@ -50,57 +50,67 @@ $repository 	= get_arg($opts, 'r', 'phpbb3');
 $developer		= get_arg($opts, 'm', '');
 $dry_run		= !get_arg($opts, 'd', true);
 run(null, $dry_run);
+exit(work($scope, $username, $repository, $developer));
 
-// Get some basic data
-$network		= get_network($username, $repository);
-$collaborators	= get_collaborators($username, $repository);
-
-switch ($scope)
+function work($scope, $username, $repository, $developer)
 {
-	case 'collaborators':
-		$remotes = array_intersect_key($network, $collaborators);
-	break;
+	// Get some basic data
+	$network		= get_network($username, $repository);
+	$collaborators	= get_collaborators($username, $repository);
 
-	case 'organisation':
-		$remotes = array_intersect_key($network, get_organisation_members($username));
-	break;
+	if ($network === false || $collaborators === false)
+	{
+		echo "Error: failed to retrieve network or collaborators\n";
+		return 1;
+	}
 
-	case 'contributors':
-		$remotes = array_intersect_key($network, get_contributors($username, $repository));
-	break;
+	switch ($scope)
+	{
+		case 'collaborators':
+			$remotes = array_intersect_key($network, $collaborators);
+		break;
 
-	case 'network':
-		$remotes = $network;
-	break;
+		case 'organisation':
+			$remotes = array_intersect_key($network, get_organisation_members($username));
+		break;
 
-	default:
-		show_usage();
+		case 'contributors':
+			$remotes = array_intersect_key($network, get_contributors($username, $repository));
+		break;
+
+		case 'network':
+			$remotes = $network;
+		break;
+
+		default:
+			show_usage();
+	}
+
+	if (file_exists('.git'))
+	{
+		add_remote($username, $repository, isset($collaborators[$developer]));
+	}
+	else
+	{
+		clone_repository($username, $repository, isset($collaborators[$developer]));
+	}
+
+	// Add private security repository for developers
+	if ($username == 'phpbb' && $repository == 'phpbb3' && isset($collaborators[$developer]))
+	{
+		run("git remote add $username-security " . get_repository_url($username, "$repository-security", true));
+	}
+
+	// Skip blessed repository.
+	unset($remotes[$username]);
+
+	foreach ($remotes as $remote)
+	{
+		add_remote($remote['username'], $remote['repository'], $remote['username'] == $developer);
+	}
+
+	run('git remote update');
 }
-
-if (file_exists('.git'))
-{
-	add_remote($username, $repository, isset($collaborators[$developer]));
-}
-else
-{
-	clone_repository($username, $repository, isset($collaborators[$developer]));
-}
-
-// Add private security repository for developers
-if ($username == 'phpbb' && $repository == 'phpbb3' && isset($collaborators[$developer]))
-{
-	run("git remote add $username-security " . get_repository_url($username, "$repository-security", true));
-}
-
-// Skip blessed repository.
-unset($remotes[$username]);
-
-foreach ($remotes as $remote)
-{
-	add_remote($remote['username'], $remote['repository'], $remote['username'] == $developer);
-}
-
-run('git remote update');
 
 function clone_repository($username, $repository, $pushable = false)
 {
