@@ -163,25 +163,7 @@ class phpbb_group_positions
 	*/
 	public function move_up($group_id)
 	{
-		$current_value = $this->get_group_value($group_id);
-
-		// Only move the group, if it is in the list and not already on top.
-		if ($current_value > 1)
-		{
-			$this->db->sql_transaction('begin');
-
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = group_' . $this->field . ' + 1
-				WHERE group_' . $this->field . ' = ' . ($current_value - 1);
-			$this->db->sql_query($sql);
-
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
-				WHERE group_id = ' . (int) $group_id;
-			$this->db->sql_query($sql);
-
-			$this->db->sql_transaction('commit');
-		}
+		$this->move($group_id, 1);
 	}
 
 	/**
@@ -192,22 +174,51 @@ class phpbb_group_positions
 	*/
 	public function move_down($group_id)
 	{
+		$this->move($group_id, -1);
+	}
+
+	/**
+	* Moves a group up/down
+	*
+	* @param	int		$group_id	group_id of the group to be moved
+	* @param	int		$delta		number of steps:
+	*								- positive = move up
+	*								- negative = move down
+	* @return	void
+	*/
+	public function move($group_id, $delta)
+	{
+		if (!is_int($delta) || !$delta)
+		{
+			return;
+		}
+
+		$move_up = ($delta > 0) ? true : false;
 		$current_value = $this->get_group_value($group_id);
 
 		if ($current_value != self::GROUP_DISABLED)
 		{
 			$this->db->sql_transaction('begin');
 
+			// First we move all groups between our current value and the target value up/down 1,
+			// so we have a gap for our group to move.
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
-				WHERE group_' . $this->field . ' = ' . ($current_value + 1);
+				SET group_' . $this->field . ' = group_' . $this->field . (($move_up) ? ' + 1' : ' - 1') . '
+				WHERE group_' . $this->field . ' > ' . self::GROUP_DISABLED . '
+					AND group_' . $this->field . (($move_up) ? ' >= ' : ' <= ') . ($current_value - $delta) . '
+					AND group_' . $this->field . (($move_up) ? ' < ' : ' > ') . $current_value;
 			$this->db->sql_query($sql);
 
-			if ($this->db->sql_affectedrows() == 1)
+			// Because there might be fewer groups above/below the group than we wanted to move,
+			// we use the number of changed groups, to update the group.
+			$delta = (int) $this->db->sql_affectedrows();
+
+			if ($delta)
 			{
-				// Only update when we move another one up, otherwise it was the last.
+				// And now finally, when we moved some other groups and built a gap,
+				// we can move the desired group to it.
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_' . $this->field . ' = group_' . $this->field . ' + 1
+					SET group_' . $this->field . ' = group_' . $this->field . (($move_up) ? ' - ' : ' + ') . $delta . '
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
 			}

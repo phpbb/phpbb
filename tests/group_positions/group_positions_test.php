@@ -224,5 +224,64 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
+
+	public static function move_data()
+	{
+		return array(
+			array('teampage', 1, 1, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
+			)),
+			array('teampage', 1, -1, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
+			)),
+			array('teampage', 3, 3, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 2, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 1, 'group_legend' => 1),
+			)),
+			array('teampage', 2, 0, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
+			)),
+			array('teampage', 2, -1, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 2, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 1, 'group_legend' => 1),
+			)),
+			array('teampage', 2, -3, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 2, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 1, 'group_legend' => 1),
+			)),
+			array('teampage', 3, -1, array(
+				array('group_id' => 1, 'group_teampage' => 0, 'group_legend' => 0),
+				array('group_id' => 2, 'group_teampage' => 1, 'group_legend' => 0),
+				array('group_id' => 3, 'group_teampage' => 2, 'group_legend' => 1),
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider move_data
+	*/
+	public function test_move($field, $group_id, $increment, $expected)
+	{
+		global $db;
+
+		$db = $this->new_dbal();
+		$test_class = new phpbb_group_positions($db, $field);
+		$test_class->move($group_id, $increment);
+
+		$result = $db->sql_query('SELECT group_id, group_teampage, group_legend
+			FROM ' . GROUPS_TABLE . '
+			ORDER BY group_id ASC');
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+	}
 }
 
