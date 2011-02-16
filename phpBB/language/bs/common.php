@@ -1,12 +1,31 @@
 <?php
 /**
 *
-* common [Bosnian]
+* This file is part of U.S. English phpBB translation.
+* Copyright (c) 2010 Maël Soucaze.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; version 2 of the License.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* common [U.S. English]
 *
 * @package   language
-* @author    Kenan Dervišević <kenan3008@gmail.com>
+* @author    Maël Soucaze <maelsoucaze@gmail.com> (Maël Soucaze) http://mael.soucaze.com/
+* @author    sevenalive (Robert Baker) http://sevenupdate.com/
+* @author    Unknown Bliss <sa007@phpbbdevelopers.net> (Michael C.) http://www.unknownbliss.co.uk/
+* @copyright (c) 2009 phpBB Group
 * @license   http://opensource.org/licenses/gpl-2.0.php GNU General Public License
-* @version   1.0
+* @version   $Id$
 *
 */
 
@@ -42,16 +61,16 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'TRANSLATION_INFO'	=> 'BS (Bosanski) by kenan3008',
 	'DIRECTION'			=> 'ltr',
-	'DATE_FORMAT'		=> '|F jS, Y|',	// January 1st, 2007 (with Relative days enabled)
+	'DATE_FORMAT'		=> '|j. F Y.|',	// January 1st, 2007 (with Relative days enabled)
 	'USER_LANG'			=> 'bs',
 
-	'1_DAY'			=> '1 day',
-	'1_MONTH'		=> '1 month',
-	'1_YEAR'		=> '1 year',
-	'2_WEEKS'		=> '2 weeks',
-	'3_MONTHS'		=> '3 months',
-	'6_MONTHS'		=> '6 months',
-	'7_DAYS'		=> '7 days',
+	'1_DAY'			=> '1 dan',
+	'1_MONTH'		=> '1 mjesec',
+	'1_YEAR'		=> '1 godinu',
+	'2_WEEKS'		=> '2 sedmice',
+	'3_MONTHS'		=> '3 mjeseca',
+	'6_MONTHS'		=> '6 mjeseci',
+	'7_DAYS'		=> '7 dana',
 
 	'ACCOUNT_ALREADY_ACTIVATED'		=> 'Your account has already been activated.',
 	'ACCOUNT_DEACTIVATED'			=> 'Your account has been manually deactivated and is only able to be reactivated by an administrator.',
@@ -316,11 +335,11 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_EDIT'				=> 'In order to edit posts in this forum you have to be registered and logged in.',
 	'LOGIN_EXPLAIN_VIEWONLINE'			=> 'In order to view the online list you have to be registered and logged in.',
 	'LOGOUT'							=> 'Odjava',
-	'LOGOUT_USER'						=> 'Logout [ %s ]',
+	'LOGOUT_USER'						=> 'Odjava [ %s ]',
 	'LOG_ME_IN'							=> 'Log me on automatically each visit',
 
-	'MARK'					=> 'Mark',
-	'MARK_ALL'				=> 'Mark all',
+	'MARK'					=> 'Označi',
+	'MARK_ALL'				=> 'Označi sve',
 	'MARK_FORUMS_READ'		=> 'Mark forums read',
 	'MB'					=> 'MB',
 	'MIB'					=> 'MiB',
@@ -454,7 +473,7 @@ $lang = array_merge($lang, array(
 	'PRIVATE_MESSAGE'		=> 'Private message',
 	'PRIVATE_MESSAGES'		=> 'Private messages',
 	'PRIVATE_MESSAGING'		=> 'Private messaging',
-	'PROFILE'				=> 'User Control Panel',
+	'PROFILE'				=> 'Korisnička kontrolna ploča',
 
 	'READING_FORUM'				=> 'Viewing topics in %s',
 	'READING_GLOBAL_ANNOUNCE'	=> 'Reading global announcement',
@@ -548,7 +567,7 @@ $lang = array_merge($lang, array(
 	'SORT_LOCATION'				=> 'Location',
 	'SORT_RANK'					=> 'Rank',
 	'SORT_POSTS'				=> 'Posts',
-	'SORT_TOPIC_TITLE'			=> 'Topic title',
+	'SORT_TOPIC_TITLE'			=> 'Naslovu teme',
 	'SORT_USERNAME'				=> 'Username',
 	'SPLIT_TOPIC'				=> 'Split topic',
 	'SQL_ERROR_OCCURRED'		=> 'An SQL error occurred while fetching this page. Please contact the %sBoard Administrator%s if this problem persists.',
@@ -873,7 +892,7 @@ $lang = array_merge($lang, array(
 
 	// The default dateformat which will be used on new installs in this language
 	// Translators should change this if a the usual date format is different
-	'default_dateformat'	=> 'F jS, Y, g:i a', // January 1st, 2007, 1:37 pm
+	'default_dateformat'	=> 'j. F Y., H:i', // January 1st, 2007, 1:37 pm
 
 ));
 
