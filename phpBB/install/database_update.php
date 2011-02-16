@@ -2,13 +2,12 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-$updates_to_version = '3.0.9-dev';
+$updates_to_version = '3.1.0-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -921,6 +920,8 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
+		// No changes from 3.1.0-dev to 3.1.0-A1
+		'3.1.0-dev'		=> array(),
 	);
 }
 
@@ -1864,7 +1865,8 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.8-RC1':
 		break;
 
-		case '3.0.9-dev':
+		// Changes from 3.1.0-dev to 3.1.0-A1
+		case '3.1.0-dev':
 			set_config('use_system_cron', 0);
 		break;
 	}
