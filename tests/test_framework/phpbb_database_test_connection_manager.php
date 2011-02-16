@@ -83,7 +83,7 @@ class phpbb_database_test_connection_manager
 		catch (PDOException $e)
 		{
 			$cleaned_dsn = str_replace($this->config['dbpasswd'], '*password*', $dsn);
-			throw new Exception("Unable do connect to $cleaned_dsn with error: {$e->getMessage()}");
+			throw new Exception("Unable do connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
 		}
 
 		// good for debug
@@ -338,7 +338,7 @@ class phpbb_database_test_connection_manager
 		}
 		else
 		{
-			$message = 'Supplied dbms is unsupported, must be one of: ';
+			$message = "Supplied dbms \"$dbms\" is not a valid phpBB dbms, must be one of: ";
 			$message .= implode(', ', array_keys($available_dbms));
 			throw new Exception($message);
 		}
