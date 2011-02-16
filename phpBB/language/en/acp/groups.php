@@ -110,7 +110,7 @@ $lang = array_merge($lang, array(
 	'LEGEND_EXPLAIN'				=> 'These are the groups, which are viewed on the group legend:',
 	'LEGEND_SETTINGS'				=> 'Legend settings',
 	'LEGEND_SORT_GROUPNAME'			=> 'Sort legend by group name',
-	'LEGEND_SORT_GROUPNAME_EXPLAIN'	=> 'The order from bellow is ignored when this option is enabled.',
+	'LEGEND_SORT_GROUPNAME_EXPLAIN'	=> 'The order below is ignored when this option is enabled.',
 
 	'MANAGE_LEGEND'			=> 'Manage group legend',
 	'MANAGE_TEAMPAGE'		=> 'Manage teampage',
@@ -131,7 +131,7 @@ $lang = array_merge($lang, array(
 
 	'TEAMPAGE_EXPLAIN'			=> 'These are the groups, which are viewed on the teampage:',
 	'TEAMPAGE_FORUMS'			=> 'Display moderator forums',
-	'TEAMPAGE_FORUMS_EXPLAIN'	=> 'If set to yes, moderators will have a list with all of the forums, where they have moderator permissions, in their row. This can be very SQL intensive for big boards.',
+	'TEAMPAGE_FORUMS_EXPLAIN'	=> 'If set to yes, moderators will have a list with all of the forums, where they have moderator permissions, in their row. This can be very database intensive for big boards.',
 	'TEAMPAGE_MULTIPLE'			=> 'Display users in all groups',
 	'TEAMPAGE_MULTIPLE_EXPLAIN'	=> 'If set to no, the users will only be displayed in their first group.',
 	'TEAMPAGE_SETTINGS'			=> 'Teampage settings',

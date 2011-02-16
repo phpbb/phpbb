@@ -2,8 +2,7 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -125,10 +124,10 @@ class phpbb_group_positions
 	}
 
 	/**
-	* Deletes a group by group_id
+	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
 	*
 	* @param	int		$group_id		group_id of the group to be deleted
-	* @param	bool	$skip_group		Skip the group itself, to save the query, when you need to update it anyway.
+	* @param	bool	$skip_group		Skip setting the group to GROUP_DISABLED, to save the query, when you need to update it anyway.
 	* @return	void
 	*/
 	public function delete_group($group_id, $skip_group = false)
@@ -177,7 +176,7 @@ class phpbb_group_positions
 			$this->db->sql_query($sql);
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_' . $this->field . ' = ' . ($current_value - 1) . '
+				SET group_' . $this->field . ' = group_' . $this->field . ' - 1
 				WHERE group_id = ' . (int) $group_id;
 			$this->db->sql_query($sql);
 
@@ -208,7 +207,7 @@ class phpbb_group_positions
 			{
 				// Only update when we move another one up, otherwise it was the last.
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_' . $this->field . ' = ' . ($current_value + 1) . '
+					SET group_' . $this->field . ' = group_' . $this->field . ' + 1
 					WHERE group_id = ' . (int) $group_id;
 				$this->db->sql_query($sql);
 			}
