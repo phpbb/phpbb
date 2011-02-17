@@ -2506,7 +2506,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$current_teampage = $teampage->get_group_value($group_id);
 		}
 
-		if (isset($group_attributes['group_legend']))
+		if (!empty($group_attributes['group_legend']))
 		{
 			if (($group_id && ($current_legend == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
 			{
@@ -2530,7 +2530,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
 		}
 
-		if (isset($group_attributes['group_teampage']))
+		if (!empty($group_attributes['group_teampage']))
 		{
 			if (($group_id && ($current_teampage == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
 			{
