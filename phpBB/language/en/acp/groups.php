@@ -107,7 +107,7 @@ $lang = array_merge($lang, array(
 	'GROUP_USERS_EXIST'				=> 'The selected users are already members.',
 	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully.',
 
-	'LEGEND_EXPLAIN'				=> 'These are the groups, which are viewed on the group legend:',
+	'LEGEND_EXPLAIN'				=> 'These are the groups which are displayed in the group legend:',
 	'LEGEND_SETTINGS'				=> 'Legend settings',
 	'LEGEND_SORT_GROUPNAME'			=> 'Sort legend by group name',
 	'LEGEND_SORT_GROUPNAME_EXPLAIN'	=> 'The order below is ignored when this option is enabled.',
@@ -129,9 +129,9 @@ $lang = array_merge($lang, array(
 	'SPECIAL_GROUPS'			=> 'Pre-defined groups',
 	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings.',
 
-	'TEAMPAGE_EXPLAIN'			=> 'These are the groups, which are viewed on the teampage:',
-	'TEAMPAGE_FORUMS'			=> 'Display moderator forums',
-	'TEAMPAGE_FORUMS_EXPLAIN'	=> 'If set to yes, moderators will have a list with all of the forums, where they have moderator permissions, in their row. This can be very database intensive for big boards.',
+	'TEAMPAGE_EXPLAIN'			=> 'These are the groups which are displayed on the teampage:',
+	'TEAMPAGE_FORUMS'			=> 'Display moderated forums',
+	'TEAMPAGE_FORUMS_EXPLAIN'	=> 'If set to yes, moderators will have a list with all of the forums where they have moderator permissions displayed in their row. This can be very database intensive for big boards.',
 	'TEAMPAGE_MULTIPLE'			=> 'Display users in all groups',
 	'TEAMPAGE_MULTIPLE_EXPLAIN'	=> 'If set to no, the users will only be displayed in their first group.',
 	'TEAMPAGE_SETTINGS'			=> 'Teampage settings',
