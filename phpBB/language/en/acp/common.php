@@ -116,6 +116,10 @@ $lang = array_merge($lang, array(
 	'ACP_LOGGING'				=> 'Logging',
 
 	'ACP_MAIN'					=> 'ACP index',
+
+	'ACP_MANAGE_ATTACHMENTS'			=> 'Manage attachments',
+	'ACP_MANAGE_ATTACHMENTS_EXPLAIN'	=> 'Here you can manage files attached to posts. You are able to delete the files or reassign them to existing posts. Reassigning to posts requires a valid post ID, you have to determine this ID by yourself. This will reassign the already assigned attachment to the post you entered.',
+
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
@@ -227,6 +231,7 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_AS'				=> 'Download as',
 	'DOWNLOAD_STORE'			=> 'Download or store file',
 	'DOWNLOAD_STORE_EXPLAIN'	=> 'You may directly download the file or save it in your <samp>store/</samp> folder.',
+	'DOWNLOADS'          		=> 'Downloads',
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
@@ -283,6 +288,8 @@ $lang = array_merge($lang, array(
 	'SETTING_TOO_SHORT'		=> 'The provided value for the setting “%1$s” is too short. The minimum acceptable length is %2$d.',
 
 	'SHOW_ALL_OPERATIONS'	=> 'Show all operations',
+
+	'TOTAL_SIZE'      		=> 'Total size',
 
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
