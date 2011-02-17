@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
 *
@@ -14,7 +15,7 @@ function show_usage()
 	echo "$filename adds repositories of a github network as remotes to a local git repository.\n";
 	echo "\n";
 
-	echo "Usage: php $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
+	echo "Usage: [php] $filename -s collaborators|organisation|contributors|network [OPTIONS]\n";
 	echo "\n";
 
 	echo "Scopes:\n";
@@ -30,14 +31,15 @@ function show_usage()
 	echo " -r repository_name             Overwrites the repository name (optional)\n";
 	echo " -m your_github_username        Sets up ssh:// instead of git:// for pushable repositories (optional)\n";
 	echo " -d                             Outputs the commands instead of running them (optional)\n";
+	echo " -h                             This help text\n";
 
 	exit(1);
 }
 
 // Handle arguments
-$opts = getopt('s:u:r:m:d');
+$opts = getopt('s:u:r:m:dh');
 
-if (empty($opts))
+if (empty($opts) || isset($opts['h']))
 {
 	show_usage();
 }
@@ -48,57 +50,67 @@ $repository 	= get_arg($opts, 'r', 'phpbb3');
 $developer		= get_arg($opts, 'm', '');
 $dry_run		= !get_arg($opts, 'd', true);
 run(null, $dry_run);
+exit(work($scope, $username, $repository, $developer));
 
-// Get some basic data
-$network		= get_network($username, $repository);
-$collaborators	= get_collaborators($username, $repository);
-
-switch ($scope)
+function work($scope, $username, $repository, $developer)
 {
-	case 'collaborators':
-		$remotes = array_intersect_key($network, $collaborators);
-	break;
+	// Get some basic data
+	$network		= get_network($username, $repository);
+	$collaborators	= get_collaborators($username, $repository);
 
-	case 'organisation':
-		$remotes = array_intersect_key($network, get_organisation_members($username));
-	break;
+	if ($network === false || $collaborators === false)
+	{
+		echo "Error: failed to retrieve network or collaborators\n";
+		return 1;
+	}
 
-	case 'contributors':
-		$remotes = array_intersect_key($network, get_contributors($username, $repository));
-	break;
+	switch ($scope)
+	{
+		case 'collaborators':
+			$remotes = array_intersect_key($network, $collaborators);
+		break;
 
-	case 'network':
-		$remotes = $network;
-	break;
+		case 'organisation':
+			$remotes = array_intersect_key($network, get_organisation_members($username));
+		break;
 
-	default:
-		show_usage();
+		case 'contributors':
+			$remotes = array_intersect_key($network, get_contributors($username, $repository));
+		break;
+
+		case 'network':
+			$remotes = $network;
+		break;
+
+		default:
+			show_usage();
+	}
+
+	if (file_exists('.git'))
+	{
+		add_remote($username, $repository, isset($collaborators[$developer]));
+	}
+	else
+	{
+		clone_repository($username, $repository, isset($collaborators[$developer]));
+	}
+
+	// Add private security repository for developers
+	if ($username == 'phpbb' && $repository == 'phpbb3' && isset($collaborators[$developer]))
+	{
+		run("git remote add $username-security " . get_repository_url($username, "$repository-security", true));
+	}
+
+	// Skip blessed repository.
+	unset($remotes[$username]);
+
+	foreach ($remotes as $remote)
+	{
+		add_remote($remote['username'], $remote['repository'], $remote['username'] == $developer);
+	}
+
+	run('git remote update');
 }
-
-if (file_exists('.git'))
-{
-	add_remote($username, $repository, isset($collaborators[$developer]));
-}
-else
-{
-	clone_repository($username, $repository, isset($collaborators[$developer]));
-}
-
-// Add private security repository for developers
-if ($username == 'phpbb' && $repository == 'phpbb3' && isset($collaborators[$developer]))
-{
-	run("git remote add $username-security " . get_repository_url($username, "$repository-security", true));
-}
-
-// Skip blessed repository.
-unset($remotes[$username]);
-
-foreach ($remotes as $remote)
-{
-	add_remote($remote['username'], $remote['repository'], $remote['username'] == $developer);
-}
-
-run('git remote update');
 
 function clone_repository($username, $repository, $pushable = false)
 {
@@ -133,12 +145,21 @@ function get_repository_url($username, $repository, $ssh = false)
 
 function api_request($query)
 {
-	return json_decode(file_get_contents("http://github.com/api/v2/json/$query"));
+	$contents = file_get_contents("http://github.com/api/v2/json/$query");
+	if ($contents === false)
+	{
+		return false;
+	}
+	return json_decode($contents);
 }
 
 function get_contributors($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/contributors");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->contributors as $contributor)
@@ -152,6 +173,10 @@ function get_contributors($username, $repository)
 function get_organisation_members($username)
 {
 	$request = api_request("organizations/$username/public_members");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->users as $member)
@@ -165,6 +190,10 @@ function get_organisation_members($username)
 function get_collaborators($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/collaborators");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->collaborators as $collaborator)
@@ -178,6 +207,10 @@ function get_collaborators($username, $repository)
 function get_network($username, $repository)
 {
 	$request = api_request("repos/show/$username/$repository/network");
+	if ($request === false)
+	{
+		return false;
+	}
 
 	$usernames = array();
 	foreach ($request->network as $network)
