@@ -19,6 +19,7 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 	static public function session_begin_attempts()
 	{
+		global $_SID;
 		return array(
 			array(
 				'bar_session', '4', 'user agent',
