@@ -7,9 +7,8 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once 'mock/cache.php';
-require_once 'mock/session_testable.php';
+require_once dirname(__FILE__) . '/../mock/cache.php';
+require_once dirname(__FILE__) . '/../mock/session_testable.php';
 
 class phpbb_session_init_test extends phpbb_database_test_case
 {
