@@ -83,9 +83,9 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 			}
 		}
 
-		$this->assertResultEquals(
-			$sql,
+		$this->assertSqlResultEquals(
 			$expected_sessions,
+			$sql,
 			'Check if no new session was created'
 		);
 

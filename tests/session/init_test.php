@@ -40,9 +40,9 @@ class phpbb_session_init_test extends phpbb_database_test_case
 		$sql = 'SELECT session_user_id
 			FROM phpbb_sessions';
 
-		$this->assertResultEquals(
-			$sql,
+		$this->assertSqlResultEquals(
 			array(array('session_user_id' => 3)),
+			$sql,
 			'Check if exacly one session for user id 3 was created'
 		);
 
