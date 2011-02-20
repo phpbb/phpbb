@@ -7,8 +7,8 @@
 *
 */
 
-require_once '../phpBB/includes/functions.php';
-require_once '../phpBB/includes/session.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 class phpbb_mock_session_testable extends session
 {
