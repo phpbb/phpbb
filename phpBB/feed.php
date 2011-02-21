@@ -704,7 +704,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		if ($config['feed_item_statistics'])
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time'])
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
 				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
 		}
 	}
@@ -747,7 +747,7 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 		if ($config['feed_item_statistics'])
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('updated')])
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . (($this->is_moderator_approve_forum($row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views']
 				. (($this->is_moderator_approve_forum($row['forum_id']) && ($row['topic_replies_real'] != $row['topic_replies'])) ? ' ' . $this->separator_stats . ' ' . $user->lang['POSTS_UNAPPROVED'] : '');
