@@ -726,8 +726,8 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 
 		$this->set('author_id',	'topic_poster');
 		$this->set('creator',	'topic_first_poster_name');
-		$this->set('published',	'topic_time');
-		$this->set('updated',	'topic_last_post_time');
+		$this->set('published',	'post_time');
+		$this->set('updated',	'post_edit_time');
 		$this->set('text',		'post_text');
 
 		$this->set('bitfield',	'bbcode_bitfield');
@@ -1272,7 +1272,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1345,7 +1345,7 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_replies_real, t.topic_views, t.topic_time, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1391,8 +1391,6 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 
 		$this->set('author_id',	'topic_last_poster_id');
 		$this->set('creator',	'topic_last_poster_name');
-		$this->set('updated',	'topic_last_post_time');
-		$this->set('text',		'post_text');
 	}
 
 	function get_sql()
@@ -1444,7 +1442,7 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_replies, t.topic_replies_real, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
