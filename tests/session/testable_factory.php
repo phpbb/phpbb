@@ -12,9 +12,9 @@ require_once dirname(__FILE__) . '/../mock/session_testable.php';
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
 *
-* The class has rather complex dependencies, so in order to make its tests more
-* understandable and to make its dependencies more visible this class sets up
-* all the necessary global state & variable contents.
+* The session class has rather complex dependencies, so in order to make its
+* tests more * understandable and to make its dependencies more visible this
+* factory class sets up all the necessary global state & variable contents.
 */
 class phpbb_session_testable_factory
 {
@@ -57,6 +57,12 @@ class phpbb_session_testable_factory
 		$this->server_data = $_SERVER;
 	}
 
+	/**
+	* Retrieve the configured session class instance
+	*
+	* @param dbal $dbal The database connection to use for session data
+	* @return phpbb_mock_session_testable A session instance
+	*/
 	public function get_session(dbal $dbal)
 	{
 		// set up all the global variables used by session
@@ -75,41 +81,88 @@ class phpbb_session_testable_factory
 		return $session;
 	}
 
-	public function set_cookies($cookies)
+	/**
+	* Set the cookies which should be present in the request data.
+	*
+	* @param array $cookies The cookie data, structured like $_COOKIE contents.
+	*/
+	public function set_cookies(array $cookies)
 	{
 		$this->cookies = $cookies;
 	}
 
+	/**
+	* Check if the cache used for the generated session contains correct data.
+	*
+	* @param PHPUnit_Framework_Assert $test The test case to call assert methods
+	*                                       on
+	*/
 	public function check(PHPUnit_Framework_Assert $test)
 	{
 		$this->cache->check($test, $this->get_cache_data());
 	}
 
-	public function merge_config_data($config_data)
+	/**
+	* Merge config data with the current config data to be supplied to session.
+	*
+	* New values overwrite new ones.
+	*
+	* @param array $config_data The config data to merge with previous data
+	*/
+	public function merge_config_data(array $config_data)
 	{
 		$this->config_data = array_merge($this->config_data, $config_data);
 	}
 
+	/**
+	* Retrieve the entire config data to be passed to the session.
+	*
+	* @return array Configuration
+	*/
 	public function get_config_data()
 	{
 		return $this->config_data;
 	}
 
-	public function merge_cache_data($cache_data)
+	/**
+	* Merge the cache contents with more data.
+	*
+	* New values overwrite old ones.
+	*
+	* @param array $cache_data The additional cache data
+	*/
+	public function merge_cache_data(array $cache_data)
 	{
 		$this->cache_data = array_merge($this->cache_data, $cache_data);
 	}
 
+	/**
+	* Retrieve the entire cache data to be passed to the session.
+	*
+	* @return array Cache contents
+	*/
 	public function get_cache_data()
 	{
 		return $this->cache_data;
 	}
 
+	/**
+	* Merge the current server info ($_SERVER) with more data.
+	*
+	* New values overwrite old ones.
+	*
+	* @param array $server_data The additional server variables
+	*/
 	public function merge_server_data($server_data)
 	{
 		return $this->server_data = array_merge($this->server_data, $server_data);
 	}
 
+	/**
+	* Retrieve all server variables to be passed to the session.
+	*
+	* @return array Server variables
+	*/
 	public function get_server_data()
 	{
 		return $this->server_data;
