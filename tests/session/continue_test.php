@@ -2,13 +2,13 @@
 /**
 *
 * @package testing
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 require_once dirname(__FILE__) . '/../mock/cache.php';
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
+require_once dirname(__FILE__) . '/testable_factory.php';
 
 class phpbb_session_continue_test extends phpbb_database_test_case
 {
@@ -22,16 +22,16 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 		global $_SID;
 		return array(
 			array(
-				'bar_session', '4', 'user agent',
+				'bar_session', '4', 'user agent', '127.0.0.1',
 				array(
 					array('session_id' => 'anon_session', 'session_user_id' => 1),
 					array('session_id' => 'bar_session', 'session_user_id' => 4)
 				),
 				array(),
-				'Check if no new session was created',
+				'If a request comes with a valid session id with matching user agent and IP, no new session should be created.',
 			),
 			array(
-				'anon_session', '4', 'user agent',
+				'anon_session', '4', 'user agent', '127.0.0.1',
 				array(
 					array('session_id' => 'bar_session', 'session_user_id' => 4),
 					array('session_id' => null, 'session_user_id' => 1) // use generated SID
@@ -41,7 +41,7 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 					'k' => array(null, null),
 					'sid' => array($_SID, null),
 				),
-				'Check if an anonymous new session was created',
+				'If a request comes with a valid session id and IP but different user id and user agent, a new anonymous session is created and the session matching the supplied session id is deleted.',
 			),
 		);
 	}
@@ -49,29 +49,25 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 	/**
 	* @dataProvider session_begin_attempts
 	*/
-	public function test_session_begin_valid_session($session_id, $user_id, $user_agent, $expected_sessions, $expected_cookies, $message)
+	public function test_session_begin_valid_session($session_id, $user_id, $user_agent, $ip, $expected_sessions, $expected_cookies, $message)
 	{
-		$this->markTestIncomplete('Test needs to be fixed');
-		
-		$session = new phpbb_mock_session_testable;
+		$db = $this->new_dbal();
+		$session_factory = new phpbb_session_testable_factory;
+		$session_factory->set_cookies(array(
+			'_sid' => $session_id,
+			'_u' => $user_id,
+		));
+		$session_factory->merge_config_data(array(
+			'session_length' => time(), // need to do this to allow sessions started at time 0
+		));
+		$session_factory->merge_server_data(array(
+			'HTTP_USER_AGENT' => $user_agent,
+			'REMOTE_ADDR' => $ip,
+		));
+
+		$session = $session_factory->get_session($db);
 		$session->page = array('page' => 'page', 'forum' => 0);
 
-		// set up all the global variables used in session_create
-		global $SID, $_SID, $db, $config, $cache;
-
-		$config = $this->get_config();
-		$db = $this->new_dbal();
-		$cache_data = array(
-			'_bots' => array(),
-		);
-		$cache = new phpbb_mock_cache;
-		$SID = $_SID = null;
-
-		$_COOKIE['_sid'] = $session_id;
-		$_COOKIE['_u'] = $user_id;
-		$_SERVER['HTTP_USER_AGENT'] = $user_agent;
-
-		$config['session_length'] = time(); // need to do this to allow sessions started at time 0
 		$session->session_begin();
 
 		$sql = 'SELECT session_id, session_user_id
@@ -94,26 +90,7 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 		$session->check_cookies($this, $expected_cookies);
 
-		$cache->check($this, $cache_data);
-	}
-	static public function get_config()
-	{
-		return array(
-			'allow_autologin' => false,
-			'auth_method' => 'db',
-			'forwarded_for_check' => true,
-			'active_sessions' => 0, // disable
-			'rand_seed' => 'foo',
-			'rand_seed_last_update' => 0,
-			'max_autologin_time' => 0,
-			'session_length' => 100,
-			'form_token_lifetime' => 100,
-			'cookie_name' => '',
-			'limit_load' => 0,
-			'limit_search_load' => 0,
-			'ip_check' => 3,
-			'browser_check' => 1,
-		);
+		$session_factory->check($this);
 	}
 }
 

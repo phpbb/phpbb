@@ -16,4 +16,10 @@
 			<value>bar</value>
 		</row>
 	</table>
+	<table name="phpbb_sessions">
+		<column>session_id</column>
+		<column>session_user_id</column>
+		<column>session_ip</column>
+		<column>session_browser</column>
+	</table>
 </dataset>
