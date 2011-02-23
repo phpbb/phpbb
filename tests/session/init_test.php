@@ -2,13 +2,13 @@
 /**
 *
 * @package testing
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 require_once dirname(__FILE__) . '/../mock/cache.php';
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
+require_once dirname(__FILE__) . '/testable_factory.php';
 
 class phpbb_session_init_test extends phpbb_database_test_case
 {
@@ -21,21 +21,11 @@ class phpbb_session_init_test extends phpbb_database_test_case
 
 	public function test_login_session_create()
 	{
-		$this->markTestIncomplete('Test fails when run as part of the test suite');
-		
-		$session = new phpbb_mock_session_testable;
-		$session->page = array('page' => 'page', 'forum' => 0);
-
-		// set up all the global variables used in session_create
-		global $SID, $_SID, $db, $config, $cache;
-
-		$config = $this->get_config();
 		$db = $this->new_dbal();
-		$cache_data = array(
-			'_bots' => array(),
-		);
-		$cache = new phpbb_mock_cache;
-		$SID = $_SID = null;
+		$session_factory = new phpbb_session_testable_factory;
+
+		$session = $session_factory->get_session($db);
+		$session->page = array('page' => 'page', 'forum' => 0);
 
 		$session->session_create(3);
 
@@ -48,30 +38,19 @@ class phpbb_session_init_test extends phpbb_database_test_case
 			'Check if exacly one session for user id 3 was created'
 		);
 
-		$cookie_expire = $session->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
+		$cookie_expire = $session->time_now + 31536000;
 
 		$session->check_cookies($this, array(
 			'u' => array(null, $cookie_expire),
 			'k' => array(null, $cookie_expire),
-			'sid' => array($_SID, $cookie_expire),
+			'sid' => array($session->session_id, $cookie_expire),
 		));
 
-		$cache->check($this, $cache_data);
-	}
+		global $SID, $_SID;
+		$this->assertEquals($session->session_id, $_SID);
+		$this->assertEquals('?sid=' . $session->session_id, $SID);
 
-	static public function get_config()
-	{
-		return array(
-			'allow_autologin' => false,
-			'auth_method' => 'db',
-			'forwarded_for_check' => true,
-			'active_sessions' => 0, // disable
-			'rand_seed' => 'foo',
-			'rand_seed_last_update' => 0,
-			'max_autologin_time' => 0,
-			'session_length' => 100,
-			'form_token_lifetime' => 100,
-		);
+		$session_factory->check($this);
 	}
 }
 

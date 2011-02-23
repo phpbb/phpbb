@@ -10,6 +10,13 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
+/**
+* Extends the session class to overwrite the setting of cookies.
+*
+* The session class directly writes cookie headers making it impossible to
+* test it without warnings about sent headers. This class only stores cookie
+* data for later verification.
+*/
 class phpbb_mock_session_testable extends session
 {
 	private $_cookies = array();
