@@ -3931,7 +3931,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 function phpbb_error_collection_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $phpbb_collected_errors;
-	$phpbb_collected_errors[-1][] = array($errno, $msg_text, $errfile, $errline);
+	$phpbb_collected_errors[count($phpbb_collected_errors)-1][] = array($errno, $msg_text, $errfile, $errline);
 }
 
 function phpbb_start_error_collection()
