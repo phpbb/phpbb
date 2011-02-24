@@ -529,7 +529,7 @@ class acp_main
 		);
 
 		$log_data = array();
-		$log_count = 0;
+		$log_count = false;
 
 		if ($auth->acl_get('a_viewlogs'))
 		{
