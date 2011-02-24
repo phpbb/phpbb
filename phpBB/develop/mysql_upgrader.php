@@ -414,7 +414,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_bbcodes'] = array(
 		'COLUMNS'		=> array(
-			'bbcode_id'				=> array('TINT:3', 0),
+			'bbcode_id'				=> array('USINT', 0),
 			'bbcode_tag'			=> array('VCHAR:16', ''),
 			'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			'display_on_posting'	=> array('BOOL', 0),
