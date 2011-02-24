@@ -212,13 +212,18 @@ switch ($mode)
 
 		foreach ($groups_ary as $group_id => $group_data)
 		{
-			if (!empty($group_users[$group_id]))
+			if ($group_data['group_teampage'])
 			{
 				$template->assign_block_vars('group', array(
 					'GROUP_NAME'	=> $group_data['group_name'],
 					'GROUP_COLOR'	=> $group_data['group_colour'],
 					'U_GROUP'		=> $group_data['u_group'],
 				));
+			}
+
+			// Display group members.
+			if (!empty($group_users[$group_id]))
+			{
 				foreach ($group_users[$group_id] as $user_id)
 				{
 					if (isset($user_ary[$user_id]))
@@ -229,24 +234,24 @@ switch ($mode)
 						get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
 
 						$template->assign_block_vars('group.user', array(
-							'USER_ID' => $row['user_id'],
-							'FORUMS' => $row['forums'],
-							'FORUM_OPTIONS' => (isset($row['forums_options'])) ? true : false,
-							'RANK_TITLE' => $rank_title,
+							'USER_ID'		=> $row['user_id'],
+							'FORUMS'		=> $row['forums'],
+							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
+							'RANK_TITLE'	=> $rank_title,
 
-							'GROUP_NAME' => $groups_ary[$row['default_group']]['group_name'],
-							'GROUP_COLOR' => $groups_ary[$row['default_group']]['group_colour'],
-							'U_GROUP' => $groups_ary[$row['default_group']]['u_group'],
+							'GROUP_NAME'	=> $groups_ary[$row['default_group']]['group_name'],
+							'GROUP_COLOR'	=> $groups_ary[$row['default_group']]['group_colour'],
+							'U_GROUP'		=> $groups_ary[$row['default_group']]['u_group'],
 
-							'RANK_IMG' => $rank_img,
-							'RANK_IMG_SRC' => $rank_img_src,
+							'RANK_IMG'		=> $rank_img,
+							'RANK_IMG_SRC'	=> $rank_img_src,
 
-							'U_PM' => ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 
-							'USERNAME_FULL' => get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
-							'USERNAME' => get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-							'USER_COLOR' => get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
-							'U_VIEW_PROFILE' => get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+							'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 						));
 
 						if (!$config['teampage_multiple'])
