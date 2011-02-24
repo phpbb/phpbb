@@ -173,6 +173,9 @@ define('BBCODE_UID_LEN', 8);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// BBCode hard limit
+define('BBCODE_LIMIT', 1511);
+
 // Smiley hard limit
 define('SMILEY_LIMIT', 1000);
 

@@ -213,7 +213,7 @@ CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist (ban_ip, ban_exclude);
 	Table: 'phpbb_bbcodes'
 */
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id INT2 DEFAULT '0' NOT NULL,
+	bbcode_id INT2 DEFAULT '0' NOT NULL CHECK (bbcode_id >= 0),
 	bbcode_tag varchar(16) DEFAULT '' NOT NULL,
 	bbcode_helpline varchar(255) DEFAULT '' NOT NULL,
 	display_on_posting INT2 DEFAULT '0' NOT NULL CHECK (display_on_posting >= 0),

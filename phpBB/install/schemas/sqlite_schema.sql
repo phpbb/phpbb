@@ -108,7 +108,7 @@ CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist (ban_ip, ban_exclude);
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id tinyint(3) NOT NULL DEFAULT '0',
+	bbcode_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_tag varchar(16) NOT NULL DEFAULT '',
 	bbcode_helpline varchar(255) NOT NULL DEFAULT '',
 	display_on_posting INTEGER UNSIGNED NOT NULL DEFAULT '0',
