@@ -125,6 +125,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	if (!@file_exists($filename))
 	{
+		send_status_line(404, 'Not Found');
 		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
 	}
 
@@ -151,9 +152,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		// PHP track_errors setting On?
 		if (!empty($php_errormsg))
 		{
+			send_status_line(500, 'Internal Server Error');
 			trigger_error($user->lang['UNABLE_TO_DELIVER_FILE'] . '<br />' . sprintf($user->lang['TRACKED_PHP_ERROR'], $php_errormsg));
 		}
 
+		send_status_line(500, 'Internal Server Error');
 		trigger_error('UNABLE_TO_DELIVER_FILE');
 	}
 

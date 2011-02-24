@@ -136,11 +136,13 @@ $user->setup('viewtopic');
 
 if (!$download_id)
 {
+	send_status_line(404, 'Not Found');
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
 if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 {
+	send_status_line(404, 'Not Found');
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
@@ -153,11 +155,13 @@ $db->sql_freeresult($result);
 
 if (!$attachment)
 {
+	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
 if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach']))
 {
+	send_status_line(404, 'Not Found');
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
@@ -170,6 +174,7 @@ if ($attachment['is_orphan'])
 
 	if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
 	{
+		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
@@ -202,6 +207,7 @@ else
 		}
 		else
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 	}
@@ -242,6 +248,7 @@ else
 	$extensions = array();
 	if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 	{
+		send_status_line(404, 'Forbidden');
 		trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 	}
 }
@@ -264,6 +271,7 @@ $db->sql_freeresult($result);
 
 if (!$attachment)
 {
+	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
@@ -306,6 +314,7 @@ else
 		// This presenting method should no longer be used
 		if (!@is_dir($phpbb_root_path . $config['upload_path']))
 		{
+			send_status_line(500, 'Internal Server Error');
 			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 		}
 

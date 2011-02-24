@@ -231,7 +231,7 @@ if (empty($config['dbms_version']))
 	set_config('dbms_version', $db->sql_server_info(true));
 }
 
-// Firebird update from Firebord 2.0 to 2.1+ required?
+// Firebird update from Firebird 2.0 to 2.1+ required?
 if ($db->sql_layer == 'firebird')
 {
 	// We do not trust any PHP5 function enabled, we will simply test for a function new in 2.1
