@@ -83,7 +83,7 @@ class dbal_postgres extends dbal
 		{
 			if (!function_exists('pg_pconnect'))
 			{
-				return $this->sql_error('pg_pconnect does not exist');
+				return $this->sql_error('pg_pconnect function does not exist, is pgsql extension installed?');
 			}
 			phpbb_start_error_collection();
 			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
@@ -92,7 +92,7 @@ class dbal_postgres extends dbal
 		{
 			if (!function_exists('pg_pconnect'))
 			{
-				return $this->sql_error('pg_connect does not exist');
+				return $this->sql_error('pg_connect function does not exist, is pgsql extension installed?');
 			}
 			phpbb_start_error_collection();
 			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
