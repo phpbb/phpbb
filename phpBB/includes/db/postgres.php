@@ -81,12 +81,24 @@ class dbal_postgres extends dbal
 
 		if ($this->persistency)
 		{
+			if (!function_exists('pg_pconnect'))
+			{
+				return $this->sql_error('pg_pconnect does not exist');
+			}
+			phpbb_start_error_collection();
 			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
 		else
 		{
+			if (!function_exists('pg_pconnect'))
+			{
+				return $this->sql_error('pg_connect does not exist');
+			}
+			phpbb_start_error_collection();
 			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
+
+		$errors = phpbb_stop_error_collection();
 
 		if ($this->db_connect_id)
 		{
@@ -102,7 +114,8 @@ class dbal_postgres extends dbal
 			return $this->db_connect_id;
 		}
 
-		return $this->sql_error('');
+		$errors = phpbb_format_collected_errors($errors);
+		return $this->sql_error($errors);
 	}
 
 	/**

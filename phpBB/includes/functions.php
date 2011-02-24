@@ -3928,6 +3928,50 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	return false;
 }
 
+function phpbb_error_collection_handler($errno, $msg_text, $errfile, $errline)
+{
+	global $phpbb_collected_errors;
+	$phpbb_collected_errors[-1][] = array($errno, $msg_text, $errfile, $errline);
+}
+
+function phpbb_start_error_collection()
+{
+	global $phpbb_collected_errors;
+	if (!isset($phpbb_collected_errors))
+	{
+		$phpbb_collected_errors = array();
+	}
+	$phpbb_collected_errors[] = array();
+	set_error_handler('phpbb_error_collection_handler');
+}
+
+function phpbb_stop_error_collection()
+{
+	global $phpbb_collected_errors;
+	restore_error_handler();
+	$errors = array_pop($phpbb_collected_errors);
+	return $errors;
+}
+
+function phpbb_format_collected_errors($errors)
+{
+	$text = '';
+	foreach ($errors as $error)
+	{
+		if (!empty($text))
+		{
+			$text .= "<br />\n";
+		}
+		list($errno, $msg_text, $errfile, $errline) = $error;
+		$text .= "Errno $errno: $msg_text";
+		if (defined('DEBUG'))
+		{
+			$text .= " at $errfile line $errline";
+		}
+	}
+	return $text;
+}
+
 /**
 * Queries the session table to get information about online guests
 * @param int $item_id Limits the search to the item with this id
