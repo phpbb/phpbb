@@ -1893,7 +1893,7 @@ function change_database_data(&$no_updates, $version)
 					AND group_name = 'GLOBAL_MODERATORS'";
 			_sql($sql, $errored, $error_ary);
 
-			set_config('legend_sort_groupname', '1');
+			set_config('legend_sort_groupname', '0');
 			set_config('teampage_multiple', '1');
 			set_config('teampage_forums', '1');
 
