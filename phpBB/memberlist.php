@@ -229,6 +229,11 @@ switch ($mode)
 					if (isset($user_ary[$user_id]))
 					{
 						$row = $user_ary[$user_id];
+						if (!$config['teampage_multiple'] && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						{
+							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
+							continue;
+						}
 
 						$rank_title = $rank_img = $rank_img_src = '';
 						get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);

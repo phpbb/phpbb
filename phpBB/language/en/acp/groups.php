@@ -133,7 +133,7 @@ $lang = array_merge($lang, array(
 	'TEAMPAGE_FORUMS'			=> 'Display moderated forums',
 	'TEAMPAGE_FORUMS_EXPLAIN'	=> 'If set to yes, moderators will have a list with all of the forums where they have moderator permissions displayed in their row. This can be very database intensive for big boards.',
 	'TEAMPAGE_MULTIPLE'			=> 'Display users in all groups',
-	'TEAMPAGE_MULTIPLE_EXPLAIN'	=> 'If set to no, the users will only be displayed in their first group.',
+	'TEAMPAGE_MULTIPLE_EXPLAIN'	=> 'If set to no, the users will only be displayed in their primary group (If the primary group is not listed, the users will be displayed in their first displayed group).',
 	'TEAMPAGE_SETTINGS'			=> 'Teampage settings',
 	'TOTAL_MEMBERS'				=> 'Members',
 
