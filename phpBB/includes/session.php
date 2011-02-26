@@ -598,6 +598,13 @@ class session
 			$bot = false;
 		}
 
+		// Bot user, if they have a SID in the Request URI we need to get rid of it
+		// otherwise they'll index this page with the SID, duplicate content oh my!
+		if ($bot && isset($_GET['sid']))
+		{
+			redirect(build_url(array('sid')));
+		}
+
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -634,12 +641,6 @@ class session
 		}
 		else
 		{
-			// Bot user, if they have a SID in the Request URI we need to get rid of it
-			// otherwise they'll index this page with the SID, duplicate content oh my!
-			if (isset($_GET['sid']))
-			{
-				redirect(build_url(array('sid')));
-			}
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
