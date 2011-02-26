@@ -652,7 +652,7 @@ fieldset.polls dd div {
 }
 
 .online {
-	background-image: url("{T_IMAGESET_LANG_PATH}/icon_user_online.gif");
+	background-image: url("{IMG_ICON_USER_ONLINE_SRC}");
 }
 
 /*  	
