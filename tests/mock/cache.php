@@ -42,9 +42,16 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 		$test->assertFalse(isset($this->data[$var_name]));
 	}
 
-	public function check(PHPUnit_Framework_Assert $test, $data)
+	public function check(PHPUnit_Framework_Assert $test, $data, $ignore_db_info = true)
 	{
-		$test->assertEquals($data, $this->data);
+		$cache_data = $this->data;
+
+		if ($ignore_db_info)
+		{
+			unset($cache_data['mysqli_version']);
+		}
+
+		$test->assertEquals($data, $cache_data);
 	}
 
 	function load()
