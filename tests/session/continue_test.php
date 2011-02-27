@@ -24,7 +24,7 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 				'bar_session', '4', 'user agent', '127.0.0.1',
 				array(
 					array('session_id' => 'anon_session', 'session_user_id' => 1),
-					array('session_id' => 'bar_session', 'session_user_id' => 4)
+					array('session_id' => 'bar_session', 'session_user_id' => 4),
 				),
 				array(),
 				'If a request comes with a valid session id with matching user agent and IP, no new session should be created.',
@@ -32,8 +32,8 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 			array(
 				'anon_session', '4', 'user agent', '127.0.0.1',
 				array(
+					array('session_id' => '__new_session_id__', 'session_user_id' => 1), // use generated SID
 					array('session_id' => 'bar_session', 'session_user_id' => 4),
-					array('session_id' => '__new_session_id__', 'session_user_id' => 1) // use generated SID
 				),
 				array(
 					'u' => array('1', null),
@@ -70,7 +70,8 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 		$session->session_begin();
 
 		$sql = 'SELECT session_id, session_user_id
-			FROM phpbb_sessions';
+			FROM phpbb_sessions
+			ORDER BY session_user_id';
 
 		$expected_sessions = $this->replace_session($expected_sessions, $session->session_id);
 		$expected_cookies = $this->replace_session($expected_cookies, $session->session_id);
