@@ -19,7 +19,6 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 	static public function session_begin_attempts()
 	{
-		global $_SID;
 		return array(
 			array(
 				'bar_session', '4', 'user agent', '127.0.0.1',
@@ -34,12 +33,12 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 				'anon_session', '4', 'user agent', '127.0.0.1',
 				array(
 					array('session_id' => 'bar_session', 'session_user_id' => 4),
-					array('session_id' => null, 'session_user_id' => 1) // use generated SID
+					array('session_id' => '__new_session_id__', 'session_user_id' => 1) // use generated SID
 				),
 				array(
 					'u' => array('1', null),
 					'k' => array(null, null),
-					'sid' => array($_SID, null),
+					'sid' => array('__new_session_id__', null),
 				),
 				'If a request comes with a valid session id and IP but different user id and user agent, a new anonymous session is created and the session matching the supplied session id is deleted.',
 			),
@@ -73,14 +72,8 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 		$sql = 'SELECT session_id, session_user_id
 			FROM phpbb_sessions';
 
-		// little tickery to allow using a dataProvider with dynamic expected result
-		foreach ($expected_sessions as $i => $s)
-		{
-			if (is_null($s['session_id']))
-			{
-				$expected_sessions[$i]['session_id'] = $session->session_id;
-			}
-		}
+		$expected_sessions = $this->replace_session($expected_sessions, $session->session_id);
+		$expected_cookies = $this->replace_session($expected_cookies, $session->session_id);
 
 		$this->assertSqlResultEquals(
 			$expected_sessions,
@@ -92,5 +85,32 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 		$session_factory->check($this);
 	}
-}
 
+	/**
+	* Replaces recursively the value __new_session_id__ with the given session
+	* id.
+	*
+	* @param array $array An array of data
+	* @param string $session_id The new session id to use instead of the
+	*                           placeholder.
+	* @return array The input array with all occurances of __new_session_id__
+	*               replaced.
+	*/
+	public function replace_session($array, $session_id)
+	{
+		foreach ($array as $key => &$value)
+		{
+			if ($value === '__new_session_id__')
+			{
+				$value = $session_id;
+			}
+
+			if (is_array($value))
+			{
+				$value = $this->replace_session($value, $session_id);
+			}
+		}
+
+		return $array;
+	}
+}
