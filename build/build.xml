@@ -13,6 +13,7 @@
 	<!-- These are the main targets which you will probably want to use -->
 	<target name="package" depends="clean,prepare,create-package" />
 	<target name="all" depends="clean,prepare,test,docs,create-package" />
+	<target name="build" depends="clean,prepare,test,docs" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
