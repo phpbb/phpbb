@@ -49,11 +49,39 @@ class acp_disallow
 
 		if ($disallow)
 		{
-			$disallowed_user = str_replace('*', '%', utf8_normalize_nfc(request_var('disallowed_user', '', true)));
+			$disallowed_user = $db->sql_escape(utf8_normalize_nfc(request_var('disallowed_user', '', true)));
 
 			if (!$disallowed_user)
 			{
 				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
+			$like_expression = $db->sql_like_expression(str_replace('*', $db->any_char, $disallowed_user));
+
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE username_clean ' . $like_expression;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				trigger_error($user->lang['DISALLOWED_ALREADY'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
+			$disallowed_user = str_replace('*', '%', $disallowed_user);
+
+			$sql = 'SELECT disallow_id
+				FROM ' . DISALLOW_TABLE . "
+				WHERE disallow_username = '" . $disallowed_user . "'";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				trigger_error($user->lang['DISALLOWED_ALREADY'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
