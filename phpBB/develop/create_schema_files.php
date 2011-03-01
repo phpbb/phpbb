@@ -1146,7 +1146,8 @@ function get_schema_struct()
 			'group_receive_pm'		=> array('BOOL', 0),
 			'group_message_limit'	=> array('UINT', 0),
 			'group_max_recipients'	=> array('UINT', 0),
-			'group_legend'			=> array('BOOL', 1),
+			'group_legend'			=> array('UINT', 0),
+			'group_teampage'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'group_id',
 		'KEYS'			=> array(

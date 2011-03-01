@@ -100,6 +100,7 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
 	'ACP_GROUPS_MANAGEMENT'			=> 'Group management',
 	'ACP_GROUPS_PERMISSIONS'		=> 'Groups’ permissions',
+	'ACP_GROUPS_POSITION'			=> 'Manage group positions',
 
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',

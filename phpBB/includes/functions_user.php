@@ -2457,6 +2457,69 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
+		$current_legend = phpbb_group_positions::GROUP_DISABLED;
+		$current_teampage = phpbb_group_positions::GROUP_DISABLED;
+
+		$legend = new phpbb_group_positions($db, 'legend');
+		$teampage = new phpbb_group_positions($db, 'teampage');
+		if ($group_id)
+		{
+			$current_legend = $legend->get_group_value($group_id);
+			$current_teampage = $teampage->get_group_value($group_id);
+		}
+
+		if (!empty($group_attributes['group_legend']))
+		{
+			if (($group_id && ($current_legend == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not in the legend or new group, add at the end.
+				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
+			}
+			else
+			{
+				// Group stayes in the legend
+				$group_attributes['group_legend'] = $current_legend;
+			}
+		}
+		else if ($group_id && ($current_legend > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the legend
+			$legend->delete_group($group_id, true);
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		if (!empty($group_attributes['group_teampage']))
+		{
+			if (($group_id && ($current_teampage == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not on the teampage or new group, add at the end.
+				$group_attributes['group_teampage'] = 1 + $teampage->get_group_count();
+			}
+			else
+			{
+				// Group stayes on the teampage
+				$group_attributes['group_teampage'] = $current_teampage;
+			}
+		}
+		else if ($group_id && ($current_teampage > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the teampage
+			$teampage->delete_group($group_id, true);
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		// Unset the objects, we don't need them anymore.
+		unset($legend);
+		unset($teampage);
+
 		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
@@ -2680,6 +2743,14 @@ function group_delete($group_id, $group_name = false)
 		$db->sql_freeresult($result);
 	}
 	while ($start);
+
+	// Delete group from legend and teampage
+	$legend = new phpbb_group_positions($db, 'legend');
+	$legend->delete_group($group_id);
+	unset($legend);
+	$teampage = new phpbb_group_positions($db, 'teampage');
+	$teampage->delete_group($group_id);
+	unset($teampage);
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "

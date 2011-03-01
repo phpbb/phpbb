@@ -930,8 +930,19 @@ function database_update_info()
 			),
 		),
 
-		// No changes from 3.1.0-dev to 3.1.0-A1
-		'3.1.0-dev'		=> array(),
+		// Changes from 3.1.0-dev to 3.1.0-A1
+		'3.1.0-dev'		=> array(
+			'add_columns'		=> array(
+				GROUPS_TABLE		=> array(
+					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
+				),
+			),
+			'change_columns'	=> array(
+				GROUPS_TABLE		=> array(
+					'group_legend'		=> array('UINT', 0),
+				),
+			),
+		),
 	);
 }
 
@@ -1902,6 +1913,56 @@ function change_database_data(&$no_updates, $version)
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 			set_config('use_system_cron', 0);
+
+			$sql = 'UPDATE ' . GROUPS_TABLE . '
+				SET group_teampage = 1
+				WHERE group_type = ' . GROUP_SPECIAL . "
+					AND group_name = 'ADMINISTRATORS'";
+			_sql($sql, $errored, $error_ary);
+
+			$sql = 'UPDATE ' . GROUPS_TABLE . '
+				SET group_teampage = 2
+				WHERE group_type = ' . GROUP_SPECIAL . "
+					AND group_name = 'GLOBAL_MODERATORS'";
+			_sql($sql, $errored, $error_ary);
+
+			set_config('legend_sort_groupname', '0');
+			set_config('teampage_multiple', '1');
+			set_config('teampage_forums', '1');
+
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_legend = 1
+				ORDER BY group_name ASC';
+			$result = $db->sql_query($sql);
+
+			$next_legend = 1;
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_legend = ' . $next_legend . '
+					WHERE group_id = ' . (int) $row['group_id'];
+				_sql($sql, $errored, $error_ary);
+
+				$next_legend++;
+			}
+			$db->sql_freeresult($result);
+			unset($next_legend);
+
+			// Install modules
+			$modules_to_install = array(
+				'position'	=> array(
+					'base'		=> 'groups',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_GROUPS_POSITION',
+					'auth'		=> 'acl_a_group',
+					'cat'		=> 'ACP_GROUPS',
+				),
+			);
+
+			_add_modules($modules_to_install);
+
+			$no_updates = false;
 		break;
 	}
 }
