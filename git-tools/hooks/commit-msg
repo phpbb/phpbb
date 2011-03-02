@@ -55,6 +55,17 @@ quit()
 	fi
 }
 
+# Check for empty commit message
+if ! grep -qv '^#' "$1"
+then
+	# Commit message is empty (or contains only comments).
+	# Let git handle this.
+	# It will abort with a message like so:
+	#
+	# Aborting commit due to empty commit message.
+	exit 0
+fi
+
 msg=$(grep -nE '.{81,}' "$1");
 
 if [ $? -eq 0 ]
