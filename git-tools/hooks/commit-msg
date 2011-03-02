@@ -118,7 +118,19 @@ do
 		case $expect in
 			"header")
 				err=$ERR_HEADER;
-				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] .+$"
+				result=$?
+				if ! echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+				then
+					# Don't be too strict.
+					# Commits may be temporary, intended to be squashed later.
+					# Just issue a warning here.
+					echo "Warning: heading should be a sentence beginning with a capital letter." 1>&2
+					echo "You entered:" 1>&2
+					echo "$line" 1>&2
+				fi
+				# restore exit code
+				(exit $result)
 			;;
 			"empty")
 				err=$ERR_EMPTY;
