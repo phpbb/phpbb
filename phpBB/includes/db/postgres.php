@@ -85,7 +85,8 @@ class dbal_postgres extends dbal
 			{
 				return $this->sql_error('pg_pconnect function does not exist, is pgsql extension installed?');
 			}
-			phpbb_start_error_collection();
+			$collector = new phpbb_error_collector;
+			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
 		else
@@ -94,11 +95,12 @@ class dbal_postgres extends dbal
 			{
 				return $this->sql_error('pg_connect function does not exist, is pgsql extension installed?');
 			}
-			phpbb_start_error_collection();
+			$collector = new phpbb_error_collector;
+			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
 
-		$errors = phpbb_stop_error_collection();
+		$collector->uninstall();
 
 		if ($this->db_connect_id)
 		{
@@ -114,7 +116,7 @@ class dbal_postgres extends dbal
 			return $this->db_connect_id;
 		}
 
-		$errors = phpbb_format_collected_errors($errors);
+		$errors = $collector->format_errors();
 		return $this->sql_error($errors);
 	}
 

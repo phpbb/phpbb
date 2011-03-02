@@ -3928,48 +3928,48 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	return false;
 }
 
-function phpbb_error_collection_handler($errno, $msg_text, $errfile, $errline)
+class phpbb_error_collector
 {
-	global $phpbb_collected_errors;
-	$phpbb_collected_errors[count($phpbb_collected_errors)-1][] = array($errno, $msg_text, $errfile, $errline);
-}
+	var $errors;
 
-function phpbb_start_error_collection()
-{
-	global $phpbb_collected_errors;
-	if (!isset($phpbb_collected_errors))
+	function phpbb_error_collector()
 	{
-		$phpbb_collected_errors = array();
+		$this->errors = array();
 	}
-	$phpbb_collected_errors[] = array();
-	set_error_handler('phpbb_error_collection_handler');
-}
 
-function phpbb_stop_error_collection()
-{
-	global $phpbb_collected_errors;
-	restore_error_handler();
-	$errors = array_pop($phpbb_collected_errors);
-	return $errors;
-}
-
-function phpbb_format_collected_errors($errors)
-{
-	$text = '';
-	foreach ($errors as $error)
+	function install()
 	{
-		if (!empty($text))
-		{
-			$text .= "<br />\n";
-		}
-		list($errno, $msg_text, $errfile, $errline) = $error;
-		$text .= "Errno $errno: $msg_text";
-		if (defined('DEBUG'))
-		{
-			$text .= " at $errfile line $errline";
-		}
+		set_error_handler(array(&$this, 'error_handler'));
 	}
-	return $text;
+
+	function uninstall()
+	{
+		restore_error_handler();
+	}
+
+	function error_handler($errno, $msg_text, $errfile, $errline)
+	{
+		$this->errors[] = array($errno, $msg_text, $errfile, $errline);
+	}
+
+	function format_errors()
+	{
+		$text = '';
+		foreach ($this->errors as $error)
+		{
+			if (!empty($text))
+			{
+				$text .= "<br />\n";
+			}
+			list($errno, $msg_text, $errfile, $errline) = $error;
+			$text .= "Errno $errno: $msg_text";
+			if (defined('DEBUG'))
+			{
+				$text .= " at $errfile line $errline";
+			}
+		}
+		return $text;
+	}
 }
 
 /**
