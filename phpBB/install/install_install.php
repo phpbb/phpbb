@@ -1882,7 +1882,7 @@ class install_install extends module
 
 			if (!$user_id)
 			{
-				// If we can't insert this user then continue to the next one to avoid inconsistant data
+				// If we can't insert this user then continue to the next one to avoid inconsistent data
 				$this->p_master->db_error('Unable to insert bot into users table', $db->sql_error_sql, __LINE__, __FILE__, true);
 				continue;
 			}
