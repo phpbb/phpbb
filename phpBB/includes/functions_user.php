@@ -482,44 +482,6 @@ function user_delete($mode, $user_id, $post_username = false)
 				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
-			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
-				FROM ' . POSTS_TABLE . "
-				WHERE poster_id = $user_id
-				GROUP BY topic_id";
-			$result = $db->sql_query($sql);
-
-			$topic_id_ary = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$topic_id_ary[$row['topic_id']] = $row['total_posts'];
-			}
-			$db->sql_freeresult($result);
-
-			if (sizeof($topic_id_ary))
-			{
-				$sql = 'SELECT topic_id, topic_replies, topic_replies_real
-					FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-				$result = $db->sql_query($sql);
-
-				$del_topic_ary = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
-					{
-						$del_topic_ary[] = $row['topic_id'];
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($del_topic_ary))
-				{
-					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-						WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
-					$db->sql_query($sql);
-				}
-			}
-
 			// Delete posts, attachments, etc.
 			delete_posts('poster_id', $user_id);
 
@@ -2080,7 +2042,7 @@ function avatar_upload($data, &$error)
 
 	// Init upload class
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], explode('|', $config['mime_triggers']));
+	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
 
 	if (!empty($_FILES['uploadfile']['name']))
 	{

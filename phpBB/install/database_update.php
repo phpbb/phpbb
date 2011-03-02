@@ -227,7 +227,7 @@ if (empty($config['dbms_version']))
 	set_config('dbms_version', $db->sql_server_info(true));
 }
 
-// Firebird update from Firebord 2.0 to 2.1+ required?
+// Firebird update from Firebird 2.0 to 2.1+ required?
 if ($db->sql_layer == 'firebird')
 {
 	// We do not trust any PHP5 function enabled, we will simply test for a function new in 2.1
@@ -511,7 +511,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+		Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group
 	</div>
 </div>
 
@@ -916,6 +916,15 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
+
+		// Changes from 3.0.8 to 3.0.9-RC1
+		'3.0.8'			=> array(
+			'change_columns'	=> array(
+				BBCODES_TABLE	=> array(
+					'bbcode_id'	=> array('USINT', 0),
+				),
+			),
+		),
 	);
 }
 
@@ -1857,6 +1866,30 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.8-RC1 to 3.0.8
 		case '3.0.8-RC1':
+		break;
+
+		// Changes from 3.0.8 to 3.0.9-RC1
+		case '3.0.8':
+			// Update file extension group names to use language strings, again.
+			$sql = 'SELECT group_id, group_name
+				FROM ' . EXTENSION_GROUPS_TABLE . '
+				WHERE group_name ' . $db->sql_like_expression('EXT_GROUP_' . $db->any_char);
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary = array(
+					'group_name'	=> substr($row['group_name'], 10), // Strip off 'EXT_GROUP_'
+				);
+
+				$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE group_id = ' . $row['group_id'];
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			$no_updates = false;
 		break;
 	}
 }

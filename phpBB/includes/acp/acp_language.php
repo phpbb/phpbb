@@ -1055,14 +1055,14 @@ class acp_language
 				$iso_src .= htmlspecialchars_decode($row['lang_author']);
 				$compress->add_data($iso_src, 'language/' . $row['lang_iso'] . '/iso.txt');
 
-				// index.html files
-				$compress->add_data('', 'language/' . $row['lang_iso'] . '/index.html');
-				$compress->add_data('', 'language/' . $row['lang_iso'] . '/email/index.html');
-				$compress->add_data('', 'language/' . $row['lang_iso'] . '/acp/index.html');
+				// index.htm files
+				$compress->add_data('', 'language/' . $row['lang_iso'] . '/index.htm');
+				$compress->add_data('', 'language/' . $row['lang_iso'] . '/email/index.htm');
+				$compress->add_data('', 'language/' . $row['lang_iso'] . '/acp/index.htm');
 
 				if (sizeof($mod_files))
 				{
-					$compress->add_data('', 'language/' . $row['lang_iso'] . '/mods/index.html');
+					$compress->add_data('', 'language/' . $row['lang_iso'] . '/mods/index.htm');
 				}
 
 				$compress->close();
@@ -1217,7 +1217,7 @@ $lang = array_merge($lang, array(
 ';
 
 		// Language files in language root directory
-		$this->main_files = array("common.$phpEx", "groups.$phpEx", "install.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
+		$this->main_files = array("captcha_qa.$phpEx", "captcha_recaptcha.$phpEx", "common.$phpEx", "groups.$phpEx", "install.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
 	}
 
 	/**

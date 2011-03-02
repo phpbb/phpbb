@@ -1698,7 +1698,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		// Get list of the unread topics
-		$last_mark = $user->data['user_lastmark'];
+		$last_mark = (int) $user->data['user_lastmark'];
 
 		$sql_array = array(
 			'SELECT'		=> 't.topic_id, t.topic_last_post_time, tt.mark_time as topic_mark_time, ft.mark_time as forum_mark_time',
@@ -1717,10 +1717,11 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			),
 
 			'WHERE'			=> "
+				 t.topic_last_post_time > $last_mark AND
 				(
 				(tt.mark_time IS NOT NULL AND t.topic_last_post_time > tt.mark_time) OR
 				(tt.mark_time IS NULL AND ft.mark_time IS NOT NULL AND t.topic_last_post_time > ft.mark_time) OR
-				(tt.mark_time IS NULL AND ft.mark_time IS NULL AND t.topic_last_post_time > $last_mark)
+				(tt.mark_time IS NULL AND ft.mark_time IS NULL)
 				)
 				$sql_extra
 				$sql_sort",
@@ -2353,12 +2354,12 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$disable_cd_check && !file_exists($pathinfo['dirname']))
+		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
 		{
 			$url = str_replace('../', '', $url);
 			$pathinfo = pathinfo($url);
 
-			if (!file_exists($pathinfo['dirname']))
+			if (!file_exists($pathinfo['dirname'] . '/'))
 			{
 				// fallback to "last known user page"
 				// at least this way we know the user does not leave the phpBB root
@@ -2630,8 +2631,14 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if (isset($_SERVER['HTTP_VERSION']))
+		if (!empty($_SERVER['SERVER_PROTOCOL']))
 		{
+			$version = $_SERVER['SERVER_PROTOCOL'];
+		}
+		else if (!empty($_SERVER['HTTP_VERSION']))
+		{
+			// I cannot remember where I got this from.
+			// This code path may never be reachable in reality.
 			$version = $_SERVER['HTTP_VERSION'];
 		}
 		else
@@ -3429,6 +3436,48 @@ function get_preg_expression($mode)
 }
 
 /**
+* Generate regexp for naughty words censoring
+* Depends on whether installed PHP version supports unicode properties
+*
+* @param string	$word			word template to be replaced
+* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode 
+*
+* @return string $preg_expr		regex to use with word censor
+*/
+function get_censor_preg_expression($word, $use_unicode = true)
+{
+	static $unicode_support = null;
+
+	// Check whether PHP version supports unicode properties
+	if (is_null($unicode_support))
+	{
+		$unicode_support = ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false) ? true : false;
+	}
+
+	// Unescape the asterisk to simplify further conversions
+	$word = str_replace('\*', '*', preg_quote($word, '#'));
+
+	if ($use_unicode && $unicode_support)
+	{
+		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
+		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
+
+		// Generate the final substitution
+		$preg_expr = '#(?<![\p{Nd}\p{L}_-])(' . $word . ')(?![\p{Nd}\p{L}_-])#iu';
+	}
+	else
+	{
+		// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
+		$word = preg_replace(array('#(?<=\S)\*+(?=\S)#iu', '#^\*+#', '#\*+$#'), array('(\x20*?\S*?)', '\S*?', '\S*?'), $word);
+
+		// Generate the final substitution
+		$preg_expr = '#(?<!\S)(' . $word . ')(?!\S)#iu';
+	}
+
+	return $preg_expr;
+}
+
+/**
 * Returns the first block of the specified IPv6 address and as many additional
 * ones as specified in the length paramater.
 * If length is zero, then an empty string is returned.
@@ -3792,7 +3841,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>';
+			echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; phpBB Group';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';

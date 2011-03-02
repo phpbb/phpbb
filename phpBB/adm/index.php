@@ -573,7 +573,11 @@ function validate_range($value_ary, &$error)
 		'BOOL'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => 1),
 		'USINT'	=> array('php_type' => 'int',		'min' => 0, 				'max' => 65535),
 		'UINT'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => (int) 0x7fffffff),
-		'INT'	=> array('php_type' => 'int', 		'min' => (int) 0x80000000, 	'max' => (int) 0x7fffffff),
+		// Do not use (int) 0x80000000 - it evaluates to different
+		// values on 32-bit and 64-bit systems.
+		// Apparently -2147483648 is a float on 32-bit systems,
+		// despite fitting in an int, thus explicit cast is needed.
+		'INT'	=> array('php_type' => 'int', 		'min' => (int) -2147483648,	'max' => (int) 0x7fffffff),
 		'TINT'	=> array('php_type' => 'int',		'min' => -128,				'max' => 127),
 
 		'VCHAR'	=> array('php_type' => 'string', 	'min' => 0, 				'max' => 255),

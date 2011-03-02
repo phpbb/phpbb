@@ -21,6 +21,7 @@
 die("Please read the first lines of this script for instructions on how to enable it");
 
 define('IN_PHPBB', true);
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
@@ -414,7 +415,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_bbcodes'] = array(
 		'COLUMNS'		=> array(
-			'bbcode_id'				=> array('TINT:3', 0),
+			'bbcode_id'				=> array('USINT', 0),
 			'bbcode_tag'			=> array('VCHAR:16', ''),
 			'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			'display_on_posting'	=> array('BOOL', 0),

@@ -22,6 +22,21 @@
 		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
 		<dd><select id="new_id" name="new_id">{S_REPLACE_OPTIONS}</select></dd>
 	</dl>
+	<!-- IF S_DELETE_STYLE -->
+		<hr />
+		<dl>
+			<dt><label for="new_template_id">{L_DELETE_TEMPLATE}:</label><br /><span>{L_REPLACE_TEMPLATE_EXPLAIN}</span></dt>
+			<dd><select id="new_template_id" name="new_template_id">{S_REPLACE_TEMPLATE_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="new_theme_id">{L_DELETE_THEME}:</label><br /><span>{L_REPLACE_THEME_EXPLAIN}</span></dt>
+			<dd><select id="new_theme_id" name="new_theme_id">{S_REPLACE_THEME_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="new_imageset_id">{L_DELETE_IMAGESET}:</label><br /><span>{L_REPLACE_IMAGESET_EXPLAIN}</span></dt>
+			<dd><select id="new_imageset_id" name="new_imageset_id">{S_REPLACE_IMAGESET_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
 
 	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
@@ -77,7 +92,7 @@
 
 		/**
 		* Init the wanted display functionality if javascript is enabled.
-		* If javascript is not available, the user is still able to properly administrate.
+		* If javascript is not available, the user is still able to properly administer.
 		*/
 		onload = function()
 		{

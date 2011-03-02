@@ -12,7 +12,8 @@
 
 	<!-- These are the main targets which you will probably want to use -->
 	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,test,create-package" />
+	<target name="all" depends="clean,prepare,test,docs,create-package" />
+	<target name="build" depends="clean,prepare,test,docs" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
@@ -42,12 +43,11 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="test">
-		<exec dir="tests"
-			command="phpunit --log-junit ../build/logs/phpunit.xml
-			--coverage-clover ../build/logs/clover.xml
-			--coverage-html ../build/coverage
-			phpbb_all_tests all_tests.php"
+	<target name="test" depends="clean,prepare">
+		<exec dir="."
+			command="phpunit --log-junit build/logs/phpunit.xml
+			--coverage-clover build/logs/clover.xml
+			--coverage-html build/coverage"
 			passthru="true" />
 
 
@@ -62,6 +62,18 @@
 			</batchtest>
 		</phpunit>
 		-->
+	</target>
+
+	<target name="docs">
+		<!-- only works if you setup phpdoctor:
+                     git clone https://github.com/peej/phpdoctor.git
+                     and then create an executable phpdoctor in your path containing
+                     #!/bin/sh
+                     php -f /path/to/phpdoctor/phpdoc.php $@
+                -->
+		<exec dir="build"
+			command="phpdoctor phpdoc-phpbb.ini"
+			passthru="true" />
 	</target>
 
 	<target name="old-version-diffs">

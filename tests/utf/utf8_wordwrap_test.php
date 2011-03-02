@@ -7,8 +7,7 @@
 *
 */
 
-require_once 'test_framework/framework.php';
-require_once '../phpBB/includes/utf/utf_tools.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_utf_utf8_wordwrap_test extends phpbb_test_case
 {
