@@ -139,6 +139,10 @@ do
 				# Should not end up here
 				false
 			;;
+			"possibly-eof")
+				# Allow empty and/or comment lines at the end
+				! tail -n +"$i" "$1" |grep -qvE '^($|#)'
+			;;
 			"comment")
 				echo "$line" | grep -Eq "^#";
 			;;
@@ -199,7 +203,7 @@ do
 				in_description=1;
 			;;
 			"footer")
-				expecting="footer eof";
+				expecting="footer possibly-eof";
 				if [ "$tickets" = "" ]
 				then
 					tickets="$line";
@@ -209,6 +213,9 @@ do
 			;;
 			"comment")
 				# Comments should expect the same thing again
+			;;
+			"possibly-eof")
+				expecting="eof";
 			;;
 			*)
 				echo "Unrecognised token $expect" >&2;
