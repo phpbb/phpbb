@@ -94,6 +94,7 @@ function phpbb_insert_forums()
 	{
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
 		break;
 	}
@@ -291,6 +292,7 @@ function phpbb_insert_forums()
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
 		break;
 
@@ -1727,6 +1729,7 @@ function phpbb_create_userconv_table()
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$map_dbms = 'mssql';
 		break;
 
