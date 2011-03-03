@@ -67,7 +67,7 @@ class acp_disallow
 
 			if ($row)
 			{
-				trigger_error($user->lang['DISALLOWED_ALREADY'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang['DISALLOW_IN_USE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$disallowed_user = str_replace('*', '%', $disallowed_user);
