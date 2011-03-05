@@ -179,6 +179,7 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 		break;
 
 		case 'postgres':
+			// Need to cast to text first for PostgreSQL 7.x
 			$sql_update = 'CAST(CAST(config_value::text as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
 		break;
 
