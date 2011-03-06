@@ -56,7 +56,7 @@ class ucp_register
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
 
-			if (file_exists($user->lang_path . $use_lang . '/'))
+			if (!validate_language($use_lang))
 			{
 				if ($change_lang)
 				{
