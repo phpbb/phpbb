@@ -1426,19 +1426,19 @@ function validate_match($string, $optional = false, $match = '')
 *
 * Tests whether a language name is valid and installed
 *
-* @param string $lang	The language string to test
+* @param string $lang_iso	The language string to test
 *
-* @return bool|string	Either false if validation succeeded or
-*						a string which will be used as the error message
-*						(with the variable name appended)
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
 */
-function validate_language($lang)
+function validate_language_iso_name($lang_iso)
 {
 	global $db;
 
 	$sql = 'SELECT lang_id
 		FROM ' . LANG_TABLE . "
-		WHERE lang_iso = '" . $db->sql_escape($lang) . "'";
+		WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
 	$result = $db->sql_query($sql);
 	$lang_id = (int) $db->sql_fetchfield('lang_id');
 	$db->sql_freeresult($result);
