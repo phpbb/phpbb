@@ -1422,33 +1422,28 @@ function validate_match($string, $optional = false, $match = '')
 }
 
 /**
-* Validate Language string
+* Validate Language Pack ISO Name
 *
-* Tests whether a language string is valid and exists on the disk
-* This is the same criteria used to determine whether to include it or not.
+* Tests whether a language name is valid and installed
 *
-* @param $lang - The language string to test
+* @param string $lang	The language string to test
 *
-* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+* @return bool|string	Either false if validation succeeded or
+*						a string which will be used as the error message
+*						(with the variable name appended)
 */
 function validate_language($lang)
 {
-	global $phpbb_root_path;
+	global $db;
 
-	// Note: Two language strings are identical here because the English
-	// version "Language you specified is not valid" is correct for both
-	// cases
-	if (!preg_match('#^[a-z_\-]{2,}$#i', $lang))
-	{
-		return 'WRONG_DATA';
-	}
+	$sql = 'SELECT lang_id
+		FROM ' . LANG_TABLE . "
+		WHERE lang_iso = '" . $db->sql_escape($lang) . "'";
+	$result = $db->sql_query($sql);
+	$lang_id = (int) $db->sql_fetchfield('lang_id');
+	$db->sql_freeresult($result);
 
-	if (!file_exists($phpbb_root_path . 'language/' . $lang . '/'))
-	{
-		return 'WRONG_DATA';
-	}
-
-	return false;
+	return ($lang_id) ? false : 'WRONG_DATA';
 }
 
 /**
