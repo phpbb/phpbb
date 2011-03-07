@@ -70,7 +70,9 @@ class dbal_firebird extends dbal
 			$this->db_connect_id = @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
 		}
 
-		if (function_exists('ibase_service_attach') && $this->server)
+		// Do not call ibase_service_attach if connection failed,
+		// otherwise error message from ibase_(p)connect call will be clobbered.
+		if ($this->db_connect_id && function_exists('ibase_service_attach') && $this->server)
 		{
 			$this->service_handle = @ibase_service_attach($this->server, $this->user, $sqlpassword);
 		}
