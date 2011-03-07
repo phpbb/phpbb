@@ -35,7 +35,7 @@ class phpbb_error_collector
 			}
 			list($errno, $msg_text, $errfile, $errline) = $error;
 			$text .= "Errno $errno: $msg_text";
-			if (defined('DEBUG'))
+			if (defined('DEBUG_EXTRA') || defined('IN_INSTALL'))
 			{
 				$text .= " at $errfile line $errline";
 			}
