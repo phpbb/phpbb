@@ -31,6 +31,7 @@ if (!class_exists('phpbb_error_collector'))
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -121,8 +122,8 @@ class dbal_postgres extends dbal
 			return $this->db_connect_id;
 		}
 
-		$errors = $collector->format_errors();
-		return $this->sql_error($errors);
+		$this->connect_error = $collector->format_errors();
+		return $this->sql_error('');
 	}
 
 	/**
@@ -391,8 +392,19 @@ class dbal_postgres extends dbal
 	*/
 	function _sql_error()
 	{
+		// pg_last_error only works when there is an established connection.
+		// Connection errors have to be tracked by us manually.
+		if ($this->db_connect_id)
+		{
+			$message = @pg_last_error($this->db_connect_id);
+		}
+		else
+		{
+			$message = $this->connect_error;
+		}
+
 		return array(
-			'message'	=> (!$this->db_connect_id) ? @pg_last_error() : @pg_last_error($this->db_connect_id),
+			'message'	=> $message,
 			'code'		=> ''
 		);
 	}
