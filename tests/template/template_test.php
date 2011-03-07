@@ -324,8 +324,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	*/
 	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
-		global $phpEx;
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.' . $phpEx;
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
 
 		$this->assertFileNotExists($cache_file);
 
@@ -375,11 +374,9 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_php()
 	{
-		global $phpEx;
-
 		$GLOBALS['config']['tpl_allow_php'] = true;
 
-		$cache_file = $this->template->cachepath . 'php.html.' . $phpEx;
+		$cache_file = $this->template->cachepath . 'php.html.php';
 
 		$this->assertFileNotExists($cache_file);
 
@@ -390,21 +387,14 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_includephp()
 	{
-		$this->markTestIncomplete('Include PHP test file paths are broken');
-
 		$GLOBALS['config']['tpl_allow_php'] = true;
 
-		$cache_file = $this->template->cachepath . 'includephp.html.' . PHP_EXT;
-
-		$cwd = getcwd();
-		chdir(dirname(__FILE__) . '/templates');
+		$cache_file = $this->template->cachepath . 'includephp.html.php';
 
 		$this->run_template('includephp.html', array(), array(), array(), 'testing included php', $cache_file);
 
 		$this->template->set_filenames(array('test' => 'includephp.html'));
-		$this->assertEquals('testing included php', $this->display('test'), "Testing $file");
-
-		chdir($cwd);
+		$this->assertEquals('testing included php', $this->display('test'), "Testing INCLUDEPHP");
 
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
@@ -418,17 +408,16 @@ class phpbb_template_template_test extends phpbb_test_case
 				false,
 				'insert',
 				<<<EOT
-outer - 0/4 - before
-outer - 1/4
-middle - 0/2
-middle - 1/2
-outer - 2/4
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 3/4
-middle - 0/2
-middle - 1/2
+outer - 0 - before
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1
+outer - 3
+middle - 0
+middle - 1
 EOT
 ,
 				'Test inserting before on top level block',
@@ -439,17 +428,16 @@ EOT
 				true,
 				'insert',
 				<<<EOT
-outer - 0/4
-middle - 0/2
-middle - 1/2
-outer - 1/4
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/4
-middle - 0/2
-middle - 1/2
-outer - 3/4 - after
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1
+outer - 3 - after
 EOT
 ,
 				'Test inserting after on top level block',
@@ -460,17 +448,16 @@ EOT
 				1,
 				'insert',
 				<<<EOT
-outer - 0/4
-middle - 0/2
-middle - 1/2
-outer - 1/4 - pos #1
-outer - 2/4
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 3/4
-middle - 0/2
-middle - 1/2
+outer - 0
+middle - 0
+middle - 1
+outer - 1 - pos #1
+outer - 2
+middle - 0
+middle - 1
+outer - 3
+middle - 0
+middle - 1
 EOT
 ,
 				'Test inserting at 1 on top level block',
@@ -481,172 +468,27 @@ EOT
 				0,
 				'change',
 				<<<EOT
-outer - 0/3 - pos #1
-middle - 0/2
-middle - 1/2
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/2
-middle - 1/2
+outer - 0 - pos #1
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1
 EOT
 ,
 				'Test inserting at 1 on top level block',
 			),
-			array(
-				'outer[0].middle',
-				array('VARIABLE' => 'before'),
-				false,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/3 - before
-middle - 1/3
-middle - 2/3
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/2
-middle - 1/2
-EOT
-,
-				'Test inserting before on nested block',
-			),
-			array(
-				'outer[0].middle',
-				array('VARIABLE' => 'after'),
-				true,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/3
-middle - 1/3
-middle - 2/3 - after
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/2
-middle - 1/2
-EOT
-,
-				'Test inserting after on nested block',
-			),
-			array(
-				'outer[0].middle',
-				array('VARIABLE' => 'pos #1'),
-				1,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/3
-middle - 1/3 - pos #1
-middle - 2/3
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/2
-middle - 1/2
-EOT
-,
-				'Test inserting at pos 1 on nested block',
-			),
-			array(
-				'outer[1].middle',
-				array('VARIABLE' => 'before'),
-				false,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/2
-middle - 1/2
-outer - 1/3
-middle - 0/4 - before
-middle - 1/4
-middle - 2/4
-middle - 3/4
-outer - 2/3
-middle - 0/2
-middle - 1/2
-EOT
-,
-				'Test inserting before on nested block (pos 1)',
-			),
-			array(
-				'outer[].middle',
-				array('VARIABLE' => 'before'),
-				false,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/2
-middle - 1/2
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/3 - before
-middle - 1/3
-middle - 2/3
-EOT
-,
-				'Test inserting before on nested block (end)',
-			),
-			array(
-				'outer.middle',
-				array('VARIABLE' => 'before'),
-				false,
-				'insert',
-				<<<EOT
-outer - 0/3
-middle - 0/2
-middle - 1/2
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/3 - before
-middle - 1/3
-middle - 2/3
-EOT
-,
-				'Test inserting before on nested block (end)',
-			),
 		);
 	}
-
-/*
-				<<<EOT
-outer - 0/3
-middle - 0/2
-middle - 1/2
-outer - 1/3
-middle - 0/3
-middle - 1/3
-middle - 2/3
-outer - 2/3
-middle - 0/2
-middle - 1/2
-EOT
-,
-*/
 
 	/**
 	* @dataProvider alter_block_array_data
 	*/
 	public function test_alter_block_array($alter_block, array $vararray, $key, $mode, $expect, $description)
 	{
-		$this->markTestIncomplete('Alter Block Test is broken');
-
 		$this->template->set_filenames(array('test' => 'loop_nested.html'));
 
 		// @todo Change this
@@ -656,12 +498,11 @@ EOT
 		$this->template->assign_block_vars('outer', array());
 		$this->template->assign_block_vars('outer.middle', array());
 		$this->template->assign_block_vars('outer.middle', array());
-		$this->template->assign_block_vars('outer.middle', array());
 		$this->template->assign_block_vars('outer', array());
 		$this->template->assign_block_vars('outer.middle', array());
 		$this->template->assign_block_vars('outer.middle', array());
 
-		$this->assertEquals("outer - 0/3\nmiddle - 0/2\nmiddle - 1/2\nouter - 1/3\nmiddle - 0/3\nmiddle - 1/3\nmiddle - 2/3\nouter - 2/3\nmiddle - 0/2\nmiddle - 1/2", $this->display('test'), 'Ensuring template is built correctly before modification');
+		$this->assertEquals("outer - 0\nmiddle - 0\nmiddle - 1\nouter - 1\nmiddle - 0\nmiddle - 1\nouter - 2\nmiddle - 0\nmiddle - 1", $this->display('test'), 'Ensuring template is built correctly before modification');
 
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
 		$this->assertEquals($expect, $this->display('test'), $description);
