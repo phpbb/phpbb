@@ -53,9 +53,23 @@ class dbal_firebird extends dbal
 			$use_database = $this->server . ':' . $this->dbname;
 		}
 
-		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
+		if ($this->persistency)
+		{
+			$this->db_connect_id = @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3);
+		}
+		else
+		{
+			$this->db_connect_id = @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
+		}
 
-		$this->service_handle = (function_exists('ibase_service_attach') && $this->server) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
+		if (function_exists('ibase_service_attach') && $this->server)
+		{
+			$this->service_handle = @ibase_service_attach($this->server, $this->user, $sqlpassword);
+		}
+		else
+		{
+			$thih->service_handle = false;
+		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
