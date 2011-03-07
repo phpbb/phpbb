@@ -343,8 +343,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	*/
 	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
-		global $phpEx;
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.' . $phpEx;
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
 
 		$this->assertFileNotExists($cache_file);
 
@@ -394,11 +393,9 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_php()
 	{
-		global $phpEx;
-
 		$GLOBALS['config']['tpl_allow_php'] = true;
 
-		$cache_file = $this->template->cachepath . 'php.html.' . $phpEx;
+		$cache_file = $this->template->cachepath . 'php.html.php';
 
 		$this->assertFileNotExists($cache_file);
 
@@ -409,11 +406,9 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_includephp()
 	{
-		global $phpEx;
-
 		$GLOBALS['config']['tpl_allow_php'] = true;
 
-		$cache_file = $this->template->cachepath . 'includephp.html.' . $phpEx;
+		$cache_file = $this->template->cachepath . 'includephp.html.php';
 
 		$this->run_template('includephp.html', array(), array(), array(), 'testing included php', $cache_file);
 
@@ -513,8 +508,6 @@ EOT
 	*/
 	public function test_alter_block_array($alter_block, array $vararray, $key, $mode, $expect, $description)
 	{
-//		$this->markTestIncomplete('Alter Block Test is broken');
-
 		$this->template->set_filenames(array('test' => 'loop_nested.html'));
 
 		// @todo Change this
