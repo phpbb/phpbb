@@ -18,6 +18,11 @@ if (!defined('IN_PHPBB'))
 
 include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
+if (!class_exists('phpbb_error_collector'))
+{
+	include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
+}
+
 /**
 * PostgreSQL Database Abstraction Layer
 * Minimum Requirement is Version 7.3+
