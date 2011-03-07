@@ -17,39 +17,74 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* @todo
+* IMG_ for image substitution?
+* {IMG_[key]:[alt]:[type]}
+* {IMG_ICON_CONTACT:CONTACT:full} -> $user->img('icon_contact', 'CONTACT', 'full');
+*
+* More in-depth...
+* yadayada
+*/
+
+/**
 * Base Template class.
 * @package phpBB3
 */
-class template
+class phpbb_template
 {
-	/** variable that holds all the data we'll be substituting into
+	public $phpbb_required = array('user', 'config');
+	public $phpbb_optional = array();
+
+	/**
+	* variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
 	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
 	* if it's a root-level variable, it'll be like this:
 	* --> $this->_tpldata[.][0][varname] == value
+	* @var array
 	*/
-	var $_tpldata = array('.' => array(0 => array()));
-	var $_rootref;
+	private $_tpldata = array('.' => array(0 => array()));
 
-	// Root dir and hash of filenames for each template handle.
-	var $root = '';
-	var $cachepath = '';
-	var $files = array();
-	var $filename = array();
-	var $files_inherit = array();
-	var $files_template = array();
-	var $inherit_root = '';
-	var $orig_tpl_storedb;
-	var $orig_tpl_inherits_id;
+	/**
+	* @var array Reference to template->_tpldata['.'][0]
+	*/
+	private $_rootref;
+
+	/**
+	* @var string Root dir for template.
+	*/
+	private $root = '';
+
+	/**
+	* @var string Path of the cache directory for the template
+	*/
+	public $cachepath = '';
+
+	/**
+	* @var array Hash of handle => file path pairs
+	*/
+	public $files = array();
+
+	/**
+	* @var array Hash of handle => filename pairs
+	*/
+	public $filename = array();
+
+	public $files_inherit = array();
+	public $files_template = array();
+	public $inherit_root = '';
+
+	public $orig_tpl_storedb;
+	public $orig_tpl_inherits_id;
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
-	var $compiled_code = array();
+	public $compiled_code = array();
 
 	/**
 	* Set template location
 	* @access public
 	*/
-	function set_template()
+	public function set_template()
 	{
 		global $phpbb_root_path, $user;
 
@@ -89,8 +124,11 @@ class template
 	/**
 	* Set custom template location (able to use directory outside of phpBB)
 	* @access public
+	* @param string $template_path Path to template directory
+	* @param string $template_name Name of template
+	* @param string $fallback_template_path Path to fallback template
 	*/
-	function set_custom_template($template_path, $template_name, $fallback_template_path = false)
+	public function set_custom_template($template_path, $template_name, $fallback_template_path = false)
 	{
 		global $phpbb_root_path, $user;
 
@@ -131,13 +169,10 @@ class template
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	* @access public
+	* @param array $filname_array Should be a hash of handle => filename pairs.
 	*/
-	function set_filenames($filename_array)
+	public function set_filenames(array $filename_array)
 	{
-		if (!is_array($filename_array))
-		{
-			return false;
-		}
 		foreach ($filename_array as $handle => $filename)
 		{
 			if (empty($filename))
@@ -161,17 +196,26 @@ class template
 	* Destroy template data set
 	* @access public
 	*/
-	function destroy()
+	public function destroy()
 	{
 		$this->_tpldata = array('.' => array(0 => array()));
 		$this->_rootref = &$this->_tpldata['.'][0];
 	}
 
 	/**
+	 * destroy method kept for compatibility.
+	 */
+	public function __destruct()
+	{
+		$this->destroy();
+	}
+
+	/**
 	* Reset/empty complete block
 	* @access public
+	* @param string $blockname Name of block to destroy
 	*/
-	function destroy_block_vars($blockname)
+	public function destroy_block_vars($blockname)
 	{
 		if (strpos($blockname, '.') !== false)
 		{
@@ -200,12 +244,15 @@ class template
 	/**
 	* Display handle
 	* @access public
+	* @param string $handle Handle to display
+	* @param bool $include_once Allow multiple inclusions
+	* @return bool True on success, false on failure
 	*/
-	function display($handle, $include_once = true)
+	public function display($handle, $include_once = true)
 	{
 		global $user, $phpbb_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
 		{
 			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
 			{
@@ -221,13 +268,23 @@ class template
 			}
 		}
 
-		if ($filename = $this->_tpl_load($handle))
+		$_tpldata	= &$this->_tpldata;
+		$_rootref	= &$this->_rootref;
+		$_lang		= &$user->lang;
+
+		if (($filename = $this->_tpl_load($handle)) !== false)
 		{
 			($include_once) ? include_once($filename) : include($filename);
 		}
+		else if (($code = $this->_tpl_eval($handle)) !== false)
+		{
+			$code = ' ?> ' . $code . ' <?php ';
+			eval($code);
+		}
 		else
 		{
-			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
+			// if we could not eval AND the file exists, something horrific has occured
+			return false;
 		}
 
 		return true;
@@ -236,8 +293,13 @@ class template
 	/**
 	* Display the handle and assign the output to a template variable or return the compiled result.
 	* @access public
+	* @param string $handle Handle to operate on
+	* @param string $template_var Template variable to assign compiled handle to
+	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
+	* @param bool $include_once Allow multiple inclusions of the file
+	* @return bool|string If $return_content is true return string of the compiled handle, otherwise return true
 	*/
-	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
+	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
 		ob_start();
 		$this->display($handle, $include_once);
@@ -256,8 +318,11 @@ class template
 	/**
 	* Load a compiled template if possible, if not, recompile it
 	* @access private
+	* @param string $handle Handle of the template to load
+	* @return string|bool Return filename on success otherwise false
+	* @uses template_compile is used to compile uncached templates
 	*/
-	function _tpl_load(&$handle)
+	private function _tpl_load($handle)
 	{
 		global $user, $phpEx, $config;
 
@@ -276,7 +341,9 @@ class template
 		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
 
 		$recompile = false;
-		if (!file_exists($filename) || @filesize($filename) === 0)
+		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || ($config['load_tplcompile'] && @filemtime($filename) < @filemtime($this->files[$handle]))) ? true : false;
+
+		if (defined('DEBUG_EXTRA'))
 		{
 			$recompile = true;
 		}
@@ -288,7 +355,7 @@ class template
 				$this->files[$handle] = $this->files_inherit[$handle];
 				$this->files_template[$handle] = $user->theme['template_inherits_id'];
 			}
-			$recompile = (@filemtime($filename) < filemtime($this->files[$handle])) ? true : false;
+			$recompile = (@filemtime($filename) < @filemtime($this->files[$handle])) ? true : false;
 		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
@@ -296,14 +363,7 @@ class template
 		{
 			return $filename;
 		}
-
-		global $db, $phpbb_root_path;
-
-		if (!class_exists('template_compile'))
-		{
-			include($phpbb_root_path . 'includes/functions_template.' . $phpEx);
-		}
-
+		
 		// Inheritance - we point to another template file for this one. Equality is also used for store_db
 		if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 		{
@@ -311,18 +371,51 @@ class template
 			$this->files_template[$handle] = $user->theme['template_inherits_id'];
 		}
 
-		$compile = new template_compile($this);
-
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		// Just compile if no user object is present (happens within the installer)
-		if (!$user)
+		if (!class_exists('phpbb_template_compile'))
 		{
-			$compile->_tpl_load_file($handle);
+			include 'template_compile.php';
+		}
+		
+		$compile = new phpbb_template_compile($this);
+
+		if ($compile->_tpl_load_file($handle) === false)
+		{
+			return false;
+		}
+		
+		return $filename;
+	}
+
+	/**
+	* This code should only run when some high level error prevents us from writing to the cache.
+	* @access private
+	* @param string $handle Template handle to compile
+	* @return string|bool Return compiled code on success otherwise false
+	* @uses template_compile is used to compile template
+	*/
+	private function _tpl_eval($handle)
+	{
+		if (!class_exists('phpbb_template_compile'))
+		{
+			include 'template_compile.php';
+		}
+		
+		$compile = new phpbb_template_compile($this);
+
+		// If we don't have a file assigned to this handle, die.
+		if (!isset($this->files[$handle]))
+		{
+			trigger_error("template->_tpl_eval(): No file specified for handle $handle", E_USER_ERROR);
+		}
+
+		if (($code = $compile->_tpl_gen_src($handle)) === false)
+		{
 			return false;
 		}
 
@@ -336,6 +429,8 @@ class template
 				$ids[] = $user->theme['template_inherits_id'];
 			}
 			$ids[] = $user->theme['template_id'];
+
+			global $db;
 
 			foreach ($ids as $id)
 			{
@@ -381,7 +476,7 @@ class template
 						$this->files_template[$row['template_filename']] = $user->theme['template_id'];
 					}
 
-					if ($force_reload || $row['template_mtime'] < filemtime($file))
+					if ($force_reload || $row['template_mtime'] < @filemtime($file))
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{
@@ -441,8 +536,9 @@ class template
 	/**
 	* Assign key variable pairs from an array
 	* @access public
+	* @param array $vararray A hash of variable name => value pairs
 	*/
-	function assign_vars($vararray)
+	public function assign_vars(array $vararray)
 	{
 		foreach ($vararray as $key => $val)
 		{
@@ -455,8 +551,10 @@ class template
 	/**
 	* Assign a single variable to a single key
 	* @access public
+	* @param string $varname Variable name
+	* @param string $varval Value to assign to variable
 	*/
-	function assign_var($varname, $varval)
+	public function assign_var($varname, $varval)
 	{
 		$this->_rootref[$varname] = $varval;
 
@@ -466,8 +564,10 @@ class template
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @access public
+	* @param string $blockname Name of block to assign $vararray to
+	* @param array $vararray A hash of variable name => value pairs
 	*/
-	function assign_block_vars($blockname, $vararray)
+	public function assign_block_vars($blockname, array $vararray)
 	{
 		if (strpos($blockname, '.') !== false)
 		{
@@ -558,18 +658,51 @@ class template
 	* @return bool false on error, true on success
 	* @access public
 	*/
-	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
+	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		if (strpos($blockname, '.') !== false)
 		{
-			// Nested blocks are not supported
-			return false;
+			// Nested block.
+			$blocks = explode('.', $blockname);
+			$blockcount = sizeof($blocks) - 1;
+
+			$block = &$this->_tpldata;
+			for ($i = 0; $i < $blockcount; $i++)
+			{
+				if (($pos = strpos($blocks[$i], '[')) !== false)
+				{
+					$name = substr($blocks[$i], 0, $pos);
+
+					if (strpos($blocks[$i], '[]') === $pos)
+					{
+						$index = sizeof($block[$name]) - 1;
+					}
+					else
+					{
+						$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
+					}
+				}
+				else
+				{
+					$name = $blocks[$i];
+					$index = sizeof($block[$name]) - 1;
+				}
+				$block = &$block[$name];
+				$block = &$block[$index];
+			}
+
+			$block = &$block[$blocks[$i]]; // Traverse the last block
+		}
+		else
+		{
+			// Top-level block.
+			$block = &$this->_tpldata[$blockname];
 		}
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
-			$key = ($key === false) ? 0 : sizeof($this->_tpldata[$blockname]);
+			$key = ($key === false) ? 0 : sizeof($block);
 		}
 
 		// Get correct position if array given
@@ -579,7 +712,7 @@ class template
 			list($search_key, $search_value) = @each($key);
 
 			$key = NULL;
-			foreach ($this->_tpldata[$blockname] as $i => $val_ary)
+			foreach ($block as $i => $val_ary)
 			{
 				if ($val_ary[$search_key] === $search_value)
 				{
@@ -612,15 +745,13 @@ class template
 			}
 
 			// Re-position template blocks
-			for ($i = sizeof($this->_tpldata[$blockname]); $i > $key; $i--)
+			for ($i = sizeof($block); $i > $key; $i--)
 			{
-				$this->_tpldata[$blockname][$i] = $this->_tpldata[$blockname][$i-1];
-				$this->_tpldata[$blockname][$i]['S_ROW_COUNT'] = $i;
+				$block[$i] = $block[$i-1];
 			}
 
 			// Insert vararray at given position
-			$vararray['S_ROW_COUNT'] = $key;
-			$this->_tpldata[$blockname][$key] = $vararray;
+			$block[$key] = $vararray;
 
 			return true;
 		}
@@ -628,12 +759,13 @@ class template
 		// Which block to change?
 		if ($mode == 'change')
 		{
-			if ($key == sizeof($this->_tpldata[$blockname]))
+			if ($key == sizeof($block))
 			{
 				$key--;
 			}
 
-			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], $vararray);
+			$block[$key] = array_merge($block[$key], $vararray);
+
 			return true;
 		}
 
@@ -643,8 +775,11 @@ class template
 	/**
 	* Include a separate template
 	* @access private
+	* @param string $filename Template filename to include
+	* @param bool $include True to include the file, false to just load it
+	* @uses template_compile is used to compile uncached templates
 	*/
-	function _tpl_include($filename, $include = true)
+	private function _tpl_include($filename, $include = true)
 	{
 		$handle = $filename;
 		$this->filename[$handle] = $filename;
@@ -654,18 +789,31 @@ class template
 			$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
 		}
 
-		$filename = $this->_tpl_load($handle);
+ 		$filename = $this->_tpl_load($handle);
 
 		if ($include)
 		{
 			global $user;
+
+			$_tpldata	= &$this->_tpldata;
+			$_rootref	= &$this->_rootref;
+			$_lang		= &$user->lang;
 
 			if ($filename)
 			{
 				include($filename);
 				return;
 			}
-			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
+			else
+			{
+				$compile = new phpbb_template_compile($this);
+
+				if (($code = $compile->_tpl_gen_src($handle)) !== false)
+				{
+					$code = ' ?> ' . $code . ' <?php ';
+					eval($code);
+				}
+			}
 		}
 	}
 
@@ -673,7 +821,7 @@ class template
 	* Include a php-file
 	* @access private
 	*/
-	function _php_include($filename)
+	private function _php_include($filename)
 	{
 		global $phpbb_root_path;
 
@@ -687,4 +835,13 @@ class template
 		}
 		include($file);
 	}
+}
+
+/**
+ * @todo remove this
+ * 
+ */
+class template extends phpbb_template
+{
+	// dirty hack
 }
