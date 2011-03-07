@@ -7,12 +7,12 @@
 *
 */
 
-require_once __DIR__ . '/../mock/cache.php';
-require_once __DIR__ . '/task/testmod/dummy_task.php';
-require_once __DIR__ . '/task/testmod/second_dummy_task.php';
-require_once __DIR__ . '/task2/testmod/simple_ready.php';
-require_once __DIR__ . '/task2/testmod/simple_not_runnable.php';
-require_once __DIR__ . '/task2/testmod/simple_should_not_run.php';
+require_once dirname(__FILE__) . '/../mock/cache.php';
+require_once dirname(__FILE__) . '/task/testmod/dummy_task.php';
+require_once dirname(__FILE__) . '/task/testmod/second_dummy_task.php';
+require_once dirname(__FILE__) . '/task2/testmod/simple_ready.php';
+require_once dirname(__FILE__) . '/task2/testmod/simple_not_runnable.php';
+require_once dirname(__FILE__) . '/task2/testmod/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 {
