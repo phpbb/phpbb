@@ -55,10 +55,18 @@ class dbal_firebird extends dbal
 
 		if ($this->persistency)
 		{
+			if (!function_exists('ibase_pconnect'))
+			{
+				return $this->sql_error('ibase_pconnect function does not exist, is interbase extension installed?');
+			}
 			$this->db_connect_id = @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3);
 		}
 		else
 		{
+			if (!function_exists('ibase_connect'))
+			{
+				return $this->sql_error('ibase_connect function does not exist, is interbase extension installed?');
+			}
 			$this->db_connect_id = @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
 		}
 
