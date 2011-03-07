@@ -18,7 +18,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		$this->manager = new phpbb_cron_manager(__DIR__ . '/task/', 'php');
+		$this->manager = new phpbb_cron_manager(dirname(__FILE__) . '/task/', 'php');
 		$this->task_name = 'phpbb_cron_task_testmod_dummy_task';
 	}
 
@@ -57,7 +57,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 	public function test_manager_finds_all_ready_tasks_cached()
 	{
 		$cache = new phpbb_mock_cache(array('_cron_tasks' => array($this->task_name)));
-		$manager = new phpbb_cron_manager(__DIR__ . '/../../phpBB/', 'php', $cache);
+		$manager = new phpbb_cron_manager(dirname(__FILE__) . '/../../phpBB/', 'php', $cache);
 
 		$tasks = $manager->find_all_ready_tasks();
 		$this->assertEquals(1, sizeof($tasks));
@@ -65,7 +65,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_manager_finds_only_ready_tasks()
 	{
-		$manager = new phpbb_cron_manager(__DIR__ . '/task2/', 'php');
+		$manager = new phpbb_cron_manager(dirname(__FILE__) . '/task2/', 'php');
 		$tasks = $manager->find_all_ready_tasks();
 		$task_names = $this->tasks_to_names($tasks);
 		$this->assertEquals(array('phpbb_cron_task_testmod_simple_ready'), $task_names);
