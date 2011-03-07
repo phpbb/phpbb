@@ -1768,7 +1768,7 @@ if (extension_loaded('intl'))
 }
 else
 {
-    /**
+	/**
 	* A wrapper function for the normalizer which takes care of including the class if
 	* required and modifies the passed strings to be in NFC (Normalization Form Composition).
 	*
