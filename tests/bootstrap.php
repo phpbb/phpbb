@@ -12,6 +12,10 @@ $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
 $table_prefix = 'phpbb_';
 
+if (!defined('E_DEPRECATED'))
+{
+    define('E_DEPRECATED', 8192);
+}
 error_reporting(E_ALL & ~E_DEPRECATED);
 
 // If we are on PHP >= 6.0.0 we do not need some code
