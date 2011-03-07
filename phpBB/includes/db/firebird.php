@@ -28,6 +28,7 @@ class dbal_firebird extends dbal
 	var $last_query_text = '';
 	var $service_handle = false;
 	var $affected_rows = 0;
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -57,7 +58,8 @@ class dbal_firebird extends dbal
 		{
 			if (!function_exists('ibase_pconnect'))
 			{
-				return $this->sql_error('ibase_pconnect function does not exist, is interbase extension installed?');
+				$this->connect_error = 'ibase_pconnect function does not exist, is interbase extension installed?';
+				return $this->sql_error('');
 			}
 			$this->db_connect_id = @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3);
 		}
@@ -65,7 +67,8 @@ class dbal_firebird extends dbal
 		{
 			if (!function_exists('ibase_connect'))
 			{
-				return $this->sql_error('ibase_connect function does not exist, is interbase extension installed?');
+				$this->connect_error = 'ibase_connect function does not exist, is interbase extension installed?';
+				return $this->sql_error('');
 			}
 			$this->db_connect_id = @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
 		}
