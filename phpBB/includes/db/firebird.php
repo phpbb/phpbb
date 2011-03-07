@@ -498,8 +498,24 @@ class dbal_firebird extends dbal
 	*/
 	function _sql_error()
 	{
+		// Need special handling here because ibase_errmsg returns
+		// connection errors, however if the interbase extension
+		// is not installed then ibase_errmsg does not exist and
+		// we cannot call it.
+		if (function_exists('ibase_errmsg'))
+		{
+			$msg = @ibase_errmsg();
+			if (!$msg)
+			{
+				$msg = $this->connect_error;
+			}
+		}
+		else
+		{
+			$msg = $this->connect_error;
+		}
 		return array(
-			'message'	=> @ibase_errmsg(),
+			'message'	=> $msg,
 			'code'		=> (@function_exists('ibase_errcode') ? @ibase_errcode() : '')
 		);
 	}
