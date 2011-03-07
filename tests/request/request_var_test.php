@@ -13,6 +13,15 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 class phpbb_request_var_test extends phpbb_test_case
 {
 	/**
+	* Makes sure request_var has its standard behaviour.
+	*/
+	protected function setUp()
+	{
+		parent::setUp();
+		request_var(false, false, false, false, false);
+	}
+
+	/**
 	* @dataProvider request_variables
 	*/
 	public function test_post($variable_value, $default, $multibyte, $expected)
