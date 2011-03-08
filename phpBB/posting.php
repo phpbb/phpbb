@@ -665,14 +665,14 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 {
 	$max_filesize = @ini_get('upload_max_filesize');
-	$unit = 'MB';
+	$unit = 'MIB';
 
 	if (!empty($max_filesize))
 	{
 		$unit = strtolower(substr($max_filesize, -1, 1));
 		$max_filesize = (int) $max_filesize;
 
-		$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+		$unit = ($unit == 'k') ? 'KIB' : (($unit == 'g') ? 'GIB' : 'MIB');
 	}
 
 	$error[] = (empty($max_filesize)) ? $user->lang['PHP_POST_NA'] : sprintf($user->lang['PHP_POST_OVERRUN'], $max_filesize, $user->lang[$unit]);
