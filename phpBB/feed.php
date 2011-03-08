@@ -147,6 +147,7 @@ $if_modified_time = phpbb_parse_if_modified_since();
 if ($if_modified_time && $if_modified_time >= $feed_updated_time)
 {
 	send_status_line(304, 'Not Modified');
+	header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
 	garbage_collection();
 	exit_handler();
 }
