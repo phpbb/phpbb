@@ -98,7 +98,7 @@ class dbal_postgres extends dbal
 		}
 		else
 		{
-			if (!function_exists('pg_pconnect'))
+			if (!function_exists('pg_connect'))
 			{
 				$this->connect_error = 'pg_connect function does not exist, is pgsql extension installed?';
 				return $this->sql_error('');

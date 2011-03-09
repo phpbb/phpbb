@@ -81,7 +81,7 @@ class dbal_firebird extends dbal
 		}
 		else
 		{
-			$thih->service_handle = false;
+			$this->service_handle = false;
 		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
