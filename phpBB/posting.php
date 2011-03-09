@@ -664,18 +664,11 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 // and http://www.phpbb.com/bugs/phpbb3/58405 for discussion
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 {
-	$max_filesize = @ini_get('upload_max_filesize');
-	$unit = 'MIB';
-
-	if (!empty($max_filesize))
+	if (!function_exists('format_upload_too_large_message'))
 	{
-		$unit = strtolower(substr($max_filesize, -1, 1));
-		$max_filesize = (int) $max_filesize;
-
-		$unit = ($unit == 'k') ? 'KIB' : (($unit == 'g') ? 'GIB' : 'MIB');
+		include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	}
-
-	$error[] = (empty($max_filesize)) ? $user->lang['PHP_POST_NA'] : sprintf($user->lang['PHP_POST_OVERRUN'], $max_filesize, $user->lang[$unit]);
+	$error[] = format_upload_too_large_message('PHP_POST_NA', 'PHP_POST_OVERRUN');
 
 	// This will close upload progress popup
 	$_POST['add_file'] = true;

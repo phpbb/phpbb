@@ -594,18 +594,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$max_filesize = @ini_get('upload_max_filesize');
-			$unit = 'MB';
-
-			if (!empty($max_filesize))
-			{
-				$unit = strtolower(substr($max_filesize, -1, 1));
-				$max_filesize = (int) $max_filesize;
-
-				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
-			}
-
-			$file->error[] = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+			$file->error[] = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
 			return $file;
 		}
 
@@ -681,18 +670,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$max_filesize = @ini_get('upload_max_filesize');
-			$unit = 'MB';
-
-			if (!empty($max_filesize))
-			{
-				$unit = strtolower(substr($max_filesize, -1, 1));
-				$max_filesize = (int) $max_filesize;
-
-				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
-			}
-
-			$file->error[] = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+			$file->error[] = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
 			return $file;
 		}
 
@@ -863,18 +841,7 @@ class fileupload
 		switch ($errorcode)
 		{
 			case 1:
-				$max_filesize = @ini_get('upload_max_filesize');
-				$unit = 'MB';
-
-				if (!empty($max_filesize))
-				{
-					$unit = strtolower(substr($max_filesize, -1, 1));
-					$max_filesize = (int) $max_filesize;
-
-					$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
-				}
-
-				$error = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+				$error = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
 			break;
 
 			case 2:
@@ -1007,6 +974,32 @@ class fileupload
 			16 => array('xbm'),
 		);
 	}
+}
+
+function format_upload_too_large_message($unknown_limit_message, $known_limit_message)
+{
+	global $user;
+
+	$max_filesize = @ini_get('upload_max_filesize');
+	$unit = 'MIB';
+
+	if (!empty($max_filesize))
+	{
+		$unit = strtolower(substr($max_filesize, -1, 1));
+		$max_filesize = (int) $max_filesize;
+
+		$unit = ($unit == 'k') ? 'KIB' : (($unit == 'g') ? 'GIB' : 'MIB');
+	}
+
+	if (empty($max_filesize))
+	{
+		$error = $user->lang[$unknown_limit_message];
+	}
+	else
+	{
+		$error = sprintf($user->lang[$known_limit_message], $max_filesize, $user->lang[$unit]);
+	}
+	return $error;
 }
 
 ?>
