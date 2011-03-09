@@ -28,6 +28,7 @@ class dbal_firebird extends dbal
 	var $last_query_text = '';
 	var $service_handle = false;
 	var $affected_rows = 0;
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -53,9 +54,35 @@ class dbal_firebird extends dbal
 			$use_database = $this->server . ':' . $this->dbname;
 		}
 
-		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
+		if ($this->persistency)
+		{
+			if (!function_exists('ibase_pconnect'))
+			{
+				$this->connect_error = 'ibase_pconnect function does not exist, is interbase extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3);
+		}
+		else
+		{
+			if (!function_exists('ibase_connect'))
+			{
+				$this->connect_error = 'ibase_connect function does not exist, is interbase extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
+		}
 
-		$this->service_handle = (function_exists('ibase_service_attach') && $this->server) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
+		// Do not call ibase_service_attach if connection failed,
+		// otherwise error message from ibase_(p)connect call will be clobbered.
+		if ($this->db_connect_id && function_exists('ibase_service_attach') && $this->server)
+		{
+			$this->service_handle = @ibase_service_attach($this->server, $this->user, $sqlpassword);
+		}
+		else
+		{
+			$this->service_handle = false;
+		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -471,8 +498,24 @@ class dbal_firebird extends dbal
 	*/
 	function _sql_error()
 	{
+		// Need special handling here because ibase_errmsg returns
+		// connection errors, however if the interbase extension
+		// is not installed then ibase_errmsg does not exist and
+		// we cannot call it.
+		if (function_exists('ibase_errmsg'))
+		{
+			$msg = @ibase_errmsg();
+			if (!$msg)
+			{
+				$msg = $this->connect_error;
+			}
+		}
+		else
+		{
+			$msg = $this->connect_error;
+		}
 		return array(
-			'message'	=> @ibase_errmsg(),
+			'message'	=> $msg,
 			'code'		=> (@function_exists('ibase_errcode') ? @ibase_errcode() : '')
 		);
 	}
