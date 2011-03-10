@@ -716,7 +716,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
 		// make sure template_file path doesn't go upwards
-		$template_file = str_replace('..', '.', $template_file);
+		$template_file = preg_replace('#\.{2,}#', '.', $template_file);
 
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
