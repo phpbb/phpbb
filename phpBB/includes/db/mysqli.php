@@ -27,12 +27,19 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_mysqli extends dbal
 {
 	var $multi_insert = true;
+	var $connect_error = '';
 
 	/**
 	* Connect to server
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false , $new_link = false)
 	{
+		if (!function_exists('mysqli_connect'))
+		{
+			$this->connect_error = 'mysqli_connect function does not exist, is mysqli extension installed?';
+			return $this->sql_error('');
+		}
+
 		// Mysqli extension supports persistent connection since PHP 5.3.0
 		$this->persistency = (version_compare(PHP_VERSION, '5.3.0', '>=')) ? $persistency : false;
 		$this->user = $sqluser;

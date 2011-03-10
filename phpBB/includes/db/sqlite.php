@@ -25,6 +25,8 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_sqlite extends dbal
 {
+	var $connect_error = '';
+
 	/**
 	* Connect to server
 	*/
@@ -36,7 +38,24 @@ class dbal_sqlite extends dbal
 		$this->dbname = $database;
 
 		$error = '';
-		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0666, $error) : @sqlite_open($this->server, 0666, $error);
+		if ($this->persistency)
+		{
+			if (!function_exists('sqlite_popen'))
+			{
+				$this->connect_error = 'sqlite_popen function does not exist, is sqlite extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @sqlite_popen($this->server, 0666, $error);
+		}
+		else
+		{
+			if (!function_exists('sqlite_open'))
+			{
+				$this->connect_error = 'sqlite_open function does not exist, is sqlite extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @sqlite_open($this->server, 0666, $error);
+		}
 
 		if ($this->db_connect_id)
 		{
