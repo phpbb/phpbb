@@ -256,15 +256,7 @@ function feed_format_date($time)
 		global $user;
 
 		$zone_offset = $user->create_datetime()->getOffset();
-
-		$sign = ($zone_offset < 0) ? '-' : '+';
-		$time_offset = abs($zone_offset);
-
-		$offset_seconds	= $time_offset % 3600;
-		$offset_minutes	= $offset_seconds / 60;
-		$offset_hours	= ($time_offset - $offset_seconds) / 3600;
-
-		$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+		$offset_string = phpbb_format_timezone_offset($zone_offset);
 	}
 
 	return gmdate("Y-m-d\TH:i:s", $time + $zone_offset) . $offset_string;

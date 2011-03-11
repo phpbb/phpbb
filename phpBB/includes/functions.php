@@ -1069,6 +1069,65 @@ function style_select($default = '', $all = false)
 	return $style_options;
 }
 
+function phpbb_format_timezone_offset($tz_offset)
+{
+	$sign = ($tz_offset < 0) ? '-' : '+';
+	$time_offset = abs($tz_offset);
+
+	$offset_seconds	= $time_offset % 3600;
+	$offset_minutes	= $offset_seconds / 60;
+	$offset_hours	= ($time_offset - $offset_seconds) / 3600;
+
+	$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+	return $offset_string;
+}
+
+// Compares two time zone labels.
+// Arranges them in increasing order by timezone offset.
+// Places UTC before other timezones in the same offset.
+function tz_select_compare($a, $b)
+{
+	$a_sign = $a[3];
+	$b_sign = $b[3];
+	if ($a_sign != $b_sign)
+	{
+		return $a_sign == '-' ? -1 : 1;
+	}
+
+	$a_offset = substr($a, 4, 5);
+	$b_offset = substr($b, 4, 5);
+	if ($a_offset == $b_offset)
+	{
+		$a_name = substr($a, 12);
+		$b_name = substr($b, 12);
+		if ($a_name == $b_name)
+		{
+			return 0;
+		} else if ($a_name == 'UTC')
+		{
+			return -1;
+		} else if ($b_name == 'UTC')
+		{
+			return 1;
+		}
+		else
+		{
+			return $a_name < $b_name ? -1 : 1;
+		}
+	}
+	else
+	{
+		if ($a_sign == '-')
+		{
+			return $a_offset > $b_offset ? -1 : 1;
+		}
+		else
+		{
+			return $a_offset < $b_offset ? -1 : 1;
+		}
+	}
+}
+
 /**
 * Pick a timezone
 * @todo Possible HTML escaping
@@ -1083,7 +1142,17 @@ function tz_select($default = '', $truncate = false)
 	{
 		$timezones = DateTimeZone::listIdentifiers();
 
-		sort($timezones);
+		foreach ($timezones as &$timezone)
+		{
+			$tz = new DateTimeZone($timezone);
+			$dt = new phpbb_datetime('now', $tz);
+			$offset = $dt->getOffset();
+			$offset_string = phpbb_format_timezone_offset($offset);
+			$timezone = 'GMT' . $offset_string . ' - ' . $timezone;
+		}
+		unset($timezone);
+
+		usort($timezones, 'tz_select_compare');
 	}
 
 	$tz_select = '';
