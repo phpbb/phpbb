@@ -175,8 +175,12 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 	switch ($db->sql_layer)
 	{
 		case 'firebird':
-		case 'postgres':
 			$sql_update = 'CAST(CAST(config_value as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
+		break;
+
+		case 'postgres':
+			// Need to cast to text first for PostgreSQL 7.x
+			$sql_update = 'CAST(CAST(config_value::text as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
 		break;
 
 		// MySQL, SQlite, mssql, mssql_odbc, oracle
