@@ -1,6 +1,7 @@
 *~
 phpunit.xml
 phpBB/cache/*.php
+phpBB/cache/queue.php.lock
 phpBB/config.php
 phpBB/files/*
 phpBB/images/avatars/gallery/*
