@@ -48,7 +48,12 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 
 		if ($ignore_db_info)
 		{
+			unset($cache_data['mssqlodbc_version']);
+			unset($cache_data['mssql_version']);
+			unset($cache_data['mysql_version']);
 			unset($cache_data['mysqli_version']);
+			unset($cache_data['pgsql_version']);
+			unset($cache_data['sqlite_version']);
 		}
 
 		$test->assertEquals($data, $cache_data);
