@@ -29,10 +29,9 @@ header('Content-length: 43');
 
 echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
-// test without flush ;)
-// flush();
+// Flush here to prevent browser from showing the page as loading while running cron.
+flush();
 
-//
 if (!isset($config['cron_lock']))
 {
 	set_config('cron_lock', '0', true);
