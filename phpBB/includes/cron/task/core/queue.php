@@ -64,21 +64,4 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 		global $config;
 		return $config['last_queue_run'] < time() - $config['queue_interval_config'];
 	}
-
-	/**
-	* Returns whether this cron task can be run in shutdown function.
-	*
-	* A user reported that using the mail() function during shutdown
-	* function execution does not work. Therefore if email is delivered
-	* via the mail() function (as opposed to SMTP) queue cron task marks
-	* itself shutdown function-unsafe.
-	*
-	* @return bool
-	*/
-	public function is_shutdown_function_safe()
-	{
-		global $config;
-		// A user reported using the mail() function while using shutdown does not work. We do not want to risk that.
-		return !$config['smtp_delivery'];
-	}
 }
