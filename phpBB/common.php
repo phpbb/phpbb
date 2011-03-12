@@ -118,11 +118,6 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-if (defined('IN_CRON'))
-{
-	$phpbb_root_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-}
-
 if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
 	require($phpbb_root_path . 'config.' . $phpEx);

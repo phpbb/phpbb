@@ -4611,7 +4611,7 @@ function page_footer($run_cron = true)
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
+	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
