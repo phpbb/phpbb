@@ -56,7 +56,7 @@ class ucp_register
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
 
-			if (file_exists($user->lang_path . $use_lang . '/'))
+			if (!validate_language_iso_name($use_lang))
 			{
 				if ($change_lang)
 				{
@@ -210,7 +210,7 @@ class ucp_register
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
 				'tz'				=> array('num', false, -14, 14),
-				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
+				'lang'				=> array('language_iso_name'),
 			));
 
 			if (!check_form_key('ucp_register'))
