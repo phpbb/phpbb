@@ -1422,6 +1422,31 @@ function validate_match($string, $optional = false, $match = '')
 }
 
 /**
+* Validate Language Pack ISO Name
+*
+* Tests whether a language name is valid and installed
+*
+* @param string $lang_iso	The language string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function validate_language_iso_name($lang_iso)
+{
+	global $db;
+
+	$sql = 'SELECT lang_id
+		FROM ' . LANG_TABLE . "
+		WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
+	$result = $db->sql_query($sql);
+	$lang_id = (int) $db->sql_fetchfield('lang_id');
+	$db->sql_freeresult($result);
+
+	return ($lang_id) ? false : 'WRONG_DATA';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
