@@ -1137,9 +1137,9 @@ class acp_attachments
 					FROM ' . ATTACHMENTS_TABLE . ' a 
 					LEFT JOIN ' . USERS_TABLE . ' u ON (u.user_id = a.poster_id) 
 					LEFT JOIN ' . TOPICS_TABLE . " t ON (a.topic_id = t.topic_id)
-						WHERE a.is_orphan = 0
-							$limit_filetime
-								ORDER BY $sql_sort_order";
+					WHERE a.is_orphan = 0
+						$limit_filetime
+					ORDER BY $sql_sort_order";
 				$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 				$i = ($store_reverse) ? $sql_limit - 1 : 0;
@@ -1161,8 +1161,7 @@ class acp_attachments
 					'S_SORT_DIR'		=> $s_sort_dir)
 				);
 
-				// Grab extensions
-				$extensions = array();
+				// Grab extensions information
 				$extensions = $cache->obtain_attach_extensions(true);
 
 				for ($i = 0, $end = sizeof($attachments_list); $i < $end; ++$i)
