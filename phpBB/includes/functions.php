@@ -4261,7 +4261,7 @@ function phpbb_http_login($param)
 	if (!is_null($username) && is_null($password) && strpos($username, 'Basic ') === 0)
 	{
 		list($username, $password) = explode(':', base64_decode(substr($username, 6)), 2);
-    }
+	}
 
 	if (!is_null($username) && !is_null($password))
 	{
