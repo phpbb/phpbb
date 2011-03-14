@@ -70,8 +70,9 @@ msg=$(grep -nE '.{81,}' "$1");
 
 if [ $? -eq 0 ]
 then
-	echo "The following lines are greater than 80 characters long:\n" >&2;
-	echo $msg >&2;
+	echo "The following lines are greater than 80 characters long:" >&2;
+	echo >&2
+	echo "$msg" >&2;
 
 	quit $ERR_LENGTH;
 fi
