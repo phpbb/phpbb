@@ -75,7 +75,12 @@
 	<!-- ENDIF -->
 	<dl>
 		<dt><label for="timezone">{L_BOARD_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="timezone" class="autowidth">{S_TZ_OPTIONS}</select></dd>
+		<dd>
+			<select name="tz" id="timezone" class="autowidth tz_select">
+				<option value="">{L_SELECT_TIMEZONE}</option>
+				{S_TZ_OPTIONS}
+			</select>
+		</dd>
 	</dl>
 	<dl>
 		<dt><label for="dst1">{L_BOARD_DST}:</label></dt>
@@ -140,5 +145,8 @@
 	customDates();
 // ]]>
 </script>
+
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+<script type="text/javascript">phpbb_preselect_tz_select();</script>
 
 <!-- INCLUDE ucp_footer.html -->

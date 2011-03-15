@@ -399,6 +399,7 @@ $lang = array_merge($lang, array(
 	'SIGNATURE_EXPLAIN'			=> 'This is a block of text that can be added to posts you make. There is a %d character limit.',
 	'SIGNATURE_PREVIEW'			=> 'Your signature will appear like this in posts',
 	'SIGNATURE_TOO_LONG'		=> 'Your signature is too long.',
+	'SELECT_TIMEZONE'			=> 'Select timezone',
 	'SORT'						=> 'Sort',
 	'SORT_COMMENT'				=> 'File comment',
 	'SORT_DOWNLOADS'			=> 'Downloads',

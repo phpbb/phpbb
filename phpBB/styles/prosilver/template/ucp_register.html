@@ -59,7 +59,12 @@
 	</dl>
 	<dl>
 		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
+		<dd>
+			<select name="tz" id="tz" tabindex="7" class="autowidth tz_select">
+				<option value="">{L_SELECT_TIMEZONE}</option>
+				{S_TZ_OPTIONS}
+			</select>
+		</dd>
 	</dl>
 
 	<!-- IF .profile_fields -->
@@ -109,5 +114,8 @@
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 </form>
+
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+<script type="text/javascript">phpbb_preselect_tz_select();</script>
 
 <!-- INCLUDE overall_footer.html -->
