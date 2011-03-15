@@ -259,6 +259,14 @@ class dbal_mssqlnative extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	function sql_buffer_nested_transaction()
+	{
+		return true;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
@@ -628,7 +636,7 @@ class dbal_mssqlnative extends dbal
 			return false;
 		}
 	}
-	
+
 	/**
 	* Allows setting mssqlnative specific query options passed to sqlsrv_query as 4th parameter.
 	*/
