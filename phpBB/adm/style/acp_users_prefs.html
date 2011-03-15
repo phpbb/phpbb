@@ -57,11 +57,6 @@
 		<dd><select id="tz" name="tz" style="width: 100%;">{S_TZ_OPTIONS}</select></dd>
 	</dl>
 	<dl> 
-		<dt><label for="dst">{L_BOARD_DST}:</label></dt>
-		<dd><label><input type="radio" class="radio" name="dst" value="1"<!-- IF DST --> id="dst" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-			<label><input type="radio" class="radio" name="dst" value="0"<!-- IF not DST --> id="dst" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
-	</dl>
-	<dl> 
 		<dt><label for="dateoptions">{L_BOARD_DATE_FORMAT}:</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
 		<dd><select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }">{S_DATEFORMAT_OPTIONS}</select></dd>
 		<dd><div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="30" /></div></dd>
