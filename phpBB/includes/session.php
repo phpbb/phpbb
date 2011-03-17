@@ -221,7 +221,7 @@ class session
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
-			$this->forwarded_for = preg_replace('#[ ]{2,}#', ' ', str_replace(',', ' ', $this->forwarded_for));
+			$this->forwarded_for = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->forwarded_for));
 
 			// split the list of IPs
 			$ips = explode(' ', $this->forwarded_for);
@@ -268,7 +268,7 @@ class session
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
 		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars((string) $_SERVER['REMOTE_ADDR']) : '';
-		$this->ip = preg_replace('#[ ]{2,}#', ' ', str_replace(',', ' ', $this->ip));
+		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs
 		$ips = explode(' ', $this->ip);
