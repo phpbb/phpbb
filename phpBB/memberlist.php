@@ -1072,6 +1072,11 @@ switch ($mode)
 
 			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
 			{
+				// Before PHP 5.1 an error value -1 can be returned instead of false.
+				// Theoretically gmmktime() can also legitimately return -1 as an actual timestamp.
+				// But since we do not pass the $second parameter to gmmktime(),
+				// an actual unix timestamp -1 cannot be returned in this case.
+				// Thus we can check whether it is -1 and treat -1 as an error.
 				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
 
 				if ($joined_time !== false && $joined_time !== -1)
