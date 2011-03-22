@@ -64,7 +64,9 @@ class phpbb_password_complexity_test extends phpbb_test_case
 	*/
 	public function test_password_complexity_positive($password, $mode)
 	{
-		$this->assertFalse(validate_password($password, $mode));
+		global $config;
+		$config['pass_complex'] = $mode;
+		$this->assertFalse(validate_password($password));
 	}
 
 	/**
@@ -72,6 +74,8 @@ class phpbb_password_complexity_test extends phpbb_test_case
 	*/
 	public function test_password_complexity_negative($password, $mode)
 	{
-		$this->assertEquals('INVALID_CHARS', validate_password($password, $mode));
+		global $config;
+		$config['pass_complex'] = $mode;
+		$this->assertEquals('INVALID_CHARS', validate_password($password));
 	}
 }

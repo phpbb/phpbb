@@ -1601,7 +1601,7 @@ function validate_username($username, $allowed_username = false)
 *
 * @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_password($password, $mode = false)
+function validate_password($password)
 {
 	global $config, $db, $user;
 
@@ -1641,7 +1641,7 @@ function validate_password($password, $mode = false)
 
 	$chars = array();
 
-	switch (($mode === false) ? $config['pass_complex'] : $mode)
+	switch ($config['pass_complex'])
 	{
 		case 'PASS_TYPE_CASE':
 			$chars[] = $low;
