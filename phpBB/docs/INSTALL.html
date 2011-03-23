@@ -79,6 +79,7 @@
 	<li><a href="#postinstall">Important (security related) post-Install tasks for all installation methods</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#avatars">Uploadable avatars</a></li>
+		<li><a href="#webserver_configuration">Webserver configuration</a></li>
 	</ol>
 	</li>
 	<li><a href="#disclaimer">Disclaimer</a></li>
@@ -407,6 +408,12 @@
 	<p>On Windows system you need to ensure the directory is not write-protected and that it has global write permissions (see your servers documentation or contact your hosting provider if you are unsure on how to achieve this).</p>
 
 	<p>Please be aware that setting a directories permissions to global write access is a potential security issue. While it is unlikely that anything nasty will occur (such as all the avatars being deleted) there are always people out there to cause trouble. Therefore you should monitor this directory and if possible make regular backups.</p>
+
+<a name="webserver_configuration"></a><h3>6.ii. Webserver configuration</h3>
+
+	<p>Depending on your web server you may have to configure your server to deny web access to the <code>files/</code> and <code>store/</code> directories. This is to prevent users from accessing private attachments and database backups.</p>
+
+	<p>For apache there are <code>.htaccess</code> files already in place to do this for you. For other webservers you will have to adjust the configuration yourself. There are sample configuration files for <em>lighttpd</em> and <em>nginx</em> in the <code>docs/</code> directory.</p>
 
 		</div>
 
