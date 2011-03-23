@@ -49,7 +49,7 @@ class acp_disallow
 
 		if ($disallow)
 		{
-			$disallowed_user = $db->sql_escape(utf8_normalize_nfc(request_var('disallowed_user', '', true)));
+			$disallowed_user = utf8_normalize_nfc(request_var('disallowed_user', '', true)));
 
 			if (!$disallowed_user)
 			{
@@ -70,7 +70,7 @@ class acp_disallow
 				trigger_error($user->lang['DISALLOW_IN_USE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$disallowed_user = str_replace('*', '%', $disallowed_user);
+			$disallowed_user = $db->sql_escape(str_replace('*', $db->any_char, $disallowed_user));
 
 			$sql = 'SELECT disallow_id
 				FROM ' . DISALLOW_TABLE . "
