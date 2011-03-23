@@ -516,7 +516,7 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	$output = '*';
 
 	// Check for correct hash
-	if (substr($setting, 0, 3) != '$H$')
+	if (substr($setting, 0, 3) != '$H$' && substr($setting, 0, 3) != '$P$')
 	{
 		return $output;
 	}
