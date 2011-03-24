@@ -99,7 +99,7 @@ class acp_email
 					else
 					{
 						$sql_ary = array(
-							'SELECT'	=> 'u.username, u.username_clean, u.user_email, u.user_jabber, u.user_notify_type',
+							'SELECT'	=> 'u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
 							'FROM'		=> array(
 								USERS_TABLE	=> 'u',
 							),
