@@ -19,21 +19,25 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 	static public function session_begin_attempts()
 	{
+		// The session_id field is defined as CHAR(32) in the database schema.
+		// Thus the data we put in session_id fields has to have a length of 32 characters on stricter DBMSes.
+		// Thus we fill those strings up with zeroes until they have a string length of 32.
+
 		return array(
 			array(
-				'bar_session', '4', 'user agent', '127.0.0.1',
+				'bar_session000000000000000000000', '4', 'user agent', '127.0.0.1',
 				array(
-					array('session_id' => 'anon_session', 'session_user_id' => 1),
-					array('session_id' => 'bar_session', 'session_user_id' => 4),
+					array('session_id' => 'anon_session00000000000000000000', 'session_user_id' => 1),
+					array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 				),
 				array(),
 				'If a request comes with a valid session id with matching user agent and IP, no new session should be created.',
 			),
 			array(
-				'anon_session', '4', 'user agent', '127.0.0.1',
+				'anon_session00000000000000000000', '4', 'user agent', '127.0.0.1',
 				array(
 					array('session_id' => '__new_session_id__', 'session_user_id' => 1), // use generated SID
-					array('session_id' => 'bar_session', 'session_user_id' => 4),
+					array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 				),
 				array(
 					'u' => array('1', null),
