@@ -1643,23 +1643,25 @@ function validate_password($password)
 
 	switch ($config['pass_complex'])
 	{
+		// No break statements below ...
+		// We require strong passwords in case pass_complex is not set or is invalid
+		default:
+
+		// Require mixed case letters, numbers and symbols
+		case 'PASS_TYPE_SYMBOL':
+			$chars[] = $sym;
+
+		// Require mixed case letters and numbers
+		case 'PASS_TYPE_ALPHA':
+			$chars[] = $num;
+
+		// Require mixed case letters
 		case 'PASS_TYPE_CASE':
 			$chars[] = $low;
 			$chars[] = $upp;
-		break;
 
-		case 'PASS_TYPE_ALPHA':
-			$chars[] = $low;
-			$chars[] = $upp;
-			$chars[] = $num;
-		break;
-
-		case 'PASS_TYPE_SYMBOL':
-			$chars[] = $low;
-			$chars[] = $upp;
-			$chars[] = $num;
-			$chars[] = $sym;
-		break;
+		// No requirements
+		case 'PASS_TYPE_ANY':
 	}
 
 	if ($pcre)
