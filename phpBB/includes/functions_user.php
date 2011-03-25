@@ -1605,7 +1605,7 @@ function validate_password($password)
 {
 	global $config, $db, $user;
 
-	if (!$password)
+	if ($password === '')
 	{
 		return false;
 	}
