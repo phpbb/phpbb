@@ -1605,8 +1605,9 @@ function validate_password($password)
 {
 	global $config, $db, $user;
 
-	if ($password === '')
+	if ($password === '' || $config['pass_complex'] === 'PASS_TYPE_ANY')
 	{
+		// Password empty or no password complexity required.
 		return false;
 	}
 
@@ -1659,9 +1660,6 @@ function validate_password($password)
 		case 'PASS_TYPE_CASE':
 			$chars[] = $low;
 			$chars[] = $upp;
-
-		// No requirements
-		case 'PASS_TYPE_ANY':
 	}
 
 	if ($pcre)
