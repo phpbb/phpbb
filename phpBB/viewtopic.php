@@ -1112,7 +1112,7 @@ while ($row = $db->sql_fetchrow($result))
 				'warnings'		=> (isset($row['user_warnings'])) ? $row['user_warnings'] : 0,
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 
-				'sig'					=> $user_sig,
+				'sig'					=> censor_text($user_sig),
 				'sig_bbcode_uid'		=> (!empty($row['user_sig_bbcode_uid'])) ? $row['user_sig_bbcode_uid'] : '',
 				'sig_bbcode_bitfield'	=> (!empty($row['user_sig_bbcode_bitfield'])) ? $row['user_sig_bbcode_bitfield'] : '',
 
