@@ -2,8 +2,7 @@
 /**
 *
 * @package acm
-* @version $Id$
-* @copyright (c) 2005, 2011 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -40,6 +39,10 @@ if (!defined('PHPBB_ACM_REDIS'))
 
 /**
 * ACM for Redis
+*
+* Compatible with the php extension phpredis available
+* at https://github.com/nicolasff/phpredis
+*
 * @package acm
 */
 class acm extends acm_memory
