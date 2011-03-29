@@ -48,7 +48,7 @@ if (!defined('PHPBB_ACM_REDIS'))
 class acm extends acm_memory
 {
 	var $extension = 'redis';
-
+	
 	var $redis;
 
 	function acm()
@@ -56,15 +56,10 @@ class acm extends acm_memory
 		// Call the parent constructor
 		parent::acm_memory();
 
-		if (!extension_loaded('redis'))
-		{
-			trigger_error("Could not find required extension [{$this->extension}] for the ACM module $acm_type.", E_USER_ERROR);
-		}
-		
 		$this->redis = new Redis();
-		foreach (explode(',', PHPBB_ACM_REDIS) as $u)
+		foreach (explode(',', PHPBB_ACM_REDIS) as $server)
 		{
-			$parts = explode('/', $u);
+			$parts = explode('/', $server);
 			$this->redis->connect(trim($parts[0]), trim($parts[1]));
 		}
 		
@@ -72,7 +67,22 @@ class acm extends acm_memory
 		{
 			if (!$this->redis->auth(PHPBB_ACM_REDIS_PASSWORD))
 			{
+				global $acm_type;
+				
 				trigger_error("Incorrect password for the ACM module $acm_type.", E_USER_ERROR);
+			}
+		}
+		
+		$this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+		$this->redis->setOption(Redis::OPT_PREFIX, $this->key_prefix);
+		
+		if (defined('PHPBB_ACM_REDIS_DB'))
+		{
+			if (!$this->redis->select(PHPBB_ACM_REDIS_DB))
+			{
+				global $acm_type;
+				
+				trigger_error("Incorrect database for the ACM module $acm_type.", E_USER_ERROR);
 			}
 		}
 	}
@@ -110,7 +120,7 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		return $this->redis->get($this->key_prefix . $var);
+		return $this->redis->get($var);
 	}
 
 	/**
@@ -124,7 +134,7 @@ class acm extends acm_memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		return $this->redis->setex($this->key_prefix . $var, $ttl, $data);
+		return $this->redis->setex($var, $ttl, $data);
 	}
 
 	/**
@@ -136,7 +146,7 @@ class acm extends acm_memory
 	*/
 	function _delete($var)
 	{
-		if ($this->redis->delete($this->key_prefix . $var) > 0)
+		if ($this->redis->delete($var) > 0)
 		{
 			return true;
 		}
