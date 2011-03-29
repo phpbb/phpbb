@@ -80,6 +80,12 @@ define('GROUP_HIDDEN', 2);
 define('GROUP_SPECIAL', 3);
 define('GROUP_FREE', 4);
 
+// File cache path, is here as the template engine always uses it, regardles of the selected cache driver
+if (!defined('PHPBB_ACM_FILE_DIR'))
+{
+	define('PHPBB_ACM_FILE_DIR', $phpbb_root_path . 'cache/');
+}
+
 // Forum/Topic states
 define('FORUM_CAT', 0);
 define('FORUM_POST', 1);

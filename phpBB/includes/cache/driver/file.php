@@ -33,10 +33,9 @@ class phpbb_cache_driver_file extends phpbb_cache_driver_base
 	/**
 	* Set cache path
 	*/
-	function __construct($cache_dir = null)
+	function __construct()
 	{
-		global $phpbb_root_path;
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/';
+		$this->cache_dir = PHPBB_ACM_FILE_DIR;
 	}
 
 	/**
