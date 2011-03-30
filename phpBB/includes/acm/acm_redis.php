@@ -48,7 +48,7 @@ if (!defined('PHPBB_ACM_REDIS'))
 class acm extends acm_memory
 {
 	var $extension = 'redis';
-	
+
 	var $redis;
 
 	function acm()
@@ -62,26 +62,26 @@ class acm extends acm_memory
 			$parts = explode('/', $server);
 			$this->redis->connect(trim($parts[0]), trim($parts[1]));
 		}
-		
+
 		if (defined('PHPBB_ACM_REDIS_PASSWORD'))
 		{
 			if (!$this->redis->auth(PHPBB_ACM_REDIS_PASSWORD))
 			{
 				global $acm_type;
-				
+
 				trigger_error("Incorrect password for the ACM module $acm_type.", E_USER_ERROR);
 			}
 		}
-		
+
 		$this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
 		$this->redis->setOption(Redis::OPT_PREFIX, $this->key_prefix);
-		
+
 		if (defined('PHPBB_ACM_REDIS_DB'))
 		{
 			if (!$this->redis->select(PHPBB_ACM_REDIS_DB))
 			{
 				global $acm_type;
-				
+
 				trigger_error("Incorrect database for the ACM module $acm_type.", E_USER_ERROR);
 			}
 		}
