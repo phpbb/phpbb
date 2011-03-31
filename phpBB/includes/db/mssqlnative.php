@@ -50,7 +50,7 @@ class result_mssqlnative
 			}
 		}
 
-		$this->m_row_count = count($this->m_rows);
+		$this->m_row_count = sizeof($this->m_rows);
 	}
 
 	private function array_to_obj($array, &$obj)
