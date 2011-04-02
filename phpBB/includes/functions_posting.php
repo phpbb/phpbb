@@ -2614,7 +2614,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 /*
 * Handle topic bumping
 */
-function bump_topic($forum_id, $topic_id, &$post_data, $current_time = false)
+function bump_topic($forum_id, $topic_id, $post_data, $current_time = false)
 {
 	global $config, $db, $user, $phpEx, $phpbb_root_path;
 
