@@ -1332,7 +1332,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$num_matches = preg_match_all('#(?<=^|[\n .])(?:' . implode('|', $match) . ')(?![^<>]*>)#', $this->message, $matches);
+				$num_matches = preg_match_all('#(?<=^|[\n .])(?:' . implode('|', $match) . ')(?![^<>]*>)#u', $this->message, $matches);
 				unset($matches);
 
 				if ($num_matches !== false && $num_matches > $max_smilies)
@@ -1343,7 +1343,7 @@ class parse_message extends bbcode_firstpass
 			}
 
 			// Make sure the delimiter # is added in front and at the end of every element within $match
-			$this->message = trim(preg_replace(explode(chr(0), '#(?<=^|[\n .])' . implode('(?![^<>]*>)#' . chr(0) . '#(?<=^|[\n .])', $match) . '(?![^<>]*>)#'), $replace, $this->message));
+			$this->message = trim(preg_replace(explode(chr(0), '#(?<=^|[\n .])' . implode('(?![^<>]*>)#u' . chr(0) . '#(?<=^|[\n .])', $match) . '(?![^<>]*>)#'), $replace, $this->message));
 		}
 	}
 
