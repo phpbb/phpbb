@@ -1332,6 +1332,8 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
+				// 'u' modifier has been added to correctly parse smilies within unicode strings
+				// For details: http://tracker.phpbb.com/browse/PHPBB3-10117
 				$num_matches = preg_match_all('#(?<=^|[\n .])(?:' . implode('|', $match) . ')(?![^<>]*>)#u', $this->message, $matches);
 				unset($matches);
 
@@ -1343,7 +1345,10 @@ class parse_message extends bbcode_firstpass
 			}
 
 			// Make sure the delimiter # is added in front and at the end of every element within $match
-			$this->message = trim(preg_replace(explode(chr(0), '#(?<=^|[\n .])' . implode('(?![^<>]*>)#u' . chr(0) . '#(?<=^|[\n .])', $match) . '(?![^<>]*>)#'), $replace, $this->message));
+			// 'u' modifier has been added to correctly parse smilies within unicode strings
+			// For details: http://tracker.phpbb.com/browse/PHPBB3-10117
+
+			$this->message = trim(preg_replace(explode(chr(0), '#(?<=^|[\n .])' . implode('(?![^<>]*>)#u' . chr(0) . '#(?<=^|[\n .])', $match) . '(?![^<>]*>)#u'), $replace, $this->message));
 		}
 	}
 
