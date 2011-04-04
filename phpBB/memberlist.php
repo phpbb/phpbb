@@ -1716,7 +1716,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_SHORT_WWW'			=> (!empty($data['user_website'])) ? ((strlen($data['user_website']) > 55) ? substr($data['user_website'], 0, 39) . ' ... ' . substr($data['user_website'], -10) : $data['user_website']) : '',
-		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($data['user_icq']) : '',
+		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/' . urlencode($data['user_icq']) . '/' : '',
 		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
