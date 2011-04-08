@@ -394,6 +394,10 @@ class acp_icons
 					{
 						// skip images where add wasn't checked
 					}
+					else if (!file_exists($phpbb_root_path . $img_path . '/' . $image))
+					{
+						$errors[$image] = 'SMILIE_NO_FILE';
+					}
 					else
 					{
 						if ($image_width[$image] == 0 || $image_height[$image] == 0)
