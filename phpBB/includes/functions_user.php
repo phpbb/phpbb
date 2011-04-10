@@ -733,7 +733,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 			else
 			{
-				trigger_error('LENGTH_BAN_INVALID');
+				trigger_error('LENGTH_BAN_INVALID', E_USER_WARNING);
 			}
 		}
 	}
@@ -793,7 +793,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			// Make sure we have been given someone to ban
 			if (!sizeof($sql_usernames))
 			{
-				trigger_error('NO_USER_SPECIFIED');
+				trigger_error('NO_USER_SPECIFIED', E_USER_WARNING);
 			}
 
 			$sql = 'SELECT user_id
@@ -824,7 +824,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			else
 			{
 				$db->sql_freeresult($result);
-				trigger_error('NO_USERS');
+				trigger_error('NO_USERS', E_USER_WARNING);
 			}
 			$db->sql_freeresult($result);
 		break;
@@ -926,7 +926,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				if (empty($banlist_ary))
 				{
-					trigger_error('NO_IPS_DEFINED');
+					trigger_error('NO_IPS_DEFINED', E_USER_WARNING);
 				}
 			}
 		break;
@@ -954,12 +954,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			if (sizeof($ban_list) == 0)
 			{
-				trigger_error('NO_EMAILS_DEFINED');
+				trigger_error('NO_EMAILS_DEFINED', E_USER_WARNING);
 			}
 		break;
 
 		default:
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_WARNING);
 		break;
 	}
 
