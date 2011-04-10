@@ -52,14 +52,16 @@ $lang = array_merge($lang, array(
 	'SEND_TO_GROUP'			=> 'Send to group',
 	'SEND_TO_USERS'			=> 'Send to users',
 	'SEND_TO_USERS_EXPLAIN'	=> 'Entering names here will override any group selected above. Enter each username on a new line.',
-	
+
+	'MAIL_BANNED'			=> 'Mail banned users',
+	'MAIL_BANNED_EXPLAIN'	=> 'When sending a mass e-mail to a group you can select here whether banned users will also receive the e-mail.',
 	'MAIL_HIGH_PRIORITY'	=> 'High',
 	'MAIL_LOW_PRIORITY'		=> 'Low',
 	'MAIL_NORMAL_PRIORITY'	=> 'Normal',
 	'MAIL_PRIORITY'			=> 'Mail priority',
 	'MASS_MESSAGE'			=> 'Your message',
 	'MASS_MESSAGE_EXPLAIN'	=> 'Please note that you may enter only plain text. All markup will be removed before sending.',
-	
+
 	'NO_EMAIL_MESSAGE'		=> 'You must enter a message.',
 	'NO_EMAIL_SUBJECT'		=> 'You must specify a subject for your message.',
 ));
