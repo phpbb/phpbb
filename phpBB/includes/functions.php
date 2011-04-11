@@ -1380,7 +1380,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 */
 function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$last_read = array();
 
@@ -1644,7 +1644,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config;
+	global $db, $tracking_topics, $user, $config, $request;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
