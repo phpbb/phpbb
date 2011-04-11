@@ -70,7 +70,7 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id = (int) ($report_data['forum_id']) ? $report_data['forum_id'] : $forum_id;
+	$forum_id = (int) $report_data['forum_id'];
 	$topic_id = (int) $report_data['topic_id'];
 
 	$sql = 'SELECT *

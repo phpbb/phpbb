@@ -1136,7 +1136,7 @@ switch ($mode)
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
 						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
-							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
+							AND " . $db->sql_in_set('forum_id', $ip_forums);
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))

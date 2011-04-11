@@ -194,8 +194,7 @@ else
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		// Global announcement?
-		$f_download = (!$row) ? $auth->acl_getf_global('f_download') : $auth->acl_get('f_download', $row['forum_id']);
+		$f_download = $auth->acl_get('f_download', $row['forum_id']);
 
 		if ($auth->acl_get('u_download') && $f_download)
 		{

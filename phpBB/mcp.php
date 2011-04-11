@@ -85,7 +85,7 @@ if ($post_id)
 	$db->sql_freeresult($result);
 
 	$topic_id = (int) $row['topic_id'];
-	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
+	$forum_id = (int) $row['forum_id'];
 }
 else if ($topic_id)
 {
@@ -400,12 +400,6 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$row['forum_id'])
-			{
-				// Global Announcement?
-				$row['forum_id'] = request_var('f', 0);
-			}
-
 			$rowset[$row['topic_id']] = $row;
 
 			if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -485,12 +479,6 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$row['forum_id'])
-		{
-			// Global Announcement?
-			$row['forum_id'] = request_var('f', 0);
-		}
-
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
