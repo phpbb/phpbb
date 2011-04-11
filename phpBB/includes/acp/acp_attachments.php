@@ -1076,6 +1076,8 @@ class acp_attachments
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true)
 				);
+				
+				$start		= request_var('start', 0);
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
