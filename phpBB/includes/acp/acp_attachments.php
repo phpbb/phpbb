@@ -61,7 +61,7 @@ class acp_attachments
 				$l_title = 'ACP_ORPHAN_ATTACHMENTS';
 			break;
 
-			case 'attachments':
+			case 'manage':
 				$l_title = 'ACP_MANAGE_ATTACHMENTS';
 			break;
 
@@ -1048,7 +1048,7 @@ class acp_attachments
 
 			break;
 
-			case 'attachments':
+			case 'manage':
 
 				if ($submit)
 				{
@@ -1067,16 +1067,27 @@ class acp_attachments
 							$deleted_filenames[] = $row['real_filename'];
 						}
 						$db->sql_freeresult($result);
-						delete_attachments('attach', $delete_files);
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
-						$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode(', ', $deleted_filenames));
+
+						if ($num_deleted = delete_attachments('attach', $delete_files))
+						{
+							if (sizeof($delete_files) != $num_deleted)
+							{
+								$error[] = $user->lang['FILES_GONE'];
+							}
+							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
+							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode(', ', $deleted_filenames));
+						}
+						else
+						{
+							$error[] = $user->lang['NO_FILES_TO_DELETE'];
+						}
 					}
 				}
 
 				$template->assign_vars(array(
-					'S_ATTACHMENTS'		=> true)
+					'S_MANAGE'		=> true)
 				);
-				
+
 				$start		= request_var('start', 0);
 
 				// Sort keys
@@ -1096,26 +1107,48 @@ class acp_attachments
 				$limit_filetime = ($min_filetime) ? " AND a.filetime >= $min_filetime " : '';
 				$start = ($sort_days && isset($_POST['sort'])) ? 0 : $start;
 
+				$attachments_per_page = (int) $config['topics_per_page'];
+
 				$num_files = (int) $config['num_files'];
-				$total_size = get_formatted_filesize((int) $config['upload_dir_size']);
+				$total_size = (int) $config['upload_dir_size'];
+
+				// Check if files statistics is accurate
+				$sql = 'SELECT COUNT(attach_id) as num_files
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
+				$result = $db->sql_query($sql, 600);
+				$num_files_real = (int) $db->sql_fetchfield('num_files');
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT SUM(filesize) as upload_dir_size
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
+				$result = $db->sql_query($sql, 600);
+				$total_size_real = (int) $db->sql_fetchfield('upload_dir_size');
+				$db->sql_freeresult($result);
+
+				if (($num_files != $num_files_real) || ($total_size != $total_size_real))
+				{
+					$error[] = sprintf($user->lang['FILES_STAT_WRONG'], $num_files_real, get_formatted_filesize($total_size_real));
+				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
 				if ($start < 0 || $start > $num_files)
 				{
-					$start = ($start < 0) ? 0 : floor(($num_files - 1) / $config['posts_per_page']) * $config['posts_per_page'];
+					$start = ($start < 0) ? 0 : floor(($num_files - 1) / $attachments_per_page) * $attachments_per_page;
 				}
 
 				// If the user is trying to reach the second half of the attachments list, fetch it starting from the end
 				$store_reverse = false;
-				$sql_limit = $config['posts_per_page'];
+				$sql_limit = $attachments_per_page;
 
 				if ($start > $num_files / 2)
 				{
 					$store_reverse = true;
 
-					if ($start + $config['posts_per_page'] > $num_files)
+					if ($start + $attachments_per_page > $num_files)
 					{
-						$sql_limit = min($config['posts_per_page'], max(1, $num_files - $start));
+						$sql_limit = min($attachments_per_page, max(1, $num_files - $start));
 					}
 
 					// Select the sort order. Add time sort anchor for non-time sorting cases
@@ -1145,32 +1178,36 @@ class acp_attachments
 				$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 				$i = ($store_reverse) ? $sql_limit - 1 : 0;
+
+				// Store increment value in a variable to save some conditional calls
+				$i_increment = ($store_reverse) ? -1 : 1;
 				while ($attachment_row = $db->sql_fetchrow($result))
 				{
 					$attachments_list[$i] = $attachment_row;
-					($store_reverse) ? $i-- : $i++;
+					$i = $i + $i_increment;
 				}
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,
-					'TOTAL_SIZE'		=> $total_size,
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $num_files, $config['posts_per_page'], $start, true),
+					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
+					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $num_files, $attachments_per_page, $start, true),
 
-					'S_ON_PAGE'			=> on_page($num_files, $config['posts_per_page'], $start),
+					'S_ON_PAGE'			=> on_page($num_files, $attachments_per_page, $start),
 					'S_LIMIT_DAYS'		=> $s_limit_days,
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir)
 				);
 
-				// Grab extensions information
+				// Grab extensions
 				$extensions = $cache->obtain_attach_extensions(true);
 
 				for ($i = 0, $end = sizeof($attachments_list); $i < $end; ++$i)
 				{
-					$row =& $attachments_list[$i];
+					$row = $attachments_list[$i];
 
 					$row['extension'] = strtolower(trim((string) $row['extension']));
+					$comment = ($row['attach_comment']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
 					$display_cat = $extensions[$row['extension']]['display_cat'];
 					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNT' : 'VIEWED_COUNT';
 					$l_download_count = (!isset($row['download_count']) || (int) $row['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (((int) $row['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $row['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $row['download_count']));
@@ -1181,8 +1218,8 @@ class acp_attachments
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
 						'REAL_FILENAME'		=> utf8_wordwrap(utf8_basename((string) $row['real_filename']), 40, '<br />', true),
 						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
+						'COMMENT'			=> $comment,
 						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
-						'DISABLED'			=> 'disabled="disabled"',
 						'ATTACH_ID'			=> (int) $row['attach_id'],
 						'POST_ID'			=> (int) $row['post_msg_id'],
 						'TOPIC_ID'			=> (int) $row['topic_id'],

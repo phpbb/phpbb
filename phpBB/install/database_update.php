@@ -1958,6 +1958,13 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_group',
 					'cat'		=> 'ACP_GROUPS',
 				),
+				'manage'	=> array(
+					'base'		=> 'attachments',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_MANAGE_ATTACHMENTS',
+					'auth'		=> 'acl_a_attach',
+					'cat'		=> 'ACP_ATTACHMENTS',
+				),
 			);
 
 			_add_modules($modules_to_install);
