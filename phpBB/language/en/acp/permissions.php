@@ -225,8 +225,8 @@ $lang = array_merge($lang, array(
 	'SELECT_TYPE'					=> 'Select type',
 	'SET_PERMISSIONS'				=> 'Set permissions',
 	'SET_ROLE_PERMISSIONS'			=> 'Set role permissions',
-	'SET_USERS_PERMISSIONS'			=> 'Set users permissions',
-	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set users forum permissions',
+	'SET_USERS_PERMISSIONS'			=> 'Set user\'s permissions',
+	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set user\'s forum permissions',
 
 	'TRACE_DEFAULT'					=> 'By default every permission is <samp>NO</samp> (unset). So the permission can be overwritten by other settings.',
 	'TRACE_FOR'						=> 'Trace for',
