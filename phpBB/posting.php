@@ -661,7 +661,7 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 // remainder of submission would fit in $_POST just fine.
 // Inform users that their submission did not make it.
 // See http://php.net/manual/en/ini.core.php#ini.post-max-size for documentation
-// and http://www.phpbb.com/bugs/phpbb3/58405 for discussion
+// and http://tracker.phpbb.com/browse/PHPBB3-9106 for discussion
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 {
 	if (!function_exists('format_upload_too_large_message'))

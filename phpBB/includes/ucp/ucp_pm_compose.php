@@ -382,6 +382,9 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	// Check for post submissions exceeding post_max_size.
+	// Please see the comment in posting.php and
+	// http://tracker.phpbb.com/browse/PHPBB3-9106 for additional details.
 	if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 	{
 		if (!function_exists('format_upload_too_large_message'))
