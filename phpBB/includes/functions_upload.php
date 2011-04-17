@@ -1014,6 +1014,7 @@ function format_upload_too_large_message($main_messages, $extra_messages = false
 		}
 		$overrun_message .= $user->lang[$message];
 	}
+	$overrun_message .= '<br /><br />';
 	$overrun_message .= format_upload_limit_message();
 	if ($extra_messages !== false) {
 		foreach ($extra_messages as $message) {
