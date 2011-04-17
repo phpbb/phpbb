@@ -564,7 +564,7 @@ $lang = array_merge($lang, array(
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
-	
+
 	'TOO_LARGE'						=> 'The value you entered is too large.',
 	'TOO_LARGE_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too large.',
 
@@ -609,7 +609,7 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_EMAIL_CONFIRM'		=> 'The e-mail address confirmation you entered is too short.',
 	'TOO_SHORT_WEBSITE'				=> 'The website address you entered is too short.',
 	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
-	
+
 	'TOO_SMALL'						=> 'The value you entered is too small.',
 	'TOO_SMALL_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too small.',
 

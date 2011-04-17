@@ -140,7 +140,8 @@ $lang = array_merge($lang, array(
 	'NO_POST_MODE'				=> 'No post mode specified.',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded.',
-	'PHP_ATTACHMENT_LIMIT'			=> 'The maximum upload size is %1$d %2$s. The maximum POST size is %3$d %4$s. Please note this is set in php.ini and cannot be overridden via phpBB.',
+	'PHP_ATTACHMENT_LIMIT'			=> 'The maximum upload size is %1$d %2$s. Please note this is set in php.ini and cannot be overridden via phpBB.',
+	'PHP_ATTACHMENT_LIMIT_POST'		=> 'The maximum upload size is %1$d %2$s. The maximum POST size is %3$d %4$s. Please note this is set in php.ini and cannot be overridden via phpBB.',
 	'PHP_ATTACHMENT_LIMIT_UNKNOWN'	=> 'Could not determine the maximum upload and/or POST sizes defined by PHP in php.ini.',
 	'PHP_ATTACHMENT_TOO_LARGE'	=> 'The attachment’s file size is too large.',
 	'PHP_POST_MISSING'			=> 'No POST data was received. If you tried uploading an attachment, it was too large and prevented the form from being processed at all. Please use the "Back" button in your browser to return to the previous page and try uploading a smaller attachment.',

@@ -574,7 +574,7 @@ class ucp_profile
 					{
 						include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 					}
-					$error[] = format_upload_too_large_message(array('PHP_POST_MISSING'), array('PHP_POST_OVERRUN_INSTRUCTIONS'));
+					$error[] = format_upload_too_large_message(array('PHP_POST_MISSING'), true);
 				}
 
 				if ($submit)
