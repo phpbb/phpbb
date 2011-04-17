@@ -976,28 +976,30 @@ class fileupload
 	}
 }
 
-function format_upload_too_large_message($unknown_limit_message, $known_limit_message)
+function format_upload_too_large_message()
 {
 	global $user;
 
-	$max_filesize = @ini_get('upload_max_filesize');
-	$unit = 'MIB';
+	$max_upload_size = @ini_get('upload_max_filesize');
+	$max_post_size = @ini_get('post_max_size');
 
-	if (!empty($max_filesize))
+	if (!empty($max_upload_size) && !empty($max_post_size))
 	{
-		$unit = strtolower(substr($max_filesize, -1, 1));
-		$max_filesize = (int) $max_filesize;
+		$upload_unit = strtolower(substr($max_upload_size, -1, 1));
+		$max_upload_size = (int) $max_upload_size;
 
-		$unit = ($unit == 'k') ? 'KIB' : (($unit == 'g') ? 'GIB' : 'MIB');
-	}
+		$upload_unit = ($upload_unit == 'k') ? 'KIB' : (($upload_unit == 'g') ? 'GIB' : 'MIB');
+		
+		$post_unit = strtolower(substr($max_post_size, -1, 1));
+		$max_post_size = (int) $max_post_size;
 
-	if (empty($max_filesize))
-	{
-		$error = $user->lang[$unknown_limit_message];
+		$post_unit = ($post_unit == 'k') ? 'KIB' : (($post_unit == 'g') ? 'GIB' : 'MIB');
+		
+		$error = sprintf($user->lang['PHP_ATTACHMENT_LIMIT'], $max_filesize, $user->lang[$unit]);
 	}
 	else
 	{
-		$error = sprintf($user->lang[$known_limit_message], $max_filesize, $user->lang[$unit]);
+		$error = $user->lang['PHP_ATTACHMENT_LIMIT_UNKNOWN'];
 	}
 	return $error;
 }
