@@ -668,10 +668,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 	{
 		include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	}
-	$overrun_message = $user->lang['PHP_POST_MISSING'];
-	$overrun_message .= format_upload_too_large_message();
-	$overrun_message = $user->lang['PHP_POST_OVERRUN_INSTRUCTIONS'];
-	$error[] = $overrun_message;
+	$error[] = format_upload_too_large_message(array('PHP_POST_MISSING'), array('PHP_POST_OVERRUN_INSTRUCTIONS'));
 
 	// This will close upload progress popup
 	$_POST['add_file'] = true;

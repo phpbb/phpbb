@@ -391,11 +391,7 @@ function compose_pm($id, $mode, $action)
 		{
 			include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 		}
-		$overrun_message = $user->lang['PHP_POST_MISSING'];
-		$overrun_message = $user->lang['PHP_POST_RECIPIENTS_LOST'];
-		$overrun_message .= format_upload_too_large_message();
-		$overrun_message = $user->lang['PHP_POST_OVERRUN_INSTRUCTIONS'];
-		$error[] = $overrun_message;
+		$error[] = format_upload_too_large_message(array('PHP_POST_MISSING', 'PHP_POST_RECIPIENTS_LOST'), array('PHP_POST_OVERRUN_INSTRUCTIONS'));
 
 		// This will close upload progress popup
 		$_POST['add_file'] = true;

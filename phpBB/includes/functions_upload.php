@@ -594,7 +594,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
+			$file->error[] = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			return $file;
 		}
 
@@ -670,7 +670,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
+			$file->error[] = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			return $file;
 		}
 
@@ -841,7 +841,7 @@ class fileupload
 		switch ($errorcode)
 		{
 			case 1:
-				$error = format_upload_too_large_message($this->error_prefix . 'PHP_SIZE_NA', $this->error_prefix . 'PHP_SIZE_OVERRUN');
+				$error = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			break;
 
 			case 2:
@@ -976,7 +976,7 @@ class fileupload
 	}
 }
 
-function format_upload_too_large_message()
+function format_upload_limit_message()
 {
 	global $user;
 
@@ -995,13 +995,33 @@ function format_upload_too_large_message()
 
 		$post_unit = ($post_unit == 'k') ? 'KIB' : (($post_unit == 'g') ? 'GIB' : 'MIB');
 		
-		$error = sprintf($user->lang['PHP_ATTACHMENT_LIMIT'], $max_filesize, $user->lang[$unit]);
+		$error = sprintf($user->lang['PHP_ATTACHMENT_LIMIT'], $max_upload_size, $user->lang[$upload_unit], $max_post_size, $user->lang[$post_unit]);
 	}
 	else
 	{
 		$error = $user->lang['PHP_ATTACHMENT_LIMIT_UNKNOWN'];
 	}
 	return $error;
+}
+
+function format_upload_too_large_message($main_messages, $extra_messages = false) {
+	global $user;
+
+	$overrun_message = '';
+	foreach ($main_messages as $message) {
+		if (!empty($overrun_message)) {
+			$overrun_message .= '<br /><br />';
+		}
+		$overrun_message .= $user->lang[$message];
+	}
+	$overrun_message .= format_upload_limit_message();
+	if ($extra_messages !== false) {
+		foreach ($extra_messages as $message) {
+			$overrun_message .= '<br /><br />';
+			$overrun_message .= $user->lang[$message];
+		}
+	}
+	return $overrun_message;
 }
 
 ?>
