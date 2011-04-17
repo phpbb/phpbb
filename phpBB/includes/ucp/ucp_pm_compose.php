@@ -382,6 +382,18 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
+	{
+		if (!function_exists('format_upload_too_large_message'))
+		{
+			include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+		}
+		$error[] = format_upload_too_large_message('PHP_POST_NA', 'PHP_POST_OVERRUN');
+
+		// This will close upload progress popup
+		$_POST['add_file'] = true;
+	}
+
 	if ($action == 'post')
 	{
 		$template->assign_var('S_NEW_MESSAGE', true);
