@@ -989,12 +989,12 @@ function format_upload_limit_message()
 		$max_upload_size = (int) $max_upload_size;
 
 		$upload_unit = ($upload_unit == 'k') ? 'KIB' : (($upload_unit == 'g') ? 'GIB' : 'MIB');
-		
+
 		$post_unit = strtolower(substr($max_post_size, -1, 1));
 		$max_post_size = (int) $max_post_size;
 
 		$post_unit = ($post_unit == 'k') ? 'KIB' : (($post_unit == 'g') ? 'GIB' : 'MIB');
-		
+
 		$error = sprintf($user->lang['PHP_ATTACHMENT_LIMIT'], $max_upload_size, $user->lang[$upload_unit], $max_post_size, $user->lang[$post_unit]);
 	}
 	else
@@ -1004,20 +1004,25 @@ function format_upload_limit_message()
 	return $error;
 }
 
-function format_upload_too_large_message($main_messages, $extra_messages = false) {
+function format_upload_too_large_message($main_messages, $extra_messages = false)
+{
 	global $user;
 
 	$overrun_message = '';
-	foreach ($main_messages as $message) {
-		if (!empty($overrun_message)) {
+	foreach ($main_messages as $message)
+	{
+		if (!empty($overrun_message))
+		{
 			$overrun_message .= '<br /><br />';
 		}
 		$overrun_message .= $user->lang[$message];
 	}
 	$overrun_message .= '<br /><br />';
 	$overrun_message .= format_upload_limit_message();
-	if ($extra_messages !== false) {
-		foreach ($extra_messages as $message) {
+	if ($extra_messages !== false)
+	{
+		foreach ($extra_messages as $message)
+		{
 			$overrun_message .= '<br /><br />';
 			$overrun_message .= $user->lang[$message];
 		}
