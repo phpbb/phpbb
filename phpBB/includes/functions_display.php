@@ -1272,52 +1272,144 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 /**
 * Get user avatar
 *
-* @param string $avatar Users assigned avatar name
-* @param int $avatar_type Type of avatar
-* @param string $avatar_width Width of users avatar
-* @param string $avatar_height Height of users avatar
+* @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
-* @return string Avatar image
+* @return string Avatar html
 */
-function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
+function get_user_avatar(&$user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	global $user, $config, $phpbb_root_path, $phpEx;
+	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 
-	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
+	if (!$config['allow_avatar'] && !$ignore_config)
 	{
 		return '';
 	}
 
-	$avatar_img = '';
-
-	switch ($avatar_type)
+	$avatar_data = array(
+		'src' => $user_row['user_avatar'],
+		'width' => $user_row['user_avatar_width'],
+		'height' => $user_row['user_avatar_height'],
+	);
+	
+	switch ($user_row['user_avatar_type'])
 	{
 		case AVATAR_UPLOAD:
+			// Compatibility with old avatars
 			if (!$config['allow_avatar_upload'] && !$ignore_config)
 			{
-				return '';
+				$avatar_data['src'] = '';
 			}
-			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
+			else
+			{
+				$avatar_data['src'] = $phpbb_root_path . "download/file.$phpEx?avatar=" . $avatar_data['src'];
+				$avatar_data['src'] = str_replace(' ', '%20', $avatar_data['src']);
+			}
 		break;
 
 		case AVATAR_GALLERY:
+			// Compatibility with old avatars
 			if (!$config['allow_avatar_local'] && !$ignore_config)
 			{
-				return '';
+				$avatar_data['src'] = '';
 			}
-			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+			else
+			{
+				$avatar_data['src'] = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_data['src'];
+				$avatar_data['src'] = str_replace(' ', '%20', $avatar_data['src']);
+			}
 		break;
 
 		case AVATAR_REMOTE:
+			// Compatibility with old avatars
 			if (!$config['allow_avatar_remote'] && !$ignore_config)
 			{
-				return '';
+				$avatar_data['src'] = '';
+			}
+			else
+			{
+				$avatar_data['src'] = str_replace(' ', '%20', $avatar_data['src']);
 			}
 		break;
+
+		default:
+			$class = 'phpbb_avatar_' . $user_row['user_avatar_type'];
+			
+			if (!class_exists($class))
+			{
+				$avatar_types = $cache->get('avatar_types');
+			
+				if (empty($avatar_types))
+				{
+					$avatar_types = array();
+				
+					if ($dh = @opendir($phpbb_root_path . 'includes/avatars'))
+					{
+						while ($file = @readdir($dh))
+						{
+							if (preg_match("/avatar_(.*)\.$phpEx/", $file, $match))
+							{
+								$avatar_types[] = $match[1];
+							}
+						}
+
+						@closedir($dh);
+
+						sort($avatar_types);
+						$cache->put('avatar_types', $avatar_types);
+					}
+				}
+
+				if (in_array($user_row['user_avatar_type'], $avatar_types))
+				{
+					require_once($phpbb_root_path . 'includes/avatars/avatar_' . $user_row['user_avatar_type'] . '.' . $phpEx);
+				}
+			}
+
+			$avatar = new $class($user_row);
+
+			if ($avatar->custom_html)
+			{
+				return $avatar->get_custom_html($ignore_config);
+			}
+
+			$avatar_data = $avatar->get_data($ignore_config);
+
+			break;
 	}
 
-	$avatar_img .= $avatar;
-	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	$html = '';
+
+	if (!empty($avatar_data['src']))
+	{
+		$html = '<img src="' . $avatar_data['src'] . '" ' . 
+			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
+			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
+			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
+	return $html;
+}
+
+/**
+* Get group avatar
+*
+* @param array $group_row Row from the groups table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function get_group_avatar(&$group_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+{
+	// Kind of abusing this functionality...
+	$avatar_row = array(
+		'user_avatar' => $group_row['group_avatar'],
+		'user_avatar_type' => $group_row['group_avatar_type'],
+		'user_avatar_width' => $group_row['group_avatar_width'],
+		'user_avatar_height' => $group_row['group_avatar_height'],
+	);
+
+	return get_user_avatar($group_row, $alt, $ignore_config);
 }

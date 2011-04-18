@@ -553,7 +553,7 @@ class acp_groups
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
+				$avatar_img = (!empty($group_row['group_avatar'])) ? get_group_avatar($group_row) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 

@@ -587,7 +587,7 @@ class ucp_profile
 
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height'], 'USER_AVATAR', true),
+					'AVATAR'		=> get_user_avatar($user->data, 'USER_AVATAR', true),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 
 					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
