@@ -47,4 +47,19 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			);
 		}
 	}
+
+	/**
+	* @TODO
+	**/
+	public function handle_form($template, &$error = array(), $submitted = false)
+	{
+		if ($submitted) {
+			$error[] = 'TODO';
+			return '';
+		}
+		else
+		{
+			return true;
+		}
+	}
 }

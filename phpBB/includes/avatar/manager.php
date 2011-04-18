@@ -26,6 +26,9 @@ class phpbb_avatar_manager
 	private $cache;
 	private static $valid_drivers = false;
 
+	/**
+	* @TODO
+	**/
 	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_config $config, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -34,6 +37,9 @@ class phpbb_avatar_manager
 		$this->cache = $cache;
 	}
 
+	/**
+	* @TODO
+	**/
 	public function get_singleton($avatar_type)
 	{
 		if (self::$valid_drivers === false)
@@ -57,6 +63,9 @@ class phpbb_avatar_manager
 		}
 	}
 
+	/**
+	* @TODO
+	**/
 	private function load_valid_drivers()
 	{
 		require_once($this->phpbb_root_path . 'includes/avatar/driver.' . $this->php_ext);
@@ -87,5 +96,17 @@ class phpbb_avatar_manager
 				$this->cache->put('avatar_drivers', self::$valid_drivers);
 			}
 		}
+	}
+
+	/**
+	* @TODO
+	**/
+	public function get_valid_drivers() {
+		if (self::$valid_drivers === false)
+		{
+			$this->load_valid_drivers();
+		}
+
+		return array_keys(self::$valid_drivers);
 	}
 }

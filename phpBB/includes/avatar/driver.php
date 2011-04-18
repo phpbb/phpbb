@@ -86,4 +86,12 @@ abstract class phpbb_avatar_driver
 	{
 		return '';
 	}
+
+	/**
+	* @TODO
+	**/
+	public function handle_form($template, &$error = array(), $submitted = false)
+	{
+		return false;
+	}
 }

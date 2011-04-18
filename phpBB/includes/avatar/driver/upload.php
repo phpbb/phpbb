@@ -47,4 +47,31 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 			);
 		}
 	}
+
+	/**
+	* @TODO
+	**/
+	public function handle_form($template, &$error = array(), $submitted = false)
+	{
+		if ($submitted) {
+			$error[] = 'TODO';
+			return '';
+		}
+		else
+		{
+			$can_upload = (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+			if ($can_upload)
+			{
+				$template->assign_vars(array(
+					'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
+				));
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }
