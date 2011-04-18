@@ -2,7 +2,7 @@
 /**
 *
 * @package avatar
-* @copyright (c) 2005, 2009 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -22,18 +22,14 @@ if (!defined('IN_PHPBB'))
 class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 {
 	/**
-	* Get the avatar url and dimensions
-	*
-	* @param $ignore_config Whether $user or global avatar visibility settings
-	*        should be ignored
-	* @return array Avatar data
+	* @inheritdoc
 	*/
 	public function get_data($user_row, $ignore_config = false)
 	{
 		if ($ignore_config || $this->config['allow_avatar_upload'])
 		{
 			return array(
-				'src' => $this->phpbb_root_path . 'download/file.' . $this->php_ext . '?avatar=' . $user_row['user_avatar'],
+				'src' => $this->phpbb_root_path . 'download/file.' . $this->phpEx . '?avatar=' . $user_row['user_avatar'],
 				'width' => $user_row['user_avatar_width'],
 				'height' => $user_row['user_avatar_height'],
 			);
@@ -49,8 +45,8 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	}
 
 	/**
-	* @TODO
-	**/
+	* @inheritdoc
+	*/
 	public function handle_form($template, &$error = array(), $submitted = false)
 	{
 		if ($submitted) {

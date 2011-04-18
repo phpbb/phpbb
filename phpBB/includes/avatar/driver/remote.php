@@ -2,7 +2,7 @@
 /**
 *
 * @package avatar
-* @copyright (c) 2005, 2009 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -22,11 +22,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 {
 	/**
-	* Get the avatar url and dimensions
-	*
-	* @param $ignore_config Whether $user or global avatar visibility settings
-	*        should be ignored
-	* @return array Avatar data
+	* @inheritdoc
 	*/
 	public function get_data($user_row, $ignore_config = false)
 	{
@@ -49,8 +45,8 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	}
 
 	/**
-	* @TODO
-	**/
+	* @inheritdoc
+	*/
 	public function handle_form($template, &$error = array(), $submitted = false)
 	{
 		if ($submitted) {

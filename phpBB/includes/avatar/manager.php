@@ -2,7 +2,7 @@
 /**
 *
 * @package avatar
-* @copyright (c) 2010 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -16,12 +16,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package acm
+* @package avatar
 */
 class phpbb_avatar_manager
 {
 	private $phpbb_root_path;
-	private $php_ext;
+	private $phpEx;
 	private $config;
 	private $cache;
 	private static $valid_drivers = false;
@@ -29,10 +29,10 @@ class phpbb_avatar_manager
 	/**
 	* @TODO
 	**/
-	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_config $config, phpbb_cache_driver_interface $cache = null)
+	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->cache = $cache;
 	}
@@ -40,7 +40,7 @@ class phpbb_avatar_manager
 	/**
 	* @TODO
 	**/
-	public function get_singleton($avatar_type)
+	public function get_driver($avatar_type, $new = false)
 	{
 		if (self::$valid_drivers === false)
 		{
@@ -49,10 +49,10 @@ class phpbb_avatar_manager
 
 		if (isset(self::$valid_drivers[$avatar_type]))
 		{
-			if (!is_object(self::$valid_drivers[$avatar_type]))
+			if ($new || !is_object(self::$valid_drivers[$avatar_type]))
 			{
 				$class_name = 'phpbb_avatar_driver_' . $avatar_type;
-				self::$valid_drivers[$avatar_type] = new $class_name($this->config, $this->phpbb_root_path, $this->php_ext);
+				self::$valid_drivers[$avatar_type] = new $class_name($this->config, $this->phpbb_root_path, $this->phpEx, $this->cache);
 			}
 
 			return self::$valid_drivers[$avatar_type];
@@ -68,7 +68,7 @@ class phpbb_avatar_manager
 	**/
 	private function load_valid_drivers()
 	{
-		require_once($this->phpbb_root_path . 'includes/avatar/driver.' . $this->php_ext);
+		require_once($this->phpbb_root_path . 'includes/avatar/driver.' . $this->phpEx);
 
 		if ($this->cache)
 		{
@@ -83,7 +83,8 @@ class phpbb_avatar_manager
 
 			foreach ($iterator as $file)
 			{
-				if (preg_match("/^(.*)\.{$this->php_ext}$/", $file, $match))
+				// Match all files that appear to be php files
+				if (preg_match("/^(.*)\.{$this->phpEx}$/", $file, $match))
 				{
 					self::$valid_drivers[] = $match[1];
 				}

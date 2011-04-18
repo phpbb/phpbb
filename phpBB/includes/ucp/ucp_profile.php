@@ -567,7 +567,7 @@ class ucp_profile
 								'avatar' => "ucp_avatar_options_$driver.html",
 							));
 
-							$avatar = $avatar_manager->get_singleton($driver);
+							$avatar = $avatar_manager->get_driver($driver);
 							if (isset($_POST["submit_av_$driver"]))
 							{
 								if (check_form_key('ucp_avatar'))

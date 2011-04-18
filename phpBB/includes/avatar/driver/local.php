@@ -2,7 +2,7 @@
 /**
 *
 * @package avatar
-* @copyright (c) 2005, 2009 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -22,11 +22,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_avatar_driver_local extends phpbb_avatar_driver
 {
 	/**
-	* Get the avatar url and dimensions
-	*
-	* @param $ignore_config Whether $user or global avatar visibility settings
-	*        should be ignored
-	* @return array Avatar data
+	* @inheritdoc
 	*/
 	public function get_data($user_row, $ignore_config = false)
 	{
@@ -49,8 +45,8 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	}
 	
 	/**
-	* @TODO
-	**/
+	* @inheritdoc
+	*/
 	public function handle_form($template, &$error = array(), $submitted = false)
 	{
 		if ($submitted) {
@@ -58,39 +54,50 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			return '';
 		}
 
-		$avatar_list = array();
-		$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
+		$avatar_list = ($this->cache == null) ? false : $this->cache->get('av_local_list');
 
-		$dh = @opendir($path);
-
-		if (!$dh)
+		if (!$avatar_list)
 		{
-			return $avatar_list;
-		}
+			$avatar_list = array();
+			$path = $this->phpbb_root_path . $this->config['avatar_gallery_path'];
 
-		while (($cat = readdir($dh)) !== false) {
-			if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
+			$dh = @opendir($path);
+
+			if (!$dh)
 			{
-				if ($ch = @opendir("$path/$cat"))
+				return $avatar_list;
+			}
+
+			while (($cat = readdir($dh)) !== false) {
+				if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
 				{
-					while (($image = readdir($ch)) !== false)
+					if ($ch = @opendir("$path/$cat"))
 					{
-						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
+						while (($image = readdir($ch)) !== false)
 						{
-							$avatar_list[$cat][] = array(
-								'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
-								'filename'  => rawurlencode($image),
-								'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
-							);
+							// Match all images in the gallery folder
+							if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
+							{
+								$avatar_list[$cat][] = array(
+									'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
+									'filename'  => rawurlencode($image),
+									'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
+								);
+							}
 						}
+						@closedir($ch);
 					}
-					@closedir($ch);
 				}
 			}
-		}
-		@closedir($dh);
+			@closedir($dh);
 
-		@ksort($avatar_list);
+			@ksort($avatar_list);
+
+			if ($this->cache != null)
+			{
+				$this->cache->put('av_local_list', $avatar_list);
+			}
+		}
 
 		$category = request_var('av_local_cat', '');
 		$categories = array_keys($avatar_list);

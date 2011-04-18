@@ -1341,7 +1341,7 @@ function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false
 				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->get_driver());
 			}
 
-			$avatar = $avatar_manager->get_singleton($user_row['user_avatar_type']);
+			$avatar = $avatar_manager->get_driver($user_row['user_avatar_type']);
 
 			if ($avatar)
 			{
