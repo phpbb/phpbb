@@ -3660,7 +3660,7 @@ function remove_newly_registered($user_id, $user_data = false)
 
 /**
 * Function that updates the style and language of the users in the
-* bots group, to the boards default style/language
+* bots group, to the board's default style/language
 * @param  String $mode Defines what to update, this can be
 *                      - default_lang: The style gets checked/updated
 *                      - default_style: The language gets checked/updated

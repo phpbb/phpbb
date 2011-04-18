@@ -449,6 +449,9 @@ class acp_board
 			$submit = false;
 		}
 
+		// Used to update some bot configuration
+		$bot_update = '';
+
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
@@ -476,7 +479,7 @@ class acp_board
 				// Changed?
 				if ($config[$config_name] != $this->new_config[$config_name])
 				{
-					$bot_update = (isset($bot_update)) ? 'both' : $config_name;
+					$bot_update = (!empty($bot_update)) ? 'both' : $config_name;
 				}
 			}
 
@@ -492,7 +495,7 @@ class acp_board
 		}
 
 		// Update bots if the default style or language is changed
-		if (isset($bot_update))
+		if (!empty($bot_update))
 		{
 			if (!function_exists('set_bot_default_lang_style'))
 			{
