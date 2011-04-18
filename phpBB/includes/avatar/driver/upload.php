@@ -30,7 +30,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	*/
 	public function get_data($user_row, $ignore_config = false)
 	{
-		if (ignore_config || $this->config['allow_avatar_upload'])
+		if ($ignore_config || $this->config['allow_avatar_upload'])
 		{
 			return array(
 				'src' => $this->phpbb_root_path . 'download/file.' . $this->php_ext . '?avatar=' . $user_row['user_avatar'],
