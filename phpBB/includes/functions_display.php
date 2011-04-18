@@ -1278,9 +1278,11 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 *
 * @return string Avatar html
 */
-function get_user_avatar(&$user_row, $alt = 'USER_AVATAR', $ignore_config = false)
+function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
+
+	static $avatar_manager = null;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -1334,47 +1336,26 @@ function get_user_avatar(&$user_row, $alt = 'USER_AVATAR', $ignore_config = fals
 		break;
 
 		default:
-			$class = 'phpbb_avatar_' . $user_row['user_avatar_type'];
-			
-			if (!class_exists($class))
+			if (empty($avatar_manager))
 			{
-				$avatar_types = $cache->get('avatar_types');
-			
-				if (empty($avatar_types))
-				{
-					$avatar_types = array();
-				
-					if ($dh = @opendir($phpbb_root_path . 'includes/avatars'))
-					{
-						while ($file = @readdir($dh))
-						{
-							if (preg_match("/avatar_(.*)\.$phpEx/", $file, $match))
-							{
-								$avatar_types[] = $match[1];
-							}
-						}
-
-						@closedir($dh);
-
-						sort($avatar_types);
-						$cache->put('avatar_types', $avatar_types);
-					}
-				}
-
-				if (in_array($user_row['user_avatar_type'], $avatar_types))
-				{
-					require_once($phpbb_root_path . 'includes/avatars/avatar_' . $user_row['user_avatar_type'] . '.' . $phpEx);
-				}
+				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->get_driver());
 			}
 
-			$avatar = new $class($user_row);
+			$avatar = $avatar_manager->get_singleton($user_row['user_avatar_type']);
 
-			if ($avatar->custom_html)
+			if ($avatar)
 			{
-				return $avatar->get_custom_html($ignore_config);
-			}
+				if ($avatar->custom_html)
+				{
+					return $avatar->get_html($user_row, $ignore_config);
+				}
 
-			$avatar_data = $avatar->get_data($ignore_config);
+				$avatar_data = $avatar->get_data($user_row, $ignore_config);
+			}
+			else
+			{
+				$avatar_data['src'] = '';
+			}
 
 			break;
 	}
@@ -1401,7 +1382,7 @@ function get_user_avatar(&$user_row, $alt = 'USER_AVATAR', $ignore_config = fals
 *
 * @return string Avatar html
 */
-function get_group_avatar(&$group_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+function get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
 {
 	// Kind of abusing this functionality...
 	$avatar_row = array(

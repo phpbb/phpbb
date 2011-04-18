@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package avatars
+* @package avatar
 * @copyright (c) 2005, 2009 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -16,16 +16,28 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Base class for avatar modules
+* Base class for avatar drivers
 * @package avatars
 */
-class phpbb_avatar_base
+abstract class phpbb_avatar_driver
 {
 	/**
-	* User data this avatar may use to generate a url or html
-	* @type array
+	* Current board configuration
+	* @type phpbb_config
 	*/
-	private $user_row;
+	protected $config;
+	
+	/**
+	* Current $phpbb_root_path
+	* @type string
+	*/
+	protected $phpbb_root_path;
+	
+	/**
+	* Current $phpEx
+	* @type string
+	*/
+	protected $php_ext;
 	
 	/**
 	* This flag should be set to true if the avatar requires a nonstandard image
@@ -39,9 +51,11 @@ class phpbb_avatar_base
 	*
 	* @param $user_row User data to base the avatar url/html on
 	*/
-	public function __construct(&$user_row)
+	public function __construct(phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
-		$this->user_row = $user_row;
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -51,7 +65,7 @@ class phpbb_avatar_base
 	*        should be ignored
 	* @return array Avatar data
 	*/
-	public function get_data($ignore_config = false)
+	public function get_data($user_row, $ignore_config = false)
 	{
 		return array(
 			'src' => '',
@@ -68,7 +82,7 @@ class phpbb_avatar_base
 	*        should be ignored
 	* @return string HTML
 	*/
-	public function get_custom_html($ignore_config = false)
+	public function get_custom_html($user_row, $ignore_config = false)
 	{
 		return '';
 	}
