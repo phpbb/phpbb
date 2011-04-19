@@ -58,43 +58,41 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 			$dh = @opendir($path);
 
-			if (!$dh)
+			if ($dh)
 			{
-				return $avatar_list;
-			}
-
-			while (($cat = readdir($dh)) !== false) {
-				if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
-				{
-					if ($ch = @opendir("$path/$cat"))
+				while (($cat = readdir($dh)) !== false) {
+					if ($cat[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $cat) && is_dir("$path/$cat"))
 					{
-						while (($image = readdir($ch)) !== false)
+						if ($ch = @opendir("$path/$cat"))
 						{
-							// Match all images in the gallery folder
-							if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
+							while (($image = readdir($ch)) !== false)
 							{
-								if (function_exists('getimagesize'))
+								// Match all images in the gallery folder
+								if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
 								{
-									$dims = getimagesize($this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $cat . '/' . $image);
+									if (function_exists('getimagesize'))
+									{
+										$dims = getimagesize($this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $cat . '/' . $image);
+									}
+									else
+									{
+										$dims = array(0, 0);
+									}
+									$avatar_list[$cat][$image] = array(
+										'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
+										'filename'  => rawurlencode($image),
+										'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
+										'width'     => $dims[0],
+										'height'    => $dims[1],
+									);
 								}
-								else
-								{
-									$dims = array(0, 0);
-								}
-								$avatar_list[$cat][$image] = array(
-									'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
-									'filename'  => rawurlencode($image),
-									'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
-									'width'     => $dims[0],
-									'height'    => $dims[1],
-								);
 							}
+							@closedir($ch);
 						}
-						@closedir($ch);
 					}
 				}
+				@closedir($dh);
 			}
-			@closedir($dh);
 
 			@ksort($avatar_list);
 

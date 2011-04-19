@@ -570,7 +570,7 @@ class ucp_profile
 								{
 									$result = $avatar->handle_form($template, $user->data, $error, true);
 								
-									if (empty($error))
+									if ($result && empty($error))
 									{
 										// Success! Lets save the result in the database
 										$result['user_avatar_type'] = $driver;
