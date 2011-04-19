@@ -91,6 +91,28 @@ class phpbb_config_db extends phpbb_config
 	}
 
 	/**
+	* Removes a configuration option
+	*
+	* @param  String $key   The configuration option's name
+	* @param  bool   $cache Whether this variable should be cached or if it
+	*                       changes too frequently to be efficiently cached
+	* @return void
+	*/
+	public function delete($key, $cache = true)
+	{
+		$sql = 'DELETE FROM ' . $this->table . "
+			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+		$this->db->sql_query($sql);
+
+		unset($this->config[$key]);
+
+		if ($cache)
+		{
+			$this->cache->destroy('config');
+		}
+	}
+
+	/**
 	* Sets a configuration option's value
 	*
 	* @param string $key   The configuration option's name
