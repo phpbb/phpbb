@@ -135,16 +135,16 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	*
 	* @param  string $key       The configuration option's name
 	* @param  string $old_value Current configuration value
-	* @param  string $value     New configuration value
+	* @param  string $new_value New configuration value
 	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached.
 	* @return bool              True if the value was changed, false otherwise.
 	*/
-	public function set_atomic($key, $old_value, $value, $use_cache = true)
+	public function set_atomic($key, $old_value, $new_value, $use_cache = true)
 	{
 		if (!isset($this->config[$key]) || $this->config[$key] == $old_value)
 		{
-			$this->config[$key] = $value;
+			$this->config[$key] = $new_value;
 			return true;
 		}
 		return false;
