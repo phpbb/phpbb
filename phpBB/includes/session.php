@@ -271,7 +271,7 @@ class session
 		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs
-		$ips = explode(' ', $this->ip);
+		$ips = explode(' ', trim($this->ip));
 
 		// Default IP if REMOTE_ADDR is invalid
 		$this->ip = '127.0.0.1';
@@ -279,7 +279,7 @@ class session
 		foreach ($ips as $ip)
 		{
 			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+			if (!preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 			{
 				// Just break
 				break;
