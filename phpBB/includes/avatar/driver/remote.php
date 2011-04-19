@@ -80,22 +80,25 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			}
 
 			// Make sure getimagesize works...
-			if (($image_data = getimagesize($url)) === false && ($width <= 0 || $height <= 0))
+			if (function_exists('getimagesize'))
 			{
-				$error[] = 'UNABLE_GET_IMAGE_SIZE';
-				return false;
+				if (($width <= 0 || $height <= 0) && (($image_data = @getimagesize($url)) === false))
+				{
+					$error[] = 'UNABLE_GET_IMAGE_SIZE';
+					return false;
+				}
+
+				if (!empty($image_data) && ($image_data[0] <= 0 || $image_data[1] <= 0))
+				{
+					$error[] = 'AVATAR_NO_SIZE';
+					return false;
+				}
+
+				$width = ($width && $height) ? $width : $image_data[0];
+				$height = ($width && $height) ? $height : $image_data[1];
 			}
 
-			if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
-			{
-				$error[] = 'AVATAR_NO_SIZE';
-				return false;
-			}
-
-			$width = ($width && $height) ? $width : $image_data[0];
-			$height = ($width && $height) ? $height : $image_data[1];
-
-			if ($width < 2 || $height < 2)
+			if ($width <= 0 || $height <= 0)
 			{
 				$error[] = 'AVATAR_NO_SIZE';
 				return false;

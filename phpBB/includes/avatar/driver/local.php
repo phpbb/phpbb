@@ -73,7 +73,14 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 							// Match all images in the gallery folder
 							if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $image))
 							{
-								$dims = getimagesize($this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $cat . '/' . $image);
+								if (function_exists('getimagesize'))
+								{
+									$dims = getimagesize($this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $cat . '/' . $image);
+								}
+								else
+								{
+									$dims = array(0, 0);
+								}
 								$avatar_list[$cat][$image] = array(
 									'file'      => rawurlencode($cat) . '/' . rawurlencode($image),
 									'filename'  => rawurlencode($image),
