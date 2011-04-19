@@ -278,26 +278,31 @@ class session
 
 		foreach ($ips as $ip)
 		{
-			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-			if (!preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+			if (preg_match(get_preg_expression('ipv4'), $ip))
 			{
-				// Just break
+				$this->ip = $ip;
+			}
+			else if (preg_match(get_preg_expression('ipv6'), $ip))
+			{
+				// Quick check for IPv4-mapped address in IPv6
+				if (stripos($ip, '::ffff:') === 0)
+				{
+					$ipv4 = substr($ip, 7);
+
+					if (preg_match(get_preg_expression('ipv4'), $ipv4))
+					{
+						$ip = $ipv4;
+					}
+				}
+
+				$this->ip = $ip;
+			}
+			else
+			{
+				// We want to use the last valid address in the chain
+				// Leave foreach loop when address is invalid
 				break;
 			}
-
-			// Quick check for IPv4-mapped address in IPv6
-			if (stripos($ip, '::ffff:') === 0)
-			{
-				$ipv4 = substr($ip, 7);
-
-				if (preg_match(get_preg_expression('ipv4'), $ipv4))
-				{
-					$ip = $ipv4;
-				}
-			}
-
-			// Use the last in chain
-			$this->ip = $ip;
 		}
 
 		$this->load = false;
