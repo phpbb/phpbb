@@ -106,12 +106,12 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	/**
 	* Removes a configuration option
 	*
-	* @param  String $key   The configuration option's name
-	* @param  bool   $cache Whether this variable should be cached or if it
-	*                       changes too frequently to be efficiently cached
+	* @param  String $key       The configuration option's name
+	* @param  bool   $use_cache Whether this variable should be cached or if it
+	*                           changes too frequently to be efficiently cached
 	* @return void
 	*/
-	public function delete($key, $cache = true)
+	public function delete($key, $use_cache = true)
 	{
 		unset($this->config[$key]);
 	}
@@ -119,12 +119,12 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	/**
 	* Sets a configuration option's value
 	*
-	* @param string $key   The configuration option's name
-	* @param string $value New configuration value
-	* @param bool   $cache Whether this variable should be cached or if it
-	*                      changes too frequently to be efficiently cached.
+	* @param string $key       The configuration option's name
+	* @param string $value     New configuration value
+	* @param bool   $use_cache Whether this variable should be cached or if it
+	*                          changes too frequently to be efficiently cached.
 	*/
-	public function set($key, $value, $cache = true)
+	public function set($key, $value, $use_cache = true)
 	{
 		$this->config[$key] = $value;
 	}
@@ -136,11 +136,11 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	* @param  string $key       The configuration option's name
 	* @param  string $old_value Current configuration value
 	* @param  string $value     New configuration value
-	* @param  bool   $cache     Whether this variable should be cached or if it
+	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached.
 	* @return bool              True if the value was changed, false otherwise.
 	*/
-	public function set_atomic($key, $old_value, $value, $cache = true)
+	public function set_atomic($key, $old_value, $value, $use_cache = true)
 	{
 		if (!isset($this->config[$key]) || $this->config[$key] == $old_value)
 		{
@@ -155,10 +155,10 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	*
 	* @param string $key       The configuration option's name
 	* @param int    $increment Amount to increment by
-	* @param bool   $cache     Whether this variable should be cached or if it
+	* @param bool   $use_cache Whether this variable should be cached or if it
 	*                          changes too frequently to be efficiently cached.
 	*/
-	function increment($key, $increment, $cache = true)
+	function increment($key, $increment, $use_cache = true)
 	{
 		if (!isset($this->config[$key]))
 		{
