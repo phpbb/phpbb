@@ -544,12 +544,8 @@ class ucp_profile
 			break;
 
 			case 'avatar':
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-				
-				$display_gallery = request_var('display_gallery', '0');
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
-				
+				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				add_form_key('ucp_avatar');
 
 				$avatars_enabled = false;
@@ -572,18 +568,15 @@ class ucp_profile
 							{
 								if (check_form_key('ucp_avatar'))
 								{
-									$result = $avatar->handle_form($template, $error, true);
+									$result = $avatar->handle_form($template, $user->data, $error, true);
 								
 									if (empty($error))
 									{
 										// Success! Lets save the result in the database
-										$sql_ary = array(
-											'user_avatar_type' => $driver,
-											'user_avatar' => (string) $result,
-										);
+										$result['user_avatar_type'] = $driver;
 
 										$sql = 'UPDATE ' . USERS_TABLE . '
-											SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+											SET ' . $db->sql_build_array('UPDATE', $result) . '
 											WHERE user_id = ' . $user->data['user_id'];
 
 										$db->sql_query($sql);
@@ -599,7 +592,7 @@ class ucp_profile
 								}
 							}
 
-							if ($avatar->handle_form($template, $error)) {
+							if ($avatar->handle_form($template, $user->data, $error)) {
 								$driver_u = strtoupper($driver);
 
 								$template->assign_block_vars('avatar_drivers', array(
@@ -613,38 +606,35 @@ class ucp_profile
 						}
 					}
 				}
-				
-				// Replace "error" strings with their real, localised form
-				$error = array_map(array($user, 'lang'), $error);
 
+				// Replace "error" strings with their real, localised form
+				$err = $error;
+				$error = array();
+				foreach ($err as $e)
+				{
+					if (is_array($e))
+					{
+						$key = array_shift($e);
+						$error[] = vsprintf($user->lang($key), $e);
+					}
+					else
+					{
+						$error[] = $user->lang((string) $e);
+					}
+				}
+				
 				$avatar = get_user_avatar($user->data, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> $avatar,
-					'AVATAR_SIZE'	=> $config['avatar_filesize'],
-
-					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
+					
+					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
-
-				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
-				{
-					avatar_gallery($category, $avatar_select, 4);
-				}
-				else if ($config['allow_avatar'])
-				{
-					$template->assign_vars(array(
-						'AVATAR_WIDTH'	=> request_var('width', empty($avatar) ? 0 : $user->data['user_avatar_width']),
-						'AVATAR_HEIGHT'	=> request_var('height', empty($avatar) ? 0 : $user->data['user_avatar_height']),
-
-						'S_AVATARS_ENABLED'		=> $avatars_enabled,
-						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
-					);
-				}
 
 			break;
 		}

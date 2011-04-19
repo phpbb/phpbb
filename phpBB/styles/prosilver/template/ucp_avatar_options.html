@@ -12,15 +12,6 @@
 			<dd><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></dd>
 			<!-- IF AVATAR && S_AVATARS_ENABLED --><dd><input type="submit" name="submit" id="delete" value="{LA_DELETE_AVATAR}" /></dd><!-- ENDIF -->
 		</dl>
-		<!-- IF S_AVATARS_ENABLED -->
-		<dl>
-			<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
-			<dd>
-				<label for="width"><input type="text" name="width" id="width" size="3" value="{AVATAR_WIDTH}" class="inputbox autowidth" /> {L_PIXEL}</label> &times;&nbsp; 
-				<label for="height"><input type="text" name="height" id="height" size="3" value="{AVATAR_HEIGHT}" class="inputbox autowidth" /> {L_PIXEL}</label>
-			</dd>
-		</dl>
-		<!-- ENDIF -->
 	</fieldset>
 
 <!-- BEGIN avatar_drivers -->

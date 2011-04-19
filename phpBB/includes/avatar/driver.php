@@ -102,7 +102,7 @@ abstract class phpbb_avatar_driver
 	/**
 	* @TODO
 	**/
-	public function handle_form($template, &$error = array(), $submitted = false)
+	public function handle_form($template, $user_row, &$error, $submitted = false)
 	{
 		return false;
 	}

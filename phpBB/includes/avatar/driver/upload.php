@@ -47,7 +47,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function handle_form($template, &$error = array(), $submitted = false)
+	public function handle_form($template, $user_row, &$error, $submitted = false)
 	{
 		if ($submitted) {
 			$error[] = 'TODO';
@@ -60,6 +60,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 			{
 				$template->assign_vars(array(
 					'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
+					'AV_UPLOAD_SIZE' => $this->config['avatar_filesize'],
 				));
 
 				return true;
