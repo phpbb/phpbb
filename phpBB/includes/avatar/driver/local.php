@@ -47,7 +47,65 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function handle_form($template, $user_row, &$error, $submitted = false)
+	public function prepare_form($template, $user_row, &$error)
+	{
+		$avatar_list = $this->get_avatar_list();
+		$category = request_var('av_local_cat', '');
+		
+		$categories = array_keys($avatar_list);
+
+		foreach ($categories as $cat)
+		{
+			if (!empty($avatar_list[$cat]))
+			{
+				$template->assign_block_vars('av_local_cats', array(
+					'NAME' => $cat,
+					'SELECTED' => ($cat == $category),
+				));
+			}
+		}
+
+		if (!empty($avatar_list[$category]))
+		{
+			foreach ($avatar_list[$category] as $img => $data)
+			{
+				$template->assign_block_vars('av_local_imgs', array(
+					'AVATAR_IMAGE'  => $path . '/' . $data['file'],
+					'AVATAR_NAME' => $data['name'],
+					'AVATAR_FILE' => $data['filename'],
+				));
+			}
+		}
+
+		return true;
+	}
+	
+	/**
+	* @inheritdoc
+	*/
+	public function process_form($template, $user_row, &$error)
+	{
+		$avatar_list = $this->get_avatar_list();
+		$category = request_var('av_local_cat', '');
+		
+		$file = request_var('av_local_file', '');
+		if (!isset($avatar_list[$category][urldecode($file)]))
+		{
+			$error[] = 'AVATAR_URL_NOT_FOUND';
+			return false;
+		}
+
+		return array(
+			'user_avatar' => $category . '/' . $file,
+			'user_avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
+			'user_avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
+		);
+	}
+
+	/**
+	* @TODO
+	*/
+	private function get_avatar_list()
 	{
 		$avatar_list = ($this->cache == null) ? false : $this->cache->get('av_local_list');
 
@@ -101,50 +159,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 				$this->cache->put('av_local_list', $avatar_list);
 			}
 		}
-		
-		$category = request_var('av_local_cat', '');
-		
-		if ($submitted) {
-			$file = request_var('av_local_file', '');
-			if (!isset($avatar_list[$category][urldecode($file)]))
-			{
-				$error[] = 'AVATAR_URL_NOT_FOUND';
-				return false;
-			}
 
-			return array(
-				'user_avatar' => $category . '/' . $file,
-				'user_avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
-				'user_avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
-			);
-		}
-
-
-		$categories = array_keys($avatar_list);
-
-		foreach ($categories as $cat)
-		{
-			if (!empty($avatar_list[$cat]))
-			{
-				$template->assign_block_vars('av_local_cats', array(
-					'NAME' => $cat,
-					'SELECTED' => ($cat == $category),
-				));
-			}
-		}
-
-		if (!empty($avatar_list[$category]))
-		{
-			foreach ($avatar_list[$category] as $img => $data)
-			{
-				$template->assign_block_vars('av_local_imgs', array(
-					'AVATAR_IMAGE'  => $path . '/' . $data['file'],
-					'AVATAR_NAME' => $data['name'],
-					'AVATAR_FILE' => $data['filename'],
-				));
-			}
-		}
-
-		return true;
+		return $avatar_list;
 	}
 }

@@ -568,7 +568,7 @@ class ucp_profile
 							{
 								if (check_form_key('ucp_avatar'))
 								{
-									$result = $avatar->handle_form($template, $user->data, $error, true);
+									$result = $avatar->process_form($template, $user->data, $error);
 								
 									if ($result && empty($error))
 									{
@@ -592,7 +592,7 @@ class ucp_profile
 								}
 							}
 
-							if ($avatar->handle_form($template, $user->data, $error)) {
+							if ($avatar->prepare_form($template, $user->data, $error)) {
 								$driver_u = strtoupper($driver);
 
 								$template->assign_block_vars('avatar_drivers', array(

@@ -47,71 +47,85 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function handle_form($template, $user_row, &$error, $submitted = false)
+	public function prepare_form($template, $user_row, &$error)
 	{
-		$can_upload = (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
-
-		if ($can_upload == false)
+		if (!$this->can_upload())
 		{
 			return false;
 		}
 
-		if ($submitted)
-		{
-			include_once($this->phpbb_root_path . 'includes/functions_upload.' . $this->phpEx);
-
-			$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
-
-			$url = request_var('av_upload_url', '');
-
-			if (!empty($_FILES['av_upload_file']['name']))
-			{
-				$file = $upload->form_upload('av_upload_file');
-			}
-			else
-			{
-				$file = $upload->remote_upload($url);
-			}
-
-			$prefix = $this->config['avatar_salt'] . '_';
-			$file->clean_filename('avatar', $prefix, $user_row['user_id']);
-
-			$destination = $this->config['avatar_path'];
-
-			// Adjust destination path (no trailing slash)
-			if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
-			{
-				$destination = substr($destination, 0, -1);
-			}
-
-			$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-			if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
-			{
-				$destination = '';
-			}
-
-			// Move file and overwrite any existing image
-			$file->move_file($destination, true);
-
-			if (sizeof($file->error))
-			{
-				$file->remove();
-				$error = array_merge($error, $file->error);
-				return false;
-			}
-
-			return array(
-				'user_avatar' => $user_row['user_id'] . '_' . time() . '.' . $file->get('extension'),
-				'user_avatar_width' => $file->get('width'),
-				'user_avatar_height' => $file->get('height'),
-			);
-		}
-		
 		$template->assign_vars(array(
 			'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
 			'AV_UPLOAD_SIZE' => $this->config['avatar_filesize'],
 		));
 		
 		return true;
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function process_form($template, $user_row, &$error)
+	{
+		if (!$this->can_upload())
+		{
+			return false;
+		}
+
+		include_once($this->phpbb_root_path . 'includes/functions_upload.' . $this->phpEx);
+
+		$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
+
+		$url = request_var('av_upload_url', '');
+
+		if (!empty($_FILES['av_upload_file']['name']))
+		{
+			$file = $upload->form_upload('av_upload_file');
+		}
+		else
+		{
+			$file = $upload->remote_upload($url);
+		}
+
+		$prefix = $this->config['avatar_salt'] . '_';
+		$file->clean_filename('avatar', $prefix, $user_row['user_id']);
+
+		$destination = $this->config['avatar_path'];
+
+		// Adjust destination path (no trailing slash)
+		if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
+		{
+			$destination = substr($destination, 0, -1);
+		}
+
+		$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
+		if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
+		{
+			$destination = '';
+		}
+
+		// Move file and overwrite any existing image
+		$file->move_file($destination, true);
+
+		if (sizeof($file->error))
+		{
+			$file->remove();
+			$error = array_merge($error, $file->error);
+			return false;
+		}
+
+		return array(
+			'user_avatar' => $user_row['user_id'] . '_' . time() . '.' . $file->get('extension'),
+			'user_avatar_width' => $file->get('width'),
+			'user_avatar_height' => $file->get('height'),
+		);
+	}
+
+	/**
+	* @TODO
+	*/
+	private function can_upload()
+	{
+		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
 	}
 }
