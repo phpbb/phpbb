@@ -553,6 +553,39 @@ class ucp_profile
 				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
 				{
 					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
+					
+					if (isset($_POST['av_delete']))
+					{
+						if (check_form_key('ucp_avatar'))
+						{
+							$result = array(
+								'user_avatar' => '',
+								'user_avatar_type' => '',
+								'user_avatar_width' => 0,
+								'user_avatar_height' => 0,
+							);
+							
+							if ($driver = $avatar_manager->get_driver($user->data['user_avatar_type']))
+							{
+								$driver->delete($user->data);
+							}
+										
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $result) . '
+								WHERE user_id = ' . $user->data['user_id'];
+
+							$db->sql_query($sql);
+
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
+						else
+						{
+							$error[] = 'FORM_INVALID';
+						}
+					}
+
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 

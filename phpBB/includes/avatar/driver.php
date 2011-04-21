@@ -114,4 +114,12 @@ abstract class phpbb_avatar_driver
 	{
 		return false;
 	}
+
+	/**
+	* @TODO
+	**/
+	public function delete($user_row)
+	{
+		return true;
+	}
 }

@@ -10,7 +10,7 @@
 		<dl>
 			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 			<dd><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></dd>
-			<!-- IF AVATAR && S_AVATARS_ENABLED --><dd><input type="submit" name="submit" id="delete" value="{LA_DELETE_AVATAR}" /></dd><!-- ENDIF -->
+			<!-- IF AVATAR && S_AVATARS_ENABLED --><dd><input type="submit" name="av_delete" id="av_delete" value="{LA_DELETE_AVATAR}" /></dd><!-- ENDIF -->
 		</dl>
 	</fieldset>
 
@@ -26,11 +26,6 @@
 		<input type="submit" name="submit_av_{avatar_drivers.DRIVER}" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
 <!-- END avatar_drivers -->
-
-	<fieldset>
-	<!-- IF S_LINK_AVATAR -->
-	<!-- ENDIF -->
-	</fieldset>
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>

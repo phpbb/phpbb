@@ -452,10 +452,10 @@ class acp_users
 							{
 								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
-
+							
 							$sql_ary = array(
 								'user_avatar'			=> '',
-								'user_avatar_type'		=> 0,
+								'user_avatar_type'		=> '',
 								'user_avatar_width'		=> 0,
 								'user_avatar_height'	=> 0,
 							);
@@ -466,9 +466,10 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
+							$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
+							if ($driver = $avatar_manager->get_driver($user_row['user_avatar_type']))
 							{
-								avatar_delete('user', $user_row);
+								$driver->delete($user_row);
 							}
 
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);

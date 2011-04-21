@@ -122,6 +122,22 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	public function delete($user_row)
+	{
+		$ext = substr(strrchr($user_row['user_avatar'], '.'), 1);
+		$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $user_row['user_id'] . '.' . $ext;
+
+		if (file_exists($filename))
+		{
+			@unlink($filename);
+		}
+
+		return true;
+	}
+
+	/**
 	* @TODO
 	*/
 	private function can_upload()

@@ -47,6 +47,20 @@ class phpbb_avatar_manager
 			$this->load_valid_drivers();
 		}
 
+		// Legacy stuff...
+		switch ($avatar_type)
+		{
+			case AVATAR_LOCAL:
+				$avatar_type = 'local';
+				break;
+			case AVATAR_UPLOAD:
+				$avatar_type = 'upload';
+				break;
+			case AVATAR_REMOTE:
+				$avatar_type = 'remote';
+				break;
+		}
+
 		if (isset(self::$valid_drivers[$avatar_type]))
 		{
 			if ($new || !is_object(self::$valid_drivers[$avatar_type]))
