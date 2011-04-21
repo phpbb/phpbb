@@ -109,6 +109,7 @@ class auth
 	*/
 	function _fill_acl($user_permissions)
 	{
+		$seq_cache = array();
 		$this->acl = array();
 		$user_permissions = explode("\n", $user_permissions);
 
@@ -125,8 +126,15 @@ class auth
 
 				while ($subseq = substr($seq, $i, 6))
 				{
-					// We put the original bitstring into the acl array
-					$this->acl[$f] .= str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT);
+					if (isset($seq_cache[$subseq]))
+					{
+						$this->acl[$f] .= $seq_cache[$subseq];
+					}
+					else
+					{
+						// We put the original bitstring into the acl array
+						$this->acl[$f] .= ($seq_cache[$subseq] = str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT));
+					}
 					$i += 6;
 				}
 			}
