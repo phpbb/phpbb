@@ -322,7 +322,7 @@ class template_compile
 		// Is the designer wanting to call another loop in a loop?
 		if (strpos($tag_args, '!') === 0)
 		{
-			// Count the number if ! occurrences (not allowed in vars)
+			// Count the number of ! occurrences (not allowed in vars)
 			$no_nesting = substr_count($tag_args, '!');
 			$tag_args = substr($tag_args, $no_nesting);
 		}
