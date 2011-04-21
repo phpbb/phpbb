@@ -126,15 +126,13 @@ class auth
 
 				while ($subseq = substr($seq, $i, 6))
 				{
-					if (isset($seq_cache[$subseq]))
+					if (!isset($seq_cache[$subseq]))
 					{
-						$this->acl[$f] .= $seq_cache[$subseq];
+						$seq_cache[$subseq] = str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT);
 					}
-					else
-					{
-						// We put the original bitstring into the acl array
-						$this->acl[$f] .= ($seq_cache[$subseq] = str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT));
-					}
+
+					// We put the original bitstring into the acl array
+					$this->acl[$f] .= $seq_cache[$subseq];
 					$i += 6;
 				}
 			}
