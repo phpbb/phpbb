@@ -317,6 +317,12 @@ class phpbb_template_filter extends php_user_filter
 				return '<!-- ENDPHP -->';
 			break;
 
+			case 'RUNHOOKS':
+				// return value here will be compiled code (html with embedded php).
+				// we don't want to wrap it in php tags here.
+				return '<?php ' . $this->compile_tag_run_hooks($matches[2]) . '?>';
+				break;
+
 			default:
 				return $matches[0];
 			break;
@@ -797,6 +803,27 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include_php($tag_args)
 	{
 		return "\$_template->_php_include('$tag_args');";
+	}
+
+	/**
+	* Compile RUNHOOKS tag.
+	*
+	* $tag_args should be a single string identifying hook location.
+	*/
+	private function compile_tag_run_hooks($tag_args)
+	{
+		if (!preg_match('/^\w+$/', $tag_args))
+		{
+			// do something
+			var_dump($tag_args);
+		}
+		$location = $tag_args;
+		// 1. find all mods defining hooks for location
+		// 2. obtain mods' template fragments
+		// 3. compile template fragments
+		// 4. return compiled code
+		// note: need to make sure we get fragments in the right order
+		return 'echo "test";';
 	}
 
 	/**
