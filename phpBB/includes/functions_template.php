@@ -345,7 +345,7 @@ class template_compile
 				$loop_start = '($_' . $tag_args . '_count < ' . $match[2] . ' ? $_' . $tag_args . '_count : ' . $match[2] . ')';
 			}
 
-			if (strlen($match[3]) < 1 || $match[3] == -1)
+			if (sizeof($match) < 4 || strlen($match[3]) < 1 || $match[3] == -1)
 			{
 				$loop_end = '$_' . $tag_args . '_count';
 			}
