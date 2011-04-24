@@ -737,7 +737,7 @@ class template_compile
 
 		// Append the variable reference.
 		$varref .= "['$varname']";
-		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
+		$varref = ($echo) ? "<?php if (isset($varref)) echo $varref; ?>" : ((isset($varref)) ? $varref : '');
 
 		return $varref;
 	}
