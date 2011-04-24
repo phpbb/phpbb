@@ -528,7 +528,18 @@ class template_compile
 				default:
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '(isset($this->_rootref[\'' . $varrefs[3] . '\']) && $this->_rootref[\'' . $varrefs[3] . '\'])');
+						if (!empty($varrefs[1]))
+						{
+							$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+							$token = "isset($token) ? $token : null";
+						} else if ($varrefs[2])
+						{
+							$token = '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']';
+						}
+						else
+						{
+							$token = '(isset($this->_rootref[\'' . $varrefs[3] . '\']) && $this->_rootref[\'' . $varrefs[3] . '\'])';
+						}
 					}
 					else if (preg_match('#^\.((?:[a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
