@@ -380,11 +380,6 @@ class phpbb_template
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		if (!class_exists('phpbb_template_compile'))
-		{
-			include 'template_compile.php';
-		}
-		
 		$compile = new phpbb_template_compile($this);
 
 		if ($compile->_tpl_load_file($handle) === false)
@@ -404,11 +399,6 @@ class phpbb_template
 	*/
 	private function _tpl_eval($handle)
 	{
-		if (!class_exists('phpbb_template_compile'))
-		{
-			include 'template_compile.php';
-		}
-		
 		$compile = new phpbb_template_compile($this);
 
 		// If we don't have a file assigned to this handle, die.
