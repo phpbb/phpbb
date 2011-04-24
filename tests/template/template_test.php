@@ -267,7 +267,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
 		$expecting = sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path . '/../') . '/templates/' . $filename);
-	//	$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');
 	}

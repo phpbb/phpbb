@@ -343,19 +343,22 @@ class phpbb_template
 		$recompile = false;
 		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || ($config['load_tplcompile'] && @filemtime($filename) < @filemtime($this->files[$handle]))) ? true : false;
 
-		if (defined('DEBUG_EXTRA'))
+		if (!$recompile)
 		{
-			$recompile = true;
-		}
-		else if ($config['load_tplcompile'])
-		{
-			// No way around it: we need to check inheritance here
-			if ($user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
+			if (defined('DEBUG_EXTRA'))
 			{
-				$this->files[$handle] = $this->files_inherit[$handle];
-				$this->files_template[$handle] = $user->theme['template_inherits_id'];
+				$recompile = true;
 			}
-			$recompile = (@filemtime($filename) < @filemtime($this->files[$handle])) ? true : false;
+			else if ($config['load_tplcompile'])
+			{
+				// No way around it: we need to check inheritance here
+				if ($user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
+				{
+					$this->files[$handle] = $this->files_inherit[$handle];
+					$this->files_template[$handle] = $user->theme['template_inherits_id'];
+				}
+				$recompile = (@filemtime($filename) < @filemtime($this->files[$handle])) ? true : false;
+			}
 		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
