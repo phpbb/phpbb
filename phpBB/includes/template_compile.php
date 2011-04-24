@@ -978,5 +978,3 @@ class phpbb_template_compile
 		return stream_get_contents($destination_handle);
 	}
 }
-
-?>
