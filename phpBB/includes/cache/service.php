@@ -194,6 +194,7 @@ class phpbb_cache_service
 					'max_filesize'	=> (int) $row['max_filesize'],
 					'allow_group'	=> $row['allow_group'],
 					'allow_in_pm'	=> $row['allow_in_pm'],
+					'group_name'	=> $row['group_name'],
 				);
 
 				$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();

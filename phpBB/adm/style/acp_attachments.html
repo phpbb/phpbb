@@ -371,6 +371,79 @@
 	</fieldset>
 	</form>
 
+<!-- ELSEIF S_MANAGE -->
+
+	<form id="attachments" method="post" action="{U_ACTION}">
+
+	<fieldset class="tabulated">
+	<legend>{L_TITLE}</legend>
+
+	<!-- IF PAGINATION  or TOTAL_FILES -->
+	<div class="pagination">
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_FILENAME}</th>
+		<th>{L_POSTED}</th>
+		<th>{L_FILESIZE}</th>
+		<th>{L_DELETE}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN attachments -->
+		<!-- IF attachments.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td>
+				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}: <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
+				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}: <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
+			</td>
+			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
+			<td>{attachments.FILESIZE}</td>
+			<td><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
+		</tr>
+	<!-- END attachments -->
+	<tr class="row4">
+		<td colspan="3">&nbsp;</td>
+		<td class="small"><a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<!-- IF TOTAL_FILES -->
+	<fieldset class="display-options">
+		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+
+	<hr />
+
+	<div class="pagination">
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+	<!-- IF S_ACTION_OPTIONS -->
+	<fieldset>
+		<legend>{L_RESYNC_STATS}</legend>
+		<form id="action_stats_form" method="post" action="{U_ACTION}">
+			<dl>
+				<dt><label for="action_stats">{L_RESYNC_FILES_STATS}</label><br /><span>{L_RESYNC_FILES_STATS_EXPLAIN}</span></dt>
+				<dd><input type="hidden" name="action" value="stats" /><input class="button2" type="submit" id="action_stats" name="action_stats" value="{L_RUN}" /></dd>
+			</dl>
+		</form>
+	</fieldset>
+	<!-- ENDIF -->
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->
