@@ -139,4 +139,28 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$cache2->checkVarUnset($this, 'foo');
 		$this->assertFalse(isset($config2['foo']));
 	}
+
+	public function test_delete_write_read_not_cacheable()
+	{
+		// bar is dynamic
+		$this->assertTrue(isset($this->config['bar']));
+		$this->config->delete('bar');
+		$this->cache->checkVarUnset($this, 'bar');
+		$this->assertFalse(isset($this->config['bar']));
+		
+		$this->config->set('bar', 'new bar', false);
+		$this->assertEquals('new bar', $this->config['bar']);
+	}
+
+	public function test_delete_write_read_cacheable()
+	{
+		// foo is not dynamic
+		$this->assertTrue(isset($this->config['foo']));
+		$this->config->delete('foo');
+		$this->cache->checkVarUnset($this, 'foo');
+		$this->assertFalse(isset($this->config['foo']));
+		
+		$this->config->set('foo', 'new foo', true);
+		$this->assertEquals('new foo', $this->config['foo']);
+	}
 }
