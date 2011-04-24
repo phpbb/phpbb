@@ -782,7 +782,7 @@ class phpbb_template
 			$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
 		}
 
- 		$filename = $this->_tpl_load($handle);
+		$filename = $this->_tpl_load($handle);
 
 		if ($include)
 		{
