@@ -23,13 +23,13 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_template_filter extends php_user_filter
 {
-	const REGEX_NS = '[a-z][a-z_0-9]+';
+	const REGEX_NS = '[a-z_][a-z_0-9]+';
 
-	const REGEX_VAR = '[A-Z][A-Z_0-9]+';
+	const REGEX_VAR = '[A-Z_][A-Z_0-9]+';
 
 	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
 
-	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
+	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z_][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
 
 	/**
 	* @var array

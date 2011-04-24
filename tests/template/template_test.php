@@ -236,6 +236,15 @@ class phpbb_template_template_test extends phpbb_test_case
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
 			),*/
 			array(
+				// Just like a regular loop but the name begins
+				// with an underscore
+				'loop_underscore.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
+			),
+			array(
 				'lang.html',
 				array(),
 				array(),
