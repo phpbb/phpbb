@@ -520,7 +520,11 @@ class phpbb_template_filter extends php_user_filter
 						if (!empty($varrefs[1]))
 						{
 							$namespace = substr($varrefs[1], 0, -1);
-							$namespace = (strpos($namespace, '.') === false) ? $namespace : strrchr($namespace, '.');
+							$dot_pos = strrchr($namespace, '.');
+							if ($dot_pos !== false)
+							{
+								$namespace = substr($dot_pos, 1);
+							}
 
 							// S_ROW_COUNT is deceptive, it returns the current row number not the number of rows
 							// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM

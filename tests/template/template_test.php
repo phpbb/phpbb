@@ -277,7 +277,16 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
-				"top-level content",
+				// I don't completely understand this output, hopefully it's correct
+				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
+				'loop_nested_deep_multilevel_ref.html',
+				array(),
+				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				// I don't completely understand this output, hopefully it's correct
+				"top-level content\nouter\n\ninner z\nfirst row\n\ninner zz",
 			),
 		);
 	}
