@@ -366,7 +366,7 @@ class phpbb_template
 		{
 			return $filename;
 		}
-		
+
 		// Inheritance - we point to another template file for this one. Equality is also used for store_db
 		if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 		{
@@ -374,20 +374,54 @@ class phpbb_template
 			$this->files_template[$handle] = $user->theme['template_inherits_id'];
 		}
 
-		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
-		{
-			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
-		}
+		$source_file = $this->_source_file_for_handle($handle);
 
 		$compile = new phpbb_template_compile($this);
 
-		if ($compile->_tpl_load_file($handle) === false)
+		if ($compile->compile_write($source_file, $this->_compiled_file_for_handle($handle)) === false)
 		{
 			return false;
 		}
-		
+
 		return $filename;
+	}
+
+	/**
+	* Resolves template handle $handle to source file path.
+	* @access private
+	* @param string $handle Template handle (i.e. "friendly" template name)
+	* @return string Source file path
+	*/
+	private function _source_file_for_handle($handle)
+	{
+		// If we don't have a file assigned to this handle, die.
+		if (!isset($this->files[$handle]))
+		{
+			trigger_error("_source_file_for_handle(): No file specified for handle $handle", E_USER_ERROR);
+		}
+
+		$source_file = $this->files[$handle];
+
+		// Try and open template for reading
+		if (!file_exists($source_file))
+		{
+			trigger_error("_source_file_for_handle(): File $source_file does not exist", E_USER_ERROR);
+		}
+		return $source_file;
+	}
+
+	/**
+	* Determines compiled file path for handle $handle.
+	* @access private
+	* @param string $handle Template handle (i.e. "friendly" template name)
+	* @return string Compiled file path
+	*/
+	private function _compiled_file_for_handle($handle)
+	{
+		global $phpEx;
+
+		$compiled_file = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
+		return $compiled_file;
 	}
 
 	/**
@@ -401,13 +435,9 @@ class phpbb_template
 	{
 		$compile = new phpbb_template_compile($this);
 
-		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
-		{
-			trigger_error("template->_tpl_eval(): No file specified for handle $handle", E_USER_ERROR);
-		}
+		$source_file = $this->_source_file_for_handle($handle);
 
-		if (($code = $compile->_tpl_gen_src($handle)) === false)
+		if (($code = $compile->compile_gen($source_file)) === false)
 		{
 			return false;
 		}
@@ -473,13 +503,13 @@ class phpbb_template
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{
-							$compile->_tpl_load_file($handle, true);
+							$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
 						}
 						else
 						{
 							$this->files[$row['template_filename']] = $file;
 							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$compile->_tpl_load_file($row['template_filename'], true);
+							$compile->compile_write($this->_source_file_for_handle($row['template_filename']), $this->_compiled_file_for_handle($row['template_filename']));
 							unset($this->compiled_code[$row['template_filename']]);
 							unset($this->files[$row['template_filename']]);
 							unset($this->filename[$row['template_filename']]);
@@ -515,14 +545,14 @@ class phpbb_template
 					$this->files_template[$row['template_filename']] = $user->theme['template_inherits_id'];
 				}
 				// Try to load from filesystem and instruct to insert into the styles table...
-				$compile->_tpl_load_file($handle, true);
+				$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
 				return false;
 			}
 
 			return false;
 		}
 
-		$compile->_tpl_load_file($handle);
+		$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
 		return false;
 	}
 
@@ -801,7 +831,8 @@ class phpbb_template
 			{
 				$compile = new phpbb_template_compile($this);
 
-				if (($code = $compile->_tpl_gen_src($handle)) !== false)
+				$source_file = $this->_source_file_for_handle($handle);
+				if (($code = $compile->compile_gen($source_file)) !== false)
 				{
 					$code = ' ?> ' . $code . ' <?php ';
 					eval($code);

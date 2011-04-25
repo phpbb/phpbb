@@ -45,7 +45,7 @@ class phpbb_template_filter extends php_user_filter
 	* @var string
 	*/
 	private $chunk;
-	
+
 	/**
 	* @var bool
 	*/
@@ -96,12 +96,12 @@ class phpbb_template_filter extends php_user_filter
 	private function compile($data)
 	{
 		$block_start_in_php = $this->in_php;
-	
+
 		$data = preg_replace('#<(?:[\\?%]|script)#s', '<?php echo\'\\0\';?>', $data);
 		$data = preg_replace_callback(self::REGEX_TOKENS, array($this, 'replace'), $data);
 
 		global $config;
-	
+
 		// Remove php
 		if (!$config['tpl_allow_php'])
 		{
@@ -117,33 +117,33 @@ class phpbb_template_filter extends php_user_filter
 			$data = preg_replace('~<!-- PHP -->.*?<!-- ENDPHP -->~', '', $data);
 			$data = preg_replace('~<!-- ENDPHP -->.*?$~', '', $data);
 		}
-		
+
 		"?>/**/";
-		
+
 		/*
 			Preserve whitespace.
 			PHP removes a newline after the closing tag (if it's there). This is by design.
-			
-			
+
+
 			Consider the following template:
-			
+
 				<!-- IF condition -->
 				some content
 				<!-- ENDIF -->
-			
+
 			If we were to simply preserve all whitespace, we could simply replace all "?>" tags
 			with "?>\n".
 			Doing that, would add additional newlines to the compiled tempalte in place of the
 			IF and ENDIF statements. These newlines are unwanted (and one is conditional).
 			The IF and ENDIF are usually on their own line for ease of reading.
-			
+
 			This replacement preserves newlines only for statements that aren't the only statement on a line.
 			It will NOT preserve newlines at the end of statements in the above examle.
 			It will preserve newlines in situations like:
-			
+
 				<!-- IF condition -->inline content<!-- ENDIF -->
-			
-		
+
+
 		*/
 //*
 		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
@@ -158,7 +158,7 @@ class phpbb_template_filter extends php_user_filter
 		{
 			return '';
 		}
-	
+
 		if (isset($matches[3]))
 		{
 			return $this->compile_var_tags($matches[0]);
@@ -558,7 +558,7 @@ class phpbb_template_filter extends php_user_filter
 							$token = ($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']';
 							$vars[$token] = true;
 						}
-						
+
 					}
 					else if (preg_match('#^\.((?:' . self::REGEX_NS . '\.?)+)$#s', $token, $varrefs))
 					{
@@ -867,70 +867,17 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 class phpbb_template_compile
 {
 	/**
-	* @var phpbb_template Reference to the {@link phpbb_template template} object performing compilation
-	*/
-	private $template;
-
-	/**
-	* Constructor
-	* @param phpbb_template $template {@link phpbb_template Template} object performing compilation
-	*/
-	public function __construct(phpbb_template $template)
-	{
-		$this->template = $template;
-	}
-
-	/**
-	* Load template source from file
+	* Compiles template in $source_file and writes compiled template to
+	* cache directory
 	* @access public
-	* @param string $handle Template handle we wish to load
-	* @return bool Return true on success otherwise false
-	*/
-	public function _tpl_load_file($handle)
-	{
-		// Try and open template for read
-		if (!file_exists($this->template->files[$handle]))
-		{
-			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
-		}
-
-		// Actually compile the code now.
-		return $this->compile_write($handle, $this->template->files[$handle]);
-	}
-
-	/**
-	* Load template source from file
-	* @access public
-	* @param string $handle Template handle we wish to compile
-	* @return string|bool Return compiled code on successful compilation otherwise false
-	*/
-	public function _tpl_gen_src($handle)
-	{
-		// Try and open template for read
-		if (!file_exists($this->template->files[$handle]))
-		{
-			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
-		}
-
-		// Actually compile the code now.
-		return $this->compile_gen($this->template->files[$handle]);
-	}
-
-	/**
-	* Write compiled file to cache directory
-	* @access private
 	* @param string $handle Template handle to compile
 	* @param string $source_file Source template file
 	* @return bool Return true on success otherwise false
 	*/
-	private function compile_write($handle, $source_file)
+	public function compile_write($source_file, $compiled_file)
 	{
-		global $system, $phpEx;
-
-		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . $phpEx;
-
 		$source_handle = @fopen($source_file, 'rb');
-		$destination_handle = @fopen($filename, 'wb');
+		$destination_handle = @fopen($compiled_file, 'wb');
 
 		if (!$source_handle || !$destination_handle)
 		{
@@ -946,7 +893,7 @@ class phpbb_template_compile
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
 
-		phpbb_chmod($filename, CHMOD_READ | CHMOD_WRITE);
+		phpbb_chmod($compiled_file, CHMOD_READ | CHMOD_WRITE);
 
 		clearstatcache();
 
@@ -954,12 +901,13 @@ class phpbb_template_compile
 	}
 
 	/**
-	* Generate source for eval()
-	* @access private
+	* Compiles a template located at $source_file.
+	* Returns PHP source suitable for eval().
+	* @access public
 	* @param string $source_file Source template file
 	* @return string|bool Return compiled code on successful compilation otherwise false
 	*/
-	private function compile_gen($source_file)
+	public function compile_gen($source_file)
 	{
 		$source_handle = @fopen($source_file, 'rb');
 		$destination_handle = @fopen('php://temp' ,'r+b');
