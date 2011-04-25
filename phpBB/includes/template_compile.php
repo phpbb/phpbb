@@ -588,7 +588,7 @@ class phpbb_template_filter extends php_user_filter
 							// Add the block reference for the last child.
 							$varref .= "['" . $blocks[0] . "']";
 						}
-						$token = "isset($varref) && sizeof($varref)";
+						$token = "(isset($varref) ? sizeof($varref) : 0)";
 					}
 
 				break;

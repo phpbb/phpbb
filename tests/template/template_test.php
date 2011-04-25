@@ -288,6 +288,13 @@ class phpbb_template_template_test extends phpbb_test_case
 				// I don't completely understand this output, hopefully it's correct
 				"top-level content\nouter\n\ninner z\nfirst row\n\ninner zz",
 			),
+			array(
+				'loop_size.html',
+				array(),
+				array('loop' => array(array()), 'empty_loop' => array()),
+				array(),
+				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
 		);
 	}
 
