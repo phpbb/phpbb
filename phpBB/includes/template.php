@@ -260,6 +260,7 @@ class phpbb_template
 			}
 		}
 
+		/*
 		if (defined('IN_ERROR_HANDLER'))
 		{
 			if ((E_NOTICE & error_reporting()) == E_NOTICE)
@@ -267,6 +268,7 @@ class phpbb_template
 				error_reporting(error_reporting() ^ E_NOTICE);
 			}
 		}
+		*/
 
 		$_tpldata	= &$this->_tpldata;
 		$_rootref	= &$this->_rootref;
