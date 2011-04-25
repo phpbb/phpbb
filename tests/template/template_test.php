@@ -265,6 +265,20 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				"{ VARIABLE }\nValue'",
 			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array(),
+				array(),
+				"top-level content",
+			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content",
+			),
 		);
 	}
 
