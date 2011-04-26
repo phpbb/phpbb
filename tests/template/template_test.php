@@ -91,7 +91,7 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array(),
 				array(),
-				"pass\npass\n<!-- DUMMY var -->",
+				"pass\npass\npass\n<!-- DUMMY var -->",
 			),
 			array(
 				'variable.html',

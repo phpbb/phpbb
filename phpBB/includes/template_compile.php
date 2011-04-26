@@ -408,7 +408,7 @@ class phpbb_template_filter extends php_user_filter
 	* some adaptions for our block level methods
 	* @access private
 	*/
-	private function compile_expression($tag_args, &$vars = array())
+	private function compile_expression($tag_args)
 	{
 		$match = array();
 		preg_match_all('/(?:
@@ -553,14 +553,14 @@ class phpbb_template_filter extends php_user_filter
 
 								default:
 									$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
-									$vars[$token] = true;
+									$token = '(isset(' . $token . ') ? ' . $token . ' : null)';
 								break;
 							}
 						}
 						else
 						{
 							$token = ($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']';
-							$vars[$token] = true;
+							$token = '(isset(' . $token . ') ? ' . $token . ' : null)';
 						}
 
 					}
@@ -601,16 +601,9 @@ class phpbb_template_filter extends php_user_filter
 
 	private function compile_tag_if($tag_args, $elseif)
 	{
-		$vars = array();
-
-		$tokens = $this->compile_expression($tag_args, $vars);
+		$tokens = $this->compile_expression($tag_args);
 
 		$tpl = ($elseif) ? '} else if (' : 'if (';
-
-		if (!empty($vars))
-		{
-			$tpl .= '(isset(' . implode(') && isset(', array_keys($vars)) . ')) && ';
-		}
 
 		$tpl .= implode(' ', $tokens);
 		$tpl .= ') { ';
