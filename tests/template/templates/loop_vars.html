@@ -1,21 +1,14 @@
 <!-- BEGIN loop -->
 <!-- IF loop.S_FIRST_ROW -->first<!-- ENDIF -->
-
-{loop.S_ROW_COUNT}
-
-{loop.VARIABLE}
-
+{loop.S_ROW_NUM} - a
+{loop.VARIABLE} - b
 <!-- IF loop.VARIABLE -->set<!-- ENDIF -->
-
 <!-- IF loop.S_LAST_ROW -->
 last
 <!-- ENDIF -->
 <!-- BEGIN inner -->
-
-{inner.S_ROW_COUNT}
-
+{inner.S_ROW_NUM} - c
 <!-- IF inner.S_LAST_ROW and inner.S_ROW_COUNT and inner.S_NUM_ROWS -->last inner<!-- ENDIF -->
-
 <!-- END inner -->
 <!-- END loop -->
 <!-- IF .loop.inner -->inner loop<!-- ENDIF -->
