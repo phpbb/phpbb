@@ -2253,7 +2253,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 /**
 * Generate board url (example: http://www.example.com/phpBB)
+*
 * @param bool $without_script_path if set to true the script path gets not appended (example: http://www.example.com)
+*
+* @return string the generated board url
 */
 function generate_board_url($without_script_path = false)
 {
