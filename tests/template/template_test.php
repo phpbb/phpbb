@@ -295,6 +295,16 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
 			),
+			/* Does not pass with the current implementation.
+			array(
+				'loop_reuse.html',
+				array(),
+				array('one' => array(array('VAR' => 'a'), array('VAR' => 'b')), 'one.one' => array(array('VAR' => 'c'), array('VAR' => 'd'))),
+				array(),
+				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
+				"a\nb\nc\nd",
+			),
+			*/
 		);
 	}
 
