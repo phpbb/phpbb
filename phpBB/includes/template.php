@@ -276,7 +276,7 @@ class template
 		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
 
 		$recompile = false;
-		if (!file_exists($filename) || @filesize($filename) === 0)
+		if (!file_exists($filename) || @filesize($filename) === 0 || defined('DEBUG_EXTRA'))
 		{
 			$recompile = true;
 		}
