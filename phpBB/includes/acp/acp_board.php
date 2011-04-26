@@ -450,7 +450,13 @@ class acp_board
 		}
 
 		// Used to update some bot configuration
-		$bot_update = '';
+		// This array is also used to map the configuration values to user settings
+		$bot_update = array(
+			'default_lang'		=> '',
+			'default_style'		=> '',
+			'board_timezone'	=> '',
+			'board_dst'			=> '',
+		);
 
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
@@ -465,6 +471,15 @@ class acp_board
 				continue;
 			}
 
+			if (isset($bot_update[$config_name]))
+			{
+				// Changed?
+				if ($config[$config_name] != $cfg_array[$config_name])
+				{
+					$bot_update[$config_name] = $cfg_array[$config_name];
+				}
+			}
+
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')
@@ -472,15 +487,6 @@ class acp_board
 				$this->new_config['email_function_name'] = trim(str_replace(array('(', ')'), array('', ''), $this->new_config['email_function_name']));
 				$this->new_config['email_function_name'] = (empty($this->new_config['email_function_name']) || !function_exists($this->new_config['email_function_name'])) ? 'mail' : $this->new_config['email_function_name'];
 				$config_value = $this->new_config['email_function_name'];
-			}
-
-			if ($config_name == 'default_lang' || $config_name == 'default_style')
-			{
-				// Changed?
-				if ($config[$config_name] != $this->new_config[$config_name])
-				{
-					$bot_update = (!empty($bot_update)) ? 'both' : $config_name;
-				}
 			}
 
 			if ($submit)
@@ -495,7 +501,7 @@ class acp_board
 		}
 
 		// Update bots if the default style or language is changed
-		if (!empty($bot_update))
+		if ($submit && !empty($bot_update))
 		{
 			if (!function_exists('set_bot_default_lang_style'))
 			{

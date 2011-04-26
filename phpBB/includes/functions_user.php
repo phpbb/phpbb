@@ -3659,29 +3659,34 @@ function remove_newly_registered($user_id, $user_data = false)
 }
 
 /**
-* Function that updates the style and language of the users in the
-* bots group, to the board's default style/language
-* @param  String $mode Defines what to update, this can be
-*                      - default_lang: The style gets checked/updated
-*                      - default_style: The language gets checked/updated
-*                      - both: Check/update both
+* Function that updates the bot users if certain board settings are
+* updated, currently the `default_lang`, `default_style`,
+* `board_timezone` and `board_dst` are affected
+* @param  Array $options An array containing the options to be set,
+*                        the keys of the array are the configuration
+*                        names and the values are the new value.
+*                        If the value is an empty string this entry 
+*                        won't be updated.
 * @return void
 */
-function set_bot_default_lang_style($mode = 'both')
+function set_bot_default_lang_style(array $options)
 {
 	global $config, $db;
 
+	// Map the config options to user options
 	$sql_set = array();
-	foreach (array('default_lang', 'default_style') as $option)
+	foreach ($options as $optkey => $optval)
 	{
-		if ($mode == $option || $mode == 'both')
+		if (empty($optval))
 		{
-			$column = ($option == 'default_lang') ? 'user_lang' : 'user_style';
-			$sql_set[$column] = $config[$option];
+			continue;
 		}
+
+		// Replace `default_` and `board_` with `user_` so the settings can be used
+		$sql_set[str_replace(array('board_', 'default_'), 'user_', $optkey)] = $optval;
 	}
 
-	// Called with non existing mode
+	// Nothing to change, move on
 	if (empty($sql_set))
 	{
 		return;
