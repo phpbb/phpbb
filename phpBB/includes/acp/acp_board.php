@@ -451,7 +451,7 @@ class acp_board
 
 		// Used to update some bot configuration
 		// This array is also used to map the configuration values to user settings
-		$bot_update = array(
+		$bot_update_options = array(
 			'default_lang'		=> '',
 			'default_style'		=> '',
 			'board_timezone'	=> '',
@@ -471,12 +471,12 @@ class acp_board
 				continue;
 			}
 
-			if (isset($bot_update[$config_name]))
+			if (isset($bot_update_options[$config_name]))
 			{
 				// Changed?
 				if ($config[$config_name] != $cfg_array[$config_name])
 				{
-					$bot_update[$config_name] = $cfg_array[$config_name];
+					$bot_update_options[$config_name] = $cfg_array[$config_name];
 				}
 			}
 
@@ -501,14 +501,14 @@ class acp_board
 		}
 
 		// Update bots if the default style or language is changed
-		if ($submit && !empty($bot_update))
+		if ($submit && !empty($bot_update_options))
 		{
 			if (!function_exists('set_bot_default_lang_style'))
 			{
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 			}
 
-			set_bot_default_lang_style($bot_update);
+			phpbb_set_bot_default_options($bot_update_options);
 		}
 
 		// Store news and exclude ids

@@ -3669,7 +3669,7 @@ function remove_newly_registered($user_id, $user_data = false)
 *                        won't be updated.
 * @return void
 */
-function set_bot_default_lang_style(array $options)
+function phpbb_set_bot_default_options(array $options)
 {
 	global $config, $db;
 
