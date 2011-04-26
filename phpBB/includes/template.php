@@ -378,7 +378,7 @@ class phpbb_template
 
 		$source_file = $this->_source_file_for_handle($handle);
 
-		$compile = new phpbb_template_compile($this);
+		$compile = new phpbb_template_compile();
 
 		if ($compile->compile_write($source_file, $this->_compiled_file_for_handle($handle)) === false)
 		{
@@ -435,7 +435,7 @@ class phpbb_template
 	*/
 	private function _tpl_eval($handle)
 	{
-		$compile = new phpbb_template_compile($this);
+		$compile = new phpbb_template_compile();
 
 		$source_file = $this->_source_file_for_handle($handle);
 
@@ -831,7 +831,7 @@ class phpbb_template
 			}
 			else
 			{
-				$compile = new phpbb_template_compile($this);
+				$compile = new phpbb_template_compile();
 
 				$source_file = $this->_source_file_for_handle($handle);
 				if (($code = $compile->compile_gen($source_file)) !== false)
