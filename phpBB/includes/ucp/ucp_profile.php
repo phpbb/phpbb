@@ -570,11 +570,11 @@ class ucp_profile
 				// http://tracker.phpbb.com/browse/PHPBB3-9106 for additional details.
 				if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
 				{
-					if (!function_exists('format_upload_too_large_message'))
+					if (!function_exists('phpbb_format_upload_too_large_message'))
 					{
 						include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 					}
-					$error[] = format_upload_too_large_message(array('PHP_POST_MISSING'), true);
+					$error[] = phpbb_format_upload_too_large_message(array('PHP_POST_MISSING'), true);
 				}
 
 				if ($submit)

@@ -594,7 +594,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
+			$file->error[] = phpbb_format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			return $file;
 		}
 
@@ -670,7 +670,7 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
+			$file->error[] = phpbb_format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			return $file;
 		}
 
@@ -841,7 +841,7 @@ class fileupload
 		switch ($errorcode)
 		{
 			case 1:
-				$error = format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
+				$error = phpbb_format_upload_too_large_message(array('PHP_ATTACHMENT_TOO_LARGE'));
 			break;
 
 			case 2:
@@ -976,7 +976,17 @@ class fileupload
 	}
 }
 
-function format_upload_limit_message($include_post = false)
+/**
+* Creates the message informing user of PHP upload size limit in effect.
+* This message is used when a user uploads a file exceeding the PHP upload limit.
+* If $include_post is true the PHP POST size limit is also included in the message.
+* This is used when user uploaded a very large file and exceeded the POST size limit.
+* If PHP limit(s) cannot be determined a message to that effect is returned.
+*
+* @param bool $include_post Whether to include the post size limit in the message.
+* @return string Localized and substituted message.
+*/
+function phpbb_format_upload_limit_message($include_post = false)
 {
 	global $user;
 
@@ -1014,7 +1024,18 @@ function format_upload_limit_message($include_post = false)
 	return $error;
 }
 
-function format_upload_too_large_message($messages, $post_overrun = false)
+/**
+* Creates a message informing user that their uploaded file exceeded PHP limits.
+* The message incorporates page/action specific text given in $message.
+* If $post_overrun is true information about POST size limits is included,
+* along with instructions for raising it; otherwise only upload size limits are included.
+* Parts of the resulting message are separated by two line breaks.
+*
+* @param array $messages Page/action-specific messages to include in the resulting message.
+* @param bool $post_overrun Whether to include PHP POST limit information and instructions into the message
+* @return string Localized and substituted message.
+*/
+function phpbb_format_upload_too_large_message($messages, $post_overrun = false)
 {
 	global $user;
 
@@ -1028,7 +1049,7 @@ function format_upload_too_large_message($messages, $post_overrun = false)
 		$overrun_message .= $user->lang[$message];
 	}
 	$overrun_message .= '<br /><br />';
-	$overrun_message .= format_upload_limit_message($post_overrun);
+	$overrun_message .= phpbb_format_upload_limit_message($post_overrun);
 	if ($post_overrun)
 	{
 		$overrun_message .= '<br /><br />';
