@@ -382,6 +382,21 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	// Check for post submissions exceeding post_max_size.
+	// Please see the comment in posting.php and
+	// http://tracker.phpbb.com/browse/PHPBB3-9106 for additional details.
+	if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
+	{
+		if (!function_exists('phpbb_format_upload_too_large_message'))
+		{
+			include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+		}
+		$error[] = phpbb_format_upload_too_large_message(array('PHP_POST_MISSING', 'PHP_POST_RECIPIENTS_LOST'), true);
+
+		// This will close upload progress popup
+		$_POST['add_file'] = true;
+	}
+
 	if ($action == 'post')
 	{
 		$template->assign_var('S_NEW_MESSAGE', true);

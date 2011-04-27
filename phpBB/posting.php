@@ -655,6 +655,24 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+// Check for post submissions exceeding post_max_size.
+// In such event php clears $_POST and $_FILES.
+// Clearing of $_POST is unfortunate as typically user uploads a huge attachment and without it,
+// remainder of submission would fit in $_POST just fine.
+// Inform users that their submission did not make it.
+// See http://php.net/manual/en/ini.core.php#ini.post-max-size for documentation
+// and http://tracker.phpbb.com/browse/PHPBB3-9106 for discussion
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
+{
+	if (!function_exists('phpbb_format_upload_too_large_message'))
+	{
+		include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+	}
+	$error[] = phpbb_format_upload_too_large_message(array('PHP_POST_MISSING'), true);
+
+	// This will close upload progress popup
+	$_POST['add_file'] = true;
+}
 
 if ($submit || $preview || $refresh)
 {

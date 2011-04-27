@@ -565,6 +565,18 @@ class ucp_profile
 
 				add_form_key('ucp_avatar');
 
+				// Check for post submissions exceeding post_max_size.
+				// Please see the comment in posting.php and
+				// http://tracker.phpbb.com/browse/PHPBB3-9106 for additional details.
+				if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST))
+				{
+					if (!function_exists('phpbb_format_upload_too_large_message'))
+					{
+						include($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+					}
+					$error[] = phpbb_format_upload_too_large_message(array('PHP_POST_MISSING'), true);
+				}
+
 				if ($submit)
 				{
 					if (check_form_key('ucp_avatar'))
