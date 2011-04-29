@@ -1130,7 +1130,7 @@ class phpbb_db_tools
 	*/
 	function sql_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql')
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
 			$result = $this->db->sql_query($sql);
@@ -1235,7 +1235,7 @@ class phpbb_db_tools
 	*/
 	function sql_unique_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql')
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
 			$result = $this->db->sql_query($sql);
