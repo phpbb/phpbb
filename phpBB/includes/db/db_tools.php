@@ -697,7 +697,8 @@ class phpbb_db_tools
 					{
 						if ($column_exists)
 						{
-							$sqlite_data[$table]['change_columns'][] = $result;
+							continue;
+//							$sqlite_data[$table]['change_columns'][] = $result;
 						}
 						else
 						{
@@ -719,6 +720,11 @@ class phpbb_db_tools
 			{
 				foreach ($indexes as $index_name)
 				{
+					if (!$this->sql_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_index_drop($table, $index_name);
 
 					if ($this->return_statements)
@@ -779,6 +785,11 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
+					if ($this->sql_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_create_unique_index($table, $index_name, $column);
 
 					if ($this->return_statements)
@@ -796,6 +807,11 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
+					if ($this->sql_index_exists($table, $index_name))
+					{
+						continue;
+					}
+
 					$result = $this->sql_create_index($table, $index_name, $column);
 
 					if ($this->return_statements)
@@ -1102,6 +1118,98 @@ class phpbb_db_tools
 				return false;
 			break;
 		}
+	}
+
+	/**
+	* Check if a specified index exists in table
+	*
+	* @param string	$table_name		Table to check the index at
+	* @param string	$index_name		The index name to check
+	*
+	* @return bool True if index exists, else false
+	*/
+	function sql_index_exists($table_name, $index_name)
+	{
+		if ($this->sql_layer == 'mssql')
+		{
+			$sql = "EXEC sp_statistics '$table_name'";
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if ($row['TYPE'] == 3)
+				{
+					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
+					{
+						$this->db->sql_freeresult($result);
+						return true;
+					}
+				}
+			}
+			$this->db->sql_freeresult($result);
+
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = " . strtoupper($table_name) . "
+						AND RDB\$UNIQUE_FLAG IS NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisunique != 't')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name
+					FROM user_indexes
+					WHERE table_name = '" . $table_name . "'
+						AND generated = 'N'";
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_info('" . $table_name . "');";
+				$col = 'name';
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+			{
+				continue;
+			}
+
+			if (strtolower($row[$col]) == strtolower($index_name))
+			{
+				$this->db->sql_freeresult($result);
+				return true;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return false;
 	}
 
 	/**
