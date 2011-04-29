@@ -1289,13 +1289,12 @@ class phpbb_db_tools
 					FROM user_indexes
 					WHERE table_name = '" . strtoupper($table_name) . "'
 						AND generated = 'N'
-						AND uniqueness = 'UNIQUE'
-						AND index_name LIKE 'U_%'";
+						AND uniqueness = 'UNIQUE'";
 				$col = 'index_name';
 			break;
 
 			case 'sqlite':
-				$sql = "PRAGMA index_list('" . $table_name . "') WHERE unique = 1;";
+				$sql = "PRAGMA index_list('" . $table_name . "');";
 				$col = 'name';
 			break;
 		}
@@ -1322,7 +1321,15 @@ class phpbb_db_tools
 			switch ($this->sql_layer)
 			{
 				case 'oracle':
-					$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+					// Two cases here... prefixed with U_[table_owner] and not prefixed with table_name
+					if (strpos($row[$col], 'U_') === 0)
+					{
+						$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+					}
+					else if (strpos($row[$col], strtoupper($table_name)) === 0)
+					{
+						$row[$col] = substr($row[$col], strlen($table_name) + 1);
+					}
 				break;
 
 				case 'firebird':
@@ -2203,6 +2210,7 @@ class phpbb_db_tools
 				}
 				else
 				{
+					// TODO: try to change pkey without removing trigger, generator or constraints. ATM this query may fail.
 					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
 				}
 			break;
