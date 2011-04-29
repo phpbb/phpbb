@@ -1371,24 +1371,29 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
+				// Does not support AFTER statement, only POSITION (and there you need the column position)
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
 			case 'mssqlnative':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
+				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
+				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
 			break;
 
 			case 'oracle':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'postgres':
+				// Does not support AFTER, only through temporary table
 				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
 				{
 					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
