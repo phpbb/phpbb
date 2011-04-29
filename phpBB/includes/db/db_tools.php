@@ -681,10 +681,12 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet, else change it (to be consistent)
+					// Only add the column if it does not exist yet
 					if ($column_exists = $this->sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_change($table, $column_name, $column_data, true);
+						continue;
+						// This is commented out here because it can take tremendous time on updates
+//						$result = $this->sql_column_change($table, $column_name, $column_data, true);
 					}
 					else
 					{
