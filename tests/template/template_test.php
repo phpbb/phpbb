@@ -373,8 +373,9 @@ class phpbb_template_template_test extends phpbb_test_case
 		{
 		}
 
-		// For debugging
-		if (self::PRESERVE_CACHE)
+		// For debugging.
+		// When testing eval path the cache file may not exist.
+		if (self::PRESERVE_CACHE && file_exists($cache_file))
 		{
 			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
 		}
