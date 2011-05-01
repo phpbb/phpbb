@@ -321,7 +321,7 @@ if ($mode == 'bump')
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
 	   && check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
-		$meta_url = bump_topic($forum_id, $topic_id, $post_data, $current_time);
+		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
 
 		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');

@@ -2611,16 +2611,27 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	return $url;
 }
 
-/*
+/**
 * Handle topic bumping
+* @param int $forum_id The ID of the forum the topic is being bumped belongs to
+* @param int $topic_id The ID of the topic is being bumping
+* @param array $post_data Passes some topic parameters:
+*				- 'topic_title'
+*				- 'topic_last_post_id'
+*				- 'topic_last_poster_id'
+*				- 'topic_last_post_subject'
+*				- 'topic_last_poster_name'
+*				- 'topic_last_poster_colour'
+* @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time(). 
+* @return string An URL to the bumped topic, example: ./viewtopic.php?forum_id=1&amptopic_id=2&ampp=3#p3
 */
-function bump_topic($forum_id, $topic_id, $post_data, $current_time = false)
+function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 {
 	global $config, $db, $user, $phpEx, $phpbb_root_path;
 
-	if ($current_time === false)
+	if ($bump_time === false)
 	{
-		$current_time = time();
+		$bump_time = time();
 	}
 
 	// Begin bumping
@@ -2628,14 +2639,14 @@ function bump_topic($forum_id, $topic_id, $post_data, $current_time = false)
 
 	// Update the topic's last post post_time
 	$sql = 'UPDATE ' . POSTS_TABLE . "
-		SET post_time = $current_time
+		SET post_time = $bump_time
 		WHERE post_id = {$post_data['topic_last_post_id']}
 			AND topic_id = $topic_id";
 	$db->sql_query($sql);
 
 	// Sync the topic's last post time, the rest of the topic's last post data isn't changed
 	$sql = 'UPDATE ' . TOPICS_TABLE . "
-		SET topic_last_post_time = $current_time,
+		SET topic_last_post_time = $bump_time,
 			topic_bumped = 1,
 			topic_bumper = " . $user->data['user_id'] . "
 		WHERE topic_id = $topic_id";
@@ -2646,7 +2657,7 @@ function bump_topic($forum_id, $topic_id, $post_data, $current_time = false)
 		SET forum_last_post_id = " . $post_data['topic_last_post_id'] . ",
 			forum_last_poster_id = " . $post_data['topic_last_poster_id'] . ",
 			forum_last_post_subject = '" . $db->sql_escape($post_data['topic_last_post_subject']) . "',
-			forum_last_post_time = $current_time,
+			forum_last_post_time = $bump_time,
 			forum_last_poster_name = '" . $db->sql_escape($post_data['topic_last_poster_name']) . "',
 			forum_last_poster_colour = '" . $db->sql_escape($post_data['topic_last_poster_colour']) . "'
 		WHERE forum_id = $forum_id";
@@ -2654,17 +2665,17 @@ function bump_topic($forum_id, $topic_id, $post_data, $current_time = false)
 
 	// Update bumper's time of the last posting to prevent flood
 	$sql = 'UPDATE ' . USERS_TABLE . "
-		SET user_lastpost_time = $current_time
+		SET user_lastpost_time = $bump_time
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');
 
 	// Mark this topic as posted to
-	markread('post', $forum_id, $topic_id, $current_time);
+	markread('post', $forum_id, $topic_id, $bump_time);
 
 	// Mark this topic as read
-	markread('topic', $forum_id, $topic_id, $current_time);
+	markread('topic', $forum_id, $topic_id, $bump_time);
 
 	// Update forum tracking info
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
