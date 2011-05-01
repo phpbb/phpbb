@@ -299,7 +299,7 @@ class phpbb_template
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
 	* @param bool $include_once Allow multiple inclusions of the file
-	* @return bool|string If $return_content is true return string of the compiled handle, otherwise return true
+	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
