@@ -866,12 +866,3 @@ class phpbb_template
 		include($file);
 	}
 }
-
-/**
- * @todo remove this
- * 
- */
-class template extends phpbb_template
-{
-	// dirty hack
-}

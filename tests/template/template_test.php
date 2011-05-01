@@ -33,7 +33,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	private function setup_engine()
 	{
 		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->template = new template();
+		$this->template = new phpbb_template();
 		$this->template->set_custom_template($this->template_path, 'tests');
 	}
 

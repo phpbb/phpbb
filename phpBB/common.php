@@ -209,7 +209,7 @@ $class_loader->set_cache($cache->get_driver());
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
-$template	= new template();
+$template	= new phpbb_template();
 $db			= new $sql_db();
 
 // make sure request_var uses this request instance
