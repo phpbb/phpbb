@@ -21,4 +21,4 @@ include($phpbb_root_path . 'includes/template_compile.'.$phpEx);
 $file = $argv[1];
 
 $compile = new phpbb_template_compile();
-echo $compile->compile_gen($file);
+echo $compile->compile_file($file);

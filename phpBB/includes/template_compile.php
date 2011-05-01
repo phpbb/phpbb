@@ -871,7 +871,7 @@ class phpbb_template_compile
 	* @param string $source_file Source template file
 	* @return bool Return true on success otherwise false
 	*/
-	public function compile_write($source_file, $compiled_file)
+	public function compile_file_to_file($source_file, $compiled_file)
 	{
 		$source_handle = @fopen($source_file, 'rb');
 		$destination_handle = @fopen($compiled_file, 'wb');
@@ -903,7 +903,7 @@ class phpbb_template_compile
 	* @param string $source_file Source template file
 	* @return string|bool Return compiled code on successful compilation otherwise false
 	*/
-	public function compile_gen($source_file)
+	public function compile_file($source_file)
 	{
 		$source_handle = @fopen($source_file, 'rb');
 		$destination_handle = @fopen('php://temp' ,'r+b');

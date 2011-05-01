@@ -384,7 +384,7 @@ class phpbb_template
 
 		$compile = new phpbb_template_compile();
 
-		if ($compile->compile_write($source_file, $this->_compiled_file_for_handle($handle)) === false)
+		if ($compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle)) === false)
 		{
 			return false;
 		}
@@ -443,7 +443,7 @@ class phpbb_template
 
 		$source_file = $this->_source_file_for_handle($handle);
 
-		if (($code = $compile->compile_gen($source_file)) === false)
+		if (($code = $compile->compile_file($source_file)) === false)
 		{
 			return false;
 		}
@@ -509,13 +509,13 @@ class phpbb_template
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{
-							$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
+							$compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle));
 						}
 						else
 						{
 							$this->files[$row['template_filename']] = $file;
 							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$compile->compile_write($this->_source_file_for_handle($row['template_filename']), $this->_compiled_file_for_handle($row['template_filename']));
+							$compile->compile_file_to_file($this->_source_file_for_handle($row['template_filename']), $this->_compiled_file_for_handle($row['template_filename']));
 							unset($this->compiled_code[$row['template_filename']]);
 							unset($this->files[$row['template_filename']]);
 							unset($this->filename[$row['template_filename']]);
@@ -525,7 +525,7 @@ class phpbb_template
 					if ($row['template_filename'] == $this->filename[$handle])
 					{
 						$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
-						$compile->compile_write($handle, $this->compiled_code[$handle]);
+						$compile->compile_file_to_file($handle, $this->compiled_code[$handle]);
 					}
 					else
 					{
@@ -533,7 +533,7 @@ class phpbb_template
 						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
 						{
 							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
+							$compile->compile_file_to_file($row['template_filename'], $compile->compile(trim($row['template_data'])));
 							unset($this->filename[$row['template_filename']]);
 						}
 					}
@@ -551,14 +551,14 @@ class phpbb_template
 					$this->files_template[$row['template_filename']] = $user->theme['template_inherits_id'];
 				}
 				// Try to load from filesystem and instruct to insert into the styles table...
-				$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
+				$compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle));
 				return false;
 			}
 
 			return false;
 		}
 
-		$compile->compile_write($source_file, $this->_compiled_file_for_handle($handle));
+		$compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle));
 		return false;
 	}
 
@@ -838,7 +838,7 @@ class phpbb_template
 				$compile = new phpbb_template_compile();
 
 				$source_file = $this->_source_file_for_handle($handle);
-				if (($code = $compile->compile_gen($source_file)) !== false)
+				if (($code = $compile->compile_file($source_file)) !== false)
 				{
 					$code = ' ?> ' . $code . ' <?php ';
 					eval($code);
