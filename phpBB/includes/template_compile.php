@@ -883,8 +883,7 @@ class phpbb_template_compile
 
 		@flock($destination_handle, LOCK_EX);
 
-		stream_filter_append($source_handle, 'phpbb_template');
-		stream_copy_to_stream($source_handle, $destination_handle);
+		$this->compile_stream_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
 		@flock($destination_handle, LOCK_UN);
@@ -914,8 +913,7 @@ class phpbb_template_compile
 			return false;
 		}
 
-		stream_filter_append($source_handle, 'phpbb_template');
-		stream_copy_to_stream($source_handle, $destination_handle);
+		$this->compile_stream_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
 
@@ -924,5 +922,22 @@ class phpbb_template_compile
 		@fclose($dest_handle);
 
 		return $contents;
+	}
+
+	/**
+	* Compiles contents of $source_stream into $dest_stream.
+	*
+	* A stream filter is appended to $source_stream as part of the
+	* process.
+	*
+	* @access private
+	* @param resource $source_stream Source stream
+	* @param resource $dest_stream Destination stream
+	* @return void
+	*/
+	private function compile_stream_to_stream($source_stream, $dest_stream)
+	{
+		stream_filter_append($source_stream, 'phpbb_template');
+		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }
