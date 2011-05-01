@@ -920,6 +920,9 @@ class phpbb_template_compile
 		@fclose($source_handle);
 
 		rewind($destination_handle);
-		return stream_get_contents($destination_handle);
+		$contents = stream_get_contents($destination_handle);
+		@fclose($dest_handle);
+
+		return $contents;
 	}
 }
