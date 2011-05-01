@@ -1600,10 +1600,19 @@ class user extends session
 			$SID .= '&amp;style=' . $style;
 			$_EXTRA_URL = array('style=' . $style);
 		}
-		else
+		else if (!$style)
 		{
-			// Set up style
-			$style = ($style) ? $style : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
+			if ($this->data['user_id'] == ANONYMOUS || $this->data['is_bot'] || $config['override_user_style'])
+			{
+				// Anonymous users and bots get the default style.
+				// If users are not allowed to specify their own style
+				// they get the default style too.
+				$style = $config['default_style'];
+			}
+			else
+			{
+				$style = $this->data['user_style'];
+			}
 		}
 
 		$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
