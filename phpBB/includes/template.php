@@ -304,7 +304,11 @@ class phpbb_template
 	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
 		ob_start();
-		$this->display($handle, $include_once);
+		$result = $this->display($handle, $include_once);
+		if ($result === false)
+		{
+			return false;
+		}
 		$contents = ob_get_clean();
 
 		if ($return_content)
