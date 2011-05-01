@@ -331,7 +331,7 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_invalid_handle()
 	{
-		$expecting = 'template->_tpl_load(): No file specified for handle test';
+		$expecting = 'No file specified for handle test';
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');
