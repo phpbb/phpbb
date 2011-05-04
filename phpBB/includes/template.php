@@ -263,22 +263,17 @@ class phpbb_template
 		$_rootref	= &$this->_rootref;
 		$_lang		= &$user->lang;
 
-		if (($filename = $this->_tpl_load($handle)) !== false)
+		$executor = $this->_tpl_load($handle);
+
+		if ($executor)
 		{
-			($include_once) ? include_once($filename) : include($filename);
-		}
-		else if (($code = $this->_tpl_eval($handle)) !== false)
-		{
-			$code = ' ?> ' . $code . ' <?php ';
-			eval($code);
+			$executor->execute();
+			return true;
 		}
 		else
 		{
-			// if we could not eval AND the file exists, something horrific has occured
 			return false;
 		}
-
-		return true;
 	}
 
 	/**
@@ -311,11 +306,27 @@ class phpbb_template
 	}
 
 	/**
-	* Load a compiled template if possible, if not, recompile it
+	* Obtains a template executor for a template identified by specified
+	* handle. THe template executor can execute the template later.
+	*
+	* Template source will first be compiled into php code.
+	* If template cache is writable the compiled php code will be stored
+	* on filesystem and template will not be subsequently recompiled.
+	* If template cache is not writable template source will be recompiled
+	* every time it is needed. DEBUG_EXTRA define and load_tplcompile
+	* configuration setting may be used to force templates to be always
+	* recompiled.
+	*
+	* Returns an object implementing phpbb_template_executor, or null
+	* if template loading or compilation failed. Call execute() on the
+	* executor to execute the template. This will result in template
+	* contents sent to the output stream (unless, of course, output
+	* buffering is in effect).
+	*
 	* @access private
 	* @param string $handle Handle of the template to load
-	* @return string|bool Return filename on success otherwise false
-	* @uses template_compile is used to compile uncached templates
+	* @return phpbb_template_executor Template executor object, or null on failure
+	* @uses template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
@@ -358,7 +369,7 @@ class phpbb_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return $filename;
+			return new phpbb_template_executor_include($filename);
 		}
 
 		// Inheritance - we point to another template file for this one.
@@ -372,12 +383,21 @@ class phpbb_template
 
 		$compile = new phpbb_template_compile();
 
-		if ($compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle)) === false)
+		$output_file = $this->_compiled_file_for_handle($handle);
+		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			return false;
+			$executor = new phpbb_template_executor_include($output_file);
+		}
+		else if (($code = $compile->compile_file($source_file)) !== false)
+		{
+			$executor = new phpbb_template_executor_eval($code);
+		}
+		else
+		{
+			$executor = null;
 		}
 
-		return $filename;
+		return $executor;
 	}
 
 	/**
@@ -416,28 +436,6 @@ class phpbb_template
 
 		$compiled_file = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 		return $compiled_file;
-	}
-
-	/**
-	* This code should only run when some high level error prevents us from writing to the cache.
-	* @access private
-	* @param string $handle Template handle to compile
-	* @return string|bool Return compiled code on success otherwise false
-	* @uses template_compile is used to compile template
-	*/
-	private function _tpl_eval($handle)
-	{
-		$compile = new phpbb_template_compile();
-
-		$source_file = $this->_source_file_for_handle($handle);
-
-		if (($code = $compile->compile_file($source_file)) === false)
-		{
-			return false;
-		}
-
-		$compile->compile_file_to_file($source_file, $this->_compiled_file_for_handle($handle));
-		return false;
 	}
 
 	/**
@@ -696,32 +694,15 @@ class phpbb_template
 			$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
 		}
 
-		$filename = $this->_tpl_load($handle);
+		$executor = $this->_tpl_load($handle);
 
-		if ($include)
+		if ($executor)
 		{
-			global $user;
-
-			$_tpldata	= &$this->_tpldata;
-			$_rootref	= &$this->_rootref;
-			$_lang		= &$user->lang;
-
-			if ($filename)
-			{
-				include($filename);
-				return;
-			}
-			else
-			{
-				$compile = new phpbb_template_compile();
-
-				$source_file = $this->_source_file_for_handle($handle);
-				if (($code = $compile->compile_file($source_file)) !== false)
-				{
-					$code = ' ?> ' . $code . ' <?php ';
-					eval($code);
-				}
-			}
+			$executor->execute();
+		}
+		else
+		{
+			// What should we do here?
 		}
 	}
 
