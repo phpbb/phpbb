@@ -118,8 +118,6 @@ class phpbb_template_filter extends php_user_filter
 			$data = preg_replace('~<!-- ENDPHP -->.*?$~', '', $data);
 		}
 
-		"?>/**/";
-
 		/*
 			Preserve whitespace.
 			PHP removes a newline after the closing tag (if it's there). This is by design.
@@ -145,7 +143,7 @@ class phpbb_template_filter extends php_user_filter
 
 
 		*/
-//*
+
 		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
 		$data = str_replace('/**/?>', "?>\n", $data);
 		$data = str_replace('?><?php', '', $data);
