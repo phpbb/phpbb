@@ -289,11 +289,11 @@ class phpbb_template
 	{
 		ob_start();
 		$result = $this->display($handle, $include_once);
+		$contents = ob_get_clean();
 		if ($result === false)
 		{
 			return false;
 		}
-		$contents = ob_get_clean();
 
 		if ($return_content)
 		{
