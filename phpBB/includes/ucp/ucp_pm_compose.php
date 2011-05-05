@@ -741,10 +741,13 @@ function compose_pm($id, $mode, $action)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
 			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
-			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
+			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
+			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
 			meta_refresh(3, $return_message_url);
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
+			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $outbox_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
 			trigger_error($message);
 		}
 
