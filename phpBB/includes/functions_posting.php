@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $auth, $db, $user, $config, $template;
+	global $db, $user, $config, $template;
 	global $phpEx, $phpbb_root_path;
 
 	$start = request_var('start', 0);
@@ -803,7 +803,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user, $auth;
+	global $template, $config, $phpbb_root_path, $phpEx, $user;
 
 	// Some default template variables
 	$template->assign_vars(array(
