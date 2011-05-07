@@ -639,7 +639,7 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include($tag_args)
 	{
-		return "\$this->_tpl_include('$tag_args');";
+		return "\$_template->_tpl_include('$tag_args');";
 	}
 
 	/**

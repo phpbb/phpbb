@@ -36,19 +36,11 @@ class phpbb_template
 	public $phpbb_optional = array();
 
 	/**
-	* variable that holds all the data we'll be substituting into
-	* the compiled templates. Takes form:
-	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
-	* if it's a root-level variable, it'll be like this:
-	* --> $this->_tpldata[.][0][varname] == value
-	* @var array
+	* @var phpbb_template_context Template context.
+	* Stores template data used during template rendering.
+	* @access private
 	*/
-	private $_tpldata = array('.' => array(0 => array()));
-
-	/**
-	* @var array Reference to template->_tpldata['.'][0]
-	*/
-	private $_rootref;
+	private $_context;
 
 	/**
 	* @var string Root dir for template.
@@ -109,7 +101,7 @@ class phpbb_template
 			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
 		}
 
-		$this->_rootref = &$this->_tpldata['.'][0];
+		$this->_context = new phpbb_template_context();
 
 		return true;
 	}
@@ -149,7 +141,7 @@ class phpbb_template
 			$this->orig_tpl_inherits_id = false;
 		}
 
-		$this->_rootref = &$this->_tpldata['.'][0];
+		$this->_context = new phpbb_template_context();
 
 		return true;
 	}
@@ -182,52 +174,13 @@ class phpbb_template
 	}
 
 	/**
-	* Destroy template data set
-	* @access public
-	*/
-	public function destroy()
-	{
-		$this->_tpldata = array('.' => array(0 => array()));
-		$this->_rootref = &$this->_tpldata['.'][0];
-	}
-
-	/**
-	 * destroy method kept for compatibility.
-	 */
-	public function __destruct()
-	{
-		$this->destroy();
-	}
-
-	/**
 	* Reset/empty complete block
 	* @access public
 	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)
 	{
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->_tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
-			}
-
-			unset($str[$blocks[$blockcount]]);
-		}
-		else
-		{
-			// Top-level block.
-			unset($this->_tpldata[$blockname]);
-		}
-
-		return true;
+		$this->_context->destroy_block_vars($blockname);
 	}
 
 	/**
@@ -239,7 +192,7 @@ class phpbb_template
 	*/
 	public function display($handle, $include_once = true)
 	{
-		global $user, $phpbb_hook;
+		global $phpbb_hook;
 
 		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
 		{
@@ -259,21 +212,38 @@ class phpbb_template
 		}
 		*/
 
-		$_tpldata	= &$this->_tpldata;
-		$_rootref	= &$this->_rootref;
-		$_lang		= &$user->lang;
-
 		$executor = $this->_tpl_load($handle);
 
 		if ($executor)
 		{
-			$executor->execute();
+			$executor->execute($this->_context, $this->get_lang());
 			return true;
 		}
 		else
 		{
 			return false;
 		}
+	}
+
+	/**
+	* Obtains language array.
+	* This is either lang property of global $user object, or if
+	* it is not set an empty array.
+	* @return array language entries
+	*/
+	public function get_lang()
+	{
+		global $user;
+
+		if (isset($user->lang))
+		{
+			$lang = $user->lang;
+		}
+		else
+		{
+			$lang = array();
+		}
+		return $lang;
 	}
 
 	/**
@@ -369,7 +339,7 @@ class phpbb_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_executor_include($filename);
+			return new phpbb_template_executor_include($filename, $this);
 		}
 
 		// Inheritance - we point to another template file for this one.
@@ -386,11 +356,11 @@ class phpbb_template
 		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			$executor = new phpbb_template_executor_include($output_file);
+			$executor = new phpbb_template_executor_include($output_file, $this);
 		}
 		else if (($code = $compile->compile_file($source_file)) !== false)
 		{
-			$executor = new phpbb_template_executor_eval($code);
+			$executor = new phpbb_template_executor_eval($code, $this);
 		}
 		else
 		{
@@ -447,10 +417,8 @@ class phpbb_template
 	{
 		foreach ($vararray as $key => $val)
 		{
-			$this->_rootref[$key] = $val;
+			$this->assign_var($key, $val);
 		}
-
-		return true;
 	}
 
 	/**
@@ -461,11 +429,10 @@ class phpbb_template
 	*/
 	public function assign_var($varname, $varval)
 	{
-		$this->_rootref[$varname] = $varval;
-
-		return true;
+		$this->_context->assign_var($varname, $varval);
 	}
 
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @access public
@@ -474,67 +441,10 @@ class phpbb_template
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->_tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
-			}
-
-			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
-			// This is much more clever than going through the complete template data on display (phew)
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($str[$blocks[$blockcount]][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Now we add the block that we're actually assigning to.
-			// We're adding a new iteration to this block with the given
-			// variable assignments.
-			$str[$blocks[$blockcount]][] = $vararray;
-		}
-		else
-		{
-			// Top-level block.
-			$s_row_count = (isset($this->_tpldata[$blockname])) ? sizeof($this->_tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// We always assign S_LAST_ROW and remove the entry before
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Add a new iteration to this block with the variable assignments we were given.
-			$this->_tpldata[$blockname][] = $vararray;
-		}
-
-		return true;
+		return $this->_context->assign_block_vars($blockname, $vararray);
 	}
 
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
@@ -565,116 +475,7 @@ class phpbb_template
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$block = &$this->_tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				if (($pos = strpos($blocks[$i], '[')) !== false)
-				{
-					$name = substr($blocks[$i], 0, $pos);
-
-					if (strpos($blocks[$i], '[]') === $pos)
-					{
-						$index = sizeof($block[$name]) - 1;
-					}
-					else
-					{
-						$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-					}
-				}
-				else
-				{
-					$name = $blocks[$i];
-					$index = sizeof($block[$name]) - 1;
-				}
-				$block = &$block[$name];
-				$block = &$block[$index];
-			}
-
-			$block = &$block[$blocks[$i]]; // Traverse the last block
-		}
-		else
-		{
-			// Top-level block.
-			$block = &$this->_tpldata[$blockname];
-		}
-
-		// Change key to zero (change first position) if false and to last position if true
-		if ($key === false || $key === true)
-		{
-			$key = ($key === false) ? 0 : sizeof($block);
-		}
-
-		// Get correct position if array given
-		if (is_array($key))
-		{
-			// Search array to get correct position
-			list($search_key, $search_value) = @each($key);
-
-			$key = NULL;
-			foreach ($block as $i => $val_ary)
-			{
-				if ($val_ary[$search_key] === $search_value)
-				{
-					$key = $i;
-					break;
-				}
-			}
-
-			// key/value pair not found
-			if ($key === NULL)
-			{
-				return false;
-			}
-		}
-
-		// Insert Block
-		if ($mode == 'insert')
-		{
-			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($this->_tpldata[$blockname]))
-			{
-				$key = sizeof($this->_tpldata[$blockname]);
-				unset($this->_tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
-				$vararray['S_LAST_ROW'] = true;
-			}
-			else if ($key === 0)
-			{
-				unset($this->_tpldata[$blockname][0]['S_FIRST_ROW']);
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Re-position template blocks
-			for ($i = sizeof($block); $i > $key; $i--)
-			{
-				$block[$i] = $block[$i-1];
-			}
-
-			// Insert vararray at given position
-			$block[$key] = $vararray;
-
-			return true;
-		}
-
-		// Which block to change?
-		if ($mode == 'change')
-		{
-			if ($key == sizeof($block))
-			{
-				$key--;
-			}
-
-			$block[$key] = array_merge($block[$key], $vararray);
-
-			return true;
-		}
-
-		return false;
+		return $this->_context->alter_block_array($blockname, $vararray, $key, $mode);
 	}
 
 	/**
@@ -684,7 +485,7 @@ class phpbb_template
 	* @param bool $include True to include the file, false to just load it
 	* @uses template_compile is used to compile uncached templates
 	*/
-	private function _tpl_include($filename, $include = true)
+	public function _tpl_include($filename, $include = true)
 	{
 		$handle = $filename;
 		$this->filename[$handle] = $filename;
@@ -698,7 +499,7 @@ class phpbb_template
 
 		if ($executor)
 		{
-			$executor->execute();
+			$executor->execute($this->_context, $this->get_lang());
 		}
 		else
 		{
