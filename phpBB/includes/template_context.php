@@ -1,5 +1,26 @@
 <?php
+/**
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2011 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
+* Stores variables assigned to template.
+*
+* @package phpBB3
+*/
 class phpbb_template_context
 {
 	/**

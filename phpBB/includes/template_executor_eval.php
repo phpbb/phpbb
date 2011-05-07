@@ -1,8 +1,26 @@
 <?php
+/**
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2011 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Template executor that stores compiled template's php code and
 * evaluates it via eval.
+*
+* @package phpBB3
 */
 class phpbb_template_executor_eval implements phpbb_template_executor
 {
