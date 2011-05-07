@@ -32,9 +32,6 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_template
 {
-	public $phpbb_required = array('user', 'config');
-	public $phpbb_optional = array();
-
 	/**
 	* @var phpbb_template_context Template context.
 	* Stores template data used during template rendering.
@@ -67,9 +64,6 @@ class phpbb_template
 	public $inherit_root = '';
 
 	public $orig_tpl_inherits_id;
-
-	// this will hash handle names to the compiled/uncompiled code for that handle.
-	public $compiled_code = array();
 
 	/**
 	* Set template location
