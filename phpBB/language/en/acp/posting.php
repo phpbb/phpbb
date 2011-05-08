@@ -168,8 +168,9 @@ $lang = array_merge($lang, array(
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
 	'SMILIES_EDIT'				=> 'Edit smiley',
-	'SMILIE_NO_CODE'			=> 'The smilie “%s”  was ignored, as there was no code entered.',
-	'SMILIE_NO_EMOTION'			=> 'The smilie “%s” was ignored, as there was no emotion entered.',
+	'SMILIE_NO_CODE'			=> 'The smiley “%s” was ignored, as there was no code entered.',
+	'SMILIE_NO_EMOTION'			=> 'The smiley “%s” was ignored, as there was no emotion entered.',
+	'SMILIE_NO_FILE'			=> 'The smiley “%s” was ignored, as the file is missing.',
 	'SMILIES_NONE_EDITED'		=> 'No smilies were updated.',
 	'SMILIES_ONE_EDITED'		=> 'The smiley has been updated successfully.',
 	'SMILIES_EDITED'			=> 'The smilies have been updated successfully.',
@@ -233,13 +234,13 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *. Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character.',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 
 	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit.',
 	'DELETE_DISALLOW_TITLE'		=> 'Remove a disallowed username',
-	'DISALLOWED_ALREADY'		=> 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present.',
+	'DISALLOWED_ALREADY'		=> 'The name you entered is already disallowed.',
 	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed.',
 	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added.',
 

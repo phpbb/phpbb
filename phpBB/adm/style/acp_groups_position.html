@@ -1,0 +1,158 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+	<h1>{L_MANAGE_LEGEND}</h1>
+
+	<form id="legend_settings" method="post" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
+
+	<fieldset>
+		<legend>{L_LEGEND_SETTINGS}</legend>
+		<dl>
+			<dt><label for="legend_sort_groupname">{L_LEGEND_SORT_GROUPNAME}:</label><br /><span>{L_LEGEND_SORT_GROUPNAME_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" name="legend_sort_groupname" class="radio" value="1"<!-- IF LEGEND_SORT_GROUPNAME --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" name="legend_sort_groupname" class="radio" value="0"<!-- IF not LEGEND_SORT_GROUPNAME --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input type="hidden" name="action" value="set_config_legend" />
+		{S_FORM_TOKEN}
+	</p>
+	</fieldset>
+	</form>
+
+	<p>{L_LEGEND_EXPLAIN}</p>
+
+	<table cellspacing="1">
+		<col class="col1" /><col class="col2" /><col class="col2" />
+	<thead>
+	<tr>
+		<th style="width: 50%">{L_GROUP}</th>
+		<th>{L_GROUP_TYPE}</th>
+		<th>{L_ACTION}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN legend -->
+		<tr>
+			<td><strong{legend.GROUP_COLOUR}>{legend.GROUP_NAME}</strong></td>
+			<td style="text-align: center;">{legend.GROUP_TYPE}</td>
+			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+				<!-- IF legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
+					{ICON_MOVE_UP_DISABLED}
+					<a href="{legend.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+				<!-- ELSEIF not legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
+					<a href="{legend.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+					<a href="{legend.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+				<!-- ELSEIF legend.S_LAST_ROW && not legend.S_FIRST_ROW -->
+					<a href="{legend.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+					{ICON_MOVE_DOWN_DISABLED}
+				<!-- ELSE -->
+					{ICON_MOVE_UP_DISABLED}
+					{ICON_MOVE_DOWN_DISABLED}
+				<!-- ENDIF -->
+				<a href="{legend.U_DELETE}">{ICON_DELETE}</a>
+			</td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td colspan="3" class="row3">{L_NO_GROUPS_ADDED}</td>
+		</tr>
+	<!-- END legend -->
+	</tbody>
+	</table>
+
+	<form id="acp_groups" method="post" action="{U_ACTION_LEGEND}">
+		<fieldset class="quick">
+			<select name="g"><option value="0">{L_SELECT_GROUP}</option>{S_GROUP_SELECT_LEGEND}</select>
+			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
+			<input type="hidden" name="action" value="add" />
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
+	<h1>{L_MANAGE_TEAMPAGE}</h1>
+
+	<form id="teampage_settings" method="post" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
+
+	<fieldset>
+		<legend>{L_TEAMPAGE_SETTINGS}</legend>
+		<dl>
+			<dt><label for="teampage_multiple">{L_TEAMPAGE_MULTIPLE}:</label><br /><span>{L_TEAMPAGE_MULTIPLE_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" name="teampage_multiple" class="radio" value="1"<!-- IF DISPLAY_MULTIPLE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" name="teampage_multiple" class="radio" value="0"<!-- IF not DISPLAY_MULTIPLE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="teampage_forums">{L_TEAMPAGE_FORUMS}:</label><br /><span>{L_TEAMPAGE_FORUMS_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" name="teampage_forums" class="radio" value="1"<!-- IF DISPLAY_FORUMS --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" name="teampage_forums" class="radio" value="0"<!-- IF not DISPLAY_FORUMS --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input type="hidden" name="action" value="set_config_teampage" />
+		{S_FORM_TOKEN}
+	</p>
+	</fieldset>
+	</form>
+
+	<p>{L_TEAMPAGE_EXPLAIN}</p>
+
+	<table cellspacing="1">
+		<col class="col1" /><col class="col2" /><col class="col2" />
+	<thead>
+	<tr>
+		<th style="width: 50%">{L_GROUP}</th>
+		<th>{L_GROUP_TYPE}</th>
+		<th>{L_ACTION}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN teampage -->
+		<tr>
+			<td><strong{teampage.GROUP_COLOUR}>{teampage.GROUP_NAME}</strong></td>
+			<td style="text-align: center;">{teampage.GROUP_TYPE}</td>
+			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+				<!-- IF teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
+					{ICON_MOVE_UP_DISABLED}
+					<a href="{teampage.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+				<!-- ELSEIF not teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
+					<a href="{teampage.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+					<a href="{teampage.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
+				<!-- ELSEIF teampage.S_LAST_ROW && not teampage.S_FIRST_ROW -->
+					<a href="{teampage.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+					{ICON_MOVE_DOWN_DISABLED}
+				<!-- ELSE -->
+					{ICON_MOVE_UP_DISABLED}
+					{ICON_MOVE_DOWN_DISABLED}
+				<!-- ENDIF -->
+				<a href="{teampage.U_DELETE}">{ICON_DELETE}</a>
+			</td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td colspan="3" class="row3">{L_NO_GROUPS_ADDED}</td>
+		</tr>
+	<!-- END teampage -->
+	</tbody>
+	</table>
+
+	<form id="acp_groups" method="post" action="{U_ACTION_TEAMPAGE}">
+		<fieldset class="quick">
+			<select name="g"><option value="0">{L_SELECT_GROUP}</option>{S_GROUP_SELECT_TEAMPAGE}</select>
+			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
+			<input type="hidden" name="action" value="add" />
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
+<!-- INCLUDE overall_footer.html -->

@@ -35,6 +35,12 @@ class acp_groups
 		$form_key = 'acp_groups';
 		add_form_key($form_key);
 
+		if ($mode == 'position')
+		{
+			$this->manage_position();
+			return;
+		}
+
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		// Check and set some common vars
@@ -306,6 +312,7 @@ class acp_groups
 						'rank'				=> request_var('group_rank', 0),
 						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
 						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
+						'teampage'			=> isset($_REQUEST['group_teampage']) ? 1 : 0,
 						'message_limit'		=> request_var('group_message_limit', 0),
 						'max_recipients'	=> request_var('group_max_recipients', 0),
 						'founder_manage'	=> 0,
@@ -419,6 +426,7 @@ class acp_groups
 							'avatar_height'	=> 'int',
 							'receive_pm'	=> 'int',
 							'legend'		=> 'int',
+							'teampage'		=> 'int',
 							'message_limit'	=> 'int',
 							'max_recipients'=> 'int',
 							'founder_manage'=> 'int',
@@ -584,6 +592,7 @@ class acp_groups
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 					'GROUP_FOUNDER_MANAGE'	=> (isset($group_row['group_founder_manage']) && $group_row['group_founder_manage']) ? ' checked="checked"' : '',
 					'GROUP_LEGEND'			=> (isset($group_row['group_legend']) && $group_row['group_legend']) ? ' checked="checked"' : '',
+					'GROUP_TEAMPAGE'		=> (isset($group_row['group_teampage']) && $group_row['group_teampage']) ? ' checked="checked"' : '',
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 					'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
@@ -792,5 +801,123 @@ class acp_groups
 				));
 			}
 		}
+	}
+
+	public function manage_position()
+	{
+		global $config, $db, $template, $user;
+
+		$this->tpl_name = 'acp_groups_position';
+		$this->page_title = 'ACP_GROUPS_POSITION';
+
+		$field = request_var('field', '');
+		$action = request_var('action', '');
+		$group_id = request_var('g', 0);
+
+		if ($field && !in_array($field, array('legend', 'teampage')))
+		{
+			// Invalid mode
+			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		else if ($field)
+		{
+			$group_position = new phpbb_group_positions($db, $field, $this->u_action);
+		}
+
+		switch ($action)
+		{
+			case 'set_config_legend':
+				set_config('legend_sort_groupname', request_var('legend_sort_groupname', 0));
+			break;
+
+			case 'set_config_teampage':
+				set_config('teampage_forums', request_var('teampage_forums', 0));
+				set_config('teampage_multiple', request_var('teampage_multiple', 0));
+			break;
+
+			case 'add':
+				$group_position->add_group($group_id);
+			break;
+
+			case 'delete':
+				$group_position->delete_group($group_id);
+			break;
+
+			case 'move_up':
+				$group_position->move_up($group_id);
+			break;
+
+			case 'move_down':
+				$group_position->move_down($group_id);
+			break;
+		}
+
+		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
+			FROM ' . GROUPS_TABLE . '
+			ORDER BY group_legend, group_name ASC';
+		$result = $db->sql_query($sql);
+
+		$s_group_select_legend = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+			if ($row['group_legend'])
+			{
+				$template->assign_block_vars('legend', array(
+					'GROUP_NAME' => $group_name,
+					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
+					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
+
+					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
+					'U_MOVE_UP' => "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
+					'U_DELETE' => "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+				));
+			}
+			else
+			{
+				$s_group_select_legend .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_teampage
+			FROM ' . GROUPS_TABLE . '
+			ORDER BY group_teampage, group_name ASC';
+		$result = $db->sql_query($sql);
+
+		$s_group_select_teampage = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+			if ($row['group_teampage'])
+			{
+				$template->assign_block_vars('teampage', array(
+					'GROUP_NAME' => $group_name,
+					'GROUP_COLOUR' => ($row['group_colour']) ? ' style="color: #' . $row['group_colour'] . '"' : '',
+					'GROUP_TYPE' => $user->lang[phpbb_group_positions::group_type_language($row['group_type'])],
+
+					'U_MOVE_DOWN' => "{$this->u_action}&amp;field=teampage&amp;action=move_down&amp;g=" . $row['group_id'],
+					'U_MOVE_UP' => "{$this->u_action}&amp;field=teampage&amp;action=move_up&amp;g=" . $row['group_id'],
+					'U_DELETE' => "{$this->u_action}&amp;field=teampage&amp;action=delete&amp;g=" . $row['group_id'],
+				));
+			}
+			else
+			{
+				$s_group_select_teampage .= '<option value="' . (int) $row['group_id'] . '">' . $group_name . '</option>';
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$template->assign_vars(array(
+			'U_ACTION' => $this->u_action,
+			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
+			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
+
+			'S_GROUP_SELECT_LEGEND' => $s_group_select_legend,
+			'S_GROUP_SELECT_TEAMPAGE' => $s_group_select_teampage,
+			'DISPLAY_FORUMS' => ($config['teampage_forums']) ? true : false,
+			'DISPLAY_MULTIPLE' => ($config['teampage_multiple']) ? true : false,
+			'LEGEND_SORT_GROUPNAME' => ($config['legend_sort_groupname']) ? true : false,
+		));
 	}
 }

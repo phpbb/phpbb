@@ -45,20 +45,4 @@ interface phpbb_cron_task
 	* @return bool
 	*/
 	public function should_run();
-
-	/**
-	* Returns whether this cron task can be run in shutdown function.
-	*
-	* By the time shutdown sequence invokes a particular piece of code,
-	* resources that that code requires may already be released.
-	* If so, a particular cron task may be marked shutdown function-
-	* unsafe, and it will be executed in normal program flow.
-	*
-	* Generally speaking cron tasks should start off as shutdown function-
-	* safe, and only be marked shutdown function-unsafe if a problem
-	* is discovered.
-	*
-	* @return bool
-	*/
-	public function is_shutdown_function_safe();
 }

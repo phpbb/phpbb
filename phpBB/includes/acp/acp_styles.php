@@ -45,7 +45,7 @@ class acp_styles
 		$bitfield->set(9);
 		$bitfield->set(11);
 		$bitfield->set(12);
-		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
+		$this->template_bitfield = $bitfield->get_base64();
 		unset($bitfield);
 
 		$user->add_lang('acp/styles');
@@ -716,7 +716,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
 		// make sure template_file path doesn't go upwards
-		$template_file = str_replace('..', '.', $template_file);
+		$template_file = preg_replace('#\.{2,}#', '.', $template_file);
 
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
@@ -3496,7 +3496,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				}
 				else
 				{
-					$sql_ary['bbcode_bitfield'] = TEMPLATE_BITFIELD;
+					$sql_ary['bbcode_bitfield'] = $this->template_bitfield;
 				}
 
 				// We set a pre-defined bitfield here which we may use further in 3.2

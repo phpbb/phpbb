@@ -91,16 +91,38 @@ class phpbb_config_db extends phpbb_config
 	}
 
 	/**
+	* Removes a configuration option
+	*
+	* @param  String $key       The configuration option's name
+	* @param  bool   $use_cache Whether this variable should be cached or if it
+	*                           changes too frequently to be efficiently cached
+	* @return void
+	*/
+	public function delete($key, $use_cache = true)
+	{
+		$sql = 'DELETE FROM ' . $this->table . "
+			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+		$this->db->sql_query($sql);
+
+		unset($this->config[$key]);
+
+		if ($use_cache)
+		{
+			$this->cache->destroy('config');
+		}
+	}
+
+	/**
 	* Sets a configuration option's value
 	*
-	* @param string $key   The configuration option's name
-	* @param string $value New configuration value
-	* @param bool   $cache Whether this variable should be cached or if it
-	*                      changes too frequently to be efficiently cached.
+	* @param string $key       The configuration option's name
+	* @param string $value     New configuration value
+	* @param bool   $use_cache Whether this variable should be cached or if it
+	*                          changes too frequently to be efficiently cached.
 	*/
-	public function set($key, $value, $cache = true)
+	public function set($key, $value, $use_cache = true)
 	{
-		$this->set_atomic($key, false, $value, $cache);
+		$this->set_atomic($key, false, $value, $use_cache);
 	}
 
 	/**
@@ -111,11 +133,11 @@ class phpbb_config_db extends phpbb_config
 	* @param  mixed  $old_value Current configuration value or false to ignore
 	*                           the old value
 	* @param  string $new_value New configuration value
-	* @param  bool   $cache     Whether this variable should be cached or if it
+	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached
 	* @return bool              True if the value was changed, false otherwise
 	*/
-	public function set_atomic($key, $old_value, $new_value, $cache = true)
+	public function set_atomic($key, $old_value, $new_value, $use_cache = true)
 	{
 		$sql = 'UPDATE ' . $this->table . "
 			SET config_value = '" . $this->db->sql_escape($new_value) . "'
@@ -138,11 +160,11 @@ class phpbb_config_db extends phpbb_config
 			$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
 				'config_name'	=> $key,
 				'config_value'	=> $new_value,
-				'is_dynamic'	=> ($cache) ? 0 : 1));
+				'is_dynamic'	=> ($use_cache) ? 0 : 1));
 			$this->db->sql_query($sql);
 		}
 
-		if ($cache)
+		if ($use_cache)
 		{
 			$this->cache->destroy('config');
 		}
@@ -159,14 +181,14 @@ class phpbb_config_db extends phpbb_config
 	*
 	* @param string $key       The configuration option's name
 	* @param int    $increment Amount to increment by
-	* @param bool   $cache     Whether this variable should be cached or if it
+	* @param bool   $use_cache Whether this variable should be cached or if it
 	*                          changes too frequently to be efficiently cached.
 	*/
-	function increment($key, $increment, $cache = true)
+	function increment($key, $increment, $use_cache = true)
 	{
 		if (!isset($this->config[$key]))
 		{
-			$this->set($key, '0', $cache);
+			$this->set($key, '0', $use_cache);
 		}
 
 		$sql_update = $this->db->cast_expr_to_string($this->db->cast_expr_to_bigint('config_value') . ' + ' . (int) $increment);
@@ -175,7 +197,7 @@ class phpbb_config_db extends phpbb_config
 			SET config_value = ' . $sql_update . "
 			WHERE config_name = '" . $this->db->sql_escape($key) . "'");
 
-		if ($cache)
+		if ($use_cache)
 		{
 			$this->cache->destroy('config');
 		}

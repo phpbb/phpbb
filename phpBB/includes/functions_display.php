@@ -104,18 +104,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
-	// Check for unread global announcements (index page only)
-	$ga_unread = false;
-	if ($root_data['forum_id'] == 0)
-	{
-		$unread_ga_list = get_unread_topics($user->data['user_id'], 'AND t.forum_id = 0', '', 1);
-
-		if (!empty($unread_ga_list))
-		{
-			$ga_unread = true;
-		}
-	}
-
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$forum_id = $row['forum_id'];
@@ -269,8 +257,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			else
 			{
-				// Add 0 to forums array to mark global announcements correctly
-				$forum_ids[] = 0;
 				markread('topics', $forum_ids);
 				$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			}
@@ -322,12 +308,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$forum_id = $row['forum_id'];
 
 		$forum_unread = (isset($forum_tracking_info[$forum_id]) && $row['orig_forum_last_post_time'] > $forum_tracking_info[$forum_id]) ? true : false;
-
-		// Mark the first visible forum on index as unread if there's any unread global announcement
-		if ($ga_unread && !empty($forum_ids_moderator) && $forum_id == $forum_ids_moderator[0])
-		{
-			$forum_unread = true;
-		}
 
 		$folder_image = $folder_alt = $l_subforums = '';
 		$subforums_list = array();
@@ -464,6 +444,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 			'TOPICS'				=> $row['forum_topics'],
 			$l_post_click_count		=> $post_click_count,
+			'FORUM_IMG_STYLE'		=> $folder_image,
 			'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 			'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',

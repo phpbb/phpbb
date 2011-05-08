@@ -761,7 +761,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 			else
 			{
-				trigger_error('LENGTH_BAN_INVALID');
+				trigger_error('LENGTH_BAN_INVALID', E_USER_WARNING);
 			}
 		}
 	}
@@ -821,7 +821,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			// Make sure we have been given someone to ban
 			if (!sizeof($sql_usernames))
 			{
-				trigger_error('NO_USER_SPECIFIED');
+				trigger_error('NO_USER_SPECIFIED', E_USER_WARNING);
 			}
 
 			$sql = 'SELECT user_id
@@ -852,7 +852,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			else
 			{
 				$db->sql_freeresult($result);
-				trigger_error('NO_USERS');
+				trigger_error('NO_USERS', E_USER_WARNING);
 			}
 			$db->sql_freeresult($result);
 		break;
@@ -954,7 +954,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				if (empty($banlist_ary))
 				{
-					trigger_error('NO_IPS_DEFINED');
+					trigger_error('NO_IPS_DEFINED', E_USER_WARNING);
 				}
 			}
 		break;
@@ -982,12 +982,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			if (sizeof($ban_list) == 0)
 			{
-				trigger_error('NO_EMAILS_DEFINED');
+				trigger_error('NO_EMAILS_DEFINED', E_USER_WARNING);
 			}
 		break;
 
 		default:
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_WARNING);
 		break;
 	}
 
@@ -1450,6 +1450,31 @@ function validate_match($string, $optional = false, $match = '')
 }
 
 /**
+* Validate Language Pack ISO Name
+*
+* Tests whether a language name is valid and installed
+*
+* @param string $lang_iso	The language string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function validate_language_iso_name($lang_iso)
+{
+	global $db;
+
+	$sql = 'SELECT lang_id
+		FROM ' . LANG_TABLE . "
+		WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
+	$result = $db->sql_query($sql);
+	$lang_id = (int) $db->sql_fetchfield('lang_id');
+	$db->sql_freeresult($result);
+
+	return ($lang_id) ? false : 'WRONG_DATA';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
@@ -1608,8 +1633,9 @@ function validate_password($password)
 {
 	global $config, $db, $user;
 
-	if (!$password)
+	if ($password === '' || $config['pass_complex'] === 'PASS_TYPE_ANY')
 	{
+		// Password empty or no password complexity required.
 		return false;
 	}
 
@@ -1620,7 +1646,6 @@ function validate_password($password)
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
-		$let = '\p{L}';
 		$num = '\p{N}';
 		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 		$pcre = true;
@@ -1630,7 +1655,6 @@ function validate_password($password)
 		mb_regex_encoding('UTF-8');
 		$upp = '[[:upper:]]';
 		$low = '[[:lower:]]';
-		$let = '[[:lower:][:upper:]]';
 		$num = '[[:digit:]]';
 		$sym = '[^[:upper:][:lower:][:digit:]]';
 		$mbstring = true;
@@ -1639,7 +1663,6 @@ function validate_password($password)
 	{
 		$upp = '[A-Z]';
 		$low = '[a-z]';
-		$let = '[a-zA-Z]';
 		$num = '[0-9]';
 		$sym = '[^A-Za-z0-9]';
 		$pcre = true;
@@ -1649,22 +1672,22 @@ function validate_password($password)
 
 	switch ($config['pass_complex'])
 	{
+		// No break statements below ...
+		// We require strong passwords in case pass_complex is not set or is invalid
+		default:
+
+		// Require mixed case letters, numbers and symbols
+		case 'PASS_TYPE_SYMBOL':
+			$chars[] = $sym;
+
+		// Require mixed case letters and numbers
+		case 'PASS_TYPE_ALPHA':
+			$chars[] = $num;
+
+		// Require mixed case letters
 		case 'PASS_TYPE_CASE':
 			$chars[] = $low;
 			$chars[] = $upp;
-		break;
-
-		case 'PASS_TYPE_ALPHA':
-			$chars[] = $let;
-			$chars[] = $num;
-		break;
-
-		case 'PASS_TYPE_SYMBOL':
-			$chars[] = $low;
-			$chars[] = $upp;
-			$chars[] = $num;
-			$chars[] = $sym;
-		break;
 	}
 
 	if ($pcre)
@@ -2485,6 +2508,69 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
+		$current_legend = phpbb_group_positions::GROUP_DISABLED;
+		$current_teampage = phpbb_group_positions::GROUP_DISABLED;
+
+		$legend = new phpbb_group_positions($db, 'legend');
+		$teampage = new phpbb_group_positions($db, 'teampage');
+		if ($group_id)
+		{
+			$current_legend = $legend->get_group_value($group_id);
+			$current_teampage = $teampage->get_group_value($group_id);
+		}
+
+		if (!empty($group_attributes['group_legend']))
+		{
+			if (($group_id && ($current_legend == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not in the legend or new group, add at the end.
+				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
+			}
+			else
+			{
+				// Group stayes in the legend
+				$group_attributes['group_legend'] = $current_legend;
+			}
+		}
+		else if ($group_id && ($current_legend > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the legend
+			$legend->delete_group($group_id, true);
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		if (!empty($group_attributes['group_teampage']))
+		{
+			if (($group_id && ($current_teampage == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not on the teampage or new group, add at the end.
+				$group_attributes['group_teampage'] = 1 + $teampage->get_group_count();
+			}
+			else
+			{
+				// Group stayes on the teampage
+				$group_attributes['group_teampage'] = $current_teampage;
+			}
+		}
+		else if ($group_id && ($current_teampage > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the teampage
+			$teampage->delete_group($group_id, true);
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		// Unset the objects, we don't need them anymore.
+		unset($legend);
+		unset($teampage);
+
 		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
@@ -2708,6 +2794,14 @@ function group_delete($group_id, $group_name = false)
 		$db->sql_freeresult($result);
 	}
 	while ($start);
+
+	// Delete group from legend and teampage
+	$legend = new phpbb_group_positions($db, 'legend');
+	$legend->delete_group($group_id);
+	unset($legend);
+	$teampage = new phpbb_group_positions($db, 'teampage');
+	$teampage->delete_group($group_id);
+	unset($teampage);
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "

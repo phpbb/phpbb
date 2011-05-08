@@ -123,7 +123,7 @@ class phpbb_database_test_connection_manager
 
 				try
 				{
-					$this->pdo->exec('DROP DATABASE ' . $config['dbname']);
+					$this->pdo->exec('DROP DATABASE ' . $this->config['dbname']);
 				}
 				catch (PDOException $e)
 				{

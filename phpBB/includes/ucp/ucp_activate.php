@@ -98,6 +98,13 @@ class ucp_activate
 				SET user_actkey = ''
 				WHERE user_id = {$user_row['user_id']}";
 			$db->sql_query($sql);
+
+			// Create the correct logs
+			add_log('user', $user_row['user_id'], 'LOG_USER_ACTIVE_USER');
+			if ($auth->acl_get('a_user'))
+			{
+				add_log('admin', 'LOG_USER_ACTIVE', $user_row['username']);
+			}
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)

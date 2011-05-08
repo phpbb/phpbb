@@ -77,189 +77,196 @@ switch ($mode)
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
-		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
+		$sql_ary = array(
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, g.group_teampage, ug.user_id as ug_user_id',
 
-		$admin_id_ary = $global_mod_id_ary = $mod_id_ary = $forum_id_ary = array();
-		foreach ($user_ary as $forum_id => $forum_ary)
-		{
-			foreach ($forum_ary as $auth_option => $id_ary)
-			{
-				if (!$forum_id)
-				{
-					if ($auth_option == 'a_')
-					{
-						$admin_id_ary = array_merge($admin_id_ary, $id_ary);
-					}
-					else
-					{
-						$global_mod_id_ary = array_merge($global_mod_id_ary, $id_ary);
-					}
-					continue;
-				}
-				else
-				{
-					$mod_id_ary = array_merge($mod_id_ary, $id_ary);
-				}
-
-				if ($forum_id)
-				{
-					foreach ($id_ary as $id)
-					{
-						$forum_id_ary[$id][] = $forum_id;
-					}
-				}
-			}
-		}
-
-		$admin_id_ary = array_unique($admin_id_ary);
-		$global_mod_id_ary = array_unique($global_mod_id_ary);
-
-		$mod_id_ary = array_merge($mod_id_ary, $global_mod_id_ary);
-		$mod_id_ary = array_unique($mod_id_ary);
-
-		// Admin group id...
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'ADMINISTRATORS'";
-		$result = $db->sql_query($sql);
-		$admin_group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
-
-		// Get group memberships for the admin id ary...
-		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
-
-		$admin_user_ids = array();
-
-		if (!empty($admin_memberships))
-		{
-			// ok, we only need the user ids...
-			foreach ($admin_memberships as $row)
-			{
-				$admin_user_ids[$row['user_id']] = true;
-			}
-		}
-		unset($admin_memberships);
-
-		$sql = 'SELECT forum_id, forum_name
-			FROM ' . FORUMS_TABLE;
-		$result = $db->sql_query($sql);
-
-		$forums = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forums[$row['forum_id']] = $row['forum_name'];
-		}
-		$db->sql_freeresult($result);
-
-		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
-
-			'FROM'		=> array(
-				USERS_TABLE		=> 'u',
-				GROUPS_TABLE	=> 'g'
-			),
+			'FROM'		=> array(GROUPS_TABLE => 'g'),
 
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
-					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id']
-				)
+					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
+				),
 			),
 
-			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
-				AND u.group_id = g.group_id',
+			'WHERE'		=> '',
 
-			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
-		));
-		$result = $db->sql_query($sql);
+			'ORDER_BY'	=> 'g.group_teampage ASC',
+		);
 
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+
+		$group_ids = $groups_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
-
-			// We sort out admins not within the 'Administrators' group.
-			// Else, we will list those as admin only having the permission to view logs for example.
-			if ($which_row == 'admin' && empty($admin_user_ids[$row['user_id']]))
+			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
 			{
-				// Remove from admin_id_ary, because the user may be a mod instead
-				unset($admin_id_ary[array_search($row['user_id'], $admin_id_ary)]);
-
-				if (!in_array($row['user_id'], $mod_id_ary) && !in_array($row['user_id'], $global_mod_id_ary))
-				{
-					continue;
-				}
-				else
-				{
-					$which_row = 'mod';
-				}
+				$row['group_name'] = $user->lang['GROUP_UNDISCLOSED'];
+				$row['u_group'] = '';
+			}
+			else
+			{
+				$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
-			$s_forum_select = '';
-			$undisclosed_forum = false;
-
-			if (isset($forum_id_ary[$row['user_id']]) && !in_array($row['user_id'], $global_mod_id_ary))
+			if ($row['group_teampage'])
 			{
-				if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
+				// Only put groups into the array we want to display.
+				// We are fetching all groups, to ensure we got all data for default groups.
+				$group_ids[] = (int) $row['group_id'];
+			}
+			$groups_ary[(int) $row['group_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
+
+			'FROM'		=> array(
+				USER_GROUP_TABLE => 'ug',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'ug.user_id = u.user_id AND ug.user_pending = 0',
+				),
+				array(
+					'FROM'	=> array(GROUPS_TABLE => 'g'),
+					'ON'	=> 'ug.group_id = g.group_id',
+				),
+			),
+
+			'WHERE'		=> $db->sql_in_set('g.group_id', $group_ids, false, true),
+
+			'ORDER_BY'	=> 'u.username_clean ASC',
+		);
+
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+
+		$user_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$row['forums'] = '';
+			$row['forums_ary'] = array();
+			$user_ary[(int) $row['user_id']] = $row;
+			$user_ids[] = (int) $row['user_id'];
+			$group_users[(int) $row['group_id']][] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if ($config['teampage_forums'])
+		{
+			$template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
+			// Get all moderators
+			$perm_ary = $auth->acl_get_list(array_unique($user_ids), array('m_'), false);
+
+			foreach ($perm_ary as $forum_id => $forum_ary)
+			{
+				foreach ($forum_ary as $auth_option => $id_ary)
 				{
-					foreach ($forum_id_ary[$row['user_id']] as $forum_id)
+					foreach ($id_ary as $id)
 					{
-						if (isset($forums[$forum_id]))
+						if (!$forum_id)
 						{
-							if ($auth->acl_get('f_list', $forum_id))
-							{
-								$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
-							}
-							else
-							{
-								$undisclosed_forum = true;
-							}
+							$user_ary[$id]['forums'] = $user->lang['ALL_FORUMS'];
+						}
+						else
+						{
+							$user_ary[$id]['forums_ary'][] = $forum_id;
 						}
 					}
 				}
 			}
 
-			// If the mod is only moderating non-viewable forums we skip the user. There is no gain in displaying the person then...
-			if (!$s_forum_select && $undisclosed_forum)
+			$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$forums = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-//				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
-				continue;
+				$forums[$row['forum_id']] = $row['forum_name'];
 			}
+			$db->sql_freeresult($result);
 
-			// The person is moderating several "public" forums, therefore the person should be listed, but not giving the real group name if hidden.
-			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
+			foreach ($user_ary as $user_id => $user_data)
 			{
-				$group_name = $user->lang['GROUP_UNDISCLOSED'];
-				$u_group = '';
+				if (!$user_data['forums'])
+				{
+					foreach ($user_data['forums_ary'] as $forum_id)
+					{
+						$user_ary[$user_id]['forums_options'] = true;
+						if (isset($forums[$forum_id]))
+						{
+							if ($auth->acl_get('f_list', $forum_id))
+							{
+								$user_ary[$user_id]['forums'] .= '<option value="">' . $forums[$forum_id] . '</option>';
+							}
+						}
+					}
+				}
 			}
-			else
-			{
-				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-				$u_group = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
-			}
-
-			$rank_title = $rank_img = '';
-			get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
-
-			$template->assign_block_vars($which_row, array(
-				'USER_ID'		=> $row['user_id'],
-				'FORUMS'		=> $s_forum_select,
-				'RANK_TITLE'	=> $rank_title,
-				'GROUP_NAME'	=> $group_name,
-				'GROUP_COLOR'	=> $row['group_colour'],
-
-				'RANK_IMG'		=> $rank_img,
-				'RANK_IMG_SRC'	=> $rank_img_src,
-
-				'U_GROUP'			=> $u_group,
-				'U_PM'				=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-
-				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
-				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
-				'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
-			));
 		}
-		$db->sql_freeresult($result);
+
+		foreach ($groups_ary as $group_id => $group_data)
+		{
+			if ($group_data['group_teampage'])
+			{
+				$template->assign_block_vars('group', array(
+					'GROUP_NAME'	=> $group_data['group_name'],
+					'GROUP_COLOR'	=> $group_data['group_colour'],
+					'U_GROUP'		=> $group_data['u_group'],
+				));
+			}
+
+			// Display group members.
+			if (!empty($group_users[$group_id]))
+			{
+				foreach ($group_users[$group_id] as $user_id)
+				{
+					if (isset($user_ary[$user_id]))
+					{
+						$row = $user_ary[$user_id];
+						if (!$config['teampage_multiple'] && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						{
+							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
+							continue;
+						}
+
+						$rank_title = $rank_img = $rank_img_src = '';
+						get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
+
+						$template->assign_block_vars('group.user', array(
+							'USER_ID'		=> $row['user_id'],
+							'FORUMS'		=> $row['forums'],
+							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
+							'RANK_TITLE'	=> $rank_title,
+
+							'GROUP_NAME'	=> $groups_ary[$row['default_group']]['group_name'],
+							'GROUP_COLOR'	=> $groups_ary[$row['default_group']]['group_colour'],
+							'U_GROUP'		=> $groups_ary[$row['default_group']]['u_group'],
+
+							'RANK_IMG'		=> $rank_img,
+							'RANK_IMG_SRC'	=> $rank_img_src,
+
+							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+
+							'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+						));
+
+						if (!$config['teampage_multiple'])
+						{
+							unset($user_ary[$user_id]);
+						}
+					}
+				}
+			}
+		}
 
 		$template->assign_vars(array(
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
@@ -1069,8 +1076,27 @@ switch ($mode)
 			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', $db->any_char, $msn)) . ' ' : '';
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
-			$sql_where .= (sizeof($joined) > 1 && isset($find_key_match[$joined_select])) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
-			$sql_where .= ($auth->acl_get('u_viewonline') && sizeof($active) > 1 && isset($find_key_match[$active_select])) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+
+			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
+			{
+				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
+
+				if ($joined_time !== false)
+				{
+					$sql_where .= " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . $joined_time;
+				}
+			}
+
+			if (isset($find_key_match[$active_select]) && sizeof($active) == 3 && $auth->acl_get('u_viewonline'))
+			{
+				$active_time = gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
+
+				if ($active_time !== false)
+				{
+					$sql_where .= " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . $active_time;
+				}
+			}
+
 			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
 
 			if ($search_group_id)
@@ -1110,7 +1136,7 @@ switch ($mode)
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
 						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
-							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
+							AND " . $db->sql_in_set('forum_id', $ip_forums);
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -1692,7 +1718,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_SHORT_WWW'			=> (!empty($data['user_website'])) ? ((strlen($data['user_website']) > 55) ? substr($data['user_website'], 0, 39) . ' ... ' . substr($data['user_website'], -10) : $data['user_website']) : '',
-		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($data['user_icq']) : '',
+		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/' . urlencode($data['user_icq']) . '/' : '',
 		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',

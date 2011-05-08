@@ -19,27 +19,30 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 
 	static public function session_begin_attempts()
 	{
-		global $_SID;
+		// The session_id field is defined as CHAR(32) in the database schema.
+		// Thus the data we put in session_id fields has to have a length of 32 characters on stricter DBMSes.
+		// Thus we fill those strings up with zeroes until they have a string length of 32.
+
 		return array(
 			array(
-				'bar_session', '4', 'user agent', '127.0.0.1',
+				'bar_session000000000000000000000', '4', 'user agent', '127.0.0.1',
 				array(
-					array('session_id' => 'anon_session', 'session_user_id' => 1),
-					array('session_id' => 'bar_session', 'session_user_id' => 4)
+					array('session_id' => 'anon_session00000000000000000000', 'session_user_id' => 1),
+					array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 				),
 				array(),
 				'If a request comes with a valid session id with matching user agent and IP, no new session should be created.',
 			),
 			array(
-				'anon_session', '4', 'user agent', '127.0.0.1',
+				'anon_session00000000000000000000', '4', 'user agent', '127.0.0.1',
 				array(
-					array('session_id' => 'bar_session', 'session_user_id' => 4),
-					array('session_id' => null, 'session_user_id' => 1) // use generated SID
+					array('session_id' => '__new_session_id__', 'session_user_id' => 1), // use generated SID
+					array('session_id' => 'bar_session000000000000000000000', 'session_user_id' => 4),
 				),
 				array(
 					'u' => array('1', null),
 					'k' => array(null, null),
-					'sid' => array($_SID, null),
+					'sid' => array('__new_session_id__', null),
 				),
 				'If a request comes with a valid session id and IP but different user id and user agent, a new anonymous session is created and the session matching the supplied session id is deleted.',
 			),
@@ -71,26 +74,48 @@ class phpbb_session_continue_test extends phpbb_database_test_case
 		$session->session_begin();
 
 		$sql = 'SELECT session_id, session_user_id
-			FROM phpbb_sessions';
+			FROM phpbb_sessions
+			ORDER BY session_user_id';
 
-		// little tickery to allow using a dataProvider with dynamic expected result
-		foreach ($expected_sessions as $i => $s)
-		{
-			if (is_null($s['session_id']))
-			{
-				$expected_sessions[$i]['session_id'] = $session->session_id;
-			}
-		}
+		$expected_sessions = $this->replace_session($expected_sessions, $session->session_id);
+		$expected_cookies = $this->replace_session($expected_cookies, $session->session_id);
 
 		$this->assertSqlResultEquals(
 			$expected_sessions,
 			$sql,
-			'Check if no new session was created'
+			$message
 		);
 
 		$session->check_cookies($this, $expected_cookies);
 
 		$session_factory->check($this);
 	}
-}
 
+	/**
+	* Replaces recursively the value __new_session_id__ with the given session
+	* id.
+	*
+	* @param array $array An array of data
+	* @param string $session_id The new session id to use instead of the
+	*                           placeholder.
+	* @return array The input array with all occurances of __new_session_id__
+	*               replaced.
+	*/
+	public function replace_session($array, $session_id)
+	{
+		foreach ($array as $key => &$value)
+		{
+			if ($value === '__new_session_id__')
+			{
+				$value = $session_id;
+			}
+
+			if (is_array($value))
+			{
+				$value = $this->replace_session($value, $session_id);
+			}
+		}
+
+		return $array;
+	}
+}

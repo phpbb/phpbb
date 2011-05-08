@@ -48,11 +48,16 @@ function set_var(&$result, $var, $type, $multibyte = false)
 *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 * @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
 * 										phpbb_request_interface::variable for backwards compatability reasons.
+* @param	phpbb_request_interface|null|false	If an instance of phpbb_request_interface is given the instance is stored in
+*										a static variable and used for all further calls where this parameters is null. Until
+*										the function is called with an instance it automatically creates a new phpbb_request
+*										instance on every call. By passing false this per-call instantiation can be restored
+*										after having passed in a phpbb_request_interface instance.
 *
 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 * 					the same as that of $default. If the variable is not set $default is returned.
 */
-function request_var($var_name, $default, $multibyte = false, $cookie = false, phpbb_request_interface $request = null)
+function request_var($var_name, $default, $multibyte = false, $cookie = false, $request = null)
 {
 	// This is all just an ugly hack to add "Dependency Injection" to a function
 	// the only real code is the function call which maps this function to a method.
@@ -61,6 +66,15 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, p
 	if ($request instanceof phpbb_request_interface)
 	{
 		$static_request = $request;
+
+		if (empty($var_name))
+		{
+			return;
+		}
+	}
+	else if ($request === false)
+	{
+		$static_request = null;
 
 		if (empty($var_name))
 		{
@@ -168,8 +182,8 @@ function unique_id($extra = 'c')
 
 	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
 	{
-		set_config('rand_seed', $config['rand_seed'], true);
 		set_config('rand_seed_last_update', time(), true);
+		set_config('rand_seed', $config['rand_seed'], true);
 		$dss_seeded = true;
 	}
 
@@ -444,7 +458,7 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	$output = '*';
 
 	// Check for correct hash
-	if (substr($setting, 0, 3) != '$H$')
+	if (substr($setting, 0, 3) != '$H$' && substr($setting, 0, 3) != '$P$')
 	{
 		return $output;
 	}
@@ -1309,35 +1323,6 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 	{
 		$mark_time = array();
 
-		// Get global announcement info
-		if ($global_announce_list && sizeof($global_announce_list))
-		{
-			if (!isset($forum_mark_time[0]))
-			{
-				global $db;
-
-				$sql = 'SELECT mark_time
-					FROM ' . FORUMS_TRACK_TABLE . "
-					WHERE user_id = {$user->data['user_id']}
-						AND forum_id = 0";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($row)
-				{
-					$mark_time[0] = $row['mark_time'];
-				}
-			}
-			else
-			{
-				if ($forum_mark_time[0] !== false)
-				{
-					$mark_time[0] = $forum_mark_time[0];
-				}
-			}
-		}
-
 		if (!empty($forum_mark_time[$forum_id]) && $forum_mark_time[$forum_id] !== false)
 		{
 			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
@@ -1347,14 +1332,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 
 		foreach ($topic_ids as $topic_id)
 		{
-			if ($global_announce_list && isset($global_announce_list[$topic_id]))
-			{
-				$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-			}
-			else
-			{
-				$last_read[$topic_id] = $user_lastmark;
-			}
+			$last_read[$topic_id] = $user_lastmark;
 		}
 	}
 
@@ -1366,7 +1344,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 */
 function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$last_read = array();
 
@@ -1398,8 +1376,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$sql = 'SELECT forum_id, mark_time
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id " .
-					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
+					AND forum_id = $forum_id";
 			$result = $db->sql_query($sql);
 
 			$mark_time = array();
@@ -1413,14 +1390,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 			foreach ($topic_ids as $topic_id)
 			{
-				if ($global_announce_list && isset($global_announce_list[$topic_id]))
-				{
-					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-				}
-				else
-				{
-					$last_read[$topic_id] = $user_lastmark;
-				}
+				$last_read[$topic_id] = $user_lastmark;
 			}
 		}
 	}
@@ -1458,13 +1428,6 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		if (sizeof($topic_ids))
 		{
 			$mark_time = array();
-			if ($global_announce_list && sizeof($global_announce_list))
-			{
-				if (isset($tracking_topics['f'][0]))
-				{
-					$mark_time[0] = base_convert($tracking_topics['f'][0], 36, 10) + $config['board_startdate'];
-				}
-			}
 
 			if (isset($tracking_topics['f'][$forum_id]))
 			{
@@ -1475,14 +1438,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 			foreach ($topic_ids as $topic_id)
 			{
-				if ($global_announce_list && isset($global_announce_list[$topic_id]))
-				{
-					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-				}
-				else
-				{
-					$last_read[$topic_id] = $user_lastmark;
-				}
+				$last_read[$topic_id] = $user_lastmark;
 			}
 		}
 	}
@@ -1630,7 +1586,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config;
+	global $db, $tracking_topics, $user, $config, $request;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -2069,7 +2025,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 /**
 * Generate board url (example: http://www.example.com/phpBB)
+*
 * @param bool $without_script_path if set to true the script path gets not appended (example: http://www.example.com)
+*
+* @return string the generated board url
 */
 function generate_board_url($without_script_path = false)
 {
@@ -3253,7 +3212,7 @@ function get_preg_expression($mode)
 * Depends on whether installed PHP version supports unicode properties
 *
 * @param string	$word			word template to be replaced
-* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode 
+* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode
 *
 * @return string $preg_expr		regex to use with word censor
 */
@@ -4244,7 +4203,7 @@ function phpbb_http_login($param)
 	if (!is_null($username) && is_null($password) && strpos($username, 'Basic ') === 0)
 	{
 		list($username, $password) = explode(':', base64_decode(substr($username, 6)), 2);
-    }
+	}
 
 	if (!is_null($username) && !is_null($password))
 	{
@@ -4595,7 +4554,7 @@ function page_footer($run_cron = true)
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'])
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();

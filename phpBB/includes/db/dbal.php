@@ -242,6 +242,16 @@ class dbal
 	}
 
 	/**
+	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
+	*
+	* @return bool Whether buffering is required.
+	*/
+	function sql_buffer_nested_transaction()
+	{
+		return false;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/

@@ -55,12 +55,24 @@ quit()
 	fi
 }
 
-msg=$(grep -nE '.{81,}' "$1");
+# Check for empty commit message
+if ! grep -qv '^#' "$1"
+then
+	# Commit message is empty (or contains only comments).
+	# Let git handle this.
+	# It will abort with a message like so:
+	#
+	# Aborting commit due to empty commit message.
+	exit 0
+fi
+
+msg=$(grep -v '^#' "$1" |grep -nE '.{81,}')
 
 if [ $? -eq 0 ]
 then
-	echo "The following lines are greater than 80 characters long:\n" >&2;
-	echo $msg >&2;
+	echo "The following lines are greater than 80 characters long:" >&2;
+	echo >&2
+	echo "$msg" >&2;
 
 	quit $ERR_LENGTH;
 fi
@@ -107,7 +119,19 @@ do
 		case $expect in
 			"header")
 				err=$ERR_HEADER;
-				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] .+$"
+				result=$?
+				if ! echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+				then
+					# Don't be too strict.
+					# Commits may be temporary, intended to be squashed later.
+					# Just issue a warning here.
+					echo "Warning: heading should be a sentence beginning with a capital letter." 1>&2
+					echo "You entered:" 1>&2
+					echo "$line" 1>&2
+				fi
+				# restore exit code
+				(exit $result)
 			;;
 			"empty")
 				err=$ERR_EMPTY;
@@ -127,6 +151,10 @@ do
 				err=$ERR_EOF;
 				# Should not end up here
 				false
+			;;
+			"possibly-eof")
+				# Allow empty and/or comment lines at the end
+				! tail -n +"$i" "$1" |grep -qvE '^($|#)'
 			;;
 			"comment")
 				echo "$line" | grep -Eq "^#";
@@ -188,7 +216,7 @@ do
 				in_description=1;
 			;;
 			"footer")
-				expecting="footer eof";
+				expecting="footer possibly-eof";
 				if [ "$tickets" = "" ]
 				then
 					tickets="$line";
@@ -198,6 +226,9 @@ do
 			;;
 			"comment")
 				# Comments should expect the same thing again
+			;;
+			"possibly-eof")
+				expecting="eof";
 			;;
 			*)
 				echo "Unrecognised token $expect" >&2;

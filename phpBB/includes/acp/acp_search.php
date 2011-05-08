@@ -384,17 +384,30 @@ class acp_search
 									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
 							$result = $db->sql_query($sql);
 
-							while ($row = $db->sql_fetchrow($result))
+							$buffer = $db->sql_buffer_nested_transactions();
+
+							if ($buffer)
 							{
-								// Indexing enabled for this forum or global announcement?
-								// Global announcements get indexed by default.
-								if (!$row['forum_id'] || (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']]))
+								$rows = $db->sql_fetchrowset($result);
+								$rows[] = false; // indicate end of array for while loop below
+
+								$db->sql_freeresult($result);
+							}
+
+							$i = 0;
+							while ($row = ($buffer ? $rows[$i++] : $db->sql_fetchrow($result)))
+							{
+								// Indexing enabled for this forum
+								if (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']])
 								{
 									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 								}
 								$row_count++;
 							}
-							$db->sql_freeresult($result);
+							if (!$buffer)
+							{
+								$db->sql_freeresult($result);
+							}
 
 							$post_counter += $this->batch_size;
 						}

@@ -152,26 +152,12 @@ if ($view && !$post_id)
 			else
 			{
 				$topic_id = $row['topic_id'];
-
-				// Check for global announcement correctness?
-				if (!$row['forum_id'] && !$forum_id)
-				{
-					trigger_error('NO_TOPIC');
-				}
-				else if ($row['forum_id'])
-				{
-					$forum_id = $row['forum_id'];
-				}
+				$forum_id = $row['forum_id'];
 			}
 		}
 	}
 
-	// Check for global announcement correctness?
-	if ((!isset($row) || !$row['forum_id']) && !$forum_id)
-	{
-		trigger_error('NO_TOPIC');
-	}
-	else if (isset($row) && $row['forum_id'])
+	if (isset($row) && $row['forum_id'])
 	{
 		$forum_id = $row['forum_id'];
 	}
@@ -185,13 +171,6 @@ $sql_array = array(
 
 	'FROM'		=> array(FORUMS_TABLE => 'f'),
 );
-
-// Firebird handles two columns of the same name a little differently, this
-// addresses that by forcing the forum_id to come from the forums table.
-if ($db->sql_layer === 'firebird')
-{
-	$sql_array['SELECT'] = 'f.forum_id AS forum_id, ' . $sql_array['SELECT'];
-}
 
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
@@ -247,26 +226,8 @@ else
 	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id";
 }
 
-$sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
+$sql_array['WHERE'] .= ' AND f.forum_id = t.forum_id';
 
-if (!$forum_id)
-{
-	// If it is a global announcement make sure to set the forum id to a postable forum
-	$sql_array['WHERE'] .= ' OR (t.topic_type = ' . POST_GLOBAL . '
-		AND f.forum_type = ' . FORUM_POST . ')';
-}
-else
-{
-	$sql_array['WHERE'] .= ' OR (t.topic_type = ' . POST_GLOBAL . "
-		AND f.forum_id = $forum_id)";
-}
-
-$sql_array['WHERE'] .= ')';
-
-// Join to forum table on topic forum_id unless topic forum_id is zero
-// whereupon we join on the forum_id passed as a parameter ... this
-// is done so navigation, forum name, etc. remain consistent with where
-// user clicked to view a global topic
 $sql = $db->sql_build_query('SELECT', $sql_array);
 $result = $db->sql_query($sql);
 $topic_data = $db->sql_fetchrow($result);
@@ -1157,7 +1118,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_icq']))
 			{
-				$user_cache[$poster_id]['icq'] = 'http://www.icq.com/people/webmsg.php?to=' . $row['user_icq'];
+				$user_cache[$poster_id]['icq'] = 'http://www.icq.com/people/' . urlencode($row['user_icq']) . '/';
 				$user_cache[$poster_id]['icq_status_img'] = '<img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" alt="" />';
 			}
 			else
@@ -1540,13 +1501,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-		'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . (($topic_data['topic_type'] == POST_GLOBAL) ? '&amp;f=' . $forum_id : '') . '#p' . $row['post_id'],
+		'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
 		'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
+		'POST_NUMBER'		=> $i + $start + 1,
 		'POSTER_ID'			=> $poster_id,
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
@@ -1615,34 +1577,13 @@ if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($use
 	}
 }
 
-// Get last post time for all global announcements
-// to keep proper forums tracking
-if ($topic_data['topic_type'] == POST_GLOBAL)
-{
-	$sql = 'SELECT topic_last_post_time as forum_last_post_time
-		FROM ' . TOPICS_TABLE . '
-		WHERE forum_id = 0
-		ORDER BY topic_last_post_time DESC';
-	$result = $db->sql_query_limit($sql, 1);
-	$topic_data['forum_last_post_time'] = (int) $db->sql_fetchfield('forum_last_post_time');
-	$db->sql_freeresult($result);
-
-	$sql = 'SELECT mark_time as forum_mark_time
-		FROM ' . FORUMS_TRACK_TABLE . '
-		WHERE forum_id = 0
-			AND user_id = ' . $user->data['user_id'];
-	$result = $db->sql_query($sql);
-	$topic_data['forum_mark_time'] = (int) $db->sql_fetchfield('forum_mark_time');
-	$db->sql_freeresult($result);
-}
-
 // Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
 {
-	markread('topic', (($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_id, $max_post_time);
+	markread('topic', $forum_id, $topic_id, $max_post_time);
 
 	// Update forum info
-	$all_marked_read = update_forum_tracking_info((($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+	$all_marked_read = update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
 }
 else
 {

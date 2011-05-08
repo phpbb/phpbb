@@ -62,14 +62,11 @@ function do_cron($cron_lock, $run_tasks)
 
 if ($config['use_system_cron'])
 {
-	$use_shutdown_function = false;
-
 	$cron = new phpbb_cron_manager($phpbb_root_path . 'includes/cron/task', $phpEx, $cache->get_driver());
 }
 else
 {
 	$cron_type = request_var('cron_type', '');
-	$use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 
 	// Comment this line out for debugging so the page does not return an image.
 	output_image();
@@ -95,22 +92,12 @@ if ($cron_lock->acquire())
 			}
 			if ($task->is_ready())
 			{
-				if ($use_shutdown_function && !$task->is_shutdown_function_safe())
-				{
-					$use_shutdown_function = false;
-				}
 				$run_tasks = array($task);
 			}
 		}
 	}
-	if ($use_shutdown_function)
-	{
-		register_shutdown_function('do_cron', $cron_lock, $run_tasks);
-	}
-	else
-	{
-		do_cron($cron_lock, $run_tasks);
-	}
+
+	do_cron($cron_lock, $run_tasks);
 }
 else
 {

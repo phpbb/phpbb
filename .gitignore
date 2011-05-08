@@ -1,8 +1,10 @@
 *~
 phpunit.xml
 phpBB/cache/*.php
+phpBB/cache/queue.php.lock
 phpBB/config.php
 phpBB/files/*
+phpBB/images/avatars/gallery/*
 phpBB/images/avatars/upload/*
 phpBB/store/*
 tests/phpbb_unit_tests.sqlite2
