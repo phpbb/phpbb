@@ -81,7 +81,7 @@ $db->sql_freeresult($result);
 $legend = implode(', ', $legend);
 
 // Generate birthday list if required ...
-$birthday_list = '';
+$birthday_list = array();
 if ($config['load_birthdays'] && $config['allow_birthdays'])
 {
 	$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
@@ -96,20 +96,17 @@ if ($config['load_birthdays'] && $config['allow_birthdays'])
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$birthday_username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
-		$birthday_list .= (($birthday_list != '') ? ', ' : '') . $birthday_username;
-		$birthday_year = (int) substr($row['user_birthday'], -4);
-		$birthday_age = $now['year'] - $birthday_year;
-
-		if ($birthday_year)
-		{
-			$birthday_list .= ' (' . $birthday_age . ')';
-		}
+		$birthday_username	= get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		$birthday_year		= (int) substr($row['user_birthday'], -4);
+		$birthday_age		= $now['year'] - $birthday_year;
 
 		$template->assign_block_vars('birthdays', array(
 			'USERNAME'	=> $birthday_username,
 			'AGE'		=> ($birthday_year) ? $birthday_age : '',
 		));
+
+		// For 3.0 compatibility
+		$birthday_list[] = $birthday_username . (($birthday_year) ? ' (' . $birthday_age . ')' : '');
 	}
 	$db->sql_freeresult($result);
 }
@@ -122,7 +119,7 @@ $template->assign_vars(array(
 	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
-	'BIRTHDAY_LIST'	=> $birthday_list,
+	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),
 
 	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
 	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),
