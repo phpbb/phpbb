@@ -98,15 +98,15 @@ if ($config['load_birthdays'] && $config['allow_birthdays'])
 	{
 		$birthday_username	= get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		$birthday_year		= (int) substr($row['user_birthday'], -4);
-		$birthday_age		= $now['year'] - $birthday_year;
+		$birthday_age		= ($birthday_year) ? $now['year'] - $birthday_year : '';
 
 		$template->assign_block_vars('birthdays', array(
 			'USERNAME'	=> $birthday_username,
-			'AGE'		=> ($birthday_year) ? $birthday_age : '',
+			'AGE'		=> $birthday_age,
 		));
 
 		// For 3.0 compatibility
-		$birthday_list[] = $birthday_username . (($birthday_year) ? ' (' . $birthday_age . ')' : '');
+		$birthday_list[] = $birthday_username . (($birthday_age) ? ' (' . $birthday_age . ')' : '');
 	}
 	$db->sql_freeresult($result);
 }
