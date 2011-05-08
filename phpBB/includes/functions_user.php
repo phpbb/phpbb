@@ -611,7 +611,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	foreach ($undelivered_user as $_user_id => $ary)
 	{
-		if ($_user_id == $user_id)
+		if (in_array($_user_id, $user_ids))
 		{
 			continue;
 		}
