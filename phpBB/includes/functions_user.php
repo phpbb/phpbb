@@ -422,6 +422,8 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	// Remove reports
 	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE ' . $user_id_sql);
 
+	$num_users_delta = 0;
+
 	// Some things need to be done in the loop (if the query changes based
 	// on which user is currently being deleted)
 	$added_guest_posts = 0;
@@ -435,7 +437,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		// Decrement number of users if this user is active
 		if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
 		{
-			set_config_count('num_users', -1, true);
+			--$num_users_delta;
 		}
 
 		switch ($mode)
@@ -490,6 +492,11 @@ function user_delete($mode, $user_ids, $retain_username = true)
 				// there is nothing variant specific to deleting posts
 			break;
 		}
+	}
+
+	if ($num_users_delta != 0)
+	{
+		set_config_count('num_users', $num_users_delta, true);
 	}
 
 	// Now do the invariant tasks
