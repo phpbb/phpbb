@@ -50,7 +50,7 @@
 	</tr>
 	<tr>
 		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_BIRTHDAYS}" /></td>
-		<td class="row1" width="100%"><p class="genmed"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
+		<td class="row1" width="100%"><p class="genmed"><!-- IF .birthdays -->{L_CONGRATULATIONS}: <b><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
 	</tr>
 	</table>
 <!-- ENDIF -->
