@@ -17,19 +17,19 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Template executor interface.
+* Template renderer interface.
 *
-* Objects implementing this interface encapsulate a means of executing
-* (i.e. rendering) a template.
+* Objects implementing this interface encapsulate a means of displaying
+* a template.
 *
 * @package phpBB3
 */
-interface phpbb_template_executor
+interface phpbb_template_renderer
 {
 	/**
-	* Executes the template managed by this executor.
+	* Displays the template managed by this renderer.
 	* @param phpbb_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/
-	public function execute($context, $lang);
+	public function render($context, $lang);
 }

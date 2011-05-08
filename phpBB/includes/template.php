@@ -206,11 +206,11 @@ class phpbb_template
 		}
 		*/
 
-		$executor = $this->_tpl_load($handle);
+		$renderer = $this->_tpl_load($handle);
 
-		if ($executor)
+		if ($renderer)
 		{
-			$executor->execute($this->_context, $this->get_lang());
+			$renderer->render($this->_context, $this->get_lang());
 			return true;
 		}
 		else
@@ -270,8 +270,8 @@ class phpbb_template
 	}
 
 	/**
-	* Obtains a template executor for a template identified by specified
-	* handle. THe template executor can execute the template later.
+	* Obtains a template renderer for a template identified by specified
+	* handle. The template renderer can display the template later.
 	*
 	* Template source will first be compiled into php code.
 	* If template cache is writable the compiled php code will be stored
@@ -281,15 +281,15 @@ class phpbb_template
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
-	* Returns an object implementing phpbb_template_executor, or null
-	* if template loading or compilation failed. Call execute() on the
-	* executor to execute the template. This will result in template
+	* Returns an object implementing phpbb_template_renderer, or null
+	* if template loading or compilation failed. Call render() on the
+	* renderer to display the template. This will result in template
 	* contents sent to the output stream (unless, of course, output
 	* buffering is in effect).
 	*
 	* @access private
 	* @param string $handle Handle of the template to load
-	* @return phpbb_template_executor Template executor object, or null on failure
+	* @return phpbb_template_renderer Template renderer object, or null on failure
 	* @uses template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
@@ -333,7 +333,7 @@ class phpbb_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_executor_include($filename, $this);
+			return new phpbb_template_renderer_include($filename, $this);
 		}
 
 		// Inheritance - we point to another template file for this one.
@@ -350,18 +350,18 @@ class phpbb_template
 		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			$executor = new phpbb_template_executor_include($output_file, $this);
+			$renderer = new phpbb_template_renderer_include($output_file, $this);
 		}
 		else if (($code = $compile->compile_file($source_file)) !== false)
 		{
-			$executor = new phpbb_template_executor_eval($code, $this);
+			$renderer = new phpbb_template_renderer_eval($code, $this);
 		}
 		else
 		{
-			$executor = null;
+			$renderer = null;
 		}
 
-		return $executor;
+		return $renderer;
 	}
 
 	/**
@@ -489,11 +489,11 @@ class phpbb_template
 			$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
 		}
 
-		$executor = $this->_tpl_load($handle);
+		$renderer = $this->_tpl_load($handle);
 
-		if ($executor)
+		if ($renderer)
 		{
-			$executor->execute($this->_context, $this->get_lang());
+			$renderer->render($this->_context, $this->get_lang());
 		}
 		else
 		{

@@ -17,12 +17,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Template executor that stores compiled template's php code and
-* evaluates it via eval.
+* Template renderer that stores compiled template's php code and
+* displays it via eval.
 *
 * @package phpBB3
 */
-class phpbb_template_executor_eval implements phpbb_template_executor
+class phpbb_template_renderer_eval implements phpbb_template_renderer
 {
 	/**
 	* Template code to be eval'ed.
@@ -43,12 +43,12 @@ class phpbb_template_executor_eval implements phpbb_template_executor
 	}
 
 	/**
-	* Executes the template managed by this executor by eval'ing php code
+	* Displays the template managed by this renderer by eval'ing php code
 	* of the template.
 	* @param phpbb_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/
-	public function execute($context, $lang)
+	public function render($context, $lang)
 	{
 		$_template = &$this->template;
 		$_tpldata = &$context->get_data_ref();
