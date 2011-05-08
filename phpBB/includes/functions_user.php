@@ -537,6 +537,8 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
+	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
+
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
 		WHERE ' . $user_id_sql; //reportee_id = ' . $user_id;
@@ -567,7 +569,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	// Remove any undelivered mails...
 	$sql = 'SELECT msg_id, user_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('author_id', $user_ids) . '
+		WHERE ' . $author_id_sql . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$result = $db->sql_query($sql);
 
@@ -587,7 +589,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	}
 
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('author_id', $user_ids) . '
+		WHERE ' . $author_id_sql . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$db->sql_query($sql);
 
@@ -599,12 +601,12 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE ' . $db->sql_in_set('author_id', $user_ids);
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE ' . $db->sql_in_set('author_id', $user_ids);
+		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
 	foreach ($undelivered_user as $_user_id => $ary)
