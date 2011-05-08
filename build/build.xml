@@ -133,7 +133,7 @@
 	-->
 	<target name="export">
 		<exec dir="phpBB"
-			command="git archive ${revision} | tar -x -C ../${dir}"
+			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
