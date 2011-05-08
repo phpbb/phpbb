@@ -345,9 +345,11 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		$user_ids = array($user_ids);
 	}
 
+	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
+
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $user_ids);
+		WHERE ' . $user_id_sql;
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -418,7 +420,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	}
 
 	// Remove reports
-	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $user_ids));
+	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE ' . $user_id_sql);
 
 	// Some things need to be done in the loop (if the query changes based
 	// on which user is currently being deleted)
@@ -529,7 +531,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
-			WHERE " . $db->sql_in_set('user_id', $user_ids);
+			WHERE " . $user_id_sql;
 		$db->sql_query($sql);
 	}
 
@@ -537,18 +539,18 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $user_ids); //reportee_id = ' . $user_id;
+		WHERE ' . $user_id_sql; //reportee_id = ' . $user_id;
 	$db->sql_query($sql);
 
 	// Change user_id to anonymous for this users triggered events
 	$sql = 'UPDATE ' . LOG_TABLE . '
 		SET user_id = ' . ANONYMOUS . '
-		WHERE ' . $db->sql_in_set('user_id', $user_ids); //user_id = ' . $user_id;
+		WHERE ' . $user_id_sql; //user_id = ' . $user_id;
 	$db->sql_query($sql);
 
 	// Delete the user_id from the zebra table
 	$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $user_ids) . //user_id = ' . $user_id . '
+		WHERE ' . $user_id_sql . //user_id = ' . $user_id . '
 			' OR ' . $db->sql_in_set('zebra_id', $user_ids);
 	$db->sql_query($sql);
 
@@ -591,7 +593,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	// Delete all to-information
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', $user_ids);
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
