@@ -587,7 +587,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	}
 
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('author_id', $user_id) . '
+		WHERE ' . $db->sql_in_set('author_id', $user_ids) . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$db->sql_query($sql);
 
@@ -604,7 +604,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
-		WHERE ' . $db->sql_in_set('author_id', $user_id);
+		WHERE ' . $db->sql_in_set('author_id', $user_ids);
 	$db->sql_query($sql);
 
 	foreach ($undelivered_user as $_user_id => $ary)
