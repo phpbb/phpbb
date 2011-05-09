@@ -477,7 +477,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'SUBFORUMS'				=> $s_subforums_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
-			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
 			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
