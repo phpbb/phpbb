@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 * Compose private message
 * Called from ucp_pm with mode == 'compose'
 */
-function compose_pm($id, $mode, $action)
+function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
@@ -398,7 +398,7 @@ function compose_pm($id, $mode, $action)
 	unset($message_text);
 
 	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
-	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
+	$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
 
 	// Delete triggered ?
 	if ($action == 'delete')
@@ -741,13 +741,23 @@ function compose_pm($id, $mode, $action)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
 			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
-			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
+			$inbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
 			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
-			meta_refresh(3, $return_message_url);
+
+			$folder_return_message = '';
+			$return_message_url = $inbox_folder_url;
+			if ($folder_id && isset($user_folders[$folder_id]))
+			{
+				$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
+				$folder_return_message = '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_message_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+			}
 
 			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>');
-			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
+			$message .= $folder_return_message;
+			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $inbox_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
 			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $outbox_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+
+			meta_refresh(3, $return_message_url);
 			trigger_error($message);
 		}
 
