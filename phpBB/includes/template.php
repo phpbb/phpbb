@@ -195,14 +195,10 @@ class phpbb_template
 	*/
 	public function display($handle, $include_once = true)
 	{
-		global $phpbb_hook;
-
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
+		$result = $this->call_hook($handle, $include_once);
+		if ($result !== false)
 		{
-			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
-			{
-				return $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
-			}
+			return $result[0];
 		}
 
 		/*
@@ -226,6 +222,27 @@ class phpbb_template
 		{
 			return false;
 		}
+	}
+
+	/**
+	* Calls hook if any is defined.
+	* @param string $handle Template handle being displayed.
+	* @param bool $include_once Allow multiple inclusions
+	*/
+	private function call_hook($handle, $include_once)
+	{
+		global $phpbb_hook;
+
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
+		{
+			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
+			{
+				$result = $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
+				return array($result);
+			}
+		}
+
+		return false;
 	}
 
 	/**
