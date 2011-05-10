@@ -116,7 +116,6 @@ $lang = array_merge($lang, array(
 	'REMOVE_FOE'			=> 'Remove foe',
 	'REMOVE_FRIEND'			=> 'Remove friend',
 
-	'SEARCH_USER_POSTS'		=> 'Search user’s posts',
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
 	'SEND_AIM_MESSAGE'		=> 'Send AIM message',
