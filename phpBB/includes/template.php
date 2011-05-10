@@ -201,16 +201,6 @@ class phpbb_template
 			return $result[0];
 		}
 
-		/*
-		if (defined('IN_ERROR_HANDLER'))
-		{
-			if ((E_NOTICE & error_reporting()) == E_NOTICE)
-			{
-				error_reporting(error_reporting() ^ E_NOTICE);
-			}
-		}
-		*/
-
 		$renderer = $this->_tpl_load($handle);
 
 		if ($renderer)
