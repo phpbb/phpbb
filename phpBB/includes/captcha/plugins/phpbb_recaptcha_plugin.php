@@ -27,9 +27,9 @@ if (!class_exists('phpbb_default_captcha'))
 */
 class phpbb_recaptcha extends phpbb_default_captcha
 {
-	var $recaptcha_server = 'http://api.recaptcha.net';
-	var $recaptcha_server_secure = 'https://api-secure.recaptcha.net'; // class constants :(
-	var $recaptcha_verify_server = 'api-verify.recaptcha.net';
+	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
+	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
+	var $recaptcha_verify_server = 'http://www.google.com/recaptcha/api/verify';
 	var $challenge;
 	var $response;
 
