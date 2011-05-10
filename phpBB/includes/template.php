@@ -168,6 +168,15 @@ class phpbb_template
 	}
 
 	/**
+	* Clears all variables and blocks assigned to this template.
+	* @access public
+	*/
+	public function destroy()
+	{
+		$this->_context->clear();
+	}
+
+	/**
 	* Reset/empty complete block
 	* @access public
 	* @param string $blockname Name of block to destroy
