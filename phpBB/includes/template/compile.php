@@ -54,6 +54,7 @@ class phpbb_template_filter extends php_user_filter
 	public function filter($in, $out, &$consumed, $closing)
 	{
 		$written = false;
+		$first = false;
 
 		while ($bucket = stream_bucket_make_writeable($in))
 		{
@@ -71,7 +72,13 @@ class phpbb_template_filter extends php_user_filter
 
 			$written = true;
 
-			$bucket->data = $this->compile($data);
+			$data = $this->compile($data);
+			if (!$first)
+			{
+				$data = $this->prepend_preamble($data);
+				$first = false;
+			}
+			$bucket->data = $data;
 			$bucket->datalen = strlen($bucket->data);
 			stream_bucket_append($out, $bucket);
 		}
@@ -147,6 +154,18 @@ class phpbb_template_filter extends php_user_filter
 		$data = preg_replace('~(?<!^)(<\?php(?:(?<!\?>).)+(?<!/\*\*/)\?>)$~m', "$1\n", $data);
 		$data = str_replace('/**/?>', "?>\n", $data);
 		$data = str_replace('?><?php', '', $data);
+		return $data;
+	}
+
+	/**
+	* Prepends a preamble to compiled template.
+	* Currently preamble checks if IN_PHPBB is defined and calls exit() if it is not.
+	* @param string $data Compiled template chunk
+	* @return string Compiled template chunk with preamble prepended
+	*/
+	private function prepend_preamble($data)
+	{
+		$data = "<?php if (!defined('IN_PHPBB')) exit;" . ((strncmp($data, '<?php', 5) === 0) ? substr($data, 5) : ' ?>' . $data);
 		return $data;
 	}
 
