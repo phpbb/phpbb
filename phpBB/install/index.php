@@ -23,7 +23,7 @@ if (!defined('E_DEPRECATED'))
 {
 	define('E_DEPRECATED', 8192);
 }
-error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
 if (version_compare(PHP_VERSION, '4.3.3') < 0)
