@@ -508,7 +508,8 @@ class phpbb_template
 		}
 		else
 		{
-			// What should we do here?
+			// trigger_error cannot be used here, as the output already started
+			echo 'template->_tpl_include(): Failed including ' . htmlspecialchars($handle) . "\n";
 		}
 	}
 
@@ -525,7 +526,7 @@ class phpbb_template
 		if (!file_exists($file))
 		{
 			// trigger_error cannot be used here, as the output already started
-			echo 'template->_php_include(): File ' . htmlspecialchars($file) . ' does not exist or is empty';
+			echo 'template->_php_include(): File ' . htmlspecialchars($file) . " does not exist\n";
 			return;
 		}
 		include($file);
