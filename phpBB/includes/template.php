@@ -322,13 +322,13 @@ class phpbb_template
 		// by other template class instances in between.
 		$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
-		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
+		$compiled_path = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
 
 		$recompile = defined('DEBUG_EXTRA') ||
-			!file_exists($filename) ||
-			@filesize($filename) === 0 ||
-			($config['load_tplcompile'] && @filemtime($filename) < @filemtime($this->files[$handle]));
+			!file_exists($compiled_path) ||
+			@filesize($compiled_path) === 0 ||
+			($config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($this->files[$handle]));
 
 		if (!$recompile && $config['load_tplcompile'])
 		{
@@ -338,13 +338,13 @@ class phpbb_template
 				$this->files[$handle] = $this->files_inherit[$handle];
 				$this->files_template[$handle] = $user->theme['template_inherits_id'];
 			}
-			$recompile = (@filemtime($filename) < @filemtime($this->files[$handle])) ? true : false;
+			$recompile = (@filemtime($compiled_path) < @filemtime($this->files[$handle])) ? true : false;
 		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_renderer_include($filename, $this);
+			return new phpbb_template_renderer_include($compiled_path, $this);
 		}
 
 		// Inheritance - we point to another template file for this one.
