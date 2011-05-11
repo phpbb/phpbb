@@ -68,11 +68,15 @@ class phpbb_template_context
 
 	public function get_data_ref()
 	{
-		return $this->tpldata;
+		// returning a reference directly is not
+		// something php is capable of doing
+		$ref = &$this->tpldata;
+		return $ref;
 	}
 
 	public function get_root_ref()
 	{
+		// rootref is already a reference
 		return $this->rootref;
 	}
 

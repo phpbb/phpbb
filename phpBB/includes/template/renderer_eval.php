@@ -50,7 +50,7 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 	*/
 	public function render($context, $lang)
 	{
-		$_template = &$this->template;
+		$_template = $this->template;
 		$_tpldata = &$context->get_data_ref();
 		$_rootref = &$context->get_root_ref();
 		$_lang = &$lang;
