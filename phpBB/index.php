@@ -106,7 +106,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'])
 		));
 
 		// For 3.0 compatibility
-		$birthday_list[] = $birthday_username . (($birthday_age) ? ' (' . $birthday_age . ')' : '');
+		$birthday_list[] = $birthday_username . (($birthday_year) ? ' (' . $birthday_age . ')' : '');
 	}
 	$db->sql_freeresult($result);
 }
