@@ -66,6 +66,17 @@ class phpbb_template_context
 		return true;
 	}
 
+	/**
+	* Returns a reference to template data array.
+	*
+	* This function is public so that template renderer may invoke it.
+	* Users should alter template variables via functions in phpbb_template.
+	*
+	* Note: modifying returned array will affect data stored in the context.
+	*
+	* @access public
+	* @return array template data
+	*/
 	public function get_data_ref()
 	{
 		// returning a reference directly is not
@@ -74,6 +85,17 @@ class phpbb_template_context
 		return $ref;
 	}
 
+	/**
+	* Returns a reference to template root scope.
+	*
+	* This function is public so that template renderer may invoke it.
+	* Users should not need to invoke this function.
+	*
+	* Note: modifying returned array will affect data stored in the context.
+	*
+	* @access public
+	* @return array template data
+	*/
 	public function get_root_ref()
 	{
 		// rootref is already a reference
