@@ -101,7 +101,10 @@ class phpbb_template
 	}
 
 	/**
-	* Set custom template location (able to use directory outside of phpBB)
+	* Set custom template location (able to use directory outside of phpBB).
+	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
 	* @access public
 	* @param string $template_path Path to template directory
 	* @param string $template_name Name of template
