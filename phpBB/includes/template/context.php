@@ -26,17 +26,17 @@ class phpbb_template_context
 	/**
 	* variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
-	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
+	* --> $this->tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
 	* if it's a root-level variable, it'll be like this:
-	* --> $this->_tpldata[.][0][varname] == value
+	* --> $this->tpldata[.][0][varname] == value
 	* @var array
 	*/
-	private $_tpldata = array('.' => array(0 => array()));
+	private $tpldata = array('.' => array(0 => array()));
 
 	/**
-	* @var array Reference to template->_tpldata['.'][0]
+	* @var array Reference to template->tpldata['.'][0]
 	*/
-	private $_rootref;
+	private $rootref;
 
 	public function __construct()
 	{
@@ -49,8 +49,8 @@ class phpbb_template_context
 	*/
 	public function clear()
 	{
-		$this->_tpldata = array('.' => array(0 => array()));
-		$this->_rootref = &$this->_tpldata['.'][0];
+		$this->tpldata = array('.' => array(0 => array()));
+		$this->rootref = &$this->tpldata['.'][0];
 	}
 
 	/**
@@ -61,19 +61,19 @@ class phpbb_template_context
 	*/
 	public function assign_var($varname, $varval)
 	{
-		$this->_rootref[$varname] = $varval;
+		$this->rootref[$varname] = $varval;
 
 		return true;
 	}
 
 	public function get_data_ref()
 	{
-		return $this->_tpldata;
+		return $this->tpldata;
 	}
 
 	public function get_root_ref()
 	{
-		return $this->_rootref;
+		return $this->rootref;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class phpbb_template_context
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
 
-			$str = &$this->_tpldata;
+			$str = &$this->tpldata;
 			for ($i = 0; $i < $blockcount; $i++)
 			{
 				$str = &$str[$blocks[$i]];
@@ -122,7 +122,7 @@ class phpbb_template_context
 		else
 		{
 			// Top-level block.
-			$s_row_count = (isset($this->_tpldata[$blockname])) ? sizeof($this->_tpldata[$blockname]) : 0;
+			$s_row_count = (isset($this->tpldata[$blockname])) ? sizeof($this->tpldata[$blockname]) : 0;
 			$vararray['S_ROW_COUNT'] = $s_row_count;
 
 			// Assign S_FIRST_ROW
@@ -135,11 +135,11 @@ class phpbb_template_context
 			$vararray['S_LAST_ROW'] = true;
 			if ($s_row_count > 0)
 			{
-				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
+				unset($this->tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
 			}
 
 			// Add a new iteration to this block with the variable assignments we were given.
-			$this->_tpldata[$blockname][] = $vararray;
+			$this->tpldata[$blockname][] = $vararray;
 		}
 
 		return true;
@@ -181,7 +181,7 @@ class phpbb_template_context
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
 
-			$block = &$this->_tpldata;
+			$block = &$this->tpldata;
 			for ($i = 0; $i < $blockcount; $i++)
 			{
 				if (($pos = strpos($blocks[$i], '[')) !== false)
@@ -211,7 +211,7 @@ class phpbb_template_context
 		else
 		{
 			// Top-level block.
-			$block = &$this->_tpldata[$blockname];
+			$block = &$this->tpldata[$blockname];
 		}
 
 		// Change key to zero (change first position) if false and to last position if true
@@ -247,15 +247,15 @@ class phpbb_template_context
 		if ($mode == 'insert')
 		{
 			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($this->_tpldata[$blockname]))
+			if ($key >= sizeof($this->tpldata[$blockname]))
 			{
-				$key = sizeof($this->_tpldata[$blockname]);
-				unset($this->_tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
+				$key = sizeof($this->tpldata[$blockname]);
+				unset($this->tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
 				$vararray['S_LAST_ROW'] = true;
 			}
 			else if ($key === 0)
 			{
-				unset($this->_tpldata[$blockname][0]['S_FIRST_ROW']);
+				unset($this->tpldata[$blockname][0]['S_FIRST_ROW']);
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
@@ -300,7 +300,7 @@ class phpbb_template_context
 			$blocks = explode('.', $blockname);
 			$blockcount = sizeof($blocks) - 1;
 
-			$str = &$this->_tpldata;
+			$str = &$this->tpldata;
 			for ($i = 0; $i < $blockcount; $i++)
 			{
 				$str = &$str[$blocks[$i]];
@@ -312,7 +312,7 @@ class phpbb_template_context
 		else
 		{
 			// Top-level block.
-			unset($this->_tpldata[$blockname]);
+			unset($this->tpldata[$blockname]);
 		}
 
 		return true;

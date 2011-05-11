@@ -37,7 +37,7 @@ class phpbb_template
 	* Stores template data used during template rendering.
 	* @access private
 	*/
-	private $_context;
+	private $context;
 
 	/**
 	* @var string Root dir for template.
@@ -95,7 +95,7 @@ class phpbb_template
 			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
 		}
 
-		$this->_context = new phpbb_template_context();
+		$this->context = new phpbb_template_context();
 
 		return true;
 	}
@@ -135,7 +135,7 @@ class phpbb_template
 			$this->orig_tpl_inherits_id = false;
 		}
 
-		$this->_context = new phpbb_template_context();
+		$this->context = new phpbb_template_context();
 
 		return true;
 	}
@@ -173,7 +173,7 @@ class phpbb_template
 	*/
 	public function destroy()
 	{
-		$this->_context->clear();
+		$this->context->clear();
 	}
 
 	/**
@@ -183,7 +183,7 @@ class phpbb_template
 	*/
 	public function destroy_block_vars($blockname)
 	{
-		$this->_context->destroy_block_vars($blockname);
+		$this->context->destroy_block_vars($blockname);
 	}
 
 	/**
@@ -205,7 +205,7 @@ class phpbb_template
 
 		if ($renderer)
 		{
-			$renderer->render($this->_context, $this->get_lang());
+			$renderer->render($this->context, $this->get_lang());
 			return true;
 		}
 		else
@@ -439,7 +439,7 @@ class phpbb_template
 	*/
 	public function assign_var($varname, $varval)
 	{
-		$this->_context->assign_var($varname, $varval);
+		$this->context->assign_var($varname, $varval);
 	}
 
 	// Docstring is copied from phpbb_template_context method with the same name.
@@ -451,7 +451,7 @@ class phpbb_template
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
-		return $this->_context->assign_block_vars($blockname, $vararray);
+		return $this->context->assign_block_vars($blockname, $vararray);
 	}
 
 	// Docstring is copied from phpbb_template_context method with the same name.
@@ -485,7 +485,7 @@ class phpbb_template
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
-		return $this->_context->alter_block_array($blockname, $vararray, $key, $mode);
+		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
 	}
 
 	/**
@@ -509,7 +509,7 @@ class phpbb_template
 
 		if ($renderer)
 		{
-			$renderer->render($this->_context, $this->get_lang());
+			$renderer->render($this->context, $this->get_lang());
 		}
 		else
 		{
