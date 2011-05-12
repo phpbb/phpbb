@@ -39,8 +39,6 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-//		$this->markTestIncomplete("template::display raises notices.");
-
 		// Test the engine can be used
 		$this->setup_engine();
 
@@ -422,14 +420,9 @@ class phpbb_template_template_test extends phpbb_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		//$error_level = error_reporting();
-		//error_reporting($error_level & ~E_NOTICE);
-
 		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
 
 		$this->template->assign_display('test', 'VARIABLE', false);
-
-		//error_reporting($error_level);
 
 		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
 	}
