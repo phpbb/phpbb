@@ -66,33 +66,66 @@ class phpbb_template
 	public $orig_tpl_inherits_id;
 
 	/**
+	* @var string phpBB root path
+	*/
+	private $phpbb_root_path;
+
+	/**
+	* @var phpEx PHP file extension
+	*/
+	private $phpEx;
+
+	/**
+	* @var phpbb_config phpBB config instance
+	*/
+	private $config;
+
+	/**
+	* @var user current user
+	*/
+	private $user;
+
+	/**
+	* Constructor.
+	*
+	* @param string $phpbb_root_path phpBB root path
+	* @param user $user current user
+	*/
+	public function __construct($phpbb_root_path, $phpEx, $config, $user)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->config = $config;
+		$this->user = $user;
+	}
+
+	/**
 	* Set template location
 	* @access public
 	*/
 	public function set_template()
 	{
-		global $phpbb_root_path, $user;
-
-		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
+		$template_path = $this->user->theme['template_path'];
+		if (file_exists($this->phpbb_root_path . 'styles/' . $template_path . '/template'))
 		{
-			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
-			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $user->theme['template_path']) . '_';
+			$this->root = $this->phpbb_root_path . 'styles/' . $template_path . '/template';
+			$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_path) . '_';
 
 			if ($this->orig_tpl_inherits_id === null)
 			{
-				$this->orig_tpl_inherits_id = $user->theme['template_inherits_id'];
+				$this->orig_tpl_inherits_id = $this->user->theme['template_inherits_id'];
 			}
 
-			$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
+			$this->user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
-			if ($user->theme['template_inherits_id'])
+			if ($this->user->theme['template_inherits_id'])
 			{
-				$this->inherit_root = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template';
+				$this->inherit_root = $this->phpbb_root_path . 'styles/' . $this->user->theme['template_inherit_path'] . '/template';
 			}
 		}
 		else
 		{
-			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
+			trigger_error('Template path could not be found: styles/' . $template_path . '/template', E_USER_ERROR);
 		}
 
 		$this->context = new phpbb_template_context();
@@ -112,8 +145,6 @@ class phpbb_template
 	*/
 	public function set_custom_template($template_path, $template_name, $fallback_template_path = false)
 	{
-		global $phpbb_root_path, $user;
-
 		// Make sure $template_path has no ending slash
 		if (substr($template_path, -1) == '/')
 		{
@@ -121,7 +152,7 @@ class phpbb_template
 		}
 
 		$this->root = $template_path;
-		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
+		$this->cachepath = $this->phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
 
 		if ($fallback_template_path !== false)
 		{
@@ -240,17 +271,15 @@ class phpbb_template
 
 	/**
 	* Obtains language array.
-	* This is either lang property of global $user object, or if
+	* This is either lang property of $user property, or if
 	* it is not set an empty array.
 	* @return array language entries
 	*/
 	public function get_lang()
 	{
-		global $user;
-
-		if (isset($user->lang))
+		if (isset($this->user->lang))
 		{
-			$lang = $user->lang;
+			$lang = $this->user->lang;
 		}
 		else
 		{
@@ -313,8 +342,6 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		global $user, $phpEx, $config;
-
 		if (!isset($this->filename[$handle]))
 		{
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
@@ -323,23 +350,23 @@ class phpbb_template
 		// reload this setting to have the values they had when this object was initialised
 		// using set_template or set_custom_template, they might otherwise have been overwritten
 		// by other template class instances in between.
-		$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
+		$this->user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
-		$compiled_path = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
-		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
+		$compiled_path = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $this->phpEx;
+		$this->files_template[$handle] = (isset($this->user->theme['template_id'])) ? $this->user->theme['template_id'] : 0;
 
 		$recompile = defined('DEBUG_EXTRA') ||
 			!file_exists($compiled_path) ||
 			@filesize($compiled_path) === 0 ||
-			($config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($this->files[$handle]));
+			($this->config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($this->files[$handle]));
 
-		if (!$recompile && $config['load_tplcompile'])
+		if (!$recompile && $this->config['load_tplcompile'])
 		{
 			// No way around it: we need to check inheritance here
-			if ($user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
+			if ($this->user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 			{
 				$this->files[$handle] = $this->files_inherit[$handle];
-				$this->files_template[$handle] = $user->theme['template_inherits_id'];
+				$this->files_template[$handle] = $this->user->theme['template_inherits_id'];
 			}
 			$recompile = (@filemtime($compiled_path) < @filemtime($this->files[$handle])) ? true : false;
 		}
@@ -351,10 +378,10 @@ class phpbb_template
 		}
 
 		// Inheritance - we point to another template file for this one.
-		if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
+		if (isset($this->user->theme['template_inherits_id']) && $this->user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 		{
 			$this->files[$handle] = $this->files_inherit[$handle];
-			$this->files_template[$handle] = $user->theme['template_inherits_id'];
+			$this->files_template[$handle] = $this->user->theme['template_inherits_id'];
 		}
 
 		$source_file = $this->_source_file_for_handle($handle);
@@ -410,9 +437,7 @@ class phpbb_template
 	*/
 	private function _compiled_file_for_handle($handle)
 	{
-		global $phpEx;
-
-		$compiled_file = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
+		$compiled_file = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $this->phpEx;
 		return $compiled_file;
 	}
 
@@ -522,9 +547,7 @@ class phpbb_template
 	*/
 	private function _php_include($filename)
 	{
-		global $phpbb_root_path;
-
-		$file = $phpbb_root_path . $filename;
+		$file = $this->phpbb_root_path . $filename;
 
 		if (!file_exists($file))
 		{

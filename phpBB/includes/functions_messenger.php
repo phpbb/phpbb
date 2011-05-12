@@ -175,7 +175,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $user;
+		global $config, $phpbb_root_path, $phpEx, $user;
 
 		if (!trim($template_file))
 		{
@@ -193,7 +193,7 @@ class messenger
 		// tpl_msg now holds a template object we can use to parse the template file
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$this->tpl_msg[$template_lang . $template_file] = new phpbb_template();
+			$this->tpl_msg[$template_lang . $template_file] = new phpbb_template($phpbb_root_path, $phpEx, $config, $user);
 			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
 			$fallback_template_path = false;

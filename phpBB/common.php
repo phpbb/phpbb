@@ -209,7 +209,6 @@ $class_loader->set_cache($cache->get_driver());
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
-$template	= new phpbb_template();
 $db			= new $sql_db();
 
 // make sure request_var uses this request instance
@@ -225,6 +224,8 @@ unset($dbpasswd);
 $config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
+
+$template	= new phpbb_template($phpbb_root_path, $phpEx, $config, $user);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
