@@ -366,10 +366,6 @@ class phpbb_template_template_test extends phpbb_test_case
 			}
 			throw $e;
 		}
-		// TODO: Figure out why this wasn't considered.
-		catch (Exception $e)
-		{
-		}
 
 		// For debugging.
 		// When testing eval path the cache file may not exist.
