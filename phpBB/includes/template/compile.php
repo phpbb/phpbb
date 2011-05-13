@@ -667,7 +667,7 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include_php($tag_args)
 	{
-		return "include('$tag_args');";
+		return "\$_template->_php_include('$tag_args');";
 	}
 
 	/**

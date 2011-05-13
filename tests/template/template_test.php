@@ -438,16 +438,16 @@ class phpbb_template_template_test extends phpbb_test_case
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
-	public function test_includephp()
+	public function test_includephp_relative()
 	{
 		$GLOBALS['config']['tpl_allow_php'] = true;
 
-		$cache_file = $this->template->cachepath . 'includephp.html.php';
+		$cache_file = $this->template->cachepath . 'includephp_relative.html.php';
 
-		$this->run_template('includephp.html', array(), array(), array(), 'testing included php', $cache_file);
+		$this->run_template('includephp_relative.html', array(), array(), array(), "Path is relative to board root.\ntesting included php", $cache_file);
 
-		$this->template->set_filenames(array('test' => 'includephp.html'));
-		$this->assertEquals('testing included php', $this->display('test'), "Testing INCLUDEPHP");
+		$this->template->set_filenames(array('test' => 'includephp_relative.html'));
+		$this->assertEquals("Path is relative to board root.\ntesting included php", $this->display('test'), "Testing INCLUDEPHP");
 
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}

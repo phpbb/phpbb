@@ -513,7 +513,7 @@ class phpbb_template
 
 	/**
 	* Include a separate template
-	* @access private
+	* @access public
 	* @param string $filename Template filename to include
 	* @param bool $include True to include the file, false to just load it
 	* @uses template_compile is used to compile uncached templates
@@ -543,9 +543,9 @@ class phpbb_template
 
 	/**
 	* Include a php-file
-	* @access private
+	* @access public
 	*/
-	private function _php_include($filename)
+	public function _php_include($filename)
 	{
 		$file = $this->phpbb_root_path . $filename;
 
