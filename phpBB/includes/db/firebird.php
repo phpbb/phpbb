@@ -497,7 +497,8 @@ class dbal_firebird extends dbal
 	*/
 	function cast_expr_to_bigint($expression)
 	{
-		return 'CAST(' . $expression . ' as DECIMAL(255, 0))';
+		// Precision must be from 1 to 18
+		return 'CAST(' . $expression . ' as DECIMAL(18, 0))';
 	}
 
 	/**
