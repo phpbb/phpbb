@@ -45,7 +45,6 @@ class phpbb_template_context
 
 	/**
 	* Clears template data set.
-	* @access public
 	*/
 	public function clear()
 	{
@@ -55,7 +54,6 @@ class phpbb_template_context
 
 	/**
 	* Assign a single variable to a single key
-	* @access public
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
 	*/
@@ -74,7 +72,6 @@ class phpbb_template_context
 	*
 	* Note: modifying returned array will affect data stored in the context.
 	*
-	* @access public
 	* @return array template data
 	*/
 	public function get_data_ref()
@@ -93,7 +90,6 @@ class phpbb_template_context
 	*
 	* Note: modifying returned array will affect data stored in the context.
 	*
-	* @access public
 	* @return array template data
 	*/
 	public function get_root_ref()
@@ -104,7 +100,6 @@ class phpbb_template_context
 
 	/**
 	* Assign key variable pairs from an array to a specified block
-	* @access public
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
 	*/
@@ -197,7 +192,6 @@ class phpbb_template_context
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
 	* @return bool false on error, true on success
-	* @access public
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
@@ -315,7 +309,6 @@ class phpbb_template_context
 
 	/**
 	* Reset/empty complete block
-	* @access public
 	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)

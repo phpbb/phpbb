@@ -260,7 +260,6 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile variables
-	* @access private
 	*/
 	private function compile_var_tags(&$text_blocks)
 	{
@@ -310,7 +309,6 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile blocks
-	* @access private
 	*/
 	private function compile_tag_block($tag_args)
 	{
@@ -423,7 +421,6 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Compile a general expression - much of this is from Smarty with
 	* some adaptions for our block level methods
-	* @access private
 	*/
 	private function compile_expression($tag_args)
 	{
@@ -630,7 +627,6 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile DEFINE tags
-	* @access private
 	*/
 	private function compile_tag_define($tag_args, $op)
 	{
@@ -654,7 +650,6 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile INCLUDE tag
-	* @access private
 	*/
 	private function compile_tag_include($tag_args)
 	{
@@ -663,7 +658,6 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile INCLUDE_PHP tag
-	* @access private
 	*/
 	private function compile_tag_include_php($tag_args)
 	{
@@ -673,7 +667,6 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* parse expression
 	* This is from Smarty
-	* @access private
 	*/
 	private function _parse_is_expr($is_arg, $tokens)
 	{
@@ -752,7 +745,6 @@ class phpbb_template_filter extends php_user_filter
 	* ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
 	* It's ready to be inserted into an "echo" line in one of the templates.
 	*
-	* @access private
 	* @param string $namespace Namespace to access (expects a trailing "." on the namespace)
 	* @param string $varname Variable name to use
 	* @param bool $echo If true return an echo statement, otherwise a reference to the internal variable
@@ -815,7 +807,6 @@ class phpbb_template_filter extends php_user_filter
 	* (possibly nested) block namespace. This is a string of the form:
 	* $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
 	*
-	* @access private
 	* @param string $blockname Block to access (does not expect a trailing "." on the blockname)
 	* @param bool $include_last_iterator If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	* @param bool $defop If true this is a variable created with the DEFINE construct, otherwise template variable
@@ -883,7 +874,6 @@ class phpbb_template_compile
 	/**
 	* Compiles template in $source_file and writes compiled template to
 	* cache directory
-	* @access public
 	* @param string $handle Template handle to compile
 	* @param string $source_file Source template file
 	* @return bool Return true on success otherwise false
@@ -916,7 +906,6 @@ class phpbb_template_compile
 	/**
 	* Compiles a template located at $source_file.
 	* Returns PHP source suitable for eval().
-	* @access public
 	* @param string $source_file Source template file
 	* @return string|bool Return compiled code on successful compilation otherwise false
 	*/
@@ -947,7 +936,6 @@ class phpbb_template_compile
 	* A stream filter is appended to $source_stream as part of the
 	* process.
 	*
-	* @access private
 	* @param resource $source_stream Source stream
 	* @param resource $dest_stream Destination stream
 	* @return void

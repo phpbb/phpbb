@@ -35,7 +35,6 @@ class phpbb_template
 	/**
 	* @var phpbb_template_context Template context.
 	* Stores template data used during template rendering.
-	* @access private
 	*/
 	private $context;
 
@@ -101,7 +100,6 @@ class phpbb_template
 
 	/**
 	* Set template location
-	* @access public
 	*/
 	public function set_template()
 	{
@@ -138,7 +136,6 @@ class phpbb_template
 	*
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
-	* @access public
 	* @param string $template_path Path to template directory
 	* @param string $template_name Name of template
 	* @param string $fallback_template_path Path to fallback template
@@ -177,7 +174,6 @@ class phpbb_template
 	/**
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
-	* @access public
 	* @param array $filname_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
@@ -203,7 +199,6 @@ class phpbb_template
 
 	/**
 	* Clears all variables and blocks assigned to this template.
-	* @access public
 	*/
 	public function destroy()
 	{
@@ -212,7 +207,6 @@ class phpbb_template
 
 	/**
 	* Reset/empty complete block
-	* @access public
 	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)
@@ -222,7 +216,6 @@ class phpbb_template
 
 	/**
 	* Display handle
-	* @access public
 	* @param string $handle Handle to display
 	* @param bool $include_once Allow multiple inclusions
 	* @return bool True on success, false on failure
@@ -290,7 +283,6 @@ class phpbb_template
 
 	/**
 	* Display the handle and assign the output to a template variable or return the compiled result.
-	* @access public
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
@@ -335,7 +327,6 @@ class phpbb_template
 	* contents sent to the output stream (unless, of course, output
 	* buffering is in effect).
 	*
-	* @access private
 	* @param string $handle Handle of the template to load
 	* @return phpbb_template_renderer Template renderer object, or null on failure
 	* @uses template_compile is used to compile template source
@@ -407,7 +398,6 @@ class phpbb_template
 
 	/**
 	* Resolves template handle $handle to source file path.
-	* @access private
 	* @param string $handle Template handle (i.e. "friendly" template name)
 	* @return string Source file path
 	*/
@@ -431,7 +421,6 @@ class phpbb_template
 
 	/**
 	* Determines compiled file path for handle $handle.
-	* @access private
 	* @param string $handle Template handle (i.e. "friendly" template name)
 	* @return string Compiled file path
 	*/
@@ -443,7 +432,6 @@ class phpbb_template
 
 	/**
 	* Assign key variable pairs from an array
-	* @access public
 	* @param array $vararray A hash of variable name => value pairs
 	*/
 	public function assign_vars(array $vararray)
@@ -456,7 +444,6 @@ class phpbb_template
 
 	/**
 	* Assign a single variable to a single key
-	* @access public
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
 	*/
@@ -468,7 +455,6 @@ class phpbb_template
 	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
-	* @access public
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
 	*/
@@ -504,7 +490,6 @@ class phpbb_template
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
 	* @return bool false on error, true on success
-	* @access public
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
@@ -513,7 +498,6 @@ class phpbb_template
 
 	/**
 	* Include a separate template
-	* @access public
 	* @param string $filename Template filename to include
 	* @param bool $include True to include the file, false to just load it
 	* @uses template_compile is used to compile uncached templates
@@ -543,7 +527,6 @@ class phpbb_template
 
 	/**
 	* Include a php-file
-	* @access public
 	*/
 	public function _php_include($filename)
 	{
