@@ -2,7 +2,6 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2011 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
