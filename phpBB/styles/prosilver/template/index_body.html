@@ -35,9 +35,9 @@
 	<!-- IF LEGEND --><br /><em>{L_LEGEND}: {LEGEND}</em><!-- ENDIF --></p>
 <!-- ENDIF -->
 
-<!-- IF S_DISPLAY_BIRTHDAY_LIST and BIRTHDAY_LIST -->
+<!-- IF S_DISPLAY_BIRTHDAY_LIST and .birthdays -->
 	<h3>{L_BIRTHDAYS}</h3>
-	<p><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <strong>{BIRTHDAY_LIST}</strong><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p>
+	<p><!-- IF .birthdays -->{L_CONGRATULATIONS}: <strong><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></strong><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p>
 <!-- ENDIF -->
 
 <!-- IF NEWEST_USER -->
