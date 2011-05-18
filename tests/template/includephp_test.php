@@ -7,14 +7,10 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../template_test_case.php';
+require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_subdir_includephp_from_subdir_test extends phpbb_template_template_test_case
+class phpbb_template_includephp_test extends phpbb_template_template_test_case
 {
-	// Exact copy of test_includephp_relatve from ../includephp_test.php.
-	// Verifies that relative php inclusion works when including script
-	// (and thus current working directory) is in a subdirectory of
-	// board root.
 	public function test_includephp_relative()
 	{
 		$GLOBALS['config']['tpl_allow_php'] = true;
