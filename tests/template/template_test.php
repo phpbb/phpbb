@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/template.php';
 require_once dirname(__FILE__) . '/template_test_case.php';
 
 class phpbb_template_template_test extends phpbb_template_template_test_case
