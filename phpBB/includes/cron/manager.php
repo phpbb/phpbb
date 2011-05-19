@@ -73,6 +73,14 @@ class phpbb_cron_manager
 	*/
 	public function __construct($task_path, $phpEx, phpbb_cache_driver_interface $cache = null)
 	{
+		if (DIRECTORY_SEPARATOR != '/')
+		{
+			// Need this on some platforms since the code elsewhere uses /
+			// to separate directory components, but PHP iterators return
+			// paths with platform-specific directory separators.
+			$task_path = str_replace('/', DIRECTORY_SEPARATOR, $task_path);
+		}
+
 		$this->task_path = $task_path;
 		$this->phpEx = $phpEx;
 		$this->cache = $cache;
@@ -116,9 +124,9 @@ class phpbb_cron_manager
 			$file = preg_replace('#^' . preg_quote($this->task_path, '#') . '#', '', $fileinfo->getPathname());
 
 			// skip directories and files direclty in the task root path
-			if ($fileinfo->isFile() && strpos($file, '/') !== false)
+			if ($fileinfo->isFile() && strpos($file, DIRECTORY_SEPARATOR) !== false)
 			{
-				$task_name = str_replace('/', '_', substr($file, 0, -$ext_length));
+				$task_name = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, 0, -$ext_length));
 				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($task_name))
 				{
 					$task_names[] = 'phpbb_cron_task_' . $task_name;
