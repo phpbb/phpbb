@@ -529,7 +529,14 @@ class phpbb_template
 	*/
 	public function _php_include($filename)
 	{
-		$file = $this->phpbb_root_path . $filename;
+		if (is_absolute($filename))
+		{
+			$file = $filename;
+		}
+		else
+		{
+			$file = $this->phpbb_root_path . $filename;
+		}
 
 		if (!file_exists($file))
 		{
