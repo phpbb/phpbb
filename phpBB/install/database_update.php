@@ -999,6 +999,9 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
+				PROFILE_FIELDS_TABLE	=> array(
+					'field_show_on_pm'		=> array('BOOL', 0),
+				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
@@ -2108,6 +2111,9 @@ function change_database_data(&$no_updates, $version)
 				}
 				unset($table_ary);
 			}
+
+			// Allow custom profile fields in pm templates
+			set_config('load_cpf_pm', '0');
 
 			$no_updates = false;
 		break;

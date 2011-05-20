@@ -59,6 +59,18 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		$bbcode = new bbcode($message_row['bbcode_bitfield']);
 	}
 
+	// Load the custom profile fields
+	if ($config['load_cpf_pm'])
+	{
+		if (!class_exists('custom_profile'))
+		{
+			include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+		}
+		$cp = new custom_profile();
+
+		$profile_fields = $cp->generate_profile_fields_template('grab', $author_id);
+	}
+
 	// Assign TO/BCC Addresses to template
 	write_pm_addresses(array('to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']), $author_id);
 
@@ -174,6 +186,25 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
 
+	// Get the profile fields template data
+	$cp_row = array();
+	if ($config['load_cpf_pm'] && isset($profile_fields[$author_id]))
+	{
+		// Filter the fields we don't want to show
+		foreach ($profile_fields[$author_id] as $used_ident => $profile_field)
+		{
+			if (!$profile_field['data']['field_show_on_pm'])
+			{
+				unset($profile_fields[$author_id][$used_ident]);
+			}
+		}
+
+		if (isset($profile_fields[$author_id]))
+		{
+			$cp_row = $cp->generate_profile_fields_template('show', false, $profile_fields[$author_id]);
+		}
+	}
+
 	$template->assign_vars(array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -232,10 +263,22 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 		'S_PM_RECIPIENTS'	=> $num_recipients,
 		'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
+		'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
 	);
+
+	// Display the custom profile fields
+	if (!empty($cp_row['row']))
+	{
+		$template->assign_vars($cp_row['row']);
+
+		foreach ($cp_row['blockrow'] as $cp_block_row)
+		{
+			$template->assign_block_vars('custom_fields', $cp_block_row);
+		}
+	}
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
