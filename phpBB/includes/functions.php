@@ -3701,18 +3701,6 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	return NULL;
 }
 
-/**
-* Returns whether or not output buffering is enabled.
-* Output buffering could be set to "on" or a value such as 4096.
-*
-* @return bool whether output buffering is enabled
-*/
-function phpbb_output_buffering_enabled()
-{
-	$value = @ini_get('output_buffering');
-	return (int) $value > 0 || strtolower($value) === 'on';
-}
-
 // Handler, header and footer
 
 /**
@@ -3755,7 +3743,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
 				// flush the content, else we get a white page if output buffering is on
-				if (phpbb_output_buffering_enabled())
+				if (ob_get_level() > 0)
 				{
 					@ob_flush();
 				}
