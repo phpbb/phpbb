@@ -4719,7 +4719,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	(empty($config['gzip_compress'])) ? @flush() : @ob_flush();
+	(ob_get_level() > 0) ? @ob_flush() : @flush();
 
 	exit;
 }
