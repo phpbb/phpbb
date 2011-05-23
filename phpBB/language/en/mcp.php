@@ -209,9 +209,8 @@ $lang = array_merge($lang, array(
 	'MCP_WARN_POST'			=> 'Warn for specific post',
 	'MCP_WARN_USER'			=> 'Warn user',
 
-	'MERGE_POSTS'			=> 'Merge posts',
-	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to merge the selected posts?',
-	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',
+	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to move the selected posts?',
+	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can move selected posts into another topic. The posts will be split from this topic and merged into the other topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',
 	'MERGE_TOPIC_ID'		=> 'Destination topic identification number',
 	'MERGE_TOPICS'			=> 'Merge topics',
 	'MERGE_TOPICS_CONFIRM'	=> 'Are you sure you want to merge the selected topics?',
