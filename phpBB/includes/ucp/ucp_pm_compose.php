@@ -135,6 +135,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	$sql = '';
+	$folder_id = 0;
 
 	// What is all this following SQL for? Well, we need to know
 	// some basic information in all cases before we do anything.
@@ -744,18 +745,43 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$inbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
 			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
 
-			$folder_return_message = '';
-			$return_message_url = $inbox_folder_url;
-			if ($folder_id && isset($user_folders[$folder_id]))
+			$folder_url = '';
+			if (($folder_id > 0) && isset($user_folders[$folder_id]))
 			{
-				$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
-				$folder_return_message = '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_message_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+				$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
 			}
 
 			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>');
-			$message .= $folder_return_message;
-			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $inbox_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
-			$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $outbox_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+			switch ($action)
+			{
+				case 'post':
+				case 'edit':
+					if ($folder_url)
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_GOTO_FOLDER'], '<a href="' . $outbox_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+					}
+					else
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $outbox_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+					}
+				break;
+
+				case 'quote':
+				case 'quotepost':
+				case 'reply':
+				case 'forward':
+					if ($folder_url)
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_GOTO_FOLDER'], '<a href="' . $inbox_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
+					}
+					else
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $inbox_folder_url . '">', '</a>', $user->lang['PM_INBOX']);
+					}
+				break;
+			}
 
 			meta_refresh(3, $return_message_url);
 			trigger_error($message);
