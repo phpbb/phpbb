@@ -253,7 +253,7 @@ foreach ($schema_data as $table_name => $table_data)
 	// Do we now need to re-add the fulltext index? ;)
 	if ($table_name == ($prefix . 'posts') && $drop_index)
 	{
-		echo "ALTER TABLE $table_name ADD FULLTEXT (post_subject), ADD FULLTEXT (post_text), ADD FULLTEXT post_content (post_subject, post_text){$newline}";
+		echo "ALTER TABLE $table_name ADD FULLTEXT (post_subject), ADD FULLTEXT (post_text), ADD FULLTEXT post_content (post_subject, post_text);{$newline}";
 	}
 }
 
