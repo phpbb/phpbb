@@ -3434,7 +3434,7 @@ function get_preg_expression($mode)
 * Depends on whether installed PHP version supports unicode properties
 *
 * @param string	$word			word template to be replaced
-* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode 
+* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode
 *
 * @return string $preg_expr		regex to use with word censor
 */
@@ -3544,7 +3544,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// but until 5.3.3 it only works for MX records
 	// See: http://bugs.php.net/bug.php?id=51844
 
-	// Call checkdnsrr() if 
+	// Call checkdnsrr() if
 	// we're looking for an MX record or
 	// we're not on Windows or
 	// we're running a PHP version where #51844 has been fixed
@@ -3564,7 +3564,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
 	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
 
-	// Call dns_get_record() if 
+	// Call dns_get_record() if
 	// we're not looking for an AAAA record or
 	// we're not on Windows or
 	// we're running a PHP version where AAAA lookups work reliable
@@ -3594,7 +3594,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 		foreach ($resultset as $result)
 		{
 			if (
-				isset($result['host']) && $result['host'] == $host && 
+				isset($result['host']) && $result['host'] == $host &&
 				isset($result['type']) && $result['type'] == $type
 			)
 			{
