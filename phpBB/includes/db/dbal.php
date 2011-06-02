@@ -246,7 +246,7 @@ class dbal
 	*
 	* @return bool Whether buffering is required.
 	*/
-	function sql_buffer_nested_transaction()
+	function sql_buffer_nested_transactions()
 	{
 		return false;
 	}

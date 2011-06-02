@@ -261,7 +261,7 @@ class dbal_mssqlnative extends dbal
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_buffer_nested_transaction()
+	function sql_buffer_nested_transactions()
 	{
 		return true;
 	}
