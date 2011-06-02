@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_dbal_select_test extends phpbb_database_test_case
 {
@@ -316,5 +317,28 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 
 		$db->sql_freeresult($result);
+	}
+
+	function test_nested_transactions()
+	{
+		$db = $this->new_dbal();
+
+		// nested transactions should work on systems that do not require
+		// buffering of nested transactions, so ignore the ones that need
+		// buffering
+		if ($db->sql_buffer_nested_transactions())
+		{
+			return;
+		}
+
+		$sql = 'SELECT user_id FROM phpbb_users ORDER BY user_id ASC';
+		$result1 = $db->sql_query($sql);
+
+		$db->sql_transaction('begin');
+		$result2 = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result2);
+		$db->sql_transaction('commit');
+
+		$this->assertEquals('1', $row['user_id']);
 	}
 }
