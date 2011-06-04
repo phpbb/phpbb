@@ -115,7 +115,7 @@ class ucp_pm
 			case 'compose':
 				$action = request_var('action', 'post');
 
-				get_folder($user->data['user_id']);
+				$user_folders = get_folder($user->data['user_id']);
 
 				if (!$auth->acl_get('u_sendpm'))
 				{
@@ -130,7 +130,7 @@ class ucp_pm
 				}
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
-				compose_pm($id, $mode, $action);
+				compose_pm($id, $mode, $action, $user_folders);
 
 				$tpl_file = 'posting_body';
 			break;
