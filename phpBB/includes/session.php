@@ -1251,6 +1251,12 @@ class session
 			$ip = $this->ip;
 		}
 
+		// Neither Spamhaus nor Spamcop supports IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
 		$dnsbl_check = array(
 			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
