@@ -32,7 +32,7 @@ class phpbb_url_bbcode_test extends phpbb_test_case
 	{
 		$bbcode = new bbcode_firstpass();
 		$bbcode->message = $message;
-		$bbcode->bbcode_init(true);
+		$bbcode->bbcode_init(false);
 		$bbcode->parse_bbcode();
 		$this->assertNotEquals($bbcode->message, '[url][/url]');
 		$this->assertNotEquals($bbcode->message, $message);

@@ -102,7 +102,7 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Init bbcode data for later parsing
 	*/
-	function bbcode_init($no_custom_bbcode = false)
+	function bbcode_init($allow_custom_bbcode = true)
 	{
 		static $rowset;
 
@@ -135,7 +135,7 @@ class bbcode_firstpass extends bbcode
 			$this->parsed_items[$tag] = 0;
 		}
 
-		if ($no_custom_bbcode)
+		if (!$allow_custom_bbcode)
 		{
 			return;
 		}
