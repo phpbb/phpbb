@@ -975,7 +975,7 @@ class bbcode_firstpass extends bbcode
 			}
 
 			// Is this a link to somewhere inside this board? If so then remove the session id from the url
-			if (strpos($url, @generate_board_url()) !== false && strpos($url, 'sid=') !== false)
+			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
 				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\1', $url);
 				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', $url);
