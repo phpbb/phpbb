@@ -1052,7 +1052,7 @@ class session
 	{
 		global $config, $db;
 
-		if (defined('IN_CHECK_BAN'))
+		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
 			return;
 		}

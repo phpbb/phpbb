@@ -1979,6 +1979,7 @@ function change_database_data(&$no_updates, $version)
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 			set_config('use_system_cron', 0);
+			set_config('contact_admin_form_enable', 1);
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
 				SET group_teampage = 1

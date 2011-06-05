@@ -17,13 +17,19 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
+$mode = request_var('mode', '');
+
+if ($mode === 'contactadmin')
+{
+	define('SKIP_CHECK_BAN', true);
+}
+
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
 // Grab data
-$mode		= request_var('mode', '');
 $action		= request_var('action', '');
 $user_id	= request_var('u', ANONYMOUS);
 $username	= request_var('un', '', true);
@@ -31,7 +37,7 @@ $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contactadmin', 'searchuser', 'leaders')))
 {
 	trigger_error('NO_MODE');
 }
@@ -39,6 +45,7 @@ if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'sear
 switch ($mode)
 {
 	case 'email':
+	case 'contactadmin':
 	break;
 
 	default:
@@ -701,268 +708,49 @@ switch ($mode)
 
 	break;
 
+	case 'contactadmin':
 	case 'email':
-
-		// Send an email
-		$page_title = $user->lang['SEND_EMAIL'];
-		$template_html = 'memberlist_email.html';
-
-		add_form_key('memberlist_email');
-
-		if (!$config['email_enable'])
+		if (!class_exists('messenger'))
 		{
-			trigger_error('EMAIL_DISABLED');
+			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		}
 
-		if (!$auth->acl_get('u_sendemail'))
-		{
-			trigger_error('NO_EMAIL');
-		}
+		$user_id	= request_var('u', 0);
+		$topic_id	= request_var('t', 0);
 
-		// Are we trying to abuse the facility?
-		if (time() - $user->data['user_emailtime'] < $config['flood_interval'])
-		{
-			trigger_error('FLOOD_EMAIL_LIMIT');
-		}
-
-		// Determine action...
-		$user_id = request_var('u', 0);
-		$topic_id = request_var('t', 0);
-
-		// Send email to user...
 		if ($user_id)
 		{
-			if ($user_id == ANONYMOUS || !$config['board_email_form'])
-			{
-				trigger_error('NO_EMAIL');
-			}
-
-			// Get the appropriate username, etc.
-			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				trigger_error('NO_USER');
-			}
-
-			// Can we send email to this user?
-			if (!$row['user_allow_viewemail'] && !$auth->acl_get('a_user'))
-			{
-				trigger_error('NO_EMAIL');
-			}
+			$form = new phpbb_message_user_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
 		}
 		else if ($topic_id)
 		{
-			// Send topic heads-up to email address
-			$sql = 'SELECT forum_id, topic_title
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				trigger_error('NO_TOPIC');
-			}
-
-			if ($row['forum_id'])
-			{
-				if (!$auth->acl_get('f_read', $row['forum_id']))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-
-				if (!$auth->acl_get('f_email', $row['forum_id']))
-				{
-					trigger_error('NO_EMAIL');
-				}
-			}
-			else
-			{
-				// If global announcement, we need to check if the user is able to at least read and email in one forum...
-				if (!$auth->acl_getf_global('f_read'))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-
-				if (!$auth->acl_getf_global('f_email'))
-				{
-					trigger_error('NO_EMAIL');
-				}
-			}
+			$form = new phpbb_message_topic_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
+		}
+		else if ($mode === 'contactadmin')
+		{
+			$form = new phpbb_message_admin_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
 		}
 		else
 		{
 			trigger_error('NO_EMAIL');
 		}
 
-		$error = array();
-
-		$name		= utf8_normalize_nfc(request_var('name', '', true));
-		$email		= request_var('email', '');
-		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
-		$message	= utf8_normalize_nfc(request_var('message', '', true));
-		$cc			= (isset($_POST['cc_email'])) ? true : false;
-		$submit		= (isset($_POST['submit'])) ? true : false;
-
-		if ($submit)
+		$form->bind($request);
+		$error = $form->check_allow();
+		if ($error)
 		{
-			if (!check_form_key('memberlist_email'))
-			{
-				$error[] = 'FORM_INVALID';
-			}
-			if ($user_id)
-			{
-				if (!$subject)
-				{
-					$error[] = $user->lang['EMPTY_SUBJECT_EMAIL'];
-				}
-
-				if (!$message)
-				{
-					$error[] = $user->lang['EMPTY_MESSAGE_EMAIL'];
-				}
-
-				$name = $row['username'];
-				$email_lang = $row['user_lang'];
-				$email = $row['user_email'];
-			}
-			else
-			{
-				if (!$email || !preg_match('/^' . get_preg_expression('email') . '$/i', $email))
-				{
-					$error[] = $user->lang['EMPTY_ADDRESS_EMAIL'];
-				}
-
-				if (!$name)
-				{
-					$error[] = $user->lang['EMPTY_NAME_EMAIL'];
-				}
-			}
-
-			if (!sizeof($error))
-			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_emailtime = ' . time() . '
-					WHERE user_id = ' . $user->data['user_id'];
-				$result = $db->sql_query($sql);
-
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-				$messenger = new messenger(false);
-				$email_tpl = ($user_id) ? 'profile_send_email' : 'email_notify';
-
-				$mail_to_users = array();
-
-				$mail_to_users[] = array(
-					'email_lang'		=> $email_lang,
-					'email'				=> $email,
-					'name'				=> $name,
-					'username'			=> ($user_id) ? $row['username'] : '',
-					'to_name'			=> $name,
-					'user_jabber'		=> ($user_id) ? $row['user_jabber'] : '',
-					'user_notify_type'	=> ($user_id) ? $row['user_notify_type'] : NOTIFY_EMAIL,
-					'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
-					'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
-				);
-
-				// Ok, now the same email if CC specified, but without exposing the users email address
-				if ($cc)
-				{
-					$mail_to_users[] = array(
-						'email_lang'		=> $user->data['user_lang'],
-						'email'				=> $user->data['user_email'],
-						'name'				=> $user->data['username'],
-						'username'			=> $user->data['username'],
-						'to_name'			=> $name,
-						'user_jabber'		=> $user->data['user_jabber'],
-						'user_notify_type'	=> ($user_id) ? $user->data['user_notify_type'] : NOTIFY_EMAIL,
-						'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
-						'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
-					);
-				}
-
-				foreach ($mail_to_users as $row)
-				{
-					$messenger->template($email_tpl, $row['email_lang']);
-					$messenger->replyto($user->data['user_email']);
-					$messenger->to($row['email'], $row['name']);
-
-					if ($user_id)
-					{
-						$messenger->subject(htmlspecialchars_decode($subject));
-						$messenger->im($row['user_jabber'], $row['username']);
-						$notify_type = $row['user_notify_type'];
-					}
-					else
-					{
-						$notify_type = NOTIFY_EMAIL;
-					}
-
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-
-					$messenger->assign_vars(array(
-						'BOARD_CONTACT'	=> $config['board_contact'],
-						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
-						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
-						'MESSAGE'		=> htmlspecialchars_decode($message))
-					);
-
-					if ($topic_id)
-					{
-						$messenger->assign_vars(array(
-							'TOPIC_NAME'	=> htmlspecialchars_decode($row['topic_title']),
-							'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
-						);
-					}
-
-					$messenger->send($notify_type);
-				}
-
-				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
-				trigger_error($user->lang['EMAIL_SENT'] . '<br /><br />' . $message);
-			}
+			trigger_error($error);
 		}
 
-		if ($user_id)
+		if (isset($_POST['submit']))
 		{
-			$template->assign_vars(array(
-				'S_SEND_USER'	=> true,
-				'USERNAME'		=> $row['username'],
-
-				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id))
-			);
-		}
-		else
-		{
-			$template->assign_vars(array(
-				'EMAIL'				=> $email,
-				'NAME'				=> $name,
-				'S_LANG_OPTIONS'	=> language_select($email_lang),
-
-				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_TOPIC_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;t=' . $topic_id))
-			);
+			$messenger = new messenger(false);
+			$form->submit($messenger);
 		}
 
-		$template->assign_vars(array(
-			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'SUBJECT'			=> $subject,
-			'MESSAGE'			=> $message,
-			)
-		);
+		$page_title = $form->get_page_title();
+		$template_html = $form->get_template_file();
+		$form->render($template);
 
 	break;
 

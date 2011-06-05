@@ -1,13 +1,22 @@
 <!-- INCLUDE overall_header.html -->
 
+<!-- IF S_CONTACT_ADMIN-->
+<h2 class="titlespace">{L_CONTACT_ADMIN}</h2>
+<!-- ELSE -->
 <h2 class="titlespace">{L_SEND_EMAIL_USER} {USERNAME}</h2>
+<!-- ENDIF -->
 
 <form method="post" action="{S_POST_ACTION}" id="post">
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
+	<!-- IF CONTACT_INFO -->
+	<div class="postbody"><div class="content">{CONTACT_INFO}</div></div>
 
+	<br class="clear" />
+	<!-- ENDIF -->
 	<div class="content">
+
 		<!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
 		<fieldset class="fields2">
 		<!-- IF S_SEND_USER -->
@@ -18,6 +27,25 @@
 			<dl>
 				<dt><label for="subject">{L_SUBJECT}:</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="1" value="{SUBJECT}" /></dd>
+			</dl>
+		<!-- ELSEIF S_CONTACT_ADMIN-->
+			<dl>
+				<dt><label>{L_RECIPIENT}:</label></dt>
+				<dd><strong>{L_ADMINISTRATOR}</strong></dd>
+			</dl>
+			<!-- IF not S_IS_REGISTERED -->
+			<dl>
+				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}:</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="name">{L_SENDER_NAME}:</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
+			</dl>
+			<!-- ENDIF -->
+			<dl>
+				<dt><label for="subject">{L_SUBJECT}:</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
 			</dl>
 		<!-- ELSE -->
 			<dl>
