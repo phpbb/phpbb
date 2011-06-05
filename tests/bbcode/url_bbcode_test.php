@@ -18,18 +18,38 @@ class phpbb_url_bbcode_test extends phpbb_test_case
 	public function url_bbcode_test_data()
 	{
 		return array(
-			array('[url]http://www.phpbb.com/community/[/url]'),
-			array('[url=http://www.phpbb.com/community/]One line URL text[/url]'),
-			array("[url=http://www.phpbb.com/community/]Multiline\x0AURL\x0Atext[/url]"),
-			array("test [url] test \x0A test [url=http://www.phpbb.com/]test[/url] test"),
-			array("test [url=http://www.phpbb.com/]test \x0A [url]http://phpbb.com[/url] test"),
+			array(
+				'url only',
+				'[url]http://www.phpbb.com/community/[/url]',
+				'[url:]http&#58;//www&#46;phpbb&#46;com/community/[/url:]'
+			),
+			array(
+				'url with title',
+				'[url=http://www.phpbb.com/community/]One line URL text[/url]',
+				'[url=http&#58;//www&#46;phpbb&#46;com/community/:]One line URL text[/url:]'
+			),
+			array(
+				'url with multiline title',
+				"[url=http://www.phpbb.com/community/]Multiline\x0AURL\x0Atext[/url]",
+				"[url=http&#58;//www&#46;phpbb&#46;com/community/:]Multiline\x0AURL\x0Atext[/url:]"
+			),
+			array(
+				'unclosed url with multiline',
+				"test [url] test \x0A test [url=http://www.phpbb.com/]test[/url] test",
+				"test [url] test \x0A test [url=http&#58;//www&#46;phpbb&#46;com/:]test[/url:] test"
+			),
+			array(
+				'unclosed url with multiline and title',
+				"test [url=http://www.phpbb.com/]test \x0A [url]http://phpbb.com[/url] test",
+				"test [url=http&#58;//www&#46;phpbb&#46;com/:]test \x0A [url]http://phpbb.com[/url:] test"
+			),
 		);
 	}
 
 	/**
 	* @dataProvider url_bbcode_test_data
 	*/
-	public function test_url($message)
+	public function test_url($description, $message, $expected)
 	{
 		global $user;
 		$user = new phpbb_mock_user;
@@ -38,8 +58,6 @@ class phpbb_url_bbcode_test extends phpbb_test_case
 		$bbcode->message = $message;
 		$bbcode->bbcode_init(false);
 		$bbcode->parse_bbcode();
-		$this->assertNotEquals($bbcode->message, '[url][/url]');
-		$this->assertNotEquals($bbcode->message, $message);
-		$this->assertNotEquals($bbcode->message, NULL);
+		$this->assertEquals($expected, $bbcode->message);
 	}
 }
