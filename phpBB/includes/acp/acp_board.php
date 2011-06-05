@@ -770,12 +770,18 @@ class acp_board
 		global $user, $config;
 
 		$radio_ary = array(USER_ACTIVATION_DISABLE => 'ACC_DISABLE', USER_ACTIVATION_NONE => 'ACC_NONE');
+		$radio_text = h_radio('config[require_activation]', $radio_ary, $value, $key);
 		if ($config['email_enable'])
 		{
-			$radio_ary += array(USER_ACTIVATION_SELF => 'ACC_USER', USER_ACTIVATION_ADMIN => 'ACC_ADMIN');
+			$radio_ary = array(USER_ACTIVATION_SELF => 'ACC_USER', USER_ACTIVATION_ADMIN => 'ACC_ADMIN');
+			// With longer labels the four options no longer fit
+			// onto a single line. Separate them onto two lines.
+			// This also requires two h_radio calls to generate HTML.
+			$radio_text .= '<br /><br />';
+			$radio_text .= h_radio('config[require_activation]', $radio_ary, $value, $key);
 		}
 
-		return h_radio('config[require_activation]', $radio_ary, $value, $key);
+		return $radio_text;
 	}
 
 	/**
