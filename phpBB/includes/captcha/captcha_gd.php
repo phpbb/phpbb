@@ -77,7 +77,7 @@ class captcha
 		{
 			$denom = ($code_len - $i);
 			$denom = max(1.3, $denom);
-			$offset[$i] = mt_rand(0, (1.5 * $width_avail) / $denom);
+			$offset[$i] = phpbb_mt_rand(0, (int) round((1.5 * $width_avail) / $denom));
 			$width_avail -= $offset[$i];
 		}
 
