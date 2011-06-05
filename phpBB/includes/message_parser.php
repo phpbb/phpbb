@@ -102,7 +102,7 @@ class bbcode_firstpass extends bbcode
 	/**
 	* Init bbcode data for later parsing
 	*/
-	function bbcode_init()
+	function bbcode_init($no_custom_bbcode = false)
 	{
 		static $rowset;
 
@@ -117,7 +117,7 @@ class bbcode_firstpass extends bbcode
 			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#uise' => "\$this->bbcode_strong('\$1')")),
 			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#uise' => "\$this->bbcode_italic('\$1')")),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiUe' => "\$this->validate_url('\$2', '\$3')")),
+			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiUe' => "\$this->validate_url('\$2', ('\$3') ? '\$3' : '\$4')")),
 			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#uiUe' => "\$this->bbcode_img('\$1')")),
 			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uise' => "\$this->bbcode_color('\$1', '\$2')")),
@@ -133,6 +133,11 @@ class bbcode_firstpass extends bbcode
 		foreach ($this->bbcodes as $tag => $bbcode_data)
 		{
 			$this->parsed_items[$tag] = 0;
+		}
+
+		if ($no_custom_bbcode)
+		{
+			return;
 		}
 
 		if (!is_array($rowset))
@@ -970,7 +975,7 @@ class bbcode_firstpass extends bbcode
 			}
 
 			// Is this a link to somewhere inside this board? If so then remove the session id from the url
-			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
+			if (strpos($url, @generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
 				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\1', $url);
 				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', $url);
