@@ -17,7 +17,6 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_message
 {
-	protected $board_contact;
 	protected $server_name;
 
 	protected $subject = '';
@@ -36,9 +35,8 @@ class phpbb_message
 
 	protected $recipients;
 
-	public function __construct($board_contact, $server_name)
+	public function __construct($server_name)
 	{
-		$this->board_contact = $board_contact;
 		$this->server_name = $server_name;
 	}
 
@@ -171,7 +169,7 @@ class phpbb_message
 			$messenger->subject(htmlspecialchars_decode($this->subject));
 
 			$messenger->assign_vars(array(
-				'BOARD_CONTACT'	=> $this->board_contact,
+				'BOARD_CONTACT'	=> generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin',
 				'TO_USERNAME'	=> htmlspecialchars_decode($recipient['to_name']),
 				'FROM_USERNAME'	=> htmlspecialchars_decode($this->sender_name),
 				'MESSAGE'		=> htmlspecialchars_decode($this->body))

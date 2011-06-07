@@ -1166,7 +1166,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $template;
+			global $template, $phpbb_root_path, $phpEx;
 
 			// If the session is empty we need to create a valid one...
 			if (empty($this->session_id))
@@ -1187,8 +1187,6 @@ class session
 			// We show a login box here to allow founders accessing the board if banned by IP
 			if (defined('IN_LOGIN') && $this->data['user_id'] == ANONYMOUS)
 			{
-				global $phpEx;
-
 				$this->setup('ucp');
 				$this->data['is_registered'] = $this->data['is_bot'] = false;
 
@@ -1213,7 +1211,7 @@ class session
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
-			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
+			$message = sprintf($this->lang[$message], $till_date, '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
 

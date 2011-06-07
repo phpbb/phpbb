@@ -2788,8 +2788,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					$user->lang[$result['error_msg']],
 					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
-					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
-					($config['board_contact']) ? '</a>' : ''
+					'<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">',
+					'</a>'
 				);
 			break;
 
@@ -2800,7 +2800,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+					$err = sprintf($user->lang[$result['error_msg']], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 				}
 
 			break;

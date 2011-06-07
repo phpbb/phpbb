@@ -13,7 +13,7 @@ class phpbb_message_test extends phpbb_test_case
 {
 	public function test_send_one_recipient()
 	{
-		$message = new phpbb_message('board_contact', 'server_name');
+		$message = new phpbb_message('server_name');
 
 		$message->set_subject('subject');
 		$message->set_body('body');
@@ -34,13 +34,15 @@ class phpbb_message_test extends phpbb_test_case
 
 		$message->send($messenger);
 
+		$vars = $messenger->get_vars();
+		unset($vars['BOARD_CONTACT']);
+
 		$this->assertEquals(array(
-			'BOARD_CONTACT' => 'board_contact',
 			'TO_USERNAME' => 'r_username',
 			'FROM_USERNAME' => 's_name',
 			'MESSAGE'	=> 'body',
 			'foo'	=> 'bar',
-		), $messenger->get_vars());
+		), $vars);
 
 		$this->assertEquals(array(
 			'X-AntiAbuse: Board servername - server_name',

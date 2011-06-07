@@ -39,7 +39,7 @@ abstract class phpbb_message_form
 
 		$this->errors = array();
 
-		$this->message = new phpbb_message($config['board_contact'], $config['server_name']);
+		$this->message = new phpbb_message($config['server_name']);
 		$this->message->set_sender_from_user($this->user);
 	}
 

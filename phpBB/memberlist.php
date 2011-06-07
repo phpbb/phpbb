@@ -367,7 +367,7 @@ switch ($mode)
 						$messenger->im($row['user_jabber'], $row['username']);
 
 						$messenger->assign_vars(array(
-							'BOARD_CONTACT'	=> $config['board_contact'],
+							'BOARD_CONTACT'	=> generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin',
 							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 							'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
 							'MESSAGE'		=> htmlspecialchars_decode($message))
