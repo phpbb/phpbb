@@ -208,7 +208,7 @@ $lang = array_merge($lang, array(
 	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
 
 	'ACC_ACTIVATION'				=> 'Account activation',
-	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations. "Board-wide e-mail" must be enabled in order to use user or admin activation.',
+	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations. “Board-wide e-mail” must be enabled in order to use user or admin activation.',
 	'NEW_MEMBER_POST_LIMIT'			=> 'New member post limit',
 	'NEW_MEMBER_POST_LIMIT_EXPLAIN'	=> 'New members are within the <em>Newly Registered Users</em> group until they reach this number of posts. You can use this group to keep them from using the PM system or to review their posts. <strong>A value of 0 disables this feature.</strong>',
 	'NEW_MEMBER_GROUP_DEFAULT'		=> 'Set Newly Registered Users group to default',
@@ -217,7 +217,7 @@ $lang = array_merge($lang, array(
 	'ACC_ADMIN'					=> 'By admin',
 	'ACC_DISABLE'				=> 'Disable registration',
 	'ACC_NONE'					=> 'No activation (immediate access)',
-	'ACC_USER'					=> 'By user (email verification)',
+	'ACC_USER'					=> 'By user (e-mail verification)',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
 	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
 	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
