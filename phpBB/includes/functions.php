@@ -4390,6 +4390,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
 
+	$s_search_hidden_fields = array();
+	if ($_SID)
+	{
+		$s_search_hidden_fields['sid'] = $_SID;
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4478,6 +4484,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
 
 		'S_LOAD_UNREADS'			=> ($config['load_unreads_search'] && ($config['load_anon_lastread'] || $user->data['is_registered'])) ? true : false,
+
+		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
