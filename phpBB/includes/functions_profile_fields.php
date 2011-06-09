@@ -149,7 +149,18 @@ class custom_profile
 
 			case FIELD_DROPDOWN:
 				$field_value = (int) $field_value;
-			
+
+				// retrieve option lang data if necessary
+				if (!isset($this->options_lang[$field_data['field_id']]) || !isset($this->options_lang[$field_data['field_id']][$field_data['lang_id']]) || !sizeof($this->options_lang[$file_data['field_id']][$field_data['lang_id']]))
+				{
+					$this->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
+				}
+
+				if (!isset($this->options_lang[$field_data['field_id']][$field_data['lang_id']][$field_value]))
+				{
+					return 'FIELD_INVALID_VALUE';
+				}
+
 				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -302,6 +313,7 @@ class custom_profile
 				switch ($cp_result)
 				{
 					case 'FIELD_INVALID_DATE':
+					case 'FIELD_INVALID_VALUE':
 					case 'FIELD_REQUIRED':
 						$error = sprintf($user->lang[$cp_result], $row['lang_name']);
 					break;
