@@ -313,6 +313,17 @@ CREATE TABLE phpbb_drafts (
 CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
 
 /*
+	Table: 'phpbb_ext'
+*/
+CREATE TABLE phpbb_ext (
+	ext_name varchar(255) DEFAULT '' NOT NULL,
+	ext_active INT2 DEFAULT '0' NOT NULL CHECK (ext_active >= 0)
+);
+
+CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext (ext_name);
+CREATE INDEX phpbb_ext_ext_active ON phpbb_ext (ext_active);
+
+/*
 	Table: 'phpbb_extensions'
 */
 CREATE SEQUENCE phpbb_extensions_seq;

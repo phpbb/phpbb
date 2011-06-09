@@ -46,7 +46,7 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+	$class_loader = new phpbb_class_loader($phpbb_root_path . 'includes/', $phpbb_root_path . 'ext/', '.' . $phpEx);
 	$class_loader->register();
 
 	// set up caching

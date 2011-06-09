@@ -359,6 +359,22 @@ GO
 
 
 /*
+	Table: 'phpbb_ext'
+*/
+CREATE TABLE [phpbb_ext] (
+	[ext_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[ext_active] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [ext_active] ON [phpbb_ext]([ext_active]) ON [PRIMARY]
+GO
+
+
+/*
 	Table: 'phpbb_extensions'
 */
 CREATE TABLE [phpbb_extensions] (

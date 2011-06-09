@@ -191,6 +191,15 @@ CREATE TABLE phpbb_drafts (
 );
 
 
+# Table: 'phpbb_ext'
+CREATE TABLE phpbb_ext (
+	ext_name varbinary(255) DEFAULT '' NOT NULL,
+	ext_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	UNIQUE ext_name (ext_name),
+	KEY ext_active (ext_active)
+);
+
+
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
 	extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,

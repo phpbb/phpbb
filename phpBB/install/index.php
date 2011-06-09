@@ -82,7 +82,7 @@ include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader = new phpbb_class_loader($phpbb_root_path . 'includes/', $phpbb_root_path . 'ext/', '.' . $phpEx);
 $class_loader->register();
 
 // set up caching

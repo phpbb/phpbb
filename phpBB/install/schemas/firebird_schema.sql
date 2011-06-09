@@ -281,6 +281,15 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_ext'
+CREATE TABLE phpbb_ext (
+	ext_name VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	ext_active INTEGER DEFAULT 0 NOT NULL
+);;
+
+CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext(ext_name);;
+CREATE INDEX phpbb_ext_ext_active ON phpbb_ext(ext_active);;
+
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
 	extension_id INTEGER NOT NULL,

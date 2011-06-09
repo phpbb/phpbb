@@ -96,7 +96,7 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader = new phpbb_class_loader($phpbb_root_path . 'includes/', $phpbb_root_path . 'ext/', '.' . $phpEx);
 $class_loader->register();
 
 // set up caching

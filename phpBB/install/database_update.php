@@ -104,8 +104,12 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('EXT_TABLE'))
+{
+	define('EXT_TABLE', $table_prefix . 'ext');
+}
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
+$class_loader = new phpbb_class_loader($phpbb_root_path . 'includes/', $phpbb_root_path . 'ext/', '.' . $phpEx);
 $class_loader->register();
 
 // set up caching
@@ -1048,6 +1052,18 @@ function database_update_info()
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
+			'add_tables'		=> array(
+				EXT_TABLE				=> array(
+					'COLUMNS'			=> array(
+						'ext_name'		=> array('VCHAR', ''),
+						'ext_active'	=> array('BOOL', 0),
+					),
+					'KEYS'				=> array(
+						'ext_name'		=> array('UNIQUE', 'ext_name'),
+						'ext_active'	=> array('INDEX', 'ext_active'),
+					),
+				),
+			),
 			'add_columns'		=> array(
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),

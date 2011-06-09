@@ -26,7 +26,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	public function test_resolve_path()
 	{
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader($prefix);
+		$class_loader = new phpbb_class_loader($prefix . 'includes/', $prefix . 'ext/');
 
 		$prefix .= 'includes/';
 
@@ -56,6 +56,11 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 			$class_loader->resolve_path('phpbb_dir2'),
 			'Class with name of dir within dir (short class name)'
 		);
+		$this->assertEquals(
+			dirname(__FILE__) . '/ext/foo/class.php',
+			$class_loader->resolve_path('phpbb_ext_foo_class'),
+			'Extension class'
+		);
 	}
 
 	public function test_resolve_cached()
@@ -64,7 +69,7 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 		$cache = new phpbb_mock_cache($cacheMap);
 
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);
+		$class_loader = new phpbb_class_loader($prefix . 'includes/', $prefix . 'ext/', '.php', $cache);
 
 		$prefix .= 'includes/';
 

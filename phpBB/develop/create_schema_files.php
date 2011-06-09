@@ -1031,6 +1031,17 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_ext'] = array(
+		'COLUMNS'		=> array(
+			'ext_name'				=> array('VCHAR', ''),
+			'ext_active'			=> array('BOOL', 0),
+		),
+		'KEYS'			=> array(
+			'ext_name'				=> array('UNIQUE', 'ext_name'),
+			'ext_active'			=> array('INDEX', 'ext_active'),
+		),
+	);
+
 	$schema_data['phpbb_extensions'] = array(
 		'COLUMNS'		=> array(
 			'extension_id'		=> array('UINT', NULL, 'auto_increment'),

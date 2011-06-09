@@ -31,22 +31,25 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_class_loader
 {
-	private $phpbb_root_path;
+	private $core_path;
+	private $ext_path;
 	private $php_ext;
 	private $cache;
 	private $cached_paths = array();
 
 	/**
 	* Creates a new phpbb_class_loader, which loads files with the given
-	* file extension from the given phpbb root path.
+	* file extension from the given core or extension path.
 	*
-	* @param string $phpbb_root_path phpBB's root directory containing includes/
-	* @param string $php_ext         The file extension for PHP files
+	* @param string $core_path phpBB's include directory for core files
+	* @param string $ext_path  phpBB's extension directory
+	* @param string $php_ext   The file extension for PHP files
 	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($phpbb_root_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
+	public function __construct($core_path, $ext_path, $php_ext = '.php', phpbb_cache_driver_interface $cache = null)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->core_path = $core_path;
+		$this->ext_path = $ext_path;
 		$this->php_ext = $php_ext;
 
 		$this->set_cache($cache);
@@ -100,7 +103,16 @@ class phpbb_class_loader
 	*/
 	public function resolve_path($class)
 	{
-		$path_prefix = $this->phpbb_root_path . 'includes/';
+		if (substr($class, 6, 4) === 'ext_')
+		{
+			$path_prefix = $this->ext_path;
+			$prefix_length = 10;
+		}
+		else
+		{
+			$path_prefix = $this->core_path;
+			$prefix_length = 6;
+		}
 
 		if (isset($this->cached_paths[$class]))
 		{
@@ -112,7 +124,7 @@ class phpbb_class_loader
 			return false;
 		}
 
-		$parts = explode('_', substr($class, 6));
+		$parts = explode('_', substr($class, $prefix_length));
 
 		$dirs = '';
 
