@@ -329,7 +329,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 		switch ($validator[$type])
 		{
 			case 'string':
-				$length = strlen($cfg_array[$config_name]);
+				$length = utf8_strlen($cfg_array[$config_name]);
 
 				// the column is a VARCHAR
 				$validator[$max] = (isset($validator[$max])) ? min(255, $validator[$max]) : 255;
@@ -527,7 +527,7 @@ function validate_range($value_ary, &$error)
 		{
 			case 'string' :
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
-				if (strlen($value['value']) > $max)
+				if (utf8_strlen($value['value']) > $max)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
 				}
