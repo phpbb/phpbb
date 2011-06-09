@@ -221,7 +221,7 @@ class session
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
-			$this->forwarded_for = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->forwarded_for));
+			$this->forwarded_for = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->forwarded_for));
 
 			// split the list of IPs
 			$ips = explode(' ', $this->forwarded_for);
@@ -267,37 +267,42 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars((string) $_SERVER['REMOTE_ADDR']) : '';
-		$this->ip = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->ip));
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs
-		$ips = explode(' ', $this->ip);
+		$ips = explode(' ', trim($this->ip));
 
 		// Default IP if REMOTE_ADDR is invalid
 		$this->ip = '127.0.0.1';
 
 		foreach ($ips as $ip)
 		{
-			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+			if (preg_match(get_preg_expression('ipv4'), $ip))
 			{
-				// Just break
+				$this->ip = $ip;
+			}
+			else if (preg_match(get_preg_expression('ipv6'), $ip))
+			{
+				// Quick check for IPv4-mapped address in IPv6
+				if (stripos($ip, '::ffff:') === 0)
+				{
+					$ipv4 = substr($ip, 7);
+
+					if (preg_match(get_preg_expression('ipv4'), $ipv4))
+					{
+						$ip = $ipv4;
+					}
+				}
+
+				$this->ip = $ip;
+			}
+			else
+			{
+				// We want to use the last valid address in the chain
+				// Leave foreach loop when address is invalid
 				break;
 			}
-
-			// Quick check for IPv4-mapped address in IPv6
-			if (stripos($ip, '::ffff:') === 0)
-			{
-				$ipv4 = substr($ip, 7);
-
-				if (preg_match(get_preg_expression('ipv4'), $ipv4))
-				{
-					$ip = $ipv4;
-				}
-			}
-
-			// Use the last in chain
-			$this->ip = $ip;
 		}
 
 		$this->load = false;
