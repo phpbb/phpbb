@@ -3464,7 +3464,7 @@ function get_preg_expression($mode)
 * Depends on whether installed PHP version supports unicode properties
 *
 * @param string	$word			word template to be replaced
-* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode 
+* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode
 *
 * @return string $preg_expr		regex to use with word censor
 */
@@ -3574,7 +3574,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// but until 5.3.3 it only works for MX records
 	// See: http://bugs.php.net/bug.php?id=51844
 
-	// Call checkdnsrr() if 
+	// Call checkdnsrr() if
 	// we're looking for an MX record or
 	// we're not on Windows or
 	// we're running a PHP version where #51844 has been fixed
@@ -3594,7 +3594,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
 	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
 
-	// Call dns_get_record() if 
+	// Call dns_get_record() if
 	// we're not looking for an AAAA record or
 	// we're not on Windows or
 	// we're running a PHP version where AAAA lookups work reliable
@@ -3624,7 +3624,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 		foreach ($resultset as $result)
 		{
 			if (
-				isset($result['host']) && $result['host'] == $host && 
+				isset($result['host']) && $result['host'] == $host &&
 				isset($result['type']) && $result['type'] == $type
 			)
 			{
@@ -4452,6 +4452,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
 
+	$s_search_hidden_fields = array();
+	if ($_SID)
+	{
+		$s_search_hidden_fields['sid'] = $_SID;
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4540,6 +4546,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
 
 		'S_LOAD_UNREADS'			=> ($config['load_unreads_search'] && ($config['load_anon_lastread'] || $user->data['is_registered'])) ? true : false,
+
+		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
