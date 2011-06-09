@@ -87,11 +87,7 @@ a.topictitle:active {
 	padding-bottom: 0;
 }
 
-.postlink:visited {
-	color: #bdbdbd;
-	border-bottom-style: dotted;
-	border-bottom-color: #666666;
-}
+/* .postlink:visited { color: #bdbdbd; } */
 
 .postlink:active {
 	color: #d2d2d2;
