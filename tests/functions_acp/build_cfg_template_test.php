@@ -29,7 +29,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '2'),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="password" size="20" maxlength="128" name="config[config_key_name]" value="2" />',
+				'<input id="key_name" type="password" size="20" maxlength="128" name="config[config_key_name]" value="2" autocomplete="off" />',
 			),
 			array(
 				array('text', 0, 255),
