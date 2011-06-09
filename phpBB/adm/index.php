@@ -600,7 +600,7 @@ function validate_range($value_ary, &$error)
 		{
 			case 'string' :
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
-				if (strlen($value['value']) > $max)
+				if (utf8_strlen($value['value']) > $max)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
 				}
