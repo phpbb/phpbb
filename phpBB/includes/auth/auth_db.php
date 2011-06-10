@@ -85,9 +85,8 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 		}
 
 		$result = $db->sql_query($sql);
-		$attempts_row = $db->sql_fetchrow($result);
+		$attempts = (int) $db->sql_fetchfield('count');
 		$db->sql_freeresult($result);
-		$attempts = $attempts_row['count'];
 
 		$attempt_data = array(
 			'attempt_ip'			=> $ip,
