@@ -298,12 +298,14 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 
 		if (!$fpr = fopen($url, 'rb'))
 		{
-			throw new RuntimeException("Failed to download $url");
+			echo "Failed to download $url\n";
+			return;
 		}
 
 		if (!$fpw = fopen($target, 'wb'))
 		{
-			throw new RuntimeException("Failed to open $target for writing");
+			echo "Failed to open $target for writing\n";
+			return;
 		}
 
 		$chunk = 32768;
