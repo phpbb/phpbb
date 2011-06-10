@@ -916,9 +916,29 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
-
 		// Changes from 3.0.8 to 3.0.9-RC1
 		'3.0.8'			=> array(
+			'add_tables'		=> array(
+				LOGIN_ATTEMPT_TABLE	=> array(
+					'COLUMNS'			=> array(
+						'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
+						'attempt_ip'			=> array('VCHAR:40', ''),
+						'attempt_browser'		=> array('VCHAR:150', ''),
+						'attempt_forwarded_for'	=> array('VCHAR:255', ''),
+						'attempt_time'			=> array('TIMESTAMP', 0),
+						'user_id'				=> array('UINT', 0),
+						'username'				=> array('VCHAR_UNI:255', 0),
+						'username_clean'		=> array('VCHAR_CI', 0),
+					),
+					'PRIMARY_KEY'		=> 'attempt_id',
+					'KEYS'				=> array(
+						'attempt_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
+						'attempt_forwarded_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+						'attempt_time'			=> array('INDEX', array('attempt_time')),
+						'user_id'				=> array('INDEX', 'user_id'),
+					),
+				),
+			),
 			'change_columns'	=> array(
 				BBCODES_TABLE	=> array(
 					'bbcode_id'	=> array('USINT', 0),
@@ -1870,6 +1890,10 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.0.8 to 3.0.9-RC1
 		case '3.0.8':
+			set_config('ip_login_limit_max', '50');
+			set_config('ip_login_limit_time', '21600');
+			set_config('ip_login_limit_use_forwarded', '0');
+
 			// Update file extension group names to use language strings, again.
 			$sql = 'SELECT group_id, group_name
 				FROM ' . EXTENSION_GROUPS_TABLE . '
@@ -2514,6 +2538,19 @@ class updater_db_tools
 		{
 			$sqlite_data = array();
 			$sqlite = true;
+		}
+
+		// Add tables?
+		if (!empty($schema_changes['add_tables']))
+		{
+			foreach ($schema_changes['add_tables'] as $table => $table_data)
+			{
+				$result = $this->sql_create_table($table, $table_data);
+				if ($this->return_statements)
+				{
+					$statements = array_merge($statements, $result);
+				}
+			}
 		}
 
 		// Change columns?
