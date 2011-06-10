@@ -8,23 +8,11 @@
 */
 
 require_once dirname(__FILE__) . '/../mock/lang.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 {
-	/**
-	* Helper function which returns a string in a given length.
-	*/
-	static public function return_string($length)
-	{
-		$string = '';
-		for ($i = 0; $i < $length; $i++)
-		{
-			$string .= 'a';
-		}
-		return $string;
-	}
-
 	/**
 	* Data sets that don't throw an error.
 	*/
@@ -53,8 +41,10 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 			array(array(array('column_type' => 'TINT:-32:64', 'lang' => 'TEST', 'value' => 16))),
 
 			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => ''))),
-			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => self::return_string(255)))),
-			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => self::return_string(128)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => str_repeat('a', 255)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => str_repeat("\xC3\x84", 255)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => str_repeat('a', 128)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => str_repeat("\xC3\x84", 128)))),
 		);
 	}
 
@@ -157,8 +147,10 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	public function validate_range_data_too_long()
 	{
 		return array(
-			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => self::return_string(256)))),
-			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => self::return_string(129)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => str_repeat('a', 256)))),
+			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => str_repeat("\xC3\x84", 256)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => str_repeat('a', 129)))),
+			array(array(array('column_type' => 'VCHAR:128', 'lang' => 'TEST', 'value' => str_repeat("\xC3\x84", 129)))),
 		);
 	}
 

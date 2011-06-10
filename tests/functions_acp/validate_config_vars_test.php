@@ -13,19 +13,6 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 {
 	/**
-	* Helper function which returns a string in a given length.
-	*/
-	static public function return_string($length)
-	{
-		$string = '';
-		for ($i = 0; $i < $length; $i++)
-		{
-			$string .= 'a';
-		}
-		return $string;
-	}
-
-	/**
 	* Data sets that don't throw an error.
 	*/
 	public function validate_config_vars_fit_data()
@@ -35,7 +22,10 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 				array(
 					'test_bool'				=> array('lang' => 'TEST_BOOL',			'validate' => 'bool'),
 					'test_string'			=> array('lang' => 'TEST_STRING',		'validate' => 'string'),
+					'test_string'			=> array('lang' => 'TEST_STRING',		'validate' => 'string'),
 					'test_string_128'		=> array('lang' => 'TEST_STRING_128',	'validate' => 'string:128'),
+					'test_string_128'		=> array('lang' => 'TEST_STRING_128',	'validate' => 'string:128'),
+					'test_string_32_64'		=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64'),
 					'test_string_32_64'		=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64'),
 					'test_int'				=> array('lang' => 'TEST_INT',			'validate' => 'int'),
 					'test_int_32'			=> array('lang' => 'TEST_INT',			'validate' => 'int:32'),
@@ -51,9 +41,12 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 				),
 				array(
 					'test_bool'			=> true,
-					'test_string'		=> self::return_string(255),
-					'test_string_128'	=> self::return_string(128),
-					'test_string_32_64'	=> self::return_string(48),
+					'test_string'		=> str_repeat('a', 255),
+					'test_string'		=> str_repeat("\xC3\x84", 255),
+					'test_string_128'	=> str_repeat('a', 128),
+					'test_string_128'	=> str_repeat("\xC3\x84", 128),
+					'test_string_32_64'	=> str_repeat('a', 48),
+					'test_string_32_64'	=> str_repeat("\xC3\x84", 48),
 					'test_int'			=> 128,
 					'test_int_32'		=> 32,
 					'test_int_32_64'	=> 48,
@@ -86,17 +79,32 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 		return array(
 			array(
 				array('test_string_32_64'		=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
-				array('test_string_32_64'	=> self::return_string(20)),
+				array('test_string_32_64'	=> str_repeat('a', 20)),
+				array('SETTING_TOO_SHORT'),
+			),
+			array(
+				array('test_string_32_64'		=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
+				array('test_string_32_64'	=> str_repeat("\xC3\x84", 20)),
 				array('SETTING_TOO_SHORT'),
 			),
 			array(
 				array('test_string'		=> array('lang' => 'TEST_STRING',	'validate' => 'string')),
-				array('test_string'		=> self::return_string(256)),
+				array('test_string'		=> str_repeat('a', 256)),
+				array('SETTING_TOO_LONG'),
+			),
+			array(
+				array('test_string'		=> array('lang' => 'TEST_STRING',	'validate' => 'string')),
+				array('test_string'		=> str_repeat("\xC3\x84", 256)),
 				array('SETTING_TOO_LONG'),
 			),
 			array(
 				array('test_string_32_64'	=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
-				array('test_string_32_64'	=> self::return_string(65)),
+				array('test_string_32_64'	=> str_repeat('a', 65)),
+				array('SETTING_TOO_LONG'),
+			),
+			array(
+				array('test_string_32_64'	=> array('lang' => 'TEST_STRING_32_64',	'validate' => 'string:32:64')),
+				array('test_string_32_64'	=> str_repeat("\xC3\x84", 65)),
 				array('SETTING_TOO_LONG'),
 			),
 
