@@ -592,6 +592,7 @@ class session
 		// otherwise they'll index this page with the SID, duplicate content oh my!
 		if ($bot && isset($_GET['sid']))
 		{
+			send_status_line(301, 'Moved Permanently');
 			redirect(build_url(array('sid')));
 		}
 
