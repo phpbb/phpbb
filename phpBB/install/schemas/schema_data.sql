@@ -136,6 +136,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_thumb_widt
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize', '12000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_max', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_time', '21600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_use_forwarded', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password', '');

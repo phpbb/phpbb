@@ -1,5 +1,5 @@
 #
-# $Id$
+# $Id: $
 #
 
 BEGIN TRANSACTION;
@@ -356,6 +356,23 @@ CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
 CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
+
+# Table: 'phpbb_login_attempts'
+CREATE TABLE phpbb_login_attempts (
+	attempt_id INTEGER PRIMARY KEY NOT NULL ,
+	attempt_ip varchar(40) NOT NULL DEFAULT '',
+	attempt_browser varchar(150) NOT NULL DEFAULT '',
+	attempt_forwarded_for varchar(255) NOT NULL DEFAULT '',
+	attempt_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	username varchar(255) NOT NULL DEFAULT '0',
+	username_clean varchar(255) NOT NULL DEFAULT '0'
+);
+
+CREATE INDEX phpbb_login_attempts_attempt_ip ON phpbb_login_attempts (attempt_ip, attempt_time);
+CREATE INDEX phpbb_login_attempts_attempt_forwarded_for ON phpbb_login_attempts (attempt_forwarded_for, attempt_time);
+CREATE INDEX phpbb_login_attempts_attempt_time ON phpbb_login_attempts (attempt_time);
+CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
