@@ -417,6 +417,11 @@ class phpbb_db_tools
 			// here lies an array, filled with information compiled on the column's data
 			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 
+			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
+
 			// here we add the definition of the new column to the list of columns
 			switch ($this->sql_layer)
 			{
@@ -566,7 +571,13 @@ class phpbb_db_tools
 			case 'firebird':
 				if ($create_sequence)
 				{
-					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+					$statements[] = "CREATE GENERATOR {$table_name}_gen;";
+					$statements[] = "SET GENERATOR {$table_name}_gen TO 0;";
+
+					$trigger = "CREATE TRIGGER t_$table_name FOR $table_name\n";
+					$trigger .= "BEFORE INSERT\nAS\nBEGIN\n";
+					$trigger .= "\tNEW.{$create_sequence} = GEN_ID({$table_name}_gen, 1);\nEND;";
+					$statements[] = $trigger;
 				}
 			break;
 		}
@@ -1400,6 +1411,11 @@ class phpbb_db_tools
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{
+		if (strlen($column_name) > 30)
+		{
+			trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
+
 		// Get type
 		if (strpos($column_data[0], ':') !== false)
 		{
@@ -2040,6 +2056,11 @@ class phpbb_db_tools
 	{
 		$statements = array();
 
+		if (strlen($table_name . $index_name) > 30)
+		{
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -2069,6 +2090,11 @@ class phpbb_db_tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
+
+		if (strlen($table_name . $index_name) > 30)
+		{
+			trigger_error("Index name '${table_name}_$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
 
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)
