@@ -1209,6 +1209,26 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_login_attempts'] = array(
+		'COLUMNS'		=> array(
+			'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
+			'attempt_ip'			=> array('VCHAR:40', ''),
+			'attempt_browser'		=> array('VCHAR:150', ''),
+			'attempt_forwarded_for'	=> array('VCHAR:255', ''),
+			'attempt_time'			=> array('TIMESTAMP', 0),
+			'user_id'				=> array('UINT', 0),
+			'username'				=> array('VCHAR_UNI:255', 0),
+			'username_clean'		=> array('VCHAR_CI', 0),
+		),
+		'PRIMARY_KEY'	=> 'attempt_id',
+		'KEYS'			=> array(
+			'attempt_ip'				=> array('INDEX', array('attempt_ip', 'attempt_time')),
+			'attempt_forwarded_for'		=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+			'attempt_time'				=> array('INDEX', array('attempt_time')),
+			'user_id'					=> array('INDEX', 'user_id'),
+		),
+	);
+
 	$schema_data['phpbb_moderator_cache'] = array(
 		'COLUMNS'		=> array(
 			'forum_id'				=> array('UINT', 0),

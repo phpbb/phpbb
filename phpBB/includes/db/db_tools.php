@@ -638,6 +638,19 @@ class phpbb_db_tools
 			$sqlite = true;
 		}
 
+		// Add tables?
+		if (!empty($schema_changes['add_tables']))
+		{
+			foreach ($schema_changes['add_tables'] as $table => $table_data)
+			{
+				$result = $this->sql_create_table($table, $table_data);
+				if ($this->return_statements)
+				{
+					$statements = array_merge($statements, $result);
+				}
+			}
+		}
+
 		// Change columns?
 		if (!empty($schema_changes['change_columns']))
 		{

@@ -908,7 +908,7 @@ class auth
 		$method = 'login_' . $method;
 		if (function_exists($method))
 		{
-			$login = $method($username, $password);
+			$login = $method($username, $password, $user->ip, $user->browser, $user->forwarded_for);
 
 			// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
 			if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)

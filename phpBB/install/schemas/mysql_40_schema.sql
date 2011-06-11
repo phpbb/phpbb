@@ -1,5 +1,5 @@
 #
-# $Id$
+# $Id: $
 #
 
 # Table: 'phpbb_attachments'
@@ -367,6 +367,24 @@ CREATE TABLE phpbb_log (
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
+	KEY user_id (user_id)
+);
+
+
+# Table: 'phpbb_login_attempts'
+CREATE TABLE phpbb_login_attempts (
+	attempt_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	attempt_ip varbinary(40) DEFAULT '' NOT NULL,
+	attempt_browser varbinary(150) DEFAULT '' NOT NULL,
+	attempt_forwarded_for varbinary(255) DEFAULT '' NOT NULL,
+	attempt_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	username blob NOT NULL,
+	username_clean blob NOT NULL,
+	PRIMARY KEY (attempt_id),
+	KEY attempt_ip (attempt_ip, attempt_time),
+	KEY attempt_forwarded_for (attempt_forwarded_for, attempt_time),
+	KEY attempt_time (attempt_time),
 	KEY user_id (user_id)
 );
 
