@@ -536,11 +536,11 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	if ($sql === 'begin')
 	{
-		$db->sql_transaction('begin');
+		$result = $db->sql_transaction('begin');
 	}
 	else if ($sql === 'commit')
 	{
-		$db->sql_transaction('commit');
+		$result = $db->sql_transaction('commit');
 	}
 	else
 	{
