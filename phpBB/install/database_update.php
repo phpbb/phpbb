@@ -601,12 +601,23 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	$db->sql_return_on_error(true);
 
-	$result = $db->sql_query($sql);
-	if ($db->sql_error_triggered)
+	if ($sql === 'begin')
 	{
-		$errored = true;
-		$error_ary['sql'][] = $db->sql_error_sql;
-		$error_ary['error_code'][] = $db->sql_error_returned;
+		$db->sql_transaction('begin');
+	}
+	else if ($sql === 'commit')
+	{
+		$db->sql_transaction('commit');
+	}
+	else
+	{
+		$result = $db->sql_query($sql);
+		if ($db->sql_error_triggered)
+		{
+			$errored = true;
+			$error_ary['sql'][] = $db->sql_error_sql;
+			$error_ary['error_code'][] = $db->sql_error_returned;
+		}
 	}
 
 	$db->sql_return_on_error(false);
@@ -999,9 +1010,9 @@ function database_update_info()
 					),
 					'PRIMARY_KEY'		=> 'attempt_id',
 					'KEYS'				=> array(
-						'attempt_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
-						'attempt_forwarded_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
-						'attempt_time'			=> array('INDEX', array('attempt_time')),
+						'att_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
+						'att_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+						'att_time'			=> array('INDEX', array('attempt_time')),
 						'user_id'				=> array('INDEX', 'user_id'),
 					),
 				),
@@ -1997,6 +2008,27 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			global $db_tools, $table_prefix;
+
+			// Recover from potentially broken Q&A CAPTCHA table on firebird
+			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
+			// without data loss
+			if ($db_tools->sql_layer == 'firebird')
+			{
+				$tables = array(
+					$table_prefix . 'captcha_questions',
+					$table_prefix . 'captcha_answers',
+					$table_prefix . 'qa_confirm',
+				);
+				foreach ($tables as $table)
+				{
+					if ($db_tools->sql_table_exists($table))
+					{
+						$db_tools->sql_table_drop($table);
+					}
+				}
+			}
+
 			$no_updates = false;
 		break;
 
@@ -2545,6 +2577,11 @@ class updater_db_tools
 			// here lies an array, filled with information compiled on the column's data
 			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 
+			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
+			}
+
 			// here we add the definition of the new column to the list of columns
 			switch ($this->sql_layer)
 			{
@@ -2694,7 +2731,13 @@ class updater_db_tools
 			case 'firebird':
 				if ($create_sequence)
 				{
-					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+					$statements[] = "CREATE GENERATOR {$table_name}_gen;";
+					$statements[] = "SET GENERATOR {$table_name}_gen TO 0;";
+
+					$trigger = "CREATE TRIGGER t_$table_name FOR $table_name\n";
+					$trigger .= "BEFORE INSERT\nAS\nBEGIN\n";
+					$trigger .= "\tNEW.{$create_sequence} = GEN_ID({$table_name}_gen, 1);\nEND;";
+					$statements[] = $trigger;
 				}
 			break;
 		}
@@ -3528,6 +3571,11 @@ class updater_db_tools
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{
+		if (strlen($column_name) > 30)
+		{
+			trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
+
 		// Get type
 		if (strpos($column_data[0], ':') !== false)
 		{
@@ -4101,6 +4149,13 @@ class updater_db_tools
 	{
 		$statements = array();
 
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -4130,6 +4185,13 @@ class updater_db_tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
+
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
 
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)

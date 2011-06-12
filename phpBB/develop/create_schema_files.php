@@ -329,6 +329,15 @@ foreach ($supported_dbms as $dbms)
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
+			if (strlen($column_name) > 30)
+			{
+				trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment' && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
+
 			// Get type
 			if (strpos($column_data[0], ':') !== false)
 			{
@@ -630,6 +639,11 @@ foreach ($supported_dbms as $dbms)
 				if (!is_array($key_data[1]))
 				{
 					$key_data[1] = array($key_data[1]);
+				}
+
+				if (strlen($table_name . $key_name) > 30)
+				{
+					trigger_error("Index name '$key_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
 				}
 
 				switch ($dbms)
