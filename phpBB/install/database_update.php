@@ -2321,7 +2321,7 @@ class updater_db_tools
 
 			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
 			{
-				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
 			}
 
 			// here we add the definition of the new column to the list of columns
@@ -3891,9 +3891,11 @@ class updater_db_tools
 	{
 		$statements = array();
 
-		if (strlen($table_name . $index_name) > 30)
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
 		{
-			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
 		}
 
 		switch ($this->sql_layer)
@@ -3926,9 +3928,11 @@ class updater_db_tools
 	{
 		$statements = array();
 
-		if (strlen($table_name . $index_name) > 30)
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
 		{
-			trigger_error("Index name '${table_name}_$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
 		}
 
 		// remove index length unless MySQL4
