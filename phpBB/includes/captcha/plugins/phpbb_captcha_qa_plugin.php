@@ -319,7 +319,7 @@ class phpbb_captcha_qa
 					),
 					'PRIMARY_KEY'		=> 'question_id',
 					'KEYS'				=> array(
-						'lang_iso'			=> array('INDEX', 'lang_iso'),
+						'lang'			=> array('INDEX', 'lang_iso'),
 					),
 				),
 				CAPTCHA_ANSWERS_TABLE		=> array (
@@ -328,7 +328,7 @@ class phpbb_captcha_qa
 						'answer_text'	=> array('STEXT_UNI', ''),
 					),
 					'KEYS'				=> array(
-						'question_id'			=> array('INDEX', 'question_id'),
+						'qid'			=> array('INDEX', 'question_id'),
 					),
 				),
 				CAPTCHA_QA_CONFIRM_TABLE		=> array (
