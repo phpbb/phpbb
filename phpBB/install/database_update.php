@@ -1913,16 +1913,13 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools;
+			global $db_tools, $table_prefix;
 
 			// Recover from potentially broken Q&A CAPTCHA table on firebird
+			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
+			// without data loss
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				if ($config['captcha_plugin'] == 'phpbb_captcha_qa')
-				{
-					setconfig('captcha_plugin', 'phpbb_captcha_nogd');
-				}
-
 				$tables = array(
 					$table_prefix . 'captcha_questions',
 					$table_prefix . 'captcha_answers',
