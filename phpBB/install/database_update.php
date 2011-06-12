@@ -1913,6 +1913,30 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			global $db_tools;
+
+			// Recover from potentially broken Q&A CAPTCHA table on firebird
+			if ($db_tools->sql_layer == 'firebird')
+			{
+				if ($config['captcha_plugin'] == 'phpbb_captcha_qa')
+				{
+					setconfig('captcha_plugin', 'phpbb_captcha_nogd');
+				}
+
+				$tables = array(
+					$table_prefix . 'captcha_questions',
+					$table_prefix . 'captcha_answers',
+					$table_prefix . 'qa_confirm',
+				);
+				foreach ($tables as $table)
+				{
+					if ($db_tools->sql_table_exists($table))
+					{
+						$db_tools->sql_table_drop($table);
+					}
+				}
+			}
+
 			$no_updates = false;
 		break;
 	}
