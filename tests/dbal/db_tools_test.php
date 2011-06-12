@@ -127,7 +127,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		);
 	}
 
-	static public function columnValues()
+	static public function column_values()
 	{
 		return array(
 			array('c_int_size', -9999),
@@ -161,7 +161,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	}
 
 	/**
-	* @dataProvider columnValues
+	* @dataProvider column_values
 	*/
 	public function test_created_column($column_name, $column_value)
 	{
