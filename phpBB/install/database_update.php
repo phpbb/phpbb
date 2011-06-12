@@ -932,9 +932,9 @@ function database_update_info()
 					),
 					'PRIMARY_KEY'		=> 'attempt_id',
 					'KEYS'				=> array(
-						'attempt_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
-						'attempt_forwarded_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
-						'attempt_time'			=> array('INDEX', array('attempt_time')),
+						'att_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
+						'att_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+						'att_time'			=> array('INDEX', array('attempt_time')),
 						'user_id'				=> array('INDEX', 'user_id'),
 					),
 				),
