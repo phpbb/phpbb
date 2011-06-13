@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.9-RC1';
+$updates_to_version = '3.0.10-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
