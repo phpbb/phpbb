@@ -675,13 +675,13 @@ ALTER TABLE [phpbb_login_attempts] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [attempt_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [attempt_forwarded_for] ON [phpbb_login_attempts]([attempt_forwarded_for], [attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_for] ON [phpbb_login_attempts]([attempt_forwarded_for], [attempt_time]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [attempt_time] ON [phpbb_login_attempts]([attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_time] ON [phpbb_login_attempts]([attempt_time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_login_attempts]([user_id]) ON [PRIMARY]

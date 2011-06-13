@@ -382,9 +382,9 @@ CREATE TABLE phpbb_login_attempts (
 	username blob NOT NULL,
 	username_clean blob NOT NULL,
 	PRIMARY KEY (attempt_id),
-	KEY attempt_ip (attempt_ip, attempt_time),
-	KEY attempt_forwarded_for (attempt_forwarded_for, attempt_time),
-	KEY attempt_time (attempt_time),
+	KEY att_ip (attempt_ip, attempt_time),
+	KEY att_for (attempt_forwarded_for, attempt_time),
+	KEY att_time (attempt_time),
 	KEY user_id (user_id)
 );
 

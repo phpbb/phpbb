@@ -643,7 +643,7 @@ foreach ($supported_dbms as $dbms)
 
 				if (strlen($table_name . $key_name) > 30)
 				{
-					trigger_error("Index name '$key_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+					trigger_error("Index name '${table_name}_$key_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
 				}
 
 				switch ($dbms)
@@ -1236,9 +1236,9 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> 'attempt_id',
 		'KEYS'			=> array(
-			'attempt_ip'				=> array('INDEX', array('attempt_ip', 'attempt_time')),
-			'attempt_forwarded_for'		=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
-			'attempt_time'				=> array('INDEX', array('attempt_time')),
+			'att_ip'				=> array('INDEX', array('attempt_ip', 'attempt_time')),
+			'att_for'		=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+			'att_time'				=> array('INDEX', array('attempt_time')),
 			'user_id'					=> array('INDEX', 'user_id'),
 		),
 	);
