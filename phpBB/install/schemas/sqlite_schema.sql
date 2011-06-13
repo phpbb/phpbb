@@ -369,9 +369,9 @@ CREATE TABLE phpbb_login_attempts (
 	username_clean varchar(255) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_login_attempts_attempt_ip ON phpbb_login_attempts (attempt_ip, attempt_time);
-CREATE INDEX phpbb_login_attempts_attempt_forwarded_for ON phpbb_login_attempts (attempt_forwarded_for, attempt_time);
-CREATE INDEX phpbb_login_attempts_attempt_time ON phpbb_login_attempts (attempt_time);
+CREATE INDEX phpbb_login_attempts_att_ip ON phpbb_login_attempts (attempt_ip, attempt_time);
+CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts (attempt_forwarded_for, attempt_time);
+CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time);
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
 # Table: 'phpbb_moderator_cache'
