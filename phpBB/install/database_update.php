@@ -2484,7 +2484,7 @@ class updater_db_tools
 			break;
 
 			case 'oracle':
-				$table_sql .= "\n);";
+				$table_sql .= "\n)";
 				$statements[] = $table_sql;
 
 				// do we need to add a sequence and a tigger for auto incrementing columns?
@@ -2502,7 +2502,7 @@ class updater_db_tools
 					$trigger .= "BEGIN\n";
 					$trigger .= "\tSELECT {$table_name}_seq.nextval\n";
 					$trigger .= "\tINTO :new.{$create_sequence}\n";
-					$trigger .= "\tFROM dual\n";
+					$trigger .= "\tFROM dual;\n";
 					$trigger .= "END;";
 
 					$statements[] = $trigger;
