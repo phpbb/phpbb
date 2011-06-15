@@ -90,7 +90,7 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 
 		$attempt_data = array(
 			'attempt_ip'			=> $ip,
-			'attempt_browser'		=> $browser,
+			'attempt_browser'		=> trim(substr($browser, 0, 149)),
 			'attempt_forwarded_for'	=> $forwarded_for,
 			'attempt_time'			=> time(),
 			'user_id'				=> ($row) ? (int) $row['user_id'] : 0,
