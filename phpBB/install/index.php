@@ -18,110 +18,13 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices and deprecation messages
-if (!defined('E_DEPRECATED'))
-{
-	define('E_DEPRECATED', 8192);
-}
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
 if (version_compare(PHP_VERSION, '4.3.3') < 0)
 {
 	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
 }
 
-/*
-* Remove variables created by register_globals from the global scope
-* Thanks to Matt Kavanagh
-*/
-function deregister_globals()
-{
-	$not_unset = array(
-		'GLOBALS'	=> true,
-		'_GET'		=> true,
-		'_POST'		=> true,
-		'_COOKIE'	=> true,
-		'_REQUEST'	=> true,
-		'_SERVER'	=> true,
-		'_SESSION'	=> true,
-		'_ENV'		=> true,
-		'_FILES'	=> true,
-		'phpEx'		=> true,
-		'phpbb_root_path'	=> true
-	);
-
-	// Not only will array_merge and array_keys give a warning if
-	// a parameter is not an array, array_merge will actually fail.
-	// So we check if _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
-	{
-		$_SESSION = array();
-	}
-
-	// Merge all into one extremely huge array; unset this later
-	$input = array_merge(
-		array_keys($_GET),
-		array_keys($_POST),
-		array_keys($_COOKIE),
-		array_keys($_SERVER),
-		array_keys($_SESSION),
-		array_keys($_ENV),
-		array_keys($_FILES)
-	);
-
-	foreach ($input as $varname)
-	{
-		if (isset($not_unset[$varname]))
-		{
-			// Hacking attempt. No point in continuing unless it's a COOKIE
-			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
-			{
-				exit;
-			}
-			else
-			{
-				$cookie = &$_COOKIE;
-				while (isset($cookie['GLOBALS']))
-				{
-					foreach ($cookie['GLOBALS'] as $registered_var => $value)
-					{
-						if (!isset($not_unset[$registered_var]))
-						{
-							unset($GLOBALS[$registered_var]);
-						}
-					}
-					$cookie = &$cookie['GLOBALS'];
-				}
-			}
-		}
-
-		unset($GLOBALS[$varname]);
-	}
-
-	unset($input);
-}
-
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
-{
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	@set_magic_quotes_runtime(0);
-
-	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
-	{
-		deregister_globals();
-	}
-
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
-}
+require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 // Try to override some limits - maybe it helps some...
 @set_time_limit(0);
