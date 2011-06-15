@@ -70,7 +70,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			foreach ($avatar_list[$category] as $img => $data)
 			{
 				$template->assign_block_vars('av_local_imgs', array(
-					'AVATAR_IMAGE'  => $path . '/' . $data['file'],
+					'AVATAR_IMAGE'  => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $data['file'],
 					'AVATAR_NAME' => $data['name'],
 					'AVATAR_FILE' => $data['filename'],
 				));

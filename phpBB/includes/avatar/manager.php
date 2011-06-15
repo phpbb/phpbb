@@ -50,7 +50,7 @@ class phpbb_avatar_manager
 		// Legacy stuff...
 		switch ($avatar_type)
 		{
-			case AVATAR_LOCAL:
+			case AVATAR_GALLERY:
 				$avatar_type = 'local';
 				break;
 			case AVATAR_UPLOAD:
