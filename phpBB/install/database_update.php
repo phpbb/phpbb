@@ -8,17 +8,21 @@
 *
 */
 
-$updates_to_version = '3.0.10-dev';
+define('UPDATES_TO_VERSION', '3.0.10-dev');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = false;
+define('DEBUG_FROM_VERSION', false);
 
 // Which oldest version does this updater support?
-$oldest_from_version = '3.0.0';
+define('OLDEST_FROM_VERSION', '3.0.0');
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
+	$updates_to_version = UPDATES_TO_VERSION;
+	$debug_from_version = DEBUG_FROM_VERSION;
+	$oldest_from_version = OLDEST_FROM_VERSION;
+
 	return;
 }
 
@@ -30,12 +34,12 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices and deprecation messages
-if (!defined('E_DEPRECATED'))
-{
-	define('E_DEPRECATED', 8192);
-}
-//error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+require($phpbb_root_path . 'includes/startup.' . $phpEx);
+
+$updates_to_version = UPDATES_TO_VERSION;
+$debug_from_version = DEBUG_FROM_VERSION;
+$oldest_from_version = OLDEST_FROM_VERSION;
+
 error_reporting(E_ALL);
 
 @set_time_limit(0);
@@ -83,20 +87,6 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
-}
-
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
-{
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	@set_magic_quotes_runtime(0);
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
 $user = new user();
