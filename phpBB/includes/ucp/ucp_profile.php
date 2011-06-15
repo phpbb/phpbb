@@ -589,8 +589,10 @@ class ucp_profile
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 
-					foreach ($avatar_drivers as $driver) {
-						if ($config["allow_avatar_$driver"]) {
+					foreach ($avatar_drivers as $driver)
+					{
+						if ($config["allow_avatar_$driver"])
+						{
 							$avatars_enabled = true;
 							$template->set_filenames(array(
 								'avatar' => "ucp_avatar_options_$driver.html",
@@ -625,7 +627,8 @@ class ucp_profile
 								}
 							}
 
-							if ($avatar->prepare_form($template, $user->data, $error)) {
+							if ($avatar->prepare_form($template, $user->data, $error))
+							{
 								$driver_u = strtoupper($driver);
 
 								$template->assign_block_vars('avatar_drivers', array(
