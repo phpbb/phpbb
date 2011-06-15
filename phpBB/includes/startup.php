@@ -13,8 +13,6 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
-$starttime = explode(' ', microtime());
-$starttime = $starttime[1] + $starttime[0];
 
 // Report all errors, except notices and deprecation messages
 if (!defined('E_DEPRECATED'))
@@ -119,3 +117,6 @@ else
 
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
+
+$starttime = explode(' ', microtime());
+$starttime = $starttime[1] + $starttime[0];
