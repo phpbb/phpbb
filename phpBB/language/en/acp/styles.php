@@ -285,9 +285,9 @@ $lang = array_merge($lang, array(
 	'INSTALLED_TEMPLATE'		=> 'Installed templates',
 	'INSTALLED_THEME'			=> 'Installed themes',
 
-	'KEEP_IMAGESET'				=> 'Keep "%s" imageset',
-	'KEEP_TEMPLATE'				=> 'Keep "%s" template',
-	'KEEP_THEME'				=> 'Keep "%s" theme',
+	'KEEP_IMAGESET'				=> 'Keep “%s” imageset',
+	'KEEP_TEMPLATE'				=> 'Keep “%s” template',
+	'KEEP_THEME'				=> 'Keep “%s” theme',
 
 	'LINE_SPACING'				=> 'Line spacing',
 	'LOCALISED_IMAGES'			=> 'Localised',
@@ -325,7 +325,7 @@ $lang = array_merge($lang, array(
 	'REPLACE_TEMPLATE_EXPLAIN'	=> 'This template set will replace the one you are deleting in any styles that use it.',
 	'REPLACE_THEME'				=> 'Replace theme with',
 	'REPLACE_THEME_EXPLAIN'		=> 'This theme will replace the one you are deleting in any styles that use it.',
-	'REPLACE_WITH_OPTION'		=> 'Replace with "%s"',
+	'REPLACE_WITH_OPTION'		=> 'Replace with “%s”',
 	'REQUIRES_IMAGESET'			=> 'This style requires the %s imageset to be installed.',
 	'REQUIRES_TEMPLATE'			=> 'This style requires the %s template set to be installed.',
 	'REQUIRES_THEME'			=> 'This style requires the %s theme to be installed.',
