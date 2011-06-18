@@ -45,7 +45,7 @@ function phpbb_require_updated($path, $optional = false)
     {
         require($new_path);
     }
-    else if (file_exists($old_path) || !$optional)
+    else if (!$optional || file_exists($old_path))
     {
         require($old_path);
     }
@@ -89,7 +89,7 @@ require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-phpbb_require_updated($phpbb_root_path . 'includes/functions_content.' . $phpEx, true);
+phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
