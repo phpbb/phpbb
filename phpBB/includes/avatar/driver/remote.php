@@ -24,14 +24,14 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($user_row, $ignore_config = false)
+	public function get_data($row, $ignore_config = false)
 	{
 		if ($ignore_config || $this->config['allow_avatar_remote'])
 		{
 			return array(
-				'src' => $user_row['user_avatar'],
-				'width' => $user_row['user_avatar_width'],
-				'height' => $user_row['user_avatar_height'],
+				'src' => $row['avatar'],
+				'width' => $row['avatar_width'],
+				'height' => $row['avatar_height'],
 			);
 		}
 		else
@@ -47,12 +47,12 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $user_row, &$error)
+	public function prepare_form($template, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AV_REMOTE_WIDTH' => (($user_row['user_avatar_type'] == AVATAR_REMOTE || $user_row['user_avatar_type'] == 'remote') && $user_row['user_avatar_width']) ? $user_row['user_avatar_width'] : request_var('av_local_width', 0),
-			'AV_REMOTE_HEIGHT' => (($user_row['user_avatar_type'] == AVATAR_REMOTE || $user_row['user_avatar_type'] == 'remote') && $user_row['user_avatar_height']) ? $user_row['user_avatar_height'] : request_var('av_local_width', 0),
-			'AV_REMOTE_URL' => (($user_row['user_avatar_type'] == AVATAR_REMOTE || $user_row['user_avatar_type'] == 'remote') && $user_row['user_avatar']) ? $user_row['user_avatar'] : '',
+			'AV_REMOTE_WIDTH' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar_width']) ? $row['avatar_width'] : request_var('av_local_width', 0),
+			'AV_REMOTE_HEIGHT' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar_height']) ? $row['avatar_height'] : request_var('av_local_width', 0),
+			'AV_REMOTE_URL' => (($row['avatar_type'] == AVATAR_REMOTE || $row['avatar_type'] == 'remote') && $row['avatar']) ? $row['avatar'] : '',
 		));
 
 		return true;
@@ -61,7 +61,7 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $user_row, &$error)
+	public function process_form($template, $row, &$error)
 	{
 		$url = request_var('av_remote_url', '');
 		$width = request_var('av_remote_width', 0);
@@ -155,9 +155,9 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 		}
 
 		return array(
-			'user_avatar' => $url,
-			'user_avatar_width' => $width,
-			'user_avatar_height' => $height,
+			'avatar' => $url,
+			'avatar_width' => $width,
+			'avatar_height' => $height,
 		);
 	}
 }

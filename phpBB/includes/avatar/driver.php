@@ -44,6 +44,12 @@ abstract class phpbb_avatar_driver
 	* @type phpbb_cache_driver_interface
 	*/
 	protected $cache;
+
+	/**
+	* @TODO
+	*/
+	const FROM_USER = 0;
+	const FROM_GROUP = 1;
 	
 	/**
 	* This flag should be set to true if the avatar requires a nonstandard image
@@ -71,12 +77,12 @@ abstract class phpbb_avatar_driver
 	/**
 	* Get the avatar url and dimensions
 	*
-	* @param $ignore_config Whether this function should respect the users/board
-	*        configuration option, or should just render the avatar anyways.
-	*        Useful for the ACP.
+	* @param $ignore_config Whether this function should respect the users prefs
+	*        and board configuration configuration option, or should just render
+	*        the avatar anyways. Useful for the ACP.
 	* @return array Avatar data
 	*/
-	public function get_data($user_row, $ignore_config = false)
+	public function get_data($row, $ignore_config = false)
 	{
 		return array(
 			'src' => '',
@@ -89,12 +95,12 @@ abstract class phpbb_avatar_driver
 	* Returns custom html for displaying this avatar.
 	* Only called if $custom_html is true.
 	*
-	* @param $ignore_config Whether this function should respect the users/board
-	*        configuration option, or should just render the avatar anyways.
-	*        Useful for the ACP.
+	* @param $ignore_config Whether this function should respect the users prefs
+	*        and board configuration configuration option, or should just render
+	*        the avatar anyways. Useful for the ACP.
 	* @return string HTML
 	*/
-	public function get_custom_html($user_row, $ignore_config = false)
+	public function get_custom_html($row, $ignore_config = false)
 	{
 		return '';
 	}
@@ -102,7 +108,7 @@ abstract class phpbb_avatar_driver
 	/**
 	* @TODO
 	**/
-	public function prepare_form($template, $user_row, &$error, &$override_focus)
+	public function prepare_form($template, $row, &$error, &$override_focus)
 	{
 		return false;
 	}
@@ -110,7 +116,7 @@ abstract class phpbb_avatar_driver
 	/**
 	* @TODO
 	**/
-	public function process_form($template, $user_row, &$error)
+	public function process_form($template, $row, &$error)
 	{
 		return false;
 	}
@@ -118,8 +124,49 @@ abstract class phpbb_avatar_driver
 	/**
 	* @TODO
 	**/
-	public function delete($user_row)
+	public function delete($row)
 	{
 		return true;
+	}
+
+	/**
+	* @TODO
+	**/
+	public static function clean_row($row, $src = phpbb_avatar_driver::FROM_USER)
+	{
+		$return = array();
+		$prefix = false;
+		
+		if ($src == phpbb_avatar_driver::FROM_USER)
+		{
+			$prefix = 'user_';
+		}
+		else if ($src == phpbb_avatar_driver::FROM_GROUP)
+		{
+			$prefix = 'group_';
+		}
+
+		if ($prefix)
+		{
+			$len = strlen($prefix);
+			foreach ($row as $key => $val)
+			{
+				$sub = substr($key, 0, $len);
+				if ($sub == $prefix)
+				{
+					$return[substr($key, $len)] = $val;
+				}
+				else
+				{
+					$return[$key] = $val;
+				}
+			}
+		}
+		else
+		{
+			$return = $row;
+		}
+
+		return $return;
 	}
 }

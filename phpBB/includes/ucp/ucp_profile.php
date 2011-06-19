@@ -556,6 +556,9 @@ class ucp_profile
 					
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
+					
+					// This is normalised data, without the user_ prefix
+					$avatar_data = phpbb_avatar_driver::clean_row($user->data, phpbb_avatar_driver::FROM_USER);
 
 					if ($submit)
 					{
@@ -565,12 +568,17 @@ class ucp_profile
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
 								$avatar = $avatar_manager->get_driver($driver);
-								$result = $avatar->process_form($template, $user->data, $error);
+								$result = $avatar->process_form($template, $avatar_data, $error);
 
 								if ($result && empty($error))
 								{
 									// Success! Lets save the result in the database
-									$result['user_avatar_type'] = $driver;
+									$result = array(
+										'user_avatar_type' => $driver,
+										'user_avatar' => $result['avatar'],
+										'user_avatar_width' => $result['avatar_width'],
+										'user_avatar_height' => $result['avatar_height'],
+									);
 
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
@@ -588,7 +596,7 @@ class ucp_profile
 								// They are removing their avatar or are trying to play games with us
 								if ($avatar = $avatar_manager->get_driver($user->data['user_avatar_type']))
 								{
-									$avatar->delete($user->data);
+									$avatar->delete($avatar_data);
 								}
 
 								$result = array(
@@ -628,7 +636,7 @@ class ucp_profile
 
 							$avatar = $avatar_manager->get_driver($driver);
 
-							if ($avatar->prepare_form($template, $user->data, $error))
+							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
 								$driver_u = strtoupper($driver);
 

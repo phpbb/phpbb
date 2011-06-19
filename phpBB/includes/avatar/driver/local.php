@@ -24,14 +24,14 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($user_row, $ignore_config = false)
+	public function get_data($row, $ignore_config = false)
 	{
 		if ($ignore_config || $this->config['allow_avatar_local'])
 		{
 			return array(
-				'src' => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $user_row['user_avatar'],
-				'width' => $user_row['user_avatar_width'],
-				'height' => $user_row['user_avatar_height'],
+				'src' => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
+				'width' => $row['avatar_width'],
+				'height' => $row['avatar_height'],
 			);
 		}
 		else
@@ -47,7 +47,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $user_row, &$error)
+	public function prepare_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
 		$category = request_var('av_local_cat', '');
@@ -83,7 +83,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $user_row, &$error)
+	public function process_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
 		$category = request_var('av_local_cat', '');
@@ -96,9 +96,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 		}
 
 		return array(
-			'user_avatar' => $category . '/' . $file,
-			'user_avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
-			'user_avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
+			'avatar' => $category . '/' . $file,
+			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
+			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
 	}
 

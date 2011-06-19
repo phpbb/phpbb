@@ -1280,6 +1280,36 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 */
 function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
+	$row = phpbb_avatar_driver::clean_row($user_row, phpbb_avatar_driver::FROM_USER);
+	return get_avatar($row, $alt, $ignore_config);
+}
+
+/**
+* Get group avatar
+*
+* @param array $group_row Row from the groups table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+{
+	$row = phpbb_avatar_driver::clean_row($user_row, phpbb_avatar_driver::FROM_GROUP);
+	return get_avatar($row, $alt, $ignore_config);
+}
+
+/**
+* Get avatar
+*
+* @param array $row Row cleaned by phpbb_avatar_driver::clean_row
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function get_avatar($row, $alt, $ignore_config = false)
+{
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 
 	static $avatar_manager = null;
@@ -1290,12 +1320,12 @@ function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false
 	}
 
 	$avatar_data = array(
-		'src' => $user_row['user_avatar'],
-		'width' => $user_row['user_avatar_width'],
-		'height' => $user_row['user_avatar_height'],
+		'src' => $row['avatar'],
+		'width' => $row['avatar_width'],
+		'height' => $row['avatar_height'],
 	);
 	
-	switch ($user_row['user_avatar_type'])
+	switch ($row['avatar_type'])
 	{
 		case AVATAR_UPLOAD:
 			// Compatibility with old avatars
@@ -1341,16 +1371,16 @@ function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false
 				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->get_driver());
 			}
 
-			$avatar = $avatar_manager->get_driver($user_row['user_avatar_type']);
+			$avatar = $avatar_manager->get_driver($row['avatar_type']);
 
 			if ($avatar)
 			{
 				if ($avatar->custom_html)
 				{
-					return $avatar->get_html($user_row, $ignore_config);
+					return $avatar->get_html($row, $ignore_config);
 				}
 
-				$avatar_data = $avatar->get_data($user_row, $ignore_config);
+				$avatar_data = $avatar->get_data($row, $ignore_config);
 			}
 			else
 			{
@@ -1371,26 +1401,4 @@ function get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false
 	}
 
 	return $html;
-}
-
-/**
-* Get group avatar
-*
-* @param array $group_row Row from the groups table
-* @param string $alt Optional language string for alt tag within image, can be a language key or text
-* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
-*
-* @return string Avatar html
-*/
-function get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
-{
-	// Kind of abusing this functionality...
-	$avatar_row = array(
-		'user_avatar' => $group_row['group_avatar'],
-		'user_avatar_type' => $group_row['group_avatar_type'],
-		'user_avatar_width' => $group_row['group_avatar_width'],
-		'user_avatar_height' => $group_row['group_avatar_height'],
-	);
-
-	return get_user_avatar($group_row, $alt, $ignore_config);
 }

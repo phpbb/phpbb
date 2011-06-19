@@ -24,14 +24,14 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function get_data($user_row, $ignore_config = false)
+	public function get_data($row, $ignore_config = false)
 	{
 		if ($ignore_config || $this->config['allow_avatar_upload'])
 		{
 			return array(
-				'src' => $this->phpbb_root_path . 'download/file.' . $this->phpEx . '?avatar=' . $user_row['user_avatar'],
-				'width' => $user_row['user_avatar_width'],
-				'height' => $user_row['user_avatar_height'],
+				'src' => $this->phpbb_root_path . 'download/file.' . $this->phpEx . '?avatar=' . $row['avatar'],
+				'width' => $row['avatar_width'],
+				'height' => $row['avatar_height'],
 			);
 		}
 		else
@@ -47,7 +47,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function prepare_form($template, $user_row, &$error)
+	public function prepare_form($template, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{
@@ -65,7 +65,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 	/**
 	* @inheritdoc
 	*/
-	public function process_form($template, $user_row, &$error)
+	public function process_form($template, $row, &$error)
 	{
 		if (!$this->can_upload())
 		{
@@ -88,7 +88,7 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		}
 
 		$prefix = $this->config['avatar_salt'] . '_';
-		$file->clean_filename('avatar', $prefix, $user_row['user_id']);
+		$file->clean_filename('avatar', $prefix, $row['id']);
 
 		$destination = $this->config['avatar_path'];
 
@@ -115,19 +115,19 @@ class phpbb_avatar_driver_upload extends phpbb_avatar_driver
 		}
 
 		return array(
-			'user_avatar' => $user_row['user_id'] . '_' . time() . '.' . $file->get('extension'),
-			'user_avatar_width' => $file->get('width'),
-			'user_avatar_height' => $file->get('height'),
+			'avatar' => $row['id'] . '_' . time() . '.' . $file->get('extension'),
+			'avatar_width' => $file->get('width'),
+			'avatar_height' => $file->get('height'),
 		);
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function delete($user_row)
+	public function delete($row)
 	{
-		$ext = substr(strrchr($user_row['user_avatar'], '.'), 1);
-		$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $user_row['user_id'] . '.' . $ext;
+		$ext = substr(strrchr($row['avatar'], '.'), 1);
+		$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $row['id'] . '.' . $ext;
 
 		if (file_exists($filename))
 		{
