@@ -272,7 +272,7 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-$s_search_hidden_fields = array('fid' => $forum_id);
+$s_search_hidden_fields = array('fid' => array($forum_id));
 if ($_SID)
 {
 	$s_search_hidden_fields['sid'] = $_SID;

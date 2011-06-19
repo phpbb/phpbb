@@ -24,7 +24,24 @@ if (version_compare(PHP_VERSION, '4.3.3') < 0)
 	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
 }
 
-require($phpbb_root_path . 'includes/startup.' . $phpEx);
+function phpbb_require_updated($path, $optional = false)
+{
+    global $phpbb_root_path;
+
+    $new_path = $phpbb_root_path . 'install/update/new/' . $path;
+    $old_path = $phpbb_root_path . $path;
+
+    if (file_exists($new_path))
+    {
+        require($new_path);
+    }
+    else if (!$optional || file_exists($old_path))
+    {
+        require($old_path);
+    }
+}
+
+phpbb_require_updated('includes/startup.' . $phpEx);
 
 // Try to override some limits - maybe it helps some...
 @set_time_limit(0);
@@ -58,10 +75,7 @@ else
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
-{
-	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
-}
+phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
