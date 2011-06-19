@@ -26,19 +26,19 @@ if (version_compare(PHP_VERSION, '4.3.3') < 0)
 
 function phpbb_require_updated($path, $optional = false)
 {
-    global $phpbb_root_path;
+	global $phpbb_root_path;
 
-    $new_path = $phpbb_root_path . 'install/update/new/' . $path;
-    $old_path = $phpbb_root_path . $path;
+	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+	$old_path = $phpbb_root_path . $path;
 
-    if (file_exists($new_path))
-    {
-        require($new_path);
-    }
-    else if (!$optional || file_exists($old_path))
-    {
-        require($old_path);
-    }
+	if (file_exists($new_path))
+	{
+		require($new_path);
+	}
+	else if (!$optional || file_exists($old_path))
+	{
+		require($old_path);
+	}
 }
 
 phpbb_require_updated('includes/startup.' . $phpEx);
