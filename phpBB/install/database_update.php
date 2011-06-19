@@ -34,7 +34,24 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-require($phpbb_root_path . 'includes/startup.' . $phpEx);
+function phpbb_require_updated($path, $optional = false)
+{
+    global $phpbb_root_path;
+
+    $new_path = $phpbb_root_path . 'install/update/new/' . $path;
+    $old_path = $phpbb_root_path . $path;
+
+    if (file_exists($new_path))
+    {
+        require($new_path);
+    }
+    else if (!$optional || file_exists($old_path))
+    {
+        require($old_path);
+    }
+}
+
+phpbb_require_updated('includes/startup.' . $phpEx);
 
 $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
@@ -72,10 +89,7 @@ require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
-{
-	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
-}
+phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
