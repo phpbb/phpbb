@@ -102,7 +102,7 @@ abstract class phpbb_avatar_driver
 	/**
 	* @TODO
 	**/
-	public function prepare_form($template, $user_row, &$error)
+	public function prepare_form($template, $user_row, &$error, &$override_focus)
 	{
 		return false;
 	}

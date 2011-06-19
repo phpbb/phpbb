@@ -1689,53 +1689,17 @@ class acp_users
 				{
 					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
 
-					if (isset($_POST['av_delete']))
-					{
-						if (!check_form_key($form_name))
-						{
-							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
-						}
-
-						$result = array(
-							'user_avatar' => '',
-							'user_avatar_type' => '',
-							'user_avatar_height' => 0,
-							'user_avatar_width' => 0,
-						);
-
-						if ($driver = $avatar_manager->get_driver($user_row['user_avatar_type']))
-						{
-							$driver->delete($user_row);
-						}
-
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $result) . '
-							WHERE user_id = ' . $user_id;
-
-						$db->sql_query($sql);
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
-					}
-
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 
-					foreach ($avatar_drivers as $driver)
+					if ($submit)
 					{
-						if ($config["allow_avatar_$driver"])
+						if (check_form_key($form_name))
 						{
-							$avatars_enabled = true;
-							$template->set_filenames(array(
-								'avatar' => "acp_avatar_options_$driver.html",
-							));
-
-							$avatar = $avatar_manager->get_driver($driver);
-							if (isset($_POST["submit_av_$driver"]))
+							$driver = request_var('avatar_driver', '');
+							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
-								if (!check_form_key($form_name))
-								{
-									trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
-								}
-
+								$avatar = $avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $user_row, $error);
 
 								if ($result && empty($error))
@@ -1750,6 +1714,42 @@ class acp_users
 									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 								}
 							}
+							else
+							{
+								// Removing the avatar
+								$result = array(
+									'user_avatar' => '',
+									'user_avatar_type' => '',
+									'user_avatar_width' => 0,
+									'user_avatar_height' => 0,
+								);
+								
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $result) . '
+									WHERE user_id = ' . $user_id;
+
+								$db->sql_query($sql);
+								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+						}
+						else
+						{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
+					}
+
+					$focused_driver = request_var('avatar_driver', $user_row['user_avatar_type']);
+
+					foreach ($avatar_drivers as $driver)
+					{
+						if ($config["allow_avatar_$driver"])
+						{
+							$avatars_enabled = true;
+							$template->set_filenames(array(
+								'avatar' => "acp_avatar_options_$driver.html",
+							));
+
+							$avatar = $avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $user_row, $error))
 							{
@@ -1757,7 +1757,9 @@ class acp_users
 								$template->assign_block_vars('avatar_drivers', array(
 									'L_TITLE' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_TITLE'), // @TODO add lang values
 									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
+
 									'DRIVER' => $driver,
+									'SELECTED' => ($driver == $focused_driver),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
 							}

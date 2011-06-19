@@ -615,6 +615,8 @@ class ucp_profile
 						}
 					}
 
+					$focused_driver = request_var('avatar_driver', $user->data['user_avatar_type']);
+					
 					foreach ($avatar_drivers as $driver)
 					{
 						if ($config["allow_avatar_$driver"])
@@ -625,33 +627,6 @@ class ucp_profile
 							));
 
 							$avatar = $avatar_manager->get_driver($driver);
-							if (isset($_POST["submit_av_$driver"]))
-							{
-								if (check_form_key('ucp_avatar'))
-								{
-									$result = $avatar->process_form($template, $user->data, $error);
-								
-									if ($result && empty($error))
-									{
-										// Success! Lets save the result in the database
-										$result['user_avatar_type'] = $driver;
-
-										$sql = 'UPDATE ' . USERS_TABLE . '
-											SET ' . $db->sql_build_array('UPDATE', $result) . '
-											WHERE user_id = ' . $user->data['user_id'];
-
-										$db->sql_query($sql);
-									
-										meta_refresh(3, $this->u_action);
-										$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-										trigger_error($message);
-									}
-								}
-								else
-								{
-									$error[] = 'FORM_INVALID';
-								}
-							}
 
 							if ($avatar->prepare_form($template, $user->data, $error))
 							{
@@ -662,7 +637,7 @@ class ucp_profile
 									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
 
 									'DRIVER' => $driver,
-									'SELECTED' => ($driver == $user->data['user_avatar_type']),
+									'SELECTED' => ($driver == $focused_driver),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
 							}
