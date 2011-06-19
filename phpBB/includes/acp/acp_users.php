@@ -1692,6 +1692,9 @@ class acp_users
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 
+					// This is normalised data, without the user_ prefix
+					$avatar_data = phpbb_avatar_driver::clean_row($user_row, phpbb_avatar_driver::FROM_USER);
+
 					if ($submit)
 					{
 						if (check_form_key($form_name))
@@ -1700,12 +1703,17 @@ class acp_users
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
 								$avatar = $avatar_manager->get_driver($driver);
-								$result = $avatar->process_form($template, $user_row, $error);
+								$result = $avatar->process_form($template, $avatar_data, $error);
 
 								if ($result && empty($error))
 								{
 									// Success! Lets save the result in the database
-									$result['user_avatar_type'] = $driver;
+									$result = array(
+										'user_avatar_type' => $driver,
+										'user_avatar' => $result['avatar'],
+										'user_avatar_width' => $result['avatar_width'],
+										'user_avatar_height' => $result['avatar_height'],
+									);
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . $user_id;
@@ -1751,7 +1759,7 @@ class acp_users
 
 							$avatar = $avatar_manager->get_driver($driver);
 
-							if ($avatar->prepare_form($template, $user_row, $error))
+							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
 								$driver_u = strtoupper($driver);
 								$template->assign_block_vars('avatar_drivers', array(

@@ -7,8 +7,10 @@
 <input type="submit" value="{L_GO}" name="av_local_go" class="button2" />
 
 <div id="gallery">
-<!-- BEGIN av_local_imgs -->
-	<label for="av-{av_local_imgs.S_ROW_COUNT}"><img src="{av_local_imgs.AVATAR_IMAGE}" alt="" /><br />
-	<input type="radio" name="av_local_file" id="av-{av_local_imgs.S_ROW_COUNT}" value="{av_local_imgs.AVATAR_FILE}" /></label>
-<!-- END av_local_imgs -->
+<!-- BEGIN av_local_row -->
+<!-- BEGIN av_local_col -->
+	<label for="av-{av_local_row.av_local_col.S_ROW_COUNT}"><img src="{av_local_row.av_local_col.AVATAR_IMAGE}" alt="" /><br />
+	<input type="radio" name="av_local_file" id="av-{av_local_row.av_local_col.S_ROW_COUNT}" value="{av_local_row.av_local_col.AVATAR_FILE}" /></label>
+<!-- END av_local_col -->
+<!-- END av_local_row -->
 </div>
