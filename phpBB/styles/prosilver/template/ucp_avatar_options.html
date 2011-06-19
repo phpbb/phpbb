@@ -10,22 +10,61 @@
 		<dl>
 			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 			<dd><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></dd>
-			<!-- IF AVATAR && S_AVATARS_ENABLED --><dd><input type="submit" name="av_delete" id="av_delete" value="{LA_DELETE_AVATAR}" /></dd><!-- ENDIF -->
 		</dl>
 	</fieldset>
-
+	<h3>{L_AVATAR_SELECT_NEW}</h3>
+	<fieldset>
+		<dl>
+			<dt><label>{L_AVATAR_TYPE}</label></dt>
+			<dd><select name="avatar_driver" id="avatar_driver">
+				<option value="">{L_NO_AVATAR}</option>
+				<!-- BEGIN avatar_drivers -->
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<!-- END avatar_drivers -->
+			</select></dd>
+	</fieldset>
+	<div id="av_options">
 <!-- BEGIN avatar_drivers -->
-	<h3>{avatar_drivers.L_TITLE}</h3>
+	<div id="av_option_{avatar_drivers.DRIVER}">
+	<noscript>
+	<h3 class="avatar_section_header">{avatar_drivers.L_TITLE}</h3>
+	</noscript>
 	<p>{avatar_drivers.L_EXPLAIN}</p>
 
 	<fieldset>
 	{avatar_drivers.OUTPUT}
 	</fieldset>
+	</div>
+<!-- END avatar_drivers -->
+	</div>
 	<fieldset class="submit-buttons">
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" /> &nbsp;
-		<input type="submit" name="submit_av_{avatar_drivers.DRIVER}" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
-<!-- END avatar_drivers -->
+
+	<script type="text/javascript">
+		// <![CDATA[
+			function avatar_simplify() {
+				var node = document.getElementById('av_options');
+				for (var i = 0; i < node.children.length; i++) {
+					child = node.children[i];
+					child.style.display = 'none';
+				}
+
+				var selected = document.getElementById('avatar_driver').value;
+				var id = 'av_option_' + selected;
+				node = document.getElementById(id);
+				if (node != null) {
+					node.style.display = 'block';
+				}
+			}
+
+			avatar_simplify();
+			document.getElementById('avatar_driver').onchange = avatar_simplify;
+		// ]]>
+	</script>
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>
+<script type="text/javascript">
+</script>

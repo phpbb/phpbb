@@ -554,40 +554,66 @@ class ucp_profile
 				{
 					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
 					
-					if (isset($_POST['av_delete']))
+					$avatar_drivers = $avatar_manager->get_valid_drivers();
+					sort($avatar_drivers);
+
+					if ($submit)
 					{
 						if (check_form_key('ucp_avatar'))
 						{
-							$result = array(
-								'user_avatar' => '',
-								'user_avatar_type' => '',
-								'user_avatar_width' => 0,
-								'user_avatar_height' => 0,
-							);
-							
-							if ($driver = $avatar_manager->get_driver($user->data['user_avatar_type']))
+							$driver = request_var('avatar_driver', '');
+							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
-								$driver->delete($user->data);
+								$avatar = $avatar_manager->get_driver($driver);
+								$result = $avatar->process_form($template, $user->data, $error);
+
+								if ($result && empty($error))
+								{
+									// Success! Lets save the result in the database
+									$result['user_avatar_type'] = $driver;
+
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $result) . '
+										WHERE user_id = ' . $user->data['user_id'];
+
+									$db->sql_query($sql);
+									
+									meta_refresh(3, $this->u_action);
+									$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+									trigger_error($message);
+								}
 							}
-										
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $result) . '
-								WHERE user_id = ' . $user->data['user_id'];
+							else
+							{
+								// They are removing their avatar or are trying to play games with us
+								if ($avatar = $avatar_manager->get_driver($user->data['user_avatar_type']))
+								{
+									$avatar->delete($user->data);
+								}
 
-							$db->sql_query($sql);
+								$result = array(
+									'user_avatar' => '',
+									'user_avatar_type' => '',
+									'user_avatar_width' => 0,
+									'user_avatar_height' => 0,
+								);
 
-							meta_refresh(3, $this->u_action);
-							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-							trigger_error($message);
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $result) . '
+									WHERE user_id = ' . $user->data['user_id'];
+
+								$db->sql_query($sql);
+								
+								meta_refresh(3, $this->u_action);
+								$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+								trigger_error($message);
+							}
 						}
 						else
 						{
 							$error[] = 'FORM_INVALID';
 						}
 					}
-
-					$avatar_drivers = $avatar_manager->get_valid_drivers();
-					sort($avatar_drivers);
 
 					foreach ($avatar_drivers as $driver)
 					{
@@ -636,6 +662,7 @@ class ucp_profile
 									'L_EXPLAIN' => $user->lang('AVATAR_DRIVER_' . $driver_u . '_EXPLAIN'),
 
 									'DRIVER' => $driver,
+									'SELECTED' => ($driver == $user->data['user_avatar_type']),
 									'OUTPUT' => $template->assign_display('avatar'),
 								));
 							}

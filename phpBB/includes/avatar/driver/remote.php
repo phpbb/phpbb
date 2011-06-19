@@ -72,6 +72,8 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			$url = 'http://' . $url;
 		}
 
+		require_once($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+
 		$error = array_merge($error, validate_data(array(
 			'url' => $url,
 		), array(
