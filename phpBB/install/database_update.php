@@ -34,20 +34,23 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-function phpbb_require_updated($path, $optional = false)
+if (!function_exists('phpbb_require_updated'))
 {
-	global $phpbb_root_path;
-
-	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
-	$old_path = $phpbb_root_path . $path;
-
-	if (file_exists($new_path))
+	function phpbb_require_updated($path, $optional = false)
 	{
-		require($new_path);
-	}
-	else if (!$optional || file_exists($old_path))
-	{
-		require($old_path);
+		global $phpbb_root_path;
+
+		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+		$old_path = $phpbb_root_path . $path;
+
+		if (file_exists($new_path))
+		{
+			require($new_path);
+		}
+		else if (!$optional || file_exists($old_path))
+		{
+			require($old_path);
+		}
 	}
 }
 
