@@ -33,13 +33,16 @@ class dbal_mysqli extends dbal
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false , $new_link = false)
 	{
-		$this->persistency = $persistency;
+		// Mysqli extension supports persistent connection since PHP 5.3.0
+		$this->persistency = (version_compare(PHP_VERSION, '5.3.0', '>=')) ? $persistency : false;
 		$this->user = $sqluser;
-		$this->server = $sqlserver;
+
+		// If persistent connection, set dbhost to localhost when empty and prepend it with 'p:' prefix
+		$this->server = ($this->persistency) ? 'p:' . (($sqlserver) ? $sqlserver : 'localhost') : $sqlserver;
+
 		$this->dbname = $database;
 		$port = (!$port) ? NULL : $port;
 
-		// Persistant connections not supported by the mysqli extension?
 		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port);
 
 		if ($this->db_connect_id && $this->dbname != '')
