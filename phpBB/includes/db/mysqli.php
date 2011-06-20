@@ -43,7 +43,23 @@ class dbal_mysqli extends dbal
 		$this->dbname = $database;
 		$port = (!$port) ? NULL : $port;
 
-		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port);
+		// If port is set and it is not numeric, most likely mysqli socket is set.
+		// Try to map it to the $socket parameter.
+		$socket = NULL;
+		if ($port)
+		{
+			if (preg_match('#^[0-9]+$#', $port))
+			{
+				$port = (int) $port;
+			}
+			else
+			{
+				$socket = $port;
+				$port = NULL;
+			}
+		}
+
+		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
