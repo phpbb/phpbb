@@ -48,7 +48,7 @@ class dbal_mysqli extends dbal
 		$socket = NULL;
 		if ($port)
 		{
-			if (preg_match('#^[0-9]+$#', $port))
+			if (is_numeric($port))
 			{
 				$port = (int) $port;
 			}
