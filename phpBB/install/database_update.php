@@ -972,6 +972,8 @@ function database_update_info()
 		),
 		// No changes from 3.0.9-RC1 to 3.0.9-RC2
 		'3.0.9-RC1'		=> array(),
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		'3.0.9-RC2'		=> array(),
 	);
 }
 
@@ -1966,6 +1968,10 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.9-RC1 to 3.0.9-RC2
 		case '3.0.9-RC1':
+		break;
+
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		case '3.0.9-RC2':
 		break;
 	}
 }
