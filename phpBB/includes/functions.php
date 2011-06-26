@@ -3758,21 +3758,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
-				// flush the content, else we get a white page if output buffering is on
-				if (ob_get_level() > 0)
-				{
-					@ob_flush();
-				}
-
-				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
-				if (!empty($config['gzip_compress']))
-				{
-					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
-					{
-						@ob_flush();
-					}
-				}
-
 				// remove complete path to installation, with the risk of changing backslashes meant to be there
 				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
 				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
@@ -4332,7 +4317,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
-		if (@extension_loaded('zlib') && !headers_sent())
+		if (@extension_loaded('zlib') && !headers_sent() && ob_get_level() <= 1 && ob_get_length() == 0)
 		{
 			ob_start('ob_gzhandler');
 		}
