@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.9-RC3');
+define('UPDATES_TO_VERSION', '3.0.9-RC4');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -974,6 +974,16 @@ function database_update_info()
 		'3.0.9-RC1'		=> array(),
 		// No changes from 3.0.9-RC2 to 3.0.9-RC3
 		'3.0.9-RC2'		=> array(),
+
+		// Changes from 3.0.9-RC-3 to 3.0.9-RC4
+		'3.0.9-RC3'     => array(
+			'drop_keys' => array(
+				LOGIN_ATTEMPT_TABLE => array('attempt_id')
+			),
+			'drop_columns' => array(
+				LOGIN_ATTEMPT_TABLE => array('attempt_id')
+			),
+		),
 	);
 }
 

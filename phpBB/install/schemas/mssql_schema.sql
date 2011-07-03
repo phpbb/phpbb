@@ -653,7 +653,6 @@ GO
 	Table: 'phpbb_login_attempts'
 */
 CREATE TABLE [phpbb_login_attempts] (
-	[attempt_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[attempt_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[attempt_browser] [varchar] (150) DEFAULT ('') NOT NULL ,
 	[attempt_forwarded_for] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -662,13 +661,6 @@ CREATE TABLE [phpbb_login_attempts] (
 	[username] [varchar] (255) DEFAULT (0) NOT NULL ,
 	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_login_attempts] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_login_attempts] PRIMARY KEY  CLUSTERED 
-	(
-		[attempt_id]
-	)  ON [PRIMARY] 
 GO
 
 CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) ON [PRIMARY]
