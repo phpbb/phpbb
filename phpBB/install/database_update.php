@@ -1983,6 +1983,10 @@ function change_database_data(&$no_updates, $version)
 		// No changes from 3.0.9-RC2 to 3.0.9-RC3
 		case '3.0.9-RC2':
 		break;
+
+		// No changes from 3.0.9-RC3 to 3.0.9-RC4
+		case '3.0.9-RC3':
+		break;
 	}
 }
 
