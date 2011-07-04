@@ -1797,7 +1797,6 @@ class acp_users
 					'S_AVATAR'	=> true,
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
-					'AV_SHOW_DELETE' => !empty($avatar),
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 

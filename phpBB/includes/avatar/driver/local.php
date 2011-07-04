@@ -67,6 +67,10 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 		if (!empty($avatar_list[$category]))
 		{
+			$template->assign_vars(array(
+				'AV_LOCAL_SHOW' => true,
+			));
+
 			$table_cols = isset($row['av_gallery_cols']) ? $row['av_gallery_cols'] : 4;
 			$row_count = $col_count = $av_pos = 0;
 			$av_count = sizeof($avatar_list[$category]);
