@@ -242,6 +242,15 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_column_remove()
 	{
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
+
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_int_size'));
+
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
+	}
+
+	public function test_column_remove_primary()
+	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_id'));
 
 		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_id'));
@@ -264,5 +273,4 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 		$this->tools->sql_table_drop('prefix_test_table');
 	}
-
 }
