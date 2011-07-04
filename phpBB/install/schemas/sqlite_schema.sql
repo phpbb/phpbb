@@ -359,7 +359,6 @@ CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
 
 # Table: 'phpbb_login_attempts'
 CREATE TABLE phpbb_login_attempts (
-	attempt_id INTEGER PRIMARY KEY NOT NULL ,
 	attempt_ip varchar(40) NOT NULL DEFAULT '',
 	attempt_browser varchar(150) NOT NULL DEFAULT '',
 	attempt_forwarded_for varchar(255) NOT NULL DEFAULT '',
