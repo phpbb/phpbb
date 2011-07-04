@@ -744,15 +744,13 @@ END;
 	Table: 'phpbb_login_attempts'
 */
 CREATE TABLE phpbb_login_attempts (
-	attempt_id number(8) NOT NULL,
 	attempt_ip varchar2(40) DEFAULT '' ,
 	attempt_browser varchar2(150) DEFAULT '' ,
 	attempt_forwarded_for varchar2(255) DEFAULT '' ,
 	attempt_time number(11) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	username varchar2(765) DEFAULT '0' NOT NULL,
-	username_clean varchar2(255) DEFAULT '0' NOT NULL,
-	CONSTRAINT pk_phpbb_login_attempts PRIMARY KEY (attempt_id)
+	username_clean varchar2(255) DEFAULT '0' NOT NULL
 )
 /
 
@@ -764,22 +762,6 @@ CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time
 /
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
 /
-
-CREATE SEQUENCE phpbb_login_attempts_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_login_attempts
-BEFORE INSERT ON phpbb_login_attempts
-FOR EACH ROW WHEN (
-	new.attempt_id IS NULL OR new.attempt_id = 0
-)
-BEGIN
-	SELECT phpbb_login_attempts_seq.nextval
-	INTO :new.attempt_id
-	FROM dual;
-END;
-/
-
 
 /*
 	Table: 'phpbb_moderator_cache'

@@ -547,7 +547,6 @@ END;;
 
 # Table: 'phpbb_login_attempts'
 CREATE TABLE phpbb_login_attempts (
-	attempt_id INTEGER NOT NULL,
 	attempt_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	attempt_browser VARCHAR(150) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	attempt_forwarded_for VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
@@ -557,23 +556,10 @@ CREATE TABLE phpbb_login_attempts (
 	username_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT 0 NOT NULL COLLATE UNICODE
 );;
 
-ALTER TABLE phpbb_login_attempts ADD PRIMARY KEY (attempt_id);;
-
 CREATE INDEX phpbb_login_attempts_att_ip ON phpbb_login_attempts(attempt_ip, attempt_time);;
 CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts(attempt_forwarded_for, attempt_time);;
 CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts(attempt_time);;
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts(user_id);;
-
-CREATE GENERATOR phpbb_login_attempts_gen;;
-SET GENERATOR phpbb_login_attempts_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_login_attempts FOR phpbb_login_attempts
-BEFORE INSERT
-AS
-BEGIN
-	NEW.attempt_id = GEN_ID(phpbb_login_attempts_gen, 1);
-END;;
-
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (

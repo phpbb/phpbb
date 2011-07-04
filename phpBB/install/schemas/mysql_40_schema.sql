@@ -371,7 +371,6 @@ CREATE TABLE phpbb_log (
 
 # Table: 'phpbb_login_attempts'
 CREATE TABLE phpbb_login_attempts (
-	attempt_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	attempt_ip varbinary(40) DEFAULT '' NOT NULL,
 	attempt_browser varbinary(150) DEFAULT '' NOT NULL,
 	attempt_forwarded_for varbinary(255) DEFAULT '' NOT NULL,
@@ -379,7 +378,6 @@ CREATE TABLE phpbb_login_attempts (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	username blob NOT NULL,
 	username_clean blob NOT NULL,
-	PRIMARY KEY (attempt_id),
 	KEY att_ip (attempt_ip, attempt_time),
 	KEY att_for (attempt_forwarded_for, attempt_time),
 	KEY att_time (attempt_time),
