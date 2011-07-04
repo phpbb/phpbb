@@ -946,7 +946,12 @@ function database_update_info()
 			'add_tables'		=> array(
 				LOGIN_ATTEMPT_TABLE	=> array(
 					'COLUMNS'			=> array(
-						'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
+						// this column was removed from the database updater
+						// after 3.0.9-RC3 was released. It might still exist
+						// in 3.0.9-RCX installations and has to be dropped in
+						// 3.0.10 after the db_tools class is capable of properly
+						// removing a primary key.
+						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
 						'attempt_browser'		=> array('VCHAR:150', ''),
 						'attempt_forwarded_for'	=> array('VCHAR:255', ''),
@@ -974,16 +979,10 @@ function database_update_info()
 		'3.0.9-RC1'		=> array(),
 		// No changes from 3.0.9-RC2 to 3.0.9-RC3
 		'3.0.9-RC2'		=> array(),
+		// No changes from 3.0.9-RC3 to 3.0.9-RC4
+		'3.0.9-RC3'     => array(),
 
-		// Changes from 3.0.9-RC-3 to 3.0.9-RC4
-		'3.0.9-RC3'     => array(
-			'drop_keys' => array(
-				LOGIN_ATTEMPT_TABLE => array('attempt_id')
-			),
-			'drop_columns' => array(
-				LOGIN_ATTEMPT_TABLE => array('attempt_id')
-			),
-		),
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.10-RC1 */
 	);
 }
 
