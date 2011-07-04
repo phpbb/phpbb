@@ -1013,7 +1013,12 @@ function database_update_info()
 			'add_tables'		=> array(
 				LOGIN_ATTEMPT_TABLE	=> array(
 					'COLUMNS'			=> array(
-						'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
+						// this column was removed from the database updater
+						// after 3.0.9-RC3 was released. It might still exist
+						// in 3.0.9-RCX installations and has to be dropped in
+						// 3.0.10 after the db_tools class is capable of properly
+						// removing a primary key.
+						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
 						'attempt_browser'		=> array('VCHAR:150', ''),
 						'attempt_forwarded_for'	=> array('VCHAR:255', ''),
@@ -1037,6 +1042,14 @@ function database_update_info()
 				),
 			),
 		),
+		// No changes from 3.0.9-RC1 to 3.0.9-RC2
+		'3.0.9-RC1'		=> array(),
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		'3.0.9-RC2'		=> array(),
+		// No changes from 3.0.9-RC3 to 3.0.9
+		'3.0.9-RC3'     => array(),
+
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.10-RC1 */
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
@@ -2044,6 +2057,18 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$no_updates = false;
+		break;
+
+		// No changes from 3.0.9-RC1 to 3.0.9-RC2
+		case '3.0.9-RC1':
+		break;
+
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		case '3.0.9-RC2':
+		break;
+
+		// No changes from 3.0.9-RC3 to 3.0.9
+		case '3.0.9-RC3':
 		break;
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
