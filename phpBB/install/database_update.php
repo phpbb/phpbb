@@ -960,7 +960,7 @@ function database_update_info()
 						'username'				=> array('VCHAR_UNI:255', 0),
 						'username_clean'		=> array('VCHAR_CI', 0),
 					),
-					'PRIMARY_KEY'		=> 'attempt_id',
+					//'PRIMARY_KEY'		=> 'attempt_id',
 					'KEYS'				=> array(
 						'att_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
 						'att_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
