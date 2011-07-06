@@ -2288,15 +2288,23 @@ class user extends session
 			{
 				global $cache;
 
-				if (($img_file_hash = $cache->get('imageset_site_logo_md5')) === false)
+				$img_file_hashes = $cache->get('imageset_site_logo_md5');
+
+				if ($img_file_hashes === false)
 				{
-					$img_file_hash = md5(file_get_contents($phpbb_root_path . $path));
-					$cache->put('imageset_site_logo_md5', $img_file_hash);
+					$img_file_hashes = array();
+				}
+
+				$key = $this->theme['imageset_path'] . '::' . $this->img_array[$img]['image_lang'];
+				if (!isset($img_file_hashes[$key]))
+				{
+					$img_file_hashes[$key] = md5(file_get_contents($phpbb_root_path . $path));
+					$cache->put('imageset_site_logo_md5', $img_file_hashes);
 				}
 
 				$phpbb_logo_hash = '0c461a32cd3621643105f0d02a772c10';
 
-				if ($phpbb_logo_hash == $img_file_hash)
+				if ($phpbb_logo_hash == $img_file_hashes[$key])
 				{
 					$img_data['width'] = '149';
 					$img_data['height'] = '52';
