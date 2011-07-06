@@ -1097,22 +1097,34 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 					trigger_error($message);
 				}
-				if ($_GET['unwatch'] == $mode)
-				{
-					$is_watching = 0;
 
+				if (confirm_box(true))
+				{
 					$sql = 'DELETE FROM ' . $table_sql . "
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
 					$db->sql_query($sql);
+
+					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					meta_refresh(3, $redirect_url);
+					trigger_error($message);
 				}
+				else
+				{
+					$s_hidden_fields = array(
+						'uid'		=> $user->data['user_id'],
+						'unwatch'	=> $mode,
+						'start'		=> $start,
+						'f'			=> $forum_id,
+					);
+					if ($mode != 'forum')
+					{
+						$s_hidden_fields['t'] = $topic_id;
+					}
 
-				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-
-				meta_refresh(3, $redirect_url);
-
-				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
-				trigger_error($message);
+					confirm_box(false, 'UNWATCH_' . strtoupper($mode), build_hidden_fields($s_hidden_fields));
+				}
 			}
 			else
 			{
