@@ -2303,9 +2303,36 @@ class user extends session
 			// Use URL if told so
 			$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 
-			$img_data['src'] = $root_path . 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$path = 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+
+			$img_data['src'] = $root_path . $path;
 			$img_data['width'] = $this->img_array[$img]['image_width'];
 			$img_data['height'] = $this->img_array[$img]['image_height'];
+
+			// We overwrite the width and height to the phpbb logo's width
+			// and height here if the contents of the site_logo file are
+			// really equal to the phpbb_logo
+			// This allows us to change the dimensions of the phpbb_logo without
+			// modifying the imageset.cfg and causing a conflict for everyone
+			// who modified it for their custom logo on updating
+			if ($img == 'site_logo' && file_exists($phpbb_root_path . $path))
+			{
+				global $cache;
+
+				if (($img_file_hash = $cache->get('imageset_site_logo_md5')) === false)
+				{
+					$img_file_hash = md5(file_get_contents($phpbb_root_path . $path));
+					$cache->put('imageset_site_logo_md5', $img_file_hash);
+				}
+
+				$phpbb_logo_hash = '0c461a32cd3621643105f0d02a772c10';
+
+				if ($phpbb_logo_hash == $img_file_hash)
+				{
+					$img_data['width'] = '149';
+					$img_data['height'] = '52';
+				}
+			}
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
