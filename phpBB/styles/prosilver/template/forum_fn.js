@@ -200,7 +200,7 @@ function selectCode(a)
 	// Get ID of code block
 	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
 
-	// Not IE
+	// Not IE and IE9+
 	if (window.getSelection)
 	{
 		var s = window.getSelection();
