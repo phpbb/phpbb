@@ -29,9 +29,16 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		return str_replace("\n\n", "\n", implode("\n", array_map('trim', explode("\n", trim($result)))));
 	}
 
-	protected function setup_engine()
+	protected function setup_engine(array $new_config = array())
 	{
-		global $phpbb_root_path, $phpEx, $config, $user;
+		global $phpbb_root_path, $phpEx, $user;
+
+		$defaults = array(
+			'load_tplcompile'	=> true,
+			'tpl_allow_php'		=> false,
+		);
+
+		$config = new phpbb_config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user);
@@ -53,10 +60,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			unlink($file);
 		}
 
-		$GLOBALS['config'] = array(
-			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
-		);
+		$this->setup_engine();
 	}
 
 	protected function tearDown()

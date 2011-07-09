@@ -328,15 +328,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 	public function test_php()
 	{
-		$GLOBALS['config']['tpl_allow_php'] = true;
+		$this->setup_engine(array('tpl_allow_php' => true));
 
 		$cache_file = $this->template->cachepath . 'php.html.php';
 
 		$this->assertFileNotExists($cache_file);
 
 		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
-
-		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
 	public static function alter_block_array_data()

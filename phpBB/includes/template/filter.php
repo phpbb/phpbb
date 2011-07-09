@@ -65,6 +65,18 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private $in_php;
 
+	/**
+	* Whether <!-- PHP --> tags are allowed
+	*
+	* @var bool
+	*/
+	private $allow_php;
+
+	public function __construct($allow_php)
+	{
+		$this->allow_php = $allow_php;
+	}
+
 	public function filter($in, $out, &$consumed, $closing)
 	{
 		$written = false;
@@ -111,6 +123,7 @@ class phpbb_template_filter extends php_user_filter
 	{
 		$this->chunk = '';
 		$this->in_php = false;
+		$this->allow_php = $this->params['allow_php'];
 		return true;
 	}
 
@@ -121,10 +134,8 @@ class phpbb_template_filter extends php_user_filter
 		$data = preg_replace('#<(?:[\\?%]|script)#s', '<?php echo\'\\0\';?>', $data);
 		$data = preg_replace_callback(self::REGEX_TOKENS, array($this, 'replace'), $data);
 
-		global $config;
-
 		// Remove php
-		if (!$config['tpl_allow_php'])
+		if (!$this->allow_php)
 		{
 			if ($block_start_in_php
 				&& $this->in_php
@@ -195,8 +206,6 @@ class phpbb_template_filter extends php_user_filter
 			return $this->compile_var_tags($matches[0]);
 		}
 
-		global $config;
-
 		switch ($matches[1])
 		{
 			case 'BEGIN':
@@ -243,11 +252,11 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'INCLUDEPHP':
-				return ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
+				return ($this->allow_php) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
 			break;
 
 			case 'PHP':
-				if ($config['tpl_allow_php'])
+				if ($this->allow_php)
 				{
 					$this->in_php = true;
 					return '<?php ';
@@ -256,7 +265,7 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'ENDPHP':
-				if ($config['tpl_allow_php'])
+				if ($this->allow_php)
 				{
 					$this->in_php = false;
 					return ' ?>';

@@ -26,6 +26,18 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 class phpbb_template_compile
 {
 	/**
+	* Whether <!-- PHP --> tags are allowed
+	*
+	* @var bool
+	*/
+	private $allow_php;
+
+	public function __construct($allow_php)
+	{
+		$this->allow_php = $allow_php;
+	}
+
+	/**
 	* Compiles template in $source_file and writes compiled template to
 	* cache directory
 	* @param string $handle Template handle to compile
@@ -96,7 +108,7 @@ class phpbb_template_compile
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
-		stream_filter_append($source_stream, 'phpbb_template');
+		stream_filter_append($source_stream, 'phpbb_template', null, array('allow_php' => $this->allow_php));
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }

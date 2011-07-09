@@ -376,7 +376,7 @@ class phpbb_template
 
 		$source_file = $this->_source_file_for_handle($handle);
 
-		$compile = new phpbb_template_compile();
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
 
 		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
