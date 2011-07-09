@@ -180,7 +180,7 @@ $db->sql_freeresult($result);
 
 // We do not include DB Tools here, because we can not be sure the file is up-to-date ;)
 // Instead, this file defines a clean db_tools version (we are also not able to provide a different file, else the database update will not work standalone)
-$db_tools = new updater_db_tools($db, true);
+$db_tools = new phpbb_db_tools($db, true);
 
 $database_update_info = database_update_info();
 
