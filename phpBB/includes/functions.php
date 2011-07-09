@@ -3686,10 +3686,16 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 					{
 						return true;
 					}
+				break;
 
 				default:
-				case 'A':
 				case 'AAAA':
+					if (stripos($line, "$host AAAA IPv6 address") === 0)
+					{
+						return true;
+					}
+					//No break, newer versions of Windows output AAAA in the same way as the A records
+				case 'A':
 					if (!empty($host_matches))
 					{
 						// Second line
