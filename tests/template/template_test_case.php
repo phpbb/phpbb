@@ -20,7 +20,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected function display($handle)
 	{
 		ob_start();
-		$this->assertTrue($this->template->display($handle, false));
+		$this->assertTrue($this->template->display($handle));
 		return self::trim_template_result(ob_get_clean());
 	}
 

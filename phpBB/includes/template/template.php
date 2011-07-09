@@ -216,12 +216,11 @@ class phpbb_template
 	/**
 	* Display handle
 	* @param string $handle Handle to display
-	* @param bool $include_once Allow multiple inclusions
 	* @return bool True on success, false on failure
 	*/
-	public function display($handle, $include_once = true)
+	public function display($handle)
 	{
-		$result = $this->call_hook($handle, $include_once);
+		$result = $this->call_hook($handle);
 		if ($result !== false)
 		{
 			return $result[0];
@@ -243,13 +242,12 @@ class phpbb_template
 	/**
 	* Calls hook if any is defined.
 	* @param string $handle Template handle being displayed.
-	* @param bool $include_once Allow multiple inclusions
 	*/
-	private function call_hook($handle, $include_once)
+	private function call_hook($handle)
 	{
 		global $phpbb_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $this))
 		{
 			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
 			{
@@ -285,13 +283,12 @@ class phpbb_template
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @param bool $include_once Allow multiple inclusions of the file
 	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
 	*/
-	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
+	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
 		ob_start();
-		$result = $this->display($handle, $include_once);
+		$result = $this->display($handle);
 		$contents = ob_get_clean();
 		if ($result === false)
 		{
