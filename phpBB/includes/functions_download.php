@@ -100,10 +100,11 @@ function send_avatar_to_browser($file, $browser)
 */
 function wrap_img_in_html($src, $title)
 {
-	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-Strict.dtd">';
+	echo '<!DOCTYPE html>';
 	echo '<html>';
 	echo '<head>';
-	echo '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />';
+	echo '<meta charset="utf-8">';
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
 	echo '<title>' . $title . '</title>';
 	echo '</head>';
 	echo '<body>';

@@ -554,10 +554,11 @@ class module
 			return;
 		}
 
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+		echo '<!DOCTYPE html>';
+		echo '<html dir="ltr">';
 		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta charset="utf-8">';
+		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';

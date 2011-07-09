@@ -2248,10 +2248,11 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		header('Refresh: 0; URL=' . $url);
 
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
+		echo '<!DOCTYPE html>';
+		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta charset="utf-8">';
+		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -3756,10 +3757,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Try to not call the adm page data...
 
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+			echo '<!DOCTYPE html>';
+			echo '<html dir="ltr">';
 			echo '<head>';
-			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+			echo '<meta charset="utf-8">';
+			echo '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
