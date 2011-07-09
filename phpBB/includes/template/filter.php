@@ -17,6 +17,21 @@ if (!defined('IN_PHPBB'))
 
 /**
 * The template filter that does the actual compilation
+*
+* psoTFX, phpBB Development Team - Completion of file caching, decompilation
+* routines and implementation of conditionals/keywords and associated changes
+*
+* The interface was inspired by PHPLib templates, and the template file (formats are
+* quite similar)
+*
+* The keyword/conditional implementation is currently based on sections of code from
+* the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
+* (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
+* derived from an LGPL application may be relicenced under the GPL, this applies
+* to this source
+*
+* DEFINE directive inspired by a request by Cyberalien
+*
 * @see template_compile
 * @package phpBB3
 */
