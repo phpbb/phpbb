@@ -99,6 +99,8 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
+phpbb_require_updated('includes/db/db_tools.' . $phpEx);
+
 // new table constants are separately defined here in case the updater is run
 // before the files are updated
 if (!defined('LOGIN_ATTEMPT_TABLE'))
