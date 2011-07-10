@@ -983,6 +983,8 @@ function database_update_info()
 		'3.0.9-RC2'		=> array(),
 		// No changes from 3.0.9-RC3 to 3.0.9-RC4
 		'3.0.9-RC3'     => array(),
+		// No changes from 3.0.9-RC4 to 3.0.9
+		'3.0.9-RC4'     => array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.10-RC1 */
 	);
@@ -1987,6 +1989,10 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.9-RC3 to 3.0.9-RC4
 		case '3.0.9-RC3':
+		break;
+
+		// No changes from 3.0.9-RC4 to 3.0.9
+		case '3.0.9-RC4':
 		break;
 	}
 }
