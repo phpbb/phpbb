@@ -269,11 +269,12 @@ class dbal_oracle extends dbal
 						{
 							$cols = explode(', ', $regs[2]);
 
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+
 /*						The code inside this comment block breaks clob handling, but does allow the
 						database restore script to work.  If you want to allow no posts longer than 4KB
 						and/or need the db restore script, uncomment this.
 
-							preg_match_all('/\'(?:[^\']++|\'\')*+\'|[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
 
 							if (sizeof($cols) !== sizeof($vals))
 							{

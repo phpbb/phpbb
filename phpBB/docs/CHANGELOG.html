@@ -8,7 +8,7 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2007 phpBB Group" />
+<meta name="copyright" content="phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="phpBB 3.0.x Changelog" />
 <title>phpBB3 &bull; Changelog</title>
@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v308">Changes since 3.0.8</a></li>
 		<li><a href="#v307-PL1">Changes since 3.0.7-PL1</a></li>
 		<li><a href="#v307">Changes since 3.0.7</a></li>
 		<li><a href="#v306">Changes since 3.0.6</a></li>
@@ -89,7 +90,375 @@
 
 		<div class="content">
 
-	<a name="v307-PL1"></a><h3>1.i. Changes since 3.0.7-PL1</h3>
+	<a name="v308"></a><h3>1.i. Changes since 3.0.8</h3>
+
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-217'>PHPBB3-217</a>] -         Multiline [url] not Converted
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-6712'>PHPBB3-6712</a>] -         Topic bumping does not create new topic icon on index
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7057'>PHPBB3-7057</a>] -         Quicksearch uses POST, thus the page expires!
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7778'>PHPBB3-7778</a>] -         Increase limit of custom BBcodes
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7834'>PHPBB3-7834</a>] -         Correctly update topic_time when deleting first post in topic
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7888'>PHPBB3-7888</a>] -         URL of search results page does not always contain all keywords of the search query
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7941'>PHPBB3-7941</a>] -         mistake in description of function generate_board_url
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-8138'>PHPBB3-8138</a>] -         Browser autocompleton fills wrong fields in ACP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-8736'>PHPBB3-8736</a>] -         Honour ACP settings for min/max username length when posting as a guest.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-8802'>PHPBB3-8802</a>] -         Wrong confirmation text when clicking &quot;mark forums read&quot; in a category
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-8904'>PHPBB3-8904</a>] -         Show numeric CPF default value when editing
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9166'>PHPBB3-9166</a>] -         Subsilver and prosilver CSS elements out of order.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9348'>PHPBB3-9348</a>] -         Correctly encode default_dateformat when converting from phpBB2
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9575'>PHPBB3-9575</a>] -         The word &quot;administrate&quot; is not correct.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9630'>PHPBB3-9630</a>] -         Naming inconsistency of Merging Posts / Topics in MCP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9675'>PHPBB3-9675</a>] -         Add option to delete template/theme/imageset when deleting style.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9685'>PHPBB3-9685</a>] -         Unable to create &quot;Fulltext native&quot; search index using the mssqlnative DBAL
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9751'>PHPBB3-9751</a>] -         Password requirement &quot;Must contain letters and numbers&quot; is not working properly
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9764'>PHPBB3-9764</a>] -         Empty value for CONFIG_TABLE config_name= &#39;mime_triggers&#39; causes functions_fileupload.php-&gt;fileupload-&gt;check_content() to be too restrictive
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9851'>PHPBB3-9851</a>] -         &quot;Search new posts&quot; should require login
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9872'>PHPBB3-9872</a>] -         Total topics isn&#39;t correct after I deleted a user
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9874'>PHPBB3-9874</a>] -         view_log() performs unneeded count query over all log entries.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9892'>PHPBB3-9892</a>] -         Firebird index name length limit is not taken into account
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9905'>PHPBB3-9905</a>] -         DSN field should include SQLite
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9908'>PHPBB3-9908</a>] -         Send &quot;Moved Permanently&quot; before stripping off session ids for Bots.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9910'>PHPBB3-9910</a>] -         Javascript bug in Subsilver2 PMs
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9911'>PHPBB3-9911</a>] -         Incorrect open/close field in Manage ranks ACP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9913'>PHPBB3-9913</a>] -         currunt should be current
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9915'>PHPBB3-9915</a>] -         &quot;Length of ban:&quot; is not displayed in ACP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9924'>PHPBB3-9924</a>] -         $template-&gt;display hook does not pass $template instance
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9925'>PHPBB3-9925</a>] -         prosilver logo margin bug in IE 6-7-8 
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9928'>PHPBB3-9928</a>] -         Do not link &quot;login to your board&quot; to the &quot;send statistics&quot; page after completed update.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9930'>PHPBB3-9930</a>] -         Redirect fails with open_basedir enabled
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9932'>PHPBB3-9932</a>] -         The Bing bot is not added when converting.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9933'>PHPBB3-9933</a>] -         Wrong handling of consecutive multiple asterisks in word censor 
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9934'>PHPBB3-9934</a>] -         Mass Mail missing under the system tab on a fresh install
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9939'>PHPBB3-9939</a>] -         JavaScript error in recaptcha ACP template
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9944'>PHPBB3-9944</a>] -         Extension groups naming don&#39;t use users&#39; language in ACP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9946'>PHPBB3-9946</a>] -         $inserts empty in sql_query() for oracle
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9948'>PHPBB3-9948</a>] -         Inline quicktime files won&#39;t display
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9949'>PHPBB3-9949</a>] -         $user-&gt;lang() is not handling arguments as per documentation 
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9950'>PHPBB3-9950</a>] -         Problem with localized button images after uprading from 3.0.7-PL1 to 3.0.8
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9953'>PHPBB3-9953</a>] -         Set focus to password on re-authentication
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9954'>PHPBB3-9954</a>] -         u_masspm* permissions are forced to never for certain groups
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9961'>PHPBB3-9961</a>] -         Inconsistent activation logs
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9966'>PHPBB3-9966</a>] -         Language download in ACP creates index.html and misses captcha_*
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9970'>PHPBB3-9970</a>] -         user_lang input not checked during registration
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9981'>PHPBB3-9981</a>] -         Fix unit test dependencies on phpBB files
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9985'>PHPBB3-9985</a>] -         3D Wave CAPTCHA mt_rand() does not check order of min/max values
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9997'>PHPBB3-9997</a>] -         Inconsistent approve/disapprove button order in modcp
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9999'>PHPBB3-9999</a>] -         {forumrow.L_FORUM_FOLDER_ALT} and {SEARCH_IMG} only return a language key.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10005'>PHPBB3-10005</a>] -         users can register without custom profile field correctly entered
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10011'>PHPBB3-10011</a>] -         __DIR__ in test suite renders it unusable on php &lt; 5.3
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10016'>PHPBB3-10016</a>] -         set_config_count() fails on PostreSQL 7
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10020'>PHPBB3-10020</a>] -         ACP function validate_range() fails partially on non-32-bit systems
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10021'>PHPBB3-10021</a>] -         &quot;Find a member&quot; generates SQL error when large dates are entered
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10029'>PHPBB3-10029</a>] -         No such thing as $_SERVER[&#39;HTTP_VERSION&#39;]
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10033'>PHPBB3-10033</a>] -         &quot;Disallow usernames&quot; does not check already disallowed names
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10035'>PHPBB3-10035</a>] -         ACP template edit feature allows to read any files on webserver and to upload/execute any script on it
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10036'>PHPBB3-10036</a>] -         Use image from configuration file for displaying online-status.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10038'>PHPBB3-10038</a>] -         download/file.php uses $_GET value instead of function request_var()
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10039'>PHPBB3-10039</a>] -         2.x to 3.x conversion fails when using mssqlnative to connect to destination database
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10042'>PHPBB3-10042</a>] -         GD captcha has invalid mt_rand calls
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10047'>PHPBB3-10047</a>] -         Session ID always included in URL on posting.php
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10049'>PHPBB3-10049</a>] -         Session test files are misnamed, session tests are not run
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10052'>PHPBB3-10052</a>] -         Session tests are broken
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10056'>PHPBB3-10056</a>] -         Firebird misspelled in database updater
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10058'>PHPBB3-10058</a>] -         Root path is undefined in MySQL upgrader
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10059'>PHPBB3-10059</a>] -         Consistent is misspelled twice
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10060'>PHPBB3-10060</a>] -         Typo in tests database connection manager
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10068'>PHPBB3-10068</a>] -         Firefox4 restrictions to :visited
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10078'>PHPBB3-10078</a>] -         commit-msg hook prints \n on freebsd
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10081'>PHPBB3-10081</a>] -         Cleanup Template Tests
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10084'>PHPBB3-10084</a>] -         Add smilie errors out when image is missing
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10088'>PHPBB3-10088</a>] -         Cache mock does not unset database versions other than mysqli
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10090'>PHPBB3-10090</a>] -         cache/queue.php.lock isn&#39;t covered by .gitignore
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10092'>PHPBB3-10092</a>] -         commit-msg hook aborts on overlength comment lines
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10096'>PHPBB3-10096</a>] -         Wrong whitespace in functions.php
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10100'>PHPBB3-10100</a>] -         Race condition in unique_id() on heavily busy database.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10102'>PHPBB3-10102</a>] -         member.S_PENDING_SET in styles/prosilver/template/ucp_groups_manage.html
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10104'>PHPBB3-10104</a>] -         missing one intval() along with others already being there
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10109'>PHPBB3-10109</a>] -         Errors while copying a topic
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10112'>PHPBB3-10112</a>] -         Use of count() in captcha_gd.php and mssqlnative.php
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10115'>PHPBB3-10115</a>] -         BBcodes not working if post contains about or more 55000 non-english symbols
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10117'>PHPBB3-10117</a>] -         Big posts becomes empty if they have smilies on specified places.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10121'>PHPBB3-10121</a>] -         ICQ profile link leads to a webservice that is no longer active
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10123'>PHPBB3-10123</a>] -         Inconsistent use of smilie/smiley
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10128'>PHPBB3-10128</a>] -         Error message is on green background when trying to ban a nonexistent user
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10137'>PHPBB3-10137</a>] -         Deleting an unintended space at the end of PHP_URL_FOPEN_SUPPORT_EXPLAIN
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10146'>PHPBB3-10146</a>] -         Firebird cannot handle DECIMAL(255, 0)
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10147'>PHPBB3-10147</a>] -         Typo in code comment in functions_template.php
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10149'>PHPBB3-10149</a>] -         deregister_globals causes error when cookie called GLOBALS is set to scalar value
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10170'>PHPBB3-10170</a>] -         reCAPTCHA address has changed
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10171'>PHPBB3-10171</a>] -         Firefox4 displays grey pixels at PM message rows when message is neither marked nor replied
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10177'>PHPBB3-10177</a>] -         phpBB package cannot be built with bsdtar
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10178'>PHPBB3-10178</a>] -         build.xml does not specify path to find - breaks on FreeBSD
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10188'>PHPBB3-10188</a>] -         Broken compressed output when errors/warnings are handled by phpbb and output_buffering is set to 4096 and phpbb gzip is enabled
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10191'>PHPBB3-10191</a>] -         Duplicate output when output_handler is set in php.ini
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10192'>PHPBB3-10192</a>] -         Missing semicolon in MySQL Upgrader
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10195'>PHPBB3-10195</a>] -         Do not check DNS Blacklists if IPv6 address is passed to session::check_dnsbl().
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10198'>PHPBB3-10198</a>] -         Function validate_config_vars() improperly validates multibyte strings
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10203'>PHPBB3-10203</a>] -         Fix quotations and hyphen in language strings for PHPBB3-10067
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10204'>PHPBB3-10204</a>] -         Package build tool does not detect binary file changes
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10206'>PHPBB3-10206</a>] -         Normalization tests fail when unicode.org is not reachable
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10211'>PHPBB3-10211</a>] -         Missing space on the recent PHPBB3-9992 changes
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10213'>PHPBB3-10213</a>] -         IP limit index name too long on Oracle
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10214'>PHPBB3-10214</a>] -         Cannot configure Q&amp;A on Oracle
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10218'>PHPBB3-10218</a>] -         STRIP is not defined in style.php causing a notice to be thrown
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10219'>PHPBB3-10219</a>] -         Inappropriate character in web.config file
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10220'>PHPBB3-10220</a>] -         Logging in with Mobile Device triggers SQL error on *_login_attempts.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10221'>PHPBB3-10221</a>] -         Inconsistent usage of &quot;Seconds&quot; in ACP Settings
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-7729'>PHPBB3-7729</a>] -         Prevent date/time functions from throwing E_WARNING on PHP 5.3 by setting a default timezone
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10188'>PHPBB3-10188</a>] -         Broken compressed output when errors/warnings are handled by phpbb and output_buffering is set to 4096 and phpbb gzip is enabled
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10223'>PHPBB3-10223</a>] -         Updater references startup.php from board path
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10228'>PHPBB3-10228</a>] -         Typo in 3.0.9-RC1 user registration settings
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10229'>PHPBB3-10229</a>] -         On languge/acp/styles.php &quot;%s&quot; should be &quot;%s&quot;
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10232'>PHPBB3-10232</a>] -         Search within topic/forum searches all posts
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10233'>PHPBB3-10233</a>] -         IE Emulation fix breaks posting layout when PMing
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10234'>PHPBB3-10234</a>] -         msg_handler() reports E_WARNING as &quot;PHP Notice: &quot;
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10247'>PHPBB3-10247</a>] -         mediumint(8) too small for phpbb_login_attempts.attempt_id
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10250'>PHPBB3-10250</a>] -         phpBB Logo needs the Registered Trademark Symbol
+</li>
+</ul>
+    
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9581'>PHPBB3-9581</a>] -         Banned users get mass emails.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9802'>PHPBB3-9802</a>] -         Optimize session_begin REMOTE_ADDR validation
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9878'>PHPBB3-9878</a>] -         Get rid of Internet Explorer 7 emulation
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9897'>PHPBB3-9897</a>] -         Language typos in language/en/acp/board.php
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9922'>PHPBB3-9922</a>] -         Posting URL in subsilver 2
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9937'>PHPBB3-9937</a>] -         Feed Icon displays on Forum links
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9980'>PHPBB3-9980</a>] -         URLs to javascript should be T_SUPER_TEMPLATE_PATH instead of T_TEMPLATE_PATH
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9989'>PHPBB3-9989</a>] -         Skip PM popup in overall_header.html, if there are no new PMs.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10007'>PHPBB3-10007</a>] -         Add directive &#39;internal&#39; to blocked folders in nginx example configuration.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10009'>PHPBB3-10009</a>] -         Differentiate published/updated dates in Atom feed
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10014'>PHPBB3-10014</a>] -         Make the error message when cache is not writable clearer
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10024'>PHPBB3-10024</a>] -         Allow a Style to present Unread PM in different way than read PM
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10040'>PHPBB3-10040</a>] -         Continuous integration on PHP 5.2
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10041'>PHPBB3-10041</a>] -         download/file.php needs more use of send_status_line
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10044'>PHPBB3-10044</a>] -         Setup github network improvements
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10057'>PHPBB3-10057</a>] -         More informative reporting of errors when database connection fails for Firebird and PostgreSQL.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10067'>PHPBB3-10067</a>] -         ACP options for account activation are confusing when emails are turned off board-wide
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10069'>PHPBB3-10069</a>] -         Improvements in sample nginx config file
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10072'>PHPBB3-10072</a>] -         Send the post number to the template as it relates to it&#39;s position in the topic
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10101'>PHPBB3-10101</a>] -         Compatibility with native phpass hashes
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10126'>PHPBB3-10126</a>] -         Replace ^ with &amp;~ in error_reporting calls
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10141'>PHPBB3-10141</a>] -         Performance improvement for $auth-&gt;_fill_acl()
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10145'>PHPBB3-10145</a>] -         Ability to force recompilation of all templates on every page load
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10154'>PHPBB3-10154</a>] -         Move &quot;copy permissions from&quot; to below &quot;parent&quot; in forum creation form
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10158'>PHPBB3-10158</a>] -         Return link not really useful after sending a Private Message
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10186'>PHPBB3-10186</a>] -         UCP signature panel displays when not authed for signatures
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9942'>PHPBB3-9942</a>] -         WinCache Caching Module
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9992'>PHPBB3-9992</a>] -         Limit amount of failed login attempts per IP
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10110'>PHPBB3-10110</a>] -         Redis caching module
+</li>
+</ul>
+    
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9788'>PHPBB3-9788</a>] -         Add README for GitHub
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9805'>PHPBB3-9805</a>] -         Add a script for setting up git remotes for a github network
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9806'>PHPBB3-9806</a>] -         Script for easy merging
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9824'>PHPBB3-9824</a>] -         Git hook quirks
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9859'>PHPBB3-9859</a>] -         Remove the years from visible copyright in the footer.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9921'>PHPBB3-9921</a>] -         Add sample configuration for lighttpd webserver
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9943'>PHPBB3-9943</a>] -         Setup phpDocumentor API documentation generation
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9967'>PHPBB3-9967</a>] -         Use phpunit.xml for test suite
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9987'>PHPBB3-9987</a>] -         Enforce _test.php suffix for test files
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9990'>PHPBB3-9990</a>] -         Integrate utf normalizer tests into test suite
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10043'>PHPBB3-10043</a>] -         Refactor phpbb_database_test_case
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10046'>PHPBB3-10046</a>] -         Getting rid of register_shutdown_function() in cron.php to prevent path disclosure (reported by lacton)
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10075'>PHPBB3-10075</a>] -         Update docs/AUTHORS for 3.0.9-RC1 release
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10079'>PHPBB3-10079</a>] -         Add gallery avatars to .gitignore.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10082'>PHPBB3-10082</a>] -         Fix Session Test Issues with CHAR vs. VARCHAR.
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10105'>PHPBB3-10105</a>] -         Update AIM express link and &quot;Download Application&quot; links
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-10107'>PHPBB3-10107</a>] -         Improve docs for non-apache webserver configuration
+</li>
+</ul>
+    
+<h4>        Sub-task
+</h4>
+<ul>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9732'>PHPBB3-9732</a>] -         Cover session code extensively in tests
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9968'>PHPBB3-9968</a>] -         Create unit test for word censor regular expression
+</li>
+<li>[<a href='http://tracker.phpbb.com/browse/PHPBB3-9969'>PHPBB3-9969</a>] -         Move word censor regular expression creation into separate function definition in functions.php
+</li>
+</ul>
+
+
+	<a name="v307-PL1"></a><h3>1.ii. Changes since 3.0.7-PL1</h3>
 <h4>        Security
 </h4>
 <ul>
@@ -547,13 +916,13 @@
 </ul>
 
 
-	<a name="v307"></a><h3>1.ii. Changes since 3.0.7</h3>
+	<a name="v307"></a><h3>1.iii. Changes since 3.0.7</h3>
 
 	<ul>
 		<li>[Sec] Do not expose forum content of forums with ACL entries but no actual permission in ATOM Feeds. (Bug #58595)</li>
 	</ul>
 
-	<a name="v306"></a><h3>1.iii. Changes since 3.0.6</h3>
+	<a name="v306"></a><h3>1.iv. Changes since 3.0.6</h3>
 
 	<ul>
 		<li>[Fix] Allow ban reason and length to be selected and copied in ACP and subsilver2 MCP. (Bug #51095)</li>
@@ -657,7 +1026,7 @@
 
 	</ul>
 
-	<a name="v305"></a><h3>1.iv. Changes since 3.0.5</h3>
+	<a name="v305"></a><h3>1.v. Changes since 3.0.5</h3>
 
 	<ul>
 		<li>[Fix] Allow whitespaces in avatar gallery names. (Bug #44955)</li>
@@ -879,7 +1248,7 @@
 		<li>[Feature] Send anonymous statistical information to phpBB on installation and update (optional).</li>
 	</ul>
 
-	<a name="v304"></a><h3>1.v. Changes since 3.0.4</h3>
+	<a name="v304"></a><h3>1.vi. Changes since 3.0.4</h3>
 
 	<ul>
 		<li>[Fix] Delete user entry from ban list table upon user deletion (Bug #40015 - Patch by TerraFrost)</li>
@@ -968,7 +1337,7 @@
 		<li>[Sec] Only use forum id supplied for posting if global announcement detected. (Reported by nickvergessen)</li>
 	</ul>
 
-	<a name="v303"></a><h3>1.vi. Changes since 3.0.3</h3>
+	<a name="v303"></a><h3>1.vii. Changes since 3.0.3</h3>
 
 	<ul>
 		<li>[Fix] Allow mixed-case template directories to be inherited (Bug #36725)</li>
@@ -1000,7 +1369,7 @@
 		<li>[Sec] Ask for forum password if post within passworded forum quoted in private message. (Reported by nickvergessen)</li>
 	</ul>
 
-	<a name="v302"></a><h3>1.vii. Changes since 3.0.2</h3>
+	<a name="v302"></a><h3>1.viii. Changes since 3.0.2</h3>
 
 	<ul>
 		<li>[Fix] Correctly set topic starter if first post in topic removed (Bug #30575 - Patch by blueray2048)</li>
@@ -1099,7 +1468,7 @@
 		<li>[Sec Precaution] Stricter validation of the HTTP_HOST header (Thanks to Techie-Micheal et al for pointing out possible issues in derived code)</li>
 	</ul>
 
-	<a name="v301"></a><h3>1.viii. Changes since 3.0.1</h3>
+	<a name="v301"></a><h3>1.ix. Changes since 3.0.1</h3>
 
 	<ul>
 		<li>[Fix] Ability to set permissions on non-mysql dbms (Bug #24955)</li>
@@ -1147,7 +1516,7 @@
 		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 	</ul>
 
-	<a name="v300"></a><h3>1.ix Changes since 3.0.0</h3>
+	<a name="v300"></a><h3>1.x Changes since 3.0.0</h3>
 
 	<ul>
 		<li>[Change] Validate birthdays (Bug #15004)</li>
@@ -1218,7 +1587,7 @@
 		<li>[Fix] Find and display colliding usernames correctly when converting from one database to another (Bug #23925)</li>
 	</ul>
 
-	<a name="v30rc8"></a><h3>1.x. Changes since 3.0.RC8</h3>
+	<a name="v30rc8"></a><h3>1.xi. Changes since 3.0.RC8</h3>
 
 	<ul>
 		<li>[Fix] Cleaned usernames contain only single spaces, so &quot;a_name&quot; and &quot;a__name&quot; are treated as the same name (Bug #15634)</li>
@@ -1227,7 +1596,7 @@
 		<li>[Fix] Call garbage_collection() within database updater to correctly close connections (affects Oracle for example)</li>
 	</ul>
 
-	<a name="v30rc7"></a><h3>1.xi. Changes since 3.0.RC7</h3>
+	<a name="v30rc7"></a><h3>1.xii. Changes since 3.0.RC7</h3>
 
 	<ul>
 		<li>[Fix] Fixed MSSQL related bug in the update system</li>
@@ -1262,7 +1631,7 @@
 		<li>[Fix] No duplication of active topics (Bug #15474)</li>
 	</ul>
 
-	<a name="v30rc6"></a><h3>1.xii. Changes since 3.0.RC6</h3>
+	<a name="v30rc6"></a><h3>1.xiii. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -1272,7 +1641,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.xiii. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.xiv. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -1335,7 +1704,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.xiv. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.xv. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -1386,7 +1755,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.xv. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.xvi. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -1495,7 +1864,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.xvi. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.xvii. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -1541,7 +1910,7 @@
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.xvii. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.xviii. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>
@@ -1676,7 +2045,7 @@
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

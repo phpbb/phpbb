@@ -8,17 +8,21 @@
 *
 */
 
-$updates_to_version = '3.0.8';
+define('UPDATES_TO_VERSION', '3.0.9');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = false;
+define('DEBUG_FROM_VERSION', false);
 
 // Which oldest version does this updater support?
-$oldest_from_version = '3.0.0';
+define('OLDEST_FROM_VERSION', '3.0.0');
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
+	$updates_to_version = UPDATES_TO_VERSION;
+	$debug_from_version = DEBUG_FROM_VERSION;
+	$oldest_from_version = OLDEST_FROM_VERSION;
+
 	return;
 }
 
@@ -30,12 +34,32 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices and deprecation messages
-if (!defined('E_DEPRECATED'))
+if (!function_exists('phpbb_require_updated'))
 {
-	define('E_DEPRECATED', 8192);
+	function phpbb_require_updated($path, $optional = false)
+	{
+		global $phpbb_root_path;
+
+		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
+		$old_path = $phpbb_root_path . $path;
+
+		if (file_exists($new_path))
+		{
+			require($new_path);
+		}
+		else if (!$optional || file_exists($old_path))
+		{
+			require($old_path);
+		}
+	}
 }
-//error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
+
+phpbb_require_updated('includes/startup.' . $phpEx);
+
+$updates_to_version = UPDATES_TO_VERSION;
+$debug_from_version = DEBUG_FROM_VERSION;
+$oldest_from_version = OLDEST_FROM_VERSION;
+
 error_reporting(E_ALL);
 
 @set_time_limit(0);
@@ -68,28 +92,18 @@ require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
-{
-	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
-}
+phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+// new table constants are separately defined here in case the updater is run
+// before the files are updated
+if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	@set_magic_quotes_runtime(0);
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
+	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
 
 $user = new user();
@@ -227,7 +241,7 @@ if (empty($config['dbms_version']))
 	set_config('dbms_version', $db->sql_server_info(true));
 }
 
-// Firebird update from Firebord 2.0 to 2.1+ required?
+// Firebird update from Firebird 2.0 to 2.1+ required?
 if ($db->sql_layer == 'firebird')
 {
 	// We do not trust any PHP5 function enabled, we will simply test for a function new in 2.1
@@ -511,7 +525,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 	</div>
 </div>
 
@@ -534,12 +548,23 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	$db->sql_return_on_error(true);
 
-	$result = $db->sql_query($sql);
-	if ($db->sql_error_triggered)
+	if ($sql === 'begin')
 	{
-		$errored = true;
-		$error_ary['sql'][] = $db->sql_error_sql;
-		$error_ary['error_code'][] = $db->sql_error_returned;
+		$result = $db->sql_transaction('begin');
+	}
+	else if ($sql === 'commit')
+	{
+		$result = $db->sql_transaction('commit');
+	}
+	else
+	{
+		$result = $db->sql_query($sql);
+		if ($db->sql_error_triggered)
+		{
+			$errored = true;
+			$error_ary['sql'][] = $db->sql_error_sql;
+			$error_ary['error_code'][] = $db->sql_error_returned;
+		}
 	}
 
 	$db->sql_return_on_error(false);
@@ -916,6 +941,50 @@ function database_update_info()
 		'3.0.7-PL1'		=> array(),
 		// No changes from 3.0.8-RC1 to 3.0.8
 		'3.0.8-RC1'		=> array(),
+		// Changes from 3.0.8 to 3.0.9-RC1
+		'3.0.8'			=> array(
+			'add_tables'		=> array(
+				LOGIN_ATTEMPT_TABLE	=> array(
+					'COLUMNS'			=> array(
+						// this column was removed from the database updater
+						// after 3.0.9-RC3 was released. It might still exist
+						// in 3.0.9-RCX installations and has to be dropped in
+						// 3.0.10 after the db_tools class is capable of properly
+						// removing a primary key.
+						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
+						'attempt_ip'			=> array('VCHAR:40', ''),
+						'attempt_browser'		=> array('VCHAR:150', ''),
+						'attempt_forwarded_for'	=> array('VCHAR:255', ''),
+						'attempt_time'			=> array('TIMESTAMP', 0),
+						'user_id'				=> array('UINT', 0),
+						'username'				=> array('VCHAR_UNI:255', 0),
+						'username_clean'		=> array('VCHAR_CI', 0),
+					),
+					//'PRIMARY_KEY'		=> 'attempt_id',
+					'KEYS'				=> array(
+						'att_ip'			=> array('INDEX', array('attempt_ip', 'attempt_time')),
+						'att_for'	=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+						'att_time'			=> array('INDEX', array('attempt_time')),
+						'user_id'				=> array('INDEX', 'user_id'),
+					),
+				),
+			),
+			'change_columns'	=> array(
+				BBCODES_TABLE	=> array(
+					'bbcode_id'	=> array('USINT', 0),
+				),
+			),
+		),
+		// No changes from 3.0.9-RC1 to 3.0.9-RC2
+		'3.0.9-RC1'		=> array(),
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		'3.0.9-RC2'		=> array(),
+		// No changes from 3.0.9-RC3 to 3.0.9-RC4
+		'3.0.9-RC3'     => array(),
+		// No changes from 3.0.9-RC4 to 3.0.9
+		'3.0.9-RC4'     => array(),
+
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.10-RC1 */
 	);
 }
 
@@ -1858,6 +1927,71 @@ function change_database_data(&$no_updates, $version)
 		// No changes from 3.0.8-RC1 to 3.0.8
 		case '3.0.8-RC1':
 		break;
+
+		// Changes from 3.0.8 to 3.0.9-RC1
+		case '3.0.8':
+			set_config('ip_login_limit_max', '50');
+			set_config('ip_login_limit_time', '21600');
+			set_config('ip_login_limit_use_forwarded', '0');
+
+			// Update file extension group names to use language strings, again.
+			$sql = 'SELECT group_id, group_name
+				FROM ' . EXTENSION_GROUPS_TABLE . '
+				WHERE group_name ' . $db->sql_like_expression('EXT_GROUP_' . $db->any_char);
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary = array(
+					'group_name'	=> substr($row['group_name'], 10), // Strip off 'EXT_GROUP_'
+				);
+
+				$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE group_id = ' . $row['group_id'];
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			global $db_tools, $table_prefix;
+
+			// Recover from potentially broken Q&A CAPTCHA table on firebird
+			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
+			// without data loss
+			if ($db_tools->sql_layer == 'firebird')
+			{
+				$tables = array(
+					$table_prefix . 'captcha_questions',
+					$table_prefix . 'captcha_answers',
+					$table_prefix . 'qa_confirm',
+				);
+				foreach ($tables as $table)
+				{
+					if ($db_tools->sql_table_exists($table))
+					{
+						$db_tools->sql_table_drop($table);
+					}
+				}
+			}
+
+			$no_updates = false;
+		break;
+
+		// No changes from 3.0.9-RC1 to 3.0.9-RC2
+		case '3.0.9-RC1':
+		break;
+
+		// No changes from 3.0.9-RC2 to 3.0.9-RC3
+		case '3.0.9-RC2':
+		break;
+
+		// No changes from 3.0.9-RC3 to 3.0.9-RC4
+		case '3.0.9-RC3':
+		break;
+
+		// No changes from 3.0.9-RC4 to 3.0.9
+		case '3.0.9-RC4':
+		break;
 	}
 }
 
@@ -2193,6 +2327,271 @@ class updater_db_tools
 	}
 
 	/**
+	* Check if table exists
+	*
+	*
+	* @param string	$table_name	The table name to check for
+	* @return bool true if table exists, else false
+	*/
+	function sql_table_exists($table_name)
+	{
+		$this->db->sql_return_on_error(true);
+		$result = $this->db->sql_query_limit('SELECT * FROM ' . $table_name, 1);
+		$this->db->sql_return_on_error(false);
+
+		if ($result)
+		{
+			$this->db->sql_freeresult($result);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	* Create SQL Table
+	*
+	* @param string	$table_name	The table name to create
+	* @param array	$table_data	Array containing table data.
+	* @return array	Statements if $return_statements is true.
+	*/
+	function sql_create_table($table_name, $table_data)
+	{
+		// holds the DDL for a column
+		$columns = $statements = array();
+
+		if ($this->sql_table_exists($table_name))
+		{
+			return $this->_sql_run_sql($statements);
+		}
+
+		// Begin transaction
+		$statements[] = 'begin';
+
+		// Determine if we have created a PRIMARY KEY in the earliest
+		$primary_key_gen = false;
+
+		// Determine if the table must be created with TEXTIMAGE
+		$create_textimage = false;
+
+		// Determine if the table requires a sequence
+		$create_sequence = false;
+
+		// Begin table sql statement
+		switch ($this->sql_layer)
+		{
+			case 'mssql':
+			case 'mssqlnative':
+				$table_sql = 'CREATE TABLE [' . $table_name . '] (' . "\n";
+			break;
+
+			default:
+				$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
+			break;
+		}
+
+		// Iterate through the columns to create a table
+		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
+		{
+			// here lies an array, filled with information compiled on the column's data
+			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+
+			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
+			}
+
+			// here we add the definition of the new column to the list of columns
+			switch ($this->sql_layer)
+			{
+				case 'mssql':
+				case 'mssqlnative':
+					$columns[] = "\t [{$column_name}] " . $prepared_column['column_type_sql_default'];
+				break;
+
+				default:
+					$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
+				break;
+			}
+
+			// see if we have found a primary key set due to a column definition if we have found it, we can stop looking
+			if (!$primary_key_gen)
+			{
+				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
+			}
+
+			// create textimage DDL based off of the existance of certain column types
+			if (!$create_textimage)
+			{
+				$create_textimage = isset($prepared_column['textimage']) && $prepared_column['textimage'];
+			}
+
+			// create sequence DDL based off of the existance of auto incrementing columns
+			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
+			{
+				$create_sequence = $column_name;
+			}
+		}
+
+		// this makes up all the columns in the create table statement
+		$table_sql .= implode(",\n", $columns);
+
+		// Close the table for two DBMS and add to the statements
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'mssql':
+			case 'mssqlnative':
+				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
+				$statements[] = $table_sql;
+			break;
+		}
+
+		// we have yet to create a primary key for this table,
+		// this means that we can add the one we really wanted instead
+		if (!$primary_key_gen)
+		{
+			// Write primary key
+			if (isset($table_data['PRIMARY_KEY']))
+			{
+				if (!is_array($table_data['PRIMARY_KEY']))
+				{
+					$table_data['PRIMARY_KEY'] = array($table_data['PRIMARY_KEY']);
+				}
+
+				switch ($this->sql_layer)
+				{
+					case 'mysql_40':
+					case 'mysql_41':
+					case 'postgres':
+					case 'sqlite':
+						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+
+					case 'firebird':
+					case 'mssql':
+					case 'mssqlnative':
+						// We need the data here
+						$old_return_statements = $this->return_statements;
+						$this->return_statements = true;
+
+						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
+						foreach ($primary_key_stmts as $pk_stmt)
+						{
+							$statements[] = $pk_stmt;
+						}
+
+						$this->return_statements = $old_return_statements;
+					break;
+
+					case 'oracle':
+						$table_sql .= ",\n\t CONSTRAINT pk_{$table_name} PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+				}
+			}
+		}
+
+		// close the table
+		switch ($this->sql_layer)
+		{
+			case 'mysql_41':
+				// make sure the table is in UTF-8 mode
+				$table_sql .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;";
+				$statements[] = $table_sql;
+			break;
+
+			case 'mysql_40':
+			case 'sqlite':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'postgres':
+				// do we need to add a sequence for auto incrementing columns?
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+				}
+
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'oracle':
+				$table_sql .= "\n)";
+				$statements[] = $table_sql;
+
+				// do we need to add a sequence and a tigger for auto incrementing columns?
+				if ($create_sequence)
+				{
+					// create the actual sequence
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq";
+
+					// the trigger is the mechanism by which we increment the counter
+					$trigger = "CREATE OR REPLACE TRIGGER t_{$table_name}\n";
+					$trigger .= "BEFORE INSERT ON {$table_name}\n";
+					$trigger .= "FOR EACH ROW WHEN (\n";
+					$trigger .= "\tnew.{$create_sequence} IS NULL OR new.{$create_sequence} = 0\n";
+					$trigger .= ")\n";
+					$trigger .= "BEGIN\n";
+					$trigger .= "\tSELECT {$table_name}_seq.nextval\n";
+					$trigger .= "\tINTO :new.{$create_sequence}\n";
+					$trigger .= "\tFROM dual;\n";
+					$trigger .= "END;";
+
+					$statements[] = $trigger;
+				}
+			break;
+
+			case 'firebird':
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE GENERATOR {$table_name}_gen;";
+					$statements[] = "SET GENERATOR {$table_name}_gen TO 0;";
+
+					$trigger = "CREATE TRIGGER t_$table_name FOR $table_name\n";
+					$trigger .= "BEFORE INSERT\nAS\nBEGIN\n";
+					$trigger .= "\tNEW.{$create_sequence} = GEN_ID({$table_name}_gen, 1);\nEND;";
+					$statements[] = $trigger;
+				}
+			break;
+		}
+
+		// Write Keys
+		if (isset($table_data['KEYS']))
+		{
+			foreach ($table_data['KEYS'] as $key_name => $key_data)
+			{
+				if (!is_array($key_data[1]))
+				{
+					$key_data[1] = array($key_data[1]);
+				}
+
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
+				$key_stmts = ($key_data[0] == 'UNIQUE') ? $this->sql_create_unique_index($table_name, $key_name, $key_data[1]) : $this->sql_create_index($table_name, $key_name, $key_data[1]);
+
+				foreach ($key_stmts as $key_stmt)
+				{
+					$statements[] = $key_stmt;
+				}
+
+				$this->return_statements = $old_return_statements;
+			}
+		}
+
+		// Commit Transaction
+		$statements[] = 'commit';
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
 	* Handle passed database update array.
 	* Expected structure...
 	* Key being one of the following
@@ -2227,6 +2626,19 @@ class updater_db_tools
 		{
 			$sqlite_data = array();
 			$sqlite = true;
+		}
+
+		// Add tables?
+		if (!empty($schema_changes['add_tables']))
+		{
+			foreach ($schema_changes['add_tables'] as $table => $table_data)
+			{
+				$result = $this->sql_create_table($table, $table_data);
+				if ($this->return_statements)
+				{
+					$statements = array_merge($statements, $result);
+				}
+			}
 		}
 
 		// Change columns?
@@ -2978,6 +3390,11 @@ class updater_db_tools
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{
+		if (strlen($column_name) > 30)
+		{
+			trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+		}
+
 		// Get type
 		if (strpos($column_data[0], ':') !== false)
 		{
@@ -3551,6 +3968,13 @@ class updater_db_tools
 	{
 		$statements = array();
 
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
+
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
@@ -3580,6 +4004,13 @@ class updater_db_tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
+
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = $table_prefix + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
 
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)

@@ -1,6 +1,6 @@
 /*
 
- $Id$
+ $Id: $
 
 */
 
@@ -646,6 +646,33 @@ CREATE  INDEX [reportee_id] ON [phpbb_log]([reportee_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_log]([user_id]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_login_attempts'
+*/
+CREATE TABLE [phpbb_login_attempts] (
+	[attempt_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[attempt_browser] [varchar] (150) DEFAULT ('') NOT NULL ,
+	[attempt_forwarded_for] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[attempt_time] [int] DEFAULT (0) NOT NULL ,
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[username] [varchar] (255) DEFAULT (0) NOT NULL ,
+	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [att_for] ON [phpbb_login_attempts]([attempt_forwarded_for], [attempt_time]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [att_time] ON [phpbb_login_attempts]([attempt_time]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [user_id] ON [phpbb_login_attempts]([user_id]) ON [PRIMARY]
 GO
 
 
@@ -1729,4 +1756,5 @@ ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD
 		[zebra_id]
 	)  ON [PRIMARY] 
 GO
+
 

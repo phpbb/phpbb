@@ -1,5 +1,5 @@
 #
-# $Id$
+# $Id: $
 #
 
 BEGIN TRANSACTION;
@@ -108,7 +108,7 @@ CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist (ban_ip, ban_exclude);
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id tinyint(3) NOT NULL DEFAULT '0',
+	bbcode_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_tag varchar(16) NOT NULL DEFAULT '',
 	bbcode_helpline varchar(255) NOT NULL DEFAULT '',
 	display_on_posting INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -356,6 +356,22 @@ CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
 CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
+
+# Table: 'phpbb_login_attempts'
+CREATE TABLE phpbb_login_attempts (
+	attempt_ip varchar(40) NOT NULL DEFAULT '',
+	attempt_browser varchar(150) NOT NULL DEFAULT '',
+	attempt_forwarded_for varchar(255) NOT NULL DEFAULT '',
+	attempt_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	username varchar(255) NOT NULL DEFAULT '0',
+	username_clean varchar(255) NOT NULL DEFAULT '0'
+);
+
+CREATE INDEX phpbb_login_attempts_att_ip ON phpbb_login_attempts (attempt_ip, attempt_time);
+CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts (attempt_forwarded_for, attempt_time);
+CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time);
+CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (

@@ -23,8 +23,21 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Login function
+*
+* @param string $username
+* @param string $password
+* @param string $ip			IP address the login is taking place from. Used to
+*							limit the number of login attempts per IP address.
+* @param string $browser	The user agent used to login
+* @param string $forwarded_for X_FORWARDED_FOR header sent with login request
+* @return array				A associative array of the format
+*							array(
+*								'status' => status constant
+*								'error_msg' => string
+*								'user_row' => array
+*							)
 */
-function login_db(&$username, &$password)
+function login_db($username, $password, $ip = '', $browser = '', $forwarded_for = '')
 {
 	global $db, $config;
 
@@ -47,12 +60,50 @@ function login_db(&$username, &$password)
 		);
 	}
 
+	$username_clean = utf8_clean_string($username);
+
 	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
 		FROM ' . USERS_TABLE . "
-		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		WHERE username_clean = '" . $db->sql_escape($username_clean) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
+
+	if (($ip && !$config['ip_login_limit_use_forwarded']) ||
+		($forwarded_for && $config['ip_login_limit_use_forwarded']))
+	{
+		$sql = 'SELECT COUNT(*) AS attempts
+			FROM ' . LOGIN_ATTEMPT_TABLE . '
+			WHERE attempt_time > ' . (time() - (int) $config['ip_login_limit_time']);
+		if ($config['ip_login_limit_use_forwarded'])
+		{
+			$sql .= " AND attempt_forwarded_for = '" . $db->sql_escape($forwarded_for) . "'";
+		}
+		else
+		{
+			$sql .= " AND attempt_ip = '" . $db->sql_escape($ip) . "' ";
+		}
+
+		$result = $db->sql_query($sql);
+		$attempts = (int) $db->sql_fetchfield('attempts');
+		$db->sql_freeresult($result);
+
+		$attempt_data = array(
+			'attempt_ip'			=> $ip,
+			'attempt_browser'		=> trim(substr($browser, 0, 149)),
+			'attempt_forwarded_for'	=> $forwarded_for,
+			'attempt_time'			=> time(),
+			'user_id'				=> ($row) ? (int) $row['user_id'] : 0,
+			'username'				=> $username,
+			'username_clean'		=> $username_clean,
+		);
+		$sql = 'INSERT INTO ' . LOGIN_ATTEMPT_TABLE . $db->sql_build_array('INSERT', $attempt_data);
+		$result = $db->sql_query($sql);
+	}
+	else
+	{
+		$attempts = 0;
+	}
 
 	if (!$row)
 	{
@@ -62,7 +113,9 @@ function login_db(&$username, &$password)
 			'user_row'	=> array('user_id' => ANONYMOUS),
 		);
 	}
-	$show_captcha = $config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'];
+
+	$show_captcha = ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts']) ||
+		($config['ip_login_limit_max'] && $attempts >= $config['ip_login_limit_max']);
 
 	// If there are too much login attempts, we need to check for an confirm image
 	// Every auth module is able to define what to do by itself...
@@ -90,7 +143,7 @@ function login_db(&$username, &$password)
 		{
 			$captcha->reset();
 		}
-		
+
 	}
 
 	// If the password convert flag is set we need to convert it
@@ -164,6 +217,10 @@ function login_db(&$username, &$password)
 
 			$row['user_password'] = $hash;
 		}
+
+		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+			WHERE user_id = ' . $row['user_id'];
+		$db->sql_query($sql);
 
 		if ($row['user_login_attempts'] != 0)
 		{

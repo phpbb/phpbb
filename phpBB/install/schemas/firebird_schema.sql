@@ -1,5 +1,5 @@
 #
-# $Id$
+# $Id: $
 #
 
 
@@ -544,6 +544,22 @@ BEGIN
 	NEW.log_id = GEN_ID(phpbb_log_gen, 1);
 END;;
 
+
+# Table: 'phpbb_login_attempts'
+CREATE TABLE phpbb_login_attempts (
+	attempt_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	attempt_browser VARCHAR(150) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	attempt_forwarded_for VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	attempt_time INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	username VARCHAR(255) CHARACTER SET UTF8 DEFAULT 0 NOT NULL COLLATE UNICODE,
+	username_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT 0 NOT NULL COLLATE UNICODE
+);;
+
+CREATE INDEX phpbb_login_attempts_att_ip ON phpbb_login_attempts(attempt_ip, attempt_time);;
+CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts(attempt_forwarded_for, attempt_time);;
+CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts(attempt_time);;
+CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts(user_id);;
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (

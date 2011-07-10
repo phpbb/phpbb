@@ -482,44 +482,6 @@ function user_delete($mode, $user_id, $post_username = false)
 				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
-			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
-				FROM ' . POSTS_TABLE . "
-				WHERE poster_id = $user_id
-				GROUP BY topic_id";
-			$result = $db->sql_query($sql);
-
-			$topic_id_ary = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$topic_id_ary[$row['topic_id']] = $row['total_posts'];
-			}
-			$db->sql_freeresult($result);
-
-			if (sizeof($topic_id_ary))
-			{
-				$sql = 'SELECT topic_id, topic_replies, topic_replies_real
-					FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-				$result = $db->sql_query($sql);
-
-				$del_topic_ary = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
-					{
-						$del_topic_ary[] = $row['topic_id'];
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($del_topic_ary))
-				{
-					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-						WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
-					$db->sql_query($sql);
-				}
-			}
-
 			// Delete posts, attachments, etc.
 			delete_posts('poster_id', $user_id);
 
@@ -771,7 +733,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 			else
 			{
-				trigger_error('LENGTH_BAN_INVALID');
+				trigger_error('LENGTH_BAN_INVALID', E_USER_WARNING);
 			}
 		}
 	}
@@ -831,7 +793,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			// Make sure we have been given someone to ban
 			if (!sizeof($sql_usernames))
 			{
-				trigger_error('NO_USER_SPECIFIED');
+				trigger_error('NO_USER_SPECIFIED', E_USER_WARNING);
 			}
 
 			$sql = 'SELECT user_id
@@ -862,7 +824,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			else
 			{
 				$db->sql_freeresult($result);
-				trigger_error('NO_USERS');
+				trigger_error('NO_USERS', E_USER_WARNING);
 			}
 			$db->sql_freeresult($result);
 		break;
@@ -964,7 +926,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				if (empty($banlist_ary))
 				{
-					trigger_error('NO_IPS_DEFINED');
+					trigger_error('NO_IPS_DEFINED', E_USER_WARNING);
 				}
 			}
 		break;
@@ -992,12 +954,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			if (sizeof($ban_list) == 0)
 			{
-				trigger_error('NO_EMAILS_DEFINED');
+				trigger_error('NO_EMAILS_DEFINED', E_USER_WARNING);
 			}
 		break;
 
 		default:
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_WARNING);
 		break;
 	}
 
@@ -1460,6 +1422,31 @@ function validate_match($string, $optional = false, $match = '')
 }
 
 /**
+* Validate Language Pack ISO Name
+*
+* Tests whether a language name is valid and installed
+*
+* @param string $lang_iso	The language string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function validate_language_iso_name($lang_iso)
+{
+	global $db;
+
+	$sql = 'SELECT lang_id
+		FROM ' . LANG_TABLE . "
+		WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
+	$result = $db->sql_query($sql);
+	$lang_id = (int) $db->sql_fetchfield('lang_id');
+	$db->sql_freeresult($result);
+
+	return ($lang_id) ? false : 'WRONG_DATA';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
@@ -1618,8 +1605,9 @@ function validate_password($password)
 {
 	global $config, $db, $user;
 
-	if (!$password)
+	if ($password === '' || $config['pass_complex'] === 'PASS_TYPE_ANY')
 	{
+		// Password empty or no password complexity required.
 		return false;
 	}
 
@@ -1630,7 +1618,6 @@ function validate_password($password)
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
-		$let = '\p{L}';
 		$num = '\p{N}';
 		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 		$pcre = true;
@@ -1640,7 +1627,6 @@ function validate_password($password)
 		mb_regex_encoding('UTF-8');
 		$upp = '[[:upper:]]';
 		$low = '[[:lower:]]';
-		$let = '[[:lower:][:upper:]]';
 		$num = '[[:digit:]]';
 		$sym = '[^[:upper:][:lower:][:digit:]]';
 		$mbstring = true;
@@ -1649,7 +1635,6 @@ function validate_password($password)
 	{
 		$upp = '[A-Z]';
 		$low = '[a-z]';
-		$let = '[a-zA-Z]';
 		$num = '[0-9]';
 		$sym = '[^A-Za-z0-9]';
 		$pcre = true;
@@ -1659,22 +1644,22 @@ function validate_password($password)
 
 	switch ($config['pass_complex'])
 	{
+		// No break statements below ...
+		// We require strong passwords in case pass_complex is not set or is invalid
+		default:
+
+		// Require mixed case letters, numbers and symbols
+		case 'PASS_TYPE_SYMBOL':
+			$chars[] = $sym;
+
+		// Require mixed case letters and numbers
+		case 'PASS_TYPE_ALPHA':
+			$chars[] = $num;
+
+		// Require mixed case letters
 		case 'PASS_TYPE_CASE':
 			$chars[] = $low;
 			$chars[] = $upp;
-		break;
-
-		case 'PASS_TYPE_ALPHA':
-			$chars[] = $let;
-			$chars[] = $num;
-		break;
-
-		case 'PASS_TYPE_SYMBOL':
-			$chars[] = $low;
-			$chars[] = $upp;
-			$chars[] = $num;
-			$chars[] = $sym;
-		break;
 	}
 
 	if ($pcre)
@@ -2080,7 +2065,7 @@ function avatar_upload($data, &$error)
 
 	// Init upload class
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], explode('|', $config['mime_triggers']));
+	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
 
 	if (!empty($_FILES['uploadfile']['name']))
 	{

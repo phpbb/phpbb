@@ -32,7 +32,7 @@ unset($dbpasswd);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.0.8',
+	'phpbb_version'	=> '3.0.9',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -134,7 +134,7 @@ $config_schema = array(
 		'avatar_filesize'		=> 'avatar_filesize',
 		'avatar_max_width'		=> 'avatar_max_width',
 		'avatar_max_height'		=> 'avatar_max_height',
-		'default_dateformat'	=> 'default_dateformat',
+		'default_dateformat'	=> 'phpbb_set_encoding(default_dateformat)',
 		'board_timezone'		=> 'board_timezone',
 		'allow_privmsg'			=> 'not(privmsg_disable)',
 		'gzip_compress'			=> 'gzip_compress',

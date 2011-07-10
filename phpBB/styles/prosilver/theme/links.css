@@ -87,11 +87,7 @@ a.topictitle:active {
 	padding-bottom: 0;
 }
 
-.postlink:visited {
-	color: #bdbdbd;
-	border-bottom-style: dotted;
-	border-bottom-color: #666666;
-}
+/* .postlink:visited { color: #bdbdbd; } */
 
 .postlink:active {
 	color: #d2d2d2;
@@ -103,14 +99,14 @@ a.topictitle:active {
 	color: #404040;
 }
 
-.signature a, .signature a:visited, .signature a:active, .signature a:hover {
+.signature a, .signature a:visited, .signature a:hover, .signature a:active {
 	border: none;
 	text-decoration: underline;
 	background-color: transparent;
 }
 
 /* Profile links */
-.postprofile a:link, .postprofile a:active, .postprofile a:visited, .postprofile dt.author a {
+.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
 	font-weight: bold;
 	color: #898989;
 	text-decoration: none;
@@ -119,6 +115,14 @@ a.topictitle:active {
 .postprofile a:hover, .postprofile dt.author a:hover {
 	text-decoration: underline;
 	color: #d3d3d3;
+}
+
+/* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
+/* See http://www.phpbb.com/bugs/phpbb3/59685 */
+.postprofile a:active {
+	font-weight: bold;
+	color: #898989;
+	text-decoration: none;
 }
 
 

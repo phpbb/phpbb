@@ -1,6 +1,6 @@
 /*
 
- $Id$
+ $Id: $
 
 */
 
@@ -254,7 +254,7 @@ END;
 	Table: 'phpbb_bbcodes'
 */
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id number(3) DEFAULT '0' NOT NULL,
+	bbcode_id number(4) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar2(16) DEFAULT '' ,
 	bbcode_helpline varchar2(765) DEFAULT '' ,
 	display_on_posting number(1) DEFAULT '0' NOT NULL,
@@ -739,6 +739,29 @@ BEGIN
 END;
 /
 
+
+/*
+	Table: 'phpbb_login_attempts'
+*/
+CREATE TABLE phpbb_login_attempts (
+	attempt_ip varchar2(40) DEFAULT '' ,
+	attempt_browser varchar2(150) DEFAULT '' ,
+	attempt_forwarded_for varchar2(255) DEFAULT '' ,
+	attempt_time number(11) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	username varchar2(765) DEFAULT '0' NOT NULL,
+	username_clean varchar2(255) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX phpbb_login_attempts_att_ip ON phpbb_login_attempts (attempt_ip, attempt_time)
+/
+CREATE INDEX phpbb_login_attempts_att_for ON phpbb_login_attempts (attempt_forwarded_for, attempt_time)
+/
+CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time)
+/
+CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
+/
 
 /*
 	Table: 'phpbb_moderator_cache'

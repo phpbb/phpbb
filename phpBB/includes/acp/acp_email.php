@@ -82,23 +82,48 @@ class acp_email
 				{
 					if ($group_id)
 					{
-						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
-							WHERE ug.group_id = ' . $group_id . '
+						$sql_ary = array(
+							'SELECT'	=> 'u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type',
+							'FROM'		=> array(
+								USERS_TABLE			=> 'u',
+								USER_GROUP_TABLE	=> 'ug',
+							),
+							'WHERE'		=> 'ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id
 								AND u.user_allow_massemail = 1
-								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-							ORDER BY u.user_lang, u.user_notify_type';
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+							'ORDER_BY'	=> 'u.user_lang, u.user_notify_type',
+						);
 					}
 					else
 					{
-						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang
-							FROM ' . USERS_TABLE . '
-							WHERE user_allow_massemail = 1
-								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-							ORDER BY user_lang, user_notify_type';
+						$sql_ary = array(
+							'SELECT'	=> 'u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
+							'FROM'		=> array(
+								USERS_TABLE	=> 'u',
+							),
+							'WHERE'		=> 'u.user_allow_massemail = 1
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+							'ORDER_BY'	=> 'u.user_lang, u.user_notify_type',
+						);
 					}
+
+					// Mail banned or not
+					if (!isset($_REQUEST['mail_banned_flag']))
+					{
+						$sql_ary['WHERE'] .= ' AND (b.ban_id IS NULL
+						        OR b.ban_exclude = 1)';
+						$sql_ary['LEFT_JOIN'] = array(
+							array(
+								'FROM'	=> array(
+									BANLIST_TABLE	=> 'b',
+								),
+								'ON'	=> 'u.user_id = b.ban_userid',
+							),
+						);
+					}
+					$sql = $db->sql_build_query('SELECT', $sql_ary);
 				}
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);

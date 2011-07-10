@@ -221,7 +221,7 @@ class session
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
-			$this->forwarded_for = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->forwarded_for));
+			$this->forwarded_for = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->forwarded_for));
 
 			// split the list of IPs
 			$ips = explode(' ', $this->forwarded_for);
@@ -267,37 +267,42 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars((string) $_SERVER['REMOTE_ADDR']) : '';
-		$this->ip = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->ip));
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs
-		$ips = explode(' ', $this->ip);
+		$ips = explode(' ', trim($this->ip));
 
 		// Default IP if REMOTE_ADDR is invalid
 		$this->ip = '127.0.0.1';
 
 		foreach ($ips as $ip)
 		{
-			// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-			if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+			if (preg_match(get_preg_expression('ipv4'), $ip))
 			{
-				// Just break
+				$this->ip = $ip;
+			}
+			else if (preg_match(get_preg_expression('ipv6'), $ip))
+			{
+				// Quick check for IPv4-mapped address in IPv6
+				if (stripos($ip, '::ffff:') === 0)
+				{
+					$ipv4 = substr($ip, 7);
+
+					if (preg_match(get_preg_expression('ipv4'), $ipv4))
+					{
+						$ip = $ipv4;
+					}
+				}
+
+				$this->ip = $ip;
+			}
+			else
+			{
+				// We want to use the last valid address in the chain
+				// Leave foreach loop when address is invalid
 				break;
 			}
-
-			// Quick check for IPv4-mapped address in IPv6
-			if (stripos($ip, '::ffff:') === 0)
-			{
-				$ipv4 = substr($ip, 7);
-
-				if (preg_match(get_preg_expression('ipv4'), $ipv4))
-				{
-					$ip = $ipv4;
-				}
-			}
-
-			// Use the last in chain
-			$this->ip = $ip;
 		}
 
 		$this->load = false;
@@ -583,6 +588,14 @@ class session
 			$bot = false;
 		}
 
+		// Bot user, if they have a SID in the Request URI we need to get rid of it
+		// otherwise they'll index this page with the SID, duplicate content oh my!
+		if ($bot && isset($_GET['sid']))
+		{
+			send_status_line(301, 'Moved Permanently');
+			redirect(build_url(array('sid')));
+		}
+
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -619,12 +632,6 @@ class session
 		}
 		else
 		{
-			// Bot user, if they have a SID in the Request URI we need to get rid of it
-			// otherwise they'll index this page with the SID, duplicate content oh my!
-			if (isset($_GET['sid']))
-			{
-				redirect(build_url(array('sid')));
-			}
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
@@ -999,6 +1006,10 @@ class session
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
 			phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
+
+			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
+			$db->sql_query($sql);
 		}
 
 		return;
@@ -1235,6 +1246,12 @@ class session
 		if ($ip === false)
 		{
 			$ip = $this->ip;
+		}
+
+		// Neither Spamhaus nor Spamcop supports IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
 		}
 
 		$dnsbl_check = array(
@@ -1966,6 +1983,7 @@ class user extends session
 
 					$key_found = $num;
 				}
+				break;
 			}
 		}
 
@@ -2254,9 +2272,44 @@ class user extends session
 			// Use URL if told so
 			$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 
-			$img_data['src'] = $root_path . 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$path = 'styles/' . rawurlencode($this->theme['imageset_path']) . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+
+			$img_data['src'] = $root_path . $path;
 			$img_data['width'] = $this->img_array[$img]['image_width'];
 			$img_data['height'] = $this->img_array[$img]['image_height'];
+
+			// We overwrite the width and height to the phpbb logo's width
+			// and height here if the contents of the site_logo file are
+			// really equal to the phpbb_logo
+			// This allows us to change the dimensions of the phpbb_logo without
+			// modifying the imageset.cfg and causing a conflict for everyone
+			// who modified it for their custom logo on updating
+			if ($img == 'site_logo' && file_exists($phpbb_root_path . $path))
+			{
+				global $cache;
+
+				$img_file_hashes = $cache->get('imageset_site_logo_md5');
+
+				if ($img_file_hashes === false)
+				{
+					$img_file_hashes = array();
+				}
+
+				$key = $this->theme['imageset_path'] . '::' . $this->img_array[$img]['image_lang'];
+				if (!isset($img_file_hashes[$key]))
+				{
+					$img_file_hashes[$key] = md5(file_get_contents($phpbb_root_path . $path));
+					$cache->put('imageset_site_logo_md5', $img_file_hashes);
+				}
+
+				$phpbb_logo_hash = '0c461a32cd3621643105f0d02a772c10';
+
+				if ($phpbb_logo_hash == $img_file_hashes[$key])
+				{
+					$img_data['width'] = '149';
+					$img_data['height'] = '52';
+				}
+			}
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;

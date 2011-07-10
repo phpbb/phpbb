@@ -1,5 +1,5 @@
 #
-# $Id$
+# $Id: $
 #
 
 # Table: 'phpbb_attachments'
@@ -110,7 +110,7 @@ CREATE TABLE phpbb_banlist (
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
-	bbcode_id tinyint(3) DEFAULT '0' NOT NULL,
+	bbcode_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_tag varbinary(16) DEFAULT '' NOT NULL,
 	bbcode_helpline blob NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -365,6 +365,22 @@ CREATE TABLE phpbb_log (
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
+	KEY user_id (user_id)
+);
+
+
+# Table: 'phpbb_login_attempts'
+CREATE TABLE phpbb_login_attempts (
+	attempt_ip varbinary(40) DEFAULT '' NOT NULL,
+	attempt_browser varbinary(150) DEFAULT '' NOT NULL,
+	attempt_forwarded_for varbinary(255) DEFAULT '' NOT NULL,
+	attempt_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	username blob NOT NULL,
+	username_clean blob NOT NULL,
+	KEY att_ip (attempt_ip, attempt_time),
+	KEY att_for (attempt_forwarded_for, attempt_time),
+	KEY att_time (attempt_time),
 	KEY user_id (user_id)
 );
 

@@ -65,7 +65,7 @@ class ucp_prefs
 
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
-						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
+						'lang'			=> array('language_iso_name'),
 						'tz'			=> array('num', false, -14, 14),
 					));
 

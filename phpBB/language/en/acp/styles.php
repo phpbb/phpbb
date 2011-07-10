@@ -78,7 +78,7 @@ $lang = array_merge($lang, array(
 	'DELETE_IMAGESET'			=> 'Delete imageset',
 	'DELETE_IMAGESET_EXPLAIN'	=> 'Here you can remove the selected imageset from the database. Please note that there is no undo capability. It is recommended that you first export your set for possible future use.',
 	'DELETE_STYLE'				=> 'Delete style',
-	'DELETE_STYLE_EXPLAIN'		=> 'Here you can remove the selected style. You cannot remove all the style elements from here. These must be deleted individually via their respective forms. Take care when deleting styles, there is no undo facility.',
+	'DELETE_STYLE_EXPLAIN'		=> 'Here you can remove the selected style. Take care in deleting styles, there is no undo capability.',
 	'DELETE_TEMPLATE'			=> 'Delete template',
 	'DELETE_TEMPLATE_EXPLAIN'	=> 'Here you can remove the selected template set from the database. Please note that there is no undo capability. It is recommended that you first export your set for possible future use.',
 	'DELETE_THEME'				=> 'Delete theme',
@@ -285,10 +285,13 @@ $lang = array_merge($lang, array(
 	'INSTALLED_TEMPLATE'		=> 'Installed templates',
 	'INSTALLED_THEME'			=> 'Installed themes',
 
+	'KEEP_IMAGESET'				=> 'Keep “%s” imageset',
+	'KEEP_TEMPLATE'				=> 'Keep “%s” template',
+	'KEEP_THEME'				=> 'Keep “%s” theme',
+
 	'LINE_SPACING'				=> 'Line spacing',
 	'LOCALISED_IMAGES'			=> 'Localised',
 	'LOCATION_DISABLED_EXPLAIN'	=> 'This setting is inherited and cannot be changed.',
-
 
 	'NO_CLASS'					=> 'Cannot find class in stylesheet.',
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem.',
@@ -322,6 +325,7 @@ $lang = array_merge($lang, array(
 	'REPLACE_TEMPLATE_EXPLAIN'	=> 'This template set will replace the one you are deleting in any styles that use it.',
 	'REPLACE_THEME'				=> 'Replace theme with',
 	'REPLACE_THEME_EXPLAIN'		=> 'This theme will replace the one you are deleting in any styles that use it.',
+	'REPLACE_WITH_OPTION'		=> 'Replace with “%s”',
 	'REQUIRES_IMAGESET'			=> 'This style requires the %s imageset to be installed.',
 	'REQUIRES_TEMPLATE'			=> 'This style requires the %s template set to be installed.',
 	'REQUIRES_THEME'			=> 'This style requires the %s theme to be installed.',

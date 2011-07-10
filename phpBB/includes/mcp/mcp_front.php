@@ -350,7 +350,7 @@ function mcp_front_view($id, $mode, $action)
 			// Add forum_id 0 for global announcements
 			$forum_list[] = 0;
 
-			$log_count = 0;
+			$log_count = false;
 			$log = array();
 			view_log('mod', $log, $log_count, 5, 0, $forum_list);
 

@@ -50,7 +50,7 @@ class result_mssqlnative
 			}
 		}
 
-		$this->m_row_count = count($this->m_rows);
+		$this->m_row_count = sizeof($this->m_rows);
 	}
 
 	private function array_to_obj($array, &$obj)
@@ -256,6 +256,14 @@ class dbal_mssqlnative extends dbal
 		}
 
 		return ($this->sql_server_version) ? 'MSSQL<br />' . $this->sql_server_version : 'MSSQL';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_buffer_nested_transactions()
+	{
+		return true;
 	}
 
 	/**
@@ -628,7 +636,7 @@ class dbal_mssqlnative extends dbal
 			return false;
 		}
 	}
-	
+
 	/**
 	* Allows setting mssqlnative specific query options passed to sqlsrv_query as 4th parameter.
 	*/

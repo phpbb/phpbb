@@ -388,7 +388,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload();
 
-	if ($config['check_attachment_content'])
+	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
@@ -1479,7 +1479,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		break;
 
 		case 'delete_first_post':
-			$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
@@ -1493,7 +1493,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
-			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "', topic_time = " . (int) $row['post_time'];
 
 			// Decrementing topic_replies here is fine because this case only happens if there is more than one post within the topic - basically removing one "reply"
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
@@ -2607,6 +2607,108 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
+
+	return $url;
+}
+
+/**
+* Handle topic bumping
+* @param int $forum_id The ID of the forum the topic is being bumped belongs to
+* @param int $topic_id The ID of the topic is being bumping
+* @param array $post_data Passes some topic parameters:
+*				- 'topic_title'
+*				- 'topic_last_post_id'
+*				- 'topic_last_poster_id'
+*				- 'topic_last_post_subject'
+*				- 'topic_last_poster_name'
+*				- 'topic_last_poster_colour'
+* @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time(). 
+* @return string An URL to the bumped topic, example: ./viewtopic.php?forum_id=1&amptopic_id=2&ampp=3#p3
+*/
+function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
+{
+	global $config, $db, $user, $phpEx, $phpbb_root_path;
+
+	if ($bump_time === false)
+	{
+		$bump_time = time();
+	}
+
+	// Begin bumping
+	$db->sql_transaction('begin');
+
+	// Update the topic's last post post_time
+	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET post_time = $bump_time
+		WHERE post_id = {$post_data['topic_last_post_id']}
+			AND topic_id = $topic_id";
+	$db->sql_query($sql);
+
+	// Sync the topic's last post time, the rest of the topic's last post data isn't changed
+	$sql = 'UPDATE ' . TOPICS_TABLE . "
+		SET topic_last_post_time = $bump_time,
+			topic_bumped = 1,
+			topic_bumper = " . $user->data['user_id'] . "
+		WHERE topic_id = $topic_id";
+	$db->sql_query($sql);
+
+	// Update the forum's last post info
+	$sql = 'UPDATE ' . FORUMS_TABLE . "
+		SET forum_last_post_id = " . $post_data['topic_last_post_id'] . ",
+			forum_last_poster_id = " . $post_data['topic_last_poster_id'] . ",
+			forum_last_post_subject = '" . $db->sql_escape($post_data['topic_last_post_subject']) . "',
+			forum_last_post_time = $bump_time,
+			forum_last_poster_name = '" . $db->sql_escape($post_data['topic_last_poster_name']) . "',
+			forum_last_poster_colour = '" . $db->sql_escape($post_data['topic_last_poster_colour']) . "'
+		WHERE forum_id = $forum_id";
+	$db->sql_query($sql);
+
+	// Update bumper's time of the last posting to prevent flood
+	$sql = 'UPDATE ' . USERS_TABLE . "
+		SET user_lastpost_time = $bump_time
+		WHERE user_id = " . $user->data['user_id'];
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
+
+	// Mark this topic as posted to
+	markread('post', $forum_id, $topic_id, $bump_time);
+
+	// Mark this topic as read
+	markread('topic', $forum_id, $topic_id, $bump_time);
+
+	// Update forum tracking info
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		$sql = 'SELECT mark_time
+			FROM ' . FORUMS_TRACK_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . '
+				AND forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
+		$db->sql_freeresult($result);
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		$f_mark_time = false;
+	}
+
+	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		// Update forum info
+		$sql = 'SELECT forum_last_post_time
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
+		$db->sql_freeresult($result);
+
+		update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time, false);
+	}
+
+	add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
+
+	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
 	return $url;
 }

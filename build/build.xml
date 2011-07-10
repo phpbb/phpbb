@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.0.8" />
-	<property name="prevversion" value="3.0.8-RC1" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7-PL1" />
+	<property name="newversion" value="3.0.9" />
+	<property name="prevversion" value="3.0.8" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.9-RC1, 3.0.9-RC2, 3.0.9-RC3, 3.0.9-RC4" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -12,7 +12,8 @@
 
 	<!-- These are the main targets which you will probably want to use -->
 	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,test,create-package" />
+	<target name="all" depends="clean,prepare,test,docs,create-package" />
+	<target name="build" depends="clean,prepare,test,docs" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
@@ -42,12 +43,11 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="test">
-		<exec dir="tests"
-			command="phpunit --log-junit ../build/logs/phpunit.xml
-			--coverage-clover ../build/logs/clover.xml
-			--coverage-html ../build/coverage
-			phpbb_all_tests all_tests.php"
+	<target name="test" depends="clean,prepare">
+		<exec dir="."
+			command="phpunit --log-junit build/logs/phpunit.xml
+			--coverage-clover build/logs/clover.xml
+			--coverage-html build/coverage"
 			passthru="true" />
 
 
@@ -62,6 +62,18 @@
 			</batchtest>
 		</phpunit>
 		-->
+	</target>
+
+	<target name="docs">
+		<!-- only works if you setup phpdoctor:
+                     git clone https://github.com/peej/phpdoctor.git
+                     and then create an executable phpdoctor in your path containing
+                     #!/bin/sh
+                     php -f /path/to/phpdoctor/phpdoc.php $@
+                -->
+		<exec dir="build"
+			command="phpdoctor phpdoc-phpbb.ini"
+			passthru="true" />
 	</target>
 
 	<target name="old-version-diffs">
@@ -121,7 +133,7 @@
 	-->
 	<target name="export">
 		<exec dir="phpBB"
-			command="git archive ${revision} | tar -x -C ../${dir}"
+			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
@@ -129,8 +141,8 @@
 
 		<echo msg="Setting permissions for checkout of ${revision} in ${dir}" />
 		<!-- set permissions of all files to 644, directories to 755 -->
-		<exec dir="${dir}" command="find -type f|xargs chmod 644" escape="false" />
-		<exec dir="${dir}" command="find -type d|xargs chmod 755" escape="false" />
+		<exec dir="${dir}" command="find . -type f|xargs chmod 644" escape="false" />
+		<exec dir="${dir}" command="find . -type d|xargs chmod 755" escape="false" />
 		<!-- set permissions of some directories to 777 -->
 		<chmod mode="0777" file="${dir}/cache" />
 		<chmod mode="0777" file="${dir}/store" />

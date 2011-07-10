@@ -205,7 +205,7 @@ class template
 	{
 		global $user, $phpbb_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
+		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once, $this))
 		{
 			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
 			{
@@ -276,7 +276,7 @@ class template
 		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
 
 		$recompile = false;
-		if (!file_exists($filename) || @filesize($filename) === 0)
+		if (!file_exists($filename) || @filesize($filename) === 0 || defined('DEBUG_EXTRA'))
 		{
 			$recompile = true;
 		}

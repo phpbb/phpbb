@@ -1,8 +1,8 @@
 <!-- BEGIN outer -->
-	{outer.S_BLOCK_NAME} - {outer.S_ROW_NUM}/{outer.S_NUM_ROWS}<!-- IF outer.VARIABLE --> - {outer.VARIABLE}<!-- ENDIF -->
+	outer - {outer.S_ROW_COUNT}<!-- IF outer.VARIABLE --> - {outer.VARIABLE}<!-- ENDIF -->
 
 	<!-- BEGIN middle -->
-		{middle.S_BLOCK_NAME} - {middle.S_ROW_NUM}/{middle.S_NUM_ROWS}<!-- IF middle.VARIABLE --> - {middle.VARIABLE}<!-- ENDIF -->
+		middle - {middle.S_ROW_COUNT}<!-- IF middle.VARIABLE --> - {middle.VARIABLE}<!-- ENDIF -->
 
 	<!-- END middle -->
 <!-- END outer -->

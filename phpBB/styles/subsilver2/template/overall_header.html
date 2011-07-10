@@ -8,10 +8,8 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2000, 2002, 2005, 2007 phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="" />
-<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9" />
 {META}
 <title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
 
@@ -29,11 +27,8 @@
 
 <script type="text/javascript">
 // <![CDATA[
-<!-- IF S_USER_PM_POPUP -->
-	if ({S_NEW_PM})
-	{
-		popup('{UA_POPUP_PM}', 400, 225, '_phpbbprivmsg');
-	}
+<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
+	popup('{UA_POPUP_PM}', 400, 225, '_phpbbprivmsg');
 <!-- ENDIF -->
 
 function popup(url, width, height, name)

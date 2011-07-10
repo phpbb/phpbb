@@ -8,10 +8,8 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2000, 2002, 2005, 2007 phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="" />
-<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9" />
 {META}
 <title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
 
@@ -47,12 +45,9 @@
 	var onload_functions = new Array();
 	var onunload_functions = new Array();
 
-	<!-- IF S_USER_PM_POPUP -->
-		if ({S_NEW_PM})
-		{
-			var url = '{UA_POPUP_PM}';
-			window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
-		}
+	<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
+		var url = '{UA_POPUP_PM}';
+		window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
 	<!-- ENDIF -->
 
 	/**
@@ -85,8 +80,8 @@
 
 // ]]>
 </script>
-<script type="text/javascript" src="{T_TEMPLATE_PATH}/styleswitcher.js"></script>
-<script type="text/javascript" src="{T_TEMPLATE_PATH}/forum_fn.js"></script>
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/styleswitcher.js"></script>
+<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js"></script>
 
 <link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" media="print" title="printonly" />
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -118,7 +113,7 @@
 
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
 			<div id="search-box">
-				<form action="{U_SEARCH}" method="post" id="search">
+				<form action="{U_SEARCH}" method="get" id="search">
 				<fieldset>
 					<input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!-- ENDIF -->" onclick="if(this.value=='{LA_SEARCH_MINI}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_MINI}';" />
 					<input class="button2" value="{L_SEARCH}" type="submit" /><br />

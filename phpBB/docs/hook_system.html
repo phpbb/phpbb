@@ -8,7 +8,7 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2007 phpBB Group" />
+<meta name="copyright" content="phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="Hook System explanation" />
 <title>phpBB3 &bull; Hook System</title>
@@ -379,6 +379,8 @@ a:active	{ color: #368AD2; }
 <code>append_sid($url, $params = false, $is_amp = true, $session_id = false);</code> which is called for building urls (appending the session id)<br />
 <code>$template-&gt;display($handle, $include_once = true);</code> which is called directly before outputting the (not-yet-compiled) template.<br />
 <code>exit_handler();</code> which is called at the very end of phpBB3's execution.</p>
+
+<p>Please note: The <code>$template-&gt;display</code> hook takes a third <code>$template</code> argument, which is the template instance being used, which should be used instead of the global.</p>
 
 <p>There are also valid external constants you may want to use if you embed phpBB3 into your application:</p>
 
@@ -865,7 +867,7 @@ function phpbb_hook_register(&amp;$hook)
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

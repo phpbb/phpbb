@@ -18,6 +18,11 @@ if (!defined('IN_PHPBB'))
 
 include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
+if (!class_exists('phpbb_error_collector'))
+{
+	include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
+}
+
 /**
 * PostgreSQL Database Abstraction Layer
 * Minimum Requirement is Version 7.3+
@@ -26,6 +31,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -81,12 +87,28 @@ class dbal_postgres extends dbal
 
 		if ($this->persistency)
 		{
+			if (!function_exists('pg_pconnect'))
+			{
+				$this->connect_error = 'pg_pconnect function does not exist, is pgsql extension installed?';
+				return $this->sql_error('');
+			}
+			$collector = new phpbb_error_collector;
+			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
 		else
 		{
+			if (!function_exists('pg_connect'))
+			{
+				$this->connect_error = 'pg_connect function does not exist, is pgsql extension installed?';
+				return $this->sql_error('');
+			}
+			$collector = new phpbb_error_collector;
+			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
+
+		$collector->uninstall();
 
 		if ($this->db_connect_id)
 		{
@@ -102,6 +124,7 @@ class dbal_postgres extends dbal
 			return $this->db_connect_id;
 		}
 
+		$this->connect_error = $collector->format_errors();
 		return $this->sql_error('');
 	}
 
@@ -371,8 +394,19 @@ class dbal_postgres extends dbal
 	*/
 	function _sql_error()
 	{
+		// pg_last_error only works when there is an established connection.
+		// Connection errors have to be tracked by us manually.
+		if ($this->db_connect_id)
+		{
+			$message = @pg_last_error($this->db_connect_id);
+		}
+		else
+		{
+			$message = $this->connect_error;
+		}
+
 		return array(
-			'message'	=> (!$this->db_connect_id) ? @pg_last_error() : @pg_last_error($this->db_connect_id),
+			'message'	=> $message,
 			'code'		=> ''
 		);
 	}

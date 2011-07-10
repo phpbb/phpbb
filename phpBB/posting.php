@@ -321,35 +321,7 @@ if ($mode == 'bump')
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
 	   && check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
-		$db->sql_transaction('begin');
-
-		$sql = 'UPDATE ' . POSTS_TABLE . "
-			SET post_time = $current_time
-			WHERE post_id = {$post_data['topic_last_post_id']}
-				AND topic_id = $topic_id";
-		$db->sql_query($sql);
-
-		$sql = 'UPDATE ' . TOPICS_TABLE . "
-			SET topic_last_post_time = $current_time,
-				topic_bumped = 1,
-				topic_bumper = " . $user->data['user_id'] . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
-
-		update_post_information('forum', $forum_id);
-
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_lastpost_time = $current_time
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
-
-		$db->sql_transaction('commit');
-
-		markread('post', $forum_id, $topic_id, $current_time);
-
-		add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
-
-		$meta_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
+		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
 
 		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');
@@ -861,10 +833,17 @@ if ($submit || $preview || $refresh)
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
+		$user->add_lang('ucp');
+
 		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
-			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];
+		}
+
+		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
+		{
+			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
+			$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $min_max_amount);
 		}
 	}
 
@@ -1353,8 +1332,8 @@ $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_lo
 $notify_set			= ($mode != 'edit' && $config['allow_topic_notify'] && $user->data['is_registered'] && !$post_data['notify_set']) ? $user->data['user_notify'] : $post_data['notify_set'];
 $notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $notify_set);
 
-// Page title & action URL, include session_id for security purpose
-$s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id", true, $user->session_id);
+// Page title & action URL
+$s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id");
 $s_action .= ($topic_id) ? "&amp;t=$topic_id" : '';
 $s_action .= ($post_id) ? "&amp;p=$post_id" : '';
 

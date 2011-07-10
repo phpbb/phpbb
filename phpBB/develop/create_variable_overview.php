@@ -83,7 +83,7 @@ $html_skeleton .= '<br><br><a name="ref"></a><b>References: </b>{SEE_FILES}';
 
 $html_skeleton .= '
 <br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -405,7 +405,7 @@ $html_data .= '<br><li><a href="./lang_index.html" class="gen">Appendix A: Langu
 
 $html_data .= '
 </ol><br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -528,7 +528,7 @@ foreach ($lang_fp as $filepointer)
 
 $html_data .= '
 <br><br>
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
 
 		<br clear="all" /></td>
 	</tr>

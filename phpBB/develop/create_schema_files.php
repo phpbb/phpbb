@@ -329,6 +329,15 @@ foreach ($supported_dbms as $dbms)
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
+			if (strlen($column_name) > 30)
+			{
+				trigger_error("Column name '$column_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment' && strlen($column_name) > 26) // "${column_name}_gen"
+			{
+				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
+
 			// Get type
 			if (strpos($column_data[0], ':') !== false)
 			{
@@ -632,6 +641,11 @@ foreach ($supported_dbms as $dbms)
 					$key_data[1] = array($key_data[1]);
 				}
 
+				if (strlen($table_name . $key_name) > 30)
+				{
+					trigger_error("Index name '${table_name}_$key_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+				}
+
 				switch ($dbms)
 				{
 					case 'mysql_40':
@@ -926,7 +940,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_bbcodes'] = array(
 		'COLUMNS'		=> array(
-			'bbcode_id'				=> array('TINT:3', 0),
+			'bbcode_id'				=> array('USINT', 0),
 			'bbcode_tag'			=> array('VCHAR:16', ''),
 			'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			'display_on_posting'	=> array('BOOL', 0),
@@ -1204,6 +1218,24 @@ function get_schema_struct()
 			'topic_id'				=> array('INDEX', 'topic_id'),
 			'reportee_id'			=> array('INDEX', 'reportee_id'),
 			'user_id'				=> array('INDEX', 'user_id'),
+		),
+	);
+
+	$schema_data['phpbb_login_attempts'] = array(
+		'COLUMNS'		=> array(
+			'attempt_ip'			=> array('VCHAR:40', ''),
+			'attempt_browser'		=> array('VCHAR:150', ''),
+			'attempt_forwarded_for'	=> array('VCHAR:255', ''),
+			'attempt_time'			=> array('TIMESTAMP', 0),
+			'user_id'				=> array('UINT', 0),
+			'username'				=> array('VCHAR_UNI:255', 0),
+			'username_clean'		=> array('VCHAR_CI', 0),
+		),
+		'KEYS'			=> array(
+			'att_ip'				=> array('INDEX', array('attempt_ip', 'attempt_time')),
+			'att_for'		=> array('INDEX', array('attempt_forwarded_for', 'attempt_time')),
+			'att_time'				=> array('INDEX', array('attempt_time')),
+			'user_id'					=> array('INDEX', 'user_id'),
 		),
 	);
 
@@ -2047,4 +2079,3 @@ EOF;
 
 echo 'done';
 
-?>

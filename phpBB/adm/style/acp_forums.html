@@ -58,7 +58,7 @@
 
 		/**
 		* Init the wanted display functionality if javascript is enabled.
-		* If javascript is not available, the user is still able to properly administrate.
+		* If javascript is not available, the user is still able to properly administer.
 		*/
 		onload = function()
 		{
@@ -140,6 +140,12 @@
 		<dt><label for="parent">{L_FORUM_PARENT}:</label></dt>
 		<dd><select id="parent" name="forum_parent_id"><option value="0"<!-- IF not S_FORUM_PARENT_ID --> selected="selected"<!-- ENDIF -->>{L_NO_PARENT}</option>{S_PARENT_OPTIONS}</select></dd>
 	</dl>
+	<!-- IF S_CAN_COPY_PERMISSIONS -->
+		<dl>
+			<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label for="forum_name">{L_FORUM_NAME}:</label></dt>
 		<dd><input class="text medium" type="text" id="forum_name" name="forum_name" value="{FORUM_NAME}" maxlength="255" /></dd>
@@ -160,11 +166,11 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password" name="forum_password" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
+		<dd><input type="password" id="forum_password" name="forum_password" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" autocomplete="off" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
+		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" autocomplete="off" /></dd>
 	</dl>
 	<!-- IF S_FORUM_PASSWORD_SET -->
 	<dl>
@@ -176,12 +182,6 @@
 		<dt><label for="forum_style">{L_FORUM_STYLE}:</label></dt>
 		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>
 	</dl>
-	<!-- IF S_CAN_COPY_PERMISSIONS -->
-		<dl>
-			<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
-			<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
-		</dl>
-	<!-- ENDIF -->
 	</fieldset>
 
 	<div id="forum_cat_options">

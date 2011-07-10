@@ -8,7 +8,7 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2007 phpBB Group" />
+<meta name="copyright" content="phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="Olympus coding guidelines document" />
 <title>phpBB3 &bull; Coding Guidelines</title>
@@ -239,6 +239,11 @@ PHPBB_DISABLE_CONFIG_CHECK (disable ACP config.php writeable check)
 PHPBB_ACM_MEMCACHE_PORT     (overwrite memcached port, default is 11211)
 PHPBB_ACM_MEMCACHE_COMPRESS (overwrite memcached compress setting, default is disabled)
 PHPBB_ACM_MEMCACHE_HOST     (overwrite memcached host name, default is localhost)
+
+PHPBB_ACM_REDIS_HOST        (overwrite redis host name, default is localhost)
+PHPBB_ACM_REDIS_PORT        (overwrite redis port, default is 6379)
+PHPBB_ACM_REDIS_PASSWORD    (overwrite redis password, default is empty)
+PHPBB_ACM_REDIS_DB          (overwrite redis default database)
 
 PHPBB_QA                   (Set board to QA-Mode, which means the updater also checks for RC-releases)
 </pre></div>
@@ -1018,7 +1023,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 	<h4>General function usage: </h4>
 
-	<p>Some of these functions are only chosen over others because of personal preference and having no other benefit than to be consistant over the code.</p>
+	<p>Some of these functions are only chosen over others because of personal preference and having no other benefit than to be consistent over the code.</p>
 
 	<ul>
 		<li>
@@ -2369,7 +2374,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

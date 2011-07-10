@@ -458,7 +458,7 @@ class fileerror extends filespec
 class fileupload
 {
 	var $allowed_extensions = array();
-	var $disallowed_content = array();
+	var $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title'); 
 	var $max_filesize = 0;
 	var $min_width = 0;
 	var $min_height = 0;
@@ -539,7 +539,7 @@ class fileupload
 	{
 		if ($disallowed_content !== false && is_array($disallowed_content))
 		{
-			$this->disallowed_content = $disallowed_content;
+			$this->disallowed_content = array_diff($disallowed_content, array(''));
 		}
 	}
 

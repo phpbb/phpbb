@@ -1,6 +1,6 @@
 /**
 *
-* phpBB3 © Copyright 2000, 2002, 2005, 2007 phpBB Group
+* phpBB3 © Copyright phpBB Group
 * http://www.phpbb.com
 *
 * This program is free software: you can redistribute it and/or modify
@@ -22,20 +22,17 @@ involved in phpBB.
 
 phpBB Lead Developer:  naderman (Nils Adermann)
 
-phpBB Developers:      A_Jelly_Doughnut (Josh Woody)
-                       Acyd Burn (Meik Sievertsen) [Lead 09/2005 - 01/2010]
-                       APTX (Marek A. R.)
+phpBB Developers:      Acyd Burn (Meik Sievertsen) [Lead 09/2005 - 01/2010]
                        bantu (Andreas Fischer)
-                       dhn (Dominik Dröscher)
+                       ckwalsh (Cullen Walsh)
                        igorw (Igor Wiedler)
                        kellanved (Henry Sudhof)
                        nickvergessen (Joas Schilling)
+                       Oleg (Oleg Pudeyev)
                        rxu (Ruslan Uzdenov)
-                       Terrafrost (Jim Wigginton)
                        ToonArmy (Chris Smith)
 
-Contributions by:      Brainy (Cullen Walsh)
-                       leviatan21 (Gabriel Vazquez)
+Contributions by:      leviatan21 (Gabriel Vazquez)
                        Raimon (Raimon Meuldijk)
                        Xore (Robert Hetzler)
 
@@ -47,11 +44,15 @@ phpBB Project Manager: theFinn (James Atkinson) [Founder - 04/2007]
 
 phpBB Lead Developer:  psoTFX (Paul S. Owen) [2001 - 09/2005]
 
-phpBB Developers:      Ashe (Ludovic Arnaud)       [10/2002 - 11/2003, 06/2006 - 10/2006]
-                       BartVB (Bart van Bragt)     [11/2000 - 03/2006]
-                       DavidMJ (David M.)          [12/2005 - 08/2009]
-                       GrahamJE (Graham Eames)     [09/2005 - 11/2006]
-                       Vic D'Elfant (Vic D'Elfant) [04/2007 - 04/2009]
+phpBB Developers:      A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
+                       APTX (Marek A. Ruszczyński)   [12/2007 - 04/2011]
+                       Ashe (Ludovic Arnaud)         [10/2002 - 11/2003, 06/2006 - 10/2006]
+                       BartVB (Bart van Bragt)       [11/2000 - 03/2006]
+                       DavidMJ (David M.)            [12/2005 - 08/2009]
+                       dhn (Dominik Dröscher)        [05/2007 - 01/2011]
+                       GrahamJE (Graham Eames)       [09/2005 - 11/2006]
+                       TerraFrost (Jim Wigginton)    [04/2009 - 01/2011]
+                       Vic D'Elfant (Vic D'Elfant)   [04/2007 - 04/2009]
 
 -- Copyrights --
 

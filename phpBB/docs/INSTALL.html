@@ -8,7 +8,7 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
 <meta name="distribution" content="global" />
-<meta name="copyright" content="2007 phpBB Group" />
+<meta name="copyright" content="phpBB Group" />
 <meta name="keywords" content="" />
 <meta name="description" content="phpBB 3.0.x Installation, updating and conversion informations" />
 <title>phpBB3 &bull; Install</title>
@@ -79,6 +79,7 @@
 	<li><a href="#postinstall">Important (security related) post-Install tasks for all installation methods</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#avatars">Uploadable avatars</a></li>
+		<li><a href="#webserver_configuration">Webserver configuration</a></li>
 	</ol>
 	</li>
 	<li><a href="#disclaimer">Disclaimer</a></li>
@@ -273,7 +274,7 @@
 
 	<p>This package is meant for those wanting to only replace changed files from a previous version to the latest version. This package normally contains the changed files from up to five previous versions.</p>
 
-	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <samp>3.0.7-PL1</samp> you should select the phpBB-3.0.7-PL1_to_3.0.8.zip/tar.gz file.</p>
+	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <samp>3.0.8</samp> you should select the phpBB-3.0.8_to_3.0.9.zip/tar.gz file.</p>
 
 	<p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any MODs these files will overwrite the originals possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
@@ -285,7 +286,7 @@
 
 	<p>The patch file is one solution for those with many Modifications (MODs) or other changes who do not want to re-add them back to all the changed files if they use the method explained above. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application but still want to use this update approach, we strongly recommend the <a href="#update_auto">Automatic update package</a> explained below. It is also the recommended update method.</p>
 
-	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is 3.0.5 you need the phpBB-3.0.7-PL1_to_3.0.8.patch file. Place the correct patch in the parent directory containing the phpBB3 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <strong>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</strong> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB3, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <samp>3.0.8</samp> you need the phpBB-3.0.8_to_3.0.9.patch file. Place the correct patch in the parent directory containing the phpBB3 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <strong>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</strong> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB3, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 	<p>If you do get failures you should look at using the <a href="#update_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Modifications (MODs) to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
@@ -408,6 +409,12 @@
 
 	<p>Please be aware that setting a directories permissions to global write access is a potential security issue. While it is unlikely that anything nasty will occur (such as all the avatars being deleted) there are always people out there to cause trouble. Therefore you should monitor this directory and if possible make regular backups.</p>
 
+<a name="webserver_configuration"></a><h3>6.ii. Webserver configuration</h3>
+
+	<p>Depending on your web server you may have to configure your server to deny web access to the <code>cache/</code>, <code>files/</code>, <code>store/</code> and other directories. This is to prevent users from accessing sensitive files.</p>
+
+	<p>For <strong>apache</strong> there are <code>.htaccess</code> files already in place to do this for you. For other webservers you will have to adjust the configuration yourself. Sample files for <strong>nginx</strong> and <strong>lighttpd</strong> to help you get started may be found in docs directory.</p>
+
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
@@ -424,7 +431,7 @@
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

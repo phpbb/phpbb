@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.8');
+define('PHPBB_VERSION', '3.0.9');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -173,6 +173,9 @@ define('BBCODE_UID_LEN', 8);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// BBCode hard limit
+define('BBCODE_LIMIT', 1511);
+
 // Smiley hard limit
 define('SMILEY_LIMIT', 1000);
 
@@ -233,6 +236,7 @@ define('GROUPS_TABLE',				$table_prefix . 'groups');
 define('ICONS_TABLE',				$table_prefix . 'icons');
 define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
+define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
