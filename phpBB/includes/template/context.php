@@ -73,7 +73,7 @@ class phpbb_template_context
 	*
 	* @return array template data
 	*/
-	public function get_data_ref()
+	public function &get_data_ref()
 	{
 		// returning a reference directly is not
 		// something php is capable of doing
@@ -91,7 +91,7 @@ class phpbb_template_context
 	*
 	* @return array template data
 	*/
-	public function get_root_ref()
+	public function &get_root_ref()
 	{
 		// rootref is already a reference
 		return $this->rootref;
