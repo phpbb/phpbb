@@ -771,8 +771,6 @@ class dbal
 					<html dir="ltr">
 					<head>
 						<meta charset="utf-8">
-						<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-						<meta http-equiv="imagetoolbar" content="no" />
 						<title>SQL Report</title>
 						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>

@@ -210,8 +210,6 @@ if ($has_global && !$ga_forum_id)
 	<head>
 
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta http-equiv="imagetoolbar" content="no" />
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
@@ -262,8 +260,6 @@ header('Content-type: text/html; charset=UTF-8');
 <html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta http-equiv="imagetoolbar" content="no" />
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 

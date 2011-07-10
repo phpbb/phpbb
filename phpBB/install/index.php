@@ -558,7 +558,6 @@ class module
 		echo '<html dir="ltr">';
 		echo '<head>';
 		echo '<meta charset="utf-8">';
-		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';
