@@ -52,7 +52,7 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 		$_template = $this->template;
 		$_tpldata = &$context->get_data_ref();
 		$_rootref = &$context->get_root_ref();
-		$_lang = &$lang;
+		$_lang = $lang;
 
 		eval($this->code);
 	}
