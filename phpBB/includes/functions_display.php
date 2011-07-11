@@ -1195,7 +1195,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if (isset($_GET['unwatch']) && $_GET['unwatch'] == $mode)
+		if ((isset($_GET['unwatch']) && $_GET['unwatch'] == $mode) || (isset($_GET['watch']) && $_GET['watch'] == $mode))
 		{
 			login_box();
 		}
