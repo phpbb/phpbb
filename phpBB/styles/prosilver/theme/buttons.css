@@ -51,7 +51,7 @@
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
-a.print, a.sendemail, a.fontsize {
+a.print, a.sendemail {
 	display: block;
 	overflow: hidden;
 	height: 18px;
@@ -68,17 +68,6 @@ a.print {
 a.sendemail {
 	background-image: none;
 	width: 22px;
-}
-
-a.fontsize {
-	background-image: none;
-	background-position: 0 -1px;
-	width: 29px;
-}
-
-a.fontsize:hover {
-	background-position: 0 -20px;
-	text-decoration: none;
 }
 
 /* Icon images
