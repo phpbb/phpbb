@@ -203,6 +203,7 @@ $config = new phpbb_config(array(
 ));
 
 $template->set_custom_template('../adm/style', 'admin');
+$template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
 // the acp template is never stored in the database
