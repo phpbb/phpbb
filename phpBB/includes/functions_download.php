@@ -103,7 +103,6 @@ function wrap_img_in_html($src, $title)
 	echo '<!DOCTYPE html>';
 	echo '<html>';
 	echo '<head>';
-	echo '<meta charset="utf-8">';
 	echo '<title>' . $title . '</title>';
 	echo '</head>';
 	echo '<body>';

@@ -2251,7 +2251,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '<!DOCTYPE html>';
 		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
-		echo '<meta charset="utf-8">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -3759,7 +3758,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<!DOCTYPE html>';
 			echo '<html dir="ltr">';
 			echo '<head>';
-			echo '<meta charset="utf-8">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';

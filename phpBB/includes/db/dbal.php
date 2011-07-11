@@ -770,7 +770,6 @@ class dbal
 				echo '<!DOCTYPE html>
 					<html dir="ltr">
 					<head>
-						<meta charset="utf-8">
 						<title>SQL Report</title>
 						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>

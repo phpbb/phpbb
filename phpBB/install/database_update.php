@@ -209,8 +209,6 @@ if ($has_global && !$ga_forum_id)
 	<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 	<head>
 
-	<meta charset="utf-8">
-
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
 	<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
@@ -259,7 +257,6 @@ header('Content-type: text/html; charset=UTF-8');
 <!DOCTYPE html>
 <html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 <head>
-<meta charset="utf-8">
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
