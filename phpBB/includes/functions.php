@@ -3690,11 +3690,14 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 
 				default:
 				case 'AAAA':
+					// AAAA records returned by nslookup on Windows XP/2003 have this format.
+					// Later Windows versions use the A record format below for AAAA records.
 					if (stripos($line, "$host AAAA IPv6 address") === 0)
 					{
 						return true;
 					}
-					//No break, newer versions of Windows output AAAA in the same way as the A records
+				// No break
+
 				case 'A':
 					if (!empty($host_matches))
 					{
