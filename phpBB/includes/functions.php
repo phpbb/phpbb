@@ -3686,6 +3686,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 					{
 						return true;
 					}
+				break;
 
 				default:
 				case 'A':
