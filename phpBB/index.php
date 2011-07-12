@@ -83,7 +83,7 @@ $legend = implode(', ', $legend);
 $birthday_list = '';
 if ($config['load_birthdays'] && $config['allow_birthdays'])
 {
-	$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
+	$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
 	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_birthday
 		FROM ' . USERS_TABLE . ' u
 		LEFT JOIN ' . BANLIST_TABLE . " b ON (u.user_id = b.ban_userid)
