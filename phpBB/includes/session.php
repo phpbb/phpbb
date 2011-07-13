@@ -41,16 +41,18 @@ class session
 	*/
 	static function extract_current_page($root_path)
 	{
+		global $request;
+
 		$page_array = array();
 
 		// First of all, get the request uri...
-		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
-		$args = (!empty($_SERVER['QUERY_STRING'])) ? explode('&', $_SERVER['QUERY_STRING']) : explode('&', getenv('QUERY_STRING'));
+		$script_name = $request->server('PHP_SELF');
+		$args = explode('&', $request->server('QUERY_STRING'));
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
 		{
-			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$script_name = $request->server('REQUEST_URI');
 			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, $pos) : $script_name;
 			$page_array['failover'] = 1;
 		}
@@ -141,10 +143,10 @@ class session
 	*/
 	function extract_current_hostname()
 	{
-		global $config;
+		global $config, $request;
 
 		// Get hostname
-		$host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$host = $request->header('Host', $request->server('SERVER_NAME'));
 
 		// Should be a string and lowered
 		$host = (string) strtolower($host);
@@ -212,9 +214,9 @@ class session
 		$this->time_now				= time();
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
-		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
-		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
-		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? htmlspecialchars((string) $_SERVER['HTTP_X_FORWARDED_FOR']) : '';
+		$this->browser				= $request->header('User-Agent', '', true);
+		$this->referer				= $request->header('Referer', '', true);
+		$this->forwarded_for		= $request->header('X-Forwarded-For', '', true);
 
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
@@ -268,7 +270,7 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+		$this->ip = $request->server('REMOTE_ADDR');
 		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs
@@ -382,7 +384,7 @@ class session
 				$referer_valid = true;
 
 				// we assume HEAD and TRACE to be foul play and thus only whitelist GET
-				if (@$config['referer_validation'] && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) !== 'get')
+				if (@$config['referer_validation'] && $request->server('REQUEST_METHOD') && strtolower($request->server('REQUEST_METHOD')) !== 'get')
 				{
 					$referer_valid = $this->validate_referer($check_referer_path);
 				}
@@ -1449,7 +1451,7 @@ class session
 	*/
 	function validate_referer($check_script_path = false)
 	{
-		global $config;
+		global $config, $request;
 
 		// no referer - nothing to validate, user's fault for turning it off (we only check on POST; so meta can't be the reason)
 		if (empty($this->referer) || empty($this->host))
@@ -1467,7 +1469,7 @@ class session
 		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '')
 		{
 			$ref = substr($ref, strlen($host));
-			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+			$server_port = $request->server('SERVER_PORT', 0);
 
 			if ($server_port !== 80 && $server_port !== 443 && stripos($ref, ":$server_port") === 0)
 			{
@@ -1592,9 +1594,9 @@ class user extends session
 			* If re-enabled we need to make sure only those languages installed are checked
 			* Commented out so we do not loose the code.
 
-			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+			if ($request->header('Accept-Language'))
 			{
-				$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+				$accept_lang_ary = explode(',', $request->header('Accept-Language'));
 
 				foreach ($accept_lang_ary as $accept_lang)
 				{

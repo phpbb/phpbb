@@ -781,6 +781,8 @@ function is_absolute($path)
 */
 function phpbb_own_realpath($path)
 {
+	global $request;
+
 	// Now to perform funky shizzle
 
 	// Switch to use UNIX slashes
@@ -824,11 +826,11 @@ function phpbb_own_realpath($path)
 				$path_prefix = '';
 			}
 		}
-		else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+		else if ($request->server('SCRIPT_FILENAME'))
 		{
 			// Warning: If chdir() has been used this will lie!
 			// Warning: This has some problems sometime (CLI can create them easily)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($request->server('SCRIPT_FILENAME'))) . '/' . $path;
 			$absolute = true;
 			$path_prefix = '';
 		}
@@ -2048,10 +2050,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 */
 function generate_board_url($without_script_path = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+	$server_port = $request->server('SERVER_PORT', 0);
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -2067,7 +2069,7 @@ function generate_board_url($without_script_path = false)
 	else
 	{
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
-		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		$cookie_secure = $request->server('HTTPS') == 'on' ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
 		$script_path = $user->page['root_script_path'];
@@ -2419,6 +2421,8 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 */
 function send_status_line($code, $message)
 {
+	global $request;
+
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
@@ -2426,15 +2430,15 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if (!empty($_SERVER['SERVER_PROTOCOL']))
+		if ($request->server('SERVER_PROTOCOL'))
 		{
-			$version = $_SERVER['SERVER_PROTOCOL'];
+			$version = $request->server('SERVER_PROTOCOL');
 		}
-		else if (!empty($_SERVER['HTTP_VERSION']))
+		else if ($request->server('HTTP_VERSION'))
 		{
 			// I cannot remember where I got this from.
 			// This code path may never be reachable in reality.
-			$version = $_SERVER['HTTP_VERSION'];
+			$version = $request->server('HTTP_VERSION');
 		}
 		else
 		{
@@ -4144,7 +4148,7 @@ function phpbb_optionset($bit, $set, $data)
 */
 function phpbb_http_login($param)
 {
-	global $auth, $user;
+	global $auth, $user, $request;
 	global $config;
 
 	$param_defaults = array(
@@ -4184,9 +4188,9 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$username = $_SERVER[$k];
+			$username = $request->server($k);
 			break;
 		}
 	}
@@ -4194,9 +4198,9 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$password = $_SERVER[$k];
+			$password = $request->server($k);
 			break;
 		}
 	}

@@ -999,7 +999,7 @@ class install_install extends module
 	*/
 	function obtain_advanced_settings($mode, $sub)
 	{
-		global $lang, $template, $phpEx;
+		global $lang, $template, $phpEx, $request;
 
 		$this->page_title = $lang['STAGE_ADVANCED'];
 
@@ -1017,7 +1017,7 @@ class install_install extends module
 		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $data['language'] . '" />';
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1027,16 +1027,16 @@ class install_install extends module
 
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
 		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
-		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
-		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
-		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
+		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : $request->server('SERVER_PORT', 0);
+		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ($request->server('HTTPS') == 'on' ? 'https://' : 'http://');
+		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ($request->server('HTTPS') == 'on' ? true : false);
 
 		if ($data['script_path'] === '')
 		{
-			$name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+			$name = $request->server('PHP_SELF');
 			if (!$name)
 			{
-				$name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+				$name = $request->server('REQUEST_URI');
 			}
 
 			// Replace backslashes and doubled slashes (could happen on some proxy setups)
@@ -1101,7 +1101,7 @@ class install_install extends module
 	*/
 	function load_schema($mode, $sub)
 	{
-		global $db, $lang, $template, $phpbb_root_path, $phpEx;
+		global $db, $lang, $template, $phpbb_root_path, $phpEx, $request;
 
 		$this->page_title = $lang['STAGE_CREATE_TABLE'];
 		$s_hidden_fields = '';
@@ -1117,8 +1117,8 @@ class install_install extends module
 		}
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$referer = (!empty($_SERVER['HTTP_REFERER'])) ? strtolower($_SERVER['HTTP_REFERER']) : getenv('HTTP_REFERER');
+		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
+		$referer = strtolower($request->header('Referer'));
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1235,7 +1235,7 @@ class install_install extends module
 
 		$current_time = time();
 
-		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? phpbb_ip_normalise($_SERVER['REMOTE_ADDR']) : '';
+		$user_ip = $request->server('REMOTE_ADDR') ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : '';
 
 		if ($data['script_path'] !== '/')
 		{

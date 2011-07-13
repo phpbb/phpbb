@@ -23,7 +23,6 @@ class phpbb_request_test extends phpbb_test_case
 		$_GET['unset'] = '';
 
 		$this->type_cast_helper = $this->getMock('phpbb_request_type_cast_helper_interface');
-
 		$this->request = new phpbb_request($this->type_cast_helper);
 	}
 
@@ -58,6 +57,20 @@ class phpbb_request_test extends phpbb_test_case
 	{
 		$this->assertTrue($this->request->is_set_post('test'));
 		$this->assertFalse($this->request->is_set_post('unset'));
+	}
+
+	public function test_is_ajax_without_ajax()
+	{
+		$this->assertFalse($this->request->is_ajax());
+	}
+
+	public function test_is_ajax_with_ajax()
+	{
+		$this->request->enable_super_globals();
+		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+		$this->request = new phpbb_request($this->type_cast_helper);
+
+		$this->assertTrue($this->request->is_ajax());
 	}
 
 	public function test_variable_names()

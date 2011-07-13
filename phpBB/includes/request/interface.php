@@ -29,6 +29,7 @@ interface phpbb_request_interface
 	const GET = 1;
 	const REQUEST = 2;
 	const COOKIE = 3;
+	const SERVER = 4;
 	/**#@-*/
 
 	/**
@@ -60,11 +61,34 @@ interface phpbb_request_interface
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 										Specifies which super global should be used
+	* @param bool	$html_encode	When true, html encoding will be applied
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST);
+	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST, $html_encode = true);
+
+	/**
+	* Shortcut method to retrieve SERVER variables.
+	*
+	* @param	string|array	$var_name		See phpbb_request_interface::variable
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	* @param	bool			$html_encode	See phpbb_request_interface::variable
+	*
+	* @return	mixed	The server variable value.
+	*/
+	public function server($var_name, $default = '', $html_encode = false);
+
+	/**
+	* Shortcut method to retrieve the value of client HTTP headers.
+	*
+	* @param	string|array	$header_name	The name of the header to retrieve.
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	* @param	bool			$html_encode	See phpbb_request_interface::variable
+	*
+	* @return	mixed	The header value.
+	*/
+	public function header($var_name, $default = '', $html_encode = false);
 
 	/**
 	* Checks whether a certain variable was sent via POST.
@@ -89,6 +113,13 @@ interface phpbb_request_interface
 	* @return	bool			True if the variable was sent as input
 	*/
 	public function is_set($var, $super_global = phpbb_request_interface::REQUEST);
+
+	/**
+	* Checks whether the current request is an AJAX request (XMLHttpRequest)
+	*
+	* @return	bool			True if the current request is an ajax request
+	*/
+	public function is_ajax();
 
 	/**
 	* Returns all variable names for a given super global

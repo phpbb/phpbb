@@ -333,7 +333,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config;
+		global $user, $phpEx, $phpbb_root_path, $config, $request;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -341,7 +341,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+		$calling_page = $request->server('PHP_SELF');
 
 		$message = '';
 		switch ($type)

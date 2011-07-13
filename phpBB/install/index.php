@@ -100,9 +100,9 @@ request_var('', 0, false, false, $request); // "dependency injection" for a func
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));
 
-if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
+if ($request->header('Accept-Language') && !$language)
 {
-	$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+	$accept_lang_ary = explode(',', strtolower($request->header('Accept-Language')));
 	foreach ($accept_lang_ary as $accept_lang)
 	{
 		// Set correct format ... guess full xx_yy form
@@ -428,15 +428,17 @@ class module
 	*/
 	function redirect($page)
 	{
-		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		global $request;
 
-		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+		// HTTP_HOST is having the correct browser url in most cases...
+		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
+		$server_port = $request->server('SERVER_PORT', 0);
+		$secure = ($request->server('HTTPS') == 'on') ? 1 : 0;
+
+		$script_name = $request->server('PHP_SELF');
 		if (!$script_name)
 		{
-			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$script_name = $request->server('REQUEST_URI');
 		}
 
 		// Replace backslashes and doubled slashes (could happen on some proxy setups)

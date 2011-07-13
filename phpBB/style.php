@@ -152,7 +152,7 @@ if ($id)
 	if ($config['gzip_compress'])
 	{
 		// IE6 is not able to compress the style (do not ask us why!)
-		$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? strtolower(htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT'])) : '';
+		$browser = strtolower($request->header('User-Agent', '', true));
 
 		if ($browser && strpos($browser, 'msie 6.0') === false && @extension_loaded('zlib') && !headers_sent())
 		{

@@ -48,4 +48,14 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $data);
 	}
+
+	public function test_simple_set_var_without_html_encoding()
+	{
+		$data = 'eviL<3';
+		$expected = 'eviL<3';
+
+		$this->type_cast_helper->recursive_set_var($data, '', true, false);
+
+		$this->assertEquals($expected, $data);
+	}
 }

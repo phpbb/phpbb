@@ -88,20 +88,26 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	/**
 	* Set variable $result to a particular type.
 	*
-	* @param mixed	&$result	The variable to fill
-	* @param mixed	$var		The contents to fill with
-	* @param mixed	$type		The variable type. Will be used with {@link settype()}
-	* @param bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
-	* 							Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	* @param mixed	&$result		The variable to fill
+	* @param mixed	$var			The contents to fill with
+	* @param mixed	$type			The variable type. Will be used with {@link settype()}
+	* @param bool	$multibyte		Indicates whether string values may contain UTF-8 characters.
+	* 								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	* @param bool	$html_encode	When true, html encoding will be applied
 	*/
-	public function set_var(&$result, $var, $type, $multibyte = false)
+	public function set_var(&$result, $var, $type, $multibyte = false, $html_encode = true)
 	{
 		settype($var, $type);
 		$result = $var;
 
 		if ($type == 'string')
 		{
-			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
+			$result = trim(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result));
+
+			if ($html_encode)
+			{
+				$result = htmlspecialchars($result, ENT_COMPAT, 'UTF-8');
+			}
 
 			if ($multibyte)
 			{
@@ -140,8 +146,9 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param	bool	$multibyte	Indicates whether string keys and values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to
 	* 								be replaced with question marks.
+	* @param bool	$html_encode	When true, html encoding will be applied
 	*/
-	public function recursive_set_var(&$var, $default, $multibyte)
+	public function recursive_set_var(&$var, $default, $multibyte, $html_encode = true)
 	{
 		if (is_array($var) !== is_array($default))
 		{
@@ -152,7 +159,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 		if (!is_array($default))
 		{
 			$type = gettype($default);
-			$this->set_var($var, $var, $type, $multibyte);
+			$this->set_var($var, $var, $type, $multibyte, $html_encode);
 		}
 		else
 		{
@@ -173,9 +180,9 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 
 			foreach ($_var as $k => $v)
 			{
-				$this->set_var($k, $k, $key_type, $multibyte, $multibyte);
+				$this->set_var($k, $k, $key_type, $multibyte, $multibyte, $html_encode);
 
-				$this->recursive_set_var($v, $default_value, $multibyte);
+				$this->recursive_set_var($v, $default_value, $multibyte, $html_encode);
 				$var[$k] = $v;
 			}
 		}
