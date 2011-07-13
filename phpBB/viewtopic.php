@@ -1303,7 +1303,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		continue;
 	}
 
-	$row =& $rowset[$post_list[$i]];
+	$row = $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
 
 	// End signature parsing, only if needed

@@ -26,7 +26,7 @@ class phpbb_captcha_factory
 	/**
 	* return an instance of class $name in file $name_plugin.php
 	*/
-	function &get_instance($name)
+	function get_instance($name)
 	{
 		global $phpbb_root_path, $phpEx;
 

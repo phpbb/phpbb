@@ -1528,7 +1528,7 @@ switch ($mode)
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
-				$row =& $id_cache[$user_id];
+				$row = $id_cache[$user_id];
 				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
 				$leaders_set = ($leaders_set || $is_leader);
 
