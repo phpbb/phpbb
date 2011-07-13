@@ -17,20 +17,22 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 	public function setUp()
 	{
-		$this->extension_manager = new phpbb_mock_extension_manager(array(
-			'foo' => array(
-				'ext_name' => 'foo',
-				'ext_active' => '1',
-				'ext_path' => dirname(__FILE__) . '/ext/foo/',
-			),
-			'bar' => array(
-				'ext_name' => 'bar',
-				'ext_active' => '1',
-				'ext_path' => dirname(__FILE__) . '/ext/bar/',
-			),
-		));
+		$this->extension_manager = new phpbb_mock_extension_manager(
+			dirname(__FILE__) . '/',
+			array(
+				'foo' => array(
+					'ext_name' => 'foo',
+					'ext_active' => '1',
+					'ext_path' => dirname(__FILE__) . '/ext/foo/',
+				),
+				'bar' => array(
+					'ext_name' => 'bar',
+					'ext_active' => '1',
+					'ext_path' => dirname(__FILE__) . '/ext/bar/',
+				),
+			));
 
-		$this->finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/');
+		$this->finder = $this->extension_manager->get_finder();
 	}
 
 	public function test_suffix_get_classes()

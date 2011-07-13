@@ -33,126 +33,53 @@ class phpbb_cron_manager
 	protected $tasks = array();
 
 	/**
-	* Path to the root of directory tree with tasks.
-	* For bundled phpBB tasks, this is the path to includes/cron/tasks
-	* under phpBB root.
-	* @var string
+	* An extension manager to search for cron tasks in extensions.
+	* @var phpbb_extension_manager
 	*/
-	protected $task_path;
-
-	/**
-	* PHP file extension
-	* @var string
-	*/
-	protected $phpEx;
-
-	/**
-	* Cache driver
-	* @var phpbb_cache_driver_interface
-	*/
-	protected $cache;
+	protected $extension_manager;
 
 	/**
 	* Constructor. Loads all available tasks.
 	*
-	* Tasks will be looked up in directory tree rooted at $task_path.
-	* Task classes will be autoloaded and must be named according to
-	* autoloading naming conventions. To load cron tasks shipped with
-	* phpbb, pass $phpbb_root_path . 'includes/cron/task' as $task_path.
+	* Tasks will be looked up in the core task directory located in
+	* includes/cron/task/core/ and in extensions. Task classes will be
+	* autoloaded and must be named according to autoloading naming conventions.
 	*
-	* If $cache is given, names of found cron tasks will be cached in it
-	* for one hour. Note that the cron task names are stored without
-	* namespacing; if two different phbb_cron_manager instances are
-	* constructed with different $task_path arguments but the same $cache,
-	* the second instance will use task names found by the first instance.
+	* Tasks in extensions must be located in a directory called cron or a subdir
+	* of a directory called cron. The class and filename must end in a _task
+	* suffix.
 	*
-	* @param string $task_path                   Directory containing cron tasks
-	* @param string $phpEx                       PHP file extension
-	* @param phpbb_cache_driver_interface $cache Cache for task names (optional)
-	* @return void
+	* @param phpbb_extension_manager $extension_manager phpBB extension manager
 	*/
-	public function __construct($task_path, $phpEx, phpbb_cache_driver_interface $cache = null)
+	public function __construct(phpbb_extension_manager $extension_manager)
 	{
-		if (DIRECTORY_SEPARATOR != '/')
-		{
-			// Need this on some platforms since the code elsewhere uses /
-			// to separate directory components, but PHP iterators return
-			// paths with platform-specific directory separators.
-			$task_path = str_replace('/', DIRECTORY_SEPARATOR, $task_path);
-		}
-
-		$this->task_path = $task_path;
-		$this->phpEx = $phpEx;
-		$this->cache = $cache;
+		$this->extension_manager = $extension_manager;
 
 		$task_names = $this->find_cron_task_names();
 		$this->load_tasks($task_names);
 	}
 
 	/**
-	* Finds cron task names.
+	* Finds cron task names using the extension manager.
 	*
-	* A cron task file must follow the naming convention:
-	* includes/cron/task/$mod/$name.php.
-	* $mod is core for tasks that are part of phpbb.
-	* Modifications should use their name as $mod.
-	* $name is the name of the cron task.
-	* Cron task is expected to be a class named phpbb_cron_task_${mod}_${name}.
+	* All PHP files in includes/cron/task/core/ are considered tasks. Tasks
+	* in extensions have to be located in a directory called cron or a subdir
+	* of a directory called cron. The class and filename must end in a _task
+	* suffix.
 	*
 	* @return array		List of task names
 	*/
 	public function find_cron_task_names()
 	{
-		if ($this->cache)
-		{
-			$task_names = $this->cache->get('_cron_tasks');
+		$finder = $this->extension_manager->get_finder();
 
-			if ($task_names !== false)
-			{
-				return $task_names;
-			}
-		}
-
-		$task_names = array();
-		$ext = '.' . $this->phpEx;
-		$ext_length = strlen($ext);
-
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->task_path));
-
-		foreach ($iterator as $fileinfo)
-		{
-			$file = preg_replace('#^' . preg_quote($this->task_path, '#') . '#', '', $fileinfo->getPathname());
-
-			// skip directories and files direclty in the task root path
-			if ($fileinfo->isFile() && strpos($file, DIRECTORY_SEPARATOR) !== false)
-			{
-				$task_name = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, 0, -$ext_length));
-				if (substr($file, -$ext_length) == $ext && $this->is_valid_name($task_name))
-				{
-					$task_names[] = 'phpbb_cron_task_' . $task_name;
-				}
-			}
-		}
-
-		if ($this->cache)
-		{
-			$this->cache->put('_cron_tasks', $task_names, 3600);
-		}
-
-		return $task_names;
-	}
-
-	/**
-	* Checks whether $name is a valid identifier, and
-	* therefore part of valid cron task class name.
-	*
-	* @param string $name		Name to check
-	*
-	* @return bool
-	*/
-	public function is_valid_name($name)
-	{
-		return (bool) preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $name);
+		return $finder
+			->suffix('_task')
+			->directory('/cron')
+			->default_path('includes/cron/task/core/')
+			->default_suffix('')
+			->default_directory('')
+			->get_classes();
 	}
 
 	/**
