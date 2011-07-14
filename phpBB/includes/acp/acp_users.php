@@ -1124,7 +1124,7 @@ class acp_users
 				// Grab log data
 				$log_data = array();
 				$log_count = 0;
-				view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
+				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,

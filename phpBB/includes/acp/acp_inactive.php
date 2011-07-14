@@ -301,7 +301,7 @@ class acp_inactive
 			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page", $inactive_count, $per_page, $start, true),
 			'USERS_PER_PAGE'	=> $per_page,
 
-			'U_ACTION'		=> $this->u_action . '&amp;start=' . $start,
+			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",
 		));
 
 		$this->tpl_name = 'acp_inactive';

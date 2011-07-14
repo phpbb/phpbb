@@ -198,7 +198,7 @@ class mcp_notes
 
 		$log_data = array();
 		$log_count = 0;
-		view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort, $keywords);
+		$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort, $keywords);
 
 		if ($log_count)
 		{
