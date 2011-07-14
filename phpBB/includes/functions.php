@@ -2432,15 +2432,25 @@ function build_url($strip_vars = false)
 */
 function meta_refresh($time, $url, $disable_cd_check = false)
 {
-	global $template;
+	global $template, $refresh_data;
 
-	$url = redirect($url, true, $disable_cd_check);
-	$url = str_replace('&', '&amp;', $url);
+	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+	{
+		$refresh_data = array(
+			'time'	=> $time,
+			'url'		=> str_replace('&amp;', '&', $url)
+		);
+	}
+	else
+	{
+		$url = redirect($url, true, $disable_cd_check);
+		$url = str_replace('&', '&amp;', $url);
 
-	// For XHTML compatibility we change back & to &amp;
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
-	);
+		// For XHTML compatibility we change back & to &amp;
+		$template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+		);
+	}
 
 	return $url;
 }
@@ -2686,6 +2696,21 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
+
+
+	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+	{
+		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
+		echo json_encode(array(
+			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
+			'MESSAGE_TEXT' 	=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+
+			'YES_VALUE'			=> $user->lang['YES'],
+			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
+			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields
+		));
+		exit;
+	}
 
 	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
@@ -3905,6 +3930,20 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
 				'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false)
 			);
+
+			if ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+			{
+				global $refresh_data;
+
+				echo json_encode(array(
+					'MESSAGE_TITLE'		=> $msg_title,
+					'MESSAGE_TEXT'		=> $msg_text,
+					'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
+					'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				));
+				exit;
+			}
 
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);

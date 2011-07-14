@@ -423,7 +423,7 @@ table.info tbody th {
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts 
+/* column[1-2] styles are containers for two column layouts
    Also see tweaks.css */
 .column1 {
 	float: left;
@@ -545,6 +545,26 @@ li.pagination {
 
 .row .pagination span a:hover, li.pagination span a:hover {
 	background-color: #d2d2d2;
+}
+
+/* jQuery popups
+---------------------------------------- */
+.jalert {
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	display: none;
+	position: fixed;
+	top: 100px;
+	left: 35%;
+	width: 30%;
+	z-index: 50;
+	padding: 25px;
+	padding: 0 25px 20px 25px;
+}
+
+.jalert p {
+	margin: 8px 0;
+	padding-bottom: 8px;
 }
 
 /* Miscellaneous styles
