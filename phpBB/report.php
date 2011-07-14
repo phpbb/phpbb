@@ -39,11 +39,13 @@ if (!$post_id && (!$pm_id || !$config['allow_pm_report']))
 if ($post_id)
 {
 	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";
+	$return_forum_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 	$pm_id = 0;
 }
 else
 {
 	$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&mode=view&p=$pm_id");
+	$return_forum_url = '';
 	$post_id = 0;
 	$forum_id = 0;
 }
@@ -101,6 +103,7 @@ if ($post_id)
 	{
 		$message = $user->lang['ALREADY_REPORTED'];
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
 		trigger_error($message);
 	}
 }
@@ -209,6 +212,10 @@ if ($submit && $reason_id)
 	meta_refresh(3, $redirect_url);
 
 	$message = $lang_success . '<br /><br />' . sprintf($lang_return, '<a href="' . $redirect_url . '">', '</a>');
+	if ($return_forum_url)
+	{
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
+	}
 	trigger_error($message);
 }
 
