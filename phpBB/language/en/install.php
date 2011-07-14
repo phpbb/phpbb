@@ -495,7 +495,7 @@ $lang = array_merge($lang, array(
 	'SHOW_DIFF_NEW'				=> 'Show file contents',
 	'SHOW_DIFF_NEW_CONFLICT'	=> 'Show differences',
 	'SHOW_DIFF_NOT_MODIFIED'	=> 'Show differences',
-	'SOME_QUERIES_FAILED'		=> 'Some queries failed, the statements and errors are listing below.',
+	'SOME_QUERIES_FAILED'		=> 'Some queries failed, the statements and errors are listed below.',
 	'SQL'						=> 'SQL',
 	'SQL_FAILURE_EXPLAIN'		=> 'This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our support forums. See <a href="../docs/README.html">README</a> for details on how to obtain advice.',
 	'STAGE_FILE_CHECK'			=> 'Check files',
