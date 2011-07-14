@@ -1,7 +1,7 @@
 var phpbb = {};
 
 /**
- * Display a simple alert.
+ * Display a simple alert similar to JSs native alert().
  *
  * @param string title Title of the message, eg "Information"
  * @param string msg Message to display. Can be HTML.
@@ -54,7 +54,7 @@ phpbb.confirm = function(msg, callback) {
 }
 
 /**
- * Clearing up some duplicate code - don't use this.
+ * Works out what to do with the refresh. Don't use this.
  */
 function handle_refresh(data, refresh, div)
 {
@@ -97,7 +97,6 @@ function handle_refresh(data, refresh, div)
  */
 phpbb.confirm_box = function(condition, refresh, callback)
 {
-	__self = this;
 	$(condition).click(function() {
 		var __self = this;
 		$.get(this.href, function(res) {
@@ -106,16 +105,13 @@ phpbb.confirm_box = function(condition, refresh, callback)
 				if (del)
 				{
 					var p = res.S_CONFIRM_ACTION.split('?');
-					p[1] += '&confirm=Yes';
-					$.post(p[0], p[1], function(res) {
+					$.post(p[0], p[1] + '&confirm=Yes', function(res) {
 						res = JSON.parse(res);
 						var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-
 						if (typeof callback !== 'undefined')
 						{
 							callback(__self);
 						}
-
 						handle_refresh(res.REFRESH_DATA, refresh, alert);
 					});
 				}
@@ -127,6 +123,11 @@ phpbb.confirm_box = function(condition, refresh, callback)
 
 /**
  * Makes a link use AJAX instead of loading an entire page.
+ *
+ * @param string condition The element to capture.
+ * @param bool/function refresh If we are sent back a refresh, should it be
+ * 	acted upon? This can either be true / false / a function.
+ * @param function callback Callback.
  */
 phpbb.ajaxify = function(selector, refresh, callback) {
 	$(selector).click(function() {
@@ -138,23 +139,25 @@ phpbb.ajaxify = function(selector, refresh, callback) {
 			{
 				callback(__self, res);
 			}
-
 			handle_refresh(res.REFRESH_DATA, refresh, alert);
 		});
 		return false;
 	});
 }
 
+
+//bind the confirm_boxes
 var refresh = function(url) {
 	return (url.indexOf('t=') === -1);
 }
-var callback = function(el) {
+phpbb.confirm_box('.delete-icon a', refresh, function(el) {
 	var pid = el.href.split('&p=')[1];
 	$(el).parents('div #p' + pid).remove();
-}
-phpbb.confirm_box('.delete-icon a', refresh, callback);
+});
 phpbb.confirm_box('a[href$="ucp.php?mode=delete_cookies"]', true);
 
+
+//AJAXify some links
 phpbb.ajaxify('a[href*="&bookmark=1"]', false, function(el, res) {
 	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
 	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
