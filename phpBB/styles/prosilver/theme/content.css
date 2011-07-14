@@ -229,9 +229,13 @@ div[class].topic-actions {
 	padding: 0;
 	line-height: 1.48em;
 	color: #333333;
-	width: 76%;
+	width: 100%;
 	float: left;
 	clear: both;
+	margin-right: -275px;
+}
+.postbody .wrap-content {
+	padding-right: 275px;
 }
 
 .postbody .ignore {
@@ -737,7 +741,7 @@ fieldset.polls dd div {
 	min-height: 80px;
 	color: #666666;
 	border-left: 1px solid #FFFFFF;
-	width: 22%;
+	width: 265px;
 	float: right;
 	display: inline;
 }
