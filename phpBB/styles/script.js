@@ -53,6 +53,39 @@ phpbb.confirm = function(msg, callback) {
 	return div;
 }
 
+/**
+ * Clearing up some duplicate code - don't use this.
+ */
+function handle_refresh(data, refresh, div)
+{
+	if (data)
+	{
+		if (typeof refresh === 'function')
+		{
+			refresh = refresh(data.url)
+		}
+		else if (typeof refresh !== 'boolean')
+		{
+			refresh = false;
+		}
+
+		if (refresh)
+		{
+			setTimeout(function() {
+				window.location = data.url;
+			}, data.time * 1000);
+		}
+		else
+		{
+			setTimeout(function() {
+				div.hide(300, function() {
+					div.remove();
+				});
+			}, data.time * 1000);
+		}
+	}
+}
+
 
 /**
  * This function interacts via AJAX with phpBBs confirm_box function.
@@ -77,37 +110,36 @@ phpbb.confirm_box = function(condition, refresh, callback)
 					$.post(p[0], p[1], function(res) {
 						res = JSON.parse(res);
 						var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-						callback(__self);
 
-						if (res.REFRESH_DATA)
+						if (typeof callback !== 'undefined')
 						{
-							if (typeof refresh === 'function')
-							{
-								refresh = refresh(res.REFRESH_DATA.url)
-							}
-							else if (typeof refresh !== 'boolean')
-							{
-								refresh = false;
-							}
-
-							if (refresh)
-							{
-								setTimeout(function() {
-									window.location = res.REFRESH_DATA.url;
-								}, res.REFRESH_DATA.time * 1000);
-							}
-							else
-							{
-								setTimeout(function() {
-									div.hide(300, function() {
-										div.remove();
-									});
-								}, res.REFRESH_DATA.time * 1000);
-							}
+							callback(__self);
 						}
+
+						handle_refresh(res.REFRESH_DATA, refresh, alert);
 					});
 				}
 			});
+		});
+		return false;
+	});
+}
+
+/**
+ * Makes a link use AJAX instead of loading an entire page.
+ */
+phpbb.ajaxify = function(selector, refresh, callback) {
+	$(selector).click(function() {
+		var __self = this;
+		$.get(this.href, function(res) {
+			res = JSON.parse(res);
+			var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+			if (typeof callback !== 'undefined')
+			{
+				callback(__self, res);
+			}
+
+			handle_refresh(res.REFRESH_DATA, refresh, alert);
 		});
 		return false;
 	});
@@ -121,3 +153,22 @@ var callback = function(el) {
 	$(el).parents('div #p' + pid).remove();
 }
 phpbb.confirm_box('.delete-icon a', refresh, callback);
+phpbb.confirm_box('a[href$="ucp.php?mode=delete_cookies"]', true);
+
+phpbb.ajaxify('a[href*="&bookmark=1"]', false, function(el, res) {
+	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
+	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
+	$(el).text(el.title = text);
+});
+phpbb.ajaxify('a[href*="&watch=topic"]', false, function(el, res) {
+	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
+	text = (text) ? 'Unsubscribe topic' : 'Subscribe topic';
+	$(el).text(el.title = text);
+});
+phpbb.ajaxify('a[href*="watch=forum"]', false, function(el, res) {
+	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
+	text = (text) ? 'Unsubscribe forum' : 'Subscribe forum';
+	$(el).text(el.title = text);
+});
+phpbb.ajaxify('a[href*="mode=bump"]');
+phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
