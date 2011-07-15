@@ -697,6 +697,23 @@ GO
 
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE [phpbb_migrations] (
+	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
+	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
+	[migration_end_time] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  UNIQUE  INDEX [migration_name] ON [phpbb_migrations]([migration_name]) ON [PRIMARY]
+GO
+
+
+/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE [phpbb_moderator_cache] (
