@@ -781,6 +781,21 @@ CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
 /
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar2(255) DEFAULT '' ,
+	migration_schema_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_state clob DEFAULT '' ,
+	migration_start_time number(11) DEFAULT '0' NOT NULL,
+	migration_end_time number(11) DEFAULT '0' NOT NULL,
+	CONSTRAINT u_phpbb_migration_name UNIQUE (migration_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE phpbb_moderator_cache (
