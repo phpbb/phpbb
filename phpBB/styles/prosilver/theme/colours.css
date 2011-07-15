@@ -676,10 +676,6 @@ a.sendemail {
 	background-image: url("{T_THEME_PATH}/images/icon_sendemail.gif");
 }
 
-a.fontsize {
-	background-image: url("{T_THEME_PATH}/images/icon_fontsize.gif");
-}
-
 /* Icon images
 ---------------------------------------- */
 .sitehome						{ background-image: url("{T_THEME_PATH}/images/icon_home.gif"); }
