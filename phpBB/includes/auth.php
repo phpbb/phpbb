@@ -348,6 +348,60 @@ class auth
 	}
 
 	/**
+	* Replaces any-flag options (a_) with all permissions affecting the flag.
+	*/
+	function replace_anyflag_options($opts)
+	{
+		if ($opts === false)
+		{
+			return array($opts);
+		}
+
+		if (!is_array($opts))
+		{
+			if (substr($opts, -1) != '_')
+			{
+				return array($opts);
+			}
+
+			$return_opts = array($opts);
+			foreach ($this->acl_options['option'] as $option_id => $auth_option)
+			{
+				if (strpos($auth_option, $opts) === 0)
+				{
+					$return_opts[] = $auth_option;
+				}
+			}
+			return array_unique($return_opts);
+		}
+		else
+		{
+			$return_opts = array();
+			foreach ($opts as $auth_option)
+			{
+				$return_opts = array_unique(array_merge($return_opts, $this->replace_anyflag_options($auth_option)));
+			}
+			return $return_opts;
+		}
+	}
+
+	/**
+	* Shall we set the any-flag option in acl_get_list()
+	*/
+	function set_anyflag_option($option, $auth_option_ary)
+	{
+		foreach ($auth_option_ary as $auth_option => $auth_setting)
+		{
+			if ((strpos($auth_option, $option) === 0) && ($auth_option != $option) && $auth_setting)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	* Get permission listing based on user_id/options/forum_ids
 	*/
 	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
@@ -358,7 +412,10 @@ class auth
 		}
 		else
 		{
-			$hold_ary = $this->acl_raw_data($user_id, $opts, $forum_id);
+			// We get a problem here, when we use acl_get_list for any-flag permissions, like a_ or m_.
+			// So what we basically do here is, we grab f.e. all a_* and check if the user has one of them.
+			$grab_opts = $this->replace_anyflag_options($opts);
+			$hold_ary = $this->acl_raw_data($user_id, $grab_opts, $forum_id);
 		}
 
 		$auth_ary = array();
@@ -368,6 +425,21 @@ class auth
 			{
 				foreach ($auth_option_ary as $auth_option => $auth_setting)
 				{
+					if ((is_array($opts) && !in_array($auth_option, $opts)) || (!is_array($opts) && ($auth_option != $opts)))
+					{
+						// Skip permissions we added to correctly get the any-flags.
+						continue;
+					}
+
+					if (substr($auth_option, -1) == '_')
+					{
+						// Set any-flag permissions, when the user has one of the requried permissions.
+						if ($this->set_anyflag_option($auth_option, $auth_option_ary))
+						{
+							$auth_ary[$forum_id][$auth_option][] = $user_id;
+						}
+					}
+
 					if ($auth_setting)
 					{
 						$auth_ary[$forum_id][$auth_option][] = $user_id;
