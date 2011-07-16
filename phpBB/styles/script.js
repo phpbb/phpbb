@@ -16,14 +16,14 @@ phpbb.alert = function(title, msg) {
 		{
 			return true;
 		}
-		div.hide(300, function() {
+		div.animate({opacity: 0}, 300, function() {
 			div.remove();
 		});
 		return false;
 	});
 
 	$('body').append(div);
-	div.show(300);
+	div.css('opacity', 0).show().animate({opacity: 1}, 300);
 	return div;
 }
 
@@ -43,13 +43,13 @@ phpbb.confirm = function(msg, callback) {
 	$('body').append(div);
 
 	$('.jalertbut').bind('click', function(event) {
-		div.hide(300, function() {
+		div.animate({opacity: 0}, 300, function() {
 			div.remove();
 		});
 		callback(this.value === 'Yes');
 		return false;
 	});
-	div.show(300);
+	div.css('opacity', 0).show().animate({opacity: 1}, 300);
 	return div;
 }
 
@@ -78,24 +78,12 @@ function handle_refresh(data, refresh, div)
 		else
 		{
 			setTimeout(function() {
-				div.hide(300, function() {
+				div.animate({opacity: 0}, 300, function() {
 					div.remove();
 				});
 			}, data.time * 1000);
 		}
 	}
-}
-
-function parse_hidden(inputs)
-{
-	var end = [];
-	$(inputs).each(function() {
-		if (this.type === 'hidden')
-		{
-			end.push(this.name + '=' + this.value);
-		}
-	});
-	return end.join('&');
 }
 
 
@@ -110,19 +98,20 @@ function parse_hidden(inputs)
 phpbb.confirm_box = function(condition, refresh, callback)
 {
 	$(condition).click(function() {
-		var __self = this;
+		var that = this;
 		$.get(this.href, function(res) {
 			res = JSON.parse(res);
 			phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 				if (del)
 				{
-					var p = res.S_CONFIRM_ACTION.split('?');
-					$.post(p[0], p[1] + '&confirm=Yes', function(res) {
+					var path = res.S_CONFIRM_ACTION;
+					var data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+					$.post(path, data + '&confirm=Yes', function(res) {
 						res = JSON.parse(res);
 						var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 						if (typeof callback !== 'undefined')
 						{
-							callback(__self);
+							callback(that);
 						}
 						handle_refresh(res.REFRESH_DATA, refresh, alert);
 					});
@@ -143,13 +132,13 @@ phpbb.confirm_box = function(condition, refresh, callback)
  */
 phpbb.ajaxify = function(selector, refresh, callback) {
 	$(selector).click(function() {
-		var __self = this;
+		var that = this;
 		$.get(this.href, function(res) {
 			res = JSON.parse(res);
 			var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 			if (typeof callback !== 'undefined')
 			{
-				callback(__self, res);
+				callback(that, res);
 			}
 			handle_refresh(res.REFRESH_DATA, refresh, alert);
 		});
@@ -194,7 +183,7 @@ phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
  * Forms have to be captured manually, as they're all different.
  */
 $('input[name^="action"]').click(function(e) {
-	var __self = this;
+	var that = this;
 	var path = $(this).parents('form')[0].action.replace('&amp;', '&');
 	var action = (this.name === 'action[approve]') ? 'approve' : 'disapprove';
 	var data = {
@@ -207,13 +196,12 @@ $('input[name^="action"]').click(function(e) {
 			if (del)
 			{
 				path = res.S_CONFIRM_ACTION;
-				data =  parse_hidden(res.S_HIDDEN_FIELDS);
+				data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 				$.post(path, data + '&confirm=Yes', function(res) {
-					console.log(res);
 					res = JSON.parse(res);
 					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 					
-					$(__self).parents((action === 'approve') ? '.rules' : '.post').remove();
+					$(that).parents((action === 'approve') ? '.rules' : '.post').remove();
 					
 					setTimeout(function() {
 						alert.hide(300, function() {
