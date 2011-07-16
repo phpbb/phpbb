@@ -630,6 +630,10 @@ p.rules {
 
 p.rules img {
 	vertical-align: middle;
+}
+
+p.rules strong {
+	vertical-align: middle;
 	padding-top: 5px;
 }
 
