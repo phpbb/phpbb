@@ -38,7 +38,7 @@ class phpbb_mock_request implements phpbb_request_interface
 
 	public function header($header_name, $default = '', $html_encode = false)
 	{
-		$var_name = 'HTTP_'.str_replace('-', '_', strtoupper($header_name));
+		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
 		return $this->server($var_name, $default, $html_encode);
 	}
 
@@ -66,7 +66,7 @@ class phpbb_mock_request implements phpbb_request_interface
 
 	public function set_header($header_name, $value)
 	{
-		$var_name = 'HTTP_'.str_replace('-', '_', strtoupper($header_name));
+		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
 		$this->data[phpbb_request_interface::SERVER][$var_name] = $value;
 	}
 

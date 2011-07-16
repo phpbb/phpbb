@@ -282,7 +282,7 @@ class phpbb_request implements phpbb_request_interface
 	*/
 	public function header($header_name, $default = '', $html_encode = true)
 	{
-		$var_name = 'HTTP_'.str_replace('-', '_', strtoupper($header_name));
+		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
 		return $this->server($var_name, $default, $html_encode);
 	}
 
