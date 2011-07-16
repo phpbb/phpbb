@@ -86,6 +86,18 @@ function handle_refresh(data, refresh, div)
 	}
 }
 
+function parse_hidden(inputs)
+{
+	var end = [];
+	$(inputs).each(function() {
+		if (this.type === 'hidden')
+		{
+			end.push(this.name + '=' + this.value);
+		}
+	});
+	return end.join('&');
+}
+
 
 /**
  * This function interacts via AJAX with phpBBs confirm_box function.
@@ -175,3 +187,42 @@ phpbb.ajaxify('a[href*="watch=forum"]', false, function(el, res) {
 });
 phpbb.ajaxify('a[href*="mode=bump"]');
 phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
+
+
+
+/**
+ * Forms have to be captured manually, as they're all different.
+ */
+$('input[name^="action"]').click(function(e) {
+	var __self = this;
+	var path = $(this).parents('form')[0].action.replace('&amp;', '&');
+	var action = (this.name === 'action[approve]') ? 'approve' : 'disapprove';
+	var data = {
+		action: action,
+		post_id_list: [$(this).siblings('input[name="post_id_list[]"]')[0].value]
+	};
+	$.post(path, data, function(res) {
+		res = JSON.parse(res);
+		phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+			if (del)
+			{
+				path = res.S_CONFIRM_ACTION;
+				data =  parse_hidden(res.S_HIDDEN_FIELDS);
+				$.post(path, data + '&confirm=Yes', function(res) {
+					console.log(res);
+					res = JSON.parse(res);
+					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+					
+					$(__self).parents((action === 'approve') ? '.rules' : '.post').remove();
+					
+					setTimeout(function() {
+						alert.hide(300, function() {
+							alert.remove();
+						});
+					}, 5000);
+				});
+			}
+		});
+	});
+	return false;
+});
