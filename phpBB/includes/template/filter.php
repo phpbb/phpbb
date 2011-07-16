@@ -72,11 +72,12 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private $allow_php;
 
-	public function __construct($allow_php)
-	{
-		$this->allow_php = $allow_php;
-	}
-
+	/**
+	* Stream filter
+	*
+	* Is invoked for evey chunk of the stream, allowing us
+	* to work on a chunk at a time, which saves memory.
+	*/
 	public function filter($in, $out, &$consumed, $closing)
 	{
 		$written = false;
@@ -119,6 +120,12 @@ class phpbb_template_filter extends php_user_filter
 		return $written ? PSFS_PASS_ON : PSFS_FEED_ME;
 	}
 
+	/**
+	* Initializer, called on creation.
+	*
+	* Get the allow_php option from params, which is passed
+	* to stream_filter_append.
+	*/
 	public function onCreate()
 	{
 		$this->chunk = '';
@@ -194,6 +201,9 @@ class phpbb_template_filter extends php_user_filter
 		return $data;
 	}
 
+	/**
+	* Callback for replacing matched tokens with PHP code
+	*/
 	private function replace($matches)
 	{
 		if ($this->in_php && $matches[1] != 'ENDPHP')
@@ -635,7 +645,9 @@ class phpbb_template_filter extends php_user_filter
 		return $tokens;
 	}
 
-
+	/**
+	* Compile IF tags
+	*/
 	private function compile_tag_if($tag_args, $elseif)
 	{
 		$tokens = $this->compile_expression($tag_args);
