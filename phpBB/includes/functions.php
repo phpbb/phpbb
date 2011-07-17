@@ -207,6 +207,27 @@ function phpbb_mt_rand($min, $max)
 }
 
 /**
+* Wrapper for getdate() which returns the equivalent array for UTC timestamps.
+*
+* @param int $time		Unix timestamp (optional)
+*
+* @return array			Returns an associative array of information related to the timestamp.
+*						See http://www.php.net/manual/en/function.getdate.php
+*/
+function phpbb_gmgetdate($time = false)
+{
+	if ($time === false)
+	{
+		$time = time();
+	}
+
+	// getdate() interprets timestamps in local time.
+	// What follows uses the fact that getdate() and
+	// date('Z') balance each other out.
+	return getdate($time - date('Z'));
+}
+
+/**
 * Return formatted string for filesizes
 *
 * @param int	$value			filesize in bytes
