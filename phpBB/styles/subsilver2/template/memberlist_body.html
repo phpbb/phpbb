@@ -14,7 +14,12 @@
 	<form method="post" name="charsearch" action="{S_MODE_ACTION}">
 		<table width="100%" cellspacing="1">
 		<tr>
-			<td align="{S_CONTENT_FLOW_BEGIN}"><span class="genmed">{L_USERNAME_BEGINS_WITH}: </span><select name="first_char" onchange="this.form.submit();">{S_CHAR_OPTIONS}</select>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></td>
+			<td align="{S_CONTENT_FLOW_BEGIN}"><span class="genmed">{L_USERNAME_BEGINS_WITH}: </span>
+				<select name="first_char" onchange="this.form.submit();">
+					<!-- BEGIN first_char -->
+						<option value="{first_char.VALUE}"<!-- IF first_char.S_SELECTED --> selected="selected"<!-- ENDIF -->>{first_char.DESC}</option>
+					<!-- END first_char -->
+				</select>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></td>
 	<!-- IF U_FIND_MEMBER and not S_SEARCH_USER -->
 			<td class="genmed" align="{S_CONTENT_FLOW_END}"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td>
 	<!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP -->
