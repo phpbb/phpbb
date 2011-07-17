@@ -1,22 +1,21 @@
 /**
  * Make some changes to the jQuery core.
  */
-$.fn.hide = function() {
+$.fn.hide_anim = function() {
 	this.animate({opacity: 0}, 300, function() {
 		$(this).css('display', 'none')
 			.css('opacity', 1);	
 	});
 }
-$.fn.show = function() {
+$.fn.show_anim = function() {
 	this.css('opacity', 0)
 		.css('display', 'block')
 		.animate({opacity: 1}, 300);
 }
 
-$.fn.remove_old = $.fn.remove;
-$.fn.remove = function() {
+$.fn.remove_anim = function() {
 	this.animate({opacity: 0}, 300, function() {
-		$(this).remove_old();
+		$(this).remove();
 	});
 }
 
@@ -39,12 +38,12 @@ phpbb.alert = function(title, msg) {
 		{
 			return true;
 		}
-		div.remove();
+		div.remove_anim();
 		return false;
 	});
 
 	$('body').append(div);
-	div.show();
+	div.show_anim();
 	return div;
 }
 
@@ -64,11 +63,11 @@ phpbb.confirm = function(msg, callback) {
 	$('body').append(div);
 
 	$('.jalertbut').bind('click', function(event) {
-		div.remove();
+		div.remove_anim();
 		callback(this.value === 'Yes');
 		return false;
 	});
-	div.show();
+	div.show_anim();
 	return div;
 }
 
@@ -105,7 +104,7 @@ phpbb.ajaxify = function(selector, refresh, callback) {
 			}
 			else
 			{
-				div.remove();
+				div.remove_anim();
 			}
 		}, data.time * 1000);
 	}
@@ -183,14 +182,13 @@ var refresh = function(url) {
 }
 phpbb.ajaxify('.delete-icon a', refresh, function(el) {
 	var pid = el.href.split('&p=')[1];
-	$(el).parents('div #p' + pid).remove();
+	$(el).parents('div #p' + pid).remove_anim();
 });
 phpbb.ajaxify('a[href$="ucp.php?mode=delete_cookies"]', true);
 
 
 //AJAXify some links
 phpbb.ajaxify('a[href*="&bookmark=1"]', false, function(el, res) {
-	console.log(res);
 	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
 	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
 	$(el).text(el.title = text);
@@ -209,5 +207,5 @@ phpbb.ajaxify('a[href*="mode=bump"]');
 phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
 
 phpbb.ajaxify('.mcp_approve', false, function(el, act) {
-	$(el).parents((act === 'approve') ? '.rules' : '.post').remove();
+	$(el).parents((act === 'approve') ? '.rules' : '.post').remove_anim();
 });
