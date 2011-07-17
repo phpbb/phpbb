@@ -1,3 +1,26 @@
+/**
+ * Make some changes to the jQuery core.
+ */
+$.fn.hide = function() {
+	this.animate({opacity: 0}, 300, function() {
+		$(this).css('display', 'none')
+			.css('opacity', 1);	
+	});
+}
+$.fn.show = function() {
+	this.css('opacity', 0)
+		.css('display', 'block')
+		.animate({opacity: 1}, 300);
+}
+
+$.fn.remove_old = $.fn.remove;
+$.fn.remove = function() {
+	this.animate({opacity: 0}, 300, function() {
+		$(this).remove_old();
+	});
+}
+
+
 var phpbb = {};
 
 /**
@@ -16,14 +39,12 @@ phpbb.alert = function(title, msg) {
 		{
 			return true;
 		}
-		div.animate({opacity: 0}, 300, function() {
-			div.remove();
-		});
+		div.remove();
 		return false;
 	});
 
 	$('body').append(div);
-	div.css('opacity', 0).show().animate({opacity: 1}, 300);
+	div.show();
 	return div;
 }
 
@@ -37,19 +58,17 @@ phpbb.alert = function(title, msg) {
  */
 phpbb.confirm = function(msg, callback) {
 	var div = $('<div class="jalert"><p>' + msg + '</p>\
-		<input type="button" class="jalertbut" value="Yes" />&nbsp;\
-		<input type="button" class="jalertbut" value="No" /></div>');
+		<input type="button" class="jalertbut button1" value="Yes" />&nbsp;\
+		<input type="button" class="jalertbut button2" value="No" /></div>');
 
 	$('body').append(div);
 
 	$('.jalertbut').bind('click', function(event) {
-		div.animate({opacity: 0}, 300, function() {
-			div.remove();
-		});
+		div.remove();
 		callback(this.value === 'Yes');
 		return false;
 	});
-	div.css('opacity', 0).show().animate({opacity: 1}, 300);
+	div.show();
 	return div;
 }
 
@@ -101,12 +120,13 @@ phpbb.confirm_box = function(condition, refresh, callback)
 		var that = this;
 		$.get(this.href, function(res) {
 			res = JSON.parse(res);
+			console.log(res);
 			phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 				if (del)
 				{
 					var path = res.S_CONFIRM_ACTION;
 					var data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-					$.post(path, data + '&confirm=Yes', function(res) {
+					$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
 						res = JSON.parse(res);
 						var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 						if (typeof callback !== 'undefined')
@@ -135,12 +155,57 @@ phpbb.ajaxify = function(selector, refresh, callback) {
 		var that = this;
 		$.get(this.href, function(res) {
 			res = JSON.parse(res);
+			console.log(res);
 			var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 			if (typeof callback !== 'undefined')
 			{
 				callback(that, res);
 			}
 			handle_refresh(res.REFRESH_DATA, refresh, alert);
+		});
+		return false;
+	});
+}
+
+/**
+ * AJAXifies a form. This will automatically get the action from the submit.
+ *
+ * @param string condition The element to capture.
+ * @param bool/function refresh If we are sent back a refresh, should it be
+ * 	acted upon? This can either be true / false / a function.
+ * @param function callback Callback.
+ */
+phpbb.ajaxify_form = function(selector, refresh, callback)
+{
+	$(selector + ' input:submit').click(function(e) {
+		var act = /action\[([a-z]+)\]/.exec(this.name),
+			data = decodeURI($(this).closest('form').serialize()),
+			path = $(this).closest('form').attr('action').replace('&amp;', '&'),
+			that = this;
+		
+		if (act)
+		{
+			data += '&action=' + act[1];
+		}
+		
+		$.post(path, data, function(res) {
+			res = JSON.parse(res);
+			phpbb.confirm(res.MESSAGE_TEXT, function(del) {
+				if (del)
+				{
+					path = res.S_CONFIRM_ACTION;
+					data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+					$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
+						res = JSON.parse(res);
+						var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+						if (typeof callback !== 'undefined')
+						{
+							callback(that, act[1]);
+						}
+						handle_refresh(res.REFRESH_DATA, refresh, alert);
+					});
+				}
+			});
 		});
 		return false;
 	});
@@ -177,40 +242,6 @@ phpbb.ajaxify('a[href*="watch=forum"]', false, function(el, res) {
 phpbb.ajaxify('a[href*="mode=bump"]');
 phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
 
-
-
-/**
- * Forms have to be captured manually, as they're all different.
- */
-$('input[name^="action"]').click(function(e) {
-	var that = this;
-	var path = $(this).parents('form')[0].action.replace('&amp;', '&');
-	var action = (this.name === 'action[approve]') ? 'approve' : 'disapprove';
-	var data = {
-		action: action,
-		post_id_list: [$(this).siblings('input[name="post_id_list[]"]')[0].value]
-	};
-	$.post(path, data, function(res) {
-		res = JSON.parse(res);
-		phpbb.confirm(res.MESSAGE_TEXT, function(del) {
-			if (del)
-			{
-				path = res.S_CONFIRM_ACTION;
-				data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-				$.post(path, data + '&confirm=Yes', function(res) {
-					res = JSON.parse(res);
-					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-					
-					$(that).parents((action === 'approve') ? '.rules' : '.post').remove();
-					
-					setTimeout(function() {
-						alert.hide(300, function() {
-							alert.remove();
-						});
-					}, 5000);
-				});
-			}
-		});
-	});
-	return false;
+phpbb.ajaxify_form('.mcp_approve', false, function(el, act) {
+	$(el).parents((act === 'approve') ? '.rules' : '.post').remove();
 });
