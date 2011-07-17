@@ -415,11 +415,8 @@ class acp_main
 		{
 			$latest_version_info = explode("\n", $latest_version_info);
 
-			$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
-			$current_version = str_replace('rc', 'RC', strtolower($config['version']));
-
 			$template->assign_vars(array(
-				'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
 			));
 		}
 

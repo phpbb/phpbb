@@ -549,6 +549,34 @@ function phpbb_email_hash($email)
 }
 
 /**
+* Wrapper for version_compare() that allows using uppercase A and B
+* for alpha and beta releases.
+*
+* See http://www.php.net/manual/en/function.version-compare.php
+*
+* @param string $version1		First version number
+* @param string $version2		Second version number
+* @param string $operator		Comparison operator (optional)
+*
+* @return mixed					Integer (-1, 0, 1) if comparison operator is specified.
+*								Boolean (true, false) otherwise.
+*/
+function phpbb_version_compare($version1, $version2, $operator = null)
+{
+	$version1 = strtolower($version1);
+	$version2 = strtolower($version2);
+
+	if (is_null($operator))
+	{
+		return version_compare($version1, $version2);
+	}
+	else
+	{
+		return version_compare($version1, $version2, $operator);
+	}
+}
+
+/**
 * Global function for chmodding directories and files for internal use
 *
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
