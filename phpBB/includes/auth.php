@@ -349,6 +349,14 @@ class auth
 
 	/**
 	* Get permission listing based on user_id/options/forum_ids
+	*
+	* Be careful when using this function with permissions a_, m_, u_ and f_ !
+	* It may not work correctly. When a user group grants an a_* permission,
+	* e.g. a_foo, but the user's a_foo permission is set to "Never", then
+	* the user does not in fact have the a_ permission.
+	* But the user will still be listed as having the a_ permission.
+	*
+	* For more information see: http://tracker.phpbb.com/browse/PHPBB3-10252
 	*/
 	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
 	{
