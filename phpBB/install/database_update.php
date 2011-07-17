@@ -205,14 +205,9 @@ $ga_forum_id = request_var('ga_forum_id', 0);
 if ($has_global && !$ga_forum_id)
 {
 	?>
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>" xml:lang="<?php echo $lang['USER_LANG']; ?>">
+	<!DOCTYPE html>
+	<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 	<head>
-
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="content-language" content="<?php echo $lang['USER_LANG']; ?>" />
-	<meta http-equiv="content-style-type" content="text/css" />
-	<meta http-equiv="imagetoolbar" content="no" />
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
@@ -259,14 +254,9 @@ if ($has_global && !$ga_forum_id)
 header('Content-type: text/html; charset=UTF-8');
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>" xml:lang="<?php echo $lang['USER_LANG']; ?>">
+<!DOCTYPE html>
+<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<meta http-equiv="content-language" content="<?php echo $lang['USER_LANG']; ?>" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="imagetoolbar" content="no" />
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 

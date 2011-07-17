@@ -1,14 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="en" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="copyright" content="phpBB Group" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="Olympus coding guidelines document" />
 <title>phpBB3 &bull; Coding Guidelines</title>
@@ -1770,7 +1763,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), this removes the need to convert between encodings and improves the accessibility of multilingual forums.</p>
 
-	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <acronym title="Byte-Order-Mark">BOM</acronym> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
+	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <abbr title="Byte-Order-Mark">BOM</abbr> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
 
 	<h4>Language Tag:</h4>
 
@@ -1780,8 +1773,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Most language tags consist of a two- or three-letter language subtag (from <a href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO 639-1/ISO 639-2</a>). Sometimes, this is followed by a two-letter or three-digit region subtag (from <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> or <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a>). Some examples are:</p>
 
-	<table summary="Examples of various possible language tags as described by RFC 4646 and RFC 4647">
-	<caption>Language tag examples</caption>
+	<table>
+	<caption>Examples of various possible language tags as described by RFC 4646 and RFC 4647</caption>
 	<thead>
 	<tr>
 		<th scope="col">Language tag</th>
@@ -1832,8 +1825,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Next is the <a href="http://www.unicode.org/iso15924/iso15924-codes.html">ISO 15924</a> language script code and when one should or shouldn't use it. For example, whilst <code>en-Latn</code> is syntaxically correct for describing English written with Latin script, real world English writing is <strong>more-or-less exclusively in the Latin script</strong>. For such languages like English that are written in a single script, the <a href="http://www.iana.org/assignments/language-subtag-registry"><abbr title="Internet Assigned Numbers Authority">IANA</abbr> Language Subtag Registry</a> has a "Suppress-Script" field meaning the script code <strong>should be ommitted</strong> unless a specific language tag requires a specific script code. Some languages are <strong>written in more than one script</strong> and in such cases, the script code <strong>is encouraged</strong> since an end-user may be able to read their language in one script, but not the other. Some examples are:</p>
 
-	<table summary="Examples of using a language subtag in combination with a script subtag">
-	<caption>Language subtag + script subtag examples</caption>
+	<table>
+	<caption>Examples of using a language subtag in combination with a script subtag</caption>
 	<thead>
 	<tr>
 		<th scope="col">Language tag</th>
@@ -1899,8 +1892,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Examples of English using marco-geographical regions:</p>
 
-	<table summary="Examples for English of ISO 3166-1 alpha-2 vs. UN M.49 code">
-	<caption>Coding for English using macro-geographical regions</caption>
+	<table>
+	<caption>Coding for English using macro-geographical regions (examples for English of ISO 3166-1 alpha-2 vs. UN M.49 code)</caption>
 	<thead>
 	<tr>
 		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
@@ -1925,8 +1918,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Examples of Spanish using marco-geographical regions:</p>
 
-	<table summary="Examples for Spanish of ISO 3166-1 alpha-2 vs. UN M.49 code">
-	<caption>Coding for Spanish macro-geographical regions</caption>
+	<table>
+	<caption>Coding for Spanish macro-geographical regions (examples for Spanish of ISO 3166-1 alpha-2 vs. UN M.49 code)</caption>
 	<thead>
 	<tr>
 		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
@@ -1954,7 +1947,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Example of where the <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> is ambiguous and why <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a> might be preferred:</p>
 
-	<table summary="Example where the ISO 3166-1 alpha-2 is ambiguous">
+	<table>
 	<caption>Coding for ambiguous ISO 3166-1 alpha-2 regions</caption>
 	<thead>
 	<tr>
@@ -2010,7 +2003,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p><a href="http://tools.ietf.org/html/rfc4646">RFC 4646</a> anticipates features which shall be available in (currently draft) <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> which aims to provide as complete enumeration of languages as possible, including living, extinct, ancient and constructed languages, whether majour, minor or unwritten. A new feature of <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> compared to the previous two revisions is the concept of <a href="http://www.sil.org/iso639-3/macrolanguages.asp">macrolanguages</a> where Arabic and Chinese are two such examples. In such cases, their respective codes of <code>ar</code> and <code>zh</code> is very vague as to which dialect/topolect is used or perhaps some terse classical variant which may be difficult for all but very educated users. For such macrolanguages, it is recommended that the sub-language tag is used as a suffix to the macrolanguage tag, eg:</p>
 
-	<table summary="Examples of macrolanguages used with sub-language subtags">
+	<table>
 	<caption>Macrolanguage subtag + sub-language subtag examples</caption>
 	<thead>
 	<tr>
@@ -2054,7 +2047,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For phpBB, the language tags are <strong>not</strong> used in their raw form and instead converted to all lower-case and have the hyphen <code>-</code> replaced with an underscore <code>_</code> where appropriate, with some examples below:</p>
 
-	<table summary="Normalisation of language tags for usage in phpBB">
+	<table>
 	<caption>Language tag normalisation examples</caption>
 	<thead>
 	<tr>
@@ -2108,7 +2101,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For the English language description, the language name is always first and any additional attributes required to describe the subtags within the language code are then listed in order separated with commas and enclosed within parentheses, eg:</p>
 
-	<table summary="English language description examples of iso.txt for usage in phpBB">
+	<table>
 	<caption>English language description examples for iso.txt</caption>
 	<thead>
 	<tr>
@@ -2160,7 +2153,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropriate are as follows:</p>
 
-	<table summary="Table of the various Unicode bidirectional control characters">
+	<table>
 	<caption>Unicode bidirectional control characters &amp; HTML elements/entities</caption>
 	<thead>
 	<tr>
@@ -2226,7 +2219,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For <code>iso.txt</code>, the directionality of the text can be explicitly set using special Unicode characters via any of the three methods provided by left-to-right/right-to-left markers/embeds/overrides, as without them, the ordering of characters will be incorrect, eg:</p>
 
-	<table summary="Effect of using Unicode bidirectional control characters within iso.txt">
+	<table>
 	<caption>Unicode bidirectional control characters iso.txt</caption>
 	<thead>
 	<tr>
