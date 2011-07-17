@@ -488,7 +488,7 @@ $s_watching_topic = array(
 
 if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
-	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
+	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start, $topic_data['topic_title']);
 
 	// Reset forum notification if forum notify is set
 	if ($config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
