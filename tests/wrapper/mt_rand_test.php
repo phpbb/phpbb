@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
-class phpbb_random_mt_rand_test extends phpbb_test_case
+class phpbb_wrapper_mt_rand_test extends phpbb_test_case
 {
 	public function test_max_equals_min()
 	{
