@@ -157,7 +157,6 @@ class ucp_register
 			return;
 		}
 
-
 		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change.
 		if ($config['enable_confirm'])
 		{
