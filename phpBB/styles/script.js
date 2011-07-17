@@ -184,27 +184,27 @@ phpbb.ajaxify('.delete-icon a', refresh, function(el) {
 	var pid = el.href.split('&p=')[1];
 	$(el).parents('div #p' + pid).remove_anim();
 });
-phpbb.ajaxify('a[href$="ucp.php?mode=delete_cookies"]', true);
+phpbb.ajaxify('#page-footer a[href$="ucp.php?mode=delete_cookies"]', true);
 
 
 //AJAXify some links
-phpbb.ajaxify('a[href*="&bookmark=1"]', false, function(el, res) {
+phpbb.ajaxify('#page-footer a[href*="&bookmark=1"]', false, function(el, res) {
 	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
 	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
 	$(el).text(el.title = text);
 });
-phpbb.ajaxify('a[href*="watch=topic"]', false, function(el, res) {
+phpbb.ajaxify('#page-footer a[href*="watch=topic"]', false, function(el, res) {
 	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
 	text = (text) ? 'Unsubscribe topic' : 'Subscribe topic';
 	$(el).text(el.title = text);
 });
-phpbb.ajaxify('a[href*="watch=forum"]', false, function(el, res) {
+phpbb.ajaxify('#page-footer a[href*="watch=forum"]', false, function(el, res) {
 	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
 	text = (text) ? 'Unsubscribe forum' : 'Subscribe forum';
 	$(el).text(el.title = text);
 });
-phpbb.ajaxify('a[href*="mode=bump"]');
-phpbb.ajaxify('a[href*="mark="]'); //captures topics and forums
+phpbb.ajaxify('#page-footer a[href*="mode=bump"]');
+phpbb.ajaxify('.rightside a[href*="mark="]'); //captures topics and forums
 
 phpbb.ajaxify('.mcp_approve', false, function(el, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').remove_anim();
