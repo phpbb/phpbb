@@ -235,9 +235,18 @@ div[class].topic-actions {
 	padding: 0;
 	line-height: 1.48em;
 	color: #333333;
-	width: 76%;
+	width: 100%;
 	float: left;
 	clear: both;
+	margin-right: -275px;
+}
+
+.postbody .wrap-content {
+	padding-right: 275px;
+}
+
+.search .postbody .wrap-content {
+	padding-right: 205px;
 }
 
 .postbody .ignore {
@@ -270,7 +279,7 @@ div[class].topic-actions {
 }
 
 .search .postbody {
-	width: 68%
+	margin-right: -205px;
 }
 
 /* Topic review panel
@@ -743,7 +752,7 @@ fieldset.polls dd div {
 	min-height: 80px;
 	color: #666666;
 	border-left: 1px solid #FFFFFF;
-	width: 22%;
+	width: 265px;
 	float: right;
 	display: inline;
 }
@@ -774,7 +783,7 @@ fieldset.polls dd div {
 
 /* Poster profile used by search*/
 .search .postprofile {
-	width: 30%;
+	width: 200px;
 }
 
 /* pm list in compose message if mass pm is enabled */
