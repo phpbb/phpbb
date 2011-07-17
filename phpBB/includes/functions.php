@@ -3673,10 +3673,19 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 					{
 						return true;
 					}
+				break;
 
 				default:
-				case 'A':
 				case 'AAAA':
+					// AAAA records returned by nslookup on Windows XP/2003 have this format.
+					// Later Windows versions use the A record format below for AAAA records.
+					if (stripos($line, "$host AAAA IPv6 address") === 0)
+					{
+						return true;
+					}
+				// No break
+
+				case 'A':
 					if (!empty($host_matches))
 					{
 						// Second line
