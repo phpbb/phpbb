@@ -34,34 +34,11 @@
 				<li>
 
 				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
-				<strong style="font-size: 0.95em;"><a href="{S_MODE_ACTION}&amp;first_char=">{L_ALL}</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=a#memberlist">A</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=b#memberlist">B</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=c#memberlist">C</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=d#memberlist">D</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=e#memberlist">E</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=f#memberlist">F</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=g#memberlist">G</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=h#memberlist">H</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=i#memberlist">I</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=j#memberlist">J</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=k#memberlist">K</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=l#memberlist">L</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=m#memberlist">M</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=n#memberlist">N</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=o#memberlist">O</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=p#memberlist">P</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=q#memberlist">Q</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=r#memberlist">R</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=s#memberlist">S</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=t#memberlist">T</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=u#memberlist">U</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=v#memberlist">V</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=w#memberlist">W</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=x#memberlist">X</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=y#memberlist">Y</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=z#memberlist">Z</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=other">#</a></strong>
+				<strong style="font-size: 0.95em;">
+				<!-- BEGIN first_char -->
+					<a href="{first_char.U_SORT}">{first_char.DESC}</a>&nbsp; 
+				<!-- END first_char -->
+				</strong>
 				</li>
 				<li class="rightside pagination">
 					{TOTAL_USERS} &bull; 
