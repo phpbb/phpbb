@@ -99,7 +99,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'])
 
 		if ($age = (int) substr($row['user_birthday'], -4))
 		{
-			$birthday_list .= ' (' . ($now['year'] - $age) . ')';
+			$birthday_list .= ' (' . max(0, $now['year'] - $age) . ')';
 		}
 	}
 	$db->sql_freeresult($result);
