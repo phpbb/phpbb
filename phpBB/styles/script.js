@@ -79,12 +79,12 @@ phpbb.confirm = function(msg, callback) {
 /**
  * Makes a link use AJAX instead of loading an entire page.
  *
- * @param string condition The element to capture.
+ * @param object options Options, if a string will be the selector.
  * @param bool/function refresh If we are sent back a refresh, should it be
  * 	acted upon? This can either be true / false / a function.
  * @param function callback Callback.
  */
-phpbb.ajaxify = function(selector, refresh, callback) {
+phpbb.ajaxify = function(options, refresh, callback) {
 
 	//private function to handle refreshes
 	function handle_refresh(data, refresh, div)
@@ -109,9 +109,20 @@ phpbb.ajaxify = function(selector, refresh, callback) {
 		}, data.time * 1000);
 	}
 
+	var selector = (typeof options === 'string') ? options : options.selector;
+
 	var is_form = $(selector).is('form');
 	$(selector + ((is_form) ? ' input:submit' : '')).click(function() {
 		var act, data, path, that = this;
+		
+		if (typeof options.exception !== 'undefined')
+		{
+			if (options.exception(this))
+			{
+				return true;
+			}
+		}
+		
 		function return_handler(res)
 		{
 			res = JSON.parse(res);
@@ -209,3 +220,5 @@ phpbb.ajaxify('.rightside a[href*="mark="]'); //captures topics and forums
 phpbb.ajaxify('.mcp_approve', false, function(el, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').remove_anim();
 });
+
+phpbb.ajaxify('#quickmodform');
