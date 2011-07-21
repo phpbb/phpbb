@@ -361,8 +361,6 @@ $lang = array_merge($lang, array(
 	'NUMBER_USERS'		=> 'Number of users',
 	'NUMBER_ORPHAN'		=> 'Orphan attachments',
 
-	'PHP_VERSION_OLD'	=> 'The version of PHP on this server will no longer be supported by future versions of phpBB. %sDetails%s',
-
 	'POSTS_PER_DAY'		=> 'Posts per day',
 
 	'PURGE_CACHE'			=> 'Purge the cache',
@@ -404,7 +402,45 @@ $lang = array_merge($lang, array(
 	'VIEW_INACTIVE_USERS'		=> 'View inactive users',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
-	'WRITABLE_CONFIG'		=> 'Your config file (config.php) is currently world-writable. We strongly encourage you to change the permissions to 640 or at least to 644 (for example: <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a> 640 config.php).',
+));
+
+// Enviroment configuration checks
+$lang = array_merge($lang, array(
+	// mbstring related
+	'ERROR_MBSTRING_FUNC_OVERLOAD'					=> 'Function overloading setting failed',
+	'ERROR_MBSTRING_FUNC_OVERLOAD_EXPLAIN'			=> '<var>mbstring.func_overload</var> must be set to either 0 or 4. You can check current value on <samp>PHP information</samp> page.',
+	'ERROR_MBSTRING_ENCODING_TRANSLATION'			=> 'Transparent character encoding setting failed',
+	'ERROR_MBSTRING_ENCODING_TRANSLATION_EXPLAIN'	=> '<var>mbstring.encoding_translation</var> must be set to 0.  You can check current value on <samp>PHP information</samp> page.',
+	'ERROR_MBSTRING_HTTP_INPUT'						=> 'HTTP input character conversion setting failed',
+	'ERROR_MBSTRING_HTTP_INPUT_EXPLAIN'				=> '<var>mbstring.http_input</var> must be set to <samp>pass</samp>.  You can check current value on <samp>PHP information</samp> page.',
+	'ERROR_MBSTRING_HTTP_OUTPUT'					=> 'HTTP output character conversion setting failed',
+	'ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN'			=> '<var>mbstring.http_output</var> must be set to <samp>pass</samp>.  You can check current value on <samp>PHP information</samp> page.',
+
+	// writable/unwritable errors
+	'ERROR_DIRECTORY_AVATARS_UNWRITABLE'			=> 'Directory <var>images/avatars/upload/</var> is not writable',
+	'ERROR_DIRECTORY_AVATARS_UNWRITABLE_EXPLAIN'	=> 'Directory <var>images/avatars/upload/</var> must be writable for phpBB to operate properly. You have to change the permissions to 666 (for example, using <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a>).',
+	'ERROR_DIRECTORY_CACHE_UNWRITABLE'				=> 'Directory <var>cache/</var> is not writable',
+	'ERROR_DIRECTORY_CACHE_UNWRITABLE_EXPLAIN'		=> 'Directory <var>cache/</var> must be writable for phpBB to operate properly. You have to change the permissions to 666 (for example, using <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a>).',
+	'ERROR_DIRECTORY_FILES_UNWRITABLE'				=> 'Directory <var>files/</var> is not writable',
+	'ERROR_DIRECTORY_FILES_UNWRITABLE_EXPLAIN'		=> 'Directory <var>files/</var> must be writable for phpBB to operate properly. You have to change the permissions to 666 (for example, using <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a>).',
+	'ERROR_DIRECTORY_STORE_UNWRITABLE'				=> 'Directory <var>store/</var> is not writable',
+	'ERROR_DIRECTORY_STORE_UNWRITABLE_EXPLAIN'		=> 'Directory <var>store/</var> must be writable for phpBB to operate properly. You have to change the permissions to 666 (for example, using <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a>).',
+	'ERROR_WRITABLE_CONFIG'							=> 'File <var>config.php</var> is world-writable',
+	'ERROR_WRITABLE_CONFIG_EXPLAIN'					=> 'Your config file (config.php) is currently world-writable. We strongly encourage you to change the permissions to 640 or at least to 644 (for example: <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a> 640 config.php).',
+
+	// misc
+	'ERROR_SAFE_MODE'						=> 'PHP is running in <var>safe mode</var>',
+	'ERROR_SAFE_MODE_EXPLAIN'				=> 'Your PHP installation seems to be running in <var>safe mode</var>. This will impose limitations on remote administration and similar features.',
+	'ERROR_REGISTER_GLOBALS'				=> 'PHP setting <var>register_globals</var> is enabled',
+	'ERROR_REGISTER_GLOBALS_EXPLAIN'		=> 'phpBB will still run if this setting is enabled, but if possible, it is recommended that register_globals is disabled on your PHP install for security reasons.',
+	'ERROR_PCRE_UTF_SUPPORT'				=> 'PCRE UTF-8 is not supported',
+	'ERROR_PCRE_UTF_SUPPORT_EXPLAIN'		=> 'phpBB will <strong>not</strong> run if your PHP installation is not compiled with UTF-8 support in the PCRE extension.',
+	'ERROR_GETIMAGESIZE_SUPPORT'			=> 'PHP function getimagesize() is unavailable',
+	'ERROR_GETIMAGESIZE_SUPPORT_EXPLAIN'	=> '<strong>Required</strong> - In order for phpBB to function correctly, the <var>getimagesize</var> function needs to be available.',
+	'ERROR_URL_FOPEN_SUPPORT'				=> 'PHP setting <var>allow_url_fopen</var> is disabled',
+	'ERROR_URL_FOPEN_SUPPORT_EXPLAIN'		=> '<strong>Optional</strong> - This setting is optional, however certain phpBB functions like off-site avatars will not work properly without it. ',
+	'ERROR_REMOVE_INSTALL_EXPLAIN'			=> 'Please delete, move or rename the install directory before you use your board. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.',
+	'ERROR_PHP_VERSION_OLD_EXPLAIN'			=> 'The version of PHP on this server will no longer be supported by future versions of phpBB. <a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">Details</a>',
 ));
 
 // Inactive Users

@@ -4922,3 +4922,159 @@ function phpbb_pcre_utf8_support()
 	}
 	return $utf8_pcre_properties;
 }
+
+/*
+* Wrapper for ini_get() PHP function
+*
+* This function calls the PHP native ini_get() and handle its output to get universal result
+*
+* @param string	$ini_param		PHP ini parameter to check
+* @return mixed					Integer if result is numeric and is greater than 1
+*								String (on) if ini parameter is set to on/1
+*								String (off) if ini parameter is not set or is set to off/0
+*								Bool (false) if ini parameter does not exist
+*/
+function phpbb_ini_get($ini_param)
+{
+	// Return false if ini parameter does not exist
+	if (($ini_val = @ini_get($ini_param)) === false)
+	{
+		return false;
+	}
+
+	$ini_val = strtolower($ini_val);
+	$ini_val = (empty($ini_val) || $ini_val == 'off') ? 'off' : ((!is_numeric($ini_val)) ? (string) $ini_val : ((is_numeric($ini_val) && (int) $ini_val > 1) ? (int) $ini_val : 'on'));
+
+	return $ini_val;
+}
+
+/**
+* Checks if server enviroment configuration still meets the requirements for running phpBB
+*
+* The heart of the function infact is call_user_func_array() PHP native function, which accepts data from array.
+*
+* @param array	$checks_array	Array containing all the data to check. See example in includes/acp/acp_main.php
+*				Alailable keys=>values:
+*				1st array dimension:	key:	a string representing the name of the function involved in check. Example: 'ini_get', 'function_exists' and so on.
+*												If there's phpbb wrapper function, it will be used instead of native one, explicit definition of phpbb_ prefix is not needed.
+*										value:	array of arrays, the latter contain actual data to check.
+*				2nd dimension:			keys: 	no explicitly defined keys.
+*										values:	arrays of data to be checked (see 3rd dimension description).
+*				3rd dimension:			keys:	'class_callback'	-	to use callback function which belongs to some class. Example: 'class_callback' => $auth
+*												'check_value'		-	the string representing comma separated list of parameters,
+*																		or array of the same parameters, which will be passed to the function defined as a 1st dimension key.
+*																		Example 1:	if 1st dimension key is 'version_compare' and 'check_value' => array(PHP_VERSION, '5.2.0', '<') is defined,
+*																					the check version_compare(PHP_VERSION, '5.2.0', '<') will be performed.
+*																		Example 2:	if 1st dimension key is 'acl_get', and 'class_callback'	=> $auth, 'check_value' => 'a_server' are defined,
+*																					$auth->acl_get('a_server') check will be performed.
+*												'expected_value'	-	expected result of the check. If received, the check will be considered as passed, no error row returned.
+*																		For ini_get checks, it should be set to 'off' to check against values of `not set/off/0`, to 'on' to check against values of `on/1`.
+*																		For checks where bitwise comparison is assumed and thus 'expected_value' is set to some integer/predefined constant, 
+*																			'comparison_type' => 'bitwise' should be set additionally.
+*												'comparison_type'	-	should be set if bitwise comparison is assumed (the only case is 'comparison_type' => 'bitwise'). Can be skipped otherwise.
+*												'negate'			-	should be set to true if the check result should not be equal to 'expected_value' value to pass the test. Can be skipped otherwise.
+*												'check_extension_loaded'	-	additional check. If set to valid PHP extension name, main check for given row will be skipped if extension is not loaded.
+*																				Example: 'check_extension_loaded' => 'mbstring'
+*												'error_type'		-	valid values: 'error', 'notice'. Depending on this type, result will be thrown to ACP on #BC2A4D or #62A5CC background respectively.
+*																		Additionally, error type results will go above notice type ones.
+*												'lang'				-	the string representing existing language key, which value is supposed to be a short error/notice title.
+*																		Additionally, if a language key with _EXPLAIN postfix exists, it will be used as reapective error/notice explanation.
+*																		It is allowed that only _EXPLAIN postfixed language key exists.
+*												'additional_checks'	-	completely shadowing the main $checks_array structure to perform additional recursive subchecks,
+*																		which should be passed along with main check row for overall check to be passed.
+*		Data array example:
+*		$checks_array = array(
+*			'ini_get'			=>	array(
+*				array('check_value' => 'safe_mode',							'expected_value' => 'off',									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
+*				array('check_value' => 'mbstring.func_overload',			'expected_value' => MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'comparison_type' => 'bitwise',	'negate' => true,	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD',),
+*				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
+*			),
+*			'is_writable'		=>	array(
+*				array('check_value' => $phpbb_root_path . 'config.' . $phpEx,		'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_WRITABLE_CONFIG',
+*					'additional_checks'	=> array(
+*						'file_exists'		=> array(
+*							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => true,),
+*						),
+*						'fileperms'			=> array(
+*							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'comparison_type' => 'bitwise', 'negate' => true,),
+*						),
+*						'defined'			=> array(
+*							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => false,),
+*						),
+*					),
+*				),
+*			),
+*		);
+*																			
+* @param bool	$additional_check	Boolean flag determining if subchecks are to be performed (recursion)
+*
+* @return array		Empty array if all checks are passed, array of errors otherwise, or array of boolean values if additional checks (subchecks) have been performed
+*/
+function phpbb_check_requirements($checks_array = array(), $additional_check = false)
+{
+	global $phpbb_root_path, $phpEx, $user;
+
+	$error = $additional_check_results = array();
+
+	foreach ($checks_array as $check_type => $check_rows)
+	{
+		$function = @function_exists('phpbb_' . $check_type) ? 'phpbb_' . $check_type : $check_type;
+
+		foreach ($check_rows as $check_row)
+		{
+			if (isset($check_row['check_extension_loaded']) && !@extension_loaded($check_row['check_extension_loaded']))
+			{
+				continue;
+			}
+
+			if (isset($check_row['class_callback']))
+			{
+				$function = array($check_row['class_callback'], $function);
+			}
+
+			$negate = (isset($check_row['negate']) && $check_row['negate'] == true) ? true : false;
+
+			$check_value = (!is_array($check_row['check_value'])) ? array($check_row['check_value']) : $check_row['check_value'];
+
+			$ini_val = call_user_func_array($function, $check_value);
+
+			if (is_int($check_row['expected_value']) && isset($check_row['comparison_type']) && ($check_row['comparison_type'] == 'bitwise'))
+			{
+				$result = (bool) (intval($ini_val) & $check_row['expected_value']);
+			}
+			else
+			{
+				$result = (bool) ($ini_val == $check_row['expected_value']);
+			}
+
+			$result = (!$negate) ? $result : !$result;
+
+			if ($additional_check)
+			{
+				$additional_check_results[] = $result;
+			}
+
+			if (isset($check_row['additional_checks']))
+			{
+				$additional_check_results = phpbb_check_requirements($check_row['additional_checks'], true);
+				foreach ($additional_check_results as $additional_check_result)
+				{
+					$result = ($result && $additional_check_result);
+				}
+			}
+
+			if (!$result && !$additional_check)
+			{
+				$error[] = array(
+					'L_ERROR'			=>	(isset($user->lang[$check_row['lang']])) ? $user->lang[$check_row['lang']] : '',
+					'L_ERROR_EXPLAIN'	=>	(isset($user->lang[$check_row['lang'] . '_EXPLAIN'])) ? $user->lang[$check_row['lang'] . '_EXPLAIN'] : '',
+					'TYPE' 				=>	$check_row['error_type'],
+				);
+			}
+		}
+	}
+
+	return (!$additional_check) ? $error : $additional_check_results;
+}
+
+?>

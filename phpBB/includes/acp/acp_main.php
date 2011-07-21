@@ -397,14 +397,6 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
-		{
-			$template->assign_vars(array(
-				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">', '</a>'),
-			));
-		}
-
 		$latest_version_info = false;
 		if (($latest_version_info = obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 		{
@@ -587,27 +579,77 @@ class acp_main
 			);
 		}
 
-		// Warn if install is still present
-		if (file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
-		{
-			$template->assign_var('S_REMOVE_INSTALL', true);
-		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
-		{
-			// World-Writable? (000x)
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
-		}
+		// Check if server enviroment configuration still satisfy phpBB installation requirements
+		$checks_array = array(
+			'ini_get'			=>	array(
+				array('check_value' => 'safe_mode',							'expected_value' => 'off',									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
+				array('check_value' => 'allow_url_fopen',					'expected_value' => 'on',									'error_type' => 'notice',	'lang' => 'ERROR_URL_FOPEN_SUPPORT',),
+				array('check_value' => 'register_globals',					'expected_value' => 'off',									'error_type' => 'error',	'lang' => 'ERROR_REGISTER_GLOBALS',),
+				array('check_value' => 'mbstring.func_overload',			'expected_value' => MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'comparison_type' => 'bitwise',	'negate' => true,	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD',),
+				array('check_value' => 'mbstring.encoding_translation',		'expected_value' => 'off',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_ENCODING_TRANSLATION',),
+				array('check_value' => 'mbstring.http_input',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_INPUT',),
+				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
+			),
 
-		if (extension_loaded('mbstring'))
+			'is_writable'		=>	array(
+				array('check_value' => $phpbb_root_path . 'images/avatars/upload/',	'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_AVATARS_UNWRITABLE',),
+				array('check_value' => $phpbb_root_path . 'store/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_STORE_UNWRITABLE',),
+				array('check_value' => $phpbb_root_path . 'cache/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_CACHE_UNWRITABLE',),
+				array('check_value' => $phpbb_root_path . 'files/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_FILES_UNWRITABLE',),
+				array('check_value' => $phpbb_root_path . 'config.' . $phpEx,		'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_WRITABLE_CONFIG',
+					'additional_checks'	=> array(
+						'file_exists'		=> array(
+							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => true,),
+						),
+						'fileperms'			=> array(
+							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'comparison_type' => 'bitwise', 'negate' => true,),
+						),
+						'defined'			=> array(
+							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => false,),
+						),
+					),
+				),
+			),
+			
+			'function_exists'	=>	array(
+				array('check_value' => 'getimagesize',						'expected_value' => true,	'error_type' => 'error',	'lang' => 'ERROR_GETIMAGESIZE_SUPPORT',),
+			),
+
+			'preg_match'		=>	array(
+				array('check_value' => array('/\p{L}/u', 'a'),				'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_PCRE_UTF_SUPPORT',),
+			),
+
+			'version_compare'	=>	array(
+				array('check_value' => array(PHP_VERSION, '5.2.0', '<'),	'expected_value' => false,	'error_type' => 'notice',	'lang' => 'ERROR_PHP_VERSION_OLD',
+					'additional_checks'	=> array(
+						'acl_get'	=> array(
+							array('class_callback'	=> $auth, 'check_value' => 'a_server',	'expected_value' => true,),
+						),
+					),
+				),
+			),
+
+			'file_exists'	=>	array(
+				array('check_value' => $phpbb_root_path . 'install',	'expected_value' => false,	'error_type' => 'error',	'lang' => 'ERROR_REMOVE_INSTALL',
+					'additional_checks'	=> array(
+						'is_file'			=> array(
+							array('check_value' => $phpbb_root_path . 'install.',	'expected_value' => false,),
+						),
+					),
+				),
+			),
+		);
+
+		$errors = phpbb_check_requirements($checks_array);	
+
+		// Dump checks result to template
+		if (sizeof($errors))
 		{
-			$template->assign_vars(array(
-				'S_MBSTRING_LOADED'						=> true,
-				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> (intval(@ini_get('mbstring.func_overload')) & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
-				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> (@ini_get('mbstring.encoding_translation') != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> (@ini_get('mbstring.http_input') != 'pass'),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> (@ini_get('mbstring.http_output') != 'pass'),
-			));
+			foreach($errors as $error)
+			{
+				$template->assign_block_vars($error['TYPE'], $error);
+			}
 		}
 
 		// Fill dbms version if not yet filled
