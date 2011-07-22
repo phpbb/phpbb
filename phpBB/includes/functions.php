@@ -4930,9 +4930,8 @@ function phpbb_pcre_utf8_support()
 *
 * @param string	$ini_param		PHP ini parameter to check
 * @return mixed					Integer if result is numeric and is greater than 1
-*								String (on) if ini parameter is set to on/1
-*								String (off) if ini parameter is not set or is set to off/0
-*								Bool (false) if ini parameter does not exist
+*								Boolean (true) if ini parameter is set to on/1
+*								Boolean (false) if ini parameter does not exist, is not set or is set to off/0
 */
 function phpbb_ini_get($ini_param)
 {
@@ -4943,7 +4942,7 @@ function phpbb_ini_get($ini_param)
 	}
 
 	$ini_val = strtolower($ini_val);
-	$ini_val = (empty($ini_val) || $ini_val == 'off') ? 'off' : ((!is_numeric($ini_val)) ? (string) $ini_val : ((is_numeric($ini_val) && (int) $ini_val > 1) ? (int) $ini_val : 'on'));
+	$ini_val = (empty($ini_val) || $ini_val == 'off') ? false : ((!is_numeric($ini_val)) ? (string) $ini_val : ((is_numeric($ini_val) && ((int) $ini_val > 1 || (int) $ini_val < 0)) ? (int) $ini_val : true));
 
 	return $ini_val;
 }
@@ -4968,7 +4967,7 @@ function phpbb_ini_get($ini_param)
 *																		Example 2:	if 1st dimension key is 'acl_get', and 'class_callback'	=> $auth, 'check_value' => 'a_server' are defined,
 *																					$auth->acl_get('a_server') check will be performed.
 *												'expected_value'	-	expected result of the check. If received, the check will be considered as passed, no error row returned.
-*																		For ini_get checks, it should be set to 'off' to check against values of `not set/off/0`, to 'on' to check against values of `on/1`.
+*																		For ini_get checks, it should be set to false to check against values of `not set/off/0`, to true to check against values of `on/1`.
 *																		For checks where bitwise comparison is assumed and thus 'expected_value' is set to some integer/predefined constant, 
 *																			'comparison_type' => 'bitwise' should be set additionally.
 *												'comparison_type'	-	should be set if bitwise comparison is assumed (the only case is 'comparison_type' => 'bitwise'). Can be skipped otherwise.
@@ -4985,7 +4984,7 @@ function phpbb_ini_get($ini_param)
 *		Data array example:
 *		$checks_array = array(
 *			'ini_get'			=>	array(
-*				array('check_value' => 'safe_mode',							'expected_value' => 'off',									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
+*				array('check_value' => 'safe_mode',							'expected_value' => false,									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
 *				array('check_value' => 'mbstring.func_overload',			'expected_value' => MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'comparison_type' => 'bitwise',	'negate' => true,	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD',),
 *				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
 *			),

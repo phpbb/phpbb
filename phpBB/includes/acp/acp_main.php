@@ -583,11 +583,11 @@ class acp_main
 		// Check if server enviroment configuration still satisfy phpBB installation requirements
 		$checks_array = array(
 			'ini_get'			=>	array(
-				array('check_value' => 'safe_mode',							'expected_value' => 'off',									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
-				array('check_value' => 'allow_url_fopen',					'expected_value' => 'on',									'error_type' => 'notice',	'lang' => 'ERROR_URL_FOPEN_SUPPORT',),
-				array('check_value' => 'register_globals',					'expected_value' => 'off',									'error_type' => 'error',	'lang' => 'ERROR_REGISTER_GLOBALS',),
+				array('check_value' => 'safe_mode',							'expected_value' => false,									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
+				array('check_value' => 'allow_url_fopen',					'expected_value' => true,									'error_type' => 'notice',	'lang' => 'ERROR_URL_FOPEN_SUPPORT',),
+				array('check_value' => 'register_globals',					'expected_value' => false,									'error_type' => 'error',	'lang' => 'ERROR_REGISTER_GLOBALS',),
 				array('check_value' => 'mbstring.func_overload',			'expected_value' => MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'comparison_type' => 'bitwise',	'negate' => true,	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD',),
-				array('check_value' => 'mbstring.encoding_translation',		'expected_value' => 'off',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_ENCODING_TRANSLATION',),
+				array('check_value' => 'mbstring.encoding_translation',		'expected_value' => false,									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_ENCODING_TRANSLATION',),
 				array('check_value' => 'mbstring.http_input',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_INPUT',),
 				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
 			),
@@ -606,7 +606,7 @@ class acp_main
 							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'comparison_type' => 'bitwise', 'negate' => true,),
 						),
 						'defined'			=> array(
-							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => false,),
+							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => true,),
 						),
 					),
 				),
