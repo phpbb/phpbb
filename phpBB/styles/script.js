@@ -53,10 +53,6 @@ phpbb.confirm = function(msg, callback) {
 	return div;
 }
 
-/**
- * Works out what to do with the refresh. Don't use this.
- */
-
 
 /**
  * Makes a link use AJAX instead of loading an entire page.
@@ -94,9 +90,17 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	}
 
 	var selector = (typeof options === 'string') ? options : options.selector;
-
 	var is_form = $(selector).is('form');
-	$(selector + ((is_form) ? ' input:submit' : '')).click(function() {
+	if (is_form && typeof selector === 'object')
+	{
+		selector = $(selector).find('input:submit');
+	}
+	else if (is_form)
+	{
+		selector += ' input:submit';
+	}
+	
+	$(selector).click(function() {
 		var act, data, path, that = this;
 		
 		if (typeof options.exception !== 'undefined')
@@ -117,9 +121,10 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				 * It is a standard link, no confirm_box required.
 				 */
 				var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				if (typeof callback !== 'undefined')
+				callback = phpbb.ajax_callbacks[callback];
+				if (typeof callback === 'function')
 				{
-					callback(that, res);
+					callback(that, (is_form) ? act : null);
 				}
 				handle_refresh(res.REFRESH_DATA, refresh, alert);
 			}
@@ -136,9 +141,10 @@ phpbb.ajaxify = function(options, refresh, callback) {
 						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
 							res = JSON.parse(res);
 							var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-							if (typeof callback !== 'undefined')
+							callback = phpbb.ajax_callbacks[callback];
+							if (typeof callback === 'function')
 							{
-								callback(that, (is_form) ? act : null);
+								callback(that, res, (is_form) ? act : null);
 							}
 							handle_refresh(res.REFRESH_DATA, refresh, alert);
 						});
@@ -168,45 +174,53 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		
 		return false;
 	});
+	return this;
+}
+
+phpbb.ajax_callbacks = {};
+phpbb.add_ajax_callback = function(id, callback)
+{
+	if (typeof callback === 'function')
+	{
+		phpbb.ajax_callbacks[id] = callback;
+	}
+	return this;
 }
 
 
-//bind the confirm_boxes
-var refresh = function(url) {
-	return (url.indexOf('t=') === -1);
-}
-phpbb.ajaxify('.delete-icon a', refresh, function(el) {
-	var pid = el.href.split('&p=')[1];
-	$(el).parents('div #p' + pid).fadeOut(function() {
-		$(this).remove();
-	});
-});
-phpbb.ajaxify('#page-footer a[href$="ucp.php?mode=delete_cookies"]', true);
-
-
-//AJAXify some links
-phpbb.ajaxify('#page-footer a[href*="&bookmark=1"]', false, function(el, res) {
+phpbb.add_ajax_callback('post_delete', function(el) {
+	if ($(this).data('refresh') === undefined)
+	{
+		var pid = el.href.split('&p=')[1];
+		$(el).parents('div #p' + pid).fadeOut(function() {
+			$(this).remove();
+		});
+	}
+}).add_ajax_callback('bookmark', function(el, res) {
 	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
 	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
 	$(el).text(el.title = text);
-});
-phpbb.ajaxify('#page-footer a[href*="watch=topic"]', false, function(el, res) {
-	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
-	text = (text) ? 'Unsubscribe topic' : 'Subscribe topic';
-	$(el).text(el.title = text);
-});
-phpbb.ajaxify('#page-footer a[href*="watch=forum"]', false, function(el, res) {
-	var text = (res.MESSAGE_TEXT.indexOf('no longer subscribed') === -1);
-	text = (text) ? 'Unsubscribe forum' : 'Subscribe forum';
-	$(el).text(el.title = text);
-});
-phpbb.ajaxify('#page-footer a[href*="mode=bump"]');
-phpbb.ajaxify('.rightside a[href*="mark="]'); //captures topics and forums
-
-phpbb.ajaxify('.mcp_approve', false, function(el, act) {
+}).add_ajax_callback('topic_subscribe', function(el) {
+	$(el).text(el.title = 'Unsubscribe topic');
+}).add_ajax_callback('topic_unsubscribe', function(el) {
+	$(el).text(el.title = 'Subscribe forum');
+}).add_ajax_callback('forum_subscribe', function(el) {
+	$(el).text(el.title = 'Unsubscribe topic');
+}).add_ajax_callback('forum_unsubscribe', function(el) {
+	$(el).text(el.title = 'Subscribe forum');
+}).add_ajax_callback('post_approve', function(el, res, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
 		$(this).remove();
 	});
 });
+
+
+
+$('[data-ajax]').each(function() {
+	var fn = ($(this).data('ajax') !== 'true') ? $(this).data('ajax') : null;
+	phpbb.ajaxify({selector: this}, $(this).data('refresh') !== undefined, fn);
+});
+
+
 
 phpbb.ajaxify('#quickmodform');
