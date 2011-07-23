@@ -1,25 +1,3 @@
-/**
- * Make some changes to the jQuery core.
- */
-$.fn.hide_anim = function() {
-	this.animate({opacity: 0}, 300, function() {
-		$(this).css('display', 'none')
-			.css('opacity', 1);	
-	});
-}
-$.fn.show_anim = function() {
-	this.css('opacity', 0)
-		.css('display', 'block')
-		.animate({opacity: 1}, 300);
-}
-
-$.fn.remove_anim = function() {
-	this.animate({opacity: 0}, 300, function() {
-		$(this).remove();
-	});
-}
-
-
 var phpbb = {};
 
 /**
@@ -38,12 +16,14 @@ phpbb.alert = function(title, msg) {
 		{
 			return true;
 		}
-		div.remove_anim();
+		div.fadeOut(function() {
+			div.remove();
+		});
 		return false;
 	});
 
 	$('body').append(div);
-	div.show_anim();
+	div.fadeIn();
 	return div;
 }
 
@@ -63,11 +43,13 @@ phpbb.confirm = function(msg, callback) {
 	$('body').append(div);
 
 	$('.jalertbut').bind('click', function(event) {
-		div.remove_anim();
+		div.fadeOut(function() {
+			div.remove();
+		});
 		callback(this.value === 'Yes');
 		return false;
 	});
-	div.show_anim();
+	div.fadeIn();
 	return div;
 }
 
@@ -104,7 +86,9 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			}
 			else
 			{
-				div.remove_anim();
+				div.fadeOut(function() {
+					div.remove();
+				});
 			}
 		}, data.time * 1000);
 	}
@@ -193,7 +177,9 @@ var refresh = function(url) {
 }
 phpbb.ajaxify('.delete-icon a', refresh, function(el) {
 	var pid = el.href.split('&p=')[1];
-	$(el).parents('div #p' + pid).remove_anim();
+	$(el).parents('div #p' + pid).fadeOut(function() {
+		$(this).remove();
+	});
 });
 phpbb.ajaxify('#page-footer a[href$="ucp.php?mode=delete_cookies"]', true);
 
@@ -218,7 +204,9 @@ phpbb.ajaxify('#page-footer a[href*="mode=bump"]');
 phpbb.ajaxify('.rightside a[href*="mark="]'); //captures topics and forums
 
 phpbb.ajaxify('.mcp_approve', false, function(el, act) {
-	$(el).parents((act === 'approve') ? '.rules' : '.post').remove_anim();
+	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
+		$(this).remove();
+	});
 });
 
 phpbb.ajaxify('#quickmodform');
