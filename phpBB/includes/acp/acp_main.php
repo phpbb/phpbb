@@ -579,9 +579,9 @@ class acp_main
 			);
 		}
 
-
 		// Check if server enviroment configuration still satisfy phpBB installation requirements
 		$checks_array = array(
+			// Check PHP enviroment configuration parameters
 			'ini_get'			=>	array(
 				array('check_value' => 'safe_mode',							'expected_value' => false,									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
 				array('check_value' => 'allow_url_fopen',					'expected_value' => true,									'error_type' => 'notice',	'lang' => 'ERROR_URL_FOPEN_SUPPORT',),
@@ -592,34 +592,42 @@ class acp_main
 				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
 			),
 
+			// Check if some directories are writable
 			'is_writable'		=>	array(
 				array('check_value' => $phpbb_root_path . 'images/avatars/upload/',	'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_AVATARS_UNWRITABLE',),
 				array('check_value' => $phpbb_root_path . 'store/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_STORE_UNWRITABLE',),
 				array('check_value' => $phpbb_root_path . 'cache/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_CACHE_UNWRITABLE',),
 				array('check_value' => $phpbb_root_path . 'files/',					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_FILES_UNWRITABLE',),
-				array('check_value' => $phpbb_root_path . 'config.' . $phpEx,		'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_WRITABLE_CONFIG',
+			),
+
+			// Check if config.php is not writable - note the checks order
+			'fileperms'			=> array(
+				array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'error_type' => 'notice',	'comparison_type' => 'bitwise', 'negate' => true, 'ignore_errors' => true,	'lang' => 'ERROR_WRITABLE_CONFIG',
 					'additional_checks'	=> array(
+						'defined'			=> array(
+							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => false,),
+						),
 						'file_exists'		=> array(
 							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => true,),
 						),
-						'fileperms'			=> array(
-							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'comparison_type' => 'bitwise', 'negate' => true,),
-						),
-						'defined'			=> array(
-							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => true,),
+						'is_writable'		=> array(
+							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => true,),
 						),
 					),
 				),
 			),
-			
+
+			// Check if PHP function getimagesize() is available
 			'function_exists'	=>	array(
 				array('check_value' => 'getimagesize',						'expected_value' => true,	'error_type' => 'error',	'lang' => 'ERROR_GETIMAGESIZE_SUPPORT',),
 			),
 
+			// Check if PCRE supports unicode properties
 			'preg_match'		=>	array(
 				array('check_value' => array('/\p{L}/u', 'a'),				'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_PCRE_UTF_SUPPORT',),
 			),
 
+			// Check if PHP version is not lower than 5.2.0 (for future phpBB versions) - note the checks order
 			'version_compare'	=>	array(
 				array('check_value' => array(PHP_VERSION, '5.2.0', '<'),	'expected_value' => false,	'error_type' => 'notice',	'lang' => 'ERROR_PHP_VERSION_OLD',
 					'additional_checks'	=> array(
@@ -630,11 +638,12 @@ class acp_main
 				),
 			),
 
-			'file_exists'	=>	array(
-				array('check_value' => $phpbb_root_path . 'install',	'expected_value' => false,	'error_type' => 'error',	'lang' => 'ERROR_REMOVE_INSTALL',
+			// Check if install/ directory does not exist - note the checks order
+			'is_file'	=>	array(
+				array('check_value' => $phpbb_root_path . 'install',	'expected_value' => true,	'error_type' => 'error',	'lang' => 'ERROR_REMOVE_INSTALL',
 					'additional_checks'	=> array(
-						'is_file'			=> array(
-							array('check_value' => $phpbb_root_path . 'install.',	'expected_value' => false,),
+						'file_exists'			=> array(
+							array('check_value' => $phpbb_root_path . 'install',	'expected_value' => true,),
 						),
 					),
 				),
