@@ -103,14 +103,6 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	$(selector).click(function() {
 		var act, data, path, that = this;
 		
-		if (typeof options.exception !== 'undefined')
-		{
-			if (options.exception(this))
-			{
-				return true;
-			}
-		}
-		
 		function return_handler(res)
 		{
 			res = JSON.parse(res);
@@ -153,6 +145,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			}
 		}
 		
+		var run_exception = typeof options.exception === 'function';
 		if (is_form)
 		{
 			act = /action\[([a-z]+)\]/.exec(this.name);
@@ -165,10 +158,18 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				data += '&action=' + act;
 			}
 			
+			if (run_exception && options.exception($(this).parents('form'), act, data))
+			{
+				return true;
+			}
 			$.post(path, data, return_handler);
 		}
 		else
 		{
+			if (run_exception && options.exception($(this).parents('form')))
+			{
+				return true;
+			}
 			$.get(this.href, return_handler);
 		}
 		
@@ -223,4 +224,14 @@ $('[data-ajax]').each(function() {
 
 
 
-phpbb.ajaxify('#quickmodform');
+phpbb.ajaxify({
+	selector: '#quickmodform',
+	exception: function(el, act, data) {
+		var d = data.split('=')[1];
+		if (d == 'make_normal')
+		{
+			return !(el.find('select option[value="make_global"]').length);
+		}
+		return !(d == 'lock' || d == 'unlock' || d == 'delete_topic' || d.slice(0, 5) == 'make_');
+	}
+}, true);
