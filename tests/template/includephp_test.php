@@ -26,7 +26,7 @@ class phpbb_template_includephp_test extends phpbb_template_template_test_case
 	public function test_includephp_absolute()
 	{
 		$path_to_php = dirname(__FILE__) . '/templates/_dummy_include.php.inc';
-		$this->assertTrue(is_absolute($path_to_php));
+		$this->assertTrue(phpbb_is_absolute($path_to_php));
 		$template_text = "Path is absolute.\n<!-- INCLUDEPHP $path_to_php -->";
 
 		$cache_dir = dirname($this->template->cachepath) . '/';

@@ -526,7 +526,7 @@ class phpbb_template
 	*/
 	public function _php_include($filename)
 	{
-		if (is_absolute($filename))
+		if (phpbb_is_absolute($filename))
 		{
 			$file = $filename;
 		}
