@@ -1,4 +1,4 @@
-<form method="post" action="{U_QR_ACTION}">
+<form method="post" action="{U_QR_ACTION}" data-ajax="qr-submit" data-refresh="true">
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 				<h2>{L_QUICKREPLY}</h2>
@@ -15,7 +15,7 @@
 					{S_FORM_TOKEN}
 					{QR_HIDDEN_FIELDS}
 					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-					<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
+					<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" data-ajax="false" />&nbsp;
 				</fieldset>
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
