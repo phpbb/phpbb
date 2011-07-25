@@ -103,6 +103,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	$(selector).click(function() {
 		var act, data, path, that = this;
 		
+		if ($(this).data('ajax') == false)
+		{
+			return true;
+		}
+		
 		function return_handler(res)
 		{
 			res = JSON.parse(res);
@@ -157,7 +162,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				act = act[1]
 				data += '&action=' + act;
 			}
-			
+			else
+			{
+				data += '&' + this.name + '=' + this.value;
+			}
+
 			if (run_exception && options.exception($(this).parents('form'), act, data))
 			{
 				return true;
@@ -211,6 +220,10 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 	$(el).text(el.title = 'Subscribe forum');
 }).add_ajax_callback('post_approve', function(el, res, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
+		$(this).remove();
+	});
+}).add_ajax_callback('qr-submit', function(el) {
+	$(el).parents('form').fadeOut(function() {
 		$(this).remove();
 	});
 });
