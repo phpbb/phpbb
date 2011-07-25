@@ -1,4 +1,46 @@
+$.querystring = function(string) {
+	var end = {}, i;
+	
+	string = string.split('&');
+	for (i = 0; i < string.length; i++)
+	{
+		end[string[i].split('=')[0]] = decodeURIComponent(string[i].split('=')[1]);
+	}
+	return end;
+}
+
+
 var phpbb = {};
+
+var dark = $('<div id="darkenwrapper"><div id="darken">&nbsp;</div></div>');
+$('body').append(dark);
+
+var loading_alert = $('<div class="jalert"><h3>Loading</h3><p>Please wait.</p></div>');
+$(dark).append(loading_alert);
+
+
+/**
+ * Display a loading screen.
+ */
+phpbb.loading_alert = function() {
+	if (dark.is(':visible'))
+	{
+		loading_alert.fadeIn();
+	}
+	else
+	{
+		loading_alert.show();
+		dark.fadeIn();
+	}
+	
+	setTimeout(function() {
+		if (loading_alert.is(':visible'))
+		{
+			phpbb.alert('Error', 'Error processing your request. Please try again.');
+		}
+	}, 3000);
+	return loading_alert;
+}
 
 /**
  * Display a simple alert similar to JSs native alert().
@@ -8,22 +50,48 @@ var phpbb = {};
  *
  * @return Returns the div created.
  */
-phpbb.alert = function(title, msg) {
+phpbb.alert = function(title, msg, fadedark) {
 	var div = $('<div class="jalert"><h3>' + title + '</h3><p>' + msg + '</p></div>');
 
-	$(document).one('click', function(e) {
-		if ($(e.target).parents('.jalert').length)
+	$(div).bind('click', function(e) {
+		e.stopPropagation();
+		return true;
+	});
+	$(dark).one('click', function(e) {
+		if (typeof fadedark === 'undefined' || fadedark)
 		{
-			return true;
+			dark.fadeOut(function() {
+				div.remove();
+			});
 		}
-		div.fadeOut(function() {
-			div.remove();
-		});
+		else
+		{
+			div.fadeOut(function() {
+				div.remove();
+			});
+		}
 		return false;
 	});
 
-	$('body').append(div);
-	div.fadeIn();
+	if (loading_alert.is(':visible'))
+	{
+		loading_alert.fadeOut(function() {
+			$(dark).append(div);
+			div.fadeIn();
+		});
+	}
+	else if (dark.is(':visible'))
+	{
+		$(dark).append(div);
+		div.fadeIn();
+	}
+	else
+	{
+		$(dark).append(div);
+		div.show();
+		dark.fadeIn();
+	}
+	
 	return div;
 }
 
@@ -35,21 +103,47 @@ phpbb.alert = function(title, msg) {
  *
  * @return Returns the div created.
  */
-phpbb.confirm = function(msg, callback) {
+phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('<div class="jalert"><p>' + msg + '</p>\
 		<input type="button" class="jalertbut button1" value="Yes" />&nbsp;\
 		<input type="button" class="jalertbut button2" value="No" /></div>');
-
-	$('body').append(div);
-
-	$('.jalertbut').bind('click', function(event) {
-		div.fadeOut(function() {
-			div.remove();
-		});
+	
+	div.find('.jalertbut').bind('click', function() {
+		if (typeof fadedark === 'undefined' || fadedark)
+		{
+			dark.fadeOut(function() {
+				div.remove();
+			});
+		}
+		else
+		{
+			div.fadeOut(function() {
+				div.remove();
+			});
+		}
 		callback(this.value === 'Yes');
 		return false;
 	});
-	div.fadeIn();
+	
+	if (loading_alert.is(':visible'))
+	{
+		loading_alert.fadeOut(function() {
+			$(dark).append(div);
+			div.fadeIn();
+		});
+	}
+	else if (dark.is(':visible'))
+	{
+		$(dark).append(div);
+		div.fadeIn();
+	}
+	else
+	{
+		$(dark).append(div);
+		div.show();
+		dark.fadeIn();
+	}
+	
 	return div;
 }
 
@@ -82,7 +176,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			}
 			else
 			{
-				div.fadeOut(function() {
+				dark.fadeOut(function() {
 					div.remove();
 				});
 			}
@@ -135,6 +229,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 					{
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						path = res.S_CONFIRM_ACTION;
+						phpbb.loading_alert();
 						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
 							res = JSON.parse(res);
 							var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
@@ -146,7 +241,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 							handle_refresh(res.REFRESH_DATA, refresh, alert);
 						});
 					}
-				});
+				}, false);
 			}
 		}
 		
@@ -171,6 +266,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			{
 				return true;
 			}
+			phpbb.loading_alert();
 			$.post(path, data, return_handler);
 		}
 		else
@@ -179,6 +275,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			{
 				return true;
 			}
+			phpbb.loading_alert();
 			$.get(this.href, return_handler);
 		}
 		
@@ -240,7 +337,7 @@ $('[data-ajax]').each(function() {
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(el, act, data) {
-		var d = data.split('=')[1];
+		var d = $.querystring(data).action;
 		if (d == 'make_normal')
 		{
 			return !(el.find('select option[value="make_global"]').length);
