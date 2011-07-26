@@ -1,3 +1,6 @@
+;(function($) {  //avoid conflicts with other libraries
+
+
 $.querystring = function(string) {
 	var end = {}, i;
 	
@@ -345,3 +348,6 @@ phpbb.ajaxify({
 		return !(d == 'lock' || d == 'unlock' || d == 'delete_topic' || d.slice(0, 5) == 'make_');
 	}
 }, true);
+
+
+})(jQuery); //avoid conflicts with other libraries
