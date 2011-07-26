@@ -67,6 +67,9 @@ class acp_php_info
 		$output = preg_replace('#<img border="0"#i', '<img', $output);
 		$output = str_replace(array('class="e"', 'class="v"', 'class="h"', '<hr />', '<font', '</font>'), array('class="row1"', 'class="row2"', '', '', '<span', '</span>'), $output);
 
+		// We remove all anchor names as some of them were invalid (eg "module_Zend Optimizer")
+		$output = preg_replace('#<a name="[^"]+">#', '<a>', $output);
+
 		if (empty($output))
 		{
 			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
