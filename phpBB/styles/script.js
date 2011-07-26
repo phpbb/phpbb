@@ -1,4 +1,6 @@
-;(function($) {  //avoid conflicts with other libraries
+var phpbb = {};
+
+(function($) {  //avoid conflicts with other libraries
 
 
 $.querystring = function(string) {
@@ -12,8 +14,6 @@ $.querystring = function(string) {
 	return end;
 }
 
-
-var phpbb = {};
 
 var dark = $('<div id="darkenwrapper"><div id="darken">&nbsp;</div></div>');
 $('body').append(dark);
