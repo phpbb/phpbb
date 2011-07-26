@@ -608,8 +608,8 @@ function phpbb_email_hash($email)
 * @param string $version2		Second version number
 * @param string $operator		Comparison operator (optional)
 *
-* @return mixed					Integer (-1, 0, 1) if comparison operator is specified.
-*								Boolean (true, false) otherwise.
+* @return mixed					Boolean (true, false) if comparison operator is specified.
+*								Integer (-1, 0, 1) otherwise.
 */
 function phpbb_version_compare($version1, $version2, $operator = null)
 {
