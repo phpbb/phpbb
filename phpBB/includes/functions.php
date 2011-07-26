@@ -3853,6 +3853,13 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
+			if (defined('IN_INSTALL') || defined('DEBUG_EXTRA') || isset($auth) && $auth->acl_get('a_'))
+			{
+				$backtrace = get_backtrace();
+				$msg_text .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
+				$msg_text .= '<br />';
+			}
+
 			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
