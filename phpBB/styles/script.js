@@ -50,6 +50,8 @@ phpbb.loading_alert = function() {
  *
  * @param string title Title of the message, eg "Information"
  * @param string msg Message to display. Can be HTML.
+ * @param bool fadedark Remove the dark background when done? Defaults
+ * 	to yes.
  *
  * @return Returns the div created.
  */
@@ -61,18 +63,10 @@ phpbb.alert = function(title, msg, fadedark) {
 		return true;
 	});
 	$(dark).one('click', function(e) {
-		if (typeof fadedark === 'undefined' || fadedark)
-		{
-			dark.fadeOut(function() {
-				div.remove();
-			});
-		}
-		else
-		{
-			div.fadeOut(function() {
-				div.remove();
-			});
-		}
+		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
+		fade.fadeOut(function() {
+			div.remove();
+		});
 		return false;
 	});
 
@@ -102,7 +96,10 @@ phpbb.alert = function(title, msg, fadedark) {
  * Display a simple yes / no box to the user.
  *
  * @param string msg Message to display. Can be HTML.
- * @param function callback Callback.
+ * @param function callback Callback. Bool param, whether the user pressed
+ * 	yes or no (or whatever their language is).
+ * @param bool fadedark Remove the dark background when done? Defaults
+ * 	to yes.
  *
  * @return Returns the div created.
  */
@@ -112,19 +109,12 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		<input type="button" class="jalertbut button2" value="No" /></div>');
 	
 	div.find('.jalertbut').bind('click', function() {
-		if (typeof fadedark === 'undefined' || fadedark)
-		{
-			dark.fadeOut(function() {
-				div.remove();
-			});
-		}
-		else
-		{
-			div.fadeOut(function() {
-				div.remove();
-			});
-		}
-		callback(this.value === 'Yes');
+		var res = this.value === 'Yes';
+		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
+		fade.fadeOut(function() {
+			div.remove();
+		});
+		callback(res);
 		return false;
 	});
 	
