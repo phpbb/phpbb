@@ -255,6 +255,12 @@ class acp_forums
 					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
 					$cache->destroy('sql', FORUMS_TABLE);
 				}
+				
+				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+				{
+					echo json_encode(array('success' => ($move_forum_name !== false)));
+					exit;
+				}
 
 			break;
 
