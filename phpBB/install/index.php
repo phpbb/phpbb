@@ -556,6 +556,7 @@ class module
 		echo '<!DOCTYPE html>';
 		echo '<html dir="ltr">';
 		echo '<head>';
+		echo '<meta charset="utf-8">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';
