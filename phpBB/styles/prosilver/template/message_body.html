@@ -1,5 +1,8 @@
+<!-- IF S_SIMPLE_ERROR -->
+<!-- INCLUDE simple_header.html -->
+<!-- ELSE -->
 <!-- INCLUDE overall_header.html -->
-
+<!-- ENDIF -->
 <div class="panel" id="message">
 	<div class="inner"><span class="corners-top"><span></span></span>
 	<h2>{MESSAGE_TITLE}</h2>
@@ -7,5 +10,8 @@
 	<!-- IF SCRIPT_NAME == "search" and not S_BOARD_DISABLED and not S_NO_SEARCH and L_RETURN_TO_SEARCH_ADV --><p><a href="{U_SEARCH}" class="{S_CONTENT_FLOW_BEGIN}">{L_RETURN_TO_SEARCH_ADV}</a></p><!-- ENDIF -->
 	<span class="corners-bottom"><span></span></span></div>
 </div>
-
+<!-- IF S_SIMPLE_ERROR -->
+<!-- INCLUDE simple_footer.html -->
+<!-- ELSE -->
 <!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->
