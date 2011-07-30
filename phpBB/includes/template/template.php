@@ -58,7 +58,6 @@ class phpbb_template
 	public $filename = array();
 
 	public $files_inherit = array();
-	public $files_template = array();
 	public $inherit_root = '';
 
 	public $orig_tpl_inherits_id;
@@ -340,7 +339,6 @@ class phpbb_template
 		$this->user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
 		$compiled_path = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $this->phpEx;
-		$this->files_template[$handle] = (isset($this->user->theme['template_id'])) ? $this->user->theme['template_id'] : 0;
 
 		$recompile = defined('DEBUG_EXTRA') ||
 			!file_exists($compiled_path) ||
@@ -353,7 +351,6 @@ class phpbb_template
 			if ($this->user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 			{
 				$this->files[$handle] = $this->files_inherit[$handle];
-				$this->files_template[$handle] = $this->user->theme['template_inherits_id'];
 			}
 			$recompile = (@filemtime($compiled_path) < @filemtime($this->files[$handle])) ? true : false;
 		}
@@ -368,7 +365,6 @@ class phpbb_template
 		if (isset($this->user->theme['template_inherits_id']) && $this->user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 		{
 			$this->files[$handle] = $this->files_inherit[$handle];
-			$this->files_template[$handle] = $this->user->theme['template_inherits_id'];
 		}
 
 		$source_file = $this->_source_file_for_handle($handle);
