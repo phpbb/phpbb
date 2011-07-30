@@ -67,6 +67,9 @@ class acp_php_info
 		$output = preg_replace('#<img border="0"#i', '<img', $output);
 		$output = str_replace(array('class="e"', 'class="v"', 'class="h"', '<hr />', '<font', '</font>'), array('class="row1"', 'class="row2"', '', '', '<span', '</span>'), $output);
 
+		// Fix invalid anchor names (eg "module_Zend Optimizer")
+		$output = preg_replace_callback('#<a name="([^"]+)">#', array($this, 'remove_spaces'), $output);
+
 		if (empty($output))
 		{
 			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
@@ -78,6 +81,11 @@ class acp_php_info
 		$output = (!empty($output[1][0])) ? $output[1][0] : $orig_output;
 
 		$template->assign_var('PHPINFO', $output);
+	}
+	
+	function remove_spaces($matches)
+	{
+		return '<a name="' . str_replace(' ', '_', $matches[1]) . '">';
 	}
 }
 
