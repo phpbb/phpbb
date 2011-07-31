@@ -1107,7 +1107,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 * @param int $max_length Maximum length of string (multibyte character count as 1 char / Html entity count as 1 char)
 * @param int $max_store_length Maximum character length of string (multibyte character count as 1 char / Html entity count as entity chars).
 * @param bool $allow_reply Allow Re: in front of string 
-* 	NOTE: This parameter can cause undesired behavior (returning strings longer than $max_store_legnth) and is deprecated. 
+* 	NOTE: This parameter can cause undesired behavior (returning strings longer than $max_store_length) and is deprecated. 
 * @param string $append String to be appended
 */
 function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
