@@ -81,7 +81,7 @@ class phpbb_template
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = new phpbb_template_locator();
+		$this->locator = new phpbb_template_locator($phpbb_root_path, $user);
 	}
 
 	/**

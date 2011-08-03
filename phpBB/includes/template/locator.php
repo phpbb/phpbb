@@ -60,6 +60,14 @@ class phpbb_template_locator
 
 	private $orig_tpl_inherits_id;
 
+	private $user;
+
+	public function __construct($phpbb_root_path, $user)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->user = $user;
+	}
+
 	/**
 	* Set template location.
 	* @param string $style_name Name of style from which templates are to be taken
