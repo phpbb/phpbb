@@ -114,10 +114,9 @@ class phpbb_template_locator
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
 	* @param string $template_path Path to template directory
-	* @param string $template_name Name of template
 	* @param string|bool $fallback_template_path Path to fallback template, or false to disable fallback
 	*/
-	public function set_custom_template($template_path, $template_name, $fallback_template_path = false)
+	public function set_custom_template($template_path, $fallback_template_path = false)
 	{
 		// Make sure $template_path has no ending slash
 		if (substr($template_path, -1) == '/')
