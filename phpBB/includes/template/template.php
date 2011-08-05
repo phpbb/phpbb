@@ -42,8 +42,6 @@ class phpbb_template
 	*/
 	public $cachepath = '';
 
-	public $orig_tpl_inherits_id;
-
 	/**
 	* @var string phpBB root path
 	*/
@@ -81,7 +79,7 @@ class phpbb_template
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = new phpbb_template_locator($phpbb_root_path, $user);
+		$this->locator = new phpbb_template_locator();
 	}
 
 	/**
@@ -89,17 +87,27 @@ class phpbb_template
 	*/
 	public function set_template()
 	{
-		$template_path = $style_name = $this->user->theme['template_path'];
-		$this->locator->set_template_path($style_name);
+		$style_name = $this->user->theme['template_path'];
 
-		if (file_exists($this->phpbb_root_path . 'styles/' . $template_path . '/template'))
+		$relative_template_root = $this->relative_template_root_for_style($style_name);
+		$template_root = $this->phpbb_root_path . $relative_template_root;
+		if (!file_exists($template_root))
 		{
-			$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_path) . '_';
+			trigger_error('template locator: Template path could not be found: ' . $relative_template_root, E_USER_ERROR);
+		}
+
+		if ($this->user->theme['template_inherits_id'])
+		{
+			$fallback_template_path = $this->phpbb_root_path . $this->relative_template_root_for_style($this->user->theme['template_inherit_path']);
 		}
 		else
 		{
-			trigger_error('Template path could not be found: styles/' . $template_path . '/template', E_USER_ERROR);
+			$fallback_template_path = null;
 		}
+
+		$this->locator->set_custom_template($template_root, $fallback_template_path);
+
+		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $style_name) . '_';
 
 		$this->context = new phpbb_template_context();
 
@@ -124,6 +132,18 @@ class phpbb_template
 		$this->context = new phpbb_template_context();
 
 		return true;
+	}
+
+	/**
+	* Converts a style name to relative (to board root) path to
+	* the style's template files.
+	*
+	* @param $style_name string Style name
+	* @return string Path to style template files
+	*/
+	private function relative_template_root_for_style($style_name)
+	{
+		return 'styles/' . $style_name . '/template';
 	}
 
 	/**
@@ -273,11 +293,6 @@ class phpbb_template
 	{
 		$virtual_source_file = $this->locator->get_virtual_source_file_for_handle($handle);
 		$source_file = null;
-
-		// reload this setting to have the values they had when this object was initialised
-		// using set_template or set_custom_template, they might otherwise have been overwritten
-		// by other template class instances in between.
-		$this->user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
 		$compiled_path = $this->cachepath . str_replace('/', '.', $virtual_source_file) . '.' . $this->phpEx;
 

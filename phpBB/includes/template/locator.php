@@ -58,56 +58,6 @@ class phpbb_template_locator
 	*/
 	private $files_inherit = array();
 
-	private $orig_tpl_inherits_id;
-
-	private $user;
-
-	public function __construct($phpbb_root_path, $user)
-	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->user = $user;
-	}
-
-	/**
-	* Set template location.
-	* @param string $style_name Name of style from which templates are to be taken
-	*/
-	public function set_template_path($style_name)
-	{
-		$relative_template_root = $this->relative_template_root_for_style($style_name);
-		$template_root = $this->phpbb_root_path . $relative_template_root;
-		if (!file_exists($template_root))
-		{
-			trigger_error('template locator: Template path could not be found: ' . $relative_template_root, E_USER_ERROR);
-		}
-
-		$this->root = $template_root;
-
-		if ($this->orig_tpl_inherits_id === null)
-		{
-			$this->orig_tpl_inherits_id = $this->user->theme['template_inherits_id'];
-		}
-
-		$this->user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
-
-		if ($this->user->theme['template_inherits_id'])
-		{
-			$this->inherit_root = $this->phpbb_root_path . $this->relative_template_root_for_style($this->user->theme['template_inherit_path']);
-		}
-	}
-
-	/**
-	* Converts a style name to relative (to board root) path to
-	* the style's template files.
-	*
-	* @param $style_name string Style name
-	* @return string Path to style template files
-	*/
-	private function relative_template_root_for_style($style_name)
-	{
-		return 'styles/' . $style_name . '/template';
-	}
-
 	/**
 	* Set custom template location (able to use directory outside of phpBB).
 	*
@@ -134,11 +84,6 @@ class phpbb_template_locator
 			}
 
 			$this->inherit_root = $fallback_template_path;
-			$this->orig_tpl_inherits_id = true;
-		}
-		else
-		{
-			$this->orig_tpl_inherits_id = false;
 		}
 	}
 
