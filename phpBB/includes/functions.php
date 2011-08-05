@@ -2708,12 +2708,6 @@ function send_status_line($code, $message)
 		{
 			$version = $_SERVER['SERVER_PROTOCOL'];
 		}
-		else if (!empty($_SERVER['HTTP_VERSION']))
-		{
-			// I cannot remember where I got this from.
-			// This code path may never be reachable in reality.
-			$version = $_SERVER['HTTP_VERSION'];
-		}
 		else
 		{
 			$version = 'HTTP/1.0';
