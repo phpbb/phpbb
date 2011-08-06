@@ -22,6 +22,10 @@ class phpbb_request_test extends phpbb_test_case
 		$_REQUEST['test'] = 3;
 		$_GET['unset'] = '';
 
+		$_SERVER['HTTP_HOST'] = 'example.com';
+		$_SERVER['HTTP_ACCEPT'] = 'application/json';
+		$_SERVER['HTTP_SOMEVAR'] = '<value>';
+
 		$this->type_cast_helper = $this->getMock('phpbb_request_type_cast_helper_interface');
 		$this->request = new phpbb_request($this->type_cast_helper);
 	}
@@ -41,6 +45,46 @@ class phpbb_request_test extends phpbb_test_case
 
 		$_POST['x'] = 2;
 		$this->assertEquals($_POST, $GLOBALS['_POST'], 'Checking whether $_POST can still be accessed via $GLOBALS[\'_POST\']');
+	}
+
+	public function test_server()
+	{
+		$this->assertEquals('example.com', $this->request->server('HTTP_HOST'));
+	}
+
+	public function test_server_escaping()
+	{
+		$this->type_cast_helper
+			->expects($this->once())
+			->method('recursive_set_var')
+			->with(
+				$this->anything(),
+				'',
+				true,
+				false
+			);
+
+		$this->request->server('HTTP_SOMEVAR');
+	}
+
+	public function test_header()
+	{
+		$this->assertEquals('application/json', $this->request->header('Accept'));
+	}
+
+	public function test_header_escaping()
+	{
+		$this->type_cast_helper
+			->expects($this->once())
+			->method('recursive_set_var')
+			->with(
+				$this->anything(),
+				'',
+				true,
+				true
+			);
+
+		$this->request->header('SOMEVAR');
 	}
 
 	/**

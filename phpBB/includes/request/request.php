@@ -261,12 +261,12 @@ class phpbb_request implements phpbb_request_interface
 
 		if ($this->is_set($var_name, phpbb_request_interface::SERVER))
 		{
-			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER);
+			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER, $html_encode);
 		}
 		else
 		{
 			$var = getenv($var_name);
-			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
+			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $html_encode);
 			return $var;
 		}
 	}
