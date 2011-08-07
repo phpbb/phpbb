@@ -127,6 +127,8 @@ class phpbb_db_migrator
 				'migration_schema_done' => false,
 				'migration_data_done' => false,
 				'migration_data_state' => '',
+				'migration_start_time' => 0,
+				'migration_end_time' => 0,
 			);
 
 		$depends = $migration->depends_on();
@@ -141,6 +143,12 @@ class phpbb_db_migrator
 			}
 		}
 
+		if (!isset($this->migration_state[$name]))
+		{
+			$state['migration_start_time'] = time();
+			$this->insert_migration($name, $state);
+		}
+
 		if (!$state['migration_schema_done'])
 		{
 			$migration->update_schema();
@@ -150,6 +158,7 @@ class phpbb_db_migrator
 		{
 			$migration->update_data();
 			$state['migration_data_done'] = true;
+			$state['migration_end_time'] = time();
 		}
 
 		$sql = 'UPDATE ' . $this->migrations_table . '
@@ -160,6 +169,18 @@ class phpbb_db_migrator
 		$this->migration_state[$name] = $state;
 
 		return true;
+	}
+
+	function insert_migration($name, $state)
+	{
+		$migration_row = $state;
+		$migration_row['migration_name'] = $name;
+
+		$sql = 'INSERT INTO ' . $this->migrations_table . '
+			' . $this->db->sql_build_array('INSERT', $migration_row);
+		$this->db->sql_query($sql);
+
+		$this->migration_state[$name] = $state;
 	}
 
 	/**
