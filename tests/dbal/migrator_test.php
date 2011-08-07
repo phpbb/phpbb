@@ -26,13 +26,19 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator.xml');
 	}
 
-	public function setup()
+	public function setUp()
 	{
 		parent::setup();
 
 		$this->db = $this->new_dbal();
 		$this->db_tools = new phpbb_db_tools($this->db);
 		$this->migrator = new phpbb_db_migrator($this->db, $this->db_tools, MIGRATIONS_TABLE);
+	}
+
+	public function tearDown()
+	{
+		// cleanup
+		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 
 	public function test_update()
@@ -42,6 +48,16 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		// schema
 		$this->migrator->update();
 		$this->assertFalse($this->migrator->finished());
+
+		$this->assertSqlResultEquals(
+			array(array('success' => '1')),
+			"SELECT 1 as success
+				FROM phpbb_migrations
+				WHERE migration_name = 'phpbb_dbal_migration_dummy'
+					AND migration_start_time >= " . (time() - 1) . "
+					AND migration_start_time <= " . (time() + 1),
+			'Start time set correctly'
+		);
 
 		// data
 		$this->migrator->update();
@@ -53,8 +69,16 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			'Dummy migration created extra_column with value 1 in all rows.'
 		);
 
-		// cleanup
-		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
+		$this->assertSqlResultEquals(
+			array(array('success' => '1')),
+			"SELECT 1 as success
+				FROM phpbb_migrations
+				WHERE migration_name = 'phpbb_dbal_migration_dummy'
+					AND migration_start_time <= migration_end_time
+					AND migration_end_time >= " . (time() - 1) . "
+					AND migration_end_time <= " . (time() + 1),
+			'End time set correctly'
+		);
 	}
 
 	public function test_unfulfillable()
@@ -73,8 +97,5 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			"SELECT extra_column FROM phpbb_config WHERE config_name = 'foo'",
 			'Dummy migration was run, even though an unfulfillable migration was found.'
 		);
-
-		// cleanup
-		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 }
