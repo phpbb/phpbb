@@ -44,6 +44,7 @@ class phpbb_template_renderer_include implements phpbb_template_renderer
 	/**
 	* Displays the template managed by this renderer by including
 	* the php file containing the template.
+	*
 	* @param phpbb_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/

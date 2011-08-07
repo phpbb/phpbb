@@ -66,7 +66,9 @@ class phpbb_template_filter extends php_user_filter
 	private $in_php;
 
 	/**
-	* Whether <!-- PHP --> tags are allowed
+	* Whether inline PHP code, <!-- PHP --> and <!-- INCLUDEPHP --> tags
+	* are allowed. If this is false all PHP code will be silently
+	* removed from the template during compilation.
 	*
 	* @var bool
 	*/
@@ -134,6 +136,15 @@ class phpbb_template_filter extends php_user_filter
 		return true;
 	}
 
+	/**
+	* Compiles a chunk of template.
+	*
+	* The chunk must comprise of one or more complete lines from the source
+	* template.
+	*
+	* @param string $data Chunk of source template to compile
+	* @return string Compiled PHP/HTML code
+	*/
 	private function compile($data)
 	{
 		$block_start_in_php = $this->in_php;
@@ -192,6 +203,7 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Prepends a preamble to compiled template.
 	* Currently preamble checks if IN_PHPBB is defined and calls exit() if it is not.
+	*
 	* @param string $data Compiled template chunk
 	* @return string Compiled template chunk with preamble prepended
 	*/
@@ -203,6 +215,9 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Callback for replacing matched tokens with PHP code
+	*
+	* @param array $matches Regular expression matches
+	* @return string compiled template code
 	*/
 	private function replace($matches)
 	{
@@ -293,6 +308,9 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile variables
+	*
+	* @param string $text_blocks Variable reference in source template
+	* @return string compiled template code
 	*/
 	private function compile_var_tags(&$text_blocks)
 	{
@@ -323,6 +341,8 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Handles special language tags L_ and LA_
+	*
+	* @param string $text_blocks Variable reference in source template
 	*/
 	private function compile_language_tags(&$text_blocks)
 	{
@@ -342,6 +362,9 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile blocks
+	*
+	* @param string $tag_args Block contents in source template
+	* @return string compiled template code
 	*/
 	private function compile_tag_block($tag_args)
 	{
@@ -454,6 +477,9 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Compile a general expression - much of this is from Smarty with
 	* some adaptions for our block level methods
+	*
+	* @param string $tag_args Expression (tag arguments) in source template
+	* @return string compiled template code
 	*/
 	private function compile_expression($tag_args)
 	{
@@ -647,6 +673,10 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile IF tags
+	*
+	* @param string $tag_args Expression given with IF in source template
+	* @param bool $elseif True if compiling an IF tag, false if compiling an ELSEIF tag
+	* @return string compiled template code
 	*/
 	private function compile_tag_if($tag_args, $elseif)
 	{
@@ -662,6 +692,10 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile DEFINE tags
+	*
+	* @param string $tag_args Expression given with DEFINE in source template
+	* @param bool $op True if compiling a DEFINE tag, false if compiling an UNDEFINE tag
+	* @return string compiled template code
 	*/
 	private function compile_tag_define($tag_args, $op)
 	{
@@ -685,6 +719,9 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile INCLUDE tag
+	*
+	* @param string $tag_args Expression given with INCLUDE in source template
+	* @return string compiled template code
 	*/
 	private function compile_tag_include($tag_args)
 	{
@@ -693,6 +730,9 @@ class phpbb_template_filter extends php_user_filter
 
 	/**
 	* Compile INCLUDE_PHP tag
+	*
+	* @param string $tag_args Expression given with INCLUDEPHP in source template
+	* @return string compiled template code
 	*/
 	private function compile_tag_include_php($tag_args)
 	{

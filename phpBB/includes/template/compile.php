@@ -32,6 +32,11 @@ class phpbb_template_compile
 	*/
 	private $allow_php;
 
+	/**
+	* Constructor.
+	*
+	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	*/
 	public function __construct($allow_php)
 	{
 		$this->allow_php = $allow_php;
@@ -40,6 +45,7 @@ class phpbb_template_compile
 	/**
 	* Compiles template in $source_file and writes compiled template to
 	* cache directory
+	*
 	* @param string $handle Template handle to compile
 	* @param string $source_file Source template file
 	* @return bool Return true on success otherwise false
@@ -71,7 +77,9 @@ class phpbb_template_compile
 
 	/**
 	* Compiles a template located at $source_file.
+	*
 	* Returns PHP source suitable for eval().
+	*
 	* @param string $source_file Source template file
 	* @return string|bool Return compiled code on successful compilation otherwise false
 	*/

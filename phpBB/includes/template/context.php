@@ -28,6 +28,7 @@ class phpbb_template_context
 	* --> $this->tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
 	* if it's a root-level variable, it'll be like this:
 	* --> $this->tpldata[.][0][varname] == value
+	*
 	* @var array
 	*/
 	private $tpldata = array('.' => array(0 => array()));
@@ -53,6 +54,7 @@ class phpbb_template_context
 
 	/**
 	* Assign a single variable to a single key
+	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
 	*/
@@ -99,6 +101,7 @@ class phpbb_template_context
 
 	/**
 	* Assign key variable pairs from an array to a specified block
+	*
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
 	*/
@@ -308,6 +311,7 @@ class phpbb_template_context
 
 	/**
 	* Reset/empty complete block
+	*
 	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)
