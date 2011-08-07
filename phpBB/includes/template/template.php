@@ -83,7 +83,7 @@ class phpbb_template
 	}
 
 	/**
-	* Set template location
+	* Set template location based on (current) user's chosen style.
 	*/
 	public function set_template()
 	{
@@ -147,8 +147,8 @@ class phpbb_template
 	}
 
 	/**
-	* Sets the template filenames for handles. $filename_array
-	* should be a hash of handle => filename pairs.
+	* Sets the template filenames for handles.
+	*
 	* @param array $filname_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
@@ -168,6 +168,7 @@ class phpbb_template
 
 	/**
 	* Reset/empty complete block
+	*
 	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)
@@ -176,7 +177,12 @@ class phpbb_template
 	}
 
 	/**
-	* Display handle
+	* Display a template for provided handle.
+	*
+	* The template will be loaded and compiled, if necessary, first.
+	*
+	* This function calls hooks.
+	*
 	* @param string $handle Handle to display
 	* @return bool True on success, false on failure
 	*/
@@ -215,6 +221,7 @@ class phpbb_template
 
 	/**
 	* Calls hook if any is defined.
+	*
 	* @param string $handle Template handle being displayed.
 	*/
 	private function call_hook($handle)
@@ -253,7 +260,9 @@ class phpbb_template
 	}
 
 	/**
-	* Display the handle and assign the output to a template variable or return the compiled result.
+	* Display the handle and assign the output to a template variable
+	* or return the compiled result.
+	*
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
@@ -351,6 +360,7 @@ class phpbb_template
 
 	/**
 	* Determines compiled file path for handle $handle.
+	*
 	* @param string $handle Template handle (i.e. "friendly" template name)
 	* @return string Compiled file path
 	*/
@@ -363,6 +373,7 @@ class phpbb_template
 
 	/**
 	* Assign key variable pairs from an array
+	*
 	* @param array $vararray A hash of variable name => value pairs
 	*/
 	public function assign_vars(array $vararray)
@@ -375,6 +386,7 @@ class phpbb_template
 
 	/**
 	* Assign a single variable to a single key
+	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
 	*/
@@ -428,7 +440,12 @@ class phpbb_template
 	}
 
 	/**
-	* Include a separate template
+	* Include a separate template.
+	*
+	* This function is marked public due to the way the template
+	* implementation uses it. It is actually an implementation function
+	* and should not be considered part of template class's public API.
+	*
 	* @param string $filename Template filename to include
 	* @param bool $include True to include the file, false to just load it
 	* @uses template_compile is used to compile uncached templates
@@ -437,7 +454,7 @@ class phpbb_template
 	{
 		$this->locator->set_filenames(array($filename => $filename));
 
-		if (!$this->load_and_render($handle))
+		if (!$this->load_and_render($filename))
 		{
 			// trigger_error cannot be used here, as the output already started
 			echo 'template->_tpl_include(): Failed including ' . htmlspecialchars($handle) . "\n";
@@ -445,7 +462,17 @@ class phpbb_template
 	}
 
 	/**
-	* Include a php-file
+	* Include a PHP file.
+	*
+	* If a relative path is passed in $filename, it is considered to be
+	* relative to board root ($phpbb_root_path). Absolute paths are
+	* also allowed.
+	*
+	* This function is marked public due to the way the template
+	* implementation uses it. It is actually an implementation function
+	* and should not be considered part of template class's public API.
+	*
+	* @param string $filename Path to PHP file to include
 	*/
 	public function _php_include($filename)
 	{
