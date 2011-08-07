@@ -46,6 +46,7 @@
 	<target name="test" depends="clean,prepare">
 		<exec dir="."
 			command="phpunit --log-junit build/logs/phpunit.xml
+			--configuration phpunit.xml.all
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
