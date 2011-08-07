@@ -126,7 +126,7 @@ class phpbb_template_locator
 	{
 		if (!isset($this->filename[$handle]))
 		{
-			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+			trigger_error("template locator: get_filename_for_handle: No file specified for handle $handle", E_USER_ERROR);
 		}
 		return $this->filename[$handle];
 	}
