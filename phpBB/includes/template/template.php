@@ -188,6 +188,18 @@ class phpbb_template
 			return $result[0];
 		}
 
+		return $this->load_and_render($handle);
+	}
+
+	/**
+	* Loads a template for $handle, compiling it if necessary, and
+	* renders the template.
+	*
+	* @param string $handle Template handle to render
+	* @return bool True on success, false on failure
+	*/
+	private function load_and_render($handle)
+	{
 		$renderer = $this->_tpl_load($handle);
 
 		if ($renderer)
@@ -425,13 +437,7 @@ class phpbb_template
 	{
 		$this->locator->set_filenames(array($filename => $filename));
 
-		$renderer = $this->_tpl_load($filename);
-
-		if ($renderer)
-		{
-			$renderer->render($this->context, $this->get_lang());
-		}
-		else
+		if (!$this->load_and_render($handle))
 		{
 			// trigger_error cannot be used here, as the output already started
 			echo 'template->_tpl_include(): Failed including ' . htmlspecialchars($handle) . "\n";
