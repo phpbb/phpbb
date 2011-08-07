@@ -584,6 +584,13 @@ class bbcode
 				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
 				$code = str_replace('  ', '&nbsp; ', $code);
 				$code = str_replace('  ', ' &nbsp;', $code);
+				$code = str_replace("\n ", "\n&nbsp;", $code);
+
+				// keep space at the beginning
+				if (!empty($code) && $code[0] == ' ')
+				{
+					$code = '&nbsp;' . substr($code, 1);
+				}
 
 				// remove newline at the beginning
 				if (!empty($code) && $code[0] == "\n")
