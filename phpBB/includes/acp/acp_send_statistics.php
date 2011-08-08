@@ -16,8 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
-
 /**
 * @package acp
 */
@@ -27,7 +25,9 @@ class acp_send_statistics
 
 	function main($id, $mode)
 	{
-		global $config, $template, $phpbb_admin_path, $phpEx;
+		global $config, $template, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+
+		include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
 
 		$collect_url = "http://www.phpbb.com/stats/receive_stats.php";
 
