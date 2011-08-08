@@ -507,7 +507,7 @@ class utf_normalizer
 
 					do
 					{
-						$_utf_len = $utf_len_mask[$decomp_map[$utf_char][$_pos] & "\xF0"];
+						$_utf_len =& $utf_len_mask[$decomp_map[$utf_char][$_pos] & "\xF0"];
 
 						if (isset($_utf_len))
 						{
@@ -563,7 +563,7 @@ class utf_normalizer
 							do
 							{
 								$c = $decomp_map[$utf_char][$_pos];
-								$_utf_len = $utf_len_mask[$c & "\xF0"];
+								$_utf_len =& $utf_len_mask[$c & "\xF0"];
 
 								if (isset($_utf_len))
 								{
@@ -636,7 +636,7 @@ class utf_normalizer
 										do
 										{
 											$c = $decomp_map[$utf_char][$_pos];
-											$_utf_len = $utf_len_mask[$c & "\xF0"];
+											$_utf_len =& $utf_len_mask[$c & "\xF0"];
 
 											if (isset($_utf_len))
 											{
@@ -717,7 +717,7 @@ class utf_normalizer
 								do
 								{
 									$c = $decomp_map[$utf_char][$_pos];
-									$_utf_len = $utf_len_mask[$c & "\xF0"];
+									$_utf_len =& $utf_len_mask[$c & "\xF0"];
 
 									if (isset($_utf_len))
 									{
@@ -1064,7 +1064,7 @@ class utf_normalizer
 					do
 					{
 						$c = $decomp_map[$utf_char][$_pos];
-						$_utf_len = $utf_len_mask[$c & "\xF0"];
+						$_utf_len =& $utf_len_mask[$c & "\xF0"];
 
 						if (isset($_utf_len))
 						{
