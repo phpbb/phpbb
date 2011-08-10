@@ -261,7 +261,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$template = new phpbb_template();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -284,6 +283,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+$template_locator = new phpbb_template_locator();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
