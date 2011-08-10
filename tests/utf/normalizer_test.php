@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_normalizer.php';
 */
 class phpbb_utf_normalizer_test extends phpbb_test_case
 {
-	private static $data_dir;
+	static private $data_dir;
 
 	static public function setUpBeforeClass()
 	{
