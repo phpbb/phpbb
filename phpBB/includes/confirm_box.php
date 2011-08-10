@@ -22,19 +22,19 @@ if (!defined('IN_PHPBB'))
  */
 class phpbb_confirm_box
 {
-	private $request = null;
+	private $request;
 
-	private $user = null;
+	private $user;
 
-	private $db = null;
+	private $db;
 
-	private $template = null;
+	private $template;
 
-	private $phpbb_root_path = null;
+	private $phpbb_root_path;
 
-	private $unique = null;
+	private $unique;
 
-	private $title = null;
+	private $title;
 
 	/**
 	* @param boolean $unique Use unique key or use add_form_key
