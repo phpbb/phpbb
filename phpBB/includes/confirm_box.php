@@ -169,7 +169,7 @@ class phpbb_confirm_box
 	 * Check if a box is correctly confirmed.
 	*
 	 * @param boolean $unique Use unique check or else check_form_key
-	 * @param string $title Title required for check_foru_key
+	 * @param string $title Title required for check_form_key
 	 */
 	public function check()
 	{
