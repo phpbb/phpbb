@@ -106,7 +106,7 @@ class phpbb_template
 			$fallback_template_path = null;
 		}
 
-		return $this->locator->set_custom_template($template_root, $fallback_template_path);
+		return $this->set_custom_template($template_root, $style_name, $fallback_template_path);
 	}
 
 	/**
