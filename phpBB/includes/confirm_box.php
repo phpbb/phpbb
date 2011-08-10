@@ -178,7 +178,8 @@ class phpbb_confirm_box
 			return check_form_key($this->title);
 		}
 
-		$confirm = ($this->user->lang['YES'] === $this->request->variable('confirm', '', true, phpbb_request_interface::POST));
+		$confirm_value = $this->request->variable('confirm', '', true, phpbb_request_interface::POST);
+		$confirm = ($this->user->lang['YES'] === $confirm_value);
 
 		if ($this->request->is_set_post('cancel'))
 		{
