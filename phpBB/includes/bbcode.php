@@ -128,7 +128,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $template, $config, $user;
+		global $phpbb_root_path, $phpEx, $config, $user;
 
 		if (empty($this->template_filename))
 		{
