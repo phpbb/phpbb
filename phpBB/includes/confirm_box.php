@@ -109,13 +109,24 @@ class phpbb_confirm_box
 			));
 		}
 
-		if (defined('IN_ADMIN') && isset($this->user->data['session_admin']) && $this->user->data['session_admin'])
+		if (isset($this->user->lang[$this->title]))
 		{
-			adm_page_header((!isset($this->user->lang[$this->title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$this->title]);
+			$title = $this->user->lang[$this->title];
 		}
 		else
 		{
-			page_header(((!isset($this->user->lang[$this->title])) ? $this->user->lang['CONFIRM'] : $this->user->lang[$this->title]), false);
+			$title = $this->user->lang['CONFIRM'];
+		}
+
+		if (defined('IN_ADMIN') && isset($this->user->data['session_admin']) && $this->user->data['session_admin'])
+		{
+			$in_admin = true;
+			adm_page_header($title);
+		}
+		else
+		{
+			$in_admin = false;
+			page_header($title, false);
 		}
 
 		$this->template->set_filenames(array(
@@ -144,7 +155,7 @@ class phpbb_confirm_box
 			$this->db->sql_query($sql);
 		}
 
-		if (defined('IN_ADMIN') && isset($this->user->data['session_admin']) && $this->user->data['session_admin'])
+		if ($in_admin)
 		{
 			adm_page_footer();
 		}
