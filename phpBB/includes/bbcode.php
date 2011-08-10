@@ -30,7 +30,6 @@ class bbcode
 	var $bbcodes = array();
 
 	var $template_bitfield;
-	var $template_filename = '';
 
 	/**
 	* Constructor
