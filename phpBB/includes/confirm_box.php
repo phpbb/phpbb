@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package phpbb_confirmbox
+* @package phpBB3
 * @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -16,9 +16,9 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Class to generate confirm boxes for certian arrays
+ * Class to generate confirm boxes for certain arrays
  *
- * @package phpbb_confirmbox
+* @package phpBB3
  */
 class phpbb_confirm_box
 {
@@ -42,6 +42,7 @@ class phpbb_confirm_box
 	* message text is _CONFIRM appended to title.
 	* If title cannot be found in user->lang a default one is displayed
 	* If title_CONFIRM cannot be found in user->lang the text given is used.
+	*
 	* @param phpbb_request_interface $request
 	* @param session $user
 	* @param dbal $db
@@ -61,16 +62,17 @@ class phpbb_confirm_box
 
 	/**
 	* Build Confirm box
+	*
 	* @param string $hidden Hidden variables
 	* @param string $html_body Template used for confirm box
 	* @param string $u_action Custom form action
 	*/
 	public function confirm_box($hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 	{
-		// If activation key already exist, we better do not re-use the key (something very strange is going on...)
+		// If activation key already exists, we better not re-use the key (something very strange is going on...)
 		if ($this->request->variable('confirm_key', ''))
 		{
-			// This should not occur, therefore we cancel the operation to safe the user
+			// This should not occur, therefore we cancel the operation to safeguard the user
 			return false;
 		}
 			
@@ -154,6 +156,7 @@ class phpbb_confirm_box
 	
 	/**
 	 * Check if a box is correctly confirmed.
+	*
 	 * @param boolean $unique Use unique check or else check_form_key
 	 * @param string $title Title required for check_foru_key
 	 */
@@ -171,23 +174,24 @@ class phpbb_confirm_box
 			return false;
 		}
 		
-		if ($confirm)
+		if (!$confirm)
 		{
-			$user_id = $this->request->variable('confirm_uid', 0);
-			$session_id = $this->request->variable('sess', '');
-			$confirm_key = $this->request->variable('confirm_key', '');
-			
-			if ($user_id != $this->user->data['user_id'] || $session_id != $this->user->session_id || !$confirm_key || !$this->user->data['user_last_confirm_key'] || $confirm_key != $this->user->data['user_last_confirm_key'])
-			{
-				return false;
-			}
-
-			// Reset user_last_confirm_key
-			$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = ''
-				WHERE user_id = " . $this->user->data['user_id'];
-			$this->db->sql_query($sql);
-			return true;
+			return false;
 		}
-		return false;	
+
+		$user_id = $this->request->variable('confirm_uid', 0);
+		$session_id = $this->request->variable('sess', '');
+		$confirm_key = $this->request->variable('confirm_key', '');
+		
+		if ($user_id != $this->user->data['user_id'] || $session_id != $this->user->session_id || !$confirm_key || !$this->user->data['user_last_confirm_key'] || $confirm_key != $this->user->data['user_last_confirm_key'])
+		{
+			return false;
+		}
+
+		// Reset user_last_confirm_key
+		$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = ''
+			WHERE user_id = " . $this->user->data['user_id'];
+		$this->db->sql_query($sql);
+		return true;
 	}
 }
