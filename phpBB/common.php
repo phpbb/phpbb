@@ -224,7 +224,8 @@ $config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
-$template	= new phpbb_template($phpbb_root_path, $phpEx, $config, $user);
+$template_locator = new phpbb_template_locator();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
