@@ -23,19 +23,19 @@ if (!defined('IN_PHPBB'))
 class phpbb_confirm_box
 {
 	private $request = null;
-	
+
 	private $user = null;
-	
+
 	private $db = null;
-	
+
 	private $template = null;
-	
+
 	private $phpbb_root_path = null;
-	
+
 	private $unique = null;
-	
+
 	private $title = null;
-	
+
 	/**
 	* @param boolean $unique Use unique key or use add_form_key
 	* @param string $title Title/Message used for confirm box.
@@ -75,13 +75,13 @@ class phpbb_confirm_box
 			// This should not occur, therefore we cancel the operation to safeguard the user
 			return false;
 		}
-			
+
 		// generate activation key
 		$confirm_key = gen_rand_string(10);	
-		
+
 		$this->render($hidden, $html_body, $u_action, $confirm_key);
 	}
-	
+
 	/**
 	 * Render the template for the confirm box, including the
 	 * form keys if non unique mode is used
@@ -98,11 +98,11 @@ class phpbb_confirm_box
 			'sess'			=> $this->user->session_id,
 			'sid'			=> $this->user->session_id,
 		));
-		
+
 		if (!$this->unique)
 		{
 			list($token, $time) = add_form_key($this->title);
-			
+
 			$s_hidden_fields .= build_hidden_fields(array(
 				'creation_time' => $time,
 				'form_token'	=> $token,				
@@ -151,7 +151,7 @@ class phpbb_confirm_box
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $this->db->sql_escape($confirm_key) . "'
 				WHERE user_id = " . $this->user->data['user_id'];
-		
+
 			$this->db->sql_query($sql);
 		}
 
@@ -164,7 +164,7 @@ class phpbb_confirm_box
 			page_footer();
 		}
 	}
-	
+
 	/**
 	 * Check if a box is correctly confirmed.
 	*
@@ -177,14 +177,14 @@ class phpbb_confirm_box
 		{
 			return check_form_key($this->title);
 		}
-		
+
 		$confirm = ($this->user->lang['YES'] === $this->request->variable('confirm', '', true, phpbb_request_interface::POST));
-		
+
 		if ($this->request->is_set_post('cancel'))
 		{
 			return false;
 		}
-		
+
 		if (!$confirm)
 		{
 			return false;
@@ -193,7 +193,7 @@ class phpbb_confirm_box
 		$user_id = $this->request->variable('confirm_uid', 0);
 		$session_id = $this->request->variable('sess', '');
 		$confirm_key = $this->request->variable('confirm_key', '');
-		
+
 		if ($user_id != $this->user->data['user_id'] || $session_id != $this->user->session_id || !$confirm_key || !$this->user->data['user_last_confirm_key'] || $confirm_key != $this->user->data['user_last_confirm_key'])
 		{
 			return false;
