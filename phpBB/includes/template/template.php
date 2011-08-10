@@ -105,13 +105,7 @@ class phpbb_template
 			$fallback_template_path = null;
 		}
 
-		$this->locator->set_custom_template($template_root, $fallback_template_path);
-
-		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $style_name) . '_';
-
-		$this->context = new phpbb_template_context();
-
-		return true;
+		return $this->locator->set_custom_template($template_root, $fallback_template_path);
 	}
 
 	/**
