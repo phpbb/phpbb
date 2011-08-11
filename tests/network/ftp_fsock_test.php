@@ -17,20 +17,19 @@ class phpbb_ftp_fsock_test extends phpbb_test_case
 {
 	public function test_pasv_epsv()
 	{
-		foreach (dns_get_record('ftp.debian.org', DNS_A | DNS_AAAA) as $row)
+		$hostname = 'ftp.debian.org.';
+		$ipv4 = gethostbyname($hostname);
+
+		if ($ipv4 == $hostname)
 		{
-			if (isset($row['ip']))
-			{
-				$ipv4 = $row['ip'];
-			}
-			else if (isset($row['ipv6']))
-			{
-				$ipv6 = $row['ipv6'];
-			}
+			$this->markTestSkipped("Got no A record back from DNS query for $hostname");
 		}
 
+		// PASV
 		$this->assert_ls_contains_debian($ipv4);
-		$this->assert_ls_contains_debian("[$ipv6]");
+
+		// EPSV
+		$this->assert_ls_contains_debian("[::ffff:$ipv4]");
 	}
 
 	protected function assert_ls_contains_debian($hostname)
