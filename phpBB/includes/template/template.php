@@ -488,17 +488,4 @@ class phpbb_template
 		}
 		include($file);
 	}
-
-	/**
-	* Retrieves the template locator object.
-	*
-	* This function is public for the benefit of bbcode implementation.
-	* It should not be considered part of template class's public API.
-	*
-	* @return phpbb_template_locator Template locator for this template
-	*/
-	public function _get_locator()
-	{
-		return $this->locator;
-	}
 }
