@@ -8,69 +8,10 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/template.php';
+require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_test extends phpbb_test_case
+class phpbb_template_template_test extends phpbb_template_template_test_case
 {
-	private $template;
-	private $template_path;
-
-	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = false;
-
-	private function display($handle)
-	{
-		ob_start();
-		$this->assertTrue($this->template->display($handle, false));
-		return self::trim_template_result(ob_get_clean());
-	}
-
-	private static function trim_template_result($result)
-	{
-		return str_replace("\n\n", "\n", implode("\n", array_map('trim', explode("\n", trim($result)))));
-	}
-
-	private function setup_engine()
-	{
-		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->template = new template();
-		$this->template->set_custom_template($this->template_path, 'tests');
-	}
-
-	protected function setUp()
-	{
-		$this->markTestIncomplete("template::display raises notices.");
-
-		// Test the engine can be used
-		$this->setup_engine();
-
-		if (!is_writable(dirname($this->template->cachepath)))
-		{
-			$this->markTestSkipped("Template cache directory is not writable.");
-		}
-
-		foreach (glob($this->template->cachepath . '*') as $file)
-		{
-			unlink($file);
-		}
-
-		$GLOBALS['config'] = array(
-			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
-		);
-	}
-
-	protected function tearDown()
-	{
-		if (is_object($this->template))
-		{
-			foreach (glob($this->template->cachepath . '*') as $file)
-			{
-				unlink($file);
-			}
-		}
-	}
-
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
@@ -91,7 +32,7 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array(),
 				array(),
-				"pass\npass\n<!-- DUMMY var -->",
+				"pass\npass\npass\n<!-- DUMMY var -->",
 			),
 			array(
 				'variable.html',
@@ -105,14 +46,14 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array(),
 				array(),
-				'0',
+				'03',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => true),
 				array(),
 				array(),
-				"1\n0",
+				'1',
 			),
 			array(
 				'if.html',
@@ -161,22 +102,22 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'))),
 				array(),
-				"first\n0\nx\nset\nlast",
-			),/* no nested top level loops
+				"first\n0 - a\nx - b\nset\nlast",
+			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
 				array(),
-				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array(),
-				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast\n0\n\n1\nlast inner\ninner loop",
-			),*/
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner\ninner loop",
+			),
 			array(
 				'loop_advanced.html',
 				array(),
@@ -189,14 +130,23 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc",
+				"xyz\nabc\nabc\nbar\nbar\nabc",
 			),
 			array(
 				'expressions.html',
 				array(),
 				array(),
 				array(),
-				trim(str_repeat("pass", 39)),
+				trim(str_repeat("pass\n", 10) . "\n"
+					. str_repeat("pass\n", 4) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 6) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 6) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 3) . "\n"
+					. str_repeat("pass\n", 2) . "\n"),
 			),
 			array(
 				'php.html',
@@ -227,6 +177,15 @@ class phpbb_template_template_test extends phpbb_test_case
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
 			),*/
 			array(
+				// Just like a regular loop but the name begins
+				// with an underscore
+				'loop_underscore.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
+			),
+			array(
 				'lang.html',
 				array(),
 				array(),
@@ -247,6 +206,46 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				"{ VARIABLE }\nValue'",
 			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array(),
+				array(),
+				"top-level content",
+			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				// I don't completely understand this output, hopefully it's correct
+				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
+				'loop_nested_deep_multilevel_ref.html',
+				array(),
+				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				// I don't completely understand this output, hopefully it's correct
+				"top-level content\nouter\n\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
+				'loop_size.html',
+				array(),
+				array('loop' => array(array()), 'empty_loop' => array()),
+				array(),
+				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
+			/* Does not pass with the current implementation.
+			array(
+				'loop_reuse.html',
+				array(),
+				array('one' => array(array('VAR' => 'a'), array('VAR' => 'b')), 'one.one' => array(array('VAR' => 'c'), array('VAR' => 'd'))),
+				array(),
+				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
+				"a\nb\nc\nd",
+			),
+			*/
 		);
 	}
 
@@ -257,7 +256,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path . '/../') . '/templates/' . $filename);
+		$expecting = sprintf('template locator: File %s does not exist', realpath($this->template_path . '/../') . '/templates/' . $filename);
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');
@@ -265,7 +264,7 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_empty_file()
 	{
-		$expecting = 'template->set_filenames: Empty filename specified for test';
+		$expecting = 'template locator: set_filenames: Empty filename specified for test';
 
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 		$this->template->set_filenames(array('test' => ''));
@@ -273,50 +272,10 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_invalid_handle()
 	{
-		$expecting = 'template->_tpl_load(): No file specified for handle test';
+		$expecting = 'No file specified for handle test';
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');
-	}
-
-	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
-	{
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		foreach ($destroy as $block)
-		{
-			$this->template->destroy_block_vars($block);
-		}
-
-		try
-		{
-			$this->assertEquals($expected, $this->display('test'), "Testing $file");
-			$this->assertFileExists($cache_file);
-		}
-		catch (ErrorException $e)
-		{
-			if (file_exists($cache_file))
-			{
-				copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-			}
-
-			throw $e;
-		}
-
-		// For debugging
-		if (self::PRESERVE_CACHE)
-		{
-			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-		}
 	}
 
 	/**
@@ -360,43 +319,22 @@ class phpbb_template_template_test extends phpbb_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
 		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
 
 		$this->template->assign_display('test', 'VARIABLE', false);
-
-		error_reporting($error_level);
 
 		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
 	}
 
 	public function test_php()
 	{
-		$GLOBALS['config']['tpl_allow_php'] = true;
+		$this->setup_engine(array('tpl_allow_php' => true));
 
 		$cache_file = $this->template->cachepath . 'php.html.php';
 
 		$this->assertFileNotExists($cache_file);
 
 		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
-
-		$GLOBALS['config']['tpl_allow_php'] = false;
-	}
-
-	public function test_includephp()
-	{
-		$GLOBALS['config']['tpl_allow_php'] = true;
-
-		$cache_file = $this->template->cachepath . 'includephp.html.php';
-
-		$this->run_template('includephp.html', array(), array(), array(), 'testing included php', $cache_file);
-
-		$this->template->set_filenames(array('test' => 'includephp.html'));
-		$this->assertEquals('testing included php', $this->display('test'), "Testing INCLUDEPHP");
-
-		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
 	public static function alter_block_array_data()
@@ -507,5 +445,5 @@ EOT
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
 		$this->assertEquals($expect, $this->display('test'), $description);
 	}
-}
 
+}

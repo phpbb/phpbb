@@ -78,7 +78,6 @@ phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
-include($phpbb_root_path . 'includes/template.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
@@ -178,7 +177,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$template = new template();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -201,6 +199,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+$template_locator = new phpbb_template_locator();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 

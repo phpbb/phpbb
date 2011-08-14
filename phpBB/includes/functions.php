@@ -817,7 +817,7 @@ function phpbb_is_writable($file)
 * @param string $path Path to check absoluteness of
 * @return boolean
 */
-function is_absolute($path)
+function phpbb_is_absolute($path)
 {
 	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
 }
@@ -837,7 +837,7 @@ function phpbb_own_realpath($path)
 	$path_prefix = '';
 
 	// Determine what sort of path we have
-	if (is_absolute($path))
+	if (phpbb_is_absolute($path))
 	{
 		$absolute = true;
 
