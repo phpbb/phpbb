@@ -58,6 +58,6 @@ class phpbb_ftp_fsock_pasv_epsv_test extends phpbb_test_case
 
 	protected function get_object($hostname)
 	{
-		return new ftp_fsock($hostname, 'anonymous', 'anonymous@localost.tld', '/');
+		return new ftp_fsock($hostname, 'anonymous', 'anonymous@localhost.tld', '/');
 	}
 }
