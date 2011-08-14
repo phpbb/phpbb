@@ -45,11 +45,9 @@ class phpbb_ftp_fsock_test extends phpbb_test_case
 	{
 		$o = $this->get_object($hostname);
 		$result = $o->_init();
-		// PHP can connect to IPv6 addresses which are IPv6-encapsulated
-		// IPv4 addresses on systems that don't have IPv6 connectivity,
-		// provided that PHP was built with IPv6 support.
-		// If this test fails on such an IPv6-encapsulated IPv4 address,
-		// check whether you disabled IPv6 support in your PHP.
+		// This test may fail on IPv6 addresses if IPv6 support is
+		// not available. PHP must be compiled with IPv6 support enabled,
+		// and your operating system must be configured for IPv6 as well.
 		if ($result !== true)
 		{
 			$this->markTestSkipped("Failed to connect to $hostname: $result");
