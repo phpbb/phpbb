@@ -136,9 +136,8 @@ class bbcode
 			$template_locator = new phpbb_template_locator();
 			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 			$template->set_template();
-			$locator = $template->_get_locator();
-			$locator->set_filenames(array('bbcode.html' => 'bbcode.html'));
-			$this->template_filename = $locator->get_source_file_for_handle('bbcode.html');
+			$template_locator->set_filenames(array('bbcode.html' => 'bbcode.html'));
+			$this->template_filename = $template_locator->get_source_file_for_handle('bbcode.html');
 		}
 
 		$bbcode_ids = $rowset = $sql = array();
