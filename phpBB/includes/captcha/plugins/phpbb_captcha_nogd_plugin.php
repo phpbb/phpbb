@@ -40,9 +40,9 @@ class phpbb_captcha_nogd extends phpbb_default_captcha
 		}
 	}
 
-	function &get_instance()
+	function get_instance()
 	{
-		$instance =& new phpbb_captcha_nogd();
+		$instance = new phpbb_captcha_nogd();
 		return $instance;
 	}
 
