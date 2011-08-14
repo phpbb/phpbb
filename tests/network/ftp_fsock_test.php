@@ -24,7 +24,7 @@ class phpbb_ftp_fsock_test extends phpbb_test_case
 
 		if (self::$ipv4 == $hostname)
 		{
-			$this->markTestSkipped("Got no A record back from DNS query for $hostname");
+			self::markTestSkipped("Got no A record back from DNS query for $hostname");
 		}
 	}
 
