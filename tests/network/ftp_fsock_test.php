@@ -15,19 +15,28 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_transfer.php';
 */
 class phpbb_ftp_fsock_test extends phpbb_test_case
 {
-	public function test_pasv_epsv()
+	static protected $ipv4;
+
+	static public function setUpBeforeClass()
 	{
 		$hostname = 'ftp.debian.org.';
-		$ipv4 = gethostbyname($hostname);
+		self::$ipv4 = gethostbyname($hostname);
 
-		if ($ipv4 == $hostname)
+		if (self::$ipv4 == $hostname)
 		{
 			$this->markTestSkipped("Got no A record back from DNS query for $hostname");
 		}
+	}
 
+	public function test_pasv()
+	{
 		// PASV
-		$this->assert_ls_contains_debian($ipv4);
+		$this->assert_ls_contains_debian(self::$ipv4);
+	}
 
+	public function test_epsv()
+	{
+		$ipv4 = self::$ipv4;
 		// EPSV
 		$this->assert_ls_contains_debian("[::ffff:$ipv4]");
 	}
