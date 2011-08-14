@@ -13,7 +13,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_transfer.php';
 /**
 * @group slow
 */
-class phpbb_ftp_fsock_test extends phpbb_test_case
+class phpbb_ftp_fsock_pasv_epsv_test extends phpbb_test_case
 {
 	static protected $ipv4;
 
