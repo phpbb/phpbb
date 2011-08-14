@@ -44,7 +44,16 @@ class phpbb_ftp_fsock_test extends phpbb_test_case
 	protected function assert_ls_contains_debian($hostname)
 	{
 		$o = $this->get_object($hostname);
-		$o->_init();
+		$result = $o->_init();
+		// PHP can connect to IPv6 addresses which are IPv6-encapsulated
+		// IPv4 addresses on systems that don't have IPv6 connectivity,
+		// provided that PHP was built with IPv6 support.
+		// If this test fails on such an IPv6-encapsulated IPv4 address,
+		// check whether you disabled IPv6 support in your PHP.
+		if ($result !== true)
+		{
+			$this->markTestSkipped("Failed to connect to $hostname: $result");
+		}
 		$this->assertContains('debian', $o->_ls());
 		$o->_close();
 	}
