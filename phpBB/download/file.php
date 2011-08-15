@@ -73,6 +73,9 @@ if (isset($_GET['avatar']))
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
+	// load extensions
+	$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+
 	$filename = request_var('avatar', '');
 	$avatar_group = false;
 	$exit = false;
