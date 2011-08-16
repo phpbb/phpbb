@@ -196,7 +196,7 @@ if ($db->sql_layer === 'firebird')
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
-	$sql_array['SELECT'] .= ', p.post_approved, p.post_time';
+	$sql_array['SELECT'] .= ', p.post_approved, p.post_time, p.post_id';
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
 }
 
@@ -317,8 +317,16 @@ if ($post_id)
 		$sql = 'SELECT COUNT(p.post_id) AS prev_posts
 			FROM ' . POSTS_TABLE . " p
 			WHERE p.topic_id = {$topic_data['topic_id']}
-				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
-				AND ' . (($sort_dir == 'd') ? "p.post_time >= {$topic_data['post_time']}" : "p.post_time <= {$topic_data['post_time']}");
+				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '');
+
+		if ($sort_dir == 'd')
+		{
+			$sql .= " AND (p.post_time > {$topic_data['post_time']} OR (p.post_time = {$topic_data['post_time']} AND p.post_id >= {$topic_data['post_id']}))";
+		}
+		else
+		{
+			$sql .= " AND (p.post_time < {$topic_data['post_time']} OR (p.post_time = {$topic_data['post_time']} AND p.post_id <= {$topic_data['post_id']}))";
+		}
 
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
