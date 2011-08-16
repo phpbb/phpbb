@@ -46,13 +46,16 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-	$class_loader = new phpbb_class_loader($phpbb_root_path . 'includes/', $phpbb_root_path . 'ext/', '.' . $phpEx);
-	$class_loader->register();
+	$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+	$phpbb_class_loader_ext->register();
+	$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+	$phpbb_class_loader->register();
 
 	// set up caching
 	$cache_factory = new phpbb_cache_factory($acm_type);
 	$cache = $cache_factory->get_service();
-	$class_loader->set_cache($cache->get_driver());
+	$phpbb_class_loader_ext->set_cache($cache->get_driver());
+	$phpbb_class_loader->set_cache($cache->get_driver());
 
 	$request = new phpbb_request();
 	$db = new $sql_db();

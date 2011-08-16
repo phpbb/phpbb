@@ -23,28 +23,13 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		// disable the regular class loader to replace it with one that loads
-		// test extensions
-		global $class_loader;
-		$class_loader->unregister();
-
-		$prefix = dirname(__FILE__) . '/';
-		$this->class_loader = new phpbb_class_loader($prefix . '../../phpBB/includes/', $prefix . 'ext/');
-		$this->class_loader->register();
-
 		$this->extension_manager = new phpbb_extension_manager(
 			$this->new_dbal(),
 			'phpbb_ext',
-			$prefix,
+			dirname(__FILE__) . '/',
 			'.php',
 			new phpbb_mock_cache
 		);
-	}
-
-	protected function tearDown()
-	{
-		global $class_loader;
-		$class_loader->register();
 	}
 
 	public function test_available()
