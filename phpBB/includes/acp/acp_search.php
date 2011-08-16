@@ -77,7 +77,8 @@ class acp_search
 				continue;
 			}
 
-			$name = ucfirst(strtolower(str_replace('_', ' ', $type)));
+			$name = $search->get_name();
+
 			$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
 			$search_options .= '<option value="' . $type . '"' . $selected . '>' . $name . '</option>';
 
@@ -275,7 +276,7 @@ class acp_search
 			{
 				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			$name = ucfirst(strtolower(str_replace('_', ' ', $this->state[0])));
+			$name = $this->search->get_name();
 
 			$action = &$this->state[1];
 
@@ -454,7 +455,7 @@ class acp_search
 				continue;
 			}
 
-			$name = ucfirst(strtolower(str_replace('_', ' ', $type)));
+			$name = $search->get_name();
 
 			$data = array();
 			if (method_exists($search, 'index_stats'))
@@ -553,8 +554,19 @@ class acp_search
 
 	function get_search_types()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_extension_manager;
 
+		$finder = $phpbb_extension_manager->get_finder();
+
+		return $finder
+			->suffix('_backend')
+			->directory('/search')
+			->default_path('includes/search/')
+			->default_suffix('')
+			->default_directory('')
+			->get_classes();
+
+/*
 		$search_types = array();
 
 		$dp = @opendir($phpbb_root_path . 'includes/search');
@@ -574,6 +586,7 @@ class acp_search
 		}
 
 		return $search_types;
+*/
 	}
 
 	function get_max_post_id()
@@ -609,14 +622,6 @@ class acp_search
 	function init_search($type, &$search, &$error)
 	{
 		global $phpbb_root_path, $phpEx, $user;
-
-		if (!preg_match('#^\w+$#', $type) || !file_exists("{$phpbb_root_path}includes/search/$type.$phpEx"))
-		{
-			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
-			return $error;
-		}
-
-		include_once("{$phpbb_root_path}includes/search/$type.$phpEx");
 
 		if (!class_exists($type))
 		{
