@@ -179,7 +179,7 @@ class phpbb_extension_finder
 	{
 		$query = md5(serialize($this->query));
 
-		if ($cache && isset($this->cached_queries[$query]))
+		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
 		{
 			return $this->cached_queries[$query];
 		}
