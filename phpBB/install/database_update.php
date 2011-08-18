@@ -145,7 +145,7 @@ unset($dbpasswd);
 $user->ip = '';
 if ($request->server('REMOTE_ADDR'))
 {
-	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : $request->server('REMOTE_ADDR', '', true);
+	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : $request->server('REMOTE_ADDR');
 }
 
 $sql = "SELECT config_value

@@ -879,7 +879,8 @@ function phpbb_own_realpath($path)
 		{
 			// Warning: If chdir() has been used this will lie!
 			// Warning: This has some problems sometime (CLI can create them easily)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($request->server('SCRIPT_FILENAME'))) . '/' . $path;
+			$filename = htmlspecialchars_decode($request->server('SCRIPT_FILENAME'));
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($filename)) . '/' . $path;
 			$absolute = true;
 			$path_prefix = '';
 		}
@@ -4242,7 +4243,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$username = $request->server($k);
+			$username = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}
@@ -4252,7 +4253,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$password = $request->server($k);
+			$password = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}

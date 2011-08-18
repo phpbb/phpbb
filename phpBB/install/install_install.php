@@ -1017,7 +1017,7 @@ class install_install extends module
 		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $data['language'] . '" />';
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1033,10 +1033,10 @@ class install_install extends module
 
 		if ($data['script_path'] === '')
 		{
-			$name = $request->server('PHP_SELF');
+			$name = htmlspecialchars_decode($request->server('PHP_SELF'));
 			if (!$name)
 			{
-				$name = $request->server('REQUEST_URI');
+				$name = htmlspecialchars_decode($request->server('REQUEST_URI'));
 			}
 
 			// Replace backslashes and doubled slashes (could happen on some proxy setups)
@@ -1117,7 +1117,7 @@ class install_install extends module
 		}
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
 		$referer = strtolower($request->header('Referer'));
 
 		// HTTP HOST can carry a port number...

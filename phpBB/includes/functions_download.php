@@ -301,7 +301,7 @@ function download_allowed()
 		return true;
 	}
 
-	$url = trim($request->header('Referer'));
+	$url = htmlspecialchars_decode($request->header('Referer'));
 
 	if (!$url)
 	{

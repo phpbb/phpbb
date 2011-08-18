@@ -430,14 +430,14 @@ class module
 		global $request;
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
 		$server_port = $request->server('SERVER_PORT', 0);
 		$secure = $request->is_secure() ? 1 : 0;
 
-		$script_name = $request->server('PHP_SELF');
+		$script_name = htmlspecialchars_decode($request->server('PHP_SELF'));
 		if (!$script_name)
 		{
-			$script_name = $request->server('REQUEST_URI');
+			$script_name = htmlspecialchars_decode($request->server('REQUEST_URI'));
 		}
 
 		// Replace backslashes and doubled slashes (could happen on some proxy setups)

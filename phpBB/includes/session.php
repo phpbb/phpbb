@@ -46,13 +46,13 @@ class session
 		$page_array = array();
 
 		// First of all, get the request uri...
-		$script_name = $request->server('PHP_SELF');
-		$args = explode('&', $request->server('QUERY_STRING'));
+		$script_name = htmlspecialchars_decode($request->server('PHP_SELF'));
+		$args = explode('&', htmlspecialchars_decode($request->server('QUERY_STRING')));
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
 		{
-			$script_name = $request->server('REQUEST_URI');
+			$script_name = htmlspecialchars_decode($request->server('REQUEST_URI'));
 			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, $pos) : $script_name;
 			$page_array['failover'] = 1;
 		}
@@ -146,7 +146,7 @@ class session
 		global $config, $request;
 
 		// Get hostname
-		$host = $request->header('Host', $request->server('SERVER_NAME'));
+		$host = htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME')));
 
 		// Should be a string and lowered
 		$host = (string) strtolower($host);
@@ -214,9 +214,9 @@ class session
 		$this->time_now				= time();
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
-		$this->browser				= $request->header('User-Agent', '', true);
-		$this->referer				= $request->header('Referer', '', true);
-		$this->forwarded_for		= $request->header('X-Forwarded-For', '', true);
+		$this->browser				= $request->header('User-Agent');
+		$this->referer				= $request->header('Referer');
+		$this->forwarded_for		= $request->header('X-Forwarded-For');
 
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
@@ -270,7 +270,7 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = $request->server('REMOTE_ADDR');
+		$this->ip = htmlspecialchars_decode($request->server('REMOTE_ADDR'));
 		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
 
 		// split the list of IPs

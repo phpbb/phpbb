@@ -342,7 +342,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = $request->server('PHP_SELF');
+		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
 		$message = '';
 		switch ($type)
