@@ -60,8 +60,7 @@ class phpbb_request_test extends phpbb_test_case
 			->with(
 				$this->anything(),
 				'',
-				true,
-				false
+				true
 			);
 
 		$this->request->server('HTTP_SOMEVAR');
@@ -80,7 +79,6 @@ class phpbb_request_test extends phpbb_test_case
 			->with(
 				$this->anything(),
 				'',
-				true,
 				true
 			);
 

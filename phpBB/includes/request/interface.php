@@ -61,34 +61,31 @@ interface phpbb_request_interface
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 										Specifies which super global should be used
-	* @param bool	$html_encode	When true, html encoding will be applied
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST, $html_encode = true);
+	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST);
 
 	/**
 	* Shortcut method to retrieve SERVER variables.
 	*
 	* @param	string|array	$var_name		See phpbb_request_interface::variable
 	* @param	mixed			$default		See phpbb_request_interface::variable
-	* @param	bool			$html_encode	See phpbb_request_interface::variable
 	*
 	* @return	mixed	The server variable value.
 	*/
-	public function server($var_name, $default = '', $html_encode = false);
+	public function server($var_name, $default = '');
 
 	/**
 	* Shortcut method to retrieve the value of client HTTP headers.
 	*
 	* @param	string|array	$header_name	The name of the header to retrieve.
 	* @param	mixed			$default		See phpbb_request_interface::variable
-	* @param	bool			$html_encode	See phpbb_request_interface::variable
 	*
 	* @return	mixed	The header value.
 	*/
-	public function header($var_name, $default = '', $html_encode = false);
+	public function header($var_name, $default = '');
 
 	/**
 	* Checks whether a certain variable was sent via POST.

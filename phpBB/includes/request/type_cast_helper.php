@@ -93,9 +93,8 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param mixed	$type			The variable type. Will be used with {@link settype()}
 	* @param bool	$multibyte		Indicates whether string values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
-	* @param bool	$html_encode	When true, html encoding will be applied
 	*/
-	public function set_var(&$result, $var, $type, $multibyte = false, $html_encode = true)
+	public function set_var(&$result, $var, $type, $multibyte = false)
 	{
 		settype($var, $type);
 		$result = $var;
@@ -103,11 +102,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 		if ($type == 'string')
 		{
 			$result = trim(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result));
-
-			if ($html_encode)
-			{
-				$result = htmlspecialchars($result, ENT_COMPAT, 'UTF-8');
-			}
+			$result = htmlspecialchars($result, ENT_COMPAT, 'UTF-8');
 
 			if ($multibyte)
 			{
@@ -146,9 +141,8 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	* @param	bool	$multibyte	Indicates whether string keys and values may contain UTF-8 characters.
 	* 								Default is false, causing all bytes outside the ASCII range (0-127) to
 	* 								be replaced with question marks.
-	* @param bool	$html_encode	When true, html encoding will be applied
 	*/
-	public function recursive_set_var(&$var, $default, $multibyte, $html_encode = true)
+	public function recursive_set_var(&$var, $default, $multibyte)
 	{
 		if (is_array($var) !== is_array($default))
 		{
@@ -159,7 +153,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 		if (!is_array($default))
 		{
 			$type = gettype($default);
-			$this->set_var($var, $var, $type, $multibyte, $html_encode);
+			$this->set_var($var, $var, $type, $multibyte);
 		}
 		else
 		{
@@ -180,9 +174,9 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 
 			foreach ($_var as $k => $v)
 			{
-				$this->set_var($k, $k, $key_type, $multibyte, $multibyte, $html_encode);
+				$this->set_var($k, $k, $key_type, $multibyte, $multibyte);
 
-				$this->recursive_set_var($v, $default_value, $multibyte, $html_encode);
+				$this->recursive_set_var($v, $default_value, $multibyte);
 				$var[$k] = $v;
 			}
 		}

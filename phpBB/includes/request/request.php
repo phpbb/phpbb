@@ -194,12 +194,11 @@ class phpbb_request implements phpbb_request_interface
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 										Specifies which super global should be used
-	* @param bool	$html_encode	When true, html encoding will be applied
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST, $html_encode = true)
+	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST)
 	{
 		$path = false;
 
@@ -238,7 +237,7 @@ class phpbb_request implements phpbb_request_interface
 			}
 		}
 
-		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $html_encode);
+		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
 
 		return $var;
 	}
@@ -251,22 +250,21 @@ class phpbb_request implements phpbb_request_interface
 	*
 	* @param	string|array	$var_name		See phpbb_request_interface::variable
 	* @param	mixed			$Default		See phpbb_request_interface::variable
-	* @param	bool			$html_encode	See phpbb_request_interface::variable
 	*
 	* @return	mixed	The server variable value.
 	*/
-	public function server($var_name, $default = '', $html_encode = false)
+	public function server($var_name, $default = '')
 	{
 		$multibyte = true;
 
 		if ($this->is_set($var_name, phpbb_request_interface::SERVER))
 		{
-			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER, $html_encode);
+			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER);
 		}
 		else
 		{
 			$var = getenv($var_name);
-			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $html_encode);
+			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
 			return $var;
 		}
 	}
@@ -276,14 +274,13 @@ class phpbb_request implements phpbb_request_interface
 	*
 	* @param	string|array	$header_name	The name of the header to retrieve.
 	* @param	mixed			$default		See phpbb_request_interface::variable
-	* @param	bool			$html_encode	See phpbb_request_interface::variable
 	*
 	* @return	mixed	The header value.
 	*/
-	public function header($header_name, $default = '', $html_encode = true)
+	public function header($header_name, $default = '')
 	{
 		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
-		return $this->server($var_name, $default, $html_encode);
+		return $this->server($var_name, $default);
 	}
 
 	/**

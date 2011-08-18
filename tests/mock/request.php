@@ -25,21 +25,21 @@ class phpbb_mock_request implements phpbb_request_interface
 		$this->data[$super_global][$var_name] = $value;
 	}
 
-	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST, $html_encode = true)
+	public function variable($var_name, $default, $multibyte = false, $super_global = phpbb_request_interface::REQUEST)
 	{
 		return isset($this->data[$super_global][$var_name]) ? $this->data[$super_global][$var_name] : $default;
 	}
 
-	public function server($var_name, $default = '', $html_encode = false)
+	public function server($var_name, $default = '')
 	{
 		$super_global = phpbb_request_interface::SERVER;
 		return isset($this->data[$super_global][$var_name]) ? $this->data[$super_global][$var_name] : $default;
 	}
 
-	public function header($header_name, $default = '', $html_encode = false)
+	public function header($header_name, $default = '')
 	{
 		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
-		return $this->server($var_name, $default, $html_encode);
+		return $this->server($var_name, $default);
 	}
 
 	public function is_set_post($name)
