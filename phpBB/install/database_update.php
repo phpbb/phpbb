@@ -143,9 +143,9 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 unset($dbpasswd);
 
 $user->ip = '';
-if (!empty($_SERVER['REMOTE_ADDR']))
+if ($request->server('REMOTE_ADDR'))
 {
-	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($_SERVER['REMOTE_ADDR']) : htmlspecialchars($_SERVER['REMOTE_ADDR']);
+	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : $request->server('REMOTE_ADDR');
 }
 
 $sql = "SELECT config_value

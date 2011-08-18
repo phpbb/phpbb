@@ -63,7 +63,7 @@ if (isset($_GET['avatar']))
 	unset($dbpasswd);
 
 	// worst-case default
-	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
+	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
 	$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 	set_config(null, null, null, $config);

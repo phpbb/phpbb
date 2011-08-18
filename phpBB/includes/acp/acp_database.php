@@ -486,6 +486,8 @@ class base_extractor
 
 	function base_extractor($download = false, $store = false, $format, $filename, $time)
 	{
+		global $request;
+
 		$this->download = $download;
 		$this->store = $store;
 		$this->time = $time;
@@ -530,7 +532,7 @@ class base_extractor
 				break;
 
 				case 'gzip':
-					if ((isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) && strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'msie') === false)
+					if (strpos($request->header('Accept-Encoding'), 'gzip') !== false && strpos(strtolower($request->header('User-Agent')), 'msie') === false)
 					{
 						ob_start('ob_gzhandler');
 					}
@@ -1580,7 +1582,7 @@ class mssql_extractor extends base_extractor
 		}
 		$this->flush($sql_data);
 	}
-	
+
 	function write_data_mssqlnative($table_name)
 	{
 		global $db;
@@ -1606,7 +1608,7 @@ class mssql_extractor extends base_extractor
 
 		$row = new result_mssqlnative($result_fields);
 		$i_num_fields = $row->num_fields();
-		
+
 		for ($i = 0; $i < $i_num_fields; $i++)
 		{
 			$ary_type[$i] = $row->field_type($i);
@@ -1619,7 +1621,7 @@ class mssql_extractor extends base_extractor
 			WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 		$result2 = $db->sql_query($sql);
 		$row2 = $db->sql_fetchrow($result2);
-		
+
 		if (!empty($row2['has_identity']))
 		{
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
@@ -1683,8 +1685,8 @@ class mssql_extractor extends base_extractor
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
 		}
 		$this->flush($sql_data);
-	}	
-	
+	}
+
 	function write_data_odbc($table_name)
 	{
 		global $db;

@@ -274,7 +274,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 */
 function header_filename($file)
 {
-	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
+	global $request;
+
+	$user_agent = $request->header('User-Agent');
 
 	// There be dragons here.
 	// Not many follows the RFC...
@@ -292,14 +294,14 @@ function header_filename($file)
 */
 function download_allowed()
 {
-	global $config, $user, $db;
+	global $config, $user, $db, $request;
 
 	if (!$config['secure_downloads'])
 	{
 		return true;
 	}
 
-	$url = (!empty($_SERVER['HTTP_REFERER'])) ? trim($_SERVER['HTTP_REFERER']) : trim(getenv('HTTP_REFERER'));
+	$url = htmlspecialchars_decode($request->header('Referer'));
 
 	if (!$url)
 	{
@@ -404,8 +406,10 @@ function download_allowed()
 */
 function set_modified_headers($stamp, $browser)
 {
+	global $request;
+
 	// let's see if we have to send the file at all
-	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
+	$last_load 	=  $request->header('Modified-Since') ? strtotime(trim($request->header('Modified-Since'))) : false;
 	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
 	{
 		if ($last_load !== false && $last_load >= $stamp)
@@ -473,12 +477,12 @@ function phpbb_http_byte_range($filesize)
 	{
 		$request_array = phpbb_find_range_request();
 	}
-	
+
 	return (empty($request_array)) ? false : phpbb_parse_range_request($request_array, $filesize);
 }
 
 /**
-* Searches for HTTP range request in super globals.
+* Searches for HTTP range request in request headers.
 *
 * @return mixed		false if no request found
 *					array of strings containing the requested ranges otherwise
@@ -486,23 +490,16 @@ function phpbb_http_byte_range($filesize)
 */
 function phpbb_find_range_request()
 {
-	$globals = array(
-		array('_SERVER',	'HTTP_RANGE'),
-		array('_ENV',		'HTTP_RANGE'),
-	);
+	global $request;
 
-	foreach ($globals as $array)
+	$value = $request->header('Range');
+
+	// Make sure range request starts with "bytes="
+	if (strpos($value, 'bytes=') === 0)
 	{
-		$global	= $array[0];
-		$key	= $array[1];
-
-		// Make sure range request starts with "bytes="
-		if (isset($GLOBALS[$global][$key]) && strpos($GLOBALS[$global][$key], 'bytes=') === 0)
-		{
-			// Strip leading 'bytes='
-			// Multiple ranges can be separated by a comma
-			return explode(',', substr($GLOBALS[$global][$key], 6));
-		}
+		// Strip leading 'bytes='
+		// Multiple ranges can be separated by a comma
+		return explode(',', substr($value, 6));
 	}
 
 	return false;
