@@ -117,6 +117,17 @@ class phpbb_request_test extends phpbb_test_case
 		$this->assertTrue($this->request->is_ajax());
 	}
 
+	public function test_is_secure()
+	{
+		$this->assertFalse($this->request->is_secure());
+
+		$this->request->enable_super_globals();
+		$_SERVER['HTTPS'] = 'on';
+		$this->request = new phpbb_request($this->type_cast_helper);
+
+		$this->assertTrue($this->request->is_secure());
+	}
+
 	public function test_variable_names()
 	{
 		$expected = array('test', 'unset');

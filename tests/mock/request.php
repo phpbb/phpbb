@@ -57,6 +57,11 @@ class phpbb_mock_request implements phpbb_request_interface
 		return false;
 	}
 
+	public function is_secure()
+	{
+		return false;
+	}
+
 	public function variable_names($super_global = phpbb_request_interface::REQUEST)
 	{
 		return array_keys($this->data[$super_global]);

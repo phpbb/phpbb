@@ -122,6 +122,13 @@ interface phpbb_request_interface
 	public function is_ajax();
 
 	/**
+	* Checks if the current request is happening over HTTPS.
+	*
+	* @return	bool			True if the request is secure.
+	*/
+	public function is_secure();
+
+	/**
 	* Returns all variable names for a given super global
 	*
 	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global

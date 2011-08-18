@@ -327,6 +327,16 @@ class phpbb_request implements phpbb_request_interface
 	}
 
 	/**
+	* Checks if the current request is happening over HTTPS.
+	*
+	* @return	bool			True if the request is secure.
+	*/
+	public function is_secure()
+	{
+		return $this->server('HTTPS') == 'on';
+	}
+
+	/**
 	* Returns all variable names for a given super global
 	*
 	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
