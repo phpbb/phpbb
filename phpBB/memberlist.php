@@ -1295,13 +1295,6 @@ switch ($mode)
 			$total_users = $config['num_users'];
 		}
 
-		$s_char_options = '<option value=""' . ((!$first_char) ? ' selected="selected"' : '') . '>&nbsp; &nbsp;</option>';
-		for ($i = 97; $i < 123; $i++)
-		{
-			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i-32) . '</option>';
-		}
-		$s_char_options .= '<option value="other"' . (($first_char == 'other') ? ' selected="selected"' : '') . '>' . $user->lang['OTHER'] . '</option>';
-
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
@@ -1331,6 +1324,7 @@ switch ($mode)
 			'first_char'	=> array('first_char', ''),
 		);
 
+		$u_first_char_params = array();
 		foreach ($check_params as $key => $call)
 		{
 			if (!isset($_REQUEST[$key]))
@@ -1342,6 +1336,10 @@ switch ($mode)
 			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
 			$params[] = $param;
 
+			if ($key != 'first_char')
+			{
+				$u_first_char_params[] = $param;
+			}
 			if ($key != 'sk' && $key != 'sd')
 			{
 				$sort_params[] = $param;
@@ -1360,6 +1358,27 @@ switch ($mode)
 		$sort_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $sort_params));
 
 		unset($search_params, $sort_params);
+
+		$u_first_char_params = implode('&amp;', $u_first_char_params);
+		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
+
+		$first_characters = array();
+		$first_characters[''] = $user->lang['ALL'];
+		for ($i = 97; $i < 123; $i++)
+		{
+			$first_characters[chr($i)] = chr($i - 32);
+		}
+		$first_characters['other'] = $user->lang['OTHER'];
+
+		foreach ($first_characters as $char => $desc)
+		{
+			$template->assign_block_vars('first_char', array(
+				'DESC'			=> $desc,
+				'VALUE'			=> $char,
+				'S_SELECTED'	=> ($first_char == $char) ? true : false,
+				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
+			));
+		}
 
 		// Some search user specific data
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
@@ -1528,7 +1547,7 @@ switch ($mode)
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
-				$row =& $id_cache[$user_id];
+				$row = $id_cache[$user_id];
 				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
 				$leaders_set = ($leaders_set || $is_leader);
 
@@ -1605,7 +1624,6 @@ switch ($mode)
 			'S_LEADERS_SET'		=> $leaders_set,
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
-			'S_CHAR_OPTIONS'	=> $s_char_options,
 			'S_MODE_ACTION'		=> $pagination_url)
 		);
 }
@@ -1669,7 +1687,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		if ($bday_year)
 		{
-			$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
+			$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
 
 			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)

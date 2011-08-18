@@ -1040,7 +1040,7 @@ function display_user_activity(&$userdata)
 /**
 * Topic and forum watching common code
 */
-function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
+function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0, $item_title = '')
 {
 	global $template, $db, $user, $phpEx, $start, $phpbb_root_path;
 	global $request;
@@ -1070,32 +1070,46 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 		if (!is_null($notify_status) && $notify_status !== '')
 		{
-
 			if (isset($_GET['unwatch']))
 			{
 				$uid = request_var('uid', 0);
-				if ($uid != $user_id)
+				$token = request_var('hash', '');
+
+				if (($token && check_link_hash($token, "{$mode}_$match_id")) || confirm_box(true))
 				{
-					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
-					trigger_error($message);
-				}
-				if ($request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode)
-				{
-					$is_watching = 0;
+					if (($uid != $user_id) || ($request->variable('unwatch', '', false, phpbb_request_interface::GET) != $mode))
+					{
+						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+						$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						trigger_error($message);
+					}
 
 					$sql = 'DELETE FROM ' . $table_sql . "
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
 					$db->sql_query($sql);
+
+					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					meta_refresh(3, $redirect_url);
+					trigger_error($message);
 				}
+				else
+				{
+					$s_hidden_fields = array(
+						'uid'		=> $user->data['user_id'],
+						'unwatch'	=> $mode,
+						'start'		=> $start,
+						'f'			=> $forum_id,
+					);
+					if ($mode != 'forum')
+					{
+						$s_hidden_fields['t'] = $topic_id;
+					}
 
-				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-
-				meta_refresh(3, $redirect_url);
-
-				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
-				trigger_error($message);
+					$confirm_box_message = (($item_title == '') ? 'UNWATCH_' . strtoupper($mode) : $user->lang('UNWATCH_' . strtoupper($mode) . '_DETAILED', $item_title));
+					confirm_box(false, $confirm_box_message, build_hidden_fields($s_hidden_fields));
+				}
 			}
 			else
 			{
@@ -1115,26 +1129,45 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
+				$uid = request_var('uid', 0);
 				$token = request_var('hash', '');
-				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 
-				if ($request->variable('watch', '', false, phpbb_request_interface::GET) == $mode && check_link_hash($token, "{$mode}_$match_id"))
+				if (($token && check_link_hash($token, "{$mode}_$match_id")) || confirm_box(true))
 				{
+					if (($uid != $user_id) || ($request->variable('watch', '', false, phpbb_request_interface::GET) != $mode))
+					{
+						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+						$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						trigger_error($message);
+					}
+
 					$is_watching = true;
 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, " . NOTIFY_YES . ')';
 					$db->sql_query($sql);
+
+					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					meta_refresh(3, $redirect_url);
+					trigger_error($message);
 				}
 				else
 				{
-					$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$s_hidden_fields = array(
+						'uid'		=> $user->data['user_id'],
+						'watch'		=> $mode,
+						'start'		=> $start,
+						'f'			=> $forum_id,
+					);
+					if ($mode != 'forum')
+					{
+						$s_hidden_fields['t'] = $topic_id;
+					}
+
+					$confirm_box_message = (($item_title == '') ? 'WATCH_' . strtoupper($mode) : $user->lang('WATCH_' . strtoupper($mode) . '_DETAILED', $item_title));
+					confirm_box(false, $confirm_box_message, build_hidden_fields($s_hidden_fields));
 				}
-
-				meta_refresh(3, $redirect_url);
-
-				trigger_error($message);
 			}
 			else
 			{
@@ -1144,7 +1177,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if ($request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode)
+		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode) ||
+			(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_interface::GET) == $mode))
 		{
 			login_box();
 		}

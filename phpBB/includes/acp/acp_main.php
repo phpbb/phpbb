@@ -415,11 +415,8 @@ class acp_main
 		{
 			$latest_version_info = explode("\n", $latest_version_info);
 
-			$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
-			$current_version = str_replace('rc', 'RC', strtolower($config['version']));
-
 			$template->assign_vars(array(
-				'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
 			));
 		}
 
@@ -521,7 +518,7 @@ class acp_main
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 			'U_VERSIONCHECK'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
-			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=1&amp;versioncheck_force=1'),
+			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'versioncheck_force=1'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,

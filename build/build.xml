@@ -49,19 +49,16 @@
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
+	</target>
 
-
-		<!-- Does not allow changing the working directory to tests/
-			 so this approach does not work for us unfortunately
-		<phpunit codecoverage="true" haltonfailure="true">
-			<formatter todir="build/logs" type="xml"/>
-			<batchtest>
-				<fileset dir="tests">
-					<include name="all_tests.php"/>
-				</fileset>
-			</batchtest>
-		</phpunit>
-		-->
+	<target name="test-slow" depends="clean,prepare">
+		<exec dir="."
+			command="phpunit --log-junit build/logs/phpunit.xml
+			--configuration phpunit.xml.all
+			--group slow
+			--coverage-clover build/logs/clover-slow.xml
+			--coverage-html build/coverage-slow"
+			passthru="true" />
 	</target>
 
 	<target name="docs">

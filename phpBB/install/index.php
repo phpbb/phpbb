@@ -18,10 +18,9 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(PHP_VERSION, '4.3.3') < 0)
+if (version_compare(PHP_VERSION, '5.2.0') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.2.0 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
@@ -79,7 +78,6 @@ phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
-include($phpbb_root_path . 'includes/template.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
@@ -179,7 +177,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$template = new template();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -202,6 +199,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+$template_locator = new phpbb_template_locator();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
@@ -556,10 +555,10 @@ class module
 			return;
 		}
 
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+		echo '<!DOCTYPE html>';
+		echo '<html dir="ltr">';
 		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta charset="utf-8">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';

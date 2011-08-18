@@ -1078,7 +1078,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			continue;
 		}
 
-		$row =& $rowset[$post_list[$i]];
+		$row = $rowset[$post_list[$i]];
 
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];

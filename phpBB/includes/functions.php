@@ -207,6 +207,27 @@ function phpbb_mt_rand($min, $max)
 }
 
 /**
+* Wrapper for getdate() which returns the equivalent array for UTC timestamps.
+*
+* @param int $time		Unix timestamp (optional)
+*
+* @return array			Returns an associative array of information related to the timestamp.
+*						See http://www.php.net/manual/en/function.getdate.php
+*/
+function phpbb_gmgetdate($time = false)
+{
+	if ($time === false)
+	{
+		$time = time();
+	}
+
+	// getdate() interprets timestamps in local time.
+	// What follows uses the fact that getdate() and
+	// date('Z') balance each other out.
+	return getdate($time - date('Z'));
+}
+
+/**
 * Return formatted string for filesizes
 *
 * @param int	$value			filesize in bytes
@@ -528,6 +549,34 @@ function phpbb_email_hash($email)
 }
 
 /**
+* Wrapper for version_compare() that allows using uppercase A and B
+* for alpha and beta releases.
+*
+* See http://www.php.net/manual/en/function.version-compare.php
+*
+* @param string $version1		First version number
+* @param string $version2		Second version number
+* @param string $operator		Comparison operator (optional)
+*
+* @return mixed					Boolean (true, false) if comparison operator is specified.
+*								Integer (-1, 0, 1) otherwise.
+*/
+function phpbb_version_compare($version1, $version2, $operator = null)
+{
+	$version1 = strtolower($version1);
+	$version2 = strtolower($version2);
+
+	if (is_null($operator))
+	{
+		return version_compare($version1, $version2);
+	}
+	else
+	{
+		return version_compare($version1, $version2, $operator);
+	}
+}
+
+/**
 * Global function for chmodding directories and files for internal use
 *
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
@@ -768,7 +817,7 @@ function phpbb_is_writable($file)
 * @param string $path Path to check absoluteness of
 * @return boolean
 */
-function is_absolute($path)
+function phpbb_is_absolute($path)
 {
 	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
 }
@@ -790,7 +839,7 @@ function phpbb_own_realpath($path)
 	$path_prefix = '';
 
 	// Determine what sort of path we have
-	if (is_absolute($path))
+	if (phpbb_is_absolute($path))
 	{
 		$absolute = true;
 
@@ -2250,10 +2299,10 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		header('Refresh: 0; URL=' . $url);
 
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
+		echo '<!DOCTYPE html>';
+		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta charset="utf-8">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -2433,12 +2482,6 @@ function send_status_line($code, $message)
 		if ($request->server('SERVER_PROTOCOL'))
 		{
 			$version = $request->server('SERVER_PROTOCOL');
-		}
-		else if ($request->server('HTTP_VERSION'))
-		{
-			// I cannot remember where I got this from.
-			// This code path may never be reachable in reality.
-			$version = $request->server('HTTP_VERSION');
 		}
 		else
 		{
@@ -3628,10 +3671,19 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 					{
 						return true;
 					}
+				break;
 
 				default:
-				case 'A':
 				case 'AAAA':
+					// AAAA records returned by nslookup on Windows XP/2003 have this format.
+					// Later Windows versions use the A record format below for AAAA records.
+					if (stripos($line, "$host AAAA IPv6 address") === 0)
+					{
+						return true;
+					}
+				// No break
+
+				case 'A':
 					if (!empty($host_matches))
 					{
 						// Second line
@@ -3760,10 +3812,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Try to not call the adm page data...
 
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+			echo '<!DOCTYPE html>';
+			echo '<html dir="ltr">';
 			echo '<head>';
-			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+			echo '<meta charset="utf-8">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
