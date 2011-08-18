@@ -88,11 +88,11 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	/**
 	* Set variable $result to a particular type.
 	*
-	* @param mixed	&$result	The variable to fill
-	* @param mixed	$var		The contents to fill with
-	* @param mixed	$type		The variable type. Will be used with {@link settype()}
-	* @param bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
-	* 							Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	* @param mixed	&$result		The variable to fill
+	* @param mixed	$var			The contents to fill with
+	* @param mixed	$type			The variable type. Will be used with {@link settype()}
+	* @param bool	$multibyte		Indicates whether string values may contain UTF-8 characters.
+	* 								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
 	*/
 	public function set_var(&$result, $var, $type, $multibyte = false)
 	{
@@ -101,7 +101,8 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 
 		if ($type == 'string')
 		{
-			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
+			$result = trim(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result));
+			$result = htmlspecialchars($result, ENT_COMPAT, 'UTF-8');
 
 			if ($multibyte)
 			{
