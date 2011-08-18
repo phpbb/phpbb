@@ -69,6 +69,14 @@ phpbb.alert = function(title, msg, fadedark) {
 		});
 		return false;
 	});
+	
+	$(document).bind('keydown', function(e) {
+		if (e.keyCode === 13 || e.keyCode === 27) {
+			$(dark).trigger('click');
+			return false;
+		}
+		return true;
+	});
 
 	if (loading_alert.is(':visible'))
 	{
@@ -116,6 +124,17 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		});
 		callback(res);
 		return false;
+	});
+	
+	$(document).bind('keydown', function(e) {
+		if (e.keyCode === 13) {
+			$('.jalertbut.button1').trigger('click');
+			return false;
+		} else if (e.keyCode === 27) {
+			$('.jalertbut.button2').trigger('click');
+			return false;
+		}
+		return true;
 	});
 	
 	if (loading_alert.is(':visible'))
