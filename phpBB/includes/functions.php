@@ -2069,7 +2069,7 @@ function generate_board_url($without_script_path = false)
 	else
 	{
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
-		$cookie_secure = $request->server('HTTPS') == 'on' ? 1 : 0;
+		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
 		$script_path = $user->page['root_script_path'];

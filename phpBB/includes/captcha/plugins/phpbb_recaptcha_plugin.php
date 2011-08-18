@@ -42,7 +42,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	function phpbb_recaptcha()
 	{
 		global $request;
-		$this->recaptcha_server = $request->server('HTTPS') == 'on' ? $this->recaptcha_server_secure : $this->recaptcha_server;
+		$this->recaptcha_server = $request->is_secure() ? $this->recaptcha_server_secure : $this->recaptcha_server;
 	}
 
 	function init($type)

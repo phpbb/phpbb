@@ -1028,8 +1028,8 @@ class install_install extends module
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
 		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
 		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : $request->server('SERVER_PORT', 0);
-		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ($request->server('HTTPS') == 'on' ? 'https://' : 'http://');
-		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ($request->server('HTTPS') == 'on' ? true : false);
+		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ($request->is_secure() ? 'https://' : 'http://');
+		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : $request->is_secure();
 
 		if ($data['script_path'] === '')
 		{

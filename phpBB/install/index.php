@@ -433,7 +433,7 @@ class module
 		// HTTP_HOST is having the correct browser url in most cases...
 		$server_name = strtolower($request->header('Host', $request->server('SERVER_NAME')));
 		$server_port = $request->server('SERVER_PORT', 0);
-		$secure = ($request->server('HTTPS') == 'on') ? 1 : 0;
+		$secure = $request->is_secure() ? 1 : 0;
 
 		$script_name = $request->server('PHP_SELF');
 		if (!$script_name)
