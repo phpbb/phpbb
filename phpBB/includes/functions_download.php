@@ -276,7 +276,7 @@ function header_filename($file)
 {
 	global $request;
 
-	$user_agent = $request->header('User-Agent', '', true);
+	$user_agent = $request->header('User-Agent');
 
 	// There be dragons here.
 	// Not many follows the RFC...
