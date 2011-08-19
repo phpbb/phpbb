@@ -33,15 +33,16 @@ phpbb.loading_alert = function() {
 	else
 	{
 		loading_alert.show();
-		dark.fadeIn();
+		dark.fadeIn(function() {
+			setTimeout(function() {
+				if (loading_alert.is(':visible'))
+				{
+					phpbb.alert('Error', 'Error processing your request. Please try again.');
+				}
+			}, 5000);
+		});
 	}
-	
-	setTimeout(function() {
-		if (loading_alert.is(':visible'))
-		{
-			phpbb.alert('Error', 'Error processing your request. Please try again.');
-		}
-	}, 3000);
+
 	return loading_alert;
 }
 
