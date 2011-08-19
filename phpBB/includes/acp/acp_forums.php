@@ -258,8 +258,7 @@ class acp_forums
 				
 				if ($request->is_ajax())
 				{
-					echo json_encode(array('success' => ($move_forum_name !== false)));
-					exit;
+					JSON::send(array('success' => ($move_forum_name !== false)));
 				}
 
 			break;
