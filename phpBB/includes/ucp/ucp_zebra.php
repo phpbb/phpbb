@@ -202,6 +202,10 @@ class ucp_zebra
 
 					if ($updated)
 					{
+						JSON::add(array(
+							'message' => $user->lang[$l_mode . '_UPDATED'],
+							'success' => true
+						));
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
