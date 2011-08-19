@@ -2436,9 +2436,9 @@ function build_url($strip_vars = false)
 */
 function meta_refresh($time, $url, $disable_cd_check = false)
 {
-	global $template, $refresh_data;
+	global $template, $refresh_data, $request;
 
-	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+	if ($request->is_ajax())
 	{
 		$refresh_data = array(
 			'time'	=> $time,
@@ -2617,7 +2617,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $user, $template, $db;
+	global $user, $template, $db, $request;
 	global $phpEx, $phpbb_root_path, $request;
 
 	if (isset($_POST['cancel']))
@@ -2698,7 +2698,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$db->sql_query($sql);
 
 
-	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+	if ($request->is_ajax())
 	{
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
 		echo json_encode(array(
@@ -3744,7 +3744,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $cache, $db, $auth, $template, $config, $user;
+	global $cache, $db, $auth, $template, $config, $user, $request;
 	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
 	// Do not display notices if we suppress them via @
@@ -3932,7 +3932,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false)
 			);
 
-			if ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+			if ($request->is_ajax())
 			{
 				global $refresh_data;
 

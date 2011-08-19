@@ -26,7 +26,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -261,7 +261,7 @@ class acp_forums
 					$cache->destroy('sql', FORUMS_TABLE);
 				}
 				
-				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+				if ($request->is_ajax())
 				{
 					echo json_encode(array('success' => ($move_forum_name !== false)));
 					exit;
