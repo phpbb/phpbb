@@ -216,8 +216,6 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		
 		function return_handler(res)
 		{
-			res = JSON.parse(res);
-			
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
 				/**
@@ -243,7 +241,6 @@ phpbb.ajaxify = function(options, refresh, callback) {
 						path = res.S_CONFIRM_ACTION;
 						phpbb.loading_alert();
 						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
-							res = JSON.parse(res);
 							var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 							callback = phpbb.ajax_callbacks[callback];
 							if (typeof callback === 'function')
