@@ -84,7 +84,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
@@ -144,9 +143,9 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 unset($dbpasswd);
 
 $user->ip = '';
-if (!empty($_SERVER['REMOTE_ADDR']))
+if ($request->server('REMOTE_ADDR'))
 {
-	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($_SERVER['REMOTE_ADDR']) : htmlspecialchars($_SERVER['REMOTE_ADDR']);
+	$user->ip = (function_exists('phpbb_ip_normalise')) ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : $request->server('REMOTE_ADDR');
 }
 
 $sql = "SELECT config_value
@@ -208,6 +207,7 @@ if ($has_global && !$ga_forum_id)
 	<!DOCTYPE html>
 	<html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 	<head>
+	<meta charset="utf-8">
 
 	<title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 
@@ -257,6 +257,7 @@ header('Content-type: text/html; charset=UTF-8');
 <!DOCTYPE html>
 <html dir="<?php echo $lang['DIRECTION']; ?>" lang="<?php echo $lang['USER_LANG']; ?>">
 <head>
+<meta charset="utf-8">
 
 <title><?php echo $lang['UPDATING_TO_LATEST_STABLE']; ?></title>
 

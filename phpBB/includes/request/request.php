@@ -32,7 +32,8 @@ class phpbb_request implements phpbb_request_interface
 		phpbb_request_interface::POST => '_POST',
 		phpbb_request_interface::GET => '_GET',
 		phpbb_request_interface::REQUEST => '_REQUEST',
-		phpbb_request_interface::COOKIE => '_COOKIE'
+		phpbb_request_interface::COOKIE => '_COOKIE',
+		phpbb_request_interface::SERVER => '_SERVER',
 	);
 
 	/**
@@ -242,6 +243,47 @@ class phpbb_request implements phpbb_request_interface
 	}
 
 	/**
+	* Shortcut method to retrieve SERVER variables.
+	*
+	* Also fall back to getenv(), some CGI setups may need it (probably not, but
+	* whatever).
+	*
+	* @param	string|array	$var_name		See phpbb_request_interface::variable
+	* @param	mixed			$Default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The server variable value.
+	*/
+	public function server($var_name, $default = '')
+	{
+		$multibyte = true;
+
+		if ($this->is_set($var_name, phpbb_request_interface::SERVER))
+		{
+			return $this->variable($var_name, $default, $multibyte, phpbb_request_interface::SERVER);
+		}
+		else
+		{
+			$var = getenv($var_name);
+			$this->type_cast_helper->recursive_set_var($var, $default, $multibyte);
+			return $var;
+		}
+	}
+
+	/**
+	* Shortcut method to retrieve the value of client HTTP headers.
+	*
+	* @param	string|array	$header_name	The name of the header to retrieve.
+	* @param	mixed			$default		See phpbb_request_interface::variable
+	*
+	* @return	mixed	The header value.
+	*/
+	public function header($header_name, $default = '')
+	{
+		$var_name = 'HTTP_' . str_replace('-', '_', strtoupper($header_name));
+		return $this->server($var_name, $default);
+	}
+
+	/**
 	* Checks whether a certain variable was sent via POST.
 	* To make sure that a request was sent using POST you should call this function
 	* on at least one variable.
@@ -269,6 +311,26 @@ class phpbb_request implements phpbb_request_interface
 	public function is_set($var, $super_global = phpbb_request_interface::REQUEST)
 	{
 		return isset($this->input[$super_global][$var]);
+	}
+
+	/**
+	* Checks whether the current request is an AJAX request (XMLHttpRequest)
+	*
+	* @return	bool			True if the current request is an ajax request
+	*/
+	public function is_ajax()
+	{
+		return $this->header('X-Requested-With') == 'XMLHttpRequest';
+	}
+
+	/**
+	* Checks if the current request is happening over HTTPS.
+	*
+	* @return	bool			True if the request is secure.
+	*/
+	public function is_secure()
+	{
+		return $this->server('HTTPS') == 'on';
 	}
 
 	/**

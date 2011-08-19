@@ -78,7 +78,6 @@ phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.' . $phpEx);
-include($phpbb_root_path . 'includes/template.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
@@ -99,9 +98,9 @@ request_var('', 0, false, false, $request); // "dependency injection" for a func
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));
 
-if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
+if ($request->header('Accept-Language') && !$language)
 {
-	$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+	$accept_lang_ary = explode(',', strtolower($request->header('Accept-Language')));
 	foreach ($accept_lang_ary as $accept_lang)
 	{
 		// Set correct format ... guess full xx_yy form
@@ -178,7 +177,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$template = new template();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -201,6 +199,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+$template_locator = new phpbb_template_locator();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
@@ -427,15 +427,17 @@ class module
 	*/
 	function redirect($page)
 	{
-		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		global $request;
 
-		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+		// HTTP_HOST is having the correct browser url in most cases...
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
+		$server_port = $request->server('SERVER_PORT', 0);
+		$secure = $request->is_secure() ? 1 : 0;
+
+		$script_name = htmlspecialchars_decode($request->server('PHP_SELF'));
 		if (!$script_name)
 		{
-			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$script_name = htmlspecialchars_decode($request->server('REQUEST_URI'));
 		}
 
 		// Replace backslashes and doubled slashes (could happen on some proxy setups)
@@ -556,6 +558,7 @@ class module
 		echo '<!DOCTYPE html>';
 		echo '<html dir="ltr">';
 		echo '<head>';
+		echo '<meta charset="utf-8">';
 		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 		echo '</head>';

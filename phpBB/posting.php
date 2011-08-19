@@ -180,7 +180,7 @@ $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
 	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_POST);
 }
 

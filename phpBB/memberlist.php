@@ -1547,7 +1547,7 @@ switch ($mode)
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
-				$row =& $id_cache[$user_id];
+				$row = $id_cache[$user_id];
 				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
 				$leaders_set = ($leaders_set || $is_leader);
 
@@ -1699,7 +1699,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 				$diff = ($diff < 0) ? 1 : 0;
 			}
 
-			$age = (int) ($now['year'] - $bday_year - $diff);
+			$age = max(0, (int) ($now['year'] - $bday_year - $diff));
 		}
 	}
 

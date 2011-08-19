@@ -377,7 +377,7 @@ if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 {
 	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend = > 0
+		WHERE group_legend > 0
 		ORDER BY ' . $order_legend . ' ASC';
 }
 else

@@ -148,23 +148,15 @@ class phpbb_questionnaire_system_data_provider
 	*/
 	function get_data()
 	{
+		global $request;
+
 		// Start discovering the IPV4 server address, if available
-		$server_address = '0.0.0.0';
-
-		if (!empty($_SERVER['SERVER_ADDR']))
-		{
-			$server_address = $_SERVER['SERVER_ADDR'];
-		}
-
-		// Running on IIS?
-		if (!empty($_SERVER['LOCAL_ADDR']))
-		{
-			$server_address = $_SERVER['LOCAL_ADDR'];
-		}
+		// Try apache, IIS, fall back to 0.0.0.0
+		$server_address = htmlspecialchars_decode($request->server('SERVER_ADDR', $request->server('LOCAL_ADDR', '0.0.0.0')));
 
 		return array(
 			'os'	=> PHP_OS,
-			'httpd'	=> $_SERVER['SERVER_SOFTWARE'],
+			'httpd'	=> htmlspecialchars_decode($request->server('SERVER_SOFTWARE')),
 			// we don't want the real IP address (for privacy policy reasons) but only
 			// a network address to see whether your installation is running on a private or public network.
 			'private_ip'	=> $this->is_private_ip($server_address),
@@ -482,7 +474,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			}
 		}
 
-		global $db;
+		global $db, $request;
 
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
@@ -492,7 +484,7 @@ class phpbb_questionnaire_phpbb_data_provider
 
 		// Try to get user agent vendor and version
 		$match = array();
-		$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$user_agent = $request->header('User-Agent');
 		$agents = array('firefox', 'msie', 'opera', 'chrome', 'safari', 'mozilla', 'seamonkey', 'konqueror', 'netscape', 'gecko', 'navigator', 'mosaic', 'lynx', 'amaya', 'omniweb', 'avant', 'camino', 'flock', 'aol');
 
 		// We check here 1 by 1 because some strings occur after others (for example Mozilla [...] Firefox/)

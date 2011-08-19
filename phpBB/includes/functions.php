@@ -558,8 +558,8 @@ function phpbb_email_hash($email)
 * @param string $version2		Second version number
 * @param string $operator		Comparison operator (optional)
 *
-* @return mixed					Integer (-1, 0, 1) if comparison operator is specified.
-*								Boolean (true, false) otherwise.
+* @return mixed					Boolean (true, false) if comparison operator is specified.
+*								Integer (-1, 0, 1) otherwise.
 */
 function phpbb_version_compare($version1, $version2, $operator = null)
 {
@@ -817,7 +817,7 @@ function phpbb_is_writable($file)
 * @param string $path Path to check absoluteness of
 * @return boolean
 */
-function is_absolute($path)
+function phpbb_is_absolute($path)
 {
 	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
 }
@@ -830,6 +830,8 @@ function is_absolute($path)
 */
 function phpbb_own_realpath($path)
 {
+	global $request;
+
 	// Now to perform funky shizzle
 
 	// Switch to use UNIX slashes
@@ -837,7 +839,7 @@ function phpbb_own_realpath($path)
 	$path_prefix = '';
 
 	// Determine what sort of path we have
-	if (is_absolute($path))
+	if (phpbb_is_absolute($path))
 	{
 		$absolute = true;
 
@@ -873,11 +875,12 @@ function phpbb_own_realpath($path)
 				$path_prefix = '';
 			}
 		}
-		else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+		else if ($request->server('SCRIPT_FILENAME'))
 		{
 			// Warning: If chdir() has been used this will lie!
 			// Warning: This has some problems sometime (CLI can create them easily)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+			$filename = htmlspecialchars_decode($request->server('SCRIPT_FILENAME'));
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($filename)) . '/' . $path;
 			$absolute = true;
 			$path_prefix = '';
 		}
@@ -2097,10 +2100,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 */
 function generate_board_url($without_script_path = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+	$server_port = $request->server('SERVER_PORT', 0);
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -2116,7 +2119,7 @@ function generate_board_url($without_script_path = false)
 	else
 	{
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
-		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
 		$script_path = $user->page['root_script_path'];
@@ -2300,6 +2303,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '<!DOCTYPE html>';
 		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
+		echo '<meta charset="utf-8">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -2477,6 +2481,8 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 */
 function send_status_line($code, $message)
 {
+	global $request;
+
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
@@ -2484,15 +2490,9 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if (!empty($_SERVER['SERVER_PROTOCOL']))
+		if ($request->server('SERVER_PROTOCOL'))
 		{
-			$version = $_SERVER['SERVER_PROTOCOL'];
-		}
-		else if (!empty($_SERVER['HTTP_VERSION']))
-		{
-			// I cannot remember where I got this from.
-			// This code path may never be reachable in reality.
-			$version = $_SERVER['HTTP_VERSION'];
+			$version = $request->server('SERVER_PROTOCOL');
 		}
 		else
 		{
@@ -3841,6 +3841,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<!DOCTYPE html>';
 			echo '<html dir="ltr">';
 			echo '<head>';
+			echo '<meta charset="utf-8">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
@@ -4239,7 +4240,7 @@ function phpbb_optionset($bit, $set, $data)
 */
 function phpbb_http_login($param)
 {
-	global $auth, $user;
+	global $auth, $user, $request;
 	global $config;
 
 	$param_defaults = array(
@@ -4279,9 +4280,9 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$username = $_SERVER[$k];
+			$username = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}
@@ -4289,9 +4290,9 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$password = $_SERVER[$k];
+			$password = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}

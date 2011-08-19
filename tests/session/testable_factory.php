@@ -73,7 +73,8 @@ class phpbb_session_testable_factory
 		$request = $this->request = new phpbb_mock_request(
 			array(),
 			array(),
-			$this->cookies
+			$this->cookies,
+			$this->server_data
 		);
 		request_var(null, null, null, null, $request);
 
@@ -84,8 +85,6 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
-
-		$_SERVER = $this->server_data;
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
