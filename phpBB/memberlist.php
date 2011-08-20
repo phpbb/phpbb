@@ -1352,7 +1352,8 @@ switch ($mode)
 		}
 		$sort_params[] = "mode=$mode";
 
-		$pagination_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
+		$pagination_params = (!empty($params)) ? implode('&amp;', $params) : false;
+		$pagination_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", $pagination_params);
 		$sort_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $sort_params));
 
 		unset($search_params, $sort_params);
