@@ -9,4 +9,4 @@
 /phpBB/store/*
 /tests/phpbb_unit_tests.sqlite2
 /tests/test_config.php
-/tests/utf/data/*.txt
+/tests/tmp/*
