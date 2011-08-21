@@ -4924,16 +4924,36 @@ function phpbb_pcre_utf8_support()
 }
 
 /*
-* Wrapper for ini_get() PHP function
+* Master wrapper for ini_get() PHP function
 *
-* This function calls the PHP native ini_get() and handle its output to get universal result
+* This function calls phpBB ini_get() wrapper functions
+* depending on required output type.
+* Available types: 'bool', 'int', 'string' (default)
 *
 * @param string	$ini_param		PHP ini parameter to check
-* @return mixed					Integer if result is numeric and is greater than 1
-*								Boolean (true) if ini parameter is set to on/1
-*								Boolean (false) if ini parameter does not exist, is not set or is set to off/0
+* @param string	$type			Type of return value
+* @return mixed					False if ini parameter does not exist,
+*								value of requested type otherwise.
 */
-function phpbb_ini_get($ini_param)
+function phpbb_ini_get($ini_param, $type = 'string')
+{
+	$function = "phpbb_ini_get_{$type}";
+	return $function($ini_param);
+}
+
+/**
+* Wrapper for ini_get() PHP function
+*
+* This function calls the PHP native ini_get() and handle its output
+* to get universal result.
+* For boolean values, use phpbb_ini_get_bool()
+* For integer values, use phpbb_ini_get_int()
+*
+* @param string	$ini_param		PHP ini parameter to check
+* @return mixed					False if ini parameter does not exist,
+*								string value otherwise.
+*/
+function phpbb_ini_get_string($ini_param)
 {
 	// Return false if ini parameter does not exist
 	if (($ini_val = @ini_get($ini_param)) === false)
@@ -4941,148 +4961,72 @@ function phpbb_ini_get($ini_param)
 		return false;
 	}
 
-	$ini_val = strtolower($ini_val);
+	$ini_val = strtolower(trim($ini_val));
 	$ini_val = (empty($ini_val) || $ini_val == 'off') ? false : ((!is_numeric($ini_val)) ? (string) $ini_val : ((is_numeric($ini_val) && ((int) $ini_val > 1 || (int) $ini_val < 0)) ? (int) $ini_val : true));
 
 	return $ini_val;
 }
 
 /**
-* Checks if server enviroment configuration still meets the requirements for running phpBB
+* Wrapper for ini_get() PHP function to request boolean values
 *
-* The heart of the function infact is call_user_func_array() PHP native function, which accepts data from array.
-* Important:	if a check has additional check(s), they are to be proceeded before the main check. An order is important.
-*				Every next additional check iteration is to be performed only if the previous one was passed.
-*				If at least one of additional checks iteration is not passed, entire parent check row will be skipped.
-*				In other words, if the entire set of additional checks is not passed, parent check row won't be performed. Thus, the final check should be the parent check row.
+* This function calls the PHP native ini_get() and handle its output
+* to get the ini value of boolean type
 *
-* @param array	$checks_array	Array containing all the data to check. See example in includes/acp/acp_main.php
-*				Alailable keys=>values:
-*				1st array dimension:	key:	a string representing the name of the function involved in check. Example: 'ini_get', 'function_exists' and so on.
-*												If there's phpbb wrapper function, it will be used instead of native one, explicit definition of phpbb_ prefix is not needed.
-*										value:	array of arrays, the latter contain actual data to check.
-*				2nd dimension:			keys: 	no explicitly defined keys.
-*										values:	arrays of data to be checked (see 3rd dimension description).
-*				3rd dimension:			keys:	'class_callback'	-	to use callback function which belongs to some class. Example: 'class_callback' => $auth
-*												'check_value'		-	the string representing comma separated list of parameters,
-*																		or array of the same parameters, which will be passed to the function defined as a 1st dimension key.
-*																		Example 1:	if 1st dimension key is 'version_compare' and 'check_value' => array(PHP_VERSION, '5.2.0', '<') is defined,
-*																					the check version_compare(PHP_VERSION, '5.2.0', '<') will be performed.
-*																		Example 2:	if 1st dimension key is 'acl_get', and 'class_callback'	=> $auth, 'check_value' => 'a_server' are defined,
-*																					$auth->acl_get('a_server') check will be performed.
-*												'expected_value'	-	expected result of the check. If received, the check will be considered as passed, no error row returned.
-*																		For ini_get checks, it should be set to false to check against values of `not set/off/0`, to true to check against values of `on/1`.
-*																		For checks where bitwise comparison is assumed and thus 'expected_value' is set to some integer/predefined constant, 
-*																			'comparison_type' => 'bitwise' should be set additionally.
-*												'comparison_type'	-	should be set if bitwise comparison is assumed (the only case is 'comparison_type' => 'bitwise'). Can be skipped otherwise.
-*												'negate'			-	should be set to true if the check result should not be equal to 'expected_value' value to pass the test. Can be skipped otherwise.
-*												'check_extension_loaded'	-	additional check. If set to valid PHP extension name, main check for given row will be skipped if extension is not loaded.
-*																				Example: 'check_extension_loaded' => 'mbstring'
-*												'error_type'		-	valid values: 'error', 'notice'. Depending on this type, result will be thrown to ACP on #BC2A4D or #62A5CC background respectively.
-*																		Additionally, error type results will go above notice type ones.
-*												'lang'				-	the string representing existing language key, which value is supposed to be a short error/notice title.
-*																		Additionally, if a language key with _EXPLAIN postfix exists, it will be used as reapective error/notice explanation.
-*																		It is allowed that only _EXPLAIN postfixed language key exists.
-*												'ignore_errors'		-	if set, error control operator '@' should be used while performing check,
-*																		to supress errors output generated by the functions defined as a 1st dimension key.
-*												'additional_checks'	-	completely shadowing the main $checks_array structure to perform additional recursive subchecks,
-*																		which should be passed along with main check row for overall check to be passed.
-*		Data array example:
-*		$checks_array = array(
-*			'ini_get'			=>	array(
-*				array('check_value' => 'safe_mode',							'expected_value' => false,									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE',),
-*				array('check_value' => 'mbstring.func_overload',			'expected_value' => MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'comparison_type' => 'bitwise',	'negate' => true,	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD',),
-*				array('check_value' => 'mbstring.http_output',				'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT',),
-*			),
-*			'is_writable'		=>	array(
-*				array('check_value' => $phpbb_root_path . 'config.' . $phpEx,		'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_WRITABLE_CONFIG',
-*					'additional_checks'	=> array(
-*						'file_exists'		=> array(
-*							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => true,),
-*						),
-*						'fileperms'			=> array(
-*							array('check_value' => $phpbb_root_path . 'config.' . $phpEx,	'expected_value' => 0x0002,	'comparison_type' => 'bitwise', 'negate' => true,),
-*						),
-*						'defined'			=> array(
-*							array('check_value' => 'PHPBB_DISABLE_CONFIG_CHECK',	'expected_value' => false,),
-*						),
-*					),
-*				),
-*			),
-*		);
-*
-* @param bool	$additional_check	Boolean flag determining if subchecks are to be performed (recursion)
-*
-* @return array		Empty array if all checks are passed, array of errors otherwise, or array of boolean values if additional checks (subchecks) have been performed
+* @param string	$ini_param		PHP ini parameter to check
+* @return bool					False if ini parameter does not exist,
+*								is not set or is set to off/0.
+*								True otherwise.
 */
-function phpbb_check_requirements($checks_array = array(), $additional_check = false)
+function phpbb_ini_get_bool($ini_param)
 {
-	global $phpbb_root_path, $phpEx, $user;
-
-	$error = array();
-
-	foreach ($checks_array as $check_type => $check_rows)
+	// Return false if ini parameter does not exist
+	if (($ini_val = @ini_get($ini_param)) === false)
 	{
-		$function = @function_exists('phpbb_' . $check_type) ? 'phpbb_' . $check_type : $check_type;
+		return false;
+	}
 
-		foreach ($check_rows as $check_row)
+	$ini_val = strtolower(trim($ini_val));
+	$ini_val = (empty($ini_val) || $ini_val == 'off') ? false : true;
+
+	return $ini_val;
+}
+
+/**
+* Wrapper for phpbb_ini_get_string() PHP function to request integer values
+*
+* @param string	$ini_param		PHP ini parameter to check
+* @return mixed					False if ini parameter does not exist,
+*								integer equivalent otherwise.
+*/
+function phpbb_ini_get_int($ini_param)
+{
+	// Return false if ini parameter does not exist
+	if (($ini_val = phpbb_ini_get_string($ini_param)) === false)
+	{
+		return false;
+	}
+
+	// Parse php.ini memory size values stored in shorthand notation
+	// See http://www.php.net/manual/en/function.ini-get.php
+	// For the list of available modifiers see:
+	// http://www.php.net/manual/en/faq.using.php#faq.using.shorthandbytes
+	if (!empty($ini_val) && preg_match('#(^[0-9]+)([gmk]$)#', $ini_val, $matches))
+	{
+		$ini_val = (int) $matches[1];
+		$modifier = $matches[2];
+		switch($modifier)
 		{
-			if (isset($check_row['check_extension_loaded']) && !@extension_loaded($check_row['check_extension_loaded']))
-			{
-				continue;
-			}
-
-			// Skip the main check if at least one of additional checks failed
-			if (isset($check_row['additional_checks']) && !phpbb_check_requirements($check_row['additional_checks'], true))
-			{
-				continue;
-			}
-
-			if (isset($check_row['class_callback']))
-			{
-				$function = array($check_row['class_callback'], $function);
-			}
-
-			$negate = (isset($check_row['negate']) && $check_row['negate'] == true) ? true : false;
-
-			$check_value = (!is_array($check_row['check_value'])) ? array($check_row['check_value']) : $check_row['check_value'];
-
-			// Error control
-			$ignore_errors = (isset($check_row['ignore_errors']) && $check_row['ignore_errors'] == true) ? true : false;
-
-			$ini_val = (!$ignore_errors) ? call_user_func_array($function, $check_value) : @call_user_func_array($function, $check_value);
-
-			if (is_int($check_row['expected_value']) && isset($check_row['comparison_type']) && ($check_row['comparison_type'] == 'bitwise'))
-			{
-				$result = (bool) (intval($ini_val) & $check_row['expected_value']);
-			}
-			else
-			{
-				$result = (bool) ($ini_val == $check_row['expected_value']);
-			}
-
-			$result = (!$negate) ? $result : !$result;
-
-			// Skip the rest of additional checks if at least one additional check is not passed
-			if ($additional_check && !$result)
-			{
-				return false;
-			}
-
-			if (!$result && !$additional_check)
-			{
-				$error[] = array(
-					'L_ERROR'			=>	(isset($user->lang[$check_row['lang']])) ? $user->lang[$check_row['lang']] : '',
-					'L_ERROR_EXPLAIN'	=>	(isset($user->lang[$check_row['lang'] . '_EXPLAIN'])) ? $user->lang[$check_row['lang'] . '_EXPLAIN'] : '',
-					'TYPE' 				=>	$check_row['error_type'],
-				);
-			}
+			case 'g':
+				$ini_val *= 1024;
+			case 'm':
+				$ini_val *= 1024;
+			case 'k':
+				$ini_val *= 1024;
 		}
 	}
 
-	// Return array of errors for the main check
-	// or true if all additional checks have been passed
-	return (!$additional_check) ? $error : true;
+	return (int) $ini_val;
 }
 
 ?>

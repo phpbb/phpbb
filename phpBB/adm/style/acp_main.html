@@ -26,23 +26,19 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF .error -->
-		<!-- BEGIN error -->
-			<div class="errorbox">
-				<h3>{L_WARNING}<!-- IF error.L_ERROR -->: {error.L_ERROR}<!-- ENDIF --></h3>
-				<!-- IF error.L_ERROR_EXPLAIN --><p>{error.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
-			</div>
-		<!-- END error -->
-	<!-- ENDIF -->
+	<!-- BEGIN error -->
+		<div class="errorbox">
+			<h3>{L_WARNING}<!-- IF error.L_ERROR -->: {error.L_ERROR}<!-- ENDIF --></h3>
+			<!-- IF error.L_ERROR_EXPLAIN --><p>{error.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
+		</div>
+	<!-- END error -->
 
-	<!-- IF .notice -->
-		<!-- BEGIN notice -->
-			<div class="errorbox notice">
-				<!-- IF notice.L_ERROR --><h3>{notice.L_ERROR}</h3><!-- ENDIF -->
-				<!-- IF notice.L_ERROR_EXPLAIN --><p>{notice.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
-			</div>
-		<!-- END notice -->
-	<!-- ENDIF -->
+	<!-- BEGIN notice -->
+		<div class="errorbox notice">
+			<!-- IF notice.L_ERROR --><h3>{notice.L_ERROR}</h3><!-- ENDIF -->
+			<!-- IF notice.L_ERROR_EXPLAIN --><p>{notice.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
+		</div>
+	<!-- END notice -->
 
 	<table cellspacing="1">
 		<caption>{L_FORUM_STATS}</caption>
