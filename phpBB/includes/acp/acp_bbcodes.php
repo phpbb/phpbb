@@ -317,7 +317,7 @@ class acp_bbcodes
 		$bbcode_tpl = trim($bbcode_tpl);
 		$utf8 = strpos($bbcode_match, 'INTTEXT') !== false;
 
-		$utf8_pcre_properties = pcre_utf8_support();
+		$utf8_pcre_properties = phpbb_pcre_utf8_support();
 
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
