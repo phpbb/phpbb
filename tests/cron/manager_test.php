@@ -11,31 +11,20 @@ require_once dirname(__FILE__) . '/../mock/extension_manager.php';
 require_once dirname(__FILE__) . '/includes/cron/task/core/dummy_task.php';
 require_once dirname(__FILE__) . '/includes/cron/task/core/second_dummy_task.php';
 require_once dirname(__FILE__) . '/ext/testext/cron/dummy_task.php';
-require_once dirname(__FILE__) . '/root2/includes/cron/task/core/simple_ready.php';
-require_once dirname(__FILE__) . '/root2/includes/cron/task/core/simple_not_runnable.php';
-require_once dirname(__FILE__) . '/root2/includes/cron/task/core/simple_should_not_run.php';
+require_once dirname(__FILE__) . '/tasks/simple_ready.php';
+require_once dirname(__FILE__) . '/tasks/simple_not_runnable.php';
+require_once dirname(__FILE__) . '/tasks/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
-			array(
-				'testext' => array(
-					'ext_name'		=> 'testext',
-					'ext_active'	=> true,
-					'ext_path'		=> dirname(__FILE__) . '/ext/testext/'
-				),
-			));
-		$this->manager = new phpbb_cron_manager($this->extension_manager);
+		$this->manager = new phpbb_cron_manager(array(
+			'phpbb_cron_task_core_dummy_task',
+			'phpbb_cron_task_core_second_dummy_task',
+			'phpbb_ext_testext_cron_dummy_task',
+		));
 		$this->task_name = 'phpbb_cron_task_core_dummy_task';
-	}
-
-	public function test_manager_finds_shipped_tasks()
-	{
-		$tasks = $this->manager->find_cron_task_names();
-		$this->assertEquals(3, sizeof($tasks));
 	}
 
 	public function test_manager_finds_shipped_task_by_name()
@@ -66,7 +55,11 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_manager_finds_only_ready_tasks()
 	{
-		$manager = new phpbb_cron_manager(new phpbb_mock_extension_manager(dirname(__FILE__) . '/root2/'));
+		$manager = new phpbb_cron_manager(array(
+			'phpbb_cron_task_core_simple_ready',
+			'phpbb_cron_task_core_simple_not_runnable',
+			'phpbb_cron_task_core_simple_should_not_run',
+		));
 		$tasks = $manager->find_all_ready_tasks();
 		$task_names = $this->tasks_to_names($tasks);
 		$this->assertEquals(array('phpbb_cron_task_core_simple_ready'), $task_names);

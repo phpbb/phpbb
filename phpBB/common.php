@@ -144,5 +144,5 @@ foreach ($cache->obtain_hooks() as $hook)
 
 if (!$config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager($phpbb_extension_manager, $cache->get_driver());
+	$cron = new phpbb_cron_manager(new phpbb_cron_provider($phpbb_extension_manager), $cache->get_driver());
 }
