@@ -370,9 +370,6 @@ GO
 CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [ext_active] ON [phpbb_ext]([ext_active]) ON [PRIMARY]
-GO
-
 
 /*
 	Table: 'phpbb_extensions'

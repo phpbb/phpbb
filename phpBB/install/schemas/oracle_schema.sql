@@ -417,8 +417,6 @@ CREATE TABLE phpbb_ext (
 )
 /
 
-CREATE INDEX phpbb_ext_ext_active ON phpbb_ext (ext_active)
-/
 
 /*
 	Table: 'phpbb_extensions'

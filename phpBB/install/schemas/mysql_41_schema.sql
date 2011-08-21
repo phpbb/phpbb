@@ -195,8 +195,7 @@ CREATE TABLE phpbb_drafts (
 CREATE TABLE phpbb_ext (
 	ext_name varchar(255) DEFAULT '' NOT NULL,
 	ext_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	UNIQUE ext_name (ext_name),
-	KEY ext_active (ext_active)
+	UNIQUE ext_name (ext_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

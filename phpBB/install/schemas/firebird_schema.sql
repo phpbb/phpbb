@@ -288,7 +288,6 @@ CREATE TABLE phpbb_ext (
 );;
 
 CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext(ext_name);;
-CREATE INDEX phpbb_ext_ext_active ON phpbb_ext(ext_active);;
 
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (

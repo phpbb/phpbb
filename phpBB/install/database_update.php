@@ -1063,7 +1063,6 @@ function database_update_info()
 					),
 					'KEYS'				=> array(
 						'ext_name'		=> array('UNIQUE', 'ext_name'),
-						'ext_active'	=> array('INDEX', 'ext_active'),
 					),
 				),
 			),
