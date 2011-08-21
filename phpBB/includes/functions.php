@@ -3285,7 +3285,7 @@ function get_censor_preg_expression($word, $use_unicode = true)
 	// Unescape the asterisk to simplify further conversions
 	$word = str_replace('\*', '*', preg_quote($word, '#'));
 
-	if ($use_unicode && pcre_utf8_support())
+	if ($use_unicode && phpbb_pcre_utf8_support())
 	{
 		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
 		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
@@ -4742,7 +4742,7 @@ function phpbb_user_session_handler()
 *
 * @return bool	Returns true if PCRE (the regular expressions library) supports UTF-8 encoding
 */
-function pcre_utf8_support()
+function phpbb_pcre_utf8_support()
 {
 	static $utf8_pcre_properties = null;
 	if (is_null($utf8_pcre_properties))
