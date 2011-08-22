@@ -59,38 +59,39 @@ class phpbb_captcha_factory
 	*/
 	function get_captcha_types()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_extension_manager;
 
 		$captchas = array(
 			'available'		=> array(),
 			'unavailable'	=> array(),
 		);
 
-		$dp = @opendir($phpbb_root_path . 'includes/captcha/plugins');
+		$finder = $phpbb_extension_manager->get_finder();
+		$captcha_plugin_classes = $finder
+			->directory('/captcha')
+			->suffix('_plugin')
+			->default_path('includes/captcha/plugins/')
+			->default_directory('')
+			->get_classes();
 
-		if ($dp)
+		foreach ($captcha_plugin_classes as $class)
 		{
-			while (($file = readdir($dp)) !== false)
+			// check if this class needs to be loaded in legacy mode
+			$old_class = preg_replace('/^phpbb_captcha_plugins_/', '', $class);
+			if (file_exists($phpbb_root_path . "includes/captcha/plugins/$old_class.$phpEx") && !class_exists($old_class))
 			{
-				if ((preg_match('#_plugin\.' . $phpEx . '$#', $file)))
-				{
-					$name = preg_replace('#^(.*?)_plugin\.' . $phpEx . '$#', '\1', $file);
-					if (!class_exists($name))
-					{
-						include($phpbb_root_path . "includes/captcha/plugins/$file");
-					}
-
-					if (call_user_func(array($name, 'is_available')))
-					{
-						$captchas['available'][$name] = call_user_func(array($name, 'get_name'));
-					}
-					else
-					{
-						$captchas['unavailable'][$name] = call_user_func(array($name, 'get_name'));
-					}
-				}
+				include($phpbb_root_path . "includes/captcha/plugins/$old_class.$phpEx");
+				$class = preg_replace('/_plugin$/', '', $old_class);
 			}
-			closedir($dp);
+
+			if (call_user_func(array($class, 'is_available')))
+			{
+				$captchas['available'][$class] = call_user_func(array($class, 'get_name'));
+			}
+			else
+			{
+				$captchas['unavailable'][$class] = call_user_func(array($class, 'get_name'));
+			}
 		}
 
 		return $captchas;

@@ -104,13 +104,13 @@ class acp_captcha
 				foreach ($captchas['available'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang($title) . '</option>';
 				}
 
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang($title) . '</option>';
 				}
 
 				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
