@@ -554,21 +554,19 @@ class acp_modules
 
 			foreach ($modules as $module)
 			{
+				$info_class = preg_replace('/_module$/', '_info', $module);
+
 				// If the class does not exist it might be following the old
 				// format. phpbb_acp_info_acp_foo needs to be turned into
 				// acp_foo_info and the respective file has to be included
 				// manually because it does not support auto loading
-				if (!class_exists($module))
+				if (!class_exists($info_class))
 				{
 					$info_class = str_replace("phpbb_{$module_class}_info_", '', $module) . '_info';
 					if (file_exists($directory . $info_class . '.' . $phpEx))
 					{
 						include($directory . $info_class . '.' . $phpEx);
 					}
-				}
-				else
-				{
-					$info_class = preg_replace('/_module$/', '_info', $module);
 				}
 
 				if (class_exists($info_class))
@@ -586,17 +584,15 @@ class acp_modules
 		}
 		else
 		{
-			if (!class_exists($module))
+			$info_class = preg_replace('/_module$/', '_info', $module);
+
+			if (!class_exists($info_class))
 			{
 				if (file_exists($directory . $module . '.' . $phpEx))
 				{
 					include($directory . $module . '.' . $phpEx);
 				}
 				$info_class = $module . '_info';
-			}
-			else
-			{
-				$info_class = preg_replace('/_module$/', '_info', $module);
 			}
 
 			// Get module title tag
