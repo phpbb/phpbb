@@ -440,7 +440,8 @@ class p_master
 			trigger_error('Module not accessible', E_USER_ERROR);
 		}
 
-		if (!class_exists("{$this->p_class}_$this->p_name"))
+		// new modules use the full class names, old ones are always called <type>_<name>, e.g. acp_board
+		if (!class_exists($this->p_name) && !class_exists("{$this->p_class}_$this->p_name"))
 		{
 			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
 			{
@@ -453,62 +454,59 @@ class p_master
 			{
 				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
 			}
+		}
 
-			if (!empty($mode))
+		if (!empty($mode))
+		{
+			$this->p_mode = $mode;
+		}
+
+		// Create a new instance of the desired module ...
+		$class_name = (class_exists($this->p_name)) ? $this->p_name : "{$this->p_class}_$this->p_name";
+
+		$this->module = new $class_name($this);
+
+		// We pre-define the action parameter we are using all over the place
+		if (defined('IN_ADMIN'))
+		{
+			// Is first module automatically enabled a duplicate and the category not passed yet?
+			if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
 			{
-				$this->p_mode = $mode;
+				$icat = $this->module_ary[$this->active_module_row_id]['parent'];
 			}
 
-			// Create a new instance of the desired module ... if it has a
-			// constructor it will of course be executed
-			$instance = "{$this->p_class}_$this->p_name";
-
-			$this->module = new $instance($this);
-
-			// We pre-define the action parameter we are using all over the place
-			if (defined('IN_ADMIN'))
+			// Not being able to overwrite ;)
+			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+		}
+		else
+		{
+			// If user specified the module url we will use it...
+			if ($module_url !== false)
 			{
-				// Is first module automatically enabled a duplicate and the category not passed yet?
-				if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
-				{
-					$icat = $this->module_ary[$this->active_module_row_id]['parent'];
-				}
-
-				// Not being able to overwrite ;)
-				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = $module_url;
 			}
 			else
 			{
-				// If user specified the module url we will use it...
-				if ($module_url !== false)
-				{
-					$this->module->u_action = $module_url;
-				}
-				else
-				{
-					$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
-				}
-
-				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 			}
 
-			// Add url_extra parameter to u_action url
-			if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
-			{
-				$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
-			}
+			$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+		}
 
-			// Assign the module path for re-usage
-			$this->module->module_path = $module_path . '/';
+		// Add url_extra parameter to u_action url
+		if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
+		{
+			$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
+		}
 
-			// Execute the main method for the new instance, we send the module id and mode as parameters
-			// Users are able to call the main method after this function to be able to assign additional parameters manually
-			if ($execute_module)
-			{
-				$this->module->main($this->p_name, $this->p_mode);
-			}
+		// Assign the module path for re-usage
+		$this->module->module_path = $module_path . '/';
 
-			return;
+		// Execute the main method for the new instance, we send the module id and mode as parameters
+		// Users are able to call the main method after this function to be able to assign additional parameters manually
+		if ($execute_module)
+		{
+			$this->module->main($this->p_name, $this->p_mode);
 		}
 	}
 

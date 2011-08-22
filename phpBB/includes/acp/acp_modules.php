@@ -316,7 +316,7 @@ class acp_modules
 					}
 
 					// Name options
-					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
+					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $option . ']</option>';
 
 					$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
 
@@ -480,7 +480,7 @@ class acp_modules
 		foreach ($module_infos as $option => $values)
 		{
 			// Name options
-			$s_install_options .= '<optgroup label="' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']">';
+			$s_install_options .= '<optgroup label="' . $this->lang_name($values['title']) . ' [' . $option . ']">';
 
 			// Build module modes
 			foreach ($values['modes'] as $m_mode => $m_values)
@@ -539,57 +539,78 @@ class acp_modules
 
 		if (!$module)
 		{
-			$dh = @opendir($directory);
+			global $phpbb_extension_manager;
 
-			if (!$dh)
-			{
-				return $fileinfo;
-			}
+			$finder = $phpbb_extension_manager->get_finder();
 
-			while (($file = readdir($dh)) !== false)
+			$modules = $finder
+				->suffix('_module')
+				->directory("/$module_class")
+				->default_path("includes/$module_class/info/")
+				->default_suffix('')
+				->default_prefix($module_class . '_')
+				->default_directory('')
+				->get_classes();
+
+			foreach ($modules as $module)
 			{
-				// Is module?
-				if (preg_match('/^' . $module_class . '_.+\.' . $phpEx . '$/', $file))
+				// If the class does not exist it might be following the old
+				// format. phpbb_acp_info_acp_foo needs to be turned into
+				// acp_foo_info and the respective file has to be included
+				// manually because it does not support auto loading
+				if (!class_exists($module))
 				{
-					$class = str_replace(".$phpEx", '', $file) . '_info';
-
-					if (!class_exists($class))
+					$info_class = str_replace("phpbb_{$module_class}_info_", '', $module) . '_info';
+					if (file_exists($directory . $info_class . '.' . $phpEx))
 					{
-						include($directory . $file);
-					}
-
-					// Get module title tag
-					if (class_exists($class))
-					{
-						$c_class = new $class();
-						$module_info = $c_class->module();
-						$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
+						include($directory . $info_class . '.' . $phpEx);
 					}
 				}
+				else
+				{
+					$info_class = preg_replace('/_module$/', '_info', $module);
+				}
+
+				if (class_exists($info_class))
+				{
+					$info = new $info_class();
+					$module_info = $info->module();
+
+					$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $module;
+
+					$fileinfo[$main_class] = $module_info;
+				}
 			}
-			closedir($dh);
 
 			ksort($fileinfo);
 		}
 		else
 		{
-			$filename = $module_class . '_' . basename($module);
-			$class = $module_class . '_' . basename($module) . '_info';
-
-			if (!class_exists($class))
+			if (!class_exists($module))
 			{
-				include($directory . $filename . '.' . $phpEx);
+				if (file_exists($directory . $module . '.' . $phpEx))
+				{
+					include($directory . $module . '.' . $phpEx);
+				}
+				$info_class = $module . '_info';
+			}
+			else
+			{
+				$info_class = preg_replace('/_module$/', '_info', $module);
 			}
 
 			// Get module title tag
-			if (class_exists($class))
+			if (class_exists($info_class))
 			{
-				$c_class = new $class();
-				$module_info = $c_class->module();
-				$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
+				$info = new $info_class();
+				$module_info = $info->module();
+
+				$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $module;
+
+				$fileinfo[$main_class] = $module_info;
 			}
 		}
-		
+
 		return $fileinfo;
 	}
 
