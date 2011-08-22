@@ -111,7 +111,7 @@ class acp_modules
 				}
 
 			break;
-			
+
 			case 'enable':
 			case 'disable':
 				if (!$module_id)
@@ -170,7 +170,7 @@ class acp_modules
 					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
 					$this->remove_cache_file();
 				}
-		
+
 			break;
 
 			case 'quickadd':
@@ -207,7 +207,7 @@ class acp_modules
 						if (!sizeof($errors))
 						{
 							$this->remove_cache_file();
-	
+
 							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 						}
 					}
@@ -231,7 +231,7 @@ class acp_modules
 				{
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-				
+
 				$module_row = $this->get_module_row($module_id);
 
 			// no break
@@ -250,7 +250,7 @@ class acp_modules
 						'module_auth'		=> '',
 					);
 				}
-				
+
 				$module_data = array();
 
 				$module_data['module_basename'] = request_var('module_basename', (string) $module_row['module_basename']);
@@ -295,7 +295,7 @@ class acp_modules
 					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
-	
+
 						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
@@ -327,7 +327,7 @@ class acp_modules
 						{
 							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . $this->lang_name($m_values['title']) . '</option>';
 						}
-						
+
 						$template->assign_block_vars('m_names.modes', array(
 							'OPTION'		=> $m_mode,
 							'VALUE'			=> $this->lang_name($m_values['title']),
@@ -336,7 +336,7 @@ class acp_modules
 						);
 					}
 				}
-				
+
 				$s_cat_option = '<option value="0"' . (($module_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NO_PARENT'] . '</option>';
 
 				$template->assign_vars(array_merge(array(
@@ -349,7 +349,7 @@ class acp_modules
 					'U_EDIT_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 
 					'L_TITLE'			=> $user->lang[strtoupper($action) . '_MODULE'],
-					
+
 					'MODULENAME'		=> $this->lang_name($module_data['module_langname']),
 					'ACTION'			=> $action,
 					'MODULE_ID'			=> $module_id,
@@ -516,7 +516,7 @@ class acp_modules
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		
+
 		if (!$row)
 		{
 			trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
@@ -524,14 +524,14 @@ class acp_modules
 
 		return $row;
 	}
-	
+
 	/**
 	* Get available module information from module files
 	*/
 	function get_module_infos($module = '', $module_class = false)
 	{
 		global $phpbb_root_path, $phpEx;
-		
+
 		$module_class = ($module_class === false) ? $this->module_class : $module_class;
 
 		$directory = $phpbb_root_path . 'includes/' . $module_class . '/info/';
@@ -742,7 +742,7 @@ class acp_modules
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$p_class = str_replace(array('.', '/', '\\'), '', basename($this->module_class));
-		
+
 		$cache->destroy('_modules_' . $p_class);
 
 		// Additionally remove sql cache
