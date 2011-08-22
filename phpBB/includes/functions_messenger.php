@@ -1136,6 +1136,7 @@ class smtp_class
 {
 	var $server_response = '';
 	var $socket = 0;
+	protected $socket_tls = false;
 	var $responses = array();
 	var $commands = array();
 	var $numeric_response_code = 0;
@@ -1292,6 +1293,25 @@ class smtp_class
 			return $hello_result;
 		}
 
+		// SMTP STARTTLS (RFC 3207)
+		if (!$this->socket_tls)
+		{
+			$this->socket_tls = $this->starttls();
+
+			if ($this->socket_tls)
+			{
+				// Switched to TLS
+				// RFC 3207: "The client MUST discard any knowledge obtained from the server, [...]"
+				// So say hello again
+				$hello_result = $this->hello($local_host);
+
+				if (!is_null($hello_result))
+				{
+					return $hello_result;
+				}
+			}
+		}
+
 		// If we are not authenticated yet, something might be wrong if no username and passwd passed
 		if (!$username || !$password)
 		{
@@ -1369,6 +1389,43 @@ class smtp_class
 			unset($response[0]);
 			$this->commands[$response_code] = implode(' ', $response);
 		}
+	}
+
+	/**
+	* SMTP STARTTLS (RFC 3207)
+	*
+	* @return bool		Returns true if TLS was started
+	*					Otherwise false
+	*/
+	protected function starttls()
+	{
+		if (!function_exists('stream_socket_enable_crypto'))
+		{
+			return false;
+		}
+
+		if (!isset($this->commands['STARTTLS']))
+		{
+			return false;
+		}
+
+		$this->server_send('STARTTLS');
+
+		if ($err_msg = $this->server_parse('220', __LINE__))
+		{
+			return false;
+		}
+
+		$result = false;
+		$stream_meta = stream_get_meta_data($this->socket);
+
+		if (socket_set_blocking($this->socket, 1));
+		{
+			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
+		}
+
+		return $result;
 	}
 
 	/**
