@@ -17,4 +17,16 @@ class phpbb_mock_user
 {
 	public $host = "testhost";
 	public $page = array('root_script_path' => '/');
+	
+	public function optionget($item)
+	{
+		switch ($item)
+		{
+			case 'viewcensors':
+				return false;
+			
+			default:
+				trigger_error('Option not found, add it to the mock user object.');
+		}
+	}
 }
