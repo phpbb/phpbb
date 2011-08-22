@@ -50,8 +50,10 @@ class phpbb_extension_finder
 		$this->query = array(
 			'default_path' => false,
 			'default_suffix' => false,
+			'default_prefix' => false,
 			'default_directory' => false,
 			'suffix' => false,
+			'prefix' => false,
 			'directory' => false,
 		);
 
@@ -76,7 +78,7 @@ class phpbb_extension_finder
 	* Automatically sets the default_suffix if its value does not differ from
 	* the current suffix.
 	*
-	* @param string $default_path A filename suffix
+	* @param string $suffix A filename suffix
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
 	public function suffix($suffix)
@@ -99,6 +101,38 @@ class phpbb_extension_finder
 	public function default_suffix($default_suffix)
 	{
 		$this->query['default_suffix'] = $default_suffix;
+		return $this;
+	}
+
+	/**
+	* Sets a prefix all files found in extensions must match
+	*
+	* Automatically sets the default_prefix if its value does not differ from
+	* the current prefix.
+	*
+	* @param string $prefix A filename prefix
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function prefix($prefix)
+	{
+		if ($this->query['default_prefix'] === $this->query['prefix'])
+		{
+			$this->query['default_prefix'] = $prefix;
+		}
+
+		$this->query['prefix'] = $prefix;
+		return $this;
+	}
+
+	/**
+	* Sets a prefix all files found in the default path must match
+	*
+	* @param string $default_prefix A filename prefix
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function default_prefix($default_prefix)
+	{
+		$this->query['default_prefix'] = $default_prefix;
 		return $this;
 	}
 
@@ -202,16 +236,18 @@ class phpbb_extension_finder
 
 			if ($name === '/')
 			{
-				$prefix = $this->query['default_path'];
+				$location = $this->query['default_path'];
 				$name = '';
 				$suffix = $this->query['default_suffix'];
+				$prefix = $this->query['default_prefix'];
 				$directory = $this->query['default_directory'];
 			}
 			else
 			{
-				$prefix = 'ext/';
+				$location = 'ext/';
 				$name .= '/';
 				$suffix = $this->query['suffix'];
+				$prefix = $this->query['prefix'];
 				$directory = $this->query['directory'];
 			}
 
@@ -226,10 +262,11 @@ class phpbb_extension_finder
 				{
 					$relative_path = $iterator->getInnerIterator()->getSubPathname();
 
-					if ((!$suffix || substr($relative_path, -strlen($suffix)) == $suffix) &&
+					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
+						(!$prefix || substr($file_info->getFilename(), 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, DIRECTORY_SEPARATOR . $relative_path)))
 					{
-						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $prefix . $name . $relative_path);
+						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . $relative_path);
 					}
 				}
 			}

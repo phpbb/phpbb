@@ -55,6 +55,24 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
+	public function test_prefix_get_classes()
+	{
+		$classes = $this->finder
+			->default_path('includes/default/')
+			->prefix('hidden_')
+			->default_prefix('')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'phpbb_default_implementation',
+				'phpbb_ext_bar_my_hidden_class',
+			),
+			$classes
+		);
+	}
+
 	public function test_directory_get_classes()
 	{
 		$classes = $this->finder
@@ -109,8 +127,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		$query = array(
 			'default_path' => 'includes/foo',
 			'default_suffix' => false,
+			'default_prefix' => false,
 			'default_directory' => 'bar',
 			'suffix' => false,
+			'prefix' => false,
 			'directory' => false,
 		);
 
