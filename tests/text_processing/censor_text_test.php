@@ -78,6 +78,6 @@ class phpbb_text_processing_censor_text_test extends phpbb_test_case
 	public function test_censor_text($input, $expected)
 	{
 		$label = 'Testing word censor: ' . $input;
-		$this->assertEquals(censor_text($input), $expected, $label);
+		$this->assertEquals($expected, censor_text($input), $label);
 	}
 }
