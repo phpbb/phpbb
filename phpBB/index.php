@@ -81,7 +81,7 @@ $legend = implode(', ', $legend);
 
 // Generate birthday list if required ...
 $birthday_list = '';
-if ($config['load_birthdays'] && $config['allow_birthdays'])
+if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
 	$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
 	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_birthday
