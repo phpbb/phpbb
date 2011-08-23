@@ -19,6 +19,8 @@ class phpbb_text_processing_censor_text_test extends phpbb_test_case
 		global $cache, $user;
 		$cache = new phpbb_mock_cache;
 		$user = new phpbb_mock_user;
+		
+		$user->optionset('viewcensors', false);
 
 		return array(
 			array('', ''),
