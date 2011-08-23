@@ -59,6 +59,16 @@ class phpbb_text_processing_censor_text_test extends phpbb_test_case
 			array('badword1 badword2 badword3 badword4', 'replacement1 replacement2 replacement3 replacement4'),
 			array('badword1 badword2 badword3 badword4d', 'replacement1 replacement2 replacement3 badword4d'),
 			array('abadword1 badword2 badword3 badword4', 'replacement1 replacement2 replacement3 replacement4'),
+			
+			array("new\nline\ntest", "new\nline\ntest"),
+			array("tab\ttest\t", "tab\ttest\t"),
+			array('öäü', 'öäü'),
+			array('badw' . chr(1) . 'ord1', 'badw' . chr(1) . 'ord1'),
+			array('badw' . chr(2) . 'ord1', 'badw' . chr(2) . 'ord1'),
+			array('badw' . chr(3) . 'ord1', 'badw' . chr(3) . 'ord1'),
+			array('badw' . chr(4) . 'ord1', 'badw' . chr(4) . 'ord1'),
+			array('badw' . chr(5) . 'ord1', 'badw' . chr(5) . 'ord1'),
+			array('badw' . chr(6) . 'ord1', 'badw' . chr(6) . 'ord1'),
 		);
 	}
 
