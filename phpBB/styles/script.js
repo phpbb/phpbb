@@ -3,18 +3,6 @@ var phpbb = {};
 (function($) {  //avoid conflicts with other libraries
 
 
-$.querystring = function(string) {
-	var end = {}, i;
-	
-	string = string.split('&');
-	for (i = 0; i < string.length; i++)
-	{
-		end[string[i].split('=')[0]] = decodeURIComponent(string[i].split('=')[1]);
-	}
-	return end;
-}
-
-
 var dark = $('<div id="darkenwrapper"><div id="darken">&nbsp;</div></div>');
 $('body').append(dark);
 
@@ -158,6 +146,23 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	}
 	
 	return div;
+}
+
+/**
+ * Turn a querystring into an array.
+ *
+ * @argument string string The querystring to parse.
+ * @returns array The array created.
+ */
+phpbb.parse_querystring = function(string) {
+	var end = {}, i;
+	
+	string = string.split('&');
+	for (i = 0; i < string.length; i++)
+	{
+		end[string[i].split('=')[0]] = decodeURIComponent(string[i].split('=')[1]);
+	}
+	return end;
 }
 
 
@@ -382,7 +387,7 @@ $('[data-ajax]').each(function() {
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(el, act, data) {
-		var d = $.querystring(data).action;
+		var d = phpbb.parse_querystring(data).action;
 		if (d == 'make_normal')
 		{
 			return !(el.find('select option[value="make_global"]').length);
