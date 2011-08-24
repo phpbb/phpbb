@@ -1,6 +1,6 @@
 var phpbb = {};
 
-(function($) {  //avoid conflicts with other libraries
+(function($) {  // Avoid conflicts with other libraries
 
 
 var dark = $('#darkenwrapper'),
@@ -9,6 +9,8 @@ var dark = $('#darkenwrapper'),
 
 /**
  * Display a loading screen.
+ *
+ * @returns object Returns loading_alert.
  */
 phpbb.loading_alert = function() {
 	if (dark.is(':visible'))
@@ -39,7 +41,7 @@ phpbb.loading_alert = function() {
  * @param bool fadedark Remove the dark background when done? Defaults
  * 	to yes.
  *
- * @return Returns the div created.
+ * @returns object Returns the div created.
  */
 phpbb.alert = function(title, msg, fadedark) {
 	var div = $('<div class="jalert"><h3>' + title + '</h3><p>' + msg + '</p></div>');
@@ -95,7 +97,7 @@ phpbb.alert = function(title, msg, fadedark) {
  * @param bool fadedark Remove the dark background when done? Defaults
  * 	to yes.
  *
- * @return Returns the div created.
+ * @returns object Returns the div created.
  */
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('<div class="jalert"><p>' + msg + '</p>\
@@ -173,7 +175,7 @@ phpbb.parse_querystring = function(string) {
  */
 phpbb.ajaxify = function(options, refresh, callback) {
 
-	//private function to handle refreshes
+	// Private function to handle refreshes
 	function handle_refresh(data, refresh, div)
 	{
 		if (!data)
@@ -221,9 +223,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		{
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
-				/**
-				 * It is a standard link, no confirm_box required.
-				 */
+				// It is a standard link, no confirm_box required.
 				var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				callback = phpbb.ajax_callbacks[callback];
 				if (typeof callback === 'function')
@@ -234,9 +234,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			}
 			else
 			{
-				/**
-				 * confirm_box - confirm with the user and send back
-				 */
+				// confirm_box - confirm with the user and send back
 				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 					if (del)
 					{
@@ -394,4 +392,4 @@ phpbb.ajaxify({
 }, true);
 
 
-})(jQuery); //avoid conflicts with other libraries
+})(jQuery); // Avoid conflicts with other libraries
