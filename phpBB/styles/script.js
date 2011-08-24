@@ -228,6 +228,10 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				{
 					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				}
+				else
+				{
+					dark.fadeOut();
+				}
 				
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
@@ -248,6 +252,10 @@ phpbb.ajaxify = function(options, refresh, callback) {
 							if (typeof res.MESSAGE_TITLE !== 'undefined')
 							{
 								var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+							}
+							else
+							{
+								dark.fadeOut();
 							}
 							
 							if (typeof phpbb.ajax_callbacks[callback] === 'function')
