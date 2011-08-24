@@ -224,7 +224,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
 				// It is a standard link, no confirm_box required.
-				var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+				if (typeof res.MESSAGE_TITLE !== 'undefined')
+				{
+					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+				}
+				
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
 					phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
@@ -241,7 +245,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 						path = res.S_CONFIRM_ACTION;
 						phpbb.loading_alert();
 						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
-							var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+							if (typeof res.MESSAGE_TITLE !== 'undefined')
+							{
+								var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+							}
+							
 							if (typeof phpbb.ajax_callbacks[callback] === 'function')
 							{
 								phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
