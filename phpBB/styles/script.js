@@ -3,11 +3,8 @@ var phpbb = {};
 (function($) {  //avoid conflicts with other libraries
 
 
-var dark = $('<div id="darkenwrapper"><div id="darken">&nbsp;</div></div>');
-$('body').append(dark);
-
-var loading_alert = $('<div class="jalert"><h3>Loading</h3><p>Please wait.</p></div>');
-$(dark).append(loading_alert);
+var dark = $('#darkenwrapper'),
+	loading_alert = $('#loadingalert');
 
 
 /**
