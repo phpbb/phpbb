@@ -363,6 +363,9 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 		tr.next().find('.up').html('<a href="' + tr.data('up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
 		phpbb.ajaxify({selector: tr.next().find('.up').children('a')}, false, 'forum_up');
 	}
+}).add_ajax_callback('row_delete', function(el) {
+	var tr = $(el).parents('tr');
+	tr.remove();
 }).add_ajax_callback('zebra', function(el, res) {
 	if (res.success) {
 		$('.zebra').html(res.MESSAGE_TEXT);
