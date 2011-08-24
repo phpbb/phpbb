@@ -377,7 +377,7 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 		tr.next().find('.up').html('<a href="' + tr.data('up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
 		phpbb.ajaxify({selector: tr.next().find('.up').children('a')}, false, 'forum_up');
 	}
-}).add_ajax_callback('style_act_deact', function(el, res) {
+}).add_ajax_callback('act_deact', function(el, res) {
 	$(el).text(res.text);
 	var new_href = $(el).attr('href');
 	if (new_href.indexOf('deactivate') !== -1)
