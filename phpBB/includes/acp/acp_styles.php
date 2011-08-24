@@ -28,7 +28,7 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Hardcoded template bitfield to add for new templates
@@ -185,6 +185,18 @@ inherit_from = {INHERIT_FROM}
 									WHERE forum_style = ' . $style_id;
 								$db->sql_query($sql);
 							}
+							if ($request->is_ajax())
+							{
+								$json_response = new phpbb_json_response;
+								$json_response->send(array(
+									'text'	=> $user->lang['STYLE_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
+									'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+									'MESSAGE_TEXT'	=> $user->lang['STYLE_' . strtoupper($action) . 'D'],
+									'REFRESH_DATA'	=> array(
+										'time'	=> 3
+									)
+								));
+							}
 						}
 						else if ($action == 'deactivate')
 						{
@@ -335,7 +347,8 @@ inherit_from = {INHERIT_FROM}
 			$s_actions = array();
 			foreach ($actions as $option)
 			{
-				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
+				$data_ajax = ($option == 'refresh') ? ' data-ajax="true"' : '';
+				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '"' . $data_ajax . '>' . $user->lang[strtoupper($option)] . '</a>';
 			}
 
 			$template->assign_block_vars('installed', array(
