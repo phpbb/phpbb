@@ -225,10 +225,9 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			{
 				// It is a standard link, no confirm_box required.
 				var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				callback = phpbb.ajax_callbacks[callback];
-				if (typeof callback === 'function')
+				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
-					callback(that, (is_form) ? act : null);
+					phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
 				}
 				handle_refresh(res.REFRESH_DATA, refresh, alert);
 			}
@@ -243,10 +242,9 @@ phpbb.ajaxify = function(options, refresh, callback) {
 						phpbb.loading_alert();
 						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
 							var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-							callback = phpbb.ajax_callbacks[callback];
-							if (typeof callback === 'function')
+							if (typeof phpbb.ajax_callbacks[callback] === 'function')
 							{
-								callback(that, res, (is_form) ? act : null);
+								phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
 							}
 							handle_refresh(res.REFRESH_DATA, refresh, alert);
 						});
@@ -363,6 +361,18 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 		tr.next().find('.up').html('<a href="' + tr.data('up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
 		phpbb.ajaxify({selector: tr.next().find('.up').children('a')}, false, 'forum_up');
 	}
+}).add_ajax_callback('style_act_deact', function(el, res) {
+	$(el).text(res.text);
+	var new_href = $(el).attr('href');
+	if (new_href.indexOf('deactivate') !== -1)
+	{
+		new_href = new_href.replace('deactivate', 'activate')
+	}
+	else
+	{
+		new_href = new_href.replace('activate', 'deactivate')
+	}
+	$(el).attr('href', new_href);
 }).add_ajax_callback('row_delete', function(el) {
 	var tr = $(el).parents('tr');
 	tr.remove();
