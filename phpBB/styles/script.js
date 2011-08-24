@@ -365,7 +365,7 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 	}
 }).add_ajax_callback('zebra', function(el, res) {
 	if (res.success) {
-		$('.zebra').html(res.message);
+		$('.zebra').html(res.MESSAGE_TEXT);
 		$($('.zebra').get(1)).remove();
 	}
 });;
