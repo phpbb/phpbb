@@ -174,32 +174,6 @@ phpbb.parse_querystring = function(string) {
  * @param function callback Callback.
  */
 phpbb.ajaxify = function(options, refresh, callback) {
-
-	// Private function to handle refreshes
-	function handle_refresh(data, refresh, div)
-	{
-		if (!data)
-		{
-			return;
-		}
-		
-		refresh = ((typeof refresh === 'function') ? refresh(data.url) :
-			(typeof refresh === 'boolean') && refresh);
-
-		setTimeout(function() {
-			if (refresh)
-			{
-				window.location = data.url;
-			}
-			else
-			{
-				dark.fadeOut(function() {
-					div.remove();
-				});
-			}
-		}, data.time * 1000);
-	}
-
 	var selector = (typeof options === 'string') ? options : options.selector;
 	var is_form = $(selector).is('form');
 	if (is_form && typeof selector === 'object')
@@ -237,7 +211,29 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				{
 					phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
 				}
-				handle_refresh(res.REFRESH_DATA, refresh, alert);
+
+				if (res.REFRESH_DATA)
+				{
+					if (typeof refresh === 'function')
+					{
+						refresh = refresh(res.REFRESH_DATA.url);
+					}
+					else if (typeof refresh !== 'boolean')
+					{
+						refresh = false;
+					}
+		
+					setTimeout(function() {
+						if (refresh)
+						{
+							window.location = res.REFRESH_DATA.url;
+						}
+						
+						dark.fadeOut(function() {
+							alert.remove();
+						});
+					}, res.REFRESH_DATA.time * 1000);
+				}
 			}
 			else
 			{
@@ -245,25 +241,9 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 					if (del)
 					{
-						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-						path = res.S_CONFIRM_ACTION;
 						phpbb.loading_alert();
-						$.post(path, data + '&confirm=' + res.YES_VALUE, function(res) {
-							if (typeof res.MESSAGE_TITLE !== 'undefined')
-							{
-								var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-							}
-							else
-							{
-								dark.fadeOut();
-							}
-							
-							if (typeof phpbb.ajax_callbacks[callback] === 'function')
-							{
-								phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
-							}
-							handle_refresh(res.REFRESH_DATA, refresh, alert);
-						});
+						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
+						$.post(res.S_CONFIRM_ACTION, data + '&confirm=' + res.YES_VALUE, return_handler);
 					}
 				}, false);
 			}
