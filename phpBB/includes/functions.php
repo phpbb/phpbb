@@ -2701,7 +2701,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if ($request->is_ajax())
 	{
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
-		JSON::send(array(
+		$json_response = new phpbb_json_response;
+		$json_response->send(array(
 			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
 			'MESSAGE_TEXT' 	=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
 
@@ -3935,7 +3936,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				global $refresh_data;
 
-				JSON::send(array(
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $msg_title,
 					'MESSAGE_TEXT'		=> $msg_text,
 					'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,

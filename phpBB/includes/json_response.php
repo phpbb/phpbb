@@ -20,40 +20,23 @@ if (!defined('IN_PHPBB'))
 * JSON class
 * @package phpBB3
 */
-class JSON
+class phpbb_json_response
 {
-	private static $data = array();
-
 	/**
 	 * Send the data to the client and exit the script.
 	 *
 	 * @param array $data Any additional data to send.
 	 * @param bool $exit Will exit the script if true.
 	 */
-	public static function send($data = false, $exit = true)
+	public function send($data, $exit = true)
 	{
-		if ($data)
-		{
-			self::add($data);
-		}
-
 		header('Content-type: application/json');
-		echo json_encode(self::$data);
+		echo json_encode($data);
 
 		if ($exit)
 		{
 			garbage_collection();
 			exit_handler();
 		}
-	}
-
-	/**
-	 * Saves some data to be written when JSON::send() is called.
-	 *
-	 * @param array $data Data to save to be sent.
-	 */
-	public static function add($data)
-	{
-		self::$data = array_merge(self::$data, $data);
 	}
 }
