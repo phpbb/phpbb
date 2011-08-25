@@ -3140,6 +3140,8 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 
+		stream_set_timeout($fsock, $timeout);
+
 		$file_info = '';
 		$get_info = false;
 
