@@ -3164,6 +3164,14 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 					return false;
 				}
 			}
+
+			$stream_meta_data = stream_get_meta_data($fsock);
+
+			if (!empty($stream_meta_data['timed_out']))
+			{
+				$errstr = $user->lang['FSOCK_TIMEOUT'];
+				return false;
+			}
 		}
 		@fclose($fsock);
 	}
