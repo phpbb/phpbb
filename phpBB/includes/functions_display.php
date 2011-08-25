@@ -996,13 +996,17 @@ function display_user_activity(&$userdata)
 	}
 
 	// Obtain active topic
+	// We need to exclude passworded forums here so we do not leak the topic title
+	$forum_ary_topic = array_unique(array_merge($forum_ary, $user->get_passworded_forums()));
+	$forum_sql_topic = (!empty($forum_ary_topic)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary_topic, true) : '';
+
 	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
 			AND (post_approved = 1
 				$sql_m_approve)
-			$forum_sql
+			$forum_sql_topic
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
 	$result = $db->sql_query_limit($sql, 1);
