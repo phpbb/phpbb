@@ -604,30 +604,9 @@ class phpbb_feed_base
 
 	function get_passworded_forums()
 	{
-		global $db, $user;
+		global $user;
 
-		// Exclude passworded forums
-		$sql = 'SELECT f.forum_id, fa.user_id
-			FROM ' . FORUMS_TABLE . ' f
-			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa
-				ON (fa.forum_id = f.forum_id
-					AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-			WHERE f.forum_password <> ''";
-		$result = $db->sql_query($sql);
-
-		$forum_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_id = (int) $row['forum_id'];
-
-			if ($row['user_id'] != $user->data['user_id'])
-			{
-				$forum_ids[$forum_id] = $forum_id;
-			}
-		}
-		$db->sql_freeresult($result);
-
-		return $forum_ids;
+		return $user->get_passworded_forums();
 	}
 
 	function get_item()
