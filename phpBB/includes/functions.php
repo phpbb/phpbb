@@ -4641,6 +4641,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	header('Expires: 0');
 	header('Pragma: no-cache');
 
+	if (!empty($user->data['is_bot']))
+	{
+		// Let reverse proxies know we detected a bot.
+		header('X-PHPBB-IS-BOT: yes');
+	}
+
 	return;
 }
 
