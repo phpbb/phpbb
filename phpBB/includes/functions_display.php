@@ -152,8 +152,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			continue;
 		}
 
-		$forum_ids[] = $forum_id;
-
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
 			$forum_tracking_info[$forum_id] = (!empty($row['mark_time'])) ? $row['mark_time'] : $user->data['user_lastmark'];
