@@ -125,8 +125,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			if ($auth->acl_get('f_list', $forum_id))
 			{
 				$forum_ids[] = $forum_id;
-				continue;
 			}
+
+			continue;
 		}
 
 		// Category with no members
