@@ -26,6 +26,7 @@ class phpbb_extension_finder
 	protected $phpbb_root_path;
 	protected $cache;
 	protected $phpEx;
+	protected $cache_name;
 
 	/**
 	* @var	array	An associative array, containing all search parameters set in
@@ -48,13 +49,16 @@ class phpbb_extension_finder
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
 	* @param string $phpEx php file extension
+	* @param string $cache_name The name of the cache variable, defaults to
+	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $phpEx = '.php')
+	public function __construct(phpbb_extension_manager $extension_manager, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $phpEx = '.php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
 		$this->phpEx = $phpEx;
+		$this->cache_name = $cache_name;
 
 		$this->query = array(
 			'default_path' => false,
@@ -66,7 +70,7 @@ class phpbb_extension_finder
 			'directory' => false,
 		);
 
-		$this->cached_queries = ($this->cache) ? $this->cache->get('_ext_finder') : false;
+		$this->cached_queries = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 	}
 
 	/**
@@ -284,7 +288,7 @@ class phpbb_extension_finder
 		if ($cache && $this->cache)
 		{
 			$this->cached_queries[$query] = $files;
-			$this->cache->put('_ext_finder', $this->cached_queries);
+			$this->cache->put($this->cache_name, $this->cached_queries);
 		}
 
 		return $files;

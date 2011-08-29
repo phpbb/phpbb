@@ -27,6 +27,7 @@ class phpbb_extension_manager
 	protected $extensions;
 	protected $extension_table;
 	protected $phpbb_root_path;
+	protected $cache_name;
 
 	/**
 	* Creates a manager and loads information from database
@@ -36,16 +37,18 @@ class phpbb_extension_manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $phpEx php file extension
 	* @param phpbb_cache_driver_interface $cache A cache instance or null
+	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(dbal $db, $extension_table, $phpbb_root_path, $phpEx = '.php', phpbb_cache_driver_interface $cache = null)
+	public function __construct(dbal $db, $extension_table, $phpbb_root_path, $phpEx = '.php', phpbb_cache_driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->phpEx = $phpEx;
 		$this->extension_table = $extension_table;
+		$this->cache_name = $cache_name;
 
-		$this->extensions = $this->cache->get('_ext');
+		$this->extensions = $this->cache->get($this->cache_name);
 
 		if ($this->extensions === false)
 		{
@@ -75,7 +78,7 @@ class phpbb_extension_manager
 		}
 
 		ksort($this->extensions);
-		$this->cache->put('_ext', $this->extensions);
+		$this->cache->put($this->cache_name, $this->extensions);
 	}
 
 	/**
@@ -356,6 +359,6 @@ class phpbb_extension_manager
 	*/
 	public function get_finder()
 	{
-		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->phpEx);
+		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->phpEx, $this->cache_name . '_finder');
 	}
 }
