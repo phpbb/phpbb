@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_provider implements \IteratorAggregate
+class phpbb_cron_provider implements IteratorAggregate
 {
 	/**
 	* Array holding all found task class names.
