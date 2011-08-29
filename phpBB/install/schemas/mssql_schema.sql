@@ -363,7 +363,8 @@ GO
 */
 CREATE TABLE [phpbb_ext] (
 	[ext_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[ext_active] [int] DEFAULT (0) NOT NULL 
+	[ext_active] [int] DEFAULT (0) NOT NULL ,
+	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

@@ -189,7 +189,8 @@ CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
 # Table: 'phpbb_ext'
 CREATE TABLE phpbb_ext (
 	ext_name varchar(255) NOT NULL DEFAULT '',
-	ext_active INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	ext_active INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	ext_state text(65535) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext (ext_name);

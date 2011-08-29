@@ -1060,6 +1060,7 @@ function database_update_info()
 					'COLUMNS'			=> array(
 						'ext_name'		=> array('VCHAR', ''),
 						'ext_active'	=> array('BOOL', 0),
+						'ext_state'		=> array('TEXT', ''),
 					),
 					'KEYS'				=> array(
 						'ext_name'		=> array('UNIQUE', 'ext_name'),

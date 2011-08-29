@@ -109,28 +109,34 @@ class phpbb_extension_manager
 	}
 
 	/**
-	* Enables an extension
+	* Runs a step of the extension enabling process.
 	*
-	* Calls the enable method on the extension's meta class to allow it to
-	* make database changes and execute other initialisation code.
+	* Allows the exentension to enable in a long running script that works
+	* in multiple steps across requests. State is kept for the extension
+	* in the extensions table.
 	*
-	* @param string $name The extension's name
-	* @return null
+	* @param	string	$name	The extension's name
+	* @return	bool			Whether another run of enable_step is required
 	*/
-	public function enable($name)
+	public function enable_step($name)
 	{
 		// ignore extensions that are already enabled
 		if (isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'])
 		{
-			return;
+			return false;
 		}
 
+		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
+
 		$extension = $this->get_extension($name);
-		$extension->enable();
+		$state = $extension->enable_step($old_state);
+
+		$active = ($state === false);
 
 		$extension_data = array(
-			'ext_name'	=> $name,
-			'ext_active'	=> true,
+			'ext_name'		=> $name,
+			'ext_active'	=> $active,
+			'ext_state'		=> serialize($state),
 		);
 
 		$this->extensions[$name] = $extension_data;
@@ -148,6 +154,22 @@ class phpbb_extension_manager
 				' . $this->db->sql_build_array('INSERT', $extension_data);
 			$this->db->sql_query($sql);
 		}
+
+		return !$active;
+	}
+
+	/**
+	* Enables an extension
+	*
+	* This method completely enables an extension. But it could be long running
+	* so never call this in a script that has a max_execution time.
+	*
+	* @param string $name The extension's name
+	* @return null
+	*/
+	public function enable($name)
+	{
+		while ($this->enable_step($name));
 	}
 
 	/**
@@ -172,9 +194,10 @@ class phpbb_extension_manager
 
 		$extension_data = array(
 			'ext_active'	=> false,
+			'ext_state'		=> serialize(false),
 		);
 		$this->extensions[$name]['ext_active'] = false;
-		ksort($this->extensions);
+		$this->extensions[$name]['ext_state'] = serialize(false);
 
 		$sql = 'UPDATE ' . $this->extension_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
@@ -191,12 +214,12 @@ class phpbb_extension_manager
 	* @param string $name The extension's name
 	* @return null
 	*/
-	public function purge($name)
+	public function purge_step($name)
 	{
 		// ignore extensions that do not exist
 		if (!isset($this->extensions[$name]))
 		{
-			return;
+			return false;
 		}
 
 		// disable first if necessary
@@ -205,14 +228,48 @@ class phpbb_extension_manager
 			$this->disable($name);
 		}
 
+		$old_state = unserialize($this->extensions[$name]['ext_state']);
+
 		$extension = $this->get_extension($name);
-		$extension->purge();
+		$state = $extension->purge_step($old_state);
+
+		// continue until the state is false
+		if ($state !== false)
+		{
+			$extension_data = array(
+				'ext_state'		=> serialize($state),
+			);
+			$this->extensions[$name]['ext_state'] = serialize($state);
+
+			$sql = 'UPDATE ' . $this->extension_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+
+			return true;
+		}
 
 		unset($this->extensions[$name]);
 
 		$sql = 'DELETE FROM ' . $this->extension_table . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
+
+		return false;
+	}
+
+	/**
+	* Purge an extension
+	*
+	* Purges an extension completely at once. This process could run for a while
+	* so never call this in a script that has a max_execution time.
+	*
+	* @param string $name The extension's name
+	* @return null
+	*/
+	public function purge($name)
+	{
+		while ($this->purge_step($name));
 	}
 
 	/**
