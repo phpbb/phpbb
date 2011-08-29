@@ -63,6 +63,7 @@ class phpbb_extension_manager
 
 		$result = $this->db->sql_query($sql);
 		$extensions = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
 
 		$this->extensions = array();
 		foreach ($extensions as $extension)
