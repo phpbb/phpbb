@@ -66,7 +66,7 @@ class phpbb_extension_finder
 			'directory' => false,
 		);
 
-		$this->cached_queries = ($this->cache) ? $this->cache->get('_extension_finder') : false;
+		$this->cached_queries = ($this->cache) ? $this->cache->get('_ext_finder') : false;
 	}
 
 	/**
@@ -284,7 +284,7 @@ class phpbb_extension_finder
 		if ($cache && $this->cache)
 		{
 			$this->cached_queries[$query] = $files;
-			$this->cache->put('_extension_finder', $this->cached_queries);
+			$this->cache->put('_ext_finder', $this->cached_queries);
 		}
 
 		return $files;
