@@ -283,11 +283,6 @@ class phpbb_extension_finder
 
 		if ($cache && $this->cache)
 		{
-			if ($this->cached_queries === false)
-			{
-				$this->cached_queries = array();
-			}
-
 			$this->cached_queries[$query] = $files;
 			$this->cache->put('_extension_finder', $this->cached_queries);
 		}
