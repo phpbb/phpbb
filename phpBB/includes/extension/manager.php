@@ -45,7 +45,9 @@ class phpbb_extension_manager
 		$this->phpEx = $phpEx;
 		$this->extension_table = $extension_table;
 
-		if (false === ($this->extensions = $this->cache->get('_extensions')))
+		$this->extensions = $this->cache->get('_extensions');
+
+		if ($this->extensions === false)
 		{
 			$this->load_extensions();
 		}
