@@ -649,6 +649,23 @@ class phpbb_db_tools
 			$sqlite = true;
 		}
 
+		// Drop tables?
+		if (!empty($schema_changes['drop_tables']))
+		{
+			foreach ($schema_changes['drop_tables'] as $table)
+			{
+				// only drop table if it exists
+				if ($this->sql_table_exists($table))
+				{
+					$result = $this->sql_table_drop($table);
+					if ($this->return_statements)
+					{
+						$statements = array_merge($statements, $result);
+					}
+				}
+			}
+		}
+
 		// Add tables?
 		if (!empty($schema_changes['add_tables']))
 		{
