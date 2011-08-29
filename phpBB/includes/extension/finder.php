@@ -27,7 +27,16 @@ class phpbb_extension_finder
 	protected $cache;
 	protected $phpEx;
 
+	/**
+	* @var	array	An associative array, containing all search parameters set in
+	*				methods
+	*/
 	protected $query;
+
+	/**
+	* @var	array	A map from md5 hashes of serialized queries to their
+	*				previously retrieved results.
+	*/
 	protected $cached_queries;
 
 	/**
