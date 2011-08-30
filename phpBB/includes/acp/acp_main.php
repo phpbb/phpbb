@@ -585,7 +585,7 @@ class acp_main
 			include($phpbb_root_path . 'includes/environment_checker.' . $phpEx);
 		}
 
-		$environment_checker = new phpbb_environment_checker($phpbb_root_path, $phpEx, $auth);
+		$environment_checker = new phpbb_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		$check_values = array(
 			'error'		=> $environment_checker->get_errors(),

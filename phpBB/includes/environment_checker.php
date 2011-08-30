@@ -19,13 +19,14 @@ class phpbb_environment_checker
 {
 	var $phpbb_root_path;
 	var $phpEx;
-
+	var $config;
 	var $auth;
 
-	function phpbb_environment_checker($phpbb_root_path, $phpEx, $auth)
+	function phpbb_environment_checker($phpbb_root_path, $phpEx, $config, $auth)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
+		$this->config = $config;
 		$this->auth = $auth;
 	}
 
