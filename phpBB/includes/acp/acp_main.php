@@ -579,56 +579,27 @@ class acp_main
 			);
 		}
 
-		// Check if server enviroment configuration still satisfy phpBB installation requirements
-		$checks_array = array(
-			// Check PHP enviroment configuration parameters
-			array('check_value' => phpbb_ini_get_bool('safe_mode'),						'expected_value' => false,									'error_type' => 'notice',	'lang' => 'ERROR_SAFE_MODE'),
-			array('check_value' => phpbb_ini_get_bool('allow_url_fopen'),				'expected_value' => true,									'error_type' => 'notice',	'lang' => 'ERROR_URL_FOPEN_SUPPORT'),
-			array('check_value' => phpbb_ini_get_bool('register_globals'),				'expected_value' => false,									'error_type' => 'error',	'lang' => 'ERROR_REGISTER_GLOBALS'),
-			array('check_value' => phpbb_ini_get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),	'expected_value' => false,	'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_FUNC_OVERLOAD'),
-			array('check_value' => phpbb_ini_get_bool('mbstring.encoding_translation'),	'expected_value' => false,									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_ENCODING_TRANSLATION'),
-			array('check_value' => phpbb_ini_get_string('mbstring.http_input'),			'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_INPUT'),
-			array('check_value' => phpbb_ini_get_string('mbstring.http_output'),		'expected_value' => 'pass',									'error_type' => 'error',	'check_extension_loaded' => 'mbstring',	'lang' => 'ERROR_MBSTRING_HTTP_OUTPUT'),
+		// Check whether server environment still satisfy requirements
+		if (!class_exists('phpbb_environment_checker'))
+		{
+			include($phpbb_root_path . 'includes/environment_checker.' . $phpEx);
+		}
 
-			// Check if some directories are writable
-			array('check_value' => phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'),	'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_AVATARS_UNWRITABLE'),
-			array('check_value' => phpbb_is_writable($phpbb_root_path . 'store/'),					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_STORE_UNWRITABLE'),
-			array('check_value' => phpbb_is_writable($phpbb_root_path . 'cache/'),					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_CACHE_UNWRITABLE'),
-			array('check_value' => phpbb_is_writable($phpbb_root_path . 'files/'),					'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_DIRECTORY_FILES_UNWRITABLE'),
+		$environment_checker = new phpbb_environment_checker($phpbb_root_path, $phpEx, $auth);
 
-			// Check if PHP function getimagesize() is available
-			array('check_value' => function_exists('getimagesize'),	'expected_value' => true,	'error_type' => 'error',	'lang' => 'ERROR_GETIMAGESIZE_SUPPORT'),
-
-			// Check if PCRE supports unicode properties
-			array('check_value' => preg_match('/\p{L}/u', 'a'),	'expected_value' => true,	'error_type' => 'notice',	'lang' => 'ERROR_PCRE_UTF_SUPPORT'),
+		$check_values = array(
+			'error'		=> $environment_checker->get_errors(),
+			'notice'	=> $environment_checker->get_notices(),
 		);
 
-		// Check if config.php is not writable - note the checks order
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
+		foreach ($check_values as $template_block_name => $language_array)
 		{
-			$checks_array[] = array('check_value' => @fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002,	'expected_value' => false,	'error_type' => 'notice',	'comparison_type' => 'bitwise', 'lang' => 'ERROR_WRITABLE_CONFIG');
-		}
-
-		// Check if PHP version is not lower than 5.2.0 (for future phpBB versions) - note the checks order
-		if ($auth->acl_get('a_server'))
-		{
-			$checks_array[] = array('check_value' => version_compare(PHP_VERSION, '5.2.0', '<'),	'expected_value' => false,	'error_type' => 'notice',	'lang' => 'ERROR_PHP_VERSION_OLD');
-		}
-
-		// Check if install/ directory does not exist - note the checks order
-		if (file_exists($phpbb_root_path . 'install'))
-		{
-			$checks_array[] = array('check_value' => is_file($phpbb_root_path . 'install'),	'expected_value' => true,	'error_type' => 'error',	'lang' => 'ERROR_REMOVE_INSTALL');
-		}
-
-		$errors = phpbb_check_requirements($checks_array);	
-
-		// Dump checks result to template
-		if (sizeof($errors))
-		{
-			foreach($errors as $error)
+			foreach ($language_array as $language_key)
 			{
-				$template->assign_block_vars($error['TYPE'], $error);
+				$template->assign_block_vars($template_block_name, array(
+					'L_ERROR'			=>	(isset($user->lang[$language_key])) ? $user->lang[$language_key] : '',
+					'L_ERROR_EXPLAIN'	=>	(isset($user->lang[$language_key . '_EXPLAIN'])) ? $user->lang[$language_key . '_EXPLAIN'] : '',
+				));
 			}
 		}
 
