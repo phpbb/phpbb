@@ -29,14 +29,15 @@ class phpbb_extension_finder
 	protected $cache_name;
 
 	/**
-	* @var	array	An associative array, containing all search parameters set in
-	*				methods
+	* An associative array, containing all search parameters set in methods.
+	* @var	array
 	*/
 	protected $query;
 
 	/**
-	* @var	array	A map from md5 hashes of serialized queries to their
-	*				previously retrieved results.
+	* A map from md5 hashes of serialized queries to their previously retrieved
+	* results.
+	* @var	array
 	*/
 	protected $cached_queries;
 
