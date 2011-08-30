@@ -23,12 +23,12 @@ class phpbb_extension_finder_test extends phpbb_test_case
 				'foo' => array(
 					'ext_name' => 'foo',
 					'ext_active' => '1',
-					'ext_path' => dirname(__FILE__) . '/ext/foo/',
+					'ext_path' => 'ext/foo/',
 				),
 				'bar' => array(
 					'ext_name' => 'bar',
 					'ext_active' => '1',
-					'ext_path' => dirname(__FILE__) . '/ext/bar/',
+					'ext_path' => 'ext/bar/',
 				),
 			));
 

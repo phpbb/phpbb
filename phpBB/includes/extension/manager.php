@@ -93,7 +93,7 @@ class phpbb_extension_manager
 	*/
 	public function get_extension_path($name)
 	{
-		return $this->phpbb_root_path . 'ext/' . basename($name) . '/';
+		return 'ext/' . basename($name) . '/';
 	}
 
 	/**
@@ -315,7 +315,13 @@ class phpbb_extension_manager
 	*/
 	public function all_configured()
 	{
-		return $this->extensions;
+		$configured = array();
+		foreach ($this->extensions as $name => $data)
+		{
+			$data['ext_path'] = $this->phpbb_root_path . $data['ext_path'];
+			$configured[$name] = $data;
+		}
+		return $configured;
 	}
 
 	/**
@@ -331,7 +337,7 @@ class phpbb_extension_manager
 		{
 			if ($data['ext_active'])
 			{
-				$enabled[$name] = $data['ext_path'];
+				$enabled[$name] = $this->phpbb_root_path . $data['ext_path'];
 			}
 		}
 		return $enabled;
@@ -350,7 +356,7 @@ class phpbb_extension_manager
 		{
 			if (!$data['ext_active'])
 			{
-				$disabled[$name] = $data['ext_path'];
+				$disabled[$name] = $this->phpbb_root_path . $data['ext_path'];
 			}
 		}
 		return $disabled;

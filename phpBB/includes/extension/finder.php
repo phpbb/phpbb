@@ -161,6 +161,8 @@ class phpbb_extension_finder
 	*/
 	public function directory($directory)
 	{
+		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
+
 		if (strlen($directory) > 1 && $directory[strlen($directory) - 1] === '/')
 		{
 			$directory = substr($directory, 0, -1);

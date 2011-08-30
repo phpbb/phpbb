@@ -19,7 +19,7 @@ class phpbb_cron_provider_test extends PHPUnit_Framework_TestCase
 				'testext' => array(
 					'ext_name'      => 'testext',
 					'ext_active'    => true,
-					'ext_path'      => dirname(__FILE__) . '/ext/testext/'
+					'ext_path'      => 'ext/testext/'
 				),
 			));
 		$this->provider = new phpbb_cron_provider($this->extension_manager);
