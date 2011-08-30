@@ -205,7 +205,7 @@ class phpbb_extension_finder
 		$this->query['suffix'] .= $this->phpEx;
 		$this->query['default_suffix'] .= $this->phpEx;
 
-		$files = $this->get_files($cache);
+		$files = $this->find($cache, false);
 
 		$classes = array();
 		foreach ($files as $file)
@@ -225,7 +225,7 @@ class phpbb_extension_finder
 	*/
 	public function get_directories($cache = true)
 	{
-		return $this->find($cache, true);
+		return $this->find_with_root_path($cache, true);
 	}
 
 	/**
@@ -236,7 +236,27 @@ class phpbb_extension_finder
 	*/
 	public function get_files($cache = true)
 	{
-		return $this->find($cache, false);
+		return $this->find_with_root_path($cache, false);
+	}
+
+	/**
+	* A wrapper around the general find which prepends a root path to results
+	*
+	* @param bool $cache Whether the result should be cached
+	* @param bool $is_dir Whether the found items should be directories
+	* @return array An array of paths to found items
+	*/
+	protected function find_with_root_path($cache = true, $is_dir = false)
+	{
+		$items = $this->find($cache, $is_dir);
+
+		$result = array();
+		foreach ($items as $item)
+		{
+			$result[] = $this->phpbb_root_path . $item;
+		}
+
+		return $result;
 	}
 
 	/**

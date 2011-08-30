@@ -63,7 +63,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
-			'ext/foo/type/',
+			dirname(__FILE__) . '/ext/foo/type/',
 		), $dirs);
 	}
 
@@ -137,7 +137,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/includes/', $cache, '.php', '_custom_cache_name');
+		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/', $cache, '.php', '_custom_cache_name');
 		$files = $finder->suffix('_class.php')->get_files();
 
 		sort($files);
@@ -159,7 +159,6 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'is_dir' => false,
 		);
 
-		$this->assertEquals($expected_files, $files);
 		$cache->checkAssociativeVar($this, '_custom_cache_name', array(
 			md5(serialize($query)) => $expected_files,
 		));
@@ -178,7 +177,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'is_dir' => false,
 		);
 
-		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/includes/', new phpbb_mock_cache(array(
+		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/', new phpbb_mock_cache(array(
 			'_ext_finder' => array(
 				md5(serialize($query)) => array('file_name'),
 			),
@@ -191,7 +190,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($classes);
 		$this->assertEquals(
-			array('file_name'),
+			array(dirname(__FILE__) . '/file_name'),
 			$classes
 		);
 	}
