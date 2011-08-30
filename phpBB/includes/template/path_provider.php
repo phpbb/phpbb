@@ -33,7 +33,7 @@ class phpbb_template_path_provider extends phpbb_extension_provider
 	*
 	* @param phpbb_extension_manager $extension_manager phpBB extension manager
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager)
+	public function __construct(phpbb_extension_manager $extension_manager = null)
 	{
 		// no super call to avoid find() call
 		$this->extension_manager = $extension_manager;
@@ -61,18 +61,20 @@ class phpbb_template_path_provider extends phpbb_extension_provider
 	*/
 	public function find()
 	{
-		$finder = $this->extension_manager->get_finder();
-
 		$directories = array();
 
-		foreach ($this->templates as $name => $path)
+		if ($this->extension_manager)
 		{
-			if ($path && !phpbb_is_absolute($path))
+			$finder = $this->extension_manager->get_finder();
+			foreach ($this->templates as $name => $path)
 			{
-				$directories = array_merge($directories, $finder
-					->directory('/' . $this->ext_dir_prefix . $path)
-					->get_directories()
-				);
+				if ($path && !phpbb_is_absolute($path))
+				{
+					$directories = array_merge($directories, $finder
+						->directory('/' . $this->ext_dir_prefix . $path)
+						->get_directories()
+					);
+				}
 			}
 		}
 
