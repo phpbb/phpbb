@@ -441,18 +441,19 @@ class p_master
 		}
 
 		// new modules use the full class names, old ones are always called <type>_<name>, e.g. acp_board
-		if (!class_exists($this->p_name) && !class_exists("{$this->p_class}_$this->p_name"))
+		if (!class_exists($this->p_name))
 		{
-			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
+			if (!file_exists("$module_path/{$this->p_name}.$phpEx"))
 			{
-				trigger_error("Cannot find module $module_path/{$this->p_class}_$this->p_name.$phpEx", E_USER_ERROR);
+
+				trigger_error("Cannot find module $module_path/{$this->p_name}.$phpEx", E_USER_ERROR);
 			}
 
-			include("$module_path/{$this->p_class}_$this->p_name.$phpEx");
+			include("$module_path/{$this->p_name}.$phpEx");
 
-			if (!class_exists("{$this->p_class}_$this->p_name"))
+			if (!class_exists($this->p_name))
 			{
-				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
+				trigger_error("Module file $module_path/{$this->p_name}.$phpEx does not contain correct class [{$this->p_name}]", E_USER_ERROR);
 			}
 		}
 
@@ -462,7 +463,7 @@ class p_master
 		}
 
 		// Create a new instance of the desired module ...
-		$class_name = (class_exists($this->p_name)) ? $this->p_name : "{$this->p_class}_$this->p_name";
+		$class_name = $this->p_name;
 
 		$this->module = new $class_name($this);
 

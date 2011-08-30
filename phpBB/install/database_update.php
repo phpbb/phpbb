@@ -2115,6 +2115,37 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
+
+			// rename all module basenames to full classname
+			$sql = 'SELECT module_id, module_basename, module_class
+				FROM ' . MODULES_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$module_id = (int) $row['module_id'];
+				unset($row['module_id']);
+
+				if (!empty($row['module_basename']) && !empty($row['module_class']))
+				{
+					// all the class names start with class name or with phpbb_ for auto loading
+					if (strpos($row['module_basename'], $row['module_class'] . '_') !== 0 &&
+						strpos($row['module_basename'], 'phpbb_') !== 0)
+					{
+						$row['module_basename'] = $row['module_class'] . '_' . $row['module_basename'];
+
+						$sql_update = $db->sql_build_array('UPDATE', $row);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . '
+							SET ' . $sql_update . '
+							WHERE module_id = ' . $module_id;
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			$db->sql_freeresult($result);
+
 			// try to guess the new auto loaded search class name
 			// works for native and mysql fulltext
 			set_config('search_type', 'phpbb_search_' . $config['search_type']);
@@ -2159,14 +2190,14 @@ function change_database_data(&$no_updates, $version)
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
-					'base'		=> 'groups',
+					'base'		=> 'acp_groups',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_GROUPS_POSITION',
 					'auth'		=> 'acl_a_group',
 					'cat'		=> 'ACP_GROUPS',
 				),
 				'manage'	=> array(
-					'base'		=> 'attachments',
+					'base'		=> 'acp_attachments',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_MANAGE_ATTACHMENTS',
 					'auth'		=> 'acl_a_attach',
