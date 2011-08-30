@@ -104,7 +104,6 @@ class phpbb_environment_checker
 
 		// Check if some directories are writable
 		$asserter->assert(
-			isset($this->config['avatar_path']) &&
 			phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']),
 			'ERROR_DIRECTORY_AVATARS_UNWRITABLE'
 		);
@@ -117,7 +116,7 @@ class phpbb_environment_checker
 			'ERROR_DIRECTORY_CACHE_UNWRITABLE'
 		);
 		$asserter->assert(
-			phpbb_is_writable($this->phpbb_root_path . 'files'),
+			phpbb_is_writable($this->phpbb_root_path . $this->config['upload_path']),
 			'ERROR_DIRECTORY_FILES_UNWRITABLE'
 		);
 
