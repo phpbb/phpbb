@@ -130,8 +130,9 @@ set_config_count(null, null, null, $config);
 // load extensions
 $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
-$template_locator = new phpbb_template_locator();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+$phpbb_template_locator = new phpbb_template_locator();
+$phpbb_template_path_provider = new phpbb_template_path_provider($phpbb_extension_manager);
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

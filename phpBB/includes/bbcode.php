@@ -127,14 +127,15 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 
 			$template_locator = new phpbb_template_locator();
-			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+			$template_path_provider = new phpbb_template_path_provider($phpbb_extension_manager);
+			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator, $template_path_provider);
 			$template->set_template();
 			$template_locator->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template_locator->get_source_file_for_handle('bbcode.html');

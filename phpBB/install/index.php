@@ -202,8 +202,10 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$template_locator = new phpbb_template_locator();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+$phpbb_template_locator = new phpbb_template_locator();
+$phpbb_template_path_provider = new phpbb_template_path_provider($phpbb_extension_manager);
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
+$template->set_ext_dir_prefix('adm/');
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
