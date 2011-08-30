@@ -103,19 +103,19 @@ class phpbb_environment_checker
 
 		// Check if some directories are writable
 		$asserter->assert(
-			phpbb_is_writable($this->phpbb_root_path . 'images/avatars/upload/'),
+			phpbb_is_writable($this->phpbb_root_path . 'images/avatars/upload'),
 			'ERROR_DIRECTORY_AVATARS_UNWRITABLE'
 		);
 		$asserter->assert(
-			phpbb_is_writable($this->phpbb_root_path . 'store/'),
+			phpbb_is_writable($this->phpbb_root_path . 'store'),
 			'ERROR_DIRECTORY_STORE_UNWRITABLE'
 		);
 		$asserter->assert(
-			phpbb_is_writable($this->phpbb_root_path . 'cache/'),
+			phpbb_is_writable($this->phpbb_root_path . 'cache'),
 			'ERROR_DIRECTORY_CACHE_UNWRITABLE'
 		);
 		$asserter->assert(
-			phpbb_is_writable($this->phpbb_root_path . 'files/'),
+			phpbb_is_writable($this->phpbb_root_path . 'files'),
 			'ERROR_DIRECTORY_FILES_UNWRITABLE'
 		);
 
