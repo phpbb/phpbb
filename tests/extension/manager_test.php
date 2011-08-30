@@ -81,4 +81,17 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$this->assertTrue(phpbb_ext_moo::$purged);
 	}
+
+	public function test_enabled_no_cache()
+	{
+		$extension_manager = new phpbb_extension_manager(
+			$this->new_dbal(),
+			'phpbb_ext',
+			dirname(__FILE__) . '/',
+			'.php'
+		);
+
+		$this->assertEquals(array('foo'), array_keys($extension_manager->all_enabled()));
+	}
+
 }

@@ -48,7 +48,7 @@ class phpbb_extension_manager
 		$this->extension_table = $extension_table;
 		$this->cache_name = $cache_name;
 
-		$this->extensions = $this->cache->get($this->cache_name);
+		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
 		if ($this->extensions === false)
 		{
@@ -78,7 +78,11 @@ class phpbb_extension_manager
 		}
 
 		ksort($this->extensions);
-		$this->cache->put($this->cache_name, $this->extensions);
+
+		if ($this->cache)
+		{
+			$this->cache->put($this->cache_name, $this->extensions);
+		}
 	}
 
 	/**
