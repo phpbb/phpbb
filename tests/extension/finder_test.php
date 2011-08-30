@@ -55,6 +55,18 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
+	public function test_prefix_get_directories()
+	{
+		$dirs = $this->finder
+			->directory('/type')
+			->get_directories();
+
+		sort($dirs);
+		$this->assertEquals(array(
+			'ext/foo/type/',
+		), $dirs);
+	}
+
 	public function test_prefix_get_classes()
 	{
 		$classes = $this->finder
@@ -144,6 +156,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'suffix' => '_class.php',
 			'prefix' => false,
 			'directory' => false,
+			'is_dir' => false,
 		);
 
 		$this->assertEquals($expected_files, $files);
@@ -162,6 +175,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'suffix' => false,
 			'prefix' => false,
 			'directory' => false,
+			'is_dir' => false,
 		);
 
 		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/includes/', new phpbb_mock_cache(array(

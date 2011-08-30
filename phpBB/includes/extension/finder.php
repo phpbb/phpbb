@@ -217,13 +217,37 @@ class phpbb_extension_finder
 	}
 
 	/**
+	* Finds all directories matching the configured options
+	*
+	* @param bool $cache Whether the result should be cached
+	* @return array An array of paths to found directories
+	*/
+	public function get_directories($cache = true)
+	{
+		return $this->find($cache, true);
+	}
+
+	/**
 	* Finds all files matching the configured options.
 	*
 	* @param bool $cache Whether the result should be cached
-	* @return array An array of found class names
+	* @return array An array of paths to found files
 	*/
 	public function get_files($cache = true)
 	{
+		return $this->find($cache, false);
+	}
+
+	/**
+	* Finds all file system entries matching the configured options
+	*
+	* @param bool $cache Whether the result should be cached
+	* @param bool $is_dir Whether the found items should be directories
+	* @return array An array of paths to found items
+	*/
+	protected function find($cache = true, $is_dir = false)
+	{
+		$this->query['is_dir'] = $is_dir;
 		$query = md5(serialize($this->query));
 
 		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
@@ -265,18 +289,33 @@ class phpbb_extension_finder
 			}
 
 			// match only first directory if leading slash is given
-			$directory_pattern = ($directory && $directory[0] === '/') ? '#^' : '#' . DIRECTORY_SEPARATOR;
-			$directory_pattern .= preg_quote($directory . DIRECTORY_SEPARATOR, '#') . '#';
+			if ($directory === '/')
+			{
+				$directory_pattern = '^' . preg_quote(DIRECTORY_SEPARATOR, '#');
+			}
+			else if ($directory && $directory[0] === '/')
+			{
+				$directory_pattern = '^' . preg_quote($directory . DIRECTORY_SEPARATOR, '#');
+			}
+			else
+			{
+				$directory_pattern = preg_quote(DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR, '#');
+			}
+			$directory_pattern = '#' . $directory_pattern . '#';
 
 			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 			foreach ($iterator as $file_info)
 			{
-				if (!$file_info->isDir())
+				if ($file_info->isDir() == $is_dir)
 				{
-					$relative_path = $iterator->getInnerIterator()->getSubPathname();
+					$relative_path = ($is_dir) ? $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR:
+						$iterator->getInnerIterator()->getSubPathname();
+
+					$item_name = ($is_dir) ? basename($iterator->getInnerIterator()->getSubPath()) :
+						$file_info->getFilename();
 
 					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
-						(!$prefix || substr($file_info->getFilename(), 0, strlen($prefix)) === $prefix) &&
+						(!$prefix || substr($item_name, 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, DIRECTORY_SEPARATOR . $relative_path)))
 					{
 						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . $relative_path);
