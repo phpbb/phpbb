@@ -27,10 +27,8 @@ class phpbb_cron_provider_test extends PHPUnit_Framework_TestCase
 
 	public function test_manager_finds_shipped_tasks()
 	{
-		$task_iterator = $this->provider->find_cron_task_names();
-
 		$tasks = array();
-		foreach ($task_iterator as $task)
+		foreach ($this->provider as $task)
 		{
 			$tasks[] = $task;
 		}
