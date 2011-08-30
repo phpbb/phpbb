@@ -1465,7 +1465,7 @@ class install_install extends module
 		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new fulltext_native($error);
+		$search = new phpbb_search_fulltext_native($error);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
