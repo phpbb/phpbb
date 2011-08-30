@@ -1483,7 +1483,13 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+
+		// modules require an extension manager
+		if (empty($phpbb_extension_manager))
+		{
+			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
