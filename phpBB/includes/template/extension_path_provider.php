@@ -96,6 +96,7 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	public function set_templates(array $templates)
 	{
 		$this->base_paths->set_templates($templates);
+		$this->items = null;
 	}
 
 	/**
