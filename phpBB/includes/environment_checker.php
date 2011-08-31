@@ -37,33 +37,39 @@ class phpbb_environment_checker
 			include($this->phpbb_root_path . 'includes/assertion_manager.' . $this->phpEx);
 		}
 
+		if (!class_exists('phpbb_ini_reader'))
+		{
+			include($this->phpbb_root_path . 'includes/ini_reader.' . $this->phpEx);
+		}
+
 		$asserter = new phpbb_assertion_manager;
+		$php_ini = new phpbb_ini_reader;
 
 		// Check PHP enviroment configuration parameters
 		$asserter->assert(
-			!phpbb_ini_get_bool('register_globals'),
+			!$php_ini->get_bool('register_globals'),
 			'ERROR_REGISTER_GLOBALS'
 		);
 
 		$mbstring = extension_loaded('mbstring');
 		$asserter->assert(
 			!$mbstring ||
-			!(phpbb_ini_get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
+			!($php_ini->get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 			'ERROR_MBSTRING_FUNC_OVERLOAD'
 		);
 		$asserter->assert(
 			!$mbstring ||
-			!phpbb_ini_get_bool('mbstring.encoding_translation'),
+			!$php_ini->get_bool('mbstring.encoding_translation'),
 			'ERROR_MBSTRING_ENCODING_TRANSLATION'
 		);
 		$asserter->assert(
 			!$mbstring ||
-			phpbb_ini_get_string('mbstring.http_input') == 'pass',
+			$php_ini->get_string('mbstring.http_input') == 'pass',
 			'ERROR_MBSTRING_HTTP_INPUT'
 		);
 		$asserter->assert(
 			!$mbstring ||
-			phpbb_ini_get_string('mbstring.http_output') == 'pass',
+			$php_ini->get_string('mbstring.http_output') == 'pass',
 			'ERROR_MBSTRING_HTTP_OUTPUT'
 		);
 
@@ -90,15 +96,21 @@ class phpbb_environment_checker
 			include($this->phpbb_root_path . 'includes/assertion_manager.' . $this->phpEx);
 		}
 
+		if (!class_exists('phpbb_ini_reader'))
+		{
+			include($this->phpbb_root_path . 'includes/ini_reader.' . $this->phpEx);
+		}
+
 		$asserter = new phpbb_assertion_manager;
+		$php_ini = new phpbb_ini_reader;
 
 		// Check PHP enviroment configuration parameters
 		$asserter->assert(
-			!phpbb_ini_get_bool('safe_mode'),
+			!$php_ini->get_bool('safe_mode'),
 			'ERROR_SAFE_MODE'
 		);
 		$asserter->assert(
-			phpbb_ini_get_bool('allow_url_fopen'),
+			$php_ini->get_bool('allow_url_fopen'),
 			'ERROR_URL_FOPEN_SUPPORT'
 		);
 
