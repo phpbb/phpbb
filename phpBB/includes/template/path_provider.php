@@ -22,68 +22,19 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_path_provider extends phpbb_extension_provider
+class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_path_provider_interface
 {
 	protected $main_template_name = '';
-	protected $templates = array();
-	protected $ext_dir_prefix = '';
+	protected $paths = array();
 
 	/**
-	* Constructor stores extension manager
-	*
-	* @param phpbb_extension_manager $extension_manager phpBB extension manager
-	*/
-	public function __construct(phpbb_extension_manager $extension_manager = null)
-	{
-		// no super call to avoid find() call
-		$this->extension_manager = $extension_manager;
-	}
-
-	/**
-	* Defines a prefix to use for template paths in extensions
+	* Ignores the extension dir prefix
 	*
 	* @param string $ext_dir_prefix The prefix including trailing slash
 	* @return null
 	*/
 	public function set_ext_dir_prefix($ext_dir_prefix)
 	{
-		$this->ext_dir_prefix = $ext_dir_prefix;
-	}
-
-	/**
-	* Finds template paths using the extension manager
-	*
-	* Finds paths with the same name (e.g. styles/prosilver/template/) in all
-	* active extensions. Then appends the actual template paths based in the
-	* current working directory.
-	*
-	* @return array     List of template paths
-	*/
-	public function find()
-	{
-		$directories = array();
-
-		if ($this->extension_manager)
-		{
-			$finder = $this->extension_manager->get_finder();
-			foreach ($this->templates as $name => $path)
-			{
-				if ($path && !phpbb_is_absolute($path))
-				{
-					$directories = array_merge($directories, $finder
-						->directory('/' . $this->ext_dir_prefix . $path)
-						->get_directories()
-					);
-				}
-			}
-		}
-
-		foreach ($this->templates as $name => $path)
-		{
-			$directories[] = $path;
-		}
-
-		return $directories;
 	}
 
 	/**
@@ -97,7 +48,7 @@ class phpbb_template_path_provider extends phpbb_extension_provider
 	*/
 	public function set_templates(array $templates)
 	{
-		$this->templates = array();
+		$this->paths;
 
 		foreach ($templates as $name => $path)
 		{
@@ -106,13 +57,10 @@ class phpbb_template_path_provider extends phpbb_extension_provider
 				$path = $this->template_root_for_style($name);
 			}
 
-			$this->templates[$name] = $path;
+			$this->paths[] = $path;
 		}
 
-		reset($this->templates);
-		$this->main_template_path = current($this->templates);
-
-		$this->items = $this->find();
+		$this->main_template_path = $this->paths[0];
 	}
 
 	/**
@@ -135,5 +83,15 @@ class phpbb_template_path_provider extends phpbb_extension_provider
 	private function template_root_for_style($style_name)
 	{
 		return 'styles/' . $style_name . '/template';
+	}
+
+	/**
+	* Retrieve an iterator over all template paths
+	*
+	* @return ArrayIterator An iterator for the array of template paths
+	*/
+	public function getIterator()
+	{
+		return new ArrayIterator($this->paths);
 	}
 }

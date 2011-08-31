@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_provider extends phpbb_extension_provider
+class phpbb_cron_task_provider extends phpbb_extension_provider
 {
 	/**
 	* Finds cron task names using the extension manager.
@@ -35,7 +35,7 @@ class phpbb_cron_provider extends phpbb_extension_provider
 	*
 	* @return array     List of task names
 	*/
-	public function find()
+	protected function find()
 	{
 		$finder = $this->extension_manager->get_finder();
 

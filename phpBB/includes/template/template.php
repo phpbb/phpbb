@@ -82,7 +82,7 @@ class phpbb_template
 	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_path_provider $provider template path provider
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider_interface $provider)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;

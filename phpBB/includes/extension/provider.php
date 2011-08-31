@@ -24,9 +24,9 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 {
 	/**
 	* Array holding all found items
-	* @var array
+	* @var array|null
 	*/
-	protected $items = array();
+	protected $items = null;
 
 	/**
 	* An extension manager to search for items in extensions
@@ -42,8 +42,6 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 	public function __construct(phpbb_extension_manager $extension_manager)
 	{
 		$this->extension_manager = $extension_manager;
-
-		$this->items = $this->find();
 	}
 
 	/**
@@ -51,7 +49,7 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 	*
 	* @return array     List of task names
 	*/
-	abstract function find();
+	abstract protected function find();
 
 	/**
 	* Retrieve an iterator over all items
@@ -60,6 +58,11 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 	*/
 	public function getIterator()
 	{
+		if ($this->items === null)
+		{
+			$this->items = $this->find();
+		}
+
 		return new ArrayIterator($this->items);
 	}
 }

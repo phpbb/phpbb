@@ -131,7 +131,7 @@ set_config_count(null, null, null, $config);
 $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
 $phpbb_template_locator = new phpbb_template_locator();
-$phpbb_template_path_provider = new phpbb_template_path_provider($phpbb_extension_manager);
+$phpbb_template_path_provider = new phpbb_template_extension_path_provider($phpbb_extension_manager, new phpbb_template_path_provider());
 $template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
 
 // Add own hook handler
@@ -145,5 +145,5 @@ foreach ($cache->obtain_hooks() as $hook)
 
 if (!$config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager(new phpbb_cron_provider($phpbb_extension_manager), $cache->get_driver());
+	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
 }

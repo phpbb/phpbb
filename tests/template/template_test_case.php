@@ -59,7 +59,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->template_locator = new phpbb_template_locator();
-		$this->template_provider = new phpbb_template_path_provider(new phpbb_mock_extension_manager(dirname(__FILE__) . '/'));
+		$this->template_provider = new phpbb_template_path_provider();
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator, $this->template_provider);
 		$this->template->set_custom_template($this->template_path, 'tests');
 	}
