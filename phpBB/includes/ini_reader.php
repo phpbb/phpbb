@@ -137,6 +137,10 @@ class phpbb_ini_reader
 		{
 			return $value;
 		}
+		else if (strlen($value) < 2)
+		{
+			return false;
+		}
 
 		$value_numeric = (int) $value;
 
@@ -148,6 +152,12 @@ class phpbb_ini_reader
 				$value_numeric *= 1024;
 			case 'k':
 				$value_numeric *= 1024;
+			break;
+
+			default:
+				// It's not already in bytes (and thus numeric)
+				// and does not carry a unit.
+				return false;
 		}
 
 		return $value_numeric;
