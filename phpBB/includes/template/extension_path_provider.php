@@ -91,11 +91,13 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	*                         The first element is the main template.
 	*                         If the path is false, it will be generated from
 	*                         the supplied name.
+	* @param string $style_root_path The root directory for styles identified
+	*                         by name only.
 	* @return null
 	*/
-	public function set_templates(array $templates)
+	public function set_templates(array $templates, $style_root_path)
 	{
-		$this->base_paths->set_templates($templates);
+		$this->base_paths->set_templates($templates, $style_root_path);
 		$this->items = null;
 	}
 

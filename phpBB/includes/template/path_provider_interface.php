@@ -39,9 +39,11 @@ interface phpbb_template_path_provider_interface extends Traversable
 	*                         The first element is the main template.
 	*                         If the path is false, it will be generated from
 	*                         the supplied name.
+	* @param string $style_root_path The root directory for styles identified
+	*                         by name only.
 	* @return null
 	*/
-	public function set_templates(array $templates);
+	public function set_templates(array $templates, $style_root_path);
 
 	/**
 	* Retrieves the path to the main template passed into set_templates()

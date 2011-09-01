@@ -133,7 +133,7 @@ class phpbb_template
 			$templates[$fallback_template_name] = $fallback_template_path;
 		}
 
-		$this->provider->set_templates($templates);
+		$this->provider->set_templates($templates, $this->phpbb_root_path);
 		$this->locator->set_paths($this->provider);
 		$this->locator->set_main_template($this->provider->get_main_template_path());
 
