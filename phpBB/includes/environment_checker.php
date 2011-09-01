@@ -79,7 +79,7 @@ class phpbb_environment_checker
 			'ERROR_GETIMAGESIZE_SUPPORT'
 		);
 
-		// Check if install/ directory does not exist - note the checks order
+		// Make sure that install directory does not exist
 		$asserter->assert(
 			!file_exists($this->phpbb_root_path . 'install') ||
 			is_file($this->phpbb_root_path . 'install'),
