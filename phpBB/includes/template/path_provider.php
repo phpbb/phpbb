@@ -50,7 +50,7 @@ class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_
 	*/
 	public function set_templates(array $templates, $style_root_path)
 	{
-		$this->paths;
+		$this->paths = array();
 
 		foreach ($templates as $name => $path)
 		{
