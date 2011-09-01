@@ -126,10 +126,14 @@ class phpbb_template
 	*/
 	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
 	{
-		$this->provider->set_templates(array(
-			$template_name => $template_path,
-			$fallback_template_name => $fallback_template_path,
-		));
+		$templates = array($template_name => $template_path);
+
+		if ($fallback_template_path !== false)
+		{
+			$templates[$fallback_template_name] = $fallback_template_path;
+		}
+
+		$this->provider->set_templates($templates);
 		$this->locator->set_paths($this->provider);
 		$this->locator->set_main_template($this->provider->get_main_template_path());
 
