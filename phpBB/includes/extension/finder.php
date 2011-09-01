@@ -318,11 +318,11 @@ class phpbb_extension_finder
 			}
 			else if ($directory && $directory[0] === '/')
 			{
-				$directory_pattern = '^' . preg_quote($directory . DIRECTORY_SEPARATOR, '#');
+				$directory_pattern = '^' . preg_quote(str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
 			}
 			else
 			{
-				$directory_pattern = preg_quote(DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR, '#');
+				$directory_pattern = preg_quote(DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
