@@ -34,13 +34,13 @@
 			<!-- ENDIF -->
 			</td>
 			<td class="row1">
-				<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+				<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 				{searchresults.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
 				<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
-					<a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
+					<a href="{searchresults.U_MCP_QUEUE}" class="imageset">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF searchresults.S_TOPIC_REPORTED -->
-					<a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<a href="{searchresults.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF searchresults.PAGINATION -->
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {searchresults.PAGINATION} ] </p>
@@ -53,7 +53,7 @@
 			<td class="row1" width="120" align="center">
 				<p class="topicdetails">{searchresults.LAST_POST_TIME}</p>
 				<p class="topicdetails">{searchresults.LAST_POST_AUTHOR_FULL}
-					<a href="{searchresults.U_LAST_POST}">{LAST_POST_IMG}</a>
+					<a href="{searchresults.U_LAST_POST}" class="imageset">{LAST_POST_IMG}</a>
 				</p>
 			</td>
 		</tr>

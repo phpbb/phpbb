@@ -40,13 +40,13 @@
 				<td class="row1" width="25" align="center"><!-- IF topicrow.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" width="{topicrow.TOPIC_ICON_IMG_WIDTH}" height="{topicrow.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
 			<!-- ENDIF -->
 			<td class="row1">
-				<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+				<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 				{topicrow.ATTACH_ICON_IMG} <!-- IF topicrow.S_HAS_POLL or topicrow.S_TOPIC_MOVED --><b>{topicrow.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}: {topicrow.FIRST_POST_TIME}" href="{topicrow.U_VIEW_TOPIC}"class="topictitle">{topicrow.TOPIC_TITLE}</a>
 				<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-					<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
+					<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
-					<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF topicrow.PAGINATION -->
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
@@ -58,7 +58,7 @@
 			<td class="row1" width="140" align="center">
 				<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
 				<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
-					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
+					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}" class="imageset">{LAST_POST_IMG}</a><!-- ENDIF -->
 				</p>
 			</td>
 		</tr>
@@ -137,7 +137,7 @@
 		<table width="100%" cellspacing="1">
 		<tr>
 			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
-				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
@@ -191,13 +191,13 @@
 					<td class="row1" width="25" align="center"><!-- IF topicrow.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" width="{topicrow.TOPIC_ICON_IMG_WIDTH}" height="{topicrow.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
 				<!-- ENDIF -->
 				<td class="row1">
-					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 					{topicrow.ATTACH_ICON_IMG} <!-- IF topicrow.S_HAS_POLL or topicrow.S_TOPIC_MOVED --><b>{topicrow.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}: {topicrow.FIRST_POST_TIME}" href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-						<a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
+						<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
-						<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+						<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
 					<!-- IF topicrow.PAGINATION -->
 						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
@@ -210,7 +210,7 @@
 				<td class="row1" width="140" align="center">
 					<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
-						<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
+						<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}" class="imageset">{LAST_POST_IMG}</a><!-- ENDIF -->
 					</p>
 				</td>
 			</tr>
@@ -245,7 +245,7 @@
 		<table width="100%" cellspacing="1">
 		<tr>
 			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
-				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
