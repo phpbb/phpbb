@@ -234,7 +234,12 @@ class phpbb_database_test_connection_manager
 		}
 
 		$filename = $directory . $schema . '_schema.sql';
-		$sql = $this->split_sql(file_get_contents($filename));
+		$remove_remarks = $this->dbms['COMMENTS'];
+
+		$queries = file_get_contents($filename);
+		$this->$remove_remarks($queries);
+		
+		$sql = $this->split_sql($queries);
 
 		foreach ($sql as $query)
 		{
@@ -280,6 +285,49 @@ class phpbb_database_test_connection_manager
 	}
 
 	/**
+	* remove_remarks will strip the sql comment lines out of an uploaded sql file
+	*/
+	protected function remove_remarks(&$sql)
+	{
+		$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+	}
+
+	/**
+	* remove_comments will strip the sql comment lines out of an uploaded sql file
+	* specifically for mssql and postgres type files in the install....
+	*/
+	protected function remove_comments(&$output)
+	{
+		$lines = explode("\n", $output);
+		$output = '';
+
+		// try to keep mem. use down
+		$linecount = sizeof($lines);
+
+		$in_comment = false;
+		for ($i = 0; $i < $linecount; $i++)
+		{
+			if (trim($lines[$i]) == '/*')
+			{
+				$in_comment = true;
+			}
+
+			if (!$in_comment)
+			{
+				$output .= $lines[$i] . "\n";
+			}
+
+			if (trim($lines[$i]) == '*/')
+			{
+				$in_comment = false;
+			}
+		}
+
+		unset($lines);
+		return $output;
+	}
+
+	/**
 	* Map a phpBB dbms driver name to dbms data array
 	*/
 	protected function get_dbms_data($dbms)
@@ -289,46 +337,55 @@ class phpbb_database_test_connection_manager
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
 				'PDO'			=> 'firebird',
+				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
+				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
+				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
+				'COMMENTS'		=> 'remove_comments',
 			),
 			'mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
+				'COMMENTS'		=> 'remove_comments',
 			),
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'sqlsrv',
+				'COMMENTS'		=> 'remove_comments',
 			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
 				'PDO'			=> 'oci',
+				'COMMENTS'		=> 'remove_comments',
 			),
 			'postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
+				'COMMENTS'		=> 'remove_comments',
 			),
 			'sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
+				'COMMENTS'		=> 'remove_remarks',
 			),
 		);
 
