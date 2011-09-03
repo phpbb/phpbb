@@ -983,14 +983,12 @@ CREATE TABLE phpbb_styles (
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
 	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
 	theme_id INT4 DEFAULT '0' NOT NULL CHECK (theme_id >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
 	PRIMARY KEY (style_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 
 /*
 	Table: 'phpbb_styles_template'
@@ -1042,39 +1040,6 @@ CREATE TABLE phpbb_styles_theme (
 );
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_seq;
-
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id INT4 DEFAULT nextval('phpbb_styles_imageset_seq'),
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
-	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
-	imageset_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_data_seq;
-
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id INT4 DEFAULT nextval('phpbb_styles_imageset_data_seq'),
-	image_name varchar(200) DEFAULT '' NOT NULL,
-	image_filename varchar(200) DEFAULT '' NOT NULL,
-	image_lang varchar(30) DEFAULT '' NOT NULL,
-	image_height INT2 DEFAULT '0' NOT NULL CHECK (image_height >= 0),
-	image_width INT2 DEFAULT '0' NOT NULL CHECK (image_width >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
-	PRIMARY KEY (image_id)
-);
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id);
 
 /*
 	Table: 'phpbb_topics'

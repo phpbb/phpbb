@@ -1094,14 +1094,12 @@ function get_schema_struct()
 			'style_active'			=> array('BOOL', 1),
 			'template_id'			=> array('UINT', 0),
 			'theme_id'				=> array('UINT', 0),
-			'imageset_id'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'style_id',
 		'KEYS'			=> array(
 			'style_name'		=> array('UNIQUE', 'style_name'),
 			'template_id'		=> array('INDEX', 'template_id'),
 			'theme_id'			=> array('INDEX', 'theme_id'),
-			'imageset_id'		=> array('INDEX', 'imageset_id'),
 		),
 	);
 
@@ -1149,35 +1147,6 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'theme_id',
 		'KEYS'			=> array(
 			'theme_name'		=> array('UNIQUE', 'theme_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_imageset'] = array(
-		'COLUMNS'		=> array(
-			'imageset_id'				=> array('UINT', NULL, 'auto_increment'),
-			'imageset_name'				=> array('VCHAR_UNI:255', ''),
-			'imageset_copyright'		=> array('VCHAR_UNI', ''),
-			'imageset_path'				=> array('VCHAR:100', ''),
-		),
-		'PRIMARY_KEY'		=> 'imageset_id',
-		'KEYS'				=> array(
-			'imgset_nm'			=> array('UNIQUE', 'imageset_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_imageset_data'] = array(
-		'COLUMNS'		=> array(
-			'image_id'				=> array('UINT', NULL, 'auto_increment'),
-			'image_name'			=> array('VCHAR:200', ''),
-			'image_filename'		=> array('VCHAR:200', ''),
-			'image_lang'			=> array('VCHAR:30', ''),
-			'image_height'			=> array('USINT', 0),
-			'image_width'			=> array('USINT', 0),
-			'imageset_id'			=> array('UINT', 0),
-		),
-		'PRIMARY_KEY'		=> 'image_id',
-		'KEYS'				=> array(
-			'i_d'			=> array('INDEX', 'imageset_id'),
 		),
 	);
 
