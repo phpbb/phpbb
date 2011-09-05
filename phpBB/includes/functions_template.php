@@ -532,7 +532,8 @@ class template_compile
 						{
 							$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
 							$token = "isset($token) ? $token : null";
-						} else if ($varrefs[2])
+						}
+						else if ($varrefs[2])
 						{
 							$token = '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']';
 						}
