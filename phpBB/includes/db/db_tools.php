@@ -1805,7 +1805,7 @@ class phpbb_db_tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP ' . $column_name;
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
 			break;
 
 			case 'postgres':
@@ -1956,6 +1956,7 @@ class phpbb_db_tools
 					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
 				}
 				$this->db->sql_freeresult($result);
+			break;
 
 			case 'postgres':
 				// PGSQL does not "tightly" bind sequences and tables, we must guess...
