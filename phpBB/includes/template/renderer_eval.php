@@ -55,6 +55,6 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 		$_rootref = &$context->get_root_ref();
 		$_lang = $lang;
 
-		eval($this->code);
+		eval(' ?>' . $this->code . '<?php ');
 	}
 }
