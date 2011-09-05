@@ -31,6 +31,28 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 		$this->data[$var_name] = $var;
 	}
 
+	/**
+	 * Obtain list of word censors. We don't need to parse them here,
+	 * that is tested elsewhere.
+	 */
+	public function obtain_word_list()
+	{
+		return array(
+			'match'		=> array(
+				'#(?<![\\p{Nd}\\p{L}_-])([\\p{Nd}\\p{L}_-]*?badword1[\\p{Nd}\\p{L}_-]*?)(?![\\p{Nd}\\p{L}_-])#iu',
+				'#(?<![\\p{Nd}\\p{L}_-])([\\p{Nd}\\p{L}_-]*?badword2)(?![\\p{Nd}\\p{L}_-])#iu',
+				'#(?<![\\p{Nd}\\p{L}_-])(badword3[\\p{Nd}\\p{L}_-]*?)(?![\\p{Nd}\\p{L}_-])#iu',
+				'#(?<![\\p{Nd}\\p{L}_-])(badword4)(?![\\p{Nd}\\p{L}_-])#iu',
+			),
+			'replace'	=> array(
+				'replacement1',
+				'replacement2',
+				'replacement3',
+				'replacement4',
+			),
+		);
+	}
+
 	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
 	{
 		$test->assertTrue(isset($this->data[$var_name]));
