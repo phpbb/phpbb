@@ -202,6 +202,7 @@ $config = new phpbb_config(array(
 $template_locator = new phpbb_template_locator();
 $template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 $template->set_custom_template('../adm/style', 'admin');
+$template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
 // the acp template is never stored in the database
