@@ -14,6 +14,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 {
 	protected $template;
 	protected $template_path;
+	protected $old_load_tplcompile;
+	protected $old_tpl_allow_php;
 
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
@@ -53,6 +55,13 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	protected function setUp()
 	{
+		global $config;
+
+		$this->old_load_tplcompile = isset($config['load_tplcompile']) ? $config['load_tplcompile'] : false;
+		$config['load_tplcompile'] = true;
+		$this->old_tpl_allow_php = isset($config['tpl_allow_php']) ? $config['tpl_allow_php'] : false;
+		$config['tpl_allow_php'] = false;
+
 		// Test the engine can be used
 		$this->setup_engine();
 
@@ -71,6 +80,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	protected function tearDown()
 	{
+		global $config;
+
 		if (is_object($this->template))
 		{
 			foreach (glob($this->template->cachepath . '*') as $file)
@@ -78,6 +89,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				unlink($file);
 			}
 		}
+
+		$config['load_tplcompile'] = $this->old_load_tplcompile;
+		$config['tpl_allow_php'] = $this->old_tpl_allow_php;
 	}
 
 	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
