@@ -1805,7 +1805,7 @@ class phpbb_db_tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP ' . $column_name;
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
 			break;
 
 			case 'postgres':
