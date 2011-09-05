@@ -1956,6 +1956,7 @@ class phpbb_db_tools
 					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
 				}
 				$this->db->sql_freeresult($result);
+			break;
 
 			case 'postgres':
 				// PGSQL does not "tightly" bind sequences and tables, we must guess...
