@@ -66,9 +66,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		if (!is_writable(dirname($this->template->cachepath)))
+		$template_cache_dir = dirname($this->template->cachepath);
+		if (!is_writable($template_cache_dir))
 		{
-			$this->markTestSkipped("Template cache directory is not writable.");
+			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
 		}
 
 		foreach (glob($this->template->cachepath . '*') as $file)
