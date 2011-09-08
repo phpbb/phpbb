@@ -44,6 +44,7 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
+	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 	$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
 	$class_loader->register();
@@ -53,6 +54,7 @@ if (isset($_GET['avatar']))
 	$cache = $cache_factory->get_service();
 	$class_loader->set_cache($cache->get_driver());
 
+	$request = new phpbb_request();
 	$db = new $sql_db();
 
 	// Connect to DB
@@ -61,6 +63,8 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 	unset($dbpasswd);
+
+	request_var('', 0, false, false, $request);
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
