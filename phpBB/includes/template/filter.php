@@ -273,7 +273,26 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'INCLUDE':
-				return '<?php ' . $this->compile_tag_include($matches[2]) . ' ?>';
+				// Dynamic includes
+				// Cheap match rather than a full blown regexp, we already know
+				// the format of the input so just use string manipulation.
+				$temp = $matches[2];
+				if ($temp[0] == '{')
+				{
+					$file = false;
+
+					if ($temp[1] == '$')
+					{
+						$var = substr($temp, 2, -1);
+						$temp = "\$_tpldata['DEFINE']['.']['$var']";
+					}
+					else
+					{
+						$var = substr($temp, 1, -1);
+						$temp = "\$_rootref['$var']";
+					}
+				}
+				return '<?php ' . $this->compile_tag_include($temp) . ' ?>';
 			break;
 
 			case 'INCLUDEPHP':
@@ -725,6 +744,12 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include($tag_args)
 	{
+		// Process dynamic includes
+		if ($tag_args[0] == '$')
+		{
+			return "if (isset($tag_args)) { \$_template->_tpl_include($tag_args); }";
+		}
+
 		return "\$_template->_tpl_include('$tag_args');";
 	}
 
