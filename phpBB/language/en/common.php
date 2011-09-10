@@ -45,6 +45,11 @@ $lang = array_merge($lang, array(
 	'DATE_FORMAT'		=> '|d M Y|',	// 01 Jan 2007 (with Relative days enabled)
 	'USER_LANG'			=> 'en-gb',
 
+	// You can define different rules for the determination of plural forms here.
+	// See http://wiki.phpbb.com/Plural_Rules for more information
+	// or ask the translation manager for help.
+	'PLURAL_RULE'		=> 1,
+
 	'1_DAY'			=> '1 day',
 	'1_MONTH'		=> '1 month',
 	'1_YEAR'		=> '1 year',
