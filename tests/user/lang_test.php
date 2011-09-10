@@ -54,5 +54,23 @@ class phpbb_user_lang_test extends phpbb_test_case
 		// Bug PHPBB3-9949
 		$this->assertEquals($user->lang('ARRY', 1, 2), '1 post');
 		$this->assertEquals($user->lang('ARRY', 1, 's', 2), '1 post');
+
+		// Bug PHPBB3-10345
+		$user = new user;
+		$user->lang = array(
+			'PLURAL_RULE'		=> 13,
+			'ARRY'		=> array(
+				0		=> '%d is 0',						// 0
+				1		=> '%d is 1',						// 1
+				2		=> '%d ends with 01-10',			// ending with 01-10
+				3		=> '%d ends with 11-19',			// ending with 11-19
+				4		=> '%d is part of the last rule',	// everything else
+			),
+		);
+		$this->assertEquals($user->lang('ARRY', 0), '0 is 0');
+		$this->assertEquals($user->lang('ARRY', 1), '1 is 1');
+		$this->assertEquals($user->lang('ARRY', 103), '103 ends with 01-10');
+		$this->assertEquals($user->lang('ARRY', 15), '15 ends with 11-19');
+		$this->assertEquals($user->lang('ARRY', 300), '300 is part of the last rule');
 	}
 }
