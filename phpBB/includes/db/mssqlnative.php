@@ -396,7 +396,7 @@ class dbal_mssqlnative extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->db_connect_id) ? @sqlsrv_rows_affected($this->db_connect_id) : false;
+		return (!empty($this->query_result)) ? @sqlsrv_rows_affected($this->query_result) : false;
 	}
 
 	/**

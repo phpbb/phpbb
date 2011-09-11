@@ -1999,6 +1999,12 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 
+	if ($params === '' || (is_array($params) && empty($params)))
+	{
+		// Do not append the ? if the param-list is empty anyway.
+		$params = false;
+	}
+
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
@@ -3310,7 +3316,7 @@ function get_censor_preg_expression($word, $use_unicode = true)
 	// Unescape the asterisk to simplify further conversions
 	$word = str_replace('\*', '*', preg_quote($word, '#'));
 
-	if ($use_unicode && pcre_utf8_support())
+	if ($use_unicode && phpbb_pcre_utf8_support())
 	{
 		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
 		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
@@ -4583,6 +4589,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
+		'T_ASSETS_PATH'			=> "{$web_path}assets",
 		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . $user->theme['template_inherit_path'] . '/template' : "{$web_path}styles/" . $user->theme['template_path'] . '/template',
@@ -4622,6 +4629,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
+
+	if (!empty($user->data['is_bot']))
+	{
+		// Let reverse proxies know we detected a bot.
+		header('X-PHPBB-IS-BOT: yes');
+	}
 
 	return;
 }
@@ -4781,7 +4794,7 @@ function phpbb_user_session_handler()
 *
 * @return bool	Returns true if PCRE (the regular expressions library) supports UTF-8 encoding
 */
-function pcre_utf8_support()
+function phpbb_pcre_utf8_support()
 {
 	static $utf8_pcre_properties = null;
 	if (is_null($utf8_pcre_properties))

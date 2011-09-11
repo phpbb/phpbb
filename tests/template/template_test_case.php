@@ -21,8 +21,22 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected function display($handle)
 	{
 		ob_start();
-		$this->assertTrue($this->template->display($handle));
-		return self::trim_template_result(ob_get_clean());
+
+		try
+		{
+			$this->assertTrue($this->template->display($handle, false));
+		}
+		catch (Exception $exception)
+		{
+			// reset output buffering even when an error occured
+			// PHPUnit turns trigger_error into exceptions as well
+			ob_end_clean();
+			throw $exception;
+		}
+
+		$result = self::trim_template_result(ob_get_clean());
+
+		return $result;
 	}
 
 	protected static function trim_template_result($result)
@@ -52,9 +66,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		if (!is_writable(dirname($this->template->cachepath)))
+		$template_cache_dir = dirname($this->template->cachepath);
+		if (!is_writable($template_cache_dir))
 		{
-			$this->markTestSkipped("Template cache directory is not writable.");
+			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
 		}
 
 		foreach (glob($this->template->cachepath . '*') as $file)

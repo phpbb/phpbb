@@ -691,9 +691,6 @@ function censor_text($text)
 		return '';
 	}
 
-	// Strip control characters
-	$text = preg_replace('/[\x00-\x0f]/', '', $text);
-
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{

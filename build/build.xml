@@ -119,6 +119,15 @@
 	<target name="create-package" depends="prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/language new_version/phpBB3/language >
+				save/save_${prevversion}_to_${newversion}/language/phpbb-${prevversion}_to_${newversion}_language.patch" />
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
+				save/save_${prevversion}_to_${newversion}/prosilver/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
+				save/save_${prevversion}_to_${newversion}/subsilver2/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
 	</target>
 
 	<!--

@@ -52,6 +52,27 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$sql_where = 'left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
 	}
 
+	// Handle marking everything read
+	if ($mark_read == 'all')
+	{
+		$redirect = build_url(array('mark', 'hash'));
+		meta_refresh(3, $redirect);
+
+		if (check_link_hash(request_var('hash', ''), 'global'))
+		{
+			markread('all');
+
+			trigger_error(
+				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
+				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
+			);
+		}
+		else
+		{
+			trigger_error(sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+		}
+	}
+
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
@@ -109,13 +130,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$forum_id = $row['forum_id'];
 
 		// Mark forums read?
-		if ($mark_read == 'forums' || $mark_read == 'all')
+		if ($mark_read == 'forums')
 		{
 			if ($auth->acl_get('f_list', $forum_id))
 			{
 				$forum_ids[] = $forum_id;
-				continue;
 			}
+
+			continue;
 		}
 
 		// Category with no members
@@ -140,8 +162,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$right_id = $row['right_id'];
 			continue;
 		}
-
-		$forum_ids[] = $forum_id;
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
@@ -244,22 +264,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$db->sql_freeresult($result);
 
 	// Handle marking posts
-	if ($mark_read == 'forums' || $mark_read == 'all')
+	if ($mark_read == 'forums')
 	{
 		$redirect = build_url(array('mark', 'hash'));
 		$token = request_var('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			if ($mark_read == 'all')
-			{
-				markread('all');
-				$message = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>');
-			}
-			else
-			{
-				markread('topics', $forum_ids);
-				$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
-			}
+			markread('topics', $forum_ids);
+			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
@@ -978,13 +990,17 @@ function display_user_activity(&$userdata)
 	}
 
 	// Obtain active topic
+	// We need to exclude passworded forums here so we do not leak the topic title
+	$forum_ary_topic = array_unique(array_merge($forum_ary, $user->get_passworded_forums()));
+	$forum_sql_topic = (!empty($forum_ary_topic)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary_topic, true) : '';
+
 	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
 			AND (post_approved = 1
 				$sql_m_approve)
-			$forum_sql
+			$forum_sql_topic
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
 	$result = $db->sql_query_limit($sql, 1);
