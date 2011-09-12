@@ -2005,6 +2005,10 @@ class user extends session
 	/**
 	* Determine which plural form we should use.
 	* For some languages this is not as simple as for English.
+	*
+	* @param $number		int		The number we want to get the plural case for
+	* @param $force_rule	mixed	False to use the plural rule of the language package
+	*								or an integer to force a certain plural rule
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
@@ -2014,10 +2018,17 @@ class user extends session
 			return 0;
 		}
 
-		// Default to english system
+		// Default to English system
 		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
-		$plural_rule = max(0, min($plural_rule, 15));
+		if ($plural_rule > 15 || $plural_rule < 0)
+		{
+			trigger_error('INVALID_PLURAL_RULE');
+		}
 
+		/**
+		* The following plural rules are based on a list published by the Mozilla Developer Network
+		* https://developer.mozilla.org/en/Localization_and_Plurals
+		*/
 		switch ($plural_rule)
 		{
 			case 0:

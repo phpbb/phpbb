@@ -51,11 +51,11 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 2), '2 posts');
 		$this->assertEquals($user->lang('ARRY', 123), '123 posts');
 
-		// Bug PHPBB3-9949
+		// ticket PHPBB3-9949
 		$this->assertEquals($user->lang('ARRY', 1, 2), '1 post');
 		$this->assertEquals($user->lang('ARRY', 1, 's', 2), '1 post');
 
-		// Bug PHPBB3-10345
+		// ticket PHPBB3-10345
 		$user = new user;
 		$user->lang = array(
 			'PLURAL_RULE'		=> 13,
