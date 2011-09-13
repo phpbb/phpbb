@@ -743,7 +743,6 @@ $lang = array_merge($lang, array(
 			0		=> 'less than a minute ago',
 			1		=> '%d minute ago',
 			2		=> '%d minutes ago',
-			60		=> '1 hour ago',
 		),
 
 		'Sunday'	=> 'Sunday',
