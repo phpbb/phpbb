@@ -119,22 +119,9 @@ function mcp_front_view($id, $mode, $action)
 			$template->assign_vars(array(
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 				'S_MCP_QUEUE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue"),
+				'L_UNAPPROVED_TOTAL'	=> $user->lang('UNAPPROVED_POSTS_TOTAL', (int) $total),
+				'S_HAS_UNAPPROVED_POSTS'=> ($total != 0),
 			));
-
-			if ($total == 0)
-			{
-				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> $user->lang['UNAPPROVED_POSTS_ZERO_TOTAL'],
-					'S_HAS_UNAPPROVED_POSTS'	=> false)
-				);
-			}
-			else
-			{
-				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> ($total == 1) ? $user->lang['UNAPPROVED_POST_TOTAL'] : sprintf($user->lang['UNAPPROVED_POSTS_TOTAL'], $total),
-					'S_HAS_UNAPPROVED_POSTS'	=> true)
-				);
-			}
 		}
 	}
 
@@ -220,20 +207,10 @@ function mcp_front_view($id, $mode, $action)
 				}
 			}
 
-			if ($total == 0)
-			{
-				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=>	$user->lang['REPORTS_ZERO_TOTAL'],
-					'S_HAS_REPORTS'		=>	false)
-				);
-			}
-			else
-			{
-				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['REPORT_TOTAL'] : sprintf($user->lang['REPORTS_TOTAL'], $total),
-					'S_HAS_REPORTS'		=> true)
-				);
-			}
+			$template->assign_vars(array(
+				'L_REPORTS_TOTAL'	=> $user->lang('REPORTS_TOTAL', (int) $total),
+				'S_HAS_REPORTS'		=> ($total != 0),
+			));
 		}
 	}
 
@@ -313,20 +290,10 @@ function mcp_front_view($id, $mode, $action)
 			}
 		}
 
-		if ($total == 0)
-		{
-			$template->assign_vars(array(
-				'L_PM_REPORTS_TOTAL'	=>	$user->lang['PM_REPORTS_ZERO_TOTAL'],
-				'S_HAS_PM_REPORTS'		=>	false)
-			);
-		}
-		else
-		{
-			$template->assign_vars(array(
-				'L_PM_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['PM_REPORT_TOTAL'] : sprintf($user->lang['PM_REPORTS_TOTAL'], $total),
-				'S_HAS_PM_REPORTS'		=> true)
-			);
-		}
+		$template->assign_vars(array(
+			'L_PM_REPORTS_TOTAL'	=> $user->lang('PM_REPORTS_TOTAL', (int) $total),
+			'S_HAS_PM_REPORTS'		=> ($total != 0),
+		));
 	}
 
 	// Latest 5 logs

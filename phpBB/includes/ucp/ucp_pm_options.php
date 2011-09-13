@@ -409,7 +409,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	
 	$folder[PRIVMSGS_INBOX] = array(
 		'folder_name'		=> $user->lang['PM_INBOX'],
-		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
+		'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $num_messages),
 	);
 
 	$sql = 'SELECT folder_id, folder_name, pm_count
@@ -423,7 +423,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
 			'folder_name'		=> $row['folder_name'],
-			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
+			'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $row['pm_count']),
 		);
 	}
 	$db->sql_freeresult($result);

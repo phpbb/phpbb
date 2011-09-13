@@ -1821,6 +1821,9 @@ class user extends session
 	* This function/functionality is inspired by SHS` and Ashe.
 	*
 	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
+	*
+	* If the first parameter is an array, the parts are used as keys and subkeys to get the lang:
+	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as lang.
 	*/
 	function lang()
 	{

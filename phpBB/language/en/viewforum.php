@@ -64,6 +64,9 @@ $lang = array_merge($lang, array(
 	'UNREAD_POSTS_LOCKED'	=> 'Unread posts [ Locked ]',
 
 	'VIEW_FORUM'			=> 'View forum',
-	'VIEW_FORUM_TOPIC'		=> '1 topic',
-	'VIEW_FORUM_TOPICS'		=> '%d topics',
+	'VIEW_FORUM_TOPICS'		=> array(
+		0	=> '%d topics',
+		1	=> '%d topic',
+		2	=> '%d topics',
+	),
 ));

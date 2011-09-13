@@ -674,8 +674,8 @@ class ucp_main
 			$template->assign_vars(array(
 				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-				'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
-			);
+				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
+			));
 		}
 
 		if ($mode == 'subscribed')
