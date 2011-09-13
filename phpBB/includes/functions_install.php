@@ -552,3 +552,91 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 
 	return $config_data;
 }
+
+/**
+* Check if Imagemagick can be found anywhere on the system
+*/
+function get_imagemagic()
+{
+	$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
+
+	$magic_home = getenv('MAGICK_HOME');
+	$img_imagick = '';
+	if (empty($magic_home))
+	{
+		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
+		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
+
+		$locations = array_merge($path_locations, $locations);
+		foreach ($locations as $location)
+		{
+			// The path might not end properly, fudge it
+			if (substr($location, -1, 1) !== '/')
+			{
+				$location .= '/';
+			}
+
+			if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
+			{
+				$img_imagick = str_replace('\\', '/', $location);
+				continue;
+			}
+		}
+	}
+	else
+	{
+		$img_imagick = str_replace('\\', '/', $magic_home);
+	}
+	
+	return ($img_magic) ? $img_imagick : false;
+}
+
+/**
+* Tests if directory exists, if not, tries to create it.
+*/
+function check_dir_exists($dir)
+{
+	global $phpbb_root_path;
+
+	umask(0);
+	$exists = false;
+
+	// Try to create the directory if it does not exist
+	if (!file_exists($phpbb_root_path . $dir))
+	{
+		@mkdir($phpbb_root_path . $dir, 0777);
+		phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+	}
+
+	// Now really check
+	if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
+	{
+		phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+		$exists = true;
+	}
+	
+	return $exists;
+}
+
+/**
+* Tests if directory is writable by storing simple file.
+*/
+function check_dir_is_writable($dir)
+{
+	global $phpbb_root_path;
+
+	$writable = false;
+
+	// Now check if it is writable by storing a simple file
+	$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
+	if ($fp !== false)
+	{
+		$writable = true;
+	}
+	@fclose($fp);
+	@unlink($phpbb_root_path . $dir . 'test_lock');
+
+	return $writable;
+}
+
+?>
