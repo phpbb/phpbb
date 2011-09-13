@@ -4161,58 +4161,25 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	}
 	else if ($config['load_online_guests'])
 	{
-		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_' . $item_caps . '_GUEST'] : $user->lang['BROWSING_' . $item_caps . '_GUESTS'];
-		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
+		$online_userlist = $user->lang('BROWSING_' . $item_caps . '_GUESTS', $online_users['guests_online'], $online_userlist);
 	}
 	else
 	{
 		$online_userlist = sprintf($user->lang['BROWSING_' . $item_caps], $online_userlist);
 	}
 	// Build online listing
-	$vars_online = array(
-		'ONLINE'	=> array('total_online', 'l_t_user_s', 0),
-		'REG'		=> array('visible_online', 'l_r_user_s', !$config['load_online_guests']),
-		'HIDDEN'	=> array('hidden_online', 'l_h_user_s', $config['load_online_guests']),
-		'GUEST'		=> array('guests_online', 'l_g_user_s', 0)
-	);
-
-	foreach ($vars_online as $l_prefix => $var_ary)
-	{
-		if ($var_ary[2])
-		{
-			$l_suffix = '_AND';
-		}
-		else
-		{
-			$l_suffix = '';
-		}
-		switch ($online_users[$var_ary[0]])
-		{
-			case 0:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL' . $l_suffix];
-			break;
-
-			case 1:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL' . $l_suffix];
-			break;
-
-			default:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL' . $l_suffix];
-			break;
-		}
-	}
-	unset($vars_online);
-
-	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
-	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
-	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
+	$visible_online = $user->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
+	$hidden_online = $user->lang('HIDDEN_USERS_TOTAL', (int) $online_users['hidden_online']);
 
 	if ($config['load_online_guests'])
 	{
-		$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+		$guests_online = $user->lang('GUEST_USERS_TOTAL', (int) $online_users['guests_online']);
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL_GUESTS', (int) $online_users['total_online'], $visible_online, $hidden_online, $guests_online);
 	}
-
-
+	else
+	{
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
+	}
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -4434,10 +4401,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			set_config('record_online_date', time(), true);
 		}
 
-		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
+		$l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
 
-		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
-		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
+		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';
@@ -4448,8 +4414,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['NEW_PM'] : $user->lang['NEW_PMS'];
-			$l_privmsgs_text = sprintf($l_message_new, $user->data['user_new_privmsg']);
+			$l_privmsgs_text = $user->lang('NEW_PMS', (int) $user->data['user_new_privmsg']);
 
 			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
@@ -4467,7 +4432,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 		else
 		{
-			$l_privmsgs_text = $user->lang['NO_NEW_PM'];
+			$l_privmsgs_text = $user->lang('NEW_PMS', 0);
 			$s_privmsg_new = false;
 		}
 
@@ -4475,8 +4440,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
 		{
-			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['UNREAD_PM'] : $user->lang['UNREAD_PMS'];
-			$l_privmsgs_text_unread = sprintf($l_message_unread, $user->data['user_unread_privmsg']);
+			$l_privmsgs_text_unread = $user->lang('UNREAD_PMS', (int) $user->data['user_unread_privmsg']);
 		}
 	}
 

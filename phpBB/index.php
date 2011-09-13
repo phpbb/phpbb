@@ -27,15 +27,6 @@ $user->setup('viewforum');
 
 display_forums('', $config['load_moderators']);
 
-// Set some stats, get posts count from forums data if we... hum... retrieve all forums data
-$total_posts	= $config['num_posts'];
-$total_topics	= $config['num_topics'];
-$total_users	= $config['num_users'];
-
-$l_total_user_s = ($total_users == 0) ? 'TOTAL_USERS_ZERO' : 'TOTAL_USERS_OTHER';
-$l_total_post_s = ($total_posts == 0) ? 'TOTAL_POSTS_ZERO' : 'TOTAL_POSTS_OTHER';
-$l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OTHER';
-
 // Grab group details for legend display
 if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 {
@@ -115,9 +106,9 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 
 // Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
-	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
-	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
+	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS', (int) $config['num_posts']),
+	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
+	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
 	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,

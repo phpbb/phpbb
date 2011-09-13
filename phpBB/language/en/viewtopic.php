@@ -53,8 +53,11 @@ $lang = array_merge($lang, array(
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
-	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total.',
-	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total.',
+	'EDITED_TIMES_TOTAL'	=> array(
+		0	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
+		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
+		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
+	)
 	'EMAIL_TOPIC'			=> 'E-mail friend',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
@@ -70,8 +73,11 @@ $lang = array_merge($lang, array(
 	'MAKE_GLOBAL'				=> 'Change to “Global”',
 	'MAKE_NORMAL'				=> 'Change to “Standard Topic”',
 	'MAKE_STICKY'				=> 'Change to “Sticky”',
-	'MAX_OPTIONS_SELECT'		=> 'You may select up to <strong>%d</strong> options',
-	'MAX_OPTION_SELECT'			=> 'You may select <strong>1</strong> option',
+	'MAX_OPTIONS_SELECT'		=> array(
+		0	=> 'You may select up to <strong>%d</strong> options',
+		1	=> 'You may select <strong>%d</strong> option',
+		2	=> 'You may select up to <strong>%d</strong> options',
+	),
 	'MISSING_INLINE_ATTACHMENT'	=> 'The attachment <strong>%s</strong> is no longer available',
 	'MOVE_TOPIC'				=> 'Move topic',
 
@@ -105,8 +111,11 @@ $lang = array_merge($lang, array(
 	'VIEW_NEXT_TOPIC'		=> 'Next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
 	'VIEW_RESULTS'			=> 'View results',
-	'VIEW_TOPIC_POST'		=> '1 post',
-	'VIEW_TOPIC_POSTS'		=> '%d posts',
+	'VIEW_TOPIC_POSTS'		=> array(
+		0	=> '%d posts',
+		1	=> '%d post',
+		2	=> '%d posts',
+	),
 	'VIEW_UNREAD_POST'		=> 'First unread post',
 	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
