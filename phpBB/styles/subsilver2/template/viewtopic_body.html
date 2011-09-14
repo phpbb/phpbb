@@ -137,11 +137,11 @@
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 	<!-- IF postrow.S_IGNORE_POST -->
-			<td class="gensmall" colspan="2" height="25" align="center"><!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF --><a id="p{postrow.POST_ID}"></a>{postrow.L_IGNORE_POST}</td>
+			<td class="gensmall" colspan="2" height="25" align="center"><!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>{postrow.L_IGNORE_POST}</td>
 	<!-- ELSE -->
 
 			<td align="center" valign="middle">
-				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF --><a id="p{postrow.POST_ID}"></a>
+				<!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>
 				<b class="postauthor"<!-- IF postrow.POST_AUTHOR_COLOUR --> style="color: {postrow.POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{postrow.POST_AUTHOR}</b>
 			</td>
 			<td width="100%" height="25">
