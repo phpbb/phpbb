@@ -163,11 +163,25 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'value',
 			),
 			array(
+				'include_define.html',
+				array('VARIABLE' => 'value'),
+				array(),
+				array(),
+				'value',
+			),
+			array(
+				'include_loop.html',
+				array(),
+				array('loop' => array(array('NESTED_FILE' => 'include_loop1.html')), 'loop.inner' => array(array('NESTED_FILE' => 'include_loop1.html'), array('NESTED_FILE' => 'include_loop2.html'), array('NESTED_FILE' => 'include_loop3.html'))),
+				array(),
+				"1\n_1\n_02\n_3",
+			),
+			array(
 				'include_variable.html',
 				array('FILE' => 'variable.html', 'VARIABLE' => 'value'),
 				array(),
 				array(),
-				"value\nvalue",
+				'value',
 			),
 			array(
 				'loop_vars.html',
