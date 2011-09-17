@@ -42,6 +42,8 @@ class phpbb_error_collector
 
 	function format_errors()
 	{
+		$phpbb_root_path = phpbb_realpath(dirname(__FILE__) . '/../');
+
 		$text = '';
 		foreach ($this->errors as $error)
 		{
@@ -49,13 +51,15 @@ class phpbb_error_collector
 			{
 				$text .= "<br />\n";
 			}
+
 			list($errno, $msg_text, $errfile, $errline) = $error;
-			$text .= "Errno $errno: $msg_text";
-			if (defined('DEBUG_EXTRA') || defined('IN_INSTALL'))
-			{
-				$text .= " at $errfile line $errline";
-			}
+
+			// Prevent leakage of local path to phpBB install
+			$errfile = str_replace(array($phpbb_root_path, '\\'), array('', '/'), $errfile);
+
+			$text .= "Errno $errno: $msg_text at $errfile line $errline";
 		}
+
 		return $text;
 	}
 }
