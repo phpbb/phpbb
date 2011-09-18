@@ -4001,6 +4001,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 *
 * @param string $errfile	Absolute file path
 *							(e.g. /var/www/phpbb3/phpBB/includes/functions.php)
+*							Please note that if $errfile is outside of the phpBB root,
+*							the root path will not be found and can not be filtered.
 * @return string			Relative file path
 *							(e.g. /includes/functions.php)
 */
