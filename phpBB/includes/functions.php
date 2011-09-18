@@ -3816,9 +3816,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
-				// remove complete path to installation, with the risk of changing backslashes meant to be there
-				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+				$errfile = phpbb_filter_root_path($errfile);
+				$msg_text = phpbb_filter_root_path($msg_text);
 				$error_name = ($errno === E_WARNING) ? 'PHP Warning' : 'PHP Notice';
 				echo '<b>[phpBB Debug] ' . $error_name . '</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 
@@ -3994,6 +3993,29 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	// If we notice an error not handled here we pass this back to PHP by returning false
 	// This may not work for all php versions
 	return false;
+}
+
+/**
+* Removes absolute path to phpBB root directory from error messages
+* and converts backslashes to forward slashes.
+*
+* @param string $errfile	Absolute file path
+*							(e.g. /var/www/phpbb3/phpBB/includes/functions.php)
+*							Please note that if $errfile is outside of the phpBB root,
+*							the root path will not be found and can not be filtered.
+* @return string			Relative file path
+*							(e.g. /includes/functions.php)
+*/
+function phpbb_filter_root_path($errfile)
+{
+	static $root_path;
+
+	if (empty($root_path))
+	{
+		$root_path = phpbb_realpath(dirname(__FILE__) . '/../');
+	}
+
+	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);
 }
 
 /**
