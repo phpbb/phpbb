@@ -42,8 +42,6 @@ class phpbb_error_collector
 
 	function format_errors()
 	{
-		$phpbb_root_path = phpbb_realpath(dirname(__FILE__) . '/../');
-
 		$text = '';
 		foreach ($this->errors as $error)
 		{
@@ -55,7 +53,7 @@ class phpbb_error_collector
 			list($errno, $msg_text, $errfile, $errline) = $error;
 
 			// Prevent leakage of local path to phpBB install
-			$errfile = str_replace(array($phpbb_root_path, '\\'), array('', '/'), $errfile);
+			$errfile = phpbb_filter_errfile($errfile);
 
 			$text .= "Errno $errno: $msg_text at $errfile line $errline";
 		}
