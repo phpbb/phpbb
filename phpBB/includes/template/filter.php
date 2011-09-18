@@ -307,12 +307,13 @@ class phpbb_template_filter extends php_user_filter
 	}
 
 	/**
-	* Compile variables
+	* Convert template variables into PHP varrefs
 	*
 	* @param string $text_blocks Variable reference in source template
-	* @return string compiled template code
+	* @param bool $is_expr Returns whether the source was an expression type variable (i.e. S_FIRST_ROW)
+	* @return string PHP variable name
 	*/
-	private function compile_var_tags(&$text_blocks)
+	private function get_varref($text_blocks, &$is_expr)
 	{
 		// change template varrefs into PHP varrefs
 		$varrefs = array();
@@ -324,17 +325,38 @@ class phpbb_template_filter extends php_user_filter
 		{
 			$namespace = $var_val[1];
 			$varname = $var_val[3];
-			$new = $this->generate_block_varref($namespace, $varname, true, $var_val[2]);
+			$new = $this->generate_block_varref($namespace, $varname, $is_expr, $var_val[2]);
 
 			$text_blocks = str_replace($var_val[0], $new, $text_blocks);
 		}
 
-		// Handle special language tags L_ and LA_
-		$this->compile_language_tags($text_blocks);
+		// Language variables cannot be reduced to a single varref, so they must be skipped
+		// These two replacements would break language variables, so we can only run them on non-language types
+		if (strpos($text_blocks, '{L_') === false && strpos($text_blocks, '{LA_') === false)
+		{
+			// This will handle the remaining root-level varrefs
+			$text_blocks = preg_replace('#\{(' . self::REGEX_VAR . ')\}#', "\$_rootref['\\1']", $text_blocks);
+			$text_blocks = preg_replace('#\{\$(' . self::REGEX_VAR . ')\}#', "\$_tpldata['DEFINE']['.']['\\1']", $text_blocks);
+		}
 
-		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{(' . self::REGEX_VAR . ')\}#', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; /**/?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$(' . self::REGEX_VAR . ')\}#', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; /**/?>", $text_blocks);
+		return $text_blocks;
+	}
+
+	/**
+	* Compile variables
+	*
+	* @param string $text_blocks Variable reference in source template
+	* @return string compiled template code
+	*/
+	private function compile_var_tags(&$text_blocks)
+	{
+		$text_blocks = $this->get_varref($text_blocks, $is_expr);
+		$lang_replaced = $this->compile_language_tags($text_blocks);
+
+		if(!$lang_replaced)
+		{
+			$text_blocks = '<?php echo ' . ($is_expr ? "$text_blocks" : "(isset($text_blocks)) ? $text_blocks : ''") . '; /**/?>';
+		}
 
 		return $text_blocks;
 	}
@@ -343,21 +365,28 @@ class phpbb_template_filter extends php_user_filter
 	* Handles special language tags L_ and LA_
 	*
 	* @param string $text_blocks Variable reference in source template
+	* @return bool Whether a replacement occurred or not
 	*/
 	private function compile_language_tags(&$text_blocks)
 	{
+		$replacements = 0;
+
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks, -1, $replacements);
+			return (bool) $replacements;
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks, -1, $replacements);
+			return (bool) $replacements;
 		}
+
+		return false;
 	}
 
 	/**
@@ -725,6 +754,18 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include($tag_args)
 	{
+		// Process dynamic includes
+		if ($tag_args[0] == '{')
+		{
+			$var = $this->get_varref($tag_args, $is_expr);
+
+			// Make sure someone didn't try to include S_FIRST_ROW or similar
+			if (!$is_expr)
+			{
+				return "if (isset($var)) { \$_template->_tpl_include($var); }";
+			}
+		}
+
 		return "\$_template->_tpl_include('$tag_args');";
 	}
 
@@ -822,17 +863,16 @@ class phpbb_template_filter extends php_user_filter
 	*
 	* @param string $namespace Namespace to access (expects a trailing "." on the namespace)
 	* @param string $varname Variable name to use
-	* @param bool $echo If true return an echo statement, otherwise a reference to the internal variable
+	* @param bool $expr Returns whether the source was an expression type
 	* @param bool $defop If true this is a variable created with the DEFINE construct, otherwise template variable
 	* @return string Code to access variable or echo it if $echo is true
 	*/
-	private function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
+	private function generate_block_varref($namespace, $varname, &$expr, $defop = false)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
 
 		$expr = true;
-		$isset = false;
 
 		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
@@ -868,11 +908,9 @@ class phpbb_template_filter extends php_user_filter
 				$varref .= "['$varname']";
 
 				$expr = false;
-				$isset = true;
 			break;
 		}
 		// @todo Test the !$expr more
-		$varref = ($echo) ? '<?php echo ' . ($isset ? "isset($varref) ? $varref : ''" : $varref) . '; /**/?>' : (($expr || isset($varref)) ? $varref : '');
 
 		return $varref;
 	}
