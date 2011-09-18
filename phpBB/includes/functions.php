@@ -3816,8 +3816,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
-				$errfile = phpbb_filter_errfile($errfile);
-				$msg_text = phpbb_filter_errfile($msg_text);
+				$errfile = phpbb_filter_root_path($errfile);
+				$msg_text = phpbb_filter_root_path($msg_text);
 				$error_name = ($errno === E_WARNING) ? 'PHP Warning' : 'PHP Notice';
 				echo '<b>[phpBB Debug] ' . $error_name . '</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 
@@ -4004,7 +4004,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 * @return string			Relative file path
 *							(e.g. /includes/functions.php)
 */
-function phpbb_filter_errfile($errfile)
+function phpbb_filter_root_path($errfile)
 {
 	static $root_path;
 
