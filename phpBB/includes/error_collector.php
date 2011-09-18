@@ -49,13 +49,15 @@ class phpbb_error_collector
 			{
 				$text .= "<br />\n";
 			}
+
 			list($errno, $msg_text, $errfile, $errline) = $error;
-			$text .= "Errno $errno: $msg_text";
-			if (defined('DEBUG_EXTRA') || defined('IN_INSTALL'))
-			{
-				$text .= " at $errfile line $errline";
-			}
+
+			// Prevent leakage of local path to phpBB install
+			$errfile = phpbb_filter_root_path($errfile);
+
+			$text .= "Errno $errno: $msg_text at $errfile line $errline";
 		}
+
 		return $text;
 	}
 }
