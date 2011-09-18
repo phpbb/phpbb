@@ -4015,7 +4015,7 @@ function phpbb_filter_root_path($errfile)
 		$root_path = phpbb_realpath(dirname(__FILE__) . '/../');
 	}
 
-	return str_replace(array($root_path, '\\'), array('', '/'), $errfile);
+	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);
 }
 
 /**
