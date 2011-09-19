@@ -3401,22 +3401,15 @@ function get_backtrace()
 	{
 		// Strip the current directory from path
 		$trace['file'] = (empty($trace['file'])) ? '' : phpbb_filter_root_path($trace['file']);
-		$args = array();
 
-		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
-		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
+		// Only show function arguments for include etc.
+		// Other parameters may contain sensible information
+		$args = array();
+		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once')))
 		{
-			unset($trace['args']);
-		}
-		else
-		{
-			// Path...
-			if (!empty($trace['args'][0]))
-			{
-				$argument = htmlspecialchars($trace['args'][0]);
-				$argument = phpbb_filter_root_path($argument);
-				$args[] = "'{$argument}'";
-			}
+			$argument = htmlspecialchars($trace['args'][0]);
+			$argument = phpbb_filter_root_path($argument);
+			$args[] = "'{$argument}'";
 		}
 
 		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
