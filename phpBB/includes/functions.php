@@ -3405,7 +3405,7 @@ function get_backtrace()
 		// Only show function arguments for include etc.
 		// Other parameters may contain sensible information
 		$argument = '';
-		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once')))
+		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once', 'require_once')))
 		{
 			$argument = htmlspecialchars($trace['args'][0]);
 			$argument = phpbb_filter_root_path($argument);
