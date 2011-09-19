@@ -3394,14 +3394,11 @@ function get_backtrace()
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
 
-	foreach ($backtrace as $number => $trace)
-	{
-		// We skip the first one, because it only shows this file/function
-		if ($number == 0)
-		{
-			continue;
-		}
+	// We skip the first one, because it only shows this file/function
+	unset($backtrace[0]);
 
+	foreach ($backtrace as $trace)
+	{
 		// Strip the current directory from path
 		$trace['file'] = (empty($trace['file'])) ? '' : phpbb_filter_root_path($trace['file']);
 		$args = array();
