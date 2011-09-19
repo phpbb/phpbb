@@ -1869,7 +1869,7 @@ class user extends session
 		// We now get the first number passed and will select the key based upon this number
 		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
 		{
-			if (is_int($args[$i]))
+			if (is_int($args[$i]) || is_float($args[$i]))
 			{
 				$use_plural_form = $this->get_plural_form($args[$i]);
 				$numbers = array_keys($lang);
@@ -1905,12 +1905,14 @@ class user extends session
 	* Determine which plural form we should use.
 	* For some languages this is not as simple as for English.
 	*
-	* @param $number		int		The number we want to get the plural case for
+	* @param $number		int|float	The number we want to get the plural case for
 	* @param $force_rule	mixed	False to use the plural rule of the language package
 	*								or an integer to force a certain plural rule
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
+		$number = (int) $number;
+
 		if ($number == 0)
 		{
 			// We use special language strings for 0, so it's "no users" instead of "0 users"

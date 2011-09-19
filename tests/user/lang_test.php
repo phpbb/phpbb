@@ -26,6 +26,14 @@ class phpbb_user_lang_test extends phpbb_test_case
 				1		=> '1 post',		// 1
 				2		=> '%d posts',		// 2+
 			),
+			'ARRY_NO_ZERO'	=> array(
+				1		=> '1 post',		// 1
+				2		=> '%d posts',		// 0, 2+
+			),
+			'ARRY_FLOAT'	=> array(
+				1		=> '1 post',		// 1.x
+				2		=> '%1$.1f posts',	// 0.x, 2+.x
+			),
 		);
 
 		// No param
@@ -50,6 +58,16 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 1), '1 post');
 		$this->assertEquals($user->lang('ARRY', 2), '2 posts');
 		$this->assertEquals($user->lang('ARRY', 123), '123 posts');
+
+		// Array with missing keys
+		$this->assertEquals($user->lang('ARRY_NO_ZERO', 0), '0 posts');
+		$this->assertEquals($user->lang('ARRY_NO_ZERO', 1), '1 post');
+		$this->assertEquals($user->lang('ARRY_NO_ZERO', 2), '2 posts');
+
+		// Floats as array key
+		$this->assertEquals($user->lang('ARRY_FLOAT', 1.3), '1 post');
+		$this->assertEquals($user->lang('ARRY_FLOAT', 2.0), '2.0 posts');
+		$this->assertEquals($user->lang('ARRY_FLOAT', 2.51), '2.5 posts');
 
 		// ticket PHPBB3-9949
 		$this->assertEquals($user->lang('ARRY', 1, 2), '1 post');
