@@ -3387,61 +3387,44 @@ function add_log()
 }
 
 /**
-* Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
+* Return a nicely formatted backtrace.
+*
+* Turns the array returned by debug_backtrace() into HTML markup.
+* Also filters out absolute paths to phpBB root.
+*
+* @return string	HTML markup
 */
 function get_backtrace()
 {
-	global $phpbb_root_path;
-
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = phpbb_realpath($phpbb_root_path);
 
-	foreach ($backtrace as $number => $trace)
+	// We skip the first one, because it only shows this file/function
+	unset($backtrace[0]);
+
+	foreach ($backtrace as $trace)
 	{
-		// We skip the first one, because it only shows this file/function
-		if ($number == 0)
-		{
-			continue;
-		}
-
 		// Strip the current directory from path
-		if (empty($trace['file']))
-		{
-			$trace['file'] = '';
-		}
-		else
-		{
-			$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
-			$trace['file'] = substr($trace['file'], 1);
-		}
-		$args = array();
+		$trace['file'] = (empty($trace['file'])) ? '(not given by php)' : htmlspecialchars(phpbb_filter_root_path($trace['file']));
+		$trace['line'] = (empty($trace['line'])) ? '(not given by php)' : $trace['line'];
 
-		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
-		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
+		// Only show function arguments for include etc.
+		// Other parameters may contain sensible information
+		$argument = '';
+		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once', 'require_once')))
 		{
-			unset($trace['args']);
-		}
-		else
-		{
-			// Path...
-			if (!empty($trace['args'][0]))
-			{
-				$argument = htmlspecialchars($trace['args'][0]);
-				$argument = str_replace(array($path, '\\'), array('', '/'), $argument);
-				$argument = substr($argument, 1);
-				$args[] = "'{$argument}'";
-			}
+			$argument = htmlspecialchars(phpbb_filter_root_path($trace['args'][0]));
 		}
 
 		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
 		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
 
 		$output .= '<br />';
-		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
+		$output .= '<b>FILE:</b> ' . $trace['file'] . '<br />';
 		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
 
-		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
+		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']);
+		$output .= '(' . (($argument !== '') ? "'$argument'" : '') . ')<br />';
 	}
 	$output .= '</div>';
 	return $output;
