@@ -194,8 +194,8 @@ class ucp_main
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
-					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+					'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',

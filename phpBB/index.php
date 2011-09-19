@@ -118,7 +118,7 @@ $template->assign_vars(array(
 	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS', (int) $config['num_posts']),
 	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
 	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
+	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),

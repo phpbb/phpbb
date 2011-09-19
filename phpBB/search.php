@@ -295,7 +295,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
 		{
 			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->common_words)) . '<br />' : '';
-			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
+			trigger_error($ignored . $user->lang('NO_KEYWORDS', $user->lang('CHARACTERS', (int) $search->word_length['min']), $user->lang('CHARACTERS', (int) $search->word_length['max'])));
 		}
 	}
 

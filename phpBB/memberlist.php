@@ -612,8 +612,8 @@ switch ($mode)
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
-			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',

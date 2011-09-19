@@ -231,7 +231,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 					// Something went wrong, only partially moved?
 					if ($num_moved != $folder_row['pm_count'])
 					{
-						trigger_error(sprintf($user->lang['MOVE_PM_ERROR'], $num_moved, $folder_row['pm_count']));
+						trigger_error($user->lang('MOVE_PM_ERROR', (int) $folder_row['pm_count'], $num_moved));
 					}
 				break;
 

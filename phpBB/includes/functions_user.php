@@ -2039,7 +2039,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2048,7 +2048,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2388,7 +2388,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+				$error[] = avatar_error_wrong_size($data['width'], $data['height']);
 			}
 		}
 
@@ -2398,7 +2398,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 			{
 				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+					$error[] = avatar_error_wrong_size($data['width'], $data['height']);
 				}
 			}
 		}
@@ -2442,6 +2442,29 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	}
 
 	return (sizeof($error)) ? false : true;
+}
+
+function avatar_error_wrong_size($width, $height)
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_WRONG_SIZE',
+		$user->lang('PIXELS', (int) $config['avatar_min_width']),
+		$user->lang('PIXELS', (int) $config['avatar_min_height']),
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		$user->lang('PIXELS', (int) $width),
+		$user->lang('PIXELS', (int) $height));
+}
+
+function avatar_explanation_string()
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_EXPLAIN',
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		round($config['avatar_filesize'] / 1024));
 }
 
 //

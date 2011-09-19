@@ -487,21 +487,7 @@ class acp_icons
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
 
-				$level = E_USER_NOTICE;
-				switch ($icons_updated)
-				{
-					case 0:
-						$suc_lang = "{$lang}_NONE";
-						$level = E_USER_WARNING;
-						break;
-
-					case 1:
-						$suc_lang = "{$lang}_ONE";
-						break;
-
-					default:
-						$suc_lang = $lang;
-				}
+				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$errormsgs = '';
 				foreach ($errors as $img => $error)
 				{
@@ -509,11 +495,11 @@ class acp_icons
 				}
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang[$suc_lang . '_EDITED'] . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang($lang . '_EDITED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($user->lang[$suc_lang . '_ADDED'] . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($user->lang($lang . '_ADDED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 
 			break;

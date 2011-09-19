@@ -89,7 +89,7 @@ $lang = array_merge($lang, array(
 	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
-	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width: %1$d pixels, height: %2$d pixels, file size: %3$.2f KiB.',
+	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width: %1$s, height: %2$s, file size: %3$.2f KiB.',
 	'AVATAR_FEATURES_DISABLED'		=> 'The avatar functionality is currently disabled.',
 	'AVATAR_GALLERY'				=> 'Local gallery',
 	'AVATAR_GENERAL_UPLOAD_ERROR'	=> 'Could not upload avatar to %s.',
@@ -188,10 +188,16 @@ $lang = array_merge($lang, array(
 	'EXPORT_FOLDER'				=> 'Export this view',
 
 	'FIELD_REQUIRED'					=> 'The field “%s” must be completed.',
-	'FIELD_TOO_SHORT'					=> 'The field “%1$s” is too short, a minimum of %2$d characters is required.',
-	'FIELD_TOO_LONG'					=> 'The field “%1$s” is too long, a maximum of %2$d characters is allowed.',
-	'FIELD_TOO_SMALL'					=> 'The value of “%1$s” is too small, a minimum value of %2$d is required.',
-	'FIELD_TOO_LARGE'					=> 'The value of “%1$s” is too large, a maximum value of %2$d is allowed.',
+	'FIELD_TOO_SHORT'					=> array(
+		1	=> 'The field “%2$s” is too short, a minimum of %1$d character is required.',
+		2	=> 'The field “%2$s” is too short, a minimum of %1$d characters is required.',
+	),
+	'FIELD_TOO_LONG'					=> array(
+		1	=> 'The field “%2$s” is too long, a maximum of %1$d character is allowed.',
+		2	=> 'The field “%2$s” is too long, a maximum of %1$d characters is allowed.',
+	),
+	'FIELD_TOO_SMALL'					=> 'The value of “%2$s” is too small, a minimum value of %1$d is required.',
+	'FIELD_TOO_LARGE'					=> 'The value of “%2$s” is too large, a maximum value of %1$d is allowed.',
 	'FIELD_INVALID_CHARS_NUMBERS_ONLY'	=> 'The field “%s” has invalid characters, only numbers are allowed.',
 	'FIELD_INVALID_CHARS_ALPHA_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric characters are allowed.',
 	'FIELD_INVALID_CHARS_SPACERS_ONLY'	=> 'The field “%s” has invalid characters, only alphanumeric, space or -+_[] characters are allowed.',
@@ -273,7 +279,9 @@ $lang = array_merge($lang, array(
 	'MOVE_DELETED_MESSAGES_TO'		=> 'Move messages from removed folder to',
 	'MOVE_DOWN'						=> 'Move down',
 	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
-	'MOVE_PM_ERROR'					=> 'An error occurred while moving the messages to the new folder, only %1d from %2d messages were moved.',
+	'MOVE_PM_ERROR'					=> array(
+		2	=> 'An error occurred while moving the messages to the new folder, only %2d from %1d messages were moved.',
+	),
 	'MOVE_TO_FOLDER'				=> 'Move to folder',
 	'MOVE_UP'						=> 'Move up',
 

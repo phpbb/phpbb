@@ -371,7 +371,7 @@ class acp_groups
 						{
 							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 							{
-								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+								$error[] = avatar_error_wrong_size($data['width'], $data['height']);
 							}
 						}
 
@@ -381,7 +381,7 @@ class acp_groups
 							{
 								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 								{
-									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+									$error[] = avatar_error_wrong_size($data['width'], $data['height']);
 								}
 							}
 						}
@@ -627,7 +627,7 @@ class acp_groups
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
+					'L_AVATAR_EXPLAIN'	=> avatar_explanation_string(),
 				));
 
 				return;
