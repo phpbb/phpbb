@@ -3404,12 +3404,11 @@ function get_backtrace()
 
 		// Only show function arguments for include etc.
 		// Other parameters may contain sensible information
-		$args = array();
+		$argument = '';
 		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once')))
 		{
 			$argument = htmlspecialchars($trace['args'][0]);
 			$argument = phpbb_filter_root_path($argument);
-			$args[] = "'{$argument}'";
 		}
 
 		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
@@ -3419,7 +3418,8 @@ function get_backtrace()
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
 		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
 
-		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
+		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']);
+		$output .= '(' . (($argument !== '') ? "'$argument'" : '') . ')<br />';
 	}
 	$output .= '</div>';
 	return $output;
