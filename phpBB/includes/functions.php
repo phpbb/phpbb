@@ -3400,7 +3400,8 @@ function get_backtrace()
 	foreach ($backtrace as $trace)
 	{
 		// Strip the current directory from path
-		$trace['file'] = (empty($trace['file'])) ? '' : phpbb_filter_root_path($trace['file']);
+		$trace['file'] = (empty($trace['file'])) ? '(not given by php)' : htmlspecialchars(phpbb_filter_root_path($trace['file']));
+		$trace['line'] = (empty($trace['line'])) ? '(not given by php)' : $trace['line'];
 
 		// Only show function arguments for include etc.
 		// Other parameters may contain sensible information
@@ -3414,7 +3415,7 @@ function get_backtrace()
 		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
 
 		$output .= '<br />';
-		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
+		$output .= '<b>FILE:</b> ' . $trace['file'] . '<br />';
 		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
 
 		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']);
