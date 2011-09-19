@@ -3391,11 +3391,8 @@ function add_log()
 */
 function get_backtrace()
 {
-	global $phpbb_root_path;
-
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = phpbb_realpath($phpbb_root_path);
 
 	foreach ($backtrace as $number => $trace)
 	{
@@ -3406,15 +3403,7 @@ function get_backtrace()
 		}
 
 		// Strip the current directory from path
-		if (empty($trace['file']))
-		{
-			$trace['file'] = '';
-		}
-		else
-		{
-			$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
-			$trace['file'] = substr($trace['file'], 1);
-		}
+		$trace['file'] = (empty($trace['file'])) ? '' : phpbb_filter_root_path($trace['file']);
 		$args = array();
 
 		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
@@ -3428,8 +3417,7 @@ function get_backtrace()
 			if (!empty($trace['args'][0]))
 			{
 				$argument = htmlspecialchars($trace['args'][0]);
-				$argument = str_replace(array($path, '\\'), array('', '/'), $argument);
-				$argument = substr($argument, 1);
+				$argument = phpbb_filter_root_path($argument);
 				$args[] = "'{$argument}'";
 			}
 		}
