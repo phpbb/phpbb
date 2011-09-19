@@ -3407,8 +3407,7 @@ function get_backtrace()
 		$argument = '';
 		if (!empty($trace['args'][0]) && in_array($trace['function'], array('include', 'require', 'include_once', 'require_once')))
 		{
-			$argument = htmlspecialchars($trace['args'][0]);
-			$argument = phpbb_filter_root_path($argument);
+			$argument = htmlspecialchars(phpbb_filter_root_path($trace['args'][0]));
 		}
 
 		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
