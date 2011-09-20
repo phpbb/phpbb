@@ -1655,7 +1655,7 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id
+		$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_name, c.theme_id
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
 			WHERE s.style_id = $style
 				AND t.template_id = s.template_id
@@ -1674,7 +1674,7 @@ class user extends session
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
-			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id
+			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_id
 				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
 				WHERE s.style_id = $style
 					AND t.template_id = s.template_id
@@ -1696,7 +1696,6 @@ class user extends session
 		$parsed_items = $parsed_items['theme'];
 
 		$check_for = array(
-			'parse_css_file'	=> (int) 0,
 			'pagination_sep'	=> (string) ', '
 		);
 
@@ -1709,52 +1708,6 @@ class user extends session
 			{
 				$this->theme[$key] = htmlspecialchars($this->theme[$key]);
 			}
-		}
-
-		// If the style author specified the theme needs to be cached
-		// (because of the used paths and variables) than make sure it is the case.
-		// For example, if the theme uses language-specific images it needs to be stored in db.
-		if (!$this->theme['theme_storedb'] && $this->theme['parse_css_file'])
-		{
-			$this->theme['theme_storedb'] = 1;
-
-			$stylesheet = file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/stylesheet.css");
-			// Match CSS imports
-			$matches = array();
-			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
-
-			if (sizeof($matches))
-			{
-				$content = '';
-				foreach ($matches[0] as $idx => $match)
-				{
-					if ($content = @file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/" . $matches[1][$idx]))
-					{
-						$content = trim($content);
-					}
-					else
-					{
-						$content = '';
-					}
-					$stylesheet = str_replace($match, $content, $stylesheet);
-				}
-				unset($content);
-			}
-
-			$stylesheet = str_replace('./', 'styles/' . $this->theme['theme_path'] . '/theme/', $stylesheet);
-
-			$sql_ary = array(
-				'theme_data'	=> $stylesheet,
-				'theme_mtime'	=> time(),
-				'theme_storedb'	=> 1
-			);
-
-			$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE theme_id = ' . $this->theme['theme_id'];
-			$db->sql_query($sql);
-
-			unset($sql_ary);
 		}
 
 		$template->set_template();
