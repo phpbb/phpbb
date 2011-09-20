@@ -56,9 +56,6 @@ $template->set_custom_template($phpbb_admin_path . 'style', 'admin');
 $template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
-// the acp template is never stored in the database
-$user->theme['template_storedb'] = false;
-
 // Instantiate new module
 $module = new p_master();
 

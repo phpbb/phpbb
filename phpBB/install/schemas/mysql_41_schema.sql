@@ -766,23 +766,10 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	template_filename varchar(100) DEFAULT '' NOT NULL,
-	template_included text NOT NULL,
-	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	template_data mediumtext NOT NULL,
-	KEY tid (template_id),
-	KEY tfn (template_filename)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -792,9 +779,6 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name varchar(255) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
-	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_data mediumtext NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;

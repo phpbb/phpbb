@@ -1104,7 +1104,6 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	template_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT 'kNg=' NOT NULL,
-	template_storedb INTEGER DEFAULT 0 NOT NULL,
 	template_inherits_id INTEGER DEFAULT 0 NOT NULL,
 	template_inherit_path VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
@@ -1124,27 +1123,12 @@ BEGIN
 END;;
 
 
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id INTEGER DEFAULT 0 NOT NULL,
-	template_filename VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	template_included BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL,
-	template_mtime INTEGER DEFAULT 0 NOT NULL,
-	template_data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
-);;
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data(template_id);;
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data(template_filename);;
-
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER NOT NULL,
 	theme_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	theme_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	theme_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	theme_storedb INTEGER DEFAULT 0 NOT NULL,
-	theme_mtime INTEGER DEFAULT 0 NOT NULL,
-	theme_data BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	theme_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_styles_theme ADD PRIMARY KEY (theme_id);;

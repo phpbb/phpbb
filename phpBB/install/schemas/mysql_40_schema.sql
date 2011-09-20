@@ -766,23 +766,10 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright blob NOT NULL,
 	template_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherit_path varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name(255))
-);
-
-
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	template_filename varbinary(100) DEFAULT '' NOT NULL,
-	template_included blob NOT NULL,
-	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	template_data mediumblob NOT NULL,
-	KEY tid (template_id),
-	KEY tfn (template_filename)
 );
 
 
@@ -792,9 +779,6 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name blob NOT NULL,
 	theme_copyright blob NOT NULL,
 	theme_path varbinary(100) DEFAULT '' NOT NULL,
-	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_data mediumblob NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name(255))
 );

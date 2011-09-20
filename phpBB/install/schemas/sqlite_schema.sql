@@ -741,34 +741,18 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) NOT NULL DEFAULT '',
 	template_path varchar(100) NOT NULL DEFAULT '',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
-	template_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_inherits_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_inherit_path varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
 
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_filename varchar(100) NOT NULL DEFAULT '',
-	template_included text(65535) NOT NULL DEFAULT '',
-	template_mtime INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_data mediumtext(16777215) NOT NULL DEFAULT ''
-);
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
-
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER PRIMARY KEY NOT NULL ,
 	theme_name varchar(255) NOT NULL DEFAULT '',
 	theme_copyright varchar(255) NOT NULL DEFAULT '',
-	theme_path varchar(100) NOT NULL DEFAULT '',
-	theme_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_mtime INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_data mediumtext(16777215) NOT NULL DEFAULT ''
+	theme_path varchar(100) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
