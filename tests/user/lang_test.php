@@ -34,6 +34,12 @@ class phpbb_user_lang_test extends phpbb_test_case
 				1		=> '1 post',		// 1.x
 				2		=> '%1$.1f posts',	// 0.x, 2+.x
 			),
+			'dateformat'	=> array(
+				'AGO'	=> array(
+					1	=> '%d second',
+					2	=> '%d seconds',
+				),
+			),
 		);
 
 		// No param
@@ -69,11 +75,14 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY_FLOAT', 2.0), '2.0 posts');
 		$this->assertEquals($user->lang('ARRY_FLOAT', 2.51), '2.5 posts');
 
-		// ticket PHPBB3-9949
+		// Use sub key, if first paramenter is an array
+		$this->assertEquals($user->lang(array('dateformat', 'AGO'), 2), '2 seconds');
+
+		// ticket PHPBB3-9949 - use first int to determinate the plural-form to use
 		$this->assertEquals($user->lang('ARRY', 1, 2), '1 post');
 		$this->assertEquals($user->lang('ARRY', 1, 's', 2), '1 post');
 
-		// ticket PHPBB3-10345
+		// ticket PHPBB3-10345 - different plrual rules, not just 0/1/2+
 		$user = new user;
 		$user->lang = array(
 			'PLURAL_RULE'		=> 13,
