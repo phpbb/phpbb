@@ -1307,8 +1307,7 @@ CREATE TABLE [phpbb_styles] (
 	[style_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_active] [int] DEFAULT (1) NOT NULL ,
 	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[theme_id] [int] DEFAULT (0) NOT NULL ,
-	[imageset_id] [int] DEFAULT (0) NOT NULL 
+	[theme_id] [int] DEFAULT (0) NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -1326,9 +1325,6 @@ CREATE  INDEX [template_id] ON [phpbb_styles]([template_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [theme_id] ON [phpbb_styles]([theme_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [imageset_id] ON [phpbb_styles]([imageset_id]) ON [PRIMARY]
 GO
 
 
@@ -1399,53 +1395,6 @@ ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [theme_name] ON [phpbb_styles_theme]([theme_name]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE TABLE [phpbb_styles_imageset] (
-	[imageset_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[imageset_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[imageset_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[imageset_path] [varchar] (100) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_imageset] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_imageset] PRIMARY KEY  CLUSTERED 
-	(
-		[imageset_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  UNIQUE  INDEX [imgset_nm] ON [phpbb_styles_imageset]([imageset_name]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE TABLE [phpbb_styles_imageset_data] (
-	[image_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[image_name] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[image_filename] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[image_lang] [varchar] (30) DEFAULT ('') NOT NULL ,
-	[image_height] [int] DEFAULT (0) NOT NULL ,
-	[image_width] [int] DEFAULT (0) NOT NULL ,
-	[imageset_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_imageset_data] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_imageset_data] PRIMARY KEY  CLUSTERED 
-	(
-		[image_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  INDEX [i_d] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
 GO
 
 

@@ -1432,7 +1432,6 @@ CREATE TABLE phpbb_styles (
 	style_active number(1) DEFAULT '1' NOT NULL,
 	template_id number(8) DEFAULT '0' NOT NULL,
 	theme_id number(8) DEFAULT '0' NOT NULL,
-	imageset_id number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_styles PRIMARY KEY (style_id),
 	CONSTRAINT u_phpbb_style_name UNIQUE (style_name)
 )
@@ -1441,8 +1440,6 @@ CREATE TABLE phpbb_styles (
 CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id)
 /
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id)
-/
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id)
 /
 
 CREATE SEQUENCE phpbb_styles_seq
@@ -1540,70 +1537,6 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_styles_theme_seq.nextval
 	INTO :new.theme_id
-	FROM dual;
-END;
-/
-
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id number(8) NOT NULL,
-	imageset_name varchar2(765) DEFAULT '' ,
-	imageset_copyright varchar2(765) DEFAULT '' ,
-	imageset_path varchar2(100) DEFAULT '' ,
-	CONSTRAINT pk_phpbb_styles_imageset PRIMARY KEY (imageset_id),
-	CONSTRAINT u_phpbb_imgset_nm UNIQUE (imageset_name)
-)
-/
-
-
-CREATE SEQUENCE phpbb_styles_imageset_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_styles_imageset
-BEFORE INSERT ON phpbb_styles_imageset
-FOR EACH ROW WHEN (
-	new.imageset_id IS NULL OR new.imageset_id = 0
-)
-BEGIN
-	SELECT phpbb_styles_imageset_seq.nextval
-	INTO :new.imageset_id
-	FROM dual;
-END;
-/
-
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id number(8) NOT NULL,
-	image_name varchar2(200) DEFAULT '' ,
-	image_filename varchar2(200) DEFAULT '' ,
-	image_lang varchar2(30) DEFAULT '' ,
-	image_height number(4) DEFAULT '0' NOT NULL,
-	image_width number(4) DEFAULT '0' NOT NULL,
-	imageset_id number(8) DEFAULT '0' NOT NULL,
-	CONSTRAINT pk_phpbb_styles_imageset_data PRIMARY KEY (image_id)
-)
-/
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id)
-/
-
-CREATE SEQUENCE phpbb_styles_imageset_data_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_styles_imageset_data
-BEFORE INSERT ON phpbb_styles_imageset_data
-FOR EACH ROW WHEN (
-	new.image_id IS NULL OR new.image_id = 0
-)
-BEGIN
-	SELECT phpbb_styles_imageset_data_seq.nextval
-	INTO :new.image_id
 	FROM dual;
 END;
 /

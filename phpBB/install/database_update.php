@@ -1061,6 +1061,15 @@ function database_update_info()
 					'group_legend'		=> array('UINT', 0),
 				),
 			),
+			'drop_columns'      => array(
+			    STYLES_TABLE        => array(
+			        'imageset_id',
+                ),
+            ),
+            'drop_tables'       => array(
+                STYLES_IMAGESET_TABLE,
+                STYLES_IMAGESET_DATA_TABLE,
+            ),
 		),
 	);
 }
@@ -2128,6 +2137,10 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
+			
+			$sql = 'DELETE FROM ' . MODULES_TABLE . "
+			    WHERE module_basename = 'styles' AND module_mode = 'imageset'";
+			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
 			$sql = 'SELECT topic_id, topic_approved, (topic_replies + 1) AS topic_posts, topic_last_post_id, topic_last_post_subject, topic_last_post_time, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour

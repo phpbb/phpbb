@@ -1077,8 +1077,7 @@ CREATE TABLE phpbb_styles (
 	style_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	style_active INTEGER DEFAULT 1 NOT NULL,
 	template_id INTEGER DEFAULT 0 NOT NULL,
-	theme_id INTEGER DEFAULT 0 NOT NULL,
-	imageset_id INTEGER DEFAULT 0 NOT NULL
+	theme_id INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
@@ -1086,7 +1085,6 @@ ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles(style_name);;
 CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles(imageset_id);;
 
 CREATE GENERATOR phpbb_styles_gen;;
 SET GENERATOR phpbb_styles_gen TO 0;;
@@ -1161,55 +1159,6 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.theme_id = GEN_ID(phpbb_styles_theme_gen, 1);
-END;;
-
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id INTEGER NOT NULL,
-	imageset_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	imageset_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	imageset_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL
-);;
-
-ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset(imageset_name);;
-
-CREATE GENERATOR phpbb_styles_imageset_gen;;
-SET GENERATOR phpbb_styles_imageset_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_imageset FOR phpbb_styles_imageset
-BEFORE INSERT
-AS
-BEGIN
-	NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
-END;;
-
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id INTEGER NOT NULL,
-	image_name VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	image_filename VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	image_lang VARCHAR(30) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	image_height INTEGER DEFAULT 0 NOT NULL,
-	image_width INTEGER DEFAULT 0 NOT NULL,
-	imageset_id INTEGER DEFAULT 0 NOT NULL
-);;
-
-ALTER TABLE phpbb_styles_imageset_data ADD PRIMARY KEY (image_id);;
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data(imageset_id);;
-
-CREATE GENERATOR phpbb_styles_imageset_data_gen;;
-SET GENERATOR phpbb_styles_imageset_data_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_imageset_data FOR phpbb_styles_imageset_data
-BEFORE INSERT
-AS
-BEGIN
-	NEW.image_id = GEN_ID(phpbb_styles_imageset_data_gen, 1);
 END;;
 
 
