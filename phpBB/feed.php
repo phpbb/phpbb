@@ -127,7 +127,7 @@ if (!$feed_updated_time)
 // Some default assignments
 // FEED_IMAGE is not used (atom)
 $global_vars = array_merge($global_vars, array(
-	'FEED_IMAGE'			=> ($user->img('site_logo', '', false, '', 'src')) ? $board_url . '/' . substr($user->img('site_logo', '', false, '', 'src'), strlen($phpbb_root_path)) : '',
+	'FEED_IMAGE'			=> '',
 	'SELF_LINK'				=> feed_append_sid('/feed.' . $phpEx, $params),
 	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
 	'FEED_TITLE'			=> $config['sitename'],

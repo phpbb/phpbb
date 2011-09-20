@@ -23,7 +23,6 @@ class acp_styles_info
 				'style'		=> array('title' => 'ACP_STYLES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
 				'template'	=> array('title' => 'ACP_TEMPLATES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
 				'theme'		=> array('title' => 'ACP_THEMES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
-				'imageset'	=> array('title' => 'ACP_IMAGESETS', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
 			),
 		);
 	}

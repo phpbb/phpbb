@@ -752,12 +752,10 @@ CREATE TABLE phpbb_styles (
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name(255)),
 	KEY template_id (template_id),
-	KEY theme_id (theme_id),
-	KEY imageset_id (imageset_id)
+	KEY theme_id (theme_id)
 );
 
 
@@ -799,31 +797,6 @@ CREATE TABLE phpbb_styles_theme (
 	theme_data mediumblob NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	imageset_name blob NOT NULL,
-	imageset_copyright blob NOT NULL,
-	imageset_path varbinary(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id),
-	UNIQUE imgset_nm (imageset_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	image_name varbinary(200) DEFAULT '' NOT NULL,
-	image_filename varbinary(200) DEFAULT '' NOT NULL,
-	image_lang varbinary(30) DEFAULT '' NOT NULL,
-	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (image_id),
-	KEY i_d (imageset_id)
 );
 
 
