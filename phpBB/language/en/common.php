@@ -114,7 +114,6 @@ $lang = array_merge($lang, array(
 	'BOARD_UNAVAILABLE'		=> 'Sorry but the board is temporarily unavailable, please try again in a few minutes.',
 	'BROWSING_FORUM'		=> 'Users browsing this forum: %1$s',
 	'BROWSING_FORUM_GUESTS'	=> array(
-		0	=> 'Users browsing this forum: %2$s and 0 guests',
 		1	=> 'Users browsing this forum: %2$s and %1$d guest',
 		2	=> 'Users browsing this forum: %2$s and %1$d guests',
 	),
@@ -126,7 +125,6 @@ $lang = array_merge($lang, array(
 	'CHANGING_PREFERENCES'	=> 'Changing board preferences',
 	'CHANGING_PROFILE'		=> 'Changing profile settings',
 	'CHARACTERS'			=> array(
-		0	=> '%d characters',
 		1	=> '%d character',
 		2	=> '%d characters',
 	),
@@ -253,12 +251,10 @@ $lang = array_merge($lang, array(
 	'GROUP_ERR_USER_LONG'		=> 'Group names cannot exceed 60 characters. The specified group name is too long.',
 	'GUEST'						=> 'Guest',
 	'GUEST_USERS_ONLINE'		=> array(
-		0	=> 'There are 0 guest users online',
 		1	=> 'There is %d guest user online',
 		2	=> 'There are %d guest users online',
 	),
 	'GUEST_USERS_TOTAL'			=>  array(
-		0	=> '0 guests',
 		1	=> '%d guest',
 		2	=> '%d guests',
 	),
@@ -271,12 +267,10 @@ $lang = array_merge($lang, array(
 	'G_NEWLY_REGISTERED'		=> 'Newly registered users',
 
 	'HIDDEN_USERS_ONLINE'		=> array(
-		0	=> '0 hidden users',
 		1	=> '%d hidden user',
 		2	=> '%d hidden users',
 	),
 	'HIDDEN_USERS_TOTAL'		=> array(
-		0	=> '0 hidden',
 		1	=> '%d hidden',
 		2	=> '%d hidden',
 	),
@@ -367,7 +361,6 @@ $lang = array_merge($lang, array(
 	'NEW_MESSAGE'				=> 'New message',
 	'NEW_MESSAGES'				=> 'New messages',
 	'NEW_PMS'					=> array(
-		0	=> '<strong>0</strong> new messages',
 		1	=> '<strong>%d</strong> new message',
 		2	=> '<strong>%d</strong> new messages',
 	),
@@ -436,13 +429,11 @@ $lang = array_merge($lang, array(
 	'ONLINE_BUDDIES'			=> 'Online friends',
 	// "... :: x registered and y hidden"
 	'ONLINE_USERS_TOTAL'		=> array(
-		0	=> 'In total there are <strong>0</strong> users online :: %2$s and %3$s',
 		1	=> 'In total there is <strong>%1$d</strong> user online :: %2$s and %3$s',
 		2	=> 'In total there are <strong>%1$d</strong> users online :: %2$s and %3$s',
 	),
 	// "... :: x registered, y hidden and z guests"
 	'ONLINE_USERS_TOTAL_GUESTS'	=> array(
-		0	=> 'In total there are <strong>0</strong> users online :: %2$s, %3$s and %4$s',
 		1	=> 'In total there is <strong>%1$d</strong> user online :: %2$s, %3$s and %4$s',
 		2	=> 'In total there are <strong>%1$d</strong> users online :: %2$s, %3$s and %4$s',
 	),
@@ -453,7 +444,6 @@ $lang = array_merge($lang, array(
 	'PASSWORD'				=> 'Password',
 	'PIXEL'					=> 'px',
 	'PIXELS'				=> array(
-		0	=> '%d pixels',
 		1	=> '%d pixel',
 		2	=> '%d pixels',
 	),
@@ -506,12 +496,10 @@ $lang = array_merge($lang, array(
 	'REGISTERED_USERS'			=> 'Registered users:',
 	// "... and 2 hidden users online"
 	'REG_USERS_ONLINE'			=> array(
-		0	=> 'There are 0 registered users and %2$s online',
 		1	=> 'There is %1$d registered user and %2$s online',
 		2	=> 'There are %1$d registered users and %2$s online',
 	),
 	'REG_USERS_TOTAL'			=> array(
-		0	=> '0 registered',
 		1	=> '%d registered',
 		2	=> '%d registered',
 	),
@@ -667,12 +655,10 @@ $lang = array_merge($lang, array(
 	'TOPIC_UNAPPROVED'	=> 'This topic has not been approved',
 	'TOTAL_ATTACHMENTS'	=> 'Attachment(s)',
 	'TOTAL_LOGS'		=> array(
-		0	=> '0 logs',
 		1	=> '%d log',
 		2	=> '%d logs',
 	),
 	'TOTAL_PMS'		=> array(
-		0	=> '0 private messages in total',
 		1	=> '%d private message in total',
 		2	=> '%d private messages in total',
 	),
@@ -695,7 +681,6 @@ $lang = array_merge($lang, array(
 	'UNMARK_ALL'			=> 'Unmark all',
 	'UNREAD_MESSAGES'		=> 'Unread messages',
 	'UNREAD_PMS'			=> array(
-		0	=> '<strong>0</strong> unread messages',
 		1	=> '<strong>%d</strong> unread message',
 		2	=> '<strong>%d</strong> unread messages',
 	),
@@ -717,7 +702,6 @@ $lang = array_merge($lang, array(
 	'USER_AVATAR'			=> 'User avatar',
 	'USER_CANNOT_READ'		=> 'You cannot read posts in this forum.',
 	'USER_POSTS'			=> array(
-		0	=> '0 Posts',
 		1	=> '%d Post',
 		2	=> '%d Posts',
 	),
@@ -748,7 +732,6 @@ $lang = array_merge($lang, array(
 	'VIEW_NEWEST_POST'			=> 'View first unread post',
 	'VIEW_NOTES'				=> 'View user notes',
 	'VIEW_ONLINE_TIMES'			=> array(
-		0	=> 'based on users active over the past %d minutes',
 		1	=> 'based on users active over the past %d minute',
 		2	=> 'based on users active over the past %d minutes',
 	),

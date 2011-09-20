@@ -194,7 +194,6 @@ $lang = array_merge($lang, array(
 	'SMILIES_WIDTH'				=> 'Smiley width',
 
 	'TOO_MANY_SMILIES'			=> array(
-		0	=> 'Limit of %d smilies reached.',
 		1	=> 'Limit of %d smiley reached.',
 		2	=> 'Limit of %d smilies reached.',
 	),

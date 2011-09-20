@@ -94,7 +94,6 @@ $lang = array_merge($lang, array(
 	'LAST_ACTIVE'				=> 'Last active',
 	'LESS_THAN'					=> 'Less than',
 	'LIST_USERS'				=> array(
-		0	=> '0 users',
 		1	=> '%d user',
 		2	=> '%d users',
 	),

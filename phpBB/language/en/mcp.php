@@ -121,7 +121,6 @@ $lang = array_merge($lang, array(
 	'LATEST_WARNINGS'			=> 'Latest 5 warnings',
 	'LEAVE_SHADOW'				=> 'Leave shadow topic in place',
 	'LIST_REPORTS'				=> array(
-		0	=> '%d reports',
 		1	=> '%d report',
 		2	=> '%d reports',
 	),

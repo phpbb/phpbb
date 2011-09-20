@@ -162,12 +162,10 @@ $lang = array_merge($lang, array(
 	'POLL_MAX_OPTIONS_EXPLAIN'	=> 'This is the number of options each user may select when voting.',
 	'POLL_OPTIONS'				=> 'Poll options',
 	'POLL_OPTIONS_EXPLAIN'		=> array(
-		0	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options.',
 		1	=> 'Place each option on a new line. You may enter <strong>%d</strong> option.',
 		2	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options.',
 	),
 	'POLL_OPTIONS_EDIT_EXPLAIN'		=> array(
-		0	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options. If you remove or add options all previous votes will be reset.',
 		1	=> 'Place each option on a new line. You may enter <strong>%d</strong> option. If you remove or add options all previous votes will be reset.',
 		2	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options. If you remove or add options all previous votes will be reset.',
 	),
@@ -196,7 +194,6 @@ $lang = array_merge($lang, array(
 	'PROGRESS_BAR'				=> 'Progress bar',
 
 	'QUOTE_DEPTH_EXCEEDED'		=> array(
-		0	=> 'You may embed only %d quotes within each other.',
 		1	=> 'You may embed only %d quote within each other.',
 		2	=> 'You may embed only %d quotes within each other.',
 	),

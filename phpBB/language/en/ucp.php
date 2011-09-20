@@ -209,7 +209,6 @@ $lang = array_merge($lang, array(
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully.',
 	'FOLDER_ADDED'				=> 'Folder successfully added.',
 	'FOLDER_MESSAGE_STATUS'		=> array(
-		0	=> '%2$d from %1$d messages stored',
 		1	=> '%2$d from %1$d message stored',
 		2	=> '%2$d from %1$d messages stored',
 	),
@@ -219,7 +218,6 @@ $lang = array_merge($lang, array(
 	'FOLDER_RENAMED'			=> 'Folder successfully renamed.',
 	'FOLDER_REMOVED'			=> 'Folder successfully removed.',
 	'FOLDER_STATUS_MSG'			=> array(
-		0	=> 'Folder is %3$d%% full (%2$d from %1$d messages stored)',
 		1	=> 'Folder is %3$d%% full (%2$d from %1$d message stored)',
 		2	=> 'Folder is %3$d%% full (%2$d from %1$d messages stored)',
 	),
