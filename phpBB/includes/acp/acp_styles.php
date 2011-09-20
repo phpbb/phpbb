@@ -1706,8 +1706,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'			=> $style_row[$mode . '_name'],
@@ -2024,8 +2022,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
@@ -2167,8 +2163,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
