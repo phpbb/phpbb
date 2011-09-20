@@ -378,7 +378,7 @@ class acp_icons
 
 					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
 					{
-						trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -598,7 +598,7 @@ class acp_icons
 						$smiley_count = $this->item_count($table);
 						if ($smiley_count + sizeof($pak_ary) > SMILEY_LIMIT)
 						{
-							trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 
