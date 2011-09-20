@@ -207,7 +207,7 @@ version = {VERSION}
 
 				switch ($action)
 				{
-					// Refresh template data stored in db and clear cache
+					// Clear cache
 					case 'refresh':
 
 						$sql = 'SELECT *
@@ -224,49 +224,13 @@ version = {VERSION}
 
 						if (confirm_box(true))
 						{
-							$template_refreshed = '';
-
-							// Only refresh database if the template is stored in the database
-							if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
-							{
-								$filelist = array('' => array());
-
-								$sql = 'SELECT template_filename, template_mtime
-									FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-									WHERE template_id = $style_id";
-								$result = $db->sql_query($sql);
-
-								while ($row = $db->sql_fetchrow($result))
-								{
-//									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
-//									{
-										// get folder info from the filename
-										if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
-										{
-											$filelist[''][] = $row['template_filename'];
-										}
-										else
-										{
-											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)][] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
-										}
-//									}
-								}
-								$db->sql_freeresult($result);
-
-								$this->store_templates('update', $style_id, $template_row['template_path'], $filelist);
-								unset($filelist);
-
-								$template_refreshed = $user->lang['TEMPLATE_REFRESHED'] . '<br />';
-								add_log('admin', 'LOG_TEMPLATE_REFRESHED', $template_row['template_name']);
-							}
-
 							$this->clear_template_cache($template_row);
 
-							trigger_error($template_refreshed . $user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
-							confirm_box(false, ($template_row['template_storedb']) ? $user->lang['CONFIRM_TEMPLATE_REFRESH'] : $user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
+							confirm_box(false, $user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action,
@@ -281,63 +245,7 @@ version = {VERSION}
 			break;
 
 			case 'theme':
-
-				switch ($action)
-				{
-					// Refresh theme data stored in the database
-					case 'refresh':
-
-						$sql = 'SELECT *
-							FROM ' . STYLES_THEME_TABLE . "
-							WHERE theme_id = $style_id";
-						$result = $db->sql_query($sql);
-						$theme_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						if (!$theme_row)
-						{
-							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (!$theme_row['theme_storedb'])
-						{
-							trigger_error($user->lang['THEME_ERR_REFRESH_FS'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (confirm_box(true))
-						{
-							if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
-							{
-								// Save CSS contents
-								$sql_ary = array(
-									'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
-									'theme_data'	=> '',
-									'theme_storedb' => 0
-								);
-
-								$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-									WHERE theme_id = $style_id";
-								$db->sql_query($sql);
-
-								$cache->destroy('sql', STYLES_THEME_TABLE);
-
-								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
-								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
-							}
-						}
-						else
-						{
-							confirm_box(false, $user->lang['CONFIRM_THEME_REFRESH'], build_hidden_fields(array(
-								'i'			=> $id,
-								'mode'		=> $mode,
-								'action'	=> $action,
-								'id'		=> $style_id
-							)));
-						}
-					break;
-				}
-
-				$this->frontend('theme', array('edit', 'details'), array('refresh', 'export', 'delete'));
+				$this->frontend('theme', array('edit', 'details'), array('export', 'delete'));
 			break;
 		}
 	}
@@ -526,7 +434,7 @@ version = {VERSION}
 		$template_file = preg_replace('#\.{2,}#', '.', $template_file);
 
 		// Retrieve some information about the template
-		$sql = 'SELECT template_storedb, template_path, template_name
+		$sql = 'SELECT template_path, template_name
 			FROM ' . STYLES_TEMPLATE_TABLE . "
 			WHERE template_id = $template_id";
 		$result = $db->sql_query($sql);
@@ -536,6 +444,32 @@ version = {VERSION}
 		if (!$template_info)
 		{
 			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		// Get the filesystem location of the current file
+		$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
+		$file = "$template_path/$template_file";
+
+		if ($template_file)
+		{
+			$l_not_writable = sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action);
+
+			if ($safe_mode)
+			{
+				trigger_error($l_not_writable, E_USER_WARNING);
+			}
+
+			if (file_exists($file) && is_file($file) && is_readable($file))
+			{
+				if (!phpbb_is_writable($file))
+				{
+					trigger_error($l_not_writable, E_USER_WARNING);
+				}
+			}
+			else
+			{
+				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 		}
 
 		if ($save_changes && !check_form_key('acp_styles'))
@@ -550,50 +484,14 @@ version = {VERSION}
 		// save changes to the template if the user submitted any
 		if ($save_changes && $template_file)
 		{
-			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
-			$additional = '';
-
-			// If the template is stored on the filesystem try to write the file else store it in the database
-			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && phpbb_is_writable($file))
+			// Try to write the file
+			if (!($fp = @fopen($file, 'wb')))
 			{
-				if (!($fp = @fopen($file, 'wb')))
-				{
-					// File exists and is writeable, but still not able to be written to
-					trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-				fwrite($fp, $template_data);
-				fclose($fp);
+				// File exists and is writeable, but still not able to be written to
+				trigger_error($l_not_writable, E_USER_WARNING);
 			}
-			else
-			{
-				$db->sql_transaction('begin');
-
-				// If it's not stored in the db yet, then update the template setting and store all template files in the db
-				if (!$template_info['template_storedb'])
-				{
-					if ($super = $this->get_super('template', $template_id))
-					{
-						$this->store_in_db('template', $super['template_id']);
-					}
-					else
-					{
-						$this->store_in_db('template', $template_id);
-					}
-
-					add_log('admin', 'LOG_TEMPLATE_EDIT_DETAILS', $template_info['template_name']);
-					$additional .= '<br />' . $user->lang['EDIT_TEMPLATE_STORED_DB'];
-				}
-
-				// Update the template_data table entry for this template file
-				$sql = 'UPDATE ' . STYLES_TEMPLATE_DATA_TABLE . "
-					SET template_data = '" . $db->sql_escape($template_data) . "', template_mtime = " . time() . "
-					WHERE template_id = $template_id
-						AND template_filename = '" . $db->sql_escape($template_file) . "'";
-				$db->sql_query($sql);
-
-				$db->sql_transaction('commit');
-			}
+			fwrite($fp, $template_data);
+			fclose($fp);
 
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
@@ -601,56 +499,22 @@ version = {VERSION}
 			$cache->destroy('sql', STYLES_TABLE);
 
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
-			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
+			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
 
 		// Generate a category array containing template filenames
-		if (!$template_info['template_storedb'])
+
+		$filelist = filelist($template_path, '', 'html');
+		$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
+
+		if ($template_file)
 		{
-			$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
+			$template_data = file_get_contents($file);
 
-			$filelist = filelist($template_path, '', 'html');
-			$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
-
-			if ($template_file)
+			if (!$template_data)
 			{
-				if (!file_exists($template_path . "/$template_file") || !($template_data = file_get_contents($template_path . "/$template_file")))
-				{
-					trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-		}
-		else
-		{
-			$sql = 'SELECT *
-				FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-				WHERE template_id = $template_id";
-			$result = $db->sql_query($sql);
-
-			$filelist = array('' => array());
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$file_info = pathinfo($row['template_filename']);
-
-				if (($file_info['basename'] != 'bbcode') && ($file_info['extension'] == 'html'))
-				{
-					if (($file_info['dirname'] == '.') || empty($file_info['dirname']))
-					{
-						$filelist[''][] = $row['template_filename'];
-					}
-					else
-					{
-						$filelist[$file_info['dirname'] . '/'][] = $file_info['basename'];
-					}
-				}
-
-				if ($row['template_filename'] == $template_file)
-				{
-					$template_data = $row['template_data'];
-				}
-			}
-			$db->sql_freeresult($result);
-			unset($file_info);
 		}
 
 		if (empty($filelist['']))
@@ -821,35 +685,6 @@ version = {VERSION}
 			adm_page_footer();
 		}
 
-		$filemtime = array();
-		if ($template_row['template_storedb'])
-		{
-			$ids = array();
-			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
-			{
-				$ids[] = $template_row['template_inherits_id'];
-			}
-			$ids[] = $template_row['template_id'];
-
-			$filemtime 			= array();
-			$file_template_db	= array();
-
-			foreach ($ids as $id)
-			{
-				$sql = 'SELECT template_filename, template_mtime
-					FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-					WHERE template_id = $id";
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$filemtime[$row['template_filename']] = $row['template_mtime'];
-					$file_template_db[$row['template_filename']] = $id;
-				}
-				$db->sql_freeresult($result);
-			}
-		}
-
 		// Get a list of cached template files and then retrieve additional information about them
 		$file_ary = $this->template_cache_filelist($template_row['template_path']);
 
@@ -872,30 +707,10 @@ version = {VERSION}
 			$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html";
 			$inherited = false;
 
-			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
+			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'] && !file_exists($file_tpl))
 			{
-				if (!$template_row['template_storedb'])
-				{
-					if (!file_exists($file_tpl))
-					{
-						$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
-						$inherited = true;
-					}
-				}
-				else
-				{
-					if ($file_template_db[$file . '.html'] == $template_row['template_inherits_id'])
-					{
-						$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
-						$inherited = true;
-					}
-				}
-			}
-
-			// Correct the filename if it is stored in database and the file is in a subfolder.
-			if ($template_row['template_storedb'])
-			{
-				$file = str_replace('.', '/', $file);
+				$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
+				$inherited = true;
 			}
 
 			$template->assign_block_vars('file', array(
@@ -905,10 +720,9 @@ version = {VERSION}
 				'FILENAME'		=> $file,
 				'FILENAME_PATH'	=> $file_tpl,
 				'FILESIZE'		=> get_formatted_filesize(filesize("{$phpbb_root_path}cache/$filename")),
-				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime($file_tpl) : $filemtime[$file . '.html']))
-			);
+				'MODIFIED'		=> $user->format_date(filemtime($file_tpl)),
+			));
 		}
-		unset($filemtime);
 
 		$template->assign_vars(array(
 			'S_CACHE'			=> true,
@@ -942,7 +756,7 @@ version = {VERSION}
 		$theme_file = str_replace('..', '.', $theme_file);
 
 		// Retrieve some information about the theme
-		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
+		$sql = 'SELECT theme_path, theme_name
 			FROM ' . STYLES_THEME_TABLE . "
 			WHERE theme_id = $theme_id";
 		$result = $db->sql_query($sql);
@@ -953,70 +767,61 @@ version = {VERSION}
 		}
 		$db->sql_freeresult($result);
 
-		// save changes to the theme if the user submitted any
-		if ($save_changes)
-		{
-			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
-			$additional = '';
-			$message = $user->lang['THEME_UPDATED'];
+		// Get the filesystem location of the current file
+		$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+		$file = "$theme_path/$theme_file";
 
-			// If the theme is stored on the filesystem try to write the file else store it in the database
-			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && phpbb_is_writable($file))
+		if ($theme_file)
+		{
+			$l_not_writable = sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action);
+
+			if ($safe_mode)
 			{
-				if (!($fp = @fopen($file, 'wb')))
+				trigger_error($l_not_writable, E_USER_WARNING);
+			}
+
+			if (file_exists($file) && is_file($file) && is_readable($file))
+			{
+				if (!phpbb_is_writable($file))
 				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($l_not_writable, E_USER_WARNING);
 				}
-				fwrite($fp, $theme_data);
-				fclose($fp);
 			}
 			else
 			{
-				// Write stylesheet to db
-				$sql_ary = array(
-					'theme_mtime'		=> time(),
-					'theme_storedb'		=> 1,
-					'theme_data'		=> $this->db_theme_data($theme_info, $theme_data),
-				);
-				$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
-					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE theme_id = ' . $theme_id;
-				$db->sql_query($sql);
-
-				$cache->destroy('sql', STYLES_THEME_TABLE);
-
-				// notify the user if the theme was not stored in the db before his modification
-				if (!$theme_info['theme_storedb'])
-				{
-					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
-					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
-				}
+				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
+		}
+
+		// save changes to the theme if the user submitted any
+		if ($save_changes && $theme_file)
+		{
+			$message = $user->lang['THEME_UPDATED'];
+
+			if (!($fp = @fopen($file, 'wb')))
+			{
+				trigger_error($l_not_writable, E_USER_WARNING);
+			}
+			fwrite($fp, $theme_data);
+			fclose($fp);
+
 			$cache->destroy('sql', STYLES_THEME_TABLE);
-			add_log('admin', (!$theme_info['theme_storedb']) ? 'LOG_THEME_EDIT_FILE' : 'LOG_THEME_EDIT', $theme_info['theme_name'], (!$theme_info['theme_storedb']) ? $theme_file : '');
+			add_log('admin', 'LOG_THEME_EDIT_FILE', $theme_info['theme_name'], $theme_file);
 
 			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;template_file=$theme_file&amp;text_rows=$text_rows"));
 		}
 
 		// Generate a category array containing theme filenames
-		if (!$theme_info['theme_storedb'])
+		$filelist = filelist($theme_path, '', 'css');
+
+		if ($theme_file)
 		{
-			$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+			$theme_data = file_get_contents($file);
 
-			$filelist = filelist($theme_path, '', 'css');
-
-			if ($theme_file)
+			if (!$theme_data)
 			{
-				if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
-				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-		}
-		else
-		{
-			$theme_data = &$theme_info['theme_data'];
 		}
 
 		// Now create the categories
@@ -1080,7 +885,6 @@ version = {VERSION}
 		$template->assign_vars(array(
 			'S_EDIT_THEME'		=> true,
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $theme_file)),
-			'S_THEME_IN_DB'		=> $theme_info['theme_storedb'],
 			'S_TEMPLATES'		=> $tpl_options,
 
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows",
@@ -1098,8 +902,8 @@ version = {VERSION}
 			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
 			'TEMPLATE_FILE'		=> $theme_file,
 			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($theme_data),
-			'TEXT_ROWS'			=> $text_rows)
-		);
+			'TEXT_ROWS'			=> $text_rows,
+		));
 	}
 
 	/**
@@ -1123,12 +927,12 @@ version = {VERSION}
 
 			case 'template':
 				$sql_from = STYLES_TEMPLATE_TABLE;
-				$sql_select = 'template_id, template_name, template_path, template_storedb';
+				$sql_select = 'template_id, template_name, template_path';
 			break;
 
 			case 'theme':
 				$sql_from = STYLES_THEME_TABLE;
-				$sql_select = 'theme_id, theme_name, theme_path, theme_storedb';
+				$sql_select = 'theme_id, theme_name, theme_path';
 			break;
 		}
 
@@ -1491,7 +1295,7 @@ version = {VERSION}
 				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_storedb', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data');
+			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright');
 
 			foreach ($var_ary as $var)
 			{
@@ -1546,31 +1350,12 @@ version = {VERSION}
 				);
 
 				// This is potentially nasty memory-wise ...
-				if (!$style_row['template_storedb'])
-				{
-					$files[] = array(
-						'src'		=> "styles/{$style_row['template_path']}/template/",
-						'prefix-'	=> "styles/{$style_row['template_path']}/",
-						'prefix+'	=> false,
-						'exclude'	=> 'template.cfg'
-					);
-				}
-				else
-				{
-					$sql = 'SELECT template_filename, template_data
-						FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-						WHERE template_id = {$style_row['template_id']}";
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$data[] = array(
-							'src' => $row['template_data'],
-							'prefix' => 'template/' . $row['template_filename']
-						);
-					}
-					$db->sql_freeresult($result);
-				}
+				$files[] = array(
+					'src'		=> "styles/{$style_row['template_path']}/template/",
+					'prefix-'	=> "styles/{$style_row['template_path']}/",
+					'prefix+'	=> false,
+					'exclude'	=> 'template.cfg'
+				);
 				unset($template_cfg);
 			}
 
@@ -1587,22 +1372,13 @@ version = {VERSION}
 					'src'		=> "styles/{$style_row['theme_path']}/theme/",
 					'prefix-'	=> "styles/{$style_row['theme_path']}/",
 					'prefix+'	=> false,
-					'exclude'	=> ($style_row['theme_storedb']) ? 'stylesheet.css,theme.cfg' : 'theme.cfg'
+					'exclude'	=> 'theme.cfg',
 				);
 
 				$data[] = array(
 					'src'		=> $theme_cfg,
-					'prefix'	=> 'theme/theme.cfg'
+					'prefix'	=> 'theme/theme.cfg',
 				);
-
-				if ($style_row['theme_storedb'])
-				{
-				    $style_row['theme_data'] = str_replace("styles/{$style_row['theme_path']}/theme/", './', $style_row['theme_data']);
-					$data[] = array(
-						'src'		=> $style_row['theme_data'],
-						'prefix'	=> 'theme/stylesheet.css'
-					);
-				}
 
 				unset($items, $theme_cfg);
 			}
@@ -1772,7 +1548,6 @@ version = {VERSION}
 
 			$style_active = request_var('style_active', 0);
 			$style_default = request_var('style_default', 0);
-			$store_db = request_var('store_db', 0);
 
 			// If the admin selected the style to be the default style, but forgot to activate it... we will do it for him
 			if ($style_default)
@@ -1803,23 +1578,6 @@ version = {VERSION}
 				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
 			}
 
-			if ($mode === 'theme' || $mode === 'template')
-			{
-				// a rather elaborate check we have to do here once to avoid trouble later
-				$check = "{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . (($mode === 'theme') ? '/theme/stylesheet.css' : '/template');
-				if (($style_row["{$mode}_storedb"] != $store_db) && !$store_db && ($safe_mode || !phpbb_is_writable($check)))
-				{
-					$error[] = $user->lang['EDIT_' . strtoupper($mode) . '_STORED_DB'];
-					$store_db = 1;
-				}
-
-				// themes which have to be parsed have to go into db
-				if ($mode == 'theme')
-				{
-					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
-				}
-			}
-
 			if (!sizeof($error))
 			{
 				// Check length settings
@@ -1841,7 +1599,6 @@ version = {VERSION}
 				'template_id'			=> $template_id,
 				'theme_id'				=> $theme_id,
 				'style_active'			=> $style_active,
-				$mode . '_storedb'		=> $store_db,
 				$mode . '_name'			=> $name,
 				$mode . '_copyright'	=> $copyright)
 			);
@@ -1867,72 +1624,9 @@ version = {VERSION}
 				break;
 
 				case 'theme':
-
-					if ($style_row['theme_storedb'] != $store_db)
-					{
-						$theme_data = '';
-
-						if (!$style_row['theme_storedb'])
-						{
-							$theme_data = $this->db_theme_data($style_row);
-						}
-						else if (!$store_db && !$safe_mode && phpbb_is_writable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
-						{
-							$store_db = 1;
-							$theme_data = $style_row['theme_data'];
-
-							if ($fp = @fopen("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css", 'wb'))
-							{
-								$store_db = (@fwrite($fp, str_replace("styles/{$style_row['theme_path']}/theme/", './', $theme_data))) ? 0 : 1;
-							}
-							fclose($fp);
-						}
-
-						$sql_ary += array(
-							'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0,
-							'theme_storedb'	=> $store_db,
-							'theme_data'	=> ($store_db) ? $theme_data : '',
-						);
-					}
 				break;
 
 				case 'template':
-
-					if ($style_row['template_storedb'] != $store_db)
-					{
-						if ($super = $this->get_super($mode, $style_row['template_id']))
-						{
-							$error[] = (sprintf($user->lang["{$l_type}_INHERITS"], $super['template_name']));
-							$sql_ary = array();
-						}
-						else
-						{
-							if (!$store_db && !$safe_mode && phpbb_is_writable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
-							{
-								$err = $this->store_in_fs('template', $style_row['template_id']);
-								if ($err)
-								{
-									$error += $err;
-								}
-							}
-							else if ($store_db)
-							{
-								$this->store_in_db('template', $style_row['template_id']);
-							}
-							else
-							{
-								// We no longer store within the db, but are also not able to update the file structure
-								// Since the admin want to switch this, we adhere to his decision. But we also need to remove the cache
-								$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-									WHERE template_id = $style_id";
-								$db->sql_query($sql);
-							}
-
-							$sql_ary += array(
-								'template_storedb'	=> $store_db,
-							);
-						}
-					}
 				break;
 			}
 
@@ -1999,8 +1693,6 @@ version = {VERSION}
 			'S_STYLE'				=> ($mode == 'style') ? true : false,
 			'S_TEMPLATE'			=> ($mode == 'template') ? true : false,
 			'S_THEME'				=> ($mode == 'theme') ? true : false,
-			'S_STORE_DB'			=> (isset($style_row[$mode . '_storedb'])) ? $style_row[$mode . '_storedb'] : 0,
-			'S_STORE_DB_DISABLED'	=> (isset($style_row[$mode . '_inherits_id'])) ? $style_row[$mode . '_inherits_id'] : 0,
 			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
 			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
 			'S_SUPERTEMPLATE'		=> (isset($style_row[$mode . '_inherits_id']) && $style_row[$mode . '_inherits_id']) ? $super['template_name'] : 0,
@@ -2014,8 +1706,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'			=> $style_row[$mode . '_name'],
@@ -2099,84 +1789,6 @@ version = {VERSION}
 
 		// adjust paths
 		return str_replace('./', 'styles/' . $theme_row['theme_path'] . '/theme/', $stylesheet);
-	}
-
-	/**
-	* Store template files into db
-	*/
-	function store_templates($mode, $style_id, $template_path, $filelist)
-	{
-		global $phpbb_root_path, $phpEx, $db;
-
-		$template_path = $template_path . '/template/';
-		$includes = array();
-		foreach ($filelist as $pathfile => $file_ary)
-		{
-			foreach ($file_ary as $file)
-			{
-				if (!($fp = @fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
-				{
-					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
-				}
-
-				$filesize = filesize("{$phpbb_root_path}styles/$template_path$pathfile$file");
-
-				if ($filesize)
-				{
-					$template_data = fread($fp, $filesize);
-				}
-
-				fclose($fp);
-
-				if (!$filesize)
-				{
-					// File is empty
-					continue;
-				}
-
-				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
-				{
-					foreach ($matches[1] as $match)
-					{
-						$includes[trim($match)][] = $file;
-					}
-				}
-			}
-		}
-
-		foreach ($filelist as $pathfile => $file_ary)
-		{
-			foreach ($file_ary as $file)
-			{
-				// Skip index.
-				if (strpos($file, 'index.') === 0)
-				{
-					continue;
-				}
-
-				// We could do this using extended inserts ... but that could be one
-				// heck of a lot of data ...
-				$sql_ary = array(
-					'template_id'			=> (int) $style_id,
-					'template_filename'		=> "$pathfile$file",
-					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
-					'template_mtime'		=> (int) filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
-					'template_data'			=> (string) file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
-				);
-
-				if ($mode == 'insert')
-				{
-					$sql = 'INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-				}
-				else
-				{
-					$sql = 'UPDATE ' . STYLES_TEMPLATE_DATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-						WHERE template_id = $style_id
-							AND template_filename = '" . $db->sql_escape("$pathfile$file") . "'";
-				}
-				$db->sql_query($sql);
-			}
-		}
 	}
 
 	/**
@@ -2361,7 +1973,6 @@ version = {VERSION}
 			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$style_row['store_db'] = request_var('store_db', 0);
 		$style_row['style_active'] = request_var('style_active', 1);
 		$style_row['style_default'] = request_var('style_default', 0);
 
@@ -2379,15 +1990,14 @@ version = {VERSION}
 			}
 			else
 			{
-				$style_row['store_db'] = $this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $install_path, $style_row[$mode . '_copyright'], $style_row['store_db']);
+				$this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $install_path, $style_row[$mode . '_copyright']);
 			}
 
 			if (!sizeof($error))
 			{
 				$cache->destroy('sql', STYLES_TABLE);
 
-				$message = ($style_row['store_db']) ? '_ADDED_DB' : '_ADDED';
-				trigger_error($user->lang[$l_type . $message] . adm_back_link($this->u_action));
+				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -2403,7 +2013,6 @@ version = {VERSION}
 			'S_SUPERTEMPLATE'	=> (isset($installcfg['inherit_from'])) ? $installcfg['inherit_from'] : '',
 			'S_THEME'			=> ($mode == 'theme') ? true : false,
 
-			'S_STORE_DB'			=> (isset($style_row[$mode . '_storedb'])) ? $style_row[$mode . '_storedb'] : 0,
 			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
 			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
 
@@ -2413,8 +2022,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
@@ -2440,7 +2047,6 @@ version = {VERSION}
 			$mode . '_copyright'	=> utf8_normalize_nfc(request_var('copyright', '', true)),
 			'template_id'			=> 0,
 			'theme_id'				=> 0,
-			'store_db'				=> request_var('store_db', 0),
 			'style_active'			=> request_var('style_active', 1),
 			'style_default'			=> request_var('style_default', 0),
 		);
@@ -2512,8 +2118,7 @@ version = {VERSION}
 			{
 				$cache->destroy('sql', STYLES_TABLE);
 
-				$message = ($style_row['store_db']) ? '_ADDED_DB' : '_ADDED';
-				trigger_error($user->lang[$l_type . $message] . adm_back_link($this->u_action));
+				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -2547,7 +2152,6 @@ version = {VERSION}
 			'S_THEME'			=> ($mode == 'theme') ? true : false,
 			'S_BASIS'			=> ($basis) ? true : false,
 
-			'S_STORE_DB'			=> (isset($style_row['storedb'])) ? $style_row['storedb'] : 0,
 			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
 			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
 			'S_TEMPLATE_OPTIONS'	=> ($mode == 'style') ? $template_options : '',
@@ -2559,8 +2163,6 @@ version = {VERSION}
 			'L_TITLE'				=> $user->lang[$this->page_title],
 			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
@@ -2731,7 +2333,7 @@ version = {VERSION}
 	/**
 	* Install/add an element, doing various checks as we go
 	*/
-	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright, $store_db = 0)
+	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright)
 	{
 		global $phpbb_root_path, $db, $user;
 
@@ -2798,7 +2400,7 @@ version = {VERSION}
 				$select_bf = '';
 			}
 
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb $select_bf
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
@@ -2814,8 +2416,6 @@ version = {VERSION}
 				$inherit_id = $row["{$mode}_id"];
 				$inherit_path = $row["{$mode}_path"];
 				$inherit_bf = ($mode === 'template') ? $row["bbcode_bitfield"] : false;
-				$cfg_data['store_db'] = $row["{$mode}_storedb"];
-				$store_db = $row["{$mode}_storedb"];
 			}
 		}
 		else
@@ -2853,10 +2453,6 @@ version = {VERSION}
 					$sql_ary['bbcode_bitfield'] = $this->template_bitfield;
 				}
 
-				// We set a pre-defined bitfield here which we may use further in 3.2
-				$sql_ary += array(
-					'template_storedb'		=> $store_db,
-				);
 				if (isset($cfg_data['inherit_from']) && $cfg_data['inherit_from'])
 				{
 					$sql_ary += array(
@@ -2867,13 +2463,6 @@ version = {VERSION}
 			break;
 
 			case 'theme':
-				// We are only interested in the theme configuration for now
-
-				$sql_ary += array(
-					'theme_storedb'	=> $store_db,
-					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
-					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
-				);
 			break;
 		}
 
@@ -2885,19 +2474,9 @@ version = {VERSION}
 
 		$id = $db->sql_nextid();
 
-		if ($mode == 'template' && $store_db)
-		{
-			$filelist = filelist("{$root_path}template", '', 'html');
-			$this->store_templates('insert', $id, $path, $filelist);
-		}
-
 		$db->sql_transaction('commit');
 
-		$log = ($store_db) ? 'LOG_' . $l_type . '_ADD_DB' : 'LOG_' . $l_type . '_ADD_FS';
-		add_log('admin', $log, $name);
-
-		// Return store_db in case it had to be altered
-		return $store_db;
+		add_log('admin', 'LOG_' . $l_type . '_ADD_FS', $name);
 	}
 
 	/**
@@ -3006,180 +2585,4 @@ version = {VERSION}
 
 		return false;
 	}
-
-	/**
-	* Moves a template set and its subtemplates to the database
-	*
-	* @access public
-	* @param string $mode The component to move - only template is supported
-	* @param int $id The template id
-	*/
-	function store_in_db($mode, $id)
-	{
-		global $db, $user;
-
-		$error = array();
-		$l_type = strtoupper($mode);
-		if ($super = $this->get_super($mode, $id))
-		{
-			$error[] = (sprintf($user->lang["{$l_type}_INHERITS"], $super['template_name']));
-			return $error;
-		}
-
-		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
-			FROM " . STYLES_TEMPLATE_TABLE . '
-			WHERE template_id = ' . (int) $id;
-
-		$result = $db->sql_query_limit($sql, 1);
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
-			$subs = $this->check_inheritance($mode, $id);
-
-			$this->_store_in_db($mode, $id, $row["{$mode}_path"]);
-			if ($subs && sizeof($subs))
-			{
-				foreach ($subs as $sub_id => $sub)
-				{
-					if ($err = $this->_store_in_db($mode, $sub["{$mode}_id"], $sub["{$mode}_path"]))
-					{
-						$error[] = $err;
-					}
-				}
-			}
-		}
-		if (sizeof($error))
-		{
-			return $error;
-		}
-
-		return false;
-	}
-
-	/**
-	* Moves a template set to the database
-	*
-	* @access private
-	* @param string $mode The component to move - only template is supported
-	* @param int $id The template id
-	* @param string $path TThe path to the template files
-	*/
-	function _store_in_db($mode, $id, $path)
-	{
-		global $phpbb_root_path, $db;
-
-		$filelist = filelist("{$phpbb_root_path}styles/{$path}/template", '', 'html');
-		$this->store_templates('insert', $id, $path, $filelist);
-
-		// Okay, we do the query here -shouldn't be triggered often.
-		$sql = 'UPDATE ' . STYLES_TEMPLATE_TABLE . '
-						SET template_storedb = 1
-						WHERE template_id = ' . $id;
-		$db->sql_query($sql);
-	}
-
-	/**
-	* Moves a template set and its subtemplates to the filesystem
-	*
-	* @access public
-	* @param string $mode The component to move - only template is supported
-	* @param int $id The template id
-	*/
-	function store_in_fs($mode, $id)
-	{
-		global $db, $user;
-
-		$error = array();
-		$l_type = strtoupper($mode);
-		if ($super = $this->get_super($mode, $id))
-		{
-			$error[] = (sprintf($user->lang["{$l_type}_INHERITS"], $super['template_name']));
-			return($error);
-		}
-
-		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
-			FROM " . STYLES_TEMPLATE_TABLE . '
-			WHERE template_id = ' . (int) $id;
-
-		$result = $db->sql_query_limit($sql, 1);
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
-			if (!sizeof($error))
-			{
-				$subs = $this->check_inheritance($mode, $id);
-
-				$this->_store_in_fs($mode, $id, $row["{$mode}_path"]);
-
-				if ($subs && sizeof($subs))
-				{
-					foreach ($subs as $sub_id => $sub)
-					{
-						$this->_store_in_fs($mode, $sub["{$mode}_id"], $sub["{$mode}_path"]);
-					}
-				}
-			}
-			if (sizeof($error))
-			{
-				$this->store_in_db($id, $mode);
-				return $error;
-			}
-		}
-		return false;
-	}
-
-	/**
-	* Moves a template set to the filesystem
-	*
-	* @access private
-	* @param string $mode The component to move - only template is supported
-	* @param int $id The template id
-	* @param string $path The path to the template
-	*/
-	function _store_in_fs($mode, $id, $path)
-	{
-		global $phpbb_root_path, $db, $user, $safe_mode;
-
-		$store_db = 0;
-		$error = array();
-		if (!$safe_mode && phpbb_is_writable("{$phpbb_root_path}styles/{$path}/template"))
-		{
-			$sql = 'SELECT *
-					FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-					WHERE template_id = $id";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!($fp = @fopen("{$phpbb_root_path}styles/{$path}/template/" . $row['template_filename'], 'wb')))
-				{
-					$store_db = 1;
-					$error[] = $user->lang['EDIT_TEMPLATE_STORED_DB'];
-					break;
-				}
-
-				fwrite($fp, $row['template_data']);
-				fclose($fp);
-			}
-			$db->sql_freeresult($result);
-
-			if (!$store_db)
-			{
-				$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
-						WHERE template_id = $id";
-				$db->sql_query($sql);
-			}
-		}
-		if (sizeof($error))
-		{
-			return $error;
-		}
-		$sql = 'UPDATE ' . STYLES_TEMPLATE_TABLE . '
-				SET template_storedb = 0
-				WHERE template_id = ' . $id;
-		$db->sql_query($sql);
-
-		return false;
-	}
-
 }

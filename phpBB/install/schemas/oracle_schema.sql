@@ -1467,7 +1467,6 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar2(765) DEFAULT '' ,
 	template_path varchar2(100) DEFAULT '' ,
 	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb number(1) DEFAULT '0' NOT NULL,
 	template_inherits_id number(4) DEFAULT '0' NOT NULL,
 	template_inherit_path varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_styles_template PRIMARY KEY (template_id),
@@ -1493,23 +1492,6 @@ END;
 
 
 /*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE phpbb_styles_template_data (
-	template_id number(8) DEFAULT '0' NOT NULL,
-	template_filename varchar2(100) DEFAULT '' ,
-	template_included clob DEFAULT '' ,
-	template_mtime number(11) DEFAULT '0' NOT NULL,
-	template_data clob DEFAULT '' 
-)
-/
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id)
-/
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename)
-/
-
-/*
 	Table: 'phpbb_styles_theme'
 */
 CREATE TABLE phpbb_styles_theme (
@@ -1517,9 +1499,6 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name varchar2(765) DEFAULT '' ,
 	theme_copyright varchar2(765) DEFAULT '' ,
 	theme_path varchar2(100) DEFAULT '' ,
-	theme_storedb number(1) DEFAULT '0' NOT NULL,
-	theme_mtime number(11) DEFAULT '0' NOT NULL,
-	theme_data clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_styles_theme PRIMARY KEY (theme_id),
 	CONSTRAINT u_phpbb_theme_name UNIQUE (theme_name)
 )

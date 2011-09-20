@@ -1062,13 +1062,22 @@ function database_update_info()
 				),
 			),
 			'drop_columns'      => array(
-			    STYLES_TABLE        => array(
+			    STYLES_TABLE		    => array(
 			        'imageset_id',
                 ),
+				STYLES_TEMPLATE_TABLE	=> array(
+					'template_storedb',
+				),
+				STYLES_THEME_TABLE		=> array(
+					'theme_storedb',
+					'theme_mtime',
+					'theme_data',
+				),
             ),
             'drop_tables'       => array(
                 STYLES_IMAGESET_TABLE,
                 STYLES_IMAGESET_DATA_TABLE,
+                STYLES_TEMPLATE_DATA_TABLE,
             ),
 		),
 	);

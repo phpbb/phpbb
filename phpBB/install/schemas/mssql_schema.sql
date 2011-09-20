@@ -1337,7 +1337,6 @@ CREATE TABLE [phpbb_styles_template] (
 	[template_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[template_path] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
-	[template_storedb] [int] DEFAULT (0) NOT NULL ,
 	[template_inherits_id] [int] DEFAULT (0) NOT NULL ,
 	[template_inherit_path] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
@@ -1355,36 +1354,14 @@ GO
 
 
 /*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE [phpbb_styles_template_data] (
-	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
-	[template_mtime] [int] DEFAULT (0) NOT NULL ,
-	[template_data] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-CREATE  INDEX [tid] ON [phpbb_styles_template_data]([template_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [tfn] ON [phpbb_styles_template_data]([template_filename]) ON [PRIMARY]
-GO
-
-
-/*
 	Table: 'phpbb_styles_theme'
 */
 CREATE TABLE [phpbb_styles_theme] (
 	[theme_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[theme_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[theme_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[theme_path] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[theme_storedb] [int] DEFAULT (0) NOT NULL ,
-	[theme_mtime] [int] DEFAULT (0) NOT NULL ,
-	[theme_data] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+	[theme_path] [varchar] (100) DEFAULT ('') NOT NULL 
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
