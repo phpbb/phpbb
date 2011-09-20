@@ -748,30 +748,10 @@ version = {VERSION}
 			$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html";
 			$inherited = false;
 
-			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
+			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'] && !file_exists($file_tpl))
 			{
-				if (!$template_row['template_storedb'])
-				{
-					if (!file_exists($file_tpl))
-					{
-						$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
-						$inherited = true;
-					}
-				}
-				else
-				{
-					if ($file_template_db[$file . '.html'] == $template_row['template_inherits_id'])
-					{
-						$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
-						$inherited = true;
-					}
-				}
-			}
-
-			// Correct the filename if it is stored in database and the file is in a subfolder.
-			if ($template_row['template_storedb'])
-			{
-				$file = str_replace('.', '/', $file);
+				$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
+				$inherited = true;
 			}
 
 			$template->assign_block_vars('file', array(
