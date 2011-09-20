@@ -1871,20 +1871,30 @@ class user extends session
 		{
 			if (is_int($args[$i]) || is_float($args[$i]))
 			{
-				$use_plural_form = $this->get_plural_form($args[$i]);
-				$numbers = array_keys($lang);
-
-				foreach ($numbers as $num)
+				if ($args[$i] == 0 && isset($lang[0]))
 				{
-					if ($num > $use_plural_form)
-					{
-						// If the key we need to use does not exist, we fall back to the previous one.
-						break;
-					}
-
-					$key_found = $num;
+					// We allow each translation using plural forms to specify a version for the case of 0 things,
+					// so that "0 users" may be displayed as "No users".
+					$key_found = 0;
+					break;
 				}
-				break;
+				else
+				{
+					$use_plural_form = $this->get_plural_form($args[$i]);
+					$numbers = array_keys($lang);
+
+					foreach ($numbers as $num)
+					{
+						if ($num > $use_plural_form)
+						{
+							// If the key we need to use does not exist, we fall back to the previous one.
+							break;
+						}
+
+						$key_found = $num;
+					}
+					break;
+				}
 			}
 		}
 
@@ -1913,12 +1923,6 @@ class user extends session
 	{
 		$number = (int) $number;
 
-		if ($number == 0)
-		{
-			// We allow each translation using plural forms to specify a version for the case of 0 things, so that "0 users" may be displayed as "No users".
-			return 0;
-		}
-
 		// Default to English system
 		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
 		if ($plural_rule > 15 || $plural_rule < 0)
@@ -1935,7 +1939,7 @@ class user extends session
 			case 0:
 				/**
 				* Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
-				* 1 - everything: 1, 2, ...
+				* 1 - everything: 0, 1, 2, ...
 				*/
 				return 1;
 
@@ -1943,25 +1947,26 @@ class user extends session
 				/**
 				* Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
 				* 1 - 1
-				* 2 - everything else: 2, 3, ...
+				* 2 - everything else: 0, 2, 3, ...
 				*/
 				return ($number == 1) ? 1 : 2;
 
 			case 2:
 				/**
 				* Families: Romanic (French, Brazilian Portuguese)
-				* 1 - 1 normaly this would also apply to 0
+				* 1 - 0, 1
 				* 2 - everything else: 2, 3, ...
 				*/
-				return ($number == 1) ? 1 : 2;
+				return (($number == 0) || ($number == 1)) ? 1 : 2;
 
 			case 3:
 				/**
 				* Families: Baltic (Latvian)
-				* 1 - ends in 1, not 11: 1, 21, ... 101, 121, ...
-				* 2 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
+				* 1 - 0
+				* 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
+				* 3 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
 				*/
-				return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : 2;
+				return ($number == 0) ? 1 : ((($number % 10 == 1) && ($number % 100 != 11)) ? 2 : 3);
 
 			case 4:
 				/**
@@ -1969,7 +1974,7 @@ class user extends session
 				* 1 - is 1 or 11: 1, 11
 				* 2 - is 2 or 12: 2, 12
 				* 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
-				* 4 - everything else: 20, 21, ...
+				* 4 - everything else: 0, 20, 21, ...
 				*/
 				return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
 
@@ -1977,7 +1982,7 @@ class user extends session
 				/**
 				* Families: Romanic (Romanian)
 				* 1 - 1
-				* 2 - ends in 01-19: 2, 3, ... 19, 101, 102, ... 119, 201, ...
+				* 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
 				* 3 - everything else: 20, 21, ...
 				*/
 				return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
@@ -1986,7 +1991,7 @@ class user extends session
 				/**
 				* Families: Baltic (Lithuanian)
 				* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
-				* 2 - ends in 0 or ends in 10-20:  10, 11, 12, ... 19, 20, 30, 40, ...
+				* 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
 				* 3 - everything else: 2, 3, ... 8, 9, 22, 23, ... 29, 32, 33, ...
 				*/
 				return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
@@ -1996,7 +2001,7 @@ class user extends session
 				* Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
 				* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
 				* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
-				* 3 - everything else: 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
+				* 3 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
 				*/
 				return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
 
@@ -2005,7 +2010,7 @@ class user extends session
 				* Families: Slavic (Slovak, Czech)
 				* 1 - 1
 				* 2 - 2, 3, 4
-				* 3 - everything else: 5, 6, 7, ...
+				* 3 - everything else: 0, 5, 6, 7, ...
 				*/
 				return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
 
@@ -2014,7 +2019,7 @@ class user extends session
 				* Families: Slavic (Polish)
 				* 1 - 1
 				* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
-				* 3 - everything else: 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
+				* 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
 				*/
 				return ($number == 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
 
@@ -2024,7 +2029,7 @@ class user extends session
 				* 1 - ends in 01: 1, 101, 201, ...
 				* 2 - ends in 02: 2, 102, 202, ...
 				* 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
-				* 4 - everything else: 5, 6, 7, 8, 9, 10, 11, ...
+				* 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
 				*/
 				return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
 
@@ -2047,14 +2052,15 @@ class user extends session
 				* 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
 				* 4 - ends in 11-99: 11, ... 99, 111, 112, ...
 				* 5 - everything else: 100, 101, 102, 200, 201, 202, ...
+				* 6 - 0
 				*/
-				return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : 5)));
+				return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
 
 			case 13:
 				/**
 				* Families: Semitic (Maltese)
 				* 1 - 1
-				* 2 - ends in 01-10: 2, 3, ... 9, 10, 101, 102, ...
+				* 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
 				* 3 - ends in 11-19: 11, 12, ... 18, 19, 111, 112, ...
 				* 4 - everything else: 20, 21, ...
 				*/
@@ -2065,7 +2071,7 @@ class user extends session
 				* Families: Slavic (Macedonian)
 				* 1 - ends in 1: 1, 11, 21, ...
 				* 2 - ends in 2: 2, 12, 22, ...
-				* 3 - everything else: 3, 4, ... 10, 13, 14, ... 20, 23, ...
+				* 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
 				*/
 				return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
 
@@ -2073,7 +2079,7 @@ class user extends session
 				/**
 				* Families: Icelandic
 				* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
-				* 2 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
+				* 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
 				*/
 				return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : 2;
 		}

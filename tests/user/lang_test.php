@@ -30,6 +30,10 @@ class phpbb_user_lang_test extends phpbb_test_case
 				1		=> '1 post',		// 1
 				2		=> '%d posts',		// 0, 2+
 			),
+			'ARRY_MISSING'	=> array(
+				1		=> '%d post',		// 1
+				//Missing second plural
+			),
 			'ARRY_FLOAT'	=> array(
 				1		=> '1 post',		// 1.x
 				2		=> '%1$.1f posts',	// 0.x, 2+.x
@@ -65,10 +69,13 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 2), '2 posts');
 		$this->assertEquals($user->lang('ARRY', 123), '123 posts');
 
-		// Array with missing keys
+		// No 0 key defined
 		$this->assertEquals($user->lang('ARRY_NO_ZERO', 0), '0 posts');
 		$this->assertEquals($user->lang('ARRY_NO_ZERO', 1), '1 post');
 		$this->assertEquals($user->lang('ARRY_NO_ZERO', 2), '2 posts');
+
+		// Array with missing keys
+		$this->assertEquals($user->lang('ARRY_MISSING', 2), '2 post');
 
 		// Floats as array key
 		$this->assertEquals($user->lang('ARRY_FLOAT', 1.3), '1 post');
