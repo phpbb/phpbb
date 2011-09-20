@@ -112,7 +112,7 @@ if ($id)
 		$user		= array('user_id' => ANONYMOUS);
 	}
 
-	$sql = 'SELECT s.style_id, c.theme_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, t.template_path
+	$sql = 'SELECT s.style_id, c.theme_id, c.theme_path, c.theme_name, t.template_path
 		FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c
 		WHERE s.style_id = ' . $id . '
 			AND t.template_id = s.template_id
@@ -145,70 +145,12 @@ if ($id)
 
 	// Expire time of seven days if not recached
 	$expire_time = 7*86400;
-	$recache = false;
 
-	// Re-cache stylesheet data if necessary
-	if ($recompile || empty($theme['theme_data']))
-	{
-		$recache = (empty($theme['theme_data'])) ? true : false;
-		$update_time = time();
+	include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
 
-		// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
-		if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
-		{
-			$recache = true;
-			$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
-		}
-		else if (!$recache)
-		{
-			$last_change = $theme['theme_mtime'];
-			$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
+	$theme['theme_data'] = acp_styles::db_theme_data($theme);
 
-			if ($dir)
-			{
-				while (($entry = readdir($dir)) !== false)
-				{
-					if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}"))
-					{
-						$recache = true;
-						break;
-					}
-				}
-				closedir($dir);
-			}
-		}
-	}
-
-	if ($recache)
-	{
-		include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
-
-		$theme['theme_data'] = acp_styles::db_theme_data($theme);
-		$theme['theme_mtime'] = $update_time;
-
-		// Save CSS contents
-		$sql_ary = array(
-			'theme_mtime'	=> $theme['theme_mtime'],
-			'theme_data'	=> $theme['theme_data']
-		);
-
-		$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-			WHERE theme_id = {$theme['theme_id']}";
-		$db->sql_query($sql);
-
-		$cache->destroy('sql', STYLES_THEME_TABLE);
-	}
-
-	// Only set the expire time if the theme changed data is older than 30 minutes - to cope with changes from the ACP
-	if ($recache || $theme['theme_mtime'] > (time() - 1800))
-	{
-		header('Expires: 0');
-	}
-	else
-	{
-		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $expire_time));
-	}
-
+	header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $expire_time));
 	header('Content-type: text/css; charset=UTF-8');
 
 	// Echo Theme Data

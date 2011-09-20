@@ -1265,7 +1265,7 @@ version = {VERSION}
 				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_mtime');
+			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright');
 
 			foreach ($var_ary as $var)
 			{
@@ -2439,11 +2439,6 @@ version = {VERSION}
 			break;
 
 			case 'theme':
-				// We are only interested in the theme configuration for now
-
-				$sql_ary += array(
-					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
-				);
 			break;
 		}
 
