@@ -1822,8 +1822,8 @@ class user extends session
 	*
 	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
 	*
-	* If the first parameter is an array, the parts are used as keys and subkeys to get the lang:
-	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as lang.
+	* If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
+	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
 	*/
 	function lang()
 	{
@@ -1878,8 +1878,7 @@ class user extends session
 				{
 					if ($num > $use_plural_form)
 					{
-						// This is basically just some lazy backwards compatible stuff.
-						// If the key we need to use does not exist, it takes the previous one.
+						// If the key we need to use does not exist, we fall back to the previous one.
 						break;
 					}
 
@@ -1908,6 +1907,7 @@ class user extends session
 	* @param $number		int|float	The number we want to get the plural case for
 	* @param $force_rule	mixed	False to use the plural rule of the language package
 	*								or an integer to force a certain plural rule
+	* @return	int		The plural-case we need to use for the number plural-rule combination
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
@@ -1915,7 +1915,7 @@ class user extends session
 
 		if ($number == 0)
 		{
-			// We use special language strings for 0, so it's "no users" instead of "0 users"
+			// We allow each translation using plural forms to specify a version for the case of 0 things, so that "0 users" may be displayed as "No users".
 			return 0;
 		}
 
