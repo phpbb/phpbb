@@ -245,63 +245,7 @@ version = {VERSION}
 			break;
 
 			case 'theme':
-
-				switch ($action)
-				{
-					// Refresh theme data stored in the database
-					case 'refresh':
-
-						$sql = 'SELECT *
-							FROM ' . STYLES_THEME_TABLE . "
-							WHERE theme_id = $style_id";
-						$result = $db->sql_query($sql);
-						$theme_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						if (!$theme_row)
-						{
-							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (!$theme_row['theme_storedb'])
-						{
-							trigger_error($user->lang['THEME_ERR_REFRESH_FS'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (confirm_box(true))
-						{
-							if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
-							{
-								// Save CSS contents
-								$sql_ary = array(
-									'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
-									'theme_data'	=> '',
-									'theme_storedb' => 0
-								);
-
-								$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-									WHERE theme_id = $style_id";
-								$db->sql_query($sql);
-
-								$cache->destroy('sql', STYLES_THEME_TABLE);
-
-								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
-								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
-							}
-						}
-						else
-						{
-							confirm_box(false, $user->lang['CONFIRM_THEME_REFRESH'], build_hidden_fields(array(
-								'i'			=> $id,
-								'mode'		=> $mode,
-								'action'	=> $action,
-								'id'		=> $style_id
-							)));
-						}
-					break;
-				}
-
-				$this->frontend('theme', array('edit', 'details'), array('refresh', 'export', 'delete'));
+				$this->frontend('theme', array('edit', 'details'), array('export', 'delete'));
 			break;
 		}
 	}
@@ -797,7 +741,7 @@ version = {VERSION}
 		$theme_file = str_replace('..', '.', $theme_file);
 
 		// Retrieve some information about the theme
-		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
+		$sql = 'SELECT theme_path, theme_name
 			FROM ' . STYLES_THEME_TABLE . "
 			WHERE theme_id = $theme_id";
 		$result = $db->sql_query($sql);
@@ -816,8 +760,7 @@ version = {VERSION}
 			$additional = '';
 			$message = $user->lang['THEME_UPDATED'];
 
-			// If the theme is stored on the filesystem try to write the file else store it in the database
-			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && phpbb_is_writable($file))
+			if (!$safe_mode && file_exists($file) && phpbb_is_writable($file))
 			{
 				if (!($fp = @fopen($file, 'wb')))
 				{
@@ -828,50 +771,27 @@ version = {VERSION}
 			}
 			else
 			{
-				// Write stylesheet to db
-				$sql_ary = array(
-					'theme_mtime'		=> time(),
-					'theme_storedb'		=> 1,
-					'theme_data'		=> $this->db_theme_data($theme_info, $theme_data),
-				);
-				$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
-					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE theme_id = ' . $theme_id;
-				$db->sql_query($sql);
-
-				$cache->destroy('sql', STYLES_THEME_TABLE);
-
-				// notify the user if the theme was not stored in the db before his modification
-				if (!$theme_info['theme_storedb'])
-				{
-					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
-					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
-				}
+				// @todo Proper error
+				trigger_error('Cannot write to theme file.', E_USER_ERROR);
 			}
+
 			$cache->destroy('sql', STYLES_THEME_TABLE);
-			add_log('admin', (!$theme_info['theme_storedb']) ? 'LOG_THEME_EDIT_FILE' : 'LOG_THEME_EDIT', $theme_info['theme_name'], (!$theme_info['theme_storedb']) ? $theme_file : '');
+			add_log('admin', 'LOG_THEME_EDIT_FILE', $theme_info['theme_name'], $theme_file);
 
 			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;template_file=$theme_file&amp;text_rows=$text_rows"));
 		}
 
 		// Generate a category array containing theme filenames
-		if (!$theme_info['theme_storedb'])
+		$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+
+		$filelist = filelist($theme_path, '', 'css');
+
+		if ($theme_file)
 		{
-			$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
-
-			$filelist = filelist($theme_path, '', 'css');
-
-			if ($theme_file)
+			if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
 			{
-				if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
-				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-		}
-		else
-		{
-			$theme_data = &$theme_info['theme_data'];
 		}
 
 		// Now create the categories
@@ -935,7 +855,6 @@ version = {VERSION}
 		$template->assign_vars(array(
 			'S_EDIT_THEME'		=> true,
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $theme_file)),
-			'S_THEME_IN_DB'		=> $theme_info['theme_storedb'],
 			'S_TEMPLATES'		=> $tpl_options,
 
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows",
@@ -953,8 +872,8 @@ version = {VERSION}
 			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
 			'TEMPLATE_FILE'		=> $theme_file,
 			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($theme_data),
-			'TEXT_ROWS'			=> $text_rows)
-		);
+			'TEXT_ROWS'			=> $text_rows,
+		));
 	}
 
 	/**
@@ -983,7 +902,7 @@ version = {VERSION}
 
 			case 'theme':
 				$sql_from = STYLES_THEME_TABLE;
-				$sql_select = 'theme_id, theme_name, theme_path, theme_storedb';
+				$sql_select = 'theme_id, theme_name, theme_path';
 			break;
 		}
 
@@ -1346,7 +1265,7 @@ version = {VERSION}
 				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data');
+			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_mtime');
 
 			foreach ($var_ary as $var)
 			{
@@ -1423,22 +1342,13 @@ version = {VERSION}
 					'src'		=> "styles/{$style_row['theme_path']}/theme/",
 					'prefix-'	=> "styles/{$style_row['theme_path']}/",
 					'prefix+'	=> false,
-					'exclude'	=> ($style_row['theme_storedb']) ? 'stylesheet.css,theme.cfg' : 'theme.cfg'
+					'exclude'	=> 'theme.cfg',
 				);
 
 				$data[] = array(
 					'src'		=> $theme_cfg,
-					'prefix'	=> 'theme/theme.cfg'
+					'prefix'	=> 'theme/theme.cfg',
 				);
-
-				if ($style_row['theme_storedb'])
-				{
-				    $style_row['theme_data'] = str_replace("styles/{$style_row['theme_path']}/theme/", './', $style_row['theme_data']);
-					$data[] = array(
-						'src'		=> $style_row['theme_data'],
-						'prefix'	=> 'theme/stylesheet.css'
-					);
-				}
 
 				unset($items, $theme_cfg);
 			}
@@ -2399,7 +2309,7 @@ version = {VERSION}
 	/**
 	* Install/add an element, doing various checks as we go
 	*/
-	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright, $store_db = 0)
+	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright)
 	{
 		global $phpbb_root_path, $db, $user;
 
@@ -2466,7 +2376,7 @@ version = {VERSION}
 				$select_bf = '';
 			}
 
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb $select_bf
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
@@ -2482,8 +2392,6 @@ version = {VERSION}
 				$inherit_id = $row["{$mode}_id"];
 				$inherit_path = $row["{$mode}_path"];
 				$inherit_bf = ($mode === 'template') ? $row["bbcode_bitfield"] : false;
-				$cfg_data['store_db'] = $row["{$mode}_storedb"];
-				$store_db = $row["{$mode}_storedb"];
 			}
 		}
 		else
@@ -2534,8 +2442,6 @@ version = {VERSION}
 				// We are only interested in the theme configuration for now
 
 				$sql_ary += array(
-					'theme_storedb'	=> $store_db,
-					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
 					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
 				);
 			break;
@@ -2551,11 +2457,7 @@ version = {VERSION}
 
 		$db->sql_transaction('commit');
 
-		$log = ($store_db) ? 'LOG_' . $l_type . '_ADD_DB' : 'LOG_' . $l_type . '_ADD_FS';
-		add_log('admin', $log, $name);
-
-		// Return store_db in case it had to be altered
-		return $store_db;
+		add_log('admin', 'LOG_' . $l_type . '_ADD_FS', $name);
 	}
 
 	/**
