@@ -447,11 +447,29 @@ version = {VERSION}
 		}
 
 		// Get the filesystem location of the current file
-		$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
+		$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
+		$file = "$template_path/$template_file";
 
-		if ($template_file && ($safe_mode || !is_file($file) || !phpbb_is_writable($file)))
+		if ($template_file)
 		{
-			trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+			$l_not_writable = sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action);
+
+			if ($safe_mode)
+			{
+				trigger_error($l_not_writable, E_USER_WARNING);
+			}
+
+			if (file_exists($file) && is_file($file) && is_readable($file))
+			{
+				if (!phpbb_is_writable($file))
+				{
+					trigger_error($l_not_writable, E_USER_WARNING);
+				}
+			}
+			else
+			{
+				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 		}
 
 		if ($save_changes && !check_form_key('acp_styles'))
@@ -466,13 +484,11 @@ version = {VERSION}
 		// save changes to the template if the user submitted any
 		if ($save_changes && $template_file)
 		{
-			$additional = '';
-
 			// Try to write the file
 			if (!($fp = @fopen($file, 'wb')))
 			{
 				// File exists and is writeable, but still not able to be written to
-				trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($l_not_writable, E_USER_WARNING);
 			}
 			fwrite($fp, $template_data);
 			fclose($fp);
@@ -483,18 +499,19 @@ version = {VERSION}
 			$cache->destroy('sql', STYLES_TABLE);
 
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
-			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
+			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
 
 		// Generate a category array containing template filenames
-		$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
 
 		$filelist = filelist($template_path, '', 'html');
 		$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
 
 		if ($template_file)
 		{
-			if (!file_exists($template_path . "/$template_file") || !($template_data = file_get_contents($template_path . "/$template_file")))
+			$template_data = file_get_contents($file);
+
+			if (!$template_data)
 			{
 				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
@@ -751,22 +768,39 @@ version = {VERSION}
 		$db->sql_freeresult($result);
 
 		// Get the filesystem location of the current file
-		$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
+		$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+		$file = "$theme_path/$theme_file";
 
-		if ($theme_file && ($safe_mode || !is_file($file) || !phpbb_is_writable($file)))
+		if ($theme_file)
 		{
-			trigger_error(sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+			$l_not_writable = sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action);
+
+			if ($safe_mode)
+			{
+				trigger_error($l_not_writable, E_USER_WARNING);
+			}
+
+			if (file_exists($file) && is_file($file) && is_readable($file))
+			{
+				if (!phpbb_is_writable($file))
+				{
+					trigger_error($l_not_writable, E_USER_WARNING);
+				}
+			}
+			else
+			{
+				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 		}
 
 		// save changes to the theme if the user submitted any
-		if ($save_changes)
+		if ($save_changes && $theme_file)
 		{
-			$additional = '';
 			$message = $user->lang['THEME_UPDATED'];
 
 			if (!($fp = @fopen($file, 'wb')))
 			{
-				trigger_error(sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($l_not_writable, E_USER_WARNING);
 			}
 			fwrite($fp, $theme_data);
 			fclose($fp);
@@ -778,13 +812,13 @@ version = {VERSION}
 		}
 
 		// Generate a category array containing theme filenames
-		$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
-
 		$filelist = filelist($theme_path, '', 'css');
 
 		if ($theme_file)
 		{
-			if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
+			$theme_data = file_get_contents($file);
+
+			if (!$theme_data)
 			{
 				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
