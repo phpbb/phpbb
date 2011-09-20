@@ -122,7 +122,7 @@ class phpbb_template
 	{
 		$this->locator->set_custom_template($template_path, $fallback_template_path);
 
-		$this->cachepath = $this->phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $style_name) . '_';
+		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $style_name) . '_';
 
 		$this->context = new phpbb_template_context();
 
