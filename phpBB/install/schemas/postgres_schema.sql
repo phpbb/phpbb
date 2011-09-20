@@ -1001,27 +1001,12 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb INT2 DEFAULT '0' NOT NULL CHECK (template_storedb >= 0),
 	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
 	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
-
-/*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE phpbb_styles_template_data (
-	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
-	template_filename varchar(100) DEFAULT '' NOT NULL,
-	template_included varchar(8000) DEFAULT '' NOT NULL,
-	template_mtime INT4 DEFAULT '0' NOT NULL CHECK (template_mtime >= 0),
-	template_data TEXT DEFAULT '' NOT NULL
-);
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
 
 /*
 	Table: 'phpbb_styles_theme'
@@ -1033,9 +1018,6 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name varchar(255) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
-	theme_storedb INT2 DEFAULT '0' NOT NULL CHECK (theme_storedb >= 0),
-	theme_mtime INT4 DEFAULT '0' NOT NULL CHECK (theme_mtime >= 0),
-	theme_data TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (theme_id)
 );
 
