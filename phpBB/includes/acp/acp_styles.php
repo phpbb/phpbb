@@ -446,6 +446,14 @@ version = {VERSION}
 			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		// Get the filesystem location of the current file
+		$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
+
+		if ($template_file && ($safe_mode || !is_file($file) || !phpbb_is_writable($file)))
+		{
+			trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		if ($save_changes && !check_form_key('acp_styles'))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -458,26 +466,16 @@ version = {VERSION}
 		// save changes to the template if the user submitted any
 		if ($save_changes && $template_file)
 		{
-			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
 			$additional = '';
 
 			// Try to write the file
-			if (!$safe_mode && file_exists($file) && phpbb_is_writable($file))
+			if (!($fp = @fopen($file, 'wb')))
 			{
-				if (!($fp = @fopen($file, 'wb')))
-				{
-					// File exists and is writeable, but still not able to be written to
-					trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-				fwrite($fp, $template_data);
-				fclose($fp);
+				// File exists and is writeable, but still not able to be written to
+				trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			else
-			{
-				// @todo
-				trigger_error('Cannot write template file.', E_USER_ERROR);
-			}
+			fwrite($fp, $template_data);
+			fclose($fp);
 
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
@@ -752,28 +750,26 @@ version = {VERSION}
 		}
 		$db->sql_freeresult($result);
 
+		// Get the filesystem location of the current file
+		$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
+
+		if ($theme_file && ($safe_mode || !is_file($file) || !phpbb_is_writable($file)))
+		{
+			trigger_error(sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		// save changes to the theme if the user submitted any
 		if ($save_changes)
 		{
-			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
 			$additional = '';
 			$message = $user->lang['THEME_UPDATED'];
 
-			if (!$safe_mode && file_exists($file) && phpbb_is_writable($file))
+			if (!($fp = @fopen($file, 'wb')))
 			{
-				if (!($fp = @fopen($file, 'wb')))
-				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-				fwrite($fp, $theme_data);
-				fclose($fp);
+				trigger_error(sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			else
-			{
-				// @todo Proper error
-				trigger_error('Cannot write to theme file.', E_USER_ERROR);
-			}
+			fwrite($fp, $theme_data);
+			fclose($fp);
 
 			$cache->destroy('sql', STYLES_THEME_TABLE);
 			add_log('admin', 'LOG_THEME_EDIT_FILE', $theme_info['theme_name'], $theme_file);

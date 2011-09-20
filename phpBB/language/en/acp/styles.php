@@ -372,6 +372,7 @@ $lang = array_merge($lang, array(
 	'THEME_ERR_REFRESH_FS'		=> 'This theme is stored on the filesystem so there is no need to refresh it.',
 	'THEME_ERR_STYLE_NAME'		=> 'You must supply a name for this theme.',
 	'THEME_FILE'				=> 'Theme file',
+	'THEME_FILE_NOT_WRITABLE'	=> 'Unable to write to theme file %s. Please check the permissions for the directory and the files.',
 	'THEME_EXPORT'				=> 'Export Theme',
 	'THEME_EXPORT_EXPLAIN'		=> 'Here you can export a theme in the form of an archive. This archive will contain all the data necessary to install the theme on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.',
 	'THEME_EXPORTED'			=> 'Theme exported successfully and stored in %s.',
