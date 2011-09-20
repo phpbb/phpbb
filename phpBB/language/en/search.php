@@ -42,12 +42,10 @@ $lang = array_merge($lang, array(
 	'DISPLAY_RESULTS'		=> 'Display results as',
 
 	'FOUND_SEARCH_MATCHES'		=> array(
-		0	=> 'Search found %d matches',
 		1	=> 'Search found %d match',
 		2	=> 'Search found %d matches',
 	),
 	'FOUND_MORE_SEARCH_MATCHES'		=> array(
-		0	=> 'Search found more than %d matches',
 		1	=> 'Search found more than %d match',
 		2	=> 'Search found more than %d matches',
 	),
@@ -108,7 +106,6 @@ $lang = array_merge($lang, array(
 	'SORT_TIME'					=> 'Post time',
 
 	'TOO_FEW_AUTHOR_CHARS'	=> array(
-		0	=> 'You must specify at least %d characters of the authors name.',
 		1	=> 'You must specify at least %d character of the authors name.',
 		2	=> 'You must specify at least %d characters of the authors name.',
 	),

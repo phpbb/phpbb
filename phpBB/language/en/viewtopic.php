@@ -54,7 +54,6 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(
-		0	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
 		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
 		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
 	)
@@ -74,7 +73,6 @@ $lang = array_merge($lang, array(
 	'MAKE_NORMAL'				=> 'Change to “Standard Topic”',
 	'MAKE_STICKY'				=> 'Change to “Sticky”',
 	'MAX_OPTIONS_SELECT'		=> array(
-		0	=> 'You may select up to <strong>%d</strong> options',
 		1	=> 'You may select <strong>%d</strong> option',
 		2	=> 'You may select up to <strong>%d</strong> options',
 	),
@@ -112,7 +110,6 @@ $lang = array_merge($lang, array(
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
 	'VIEW_RESULTS'			=> 'View results',
 	'VIEW_TOPIC_POSTS'		=> array(
-		0	=> '%d posts',
 		1	=> '%d post',
 		2	=> '%d posts',
 	),

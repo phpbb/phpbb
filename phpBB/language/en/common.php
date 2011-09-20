@@ -678,19 +678,13 @@ $lang = array_merge($lang, array(
 	),
 	'TOTAL_POSTS'		=> 'Total posts',
 	'TOTAL_POSTS_COUNT'	=> array(
-		0	=> 'Total posts <strong>0</strong>',
-		1	=> 'Total posts <strong>%d</strong>',
 		2	=> 'Total posts <strong>%d</strong>',
 	),
 	'TOPIC_REPORTED'	=> 'This topic has been reported',
 	'TOTAL_TOPICS'		=> array(
-		0	=> 'Total topics <strong>0</strong>',
-		1	=> 'Total topics <strong>%d</strong>',
 		2	=> 'Total topics <strong>%d</strong>',
 	),
 	'TOTAL_USERS'		=> array(
-		0	=> 'Total members <strong>0</strong>',
-		1	=> 'Total members <strong>%d</strong>',
 		2	=> 'Total members <strong>%d</strong>',
 	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',

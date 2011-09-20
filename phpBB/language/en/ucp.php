@@ -309,7 +309,6 @@ $lang = array_merge($lang, array(
 	'NOT_AGREE'						=> 'I do not agree to these terms',
 	'NOT_ENOUGH_SPACE_FOLDER'		=> 'The destination folder “%s” seems to be full. The requested action has not been taken.',
 	'NOT_MOVED_MESSAGES'			=> array(
-		0	=> 'You have %d private messages currently on hold because of full folder.',
 		1	=> 'You have %d private message currently on hold because of full folder.',
 		2	=> 'You have %d private messages currently on hold because of full folder.',
 	),
@@ -408,7 +407,6 @@ $lang = array_merge($lang, array(
 	'RULE_DELETED'						=> 'Rule successfully removed.',
 	'RULE_NOT_DEFINED'					=> 'Rule not correctly specified.',
 	'RULE_REMOVED_MESSAGES'				=> array(
-		0	=> '%d private messages were removed due to private message filters.',
 		1	=> '%d private message was removed due to private message filters.',
 		2	=> '%d private messages were removed due to private message filters.',
 	),
@@ -512,7 +510,6 @@ $lang = array_merge($lang, array(
 	'VIEW_PM'					=> 'View message',
 	'VIEW_PM_INFO'				=> 'Message details',
 	'VIEW_PM_MESSAGES'			=> array(
-		0	=> '%d messages',
 		1	=> '%d message',
 		2	=> '%d messages',
 	),
