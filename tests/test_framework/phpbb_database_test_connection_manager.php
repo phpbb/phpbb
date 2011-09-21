@@ -234,12 +234,11 @@ class phpbb_database_test_connection_manager
 		}
 
 		$filename = $directory . $schema . '_schema.sql';
-		$remove_remarks = $this->dbms['COMMENTS'];
 
 		$queries = file_get_contents($filename);
-		$this->$remove_remarks($queries);
+		$sql = $this->remove_comments($queries);
 		
-		$sql = $this->split_sql($queries);
+		$sql = $this->split_sql($sql);
 
 		foreach ($sql as $query)
 		{
@@ -271,60 +270,23 @@ class phpbb_database_test_connection_manager
 			unset($data[key($data)]);
 		}
 
-		if ($this->config['dbms'] == 'sqlite')
-		{
-			// remove comment lines starting with # - they are not proper sqlite
-			// syntax and break sqlite2
-			foreach ($data as $i => $query)
-			{
-				$data[$i] = preg_replace('/^#.*$/m', "\n", $query);
-			}
-		}
-
 		return $data;
 	}
 
 	/**
-	* remove_remarks will strip the sql comment lines out of an uploaded sql file
+	* Removes comments from schema files
+	* 
+	* Note: This performs the functions of remove_remarks() and remove_comments() used during installation
 	*/
-	protected function remove_remarks(&$sql)
+	protected function remove_comments($sql)
 	{
+		// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+		$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
+
+		// Remove # style comments
 		$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-	}
 
-	/**
-	* remove_comments will strip the sql comment lines out of an uploaded sql file
-	* specifically for mssql and postgres type files in the install....
-	*/
-	protected function remove_comments(&$output)
-	{
-		$lines = explode("\n", $output);
-		$output = '';
-
-		// try to keep mem. use down
-		$linecount = sizeof($lines);
-
-		$in_comment = false;
-		for ($i = 0; $i < $linecount; $i++)
-		{
-			if (trim($lines[$i]) == '/*')
-			{
-				$in_comment = true;
-			}
-
-			if (!$in_comment)
-			{
-				$output .= $lines[$i] . "\n";
-			}
-
-			if (trim($lines[$i]) == '*/')
-			{
-				$in_comment = false;
-			}
-		}
-
-		unset($lines);
-		return $output;
+		return $sql;
 	}
 
 	/**
@@ -337,55 +299,46 @@ class phpbb_database_test_connection_manager
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
 				'PDO'			=> 'firebird',
-				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
-				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
-				'COMMENTS'		=> 'remove_remarks',
 			),
 			'mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
-				'COMMENTS'		=> 'remove_comments',
 			),
 			'mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
-				'COMMENTS'		=> 'remove_comments',
 			),
 			'mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'sqlsrv',
-				'COMMENTS'		=> 'remove_comments',
 			),
 			'oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
 				'PDO'			=> 'oci',
-				'COMMENTS'		=> 'remove_comments',
 			),
 			'postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
-				'COMMENTS'		=> 'remove_comments',
 			),
 			'sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
-				'COMMENTS'		=> 'remove_remarks',
 			),
 		);
 
