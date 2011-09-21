@@ -307,13 +307,22 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		$source_file = $this->locator->get_source_file_for_handle($handle);
 		$output_file = $this->_compiled_file_for_handle($handle);
 
 		$recompile = defined('DEBUG_EXTRA') ||
 			!file_exists($output_file) ||
-			@filesize($output_file) === 0 ||
-			($this->config['load_tplcompile'] && @filemtime($output_file) < @filemtime($source_file));
+			@filesize($output_file) === 0;
+
+		if ($recompile || $this->config['load_tplcompile'])
+		{
+			// Set only if a recompile or an mtime check are required.
+			$source_file = $this->locator->get_source_file_for_handle($handle);
+
+			if (!$recompile && @filemtime($output_file) < @filemtime($source_file))
+			{
+				$recompile = true;
+			}
+		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
