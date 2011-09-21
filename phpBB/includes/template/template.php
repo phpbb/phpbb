@@ -307,35 +307,22 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		$source_file = null;
-
-		$compiled_path = $this->_compiled_file_for_handle($handle);
+		$source_file = $this->locator->get_source_file_for_handle($handle);
+		$output_file = $this->_compiled_file_for_handle($handle);
 
 		$recompile = defined('DEBUG_EXTRA') ||
-			!file_exists($compiled_path) ||
-			@filesize($compiled_path) === 0 ||
-			($this->config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($source_file));
-
-		if (!$recompile && $this->config['load_tplcompile'])
-		{
-			$source_file = $this->locator->get_source_file_for_handle($handle);
-			$recompile = (@filemtime($compiled_path) < @filemtime($source_file)) ? true : false;
-		}
+			!file_exists($output_file) ||
+			@filesize($output_file) === 0 ||
+			($this->config['load_tplcompile'] && @filemtime($output_file) < @filemtime($source_file));
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_renderer_include($compiled_path, $this);
-		}
-
-		if ($source_file === null)
-		{
-			$source_file = $this->locator->get_source_file_for_handle($handle);
+			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
 		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
 
-		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
 			$renderer = new phpbb_template_renderer_include($output_file, $this);
