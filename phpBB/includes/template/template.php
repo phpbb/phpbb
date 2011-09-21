@@ -307,10 +307,9 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		$virtual_source_file = $this->locator->get_virtual_source_file_for_handle($handle);
 		$source_file = null;
 
-		$compiled_path = $this->cachepath . str_replace('/', '.', $virtual_source_file) . '.' . $this->phpEx;
+		$compiled_path = $this->_compiled_file_for_handle($handle);
 
 		$recompile = defined('DEBUG_EXTRA') ||
 			!file_exists($compiled_path) ||
