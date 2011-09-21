@@ -6,8 +6,8 @@ tweaks required due to its poor CSS support.
 
 * html table, * html select, * html input { font-size: 100%; }
 * html hr { margin: 0; }
-* html span.corners-top, * html span.corners-bottom { background-image: url("{T_THEME_PATH}/images/corners_left.gif"); }
-* html span.corners-top span, * html span.corners-bottom span { background-image: url("{T_THEME_PATH}/images/corners_right.gif"); }
+* html span.corners-top, * html span.corners-bottom { background-image: url("./images/corners_left.gif"); }
+* html span.corners-top span, * html span.corners-bottom span { background-image: url("./images/corners_right.gif"); }
 
 table.table1 {
 	width: 99%;		/* IE < 6 browsers */
