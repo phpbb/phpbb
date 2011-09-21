@@ -903,7 +903,6 @@ class install_install extends module
 		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
 		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
-		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
