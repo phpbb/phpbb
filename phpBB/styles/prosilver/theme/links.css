@@ -12,6 +12,9 @@ a:visited	{ color: #898989; text-decoration: none; }
 a:hover	{ color: #d3d3d3; text-decoration: underline; }
 a:active	{ color: #d2d2d2; text-decoration: none; }
 
+/* No underline */
+a.no-underline { text-decoration: none !important; }
+
 /* Coloured usernames */
 .username-coloured {
 	font-weight: bold;
