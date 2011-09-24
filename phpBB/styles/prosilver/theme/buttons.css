@@ -31,12 +31,6 @@
 	font-size: 1.05em;
 	text-transform: uppercase;
 	font-family: Helvetica,Arial,sans-serif;
-	font-weight: bold;
-	letter-spacing: 0.05em;
-}
-
-.buttons div a strong {
-	font-weight: bolder;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
