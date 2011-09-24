@@ -40,6 +40,7 @@ class phpbb_template_filter extends php_user_filter
 	const REGEX_NS = '[a-z_][a-z_0-9]+';
 
 	const REGEX_VAR = '[A-Z_][A-Z_0-9]+';
+	const REGEX_VAR_SUFFIX = '[A-Z_0-9]+';
 
 	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
 
@@ -374,7 +375,7 @@ class phpbb_template_filter extends php_user_filter
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks, -1, $replacements);
+			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR_SUFFIX . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks, -1, $replacements);
 			return (bool) $replacements;
 		}
 
@@ -382,7 +383,7 @@ class phpbb_template_filter extends php_user_filter
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks, -1, $replacements);
+			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR_SUFFIX . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks, -1, $replacements);
 			return (bool) $replacements;
 		}
 
