@@ -110,6 +110,12 @@ $lang = array_merge($lang, array(
 	'BROWSING_FORUM'		=> 'Users browsing this forum: %1$s',
 	'BROWSING_FORUM_GUEST'	=> 'Users browsing this forum: %1$s and %2$d guest',
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
+	'BUTTON_LOCKED'			=> '<strong>Locked</strong>',
+	'BUTTON_PM_FORWARD'		=> '<strong>Forward</strong>',
+	'BUTTON_PM_NEW'			=> 'New<strong>pm</strong>',
+	'BUTTON_PM_REPLY'		=> 'Send<strong>reply</strong>',
+	'BUTTON_TOPIC_NEW'		=> 'New<strong>topic</strong>',
+	'BUTTON_TOPIC_REPLY'	=> 'Post<strong>reply</strong>',
 	'BYTES'					=> 'Bytes',
 
 	'CANCEL'				=> 'Cancel',
