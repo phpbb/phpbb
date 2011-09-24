@@ -46,11 +46,11 @@ phpbb.loading_alert = function() {
 phpbb.alert = function(title, msg, fadedark) {
 	var div = $('<div class="jalert"><h3>' + title + '</h3><p>' + msg + '</p></div>');
 
-	$(div).bind('click', function(e) {
+	div.bind('click', function(e) {
 		e.stopPropagation();
 		return true;
 	});
-	$(dark).one('click', function(e) {
+	dark.one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
 		fade.fadeOut(100, function() {
 			div.remove();
@@ -60,7 +60,7 @@ phpbb.alert = function(title, msg, fadedark) {
 	
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === 13 || e.keyCode === 27) {
-			$(dark).trigger('click');
+			dark.trigger('click');
 			return false;
 		}
 		return true;
@@ -69,18 +69,18 @@ phpbb.alert = function(title, msg, fadedark) {
 	if (loading_alert.is(':visible'))
 	{
 		loading_alert.fadeOut(100, function() {
-			$(dark).append(div);
+			dark.append(div);
 			div.fadeIn(100);
 		});
 	}
 	else if (dark.is(':visible'))
 	{
-		$(dark).append(div);
+		dark.append(div);
 		div.fadeIn(100);
 	}
 	else
 	{
-		$(dark).append(div);
+		dark.append(div);
 		div.show();
 		dark.fadeIn(100);
 	}
@@ -128,18 +128,18 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	if (loading_alert.is(':visible'))
 	{
 		loading_alert.fadeOut(100, function() {
-			$(dark).append(div);
+			dark.append(div);
 			div.fadeIn(100);
 		});
 	}
 	else if (dark.is(':visible'))
 	{
-		$(dark).append(div);
+		dark.append(div);
 		div.fadeIn(100);
 	}
 	else
 	{
-		$(dark).append(div);
+		dark.append(div);
 		div.show();
 		dark.fadeIn(100);
 	}
@@ -174,18 +174,14 @@ phpbb.parse_querystring = function(string) {
  * @param function callback Callback.
  */
 phpbb.ajaxify = function(options, refresh, callback) {
-	var selector = (typeof options === 'string') ? options : options.selector;
-	var is_form = $(selector).is('form');
-	if (is_form && typeof selector === 'object')
+	var selector = $((typeof options === 'string') ? options : options.selector);
+	var is_form = selector.is('form');
+	if (is_form)
 	{
-		selector = $(selector).find('input:submit');
-	}
-	else if (is_form)
-	{
-		selector += ' input:submit';
+		selector = selector.find('input:submit');
 	}
 	
-	$(selector).click(function() {
+	selector.click(function() {
 		var act, data, path, that = this;
 		
 		if ($(this).data('ajax') == false)
