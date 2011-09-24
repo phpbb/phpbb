@@ -477,16 +477,77 @@
 /**
 * buttons.css
 */
-/* Rollover buttons
-   Based on: http://wellstyled.com/css-nopreload-rollovers.html
-----------------------------------------*/
 .rtl .buttons {
 	float: right;
 }
 
 /* Rollover state */
 .rtl .buttons div {
-	margin: 0 1px 0 5px;
+	float: right;
+	margin: 0 0 0 5px;
+	background-image: url("./images/buttons_sprites_rtl.png");
+}
+.rtl .buttons div a {
+	padding-left: 0;
+	padding-right: 5px;
+	background-image: url("./images/buttons_sprites_rtl.png");
+	background-position: 100% 0;
+}
+
+.rtl .buttons div span			{
+	margin-left: 20px; /* left background image */
+	margin-right: 0;
+}
+
+.rtl .buttons div.no-icon span	{
+	margin-left: 5px; /* left background image */
+	margin-right: 0;
+}
+
+/* On rtl languages, the ".buttons div" and ".buttons div a" change their functions!
+While on ltr the div is just the starting boarder, on rtl it contains the icon.
+So we need to overwrite the background positions for all "div a"
+and set the background-positions for the "div" */
+.rtl .buttons div:hover a { background-position: 100% -25px; }
+.rtl .buttons div:hover, .rtl .buttons div:hover a span { background-position: 100% -25px; }
+
+.rtl .buttons div a {
+	background-image: url("./images/buttons_sprites_rtl.png");
+}
+
+.rtl .buttons div.no-icon {
+	background-position: 0 -50px;
+}
+.rtl .buttons div.no-icon:hover {
+	background-position: 0 -75px;
+}
+
+.rtl .buttons div.forwardpm-icon, .rtl .buttons div.arrow-up-icon {
+	background-position: 0 -100px;
+}
+.rtl .buttons div.forwardpm-icon:hover, .rtl .buttons div.arrow-up-icon:hover {
+	background-position: 0 -125px;
+}
+
+.rtl .buttons div.reply-icon, .rtl .buttons div.pmreply-icon, .rtl .buttons div.arrow-down-icon {
+	background-position: 0 -150px;
+}
+.rtl .buttons div.reply-icon:hover, .rtl .buttons div.pmreply-icon:hover, .rtl .buttons div.arrow-down-icon:hover {
+	background-position: 0 -175px;
+}
+
+.rtl .buttons div.newpm-icon, .rtl .buttons div.post-icon, .rtl .buttons div.asterix-icon {
+	background-position: 0 -200px;
+}
+.rtl .buttons div.newpm-icon:hover, .rtl .buttons div.post-icon:hover, .rtl .buttons div.asterix-icon:hover {
+	background-position: 0 -225px;
+}
+
+.rtl .buttons div.locked-icon {
+	background-position: 0 -250px;
+}
+.rtl .buttons div.locked-icon:hover {
+	background-position: 0 -275px;
 }
 
 /* Sub-header (navigation bar)

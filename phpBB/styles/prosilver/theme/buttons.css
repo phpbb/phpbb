@@ -33,9 +33,6 @@
 	font-family: Helvetica,Arial,sans-serif;
 }
 
-/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
-/*.buttons div span		{ display: none; }*/
-/*.buttons div a:hover	{ background-image: none; }*/
 .buttons div span			{
 	cursor: pointer;
 	display: block;
@@ -47,6 +44,7 @@
 	background-position: 0 0;
 	background-repeat: repeat-x;
 }
+
 .buttons div.no-icon span	{
 	margin-right: 5px; /* right background image */
 }
