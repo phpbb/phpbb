@@ -1994,6 +1994,11 @@ function change_database_data(&$no_updates, $version)
 		// No changes from 3.0.9-RC4 to 3.0.9
 		case '3.0.9-RC4':
 		break;
+
+		// Changes from 3.0.9 to 3.0.10-RC1
+		case '3.0.9':
+			set_config('email_max_chunk_size', '50');
+		break;
 	}
 }
 

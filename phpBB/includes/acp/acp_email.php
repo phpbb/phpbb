@@ -136,8 +136,9 @@ class acp_email
 
 				$i = $j = 0;
 
-				// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
-				$max_chunk_size = 50;
+				// Send with BCC
+				// Maximum number of bcc recipients
+				$max_chunk_size = (int) $config['email_max_chunk_size'];
 				$email_list = array();
 				$old_lang = $row['user_lang'];
 				$old_notify_type = $row['user_notify_type'];
