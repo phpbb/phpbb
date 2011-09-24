@@ -30,7 +30,7 @@ class phpbb_json_response
 	 */
 	public function send($data, $exit = true)
 	{
-		header('Content-type: application/json');
+		header('Content-Type: application/json');
 		echo json_encode($data);
 
 		if ($exit)
