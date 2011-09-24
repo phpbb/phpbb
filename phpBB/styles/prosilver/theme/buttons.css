@@ -14,40 +14,90 @@
 .buttons div {
 	float: left;
 	margin: 0 5px 0 0;
-	background-position: 0 100%;
+	height: 25px;
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	background-image: url("./images/buttons_sprites.png");
 }
 
 /* Rolloff state */
 .buttons div a {
 	display: block;
-	width: 100%;
 	height: 100%;
-	background-position: 0 0;
-	position: relative;
-	overflow: hidden;
+	padding-left: 5px; /* left background image */
+	background-color: transparent;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	font-size: 1.05em;
+	text-transform: uppercase;
+	font-family: Helvetica,Arial,sans-serif;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+}
+
+.buttons div a strong {
+	font-weight: bolder;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
 /*.buttons div span		{ display: none; }*/
 /*.buttons div a:hover	{ background-image: none; }*/
-.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
-.buttons div a:hover span	{ background-position: 0 100%; }
+.buttons div span			{
+	cursor: pointer;
+	display: block;
+	height: 100%;
+	line-height: 25px;
+	margin-right: 20px; /* right background image */
+	padding: 0 5px;
+	background-image: url("./images/buttons_bg.png");
+	background-position: 0 0;
+	background-repeat: repeat-x;
+}
+.buttons div.no-icon span	{
+	margin-right: 5px; /* right background image */
+}
+
+.buttons div:hover, .buttons div:hover a span { background-position: 0 -25px; }
 
 /* Big button images */
-.reply-icon span	{ background: transparent none 0 0 no-repeat; }
-.post-icon span		{ background: transparent none 0 0 no-repeat; }
-.locked-icon span	{ background: transparent none 0 0 no-repeat; }
-.pmreply-icon span	{ background: none 0 0 no-repeat; }
-.newpm-icon span 	{ background: none 0 0 no-repeat; }
-.forwardpm-icon span 	{ background: none 0 0 no-repeat; }
+.buttons div a {
+	background-image: url("./images/buttons_sprites.png");
+}
 
-/* Set big button dimensions */
-.buttons div.reply-icon		{ width: 96px; height: 25px; }
-.buttons div.post-icon		{ width: 96px; height: 25px; }
-.buttons div.locked-icon	{ width: 88px; height: 25px; }
-.buttons div.pmreply-icon	{ width: 96px; height: 25px; }
-.buttons div.newpm-icon		{ width: 84px; height: 25px; }
-.buttons div.forwardpm-icon	{ width: 96px; height: 25px; }
+.buttons div.no-icon a {
+	background-position: 100% -50px;
+}
+.buttons div.no-icon:hover a {
+	background-position: 100% -75px;
+}
+
+.buttons div.forwardpm-icon a, .buttons div.arrow-up-icon a {
+	background-position: 100% -100px;
+}
+.buttons div.forwardpm-icon:hover a, .buttons div.arrow-up-icon:hover a {
+	background-position: 100% -125px;
+}
+
+.buttons div.reply-icon a, .buttons div.pmreply-icon a, .buttons div.arrow-down-icon a {
+	background-position: 100% -150px;
+}
+.buttons div.reply-icon:hover a, .buttons div.pmreply-icon:hover a, .buttons div.arrow-down-icon:hover a {
+	background-position: 100% -175px;
+}
+
+.buttons div.newpm-icon a, .buttons div.post-icon a, .buttons div.asterix-icon a {
+	background-position: 100% -200px;
+}
+.buttons div.newpm-icon:hover a, .buttons div.post-icon:hover a, .buttons div.asterix-icon:hover a {
+	background-position: 100% -225px;
+}
+
+.buttons div.locked-icon a {
+	background-position: 100% -250px;
+}
+.buttons div.locked-icon:hover a {
+	background-position: 100% -275px;
+}
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
