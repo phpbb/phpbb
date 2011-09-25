@@ -179,7 +179,7 @@ class install_install extends module
 		{
 			$checks['PHP_OPTIONAL_MODULE']['DLL_' . strtoupper($dll)] = (!@extension_loaded($dll)) ? can_load_dll($dll) : true;
 		}
-		$img_imagick = get_imagemagic();
+		$img_imagick = phpbb_search_imagemagick();
 		$checks['PHP_OPTIONAL_MODULE']['APP_MAGICK'] = $img_imagick;
 
 		// Set the required directories checks
@@ -187,8 +187,8 @@ class install_install extends module
 		$directories = array('cache/', 'files/', 'store/');
 		foreach ($directories as $dir)
 		{
-			$checks['FILES_REQUIRED'][$dir] = ($exists[$dir] = check_dir_exists($dir))
-												&& ($writable[$dir] = check_dir_is_writable($dir));
+			$checks['FILES_REQUIRED'][$dir] = ($exists[$dir] = phpbb_check_dir_exists($dir))
+												&& ($writable[$dir] = phpbb_create_dir($dir));
 		}
 
 		// Set the optional files/directories checks

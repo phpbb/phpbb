@@ -190,7 +190,7 @@ class acp_attachments
 
 				if ($action == 'imgmagick')
 				{
-					$this->new_config['img_imagick'] = $this->search_imagemagick();
+					$this->new_config['img_imagick'] = phpbb_search_imagemagick();
 				}
 
 				// We strip eventually manual added convert program, we only want the patch
@@ -1376,47 +1376,6 @@ class acp_attachments
 		$group_select .= '</select>';
 
 		return $group_select;
-	}
-
-	/**
-	* Search Imagick
-	*/
-	function search_imagemagick()
-	{
-		$imagick = '';
-
-		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
-
-		$magic_home = getenv('MAGICK_HOME');
-
-		if (empty($magic_home))
-		{
-			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
-
-			$locations = array_merge($path_locations, $locations);
-
-			foreach ($locations as $location)
-			{
-				// The path might not end properly, fudge it
-				if (substr($location, -1) !== '/')
-				{
-					$location .= '/';
-				}
-
-				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
-				{
-					$imagick = str_replace('\\', '/', $location);
-					continue;
-				}
-			}
-		}
-		else
-		{
-			$imagick = str_replace('\\', '/', $magic_home);
-		}
-
-		return $imagick;
 	}
 
 	/**

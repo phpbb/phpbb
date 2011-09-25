@@ -554,47 +554,9 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 }
 
 /**
-* Check if Imagemagick can be found anywhere on the system
-*/
-function get_imagemagic()
-{
-	$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
-
-	$magic_home = getenv('MAGICK_HOME');
-	$img_imagick = '';
-	if (empty($magic_home))
-	{
-		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
-
-		$locations = array_merge($path_locations, $locations);
-		foreach ($locations as $location)
-		{
-			// The path might not end properly, fudge it
-			if (substr($location, -1, 1) !== '/')
-			{
-				$location .= '/';
-			}
-
-			if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
-			{
-				$img_imagick = str_replace('\\', '/', $location);
-				continue;
-			}
-		}
-	}
-	else
-	{
-		$img_imagick = str_replace('\\', '/', $magic_home);
-	}
-	
-	return ($img_magic) ? $img_imagick : false;
-}
-
-/**
 * Tests if directory exists, if not, tries to create it.
 */
-function check_dir_exists($dir)
+function phpbb_check_dir_exists($dir)
 {
 	global $phpbb_root_path;
 
@@ -621,7 +583,7 @@ function check_dir_exists($dir)
 /**
 * Tests if directory is writable by storing simple file.
 */
-function check_dir_is_writable($dir)
+function phpbb_create_dir($dir)
 {
 	global $phpbb_root_path;
 
