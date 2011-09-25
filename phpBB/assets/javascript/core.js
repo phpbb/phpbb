@@ -45,7 +45,7 @@ phpbb.loading_alert = function() {
  * @returns object Returns the div created.
  */
 phpbb.alert = function(title, msg, fadedark) {
-	var div = $('#jalert_alert');
+	var div = $('#phpbb_alert');
 	div.find('h3').html(title);
 	div.find('p').html(msg);
 
@@ -107,15 +107,20 @@ phpbb.alert = function(title, msg, fadedark) {
  * @returns object Returns the div created.
  */
 phpbb.confirm = function(msg, callback, fadedark) {
-	var div = $('#jalert_confirm');
+	var div = $('#phpbb_confirm');
 	div.find('p').html(msg);
-	
-	div.find('.jalertbut').bind('click', function() {
-		var res = this.value === 'Yes';
+
+	div.bind('click', function(e) {
+		e.stopPropagation();
+		return true;
+	});
+	div.find('input[type="button"]').one('click', function() {
+		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(100, function() {
 			div.hide();
 		});
+		div.find('input[type="button"]').unbind('click');
 		callback(res);
 		return false;
 	});
@@ -131,10 +136,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === 13) {
-			$('.jalertbut.button1').trigger('click');
+			$('input[type="button"].button1').trigger('click');
 			return false;
 		} else if (e.keyCode === 27) {
-			$('.jalertbut.button2').trigger('click');
+			$('input[type="button"].button2').trigger('click');
 			return false;
 		}
 		return true;
