@@ -562,6 +562,12 @@ li.pagination {
 	padding: 0 25px 20px 25px;
 }
 
+.jalert img.alert_close {
+	float: right;
+	margin-top: -7px;
+	margin-right: -30px;
+}
+
 .jalert p {
 	margin: 8px 0;
 	padding-bottom: 8px;

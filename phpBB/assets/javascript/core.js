@@ -68,6 +68,10 @@ phpbb.alert = function(title, msg, fadedark) {
 		}
 		return true;
 	});
+	
+	div.find('.alert_close').one('click', function() {
+		dark.trigger('click');
+	});
 
 	if (loading_alert.is(':visible'))
 	{
@@ -115,6 +119,15 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		callback(res);
 		return false;
 	});
+
+	dark.one('click', function(e) {
+		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
+		fade.fadeOut(100, function() {
+			div.hide();
+		});
+		callback(false);
+		return false;
+	});
 	
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === 13) {
@@ -125,6 +138,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 			return false;
 		}
 		return true;
+	});
+	
+	div.find('.alert_close').one('click', function() {
+		dark.trigger('click');
 	});
 	
 	if (loading_alert.is(':visible'))
