@@ -126,6 +126,8 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
+		'T_JQUERY_LINK'		=> (!empty($config['load_jquery_host']) && $config['load_jquery_host'] != 'localhost') ? remote_jquery_url($config['load_jquery_host']) : "{$phpbb_root_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'	=> (!empty($config['load_jquery_host']) && $config['load_jquery_host'] != 'localhost') ? true : false,
 		'VERSION'			=> $config['version'])
 	);
 

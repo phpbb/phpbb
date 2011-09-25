@@ -4569,6 +4569,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_JQUERY_LINK'			=> (!empty($config['load_jquery_host']) && $config['load_jquery_host'] != 'localhost') ? remote_jquery_url($config['load_jquery_host']) : "{$web_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'		=> (!empty($config['load_jquery_host']) && $config['load_jquery_host'] != 'localhost') ? true : false,
 
 		'T_THEME_NAME'			=> $user->theme['theme_path'],
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -4766,4 +4768,31 @@ function phpbb_pcre_utf8_support()
 		$utf8_pcre_properties = (@preg_match('/\p{L}/u', 'a') !== false);
 	}
 	return $utf8_pcre_properties;
+}
+
+/**
+* Build jQuery URL for remote CDNs
+* Reference: http://docs.jquery.com/Downloading_jQuery#CDN_Hosted_jQuery
+*
+* @return string	Returns url to a jQuery library
+*/
+function remote_jquery_url($host)
+{
+	switch($host)
+	{
+		case 'google':
+			// Google uses a 1.5.0, 1.5.1 format (it is always a three numbered version)
+			return '//ajax.googleapis.com/ajax/libs/jquery/' . ((strlen(JQUERY_VERSION) == 3) ? JQUERY_VERSION . '.0' : JQUERY_VERSION) . '/jquery.min.js';
+		break;
+		
+		case 'microsoft':
+			// Microsoft uses a 1.5, 1.5.1 format
+			return 'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-' . JQUERY_VERSION . '.min.js';
+		break;
+		
+		case 'jquery':
+			// jQuery uses a 1.5, 1.5.1 format
+			return 'http://code.jquery.com/jquery-' .  JQUERY_VERSION . '.min.js';
+		break;
+	}
 }

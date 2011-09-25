@@ -99,6 +99,7 @@ class acp_board
 						'load_cpf_pm'			=> array('lang' => 'LOAD_CPF_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain'	=> false),
 						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_jquery_host'		=> array('lang' => 'JQUERY_HOST',			'validate' => 'string',	'type' => 'select', 'method' => 'jquery_host_select', 'explain' => true),
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
@@ -995,6 +996,16 @@ class acp_board
 
 		// Empty sql cache for forums table because options changed
 		$cache->destroy('sql', FORUMS_TABLE);
+	}
+
+	function jquery_host_select($value, $key = '')
+	{
+		global $user;
+
+		return '<option value="localhost"' . (($value == 'localhost') ? ' selected="selected"' : '') . '>' . $user->lang['JQUERY_HOST_LOCAL'] . '</option>
+				<option value="google"' . (($value == 'google') ? ' selected="selected"' : '') . '>' . $user->lang['JQUERY_HOST_GOOGLE'] . '</option>
+				<option value="microsoft"' . (($value == 'microsoft') ? ' selected="selected"' : '') . '>' . $user->lang['JQUERY_HOST_MS'] . '</option>
+				<option value="jquery"' . (($value == 'jquery') ? ' selected="selected"' : '') . '>' . $user->lang['JQUERY_HOST_JQUERY'] . '</option>';
 	}
 
 }

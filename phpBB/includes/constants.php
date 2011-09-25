@@ -210,6 +210,7 @@ define('CAPTCHA_MAX_CHARS', 7);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);
+define('JQUERY_VERSION', '1.6.2'); // Important follow jQuery versioning, ie: 1.6, 1.6.1, 1.6.2
 
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');

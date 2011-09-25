@@ -549,3 +549,13 @@ $lang = array_merge($lang, array(
 	'JAB_USERNAME'				=> 'Jabber username or JID',
 	'JAB_USERNAME_EXPLAIN'		=> 'Specify a registered username or a valid JID. The username will not be checked for validity. If you only specify a username, then your JID will be the username and the server you specified above. Else, specify a valid JID, for example user@jabber.org.',
 ));
+
+// jQuery settings
+$lang = array_merge($lang, array(
+	'JQUERY_HOST'			=> 'jQuery server',
+	'JQUERY_HOST_EXPLAIN'	=> 'Load jQuery from your local server, or choose a remote copy hosted on a CDN (Content Delivery Network). If the CDN fails, phpBB will fall back to the local copy.',
+	'JQUERY_HOST_LOCAL'		=> 'Localhost',
+	'JQUERY_HOST_GOOGLE'	=> 'Google Ajax API CDN',
+	'JQUERY_HOST_JQUERY'	=> 'jQuery CDN',
+	'JQUERY_HOST_MS'		=> 'Microsoft CDN',
+));
