@@ -661,7 +661,9 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.buttons div a	{ color: #D31141; }
+.buttons div a,
+ul.profile-icons li.edit-icon a,
+ul.profile-icons li.quote-icon a { color: #D31141; }
 
 a.print {
 	background-image: url("./images/icon_print.gif");
@@ -696,11 +698,10 @@ a.sendemail {
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
 .pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
-.quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
+
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
-.edit-icon, .edit-icon a			{ background-image: url("./en/icon_post_edit.gif"); }
 .delete-icon, .delete-icon a		{ background-image: url("./images/icon_post_delete.gif"); }
 .info-icon, .info-icon a			{ background-image: url("./images/icon_post_info.gif"); }
 .warn-icon, .warn-icon a			{ background-image: url("./images/icon_user_warn.gif"); } /* Need updated warn icon */

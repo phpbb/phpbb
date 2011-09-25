@@ -24,8 +24,8 @@
 .buttons div a {
 	display: block;
 	height: 100%;
-	padding-left: 5px; /* left background image */
 	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
 	background-repeat: no-repeat;
 	text-decoration: none;
 	font-size: 1.05em;
@@ -38,7 +38,7 @@
 	display: block;
 	height: 100%;
 	line-height: 25px;
-	margin-right: 20px; /* right background image */
+	margin: 0 20px 0 5px; /* c */
 	padding: 0 5px;
 	background-image: url("./images/buttons_bg.png");
 	background-position: 0 0;
@@ -52,10 +52,6 @@
 .buttons div:hover, .buttons div:hover a span { background-position: 0 -25px; }
 
 /* Big button images */
-.buttons div a {
-	background-image: url("./images/buttons_sprites.png");
-}
-
 .buttons div.no-icon a {
 	background-position: 100% -50px;
 }
@@ -136,12 +132,82 @@ ul.profile-icons li {
 	background-position: 0 100%;
 }
 
+ul.profile-icons li.edit-icon,
+ul.profile-icons li.quote-icon {
+	float: left;
+	margin: 0 6px 3px 0;
+	height: 20px;
+	background-repeat: no-repeat;
+	background-position: 100% -340px;
+	background-image: url("./images/buttons_sprites.png");
+}
+
 /* Rolloff state */
 ul.profile-icons li a {
 	display: block;
-	width: 100%;
 	height: 100%;
 	background-position: 0 0;
+}
+
+ul.profile-icons li.edit-icon a,
+ul.profile-icons li.quote-icon a {
+	display: block;
+	height: 100%;
+	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
+	background-repeat: no-repeat;
+	text-decoration: none;
+	font-size: 0.9em;
+	text-transform: uppercase;
+	font-family: Helvetica,Arial,sans-serif;
+}
+
+ul.profile-icons li.edit-icon a:hover,
+ul.profile-icons li.quote-icon a:hover {
+	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
+	background-repeat: no-repeat;
+}
+
+ul.profile-icons li.edit-icon a span,
+ul.profile-icons li.quote-icon a span {
+	cursor: pointer;
+	display: block;
+	height: 100%;
+	line-height: 20px;
+	margin: 0 5.5px 0 11.5px; /* left and right background */
+	padding: 1px 5px 0 3px;
+	background-image: url("./images/buttons_bg.png");
+	background-position: center -50px;
+	background-repeat: repeat-x;
+}
+
+ul.profile-icons li.edit-icon:hover a span,
+ul.profile-icons li.quote-icon:hover a span {
+	background-position: 0 -70px;
+}
+	
+ul.profile-icons li.edit-icon:hover,
+ul.profile-icons li.quote-icon:hover {
+	background-position: 100% -360px;
+}
+
+ul.profile-icons li.edit-icon a {
+	background-position: 0 -380px;
+}
+ul.profile-icons li.edit-icon:hover a {
+	background-position: 0 -400px;
+}
+
+ul.profile-icons li.edit-icon a span {
+	padding-left: 0;
+}
+
+ul.profile-icons li.quote-icon a {
+	background-position: 0 -420px;
+}
+ul.profile-icons li.quote-icon:hover a {
+	background-position: 0 -440px;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
@@ -168,12 +234,10 @@ ul.profile-icons li a:hover { background: none; }
 .icq-icon, .icq-icon a			{ background: none top left no-repeat; }
 .jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
 .pm-icon, .pm-icon a				{ background: none top left no-repeat; }
-.quote-icon, .quote-icon a		{ background: none top left no-repeat; }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background: none top left no-repeat; }
 .warn-icon, .warn-icon a			{ background: none top left no-repeat; }
-.edit-icon, .edit-icon a			{ background: none top left no-repeat; }
 .delete-icon, .delete-icon a		{ background: none top left no-repeat; }
 .info-icon, .info-icon a			{ background: none top left no-repeat; }
 
@@ -186,9 +250,7 @@ ul.profile-icons li.msnm-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.icq-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.jabber-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
-ul.profile-icons li.quote-icon	{ width: 54px; height: 20px; }
 ul.profile-icons li.report-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
 ul.profile-icons li.delete-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.info-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
