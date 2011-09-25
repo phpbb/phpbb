@@ -8,9 +8,9 @@
 		<ul class="linklist">
 			<li class="icon-home"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a></li>
 				<!-- IF not S_IS_BOT -->
-					<!-- IF S_WATCH_FORUM_LINK --><li <!-- IF S_WATCHING_FORUM -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{S_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="forum_<!-- IF S_WATCHING_FORUM -->un<!-- ENDIF -->subscribe">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
-					<!-- IF U_WATCH_TOPIC --><li <!-- IF S_WATCHING_TOPIC -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_TOPIC}" title="{L_WATCH_TOPIC}" data-ajax="topic_<!-- IF S_WATCHING_TOPIC -->un<!-- ENDIF -->subscribe">{L_WATCH_TOPIC}</a></li><!-- ENDIF -->
-					<!-- IF U_BOOKMARK_TOPIC --><li class="icon-bookmark"><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="bookmark">{L_BOOKMARK_TOPIC}</a></li><!-- ENDIF -->
+					<!-- IF S_WATCH_FORUM_LINK --><li <!-- IF S_WATCHING_FORUM -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{S_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="alt_text" data-alt-text="<!-- IF S_WATCHING_FORUM -->{L_START_WATCHING_FORUM}<!-- ELSE -->{L_STOP_WATCHING_FORUM}<!-- ENDIF -->">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
+					<!-- IF U_WATCH_TOPIC --><li <!-- IF S_WATCHING_TOPIC -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_TOPIC}" title="{L_WATCH_TOPIC}" data-ajax="alt_text" data-alt-text="<!-- IF S_WATCHING_TOPIC -->{L_START_WATCHING_TOPIC}<!-- ELSE -->{L_STOP_WATCHING_TOPIC}<!-- ENDIF -->">{L_WATCH_TOPIC}</a></li><!-- ENDIF -->
+					<!-- IF U_BOOKMARK_TOPIC --><li class="icon-bookmark"><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="<!-- IF S_BOOKMARKED_TOPIC -->{L_BOOKMARK_TOPIC_REAL}<!-- ELSE -->{L_BOOKMARK_TOPIC_REMOVE}<!-- ENDIF -->">{L_BOOKMARK_TOPIC}</a></li><!-- ENDIF -->
 					<!-- IF U_BUMP_TOPIC --><li class="icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
 				<!-- ENDIF -->
 			<li class="rightside"><!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a> &bull; <!-- ENDIF --><!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a> &bull; <!-- ENDIF -->{S_TIMEZONE}</li>
@@ -28,6 +28,13 @@
 	<div id="darkenwrapper">
 		<div id="darken">&nbsp;</div>
 		<div class="jalert" id="loadingalert"><h3>{L_LOADING}</h3><p>{L_PLEASE_WAIT}</p></div>
+	</div>
+
+	<div id="jalert_alert" class="jalert"><h3></h3><p></p></div>
+	<div id="jalert_confirm" class="jalert">
+		<p></p>
+		<input type="button" class="jalertbut button1" value="Yes" />&nbsp;
+		<input type="button" class="jalertbut button2" value="No" />
 	</div>
 </div>
 

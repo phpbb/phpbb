@@ -10,18 +10,6 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 			$(this).remove();
 		});
 	}
-}).add_ajax_callback('bookmark', function(el, res) {
-	var text = (res.MESSAGE_TEXT.indexOf('Removed') === -1);
-	text = (text) ? 'Remove from bookmarks' : 'Bookmark topic';
-	$(el).text(el.title = text);
-}).add_ajax_callback('topic_subscribe', function(el) {
-	$(el).text(el.title = 'Unsubscribe topic');
-}).add_ajax_callback('topic_unsubscribe', function(el) {
-	$(el).text(el.title = 'Subscribe forum');
-}).add_ajax_callback('forum_subscribe', function(el) {
-	$(el).text(el.title = 'Unsubscribe topic');
-}).add_ajax_callback('forum_unsubscribe', function(el) {
-	$(el).text(el.title = 'Subscribe forum');
 }).add_ajax_callback('post_approve', function(el, res, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
 		$(this).remove();
