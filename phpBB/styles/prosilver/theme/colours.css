@@ -49,7 +49,7 @@ hr.dashed {
 ---------------------------------------- */
 .headerbar {
 	background-color: #12A3EB;
-	background-image: url("{T_THEME_PATH}/images/bg_header.gif");
+	background-image: url("./images/bg_header.gif");
 	color: #FFFFFF;
 }
 
@@ -59,12 +59,12 @@ hr.dashed {
 
 .forabg {
 	background-color: #0076b1;
-	background-image: url("{T_THEME_PATH}/images/bg_list.gif");
+	background-image: url("./images/bg_list.gif");
 }
 
 .forumbg {
 	background-color: #12A3EB;
-	background-image: url("{T_THEME_PATH}/images/bg_header.gif");
+	background-image: url("./images/bg_header.gif");
 }
 
 .panel {
@@ -93,19 +93,19 @@ hr.dashed {
 }
 
 span.corners-top {
-	background-image: url("{T_THEME_PATH}/images/corners_left.png");
+	background-image: url("./images/corners_left.png");
 }
 
 span.corners-top span {
-	background-image: url("{T_THEME_PATH}/images/corners_right.png");
+	background-image: url("./images/corners_right.png");
 }
 
 span.corners-bottom {
-	background-image: url("{T_THEME_PATH}/images/corners_left.png");
+	background-image: url("./images/corners_left.png");
 }
 
 span.corners-bottom span {
-	background-image: url("{T_THEME_PATH}/images/corners_right.png");
+	background-image: url("./images/corners_right.png");
 }
 
 /* Horizontal lists
@@ -191,7 +191,7 @@ dl.details dd {
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
-	background-image: url("{T_THEME_PATH}/images/icon_pages.gif");
+	background-image: url("./images/icon_pages.gif");
 }
 
 .row .pagination span a, li.pagination span a {
@@ -338,18 +338,18 @@ a.topictitle:active {
 
 /* Back to top of page */
 a.top {
-	background-image: url("{IMG_ICON_BACK_TOP_SRC}");
+	background-image: url("./images/icon_back_top.gif");
 }
 
 a.top2 {
-	background-image: url("{IMG_ICON_BACK_TOP_SRC}");
+	background-image: url("./images/icon_back_top.gif");
 }
 
 /* Arrow links  */
-a.up		{ background-image: url("{T_THEME_PATH}/images/arrow_up.gif") }
-a.down		{ background-image: url("{T_THEME_PATH}/images/arrow_down.gif") }
-a.left		{ background-image: url("{T_THEME_PATH}/images/arrow_left.gif") }
-a.right		{ background-image: url("{T_THEME_PATH}/images/arrow_right.gif") }
+a.up		{ background-image: url("./images/arrow_up.gif") }
+a.down		{ background-image: url("./images/arrow_down.gif") }
+a.left		{ background-image: url("./images/arrow_left.gif") }
+a.right		{ background-image: url("./images/arrow_right.gif") }
 
 a.up:hover {
 	background-color: transparent;
@@ -371,7 +371,7 @@ Colours and backgrounds for content.css
 
 ul.forums {
 	background-color: #eef5f9;
-	background-image: url("{T_THEME_PATH}/images/gradient.gif");
+	background-image: url("./images/gradient.gif");
 }
 
 ul.topiclist li {
@@ -388,11 +388,11 @@ ul.topiclist dd {
 }
 
 ul.topiclist li.row dt a.subforum.read {
-	background-image: url("{IMG_SUBFORUM_READ_SRC}");
+	background-image: url("./images/subforum_read.gif");
 }
 
 ul.topiclist li.row dt a.subforum.unread {
-	background-image: url("{IMG_SUBFORUM_UNREAD_SRC}");
+	background-image: url("./images/subforum_unread.gif");
 }
 
 li.row {
@@ -467,12 +467,12 @@ dl.faq dt {
 /* Quote block */
 blockquote {
 	background-color: #EBEADD;
-	background-image: url("{T_THEME_PATH}/images/quote.gif");
+	background-image: url("./images/quote.gif");
 	border-color:#DBDBCE;
 }
 
 .rtl blockquote {
-	background-image: url("{T_THEME_PATH}/images/quote_rtl.gif");
+	background-image: url("./images/quote_rtl.gif");
 }
 
 blockquote blockquote {
@@ -652,7 +652,7 @@ fieldset.polls dd div {
 }
 
 .online {
-	background-image: url("{IMG_ICON_USER_ONLINE_SRC}");
+	background-image: url("./en/icon_user_online.gif");
 }
 
 /*  	
@@ -661,107 +661,107 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.reply-icon span	{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
-.post-icon span		{ background-image: url("{IMG_BUTTON_TOPIC_NEW_SRC}"); }
-.locked-icon span	{ background-image: url("{IMG_BUTTON_TOPIC_LOCKED_SRC}"); }
-.pmreply-icon span	{ background-image: url("{IMG_BUTTON_PM_REPLY_SRC}") ;}
-.newpm-icon span 	{ background-image: url("{IMG_BUTTON_PM_NEW_SRC}") ;}
-.forwardpm-icon span	{ background-image: url("{IMG_BUTTON_PM_FORWARD_SRC}") ;}
+.reply-icon span	{ background-image: url("./en/button_topic_reply.gif"); }
+.post-icon span		{ background-image: url("./en/button_topic_new.gif"); }
+.locked-icon span	{ background-image: url("./en/button_topic_locked.gif"); }
+.pmreply-icon span	{ background-image: url("./en/button_pm_reply.gif") ;}
+.newpm-icon span 	{ background-image: url("./en/button_pm_new.gif") ;}
+.forwardpm-icon span	{ background-image: url("./en/button_pm_forward.gif") ;}
 
 a.print {
-	background-image: url("{T_THEME_PATH}/images/icon_print.gif");
+	background-image: url("./images/icon_print.gif");
 }
 
 a.sendemail {
-	background-image: url("{T_THEME_PATH}/images/icon_sendemail.gif");
+	background-image: url("./images/icon_sendemail.gif");
 }
 
 /* Icon images
 ---------------------------------------- */
-.sitehome						{ background-image: url("{T_THEME_PATH}/images/icon_home.gif"); }
-.icon-faq						{ background-image: url("{T_THEME_PATH}/images/icon_faq.gif"); }
-.icon-members					{ background-image: url("{T_THEME_PATH}/images/icon_members.gif"); }
-.icon-home						{ background-image: url("{T_THEME_PATH}/images/icon_home.gif"); }
-.icon-ucp						{ background-image: url("{T_THEME_PATH}/images/icon_ucp.gif"); }
-.icon-register					{ background-image: url("{T_THEME_PATH}/images/icon_register.gif"); }
-.icon-logout					{ background-image: url("{T_THEME_PATH}/images/icon_logout.gif"); }
-.icon-bookmark					{ background-image: url("{T_THEME_PATH}/images/icon_bookmark.gif"); }
-.icon-bump						{ background-image: url("{T_THEME_PATH}/images/icon_bump.gif"); }
-.icon-subscribe					{ background-image: url("{T_THEME_PATH}/images/icon_subscribe.gif"); }
-.icon-unsubscribe				{ background-image: url("{T_THEME_PATH}/images/icon_unsubscribe.gif"); }
-.icon-pages						{ background-image: url("{T_THEME_PATH}/images/icon_pages.gif"); }
-.icon-search					{ background-image: url("{T_THEME_PATH}/images/icon_search.gif"); }
+.sitehome						{ background-image: url("./images/icon_home.gif"); }
+.icon-faq						{ background-image: url("./images/icon_faq.gif"); }
+.icon-members					{ background-image: url("./images/icon_members.gif"); }
+.icon-home						{ background-image: url("./images/icon_home.gif"); }
+.icon-ucp						{ background-image: url("./images/icon_ucp.gif"); }
+.icon-register					{ background-image: url("./images/icon_register.gif"); }
+.icon-logout					{ background-image: url("./images/icon_logout.gif"); }
+.icon-bookmark					{ background-image: url("./images/icon_bookmark.gif"); }
+.icon-bump						{ background-image: url("./images/icon_bump.gif"); }
+.icon-subscribe					{ background-image: url("./images/icon_subscribe.gif"); }
+.icon-unsubscribe				{ background-image: url("./images/icon_unsubscribe.gif"); }
+.icon-pages						{ background-image: url("./images/icon_pages.gif"); }
+.icon-search					{ background-image: url("./images/icon_search.gif"); }
 
 /* Profile & navigation icons */
-.email-icon, .email-icon a		{ background-image: url("{IMG_ICON_CONTACT_EMAIL_SRC}"); }
-.aim-icon, .aim-icon a			{ background-image: url("{IMG_ICON_CONTACT_AIM_SRC}"); }
-.yahoo-icon, .yahoo-icon a		{ background-image: url("{IMG_ICON_CONTACT_YAHOO_SRC}"); }
-.web-icon, .web-icon a			{ background-image: url("{IMG_ICON_CONTACT_WWW_SRC}"); }
-.msnm-icon, .msnm-icon a			{ background-image: url("{IMG_ICON_CONTACT_MSNM_SRC}"); }
-.icq-icon, .icq-icon a			{ background-image: url("{IMG_ICON_CONTACT_ICQ_SRC}"); }
-.jabber-icon, .jabber-icon a		{ background-image: url("{IMG_ICON_CONTACT_JABBER_SRC}"); }
-.pm-icon, .pm-icon a				{ background-image: url("{IMG_ICON_CONTACT_PM_SRC}"); }
-.quote-icon, .quote-icon a		{ background-image: url("{IMG_ICON_POST_QUOTE_SRC}"); }
+.email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
+.aim-icon, .aim-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
+.yahoo-icon, .yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
+.web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
+.msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
+.icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
+.jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
+.pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
+.quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
 
 /* Moderator icons */
-.report-icon, .report-icon a		{ background-image: url("{IMG_ICON_POST_REPORT_SRC}"); }
-.edit-icon, .edit-icon a			{ background-image: url("{IMG_ICON_POST_EDIT_SRC}"); }
-.delete-icon, .delete-icon a		{ background-image: url("{IMG_ICON_POST_DELETE_SRC}"); }
-.info-icon, .info-icon a			{ background-image: url("{IMG_ICON_POST_INFO_SRC}"); }
-.warn-icon, .warn-icon a			{ background-image: url("{IMG_ICON_USER_WARN_SRC}"); } /* Need updated warn icon */
+.report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
+.edit-icon, .edit-icon a			{ background-image: url("./en/icon_post_edit.gif"); }
+.delete-icon, .delete-icon a		{ background-image: url("./images/icon_post_delete.gif"); }
+.info-icon, .info-icon a			{ background-image: url("./images/icon_post_info.gif"); }
+.warn-icon, .warn-icon a			{ background-image: url("./images/icon_user_warn.gif"); } /* Need updated warn icon */
 
 /* Forum icons & Topic icons */
-.global_read													{ background-image: url("{IMG_GLOBAL_READ_SRC}"); }
-.global_read_mine												{ background-image: url("{IMG_GLOBAL_READ_MINE_SRC}"); }
-.global_read_locked												{ background-image: url("{IMG_GLOBAL_READ_LOCKED_SRC}"); }
-.global_read_locked_mine										{ background-image: url("{IMG_GLOBAL_READ_LOCKED_MINE_SRC}"); }
-.global_unread													{ background-image: url("{IMG_GLOBAL_UNREAD_SRC}"); }
-.global_unread_mine												{ background-image: url("{IMG_GLOBAL_UNREAD_MINE_SRC}"); }
-.global_unread_locked											{ background-image: url("{IMG_GLOBAL_UNREAD_LOCKED_SRC}"); }
-.global_unread_locked_mine										{ background-image: url("{IMG_GLOBAL_UNREAD_LOCKED_MINE_SRC}"); }
+.global_read													{ background-image: url("./images/announce_read.gif"); }
+.global_read_mine												{ background-image: url("./images/announce_read_mine.gif"); }
+.global_read_locked												{ background-image: url("./images/announce_read_locked.gif"); }
+.global_read_locked_mine										{ background-image: url("./images/announce_read_locked_mine.gif"); }
+.global_unread													{ background-image: url("./images/announce_unread.gif"); }
+.global_unread_mine												{ background-image: url("./images/announce_unread_mine.gif"); }
+.global_unread_locked											{ background-image: url("./images/announce_unread_locked.gif"); }
+.global_unread_locked_mine										{ background-image: url("./images/announce_unread_locked_mine.gif"); }
 
-.announce_read													{ background-image: url("{IMG_ANNOUNCE_READ_SRC}"); }
-.announce_read_mine												{ background-image: url("{IMG_ANNOUNCE_READ_MINE_SRC}"); }
-.announce_read_locked											{ background-image: url("{IMG_ANNOUNCE_READ_LOCKED_SRC}"); }
-.announce_read_locked_mine										{ background-image: url("{IMG_ANNOUNCE_READ_LOCKED_MINE_SRC}"); }
-.announce_unread												{ background-image: url("{IMG_ANNOUNCE_UNREAD_SRC}"); }
-.announce_unread_mine											{ background-image: url("{IMG_ANNOUNCE_UNREAD_MINE_SRC}"); }
-.announce_unread_locked											{ background-image: url("{IMG_ANNOUNCE_UNREAD_LOCKED_SRC}"); }
-.announce_unread_locked_mine									{ background-image: url("{IMG_ANNOUNCE_UNREAD_LOCKED_MINE_SRC}"); }
+.announce_read													{ background-image: url("./images/announce_read.gif"); }
+.announce_read_mine												{ background-image: url("./images/announce_read_mine.gif"); }
+.announce_read_locked											{ background-image: url("./images/announce_read_locked.gif"); }
+.announce_read_locked_mine										{ background-image: url("./images/announce_read_locked_mine.gif"); }
+.announce_unread												{ background-image: url("./images/announce_unread.gif"); }
+.announce_unread_mine											{ background-image: url("./images/announce_unread_mine.gif"); }
+.announce_unread_locked											{ background-image: url("./images/announce_unread_locked.gif"); }
+.announce_unread_locked_mine									{ background-image: url("./images/announce_unread_locked_mine.gif"); }
 
-.forum_link														{ background-image: url("{IMG_FORUM_LINK_SRC}"); }
-.forum_read														{ background-image: url("{IMG_FORUM_READ_SRC}"); }
-.forum_read_locked												{ background-image: url("{IMG_FORUM_READ_LOCKED_SRC}"); }
-.forum_read_subforum											{ background-image: url("{IMG_FORUM_READ_SUBFORUM_SRC}"); }
-.forum_unread													{ background-image: url("{IMG_FORUM_UNREAD_SRC}"); }
-.forum_unread_locked											{ background-image: url("{IMG_FORUM_UNREAD_LOCKED_SRC}"); }
-.forum_unread_subforum											{ background-image: url("{IMG_FORUM_UNREAD_SUBFORUM_SRC}"); }
+.forum_link														{ background-image: url("./images/forum_link.gif"); }
+.forum_read														{ background-image: url("./images/forum_read.gif"); }
+.forum_read_locked												{ background-image: url("./images/forum_read_locked.gif"); }
+.forum_read_subforum											{ background-image: url("./images/forum_read_subforum.gif"); }
+.forum_unread													{ background-image: url("./images/forum_unread.gif"); }
+.forum_unread_locked											{ background-image: url("./images/forum_unread_locked.gif"); }
+.forum_unread_subforum											{ background-image: url("./images/forum_unread_subforum.gif"); }
 
-.sticky_read													{ background-image: url("{IMG_STICKY_READ_SRC}"); }
-.sticky_read_mine												{ background-image: url("{IMG_STICKY_READ_MINE_SRC}"); }
-.sticky_read_locked												{ background-image: url("{IMG_STICKY_READ_LOCKED_SRC}"); }
-.sticky_read_locked_mine										{ background-image: url("{IMG_STICKY_READ_LOCKED_MINE_SRC}"); }
-.sticky_unread													{ background-image: url("{IMG_STICKY_UNREAD_SRC}"); }
-.sticky_unread_mine												{ background-image: url("{IMG_STICKY_UNREAD_MINE_SRC}"); }
-.sticky_unread_locked											{ background-image: url("{IMG_STICKY_UNREAD_LOCKED_SRC}"); }
-.sticky_unread_locked_mine										{ background-image: url("{IMG_STICKY_UNREAD_LOCKED_MINE_SRC}"); }
+.sticky_read													{ background-image: url("./images/sticky_read.gif"); }
+.sticky_read_mine												{ background-image: url("./images/sticky_read_mine.gif"); }
+.sticky_read_locked												{ background-image: url("./images/sticky_read_locked.gif"); }
+.sticky_read_locked_mine										{ background-image: url("./images/sticky_read_locked_mine.gif"); }
+.sticky_unread													{ background-image: url("./images/sticky_unread.gif"); }
+.sticky_unread_mine												{ background-image: url("./images/sticky_unread_mine.gif"); }
+.sticky_unread_locked											{ background-image: url("./images/sticky_unread_locked.gif"); }
+.sticky_unread_locked_mine										{ background-image: url("./images/sticky_unread_locked_mine.gif"); }
 
-.topic_moved													{ background-image: url("{IMG_TOPIC_MOVED_SRC}"); }
-.topic_read														{ background-image: url("{IMG_TOPIC_READ_SRC}"); }
-.topic_read_mine												{ background-image: url("{IMG_TOPIC_READ_MINE_SRC}"); }
-.topic_read_hot													{ background-image: url("{IMG_TOPIC_READ_HOT_SRC}"); }
-.topic_read_hot_mine											{ background-image: url("{IMG_TOPIC_READ_HOT_MINE_SRC}"); }
-.topic_read_locked												{ background-image: url("{IMG_TOPIC_READ_LOCKED_SRC}"); }
-.topic_read_locked_mine											{ background-image: url("{IMG_TOPIC_READ_LOCKED_MINE_SRC}"); }
-.topic_unread													{ background-image: url("{IMG_TOPIC_UNREAD_SRC}"); }
-.topic_unread_mine												{ background-image: url("{IMG_TOPIC_UNREAD_MINE_SRC}"); }
-.topic_unread_hot												{ background-image: url("{IMG_TOPIC_UNREAD_HOT_SRC}"); }
-.topic_unread_hot_mine											{ background-image: url("{IMG_TOPIC_UNREAD_HOT_MINE_SRC}"); }
-.topic_unread_locked											{ background-image: url("{IMG_TOPIC_UNREAD_LOCKED_SRC}"); }
-.topic_unread_locked_mine										{ background-image: url("{IMG_TOPIC_UNREAD_LOCKED_MINE_SRC}"); }
+.topic_moved													{ background-image: url("./images/topic_moved.gif"); }
+.topic_read														{ background-image: url("./images/topic_read.gif"); }
+.topic_read_mine												{ background-image: url("./images/topic_read_mine.gif"); }
+.topic_read_hot													{ background-image: url("./images/topic_read_hot.gif"); }
+.topic_read_hot_mine											{ background-image: url("./images/topic_read_hot_mine.gif"); }
+.topic_read_locked												{ background-image: url("./images/topic_read_locked.gif"); }
+.topic_read_locked_mine											{ background-image: url("./images/topic_read_locked_mine.gif"); }
+.topic_unread													{ background-image: url("./images/topic_unread.gif"); }
+.topic_unread_mine												{ background-image: url("./images/topic_unread_mine.gif"); }
+.topic_unread_hot												{ background-image: url("./images/topic_unread_hot.gif"); }
+.topic_unread_hot_mine											{ background-image: url("./images/topic_unread_hot_mine.gif"); }
+.topic_unread_locked											{ background-image: url("./images/topic_unread_locked.gif"); }
+.topic_unread_locked_mine										{ background-image: url("./images/topic_unread_locked_mine.gif"); }
 
-.pm_read														{ background-image: url("{IMG_TOPIC_READ_SRC}"); }
-.pm_unread														{ background-image: url("{IMG_TOPIC_UNREAD_SRC}"); }
+.pm_read														{ background-image: url("./images/topic_read.gif"); }
+.pm_unread														{ background-image: url("./images/topic_unread.gif"); }
 
 /*  	
 --------------------------------------------------------------
@@ -801,11 +801,11 @@ ul.cplist {
 /* CP tabbed menu
 ----------------------------------------*/
 #tabs a {
-	background-image: url("{T_THEME_PATH}/images/bg_tabs1.gif");
+	background-image: url("./images/bg_tabs1.gif");
 }
 
 #tabs a span {
-	background-image: url("{T_THEME_PATH}/images/bg_tabs2.gif");
+	background-image: url("./images/bg_tabs2.gif");
 	color: #536482;
 }
 
@@ -846,11 +846,11 @@ ul.cplist {
 #navigation a {
 	color: #333;
 	background-color: #B2C2CF;
-	background-image: url("{T_THEME_PATH}/images/bg_menu.gif");
+	background-image: url("./images/bg_menu.gif");
 }
 
 .rtl #navigation a {
-	background-image: url("{T_THEME_PATH}/images/bg_menu_rtl.gif");
+	background-image: url("./images/bg_menu_rtl.gif");
 	background-position: 0 100%;
 }
 
@@ -885,36 +885,36 @@ ul.cplist {
 }
 
 #cp-main span.corners-top, #cp-menu span.corners-top {
-	background-image: url("{T_THEME_PATH}/images/corners_left2.gif");
+	background-image: url("./images/corners_left2.gif");
 }
 
 #cp-main span.corners-top span, #cp-menu span.corners-top span {
-	background-image: url("{T_THEME_PATH}/images/corners_right2.gif");
+	background-image: url("./images/corners_right2.gif");
 }
 
 #cp-main span.corners-bottom, #cp-menu span.corners-bottom {
-	background-image: url("{T_THEME_PATH}/images/corners_left2.gif");
+	background-image: url("./images/corners_left2.gif");
 }
 
 #cp-main span.corners-bottom span, #cp-menu span.corners-bottom span {
-	background-image: url("{T_THEME_PATH}/images/corners_right2.gif");
+	background-image: url("./images/corners_right2.gif");
 }
 
 /* Topicreview */
 #cp-main .panel #topicreview span.corners-top, #cp-menu .panel #topicreview span.corners-top {
-	background-image: url("{T_THEME_PATH}/images/corners_left.gif");
+	background-image: url("./images/corners_left.gif");
 }
 
 #cp-main .panel #topicreview span.corners-top span, #cp-menu .panel #topicreview span.corners-top span {
-	background-image: url("{T_THEME_PATH}/images/corners_right.gif");
+	background-image: url("./images/corners_right.gif");
 }
 
 #cp-main .panel #topicreview span.corners-bottom, #cp-menu .panel #topicreview span.corners-bottom {
-	background-image: url("{T_THEME_PATH}/images/corners_left.gif");
+	background-image: url("./images/corners_left.gif");
 }
 
 #cp-main .panel #topicreview span.corners-bottom span, #cp-menu .panel #topicreview span.corners-bottom span {
-	background-image: url("{T_THEME_PATH}/images/corners_right.gif");
+	background-image: url("./images/corners_right.gif");
 }
 
 /* Friends list */
@@ -1042,7 +1042,7 @@ fieldset.quick-login input.inputbox {
 a.button1, input.button1, input.button3, a.button2, input.button2 {
 	color: #000;
 	background-color: #FAFAFA;
-	background-image: url("{T_THEME_PATH}/images/bg_button.gif");
+	background-image: url("./images/bg_button.gif");
 }
 
 a.button1, input.button1 {
@@ -1070,7 +1070,7 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 }
 
 input.search {
-	background-image: url("{T_THEME_PATH}/images/icon_textbox_search.gif");
+	background-image: url("./images/icon_textbox_search.gif");
 }
 
 input.disabled {

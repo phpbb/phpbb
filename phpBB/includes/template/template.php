@@ -122,7 +122,7 @@ class phpbb_template
 	{
 		$this->locator->set_custom_template($template_path, $fallback_template_path);
 
-		$this->cachepath = $this->phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $style_name) . '_';
+		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $style_name) . '_';
 
 		$this->context = new phpbb_template_context();
 
@@ -307,36 +307,31 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		$virtual_source_file = $this->locator->get_virtual_source_file_for_handle($handle);
-		$source_file = null;
-
-		$compiled_path = $this->cachepath . str_replace('/', '.', $virtual_source_file) . '.' . $this->phpEx;
+		$output_file = $this->_compiled_file_for_handle($handle);
 
 		$recompile = defined('DEBUG_EXTRA') ||
-			!file_exists($compiled_path) ||
-			@filesize($compiled_path) === 0 ||
-			($this->config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($source_file));
+			!file_exists($output_file) ||
+			@filesize($output_file) === 0;
 
-		if (!$recompile && $this->config['load_tplcompile'])
+		if ($recompile || $this->config['load_tplcompile'])
 		{
+			// Set only if a recompile or an mtime check are required.
 			$source_file = $this->locator->get_source_file_for_handle($handle);
-			$recompile = (@filemtime($compiled_path) < @filemtime($source_file)) ? true : false;
+
+			if (!$recompile && @filemtime($output_file) < @filemtime($source_file))
+			{
+				$recompile = true;
+			}
 		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_renderer_include($compiled_path, $this);
-		}
-
-		if ($source_file === null)
-		{
-			$source_file = $this->locator->get_source_file_for_handle($handle);
+			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
 		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
 
-		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
 			$renderer = new phpbb_template_renderer_include($output_file, $this);

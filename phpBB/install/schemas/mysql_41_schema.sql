@@ -752,12 +752,10 @@ CREATE TABLE phpbb_styles (
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name),
 	KEY template_id (template_id),
-	KEY theme_id (theme_id),
-	KEY imageset_id (imageset_id)
+	KEY theme_id (theme_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -768,23 +766,10 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	template_filename varchar(100) DEFAULT '' NOT NULL,
-	template_included text NOT NULL,
-	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	template_data mediumtext NOT NULL,
-	KEY tid (template_id),
-	KEY tfn (template_filename)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -794,36 +779,8 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name varchar(255) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
-	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_data mediumtext NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
-	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
-	imageset_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id),
-	UNIQUE imgset_nm (imageset_name)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	image_name varchar(200) DEFAULT '' NOT NULL,
-	image_filename varchar(200) DEFAULT '' NOT NULL,
-	image_lang varchar(30) DEFAULT '' NOT NULL,
-	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (image_id),
-	KEY i_d (imageset_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
