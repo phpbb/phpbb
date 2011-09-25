@@ -25,7 +25,7 @@ phpbb.loading_alert = function() {
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
-					phpbb.alert('Error', 'Error processing your request. Please try again.');
+					phpbb.alert($('body').data('l-err'), $('body').data('l-err-processing-req'));
 				}
 			}, 5000);
 		});
@@ -45,7 +45,9 @@ phpbb.loading_alert = function() {
  * @returns object Returns the div created.
  */
 phpbb.alert = function(title, msg, fadedark) {
-	var div = $('<div class="jalert"><h3>' + title + '</h3><p>' + msg + '</p></div>');
+	var div = $('#jalert_alert');
+	div.find('h3').html(title);
+	div.find('p').html(msg);
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -54,7 +56,7 @@ phpbb.alert = function(title, msg, fadedark) {
 	dark.one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
 		fade.fadeOut(100, function() {
-			div.remove();
+			div.hide();
 		});
 		return false;
 	});
@@ -101,15 +103,14 @@ phpbb.alert = function(title, msg, fadedark) {
  * @returns object Returns the div created.
  */
 phpbb.confirm = function(msg, callback, fadedark) {
-	var div = $('<div class="jalert"><p>' + msg + '</p>\
-		<input type="button" class="jalertbut button1" value="Yes" />&nbsp;\
-		<input type="button" class="jalertbut button2" value="No" /></div>');
+	var div = $('#jalert_confirm');
+	div.find('p').html(msg);
 	
 	div.find('.jalertbut').bind('click', function() {
 		var res = this.value === 'Yes';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(100, function() {
-			div.remove();
+			div.hide();
 		});
 		callback(res);
 		return false;
@@ -227,7 +228,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 						}
 						
 						dark.fadeOut(100, function() {
-							alert.remove();
+							alert.hide();
 						});
 					}, res.REFRESH_DATA.time * 1000);
 				}
@@ -295,6 +296,12 @@ phpbb.add_ajax_callback = function(id, callback)
 	return this;
 }
 
+
+phpbb.add_ajax_callback('alt_text', function(el) {
+	var alt_text = $(el).data('alt-text');
+	$(el).data('alt-text', $(el).text());
+	$(el).text(el.title = alt_text);
+});
 
 
 })(jQuery); // Avoid conflicts with other libraries
