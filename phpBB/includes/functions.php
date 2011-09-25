@@ -1880,7 +1880,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config;
+	global $db, $tracking_topics, $user, $config, $auth;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1903,6 +1903,10 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 	}
 
+	// Handle update of unapproved topics info.
+	// Only update for moderators having m_approve permission for the forum.
+	$sql_update_unapproved = ($auth->acl_get('m_approve', $forum_id)) ? '': 'AND t.topic_approved = 1';
+
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -1918,7 +1922,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0
+					AND t.topic_moved_id = 0 ' .
+					$sql_update_unapproved . '
 					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1942,7 +1947,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id = ' . $forum_id . '
 					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0';
+					AND topic_moved_id = 0 ' .
+					$sql_update_unapproved;
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
