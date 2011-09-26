@@ -898,7 +898,7 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'S_BLOCK_NAME':
-				$varref = "'$namespace'";
+				$varref = "'$local_namespace'";
 			break;
 
 			default:
