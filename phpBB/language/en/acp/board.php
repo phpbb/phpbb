@@ -555,7 +555,7 @@ $lang = array_merge($lang, array(
 	'JQUERY_HOST'			=> 'jQuery server',
 	'JQUERY_HOST_EXPLAIN'	=> 'Load jQuery from your local server, or choose a remote copy hosted on a CDN (Content Delivery Network). If the CDN fails, phpBB will fall back to the local copy.',
 	'JQUERY_HOST_LOCAL'		=> 'Localhost',
-	'JQUERY_HOST_GOOGLE'	=> 'Google Ajax API CDN',
+	'JQUERY_HOST_GOOGLE'	=> 'Google AJAX API CDN',
 	'JQUERY_HOST_JQUERY'	=> 'jQuery CDN',
 	'JQUERY_HOST_MS'		=> 'Microsoft CDN',
 ));
