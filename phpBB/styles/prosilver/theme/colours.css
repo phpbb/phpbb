@@ -662,6 +662,7 @@ Colours and backgrounds for buttons.css
 
 /* Big button images */
 .buttons div a,
+ul.profile-icons li.no-icon a,
 ul.profile-icons li.edit-icon a,
 ul.profile-icons li.quote-icon a { color: #D31141; }
 

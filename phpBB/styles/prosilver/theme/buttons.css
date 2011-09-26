@@ -132,6 +132,7 @@ ul.profile-icons li {
 	background-position: 0 100%;
 }
 
+ul.profile-icons li.no-icon,
 ul.profile-icons li.edit-icon,
 ul.profile-icons li.quote-icon {
 	float: left;
@@ -149,6 +150,7 @@ ul.profile-icons li a {
 	background-position: 0 0;
 }
 
+ul.profile-icons li.no-icon a,
 ul.profile-icons li.edit-icon a,
 ul.profile-icons li.quote-icon a {
 	display: block;
@@ -162,6 +164,7 @@ ul.profile-icons li.quote-icon a {
 	font-family: Helvetica,Arial,sans-serif;
 }
 
+ul.profile-icons li.no-icon a:hover,
 ul.profile-icons li.edit-icon a:hover,
 ul.profile-icons li.quote-icon a:hover {
 	background-color: transparent;
@@ -169,6 +172,7 @@ ul.profile-icons li.quote-icon a:hover {
 	background-repeat: no-repeat;
 }
 
+ul.profile-icons li.no-icon a span,
 ul.profile-icons li.edit-icon a span,
 ul.profile-icons li.quote-icon a span {
 	cursor: pointer;
@@ -182,19 +186,29 @@ ul.profile-icons li.quote-icon a span {
 	background-repeat: repeat-x;
 }
 
-/* smaller margin for the asterix */
+/* smaller margin for the asterix and without an icon */
+ul.profile-icons li.no-icon a span,
 ul.profile-icons li.edit-icon a span {
-	margin: 0 5px 0 11px; /* left and right background */
+	margin: 0 5px 0 10px; /* left and right background */
 }
 
+ul.profile-icons li.no-icon:hover a span,
 ul.profile-icons li.edit-icon:hover a span,
 ul.profile-icons li.quote-icon:hover a span {
 	background-position: 0 -70px;
 }
 
+ul.profile-icons li.no-icon:hover,
 ul.profile-icons li.edit-icon:hover,
 ul.profile-icons li.quote-icon:hover {
 	background-position: 100% -360px;
+}
+
+ul.profile-icons li.no-icon a {
+	background-position: 0 -300px;
+}
+ul.profile-icons li.no-icon:hover a {
+	background-position: 0 -320px;
 }
 
 ul.profile-icons li.edit-icon a {
@@ -204,16 +218,17 @@ ul.profile-icons li.edit-icon:hover a {
 	background-position: 0 -400px;
 }
 
-ul.profile-icons li.edit-icon a span,
-ul.profile-icons li.quote-icon a span {
-	padding-left: 0;
-}
-
 ul.profile-icons li.quote-icon a {
 	background-position: 0 -420px;
 }
 ul.profile-icons li.quote-icon:hover a {
 	background-position: 0 -440px;
+}
+
+ul.profile-icons li.no-icon a span,
+ul.profile-icons li.edit-icon a span,
+ul.profile-icons li.quote-icon a span {
+	padding-left: 0;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */

@@ -572,6 +572,7 @@ and set the background-positions for the "div" */
 	margin: 0 0 3px 6px;
 }
 
+.rtl ul.profile-icons li.no-icon,
 .rtl ul.profile-icons li.edit-icon,
 .rtl ul.profile-icons li.quote-icon {
 	float: right;
@@ -579,6 +580,9 @@ and set the background-positions for the "div" */
 	background-image: url("./images/buttons_sprites_rtl.png");
 }
 
+.rtl ul.profile-icons li.no-icon {
+	background-position: 100% -300px;
+}
 .rtl ul.profile-icons li.edit-icon {
 	background-position: 100% -380px;
 }
@@ -586,13 +590,16 @@ and set the background-positions for the "div" */
 	background-position: 100% -420px;
 }
 
+.rtl ul.profile-icons li.no-icon a,
 .rtl ul.profile-icons li.edit-icon a,
 .rtl ul.profile-icons li.quote-icon a,
+.rtl ul.profile-icons li.no-icon a:hover,
 .rtl ul.profile-icons li.edit-icon a:hover,
 .rtl ul.profile-icons li.quote-icon a:hover {
 	background-image: url("./images/buttons_sprites_rtl.png");
 }
 
+.rtl ul.profile-icons li.no-icon a span,
 .rtl ul.profile-icons li.edit-icon a span,
 .rtl ul.profile-icons li.quote-icon a span {
 	margin: 0 13px 0 5px; /* left and right background */
@@ -600,16 +607,21 @@ and set the background-positions for the "div" */
 	background-position: 50% -50px;
 }
 
-/* smaller margin for the asterix */
+/* smaller margin for the asterix and without an icon */
+.rtl ul.profile-icons li.no-icon a span,
 .rtl ul.profile-icons li.edit-icon a span {
-	margin: 0 11px 0 5px; /* left and right background */
+	margin: 0 10px 0 5px; /* left and right background */
 }
 
+.rtl ul.profile-icons li.no-icon:hover a span,
 .rtl ul.profile-icons li.edit-icon:hover a span,
 .rtl ul.profile-icons li.quote-icon:hover a span {
 	background-position: 0 -70px;
 }
 
+.rtl ul.profile-icons li.no-icon:hover {
+	background-position: 100% -320px;
+}
 .rtl ul.profile-icons li.edit-icon:hover {
 	background-position: 100% -400px;
 }
@@ -617,15 +629,18 @@ and set the background-positions for the "div" */
 	background-position: 100% -440px;
 }
 
+.rtl ul.profile-icons li.no-icon a,
 .rtl ul.profile-icons li.edit-icon a,
 .rtl ul.profile-icons li.quote-icon a {
 	background-position: 0 -340px;
 }
+.rtl ul.profile-icons li.no-icon:hover a,
 .rtl ul.profile-icons li.edit-icon:hover a,
 .rtl ul.profile-icons li.quote-icon:hover a {
 	background-position: 0 -360px;
 }
 
+.rtl ul.profile-icons li.no-icon a span,
 .rtl ul.profile-icons li.edit-icon a span,
 .rtl ul.profile-icons li.quote-icon a span {
 	padding-right: 0;
