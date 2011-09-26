@@ -59,24 +59,24 @@
 	background-position: 100% -75px;
 }
 
-.buttons div.forwardpm-icon a, .buttons div.arrow-up-icon a {
+.buttons div.forwardpm-icon a {
 	background-position: 100% -100px;
 }
-.buttons div.forwardpm-icon:hover a, .buttons div.arrow-up-icon:hover a {
+.buttons div.forwardpm-icon:hover a {
 	background-position: 100% -125px;
 }
 
-.buttons div.reply-icon a, .buttons div.pmreply-icon a, .buttons div.arrow-down-icon a {
+.buttons div.reply-icon a, .buttons div.pmreply-icon a {
 	background-position: 100% -150px;
 }
-.buttons div.reply-icon:hover a, .buttons div.pmreply-icon:hover a, .buttons div.arrow-down-icon:hover a {
+.buttons div.reply-icon:hover a, .buttons div.pmreply-icon:hover a {
 	background-position: 100% -175px;
 }
 
-.buttons div.newpm-icon a, .buttons div.post-icon a, .buttons div.asterix-icon a {
+.buttons div.newpm-icon a, .buttons div.post-icon a {
 	background-position: 100% -200px;
 }
-.buttons div.newpm-icon:hover a, .buttons div.post-icon:hover a, .buttons div.asterix-icon:hover a {
+.buttons div.newpm-icon:hover a, .buttons div.post-icon:hover a {
 	background-position: 100% -225px;
 }
 

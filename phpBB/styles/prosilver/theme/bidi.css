@@ -522,24 +522,24 @@ and set the background-positions for the "div" */
 	background-position: 0 -75px;
 }
 
-.rtl .buttons div.forwardpm-icon, .rtl .buttons div.arrow-up-icon {
+.rtl .buttons div.forwardpm-icon {
 	background-position: 0 -100px;
 }
-.rtl .buttons div.forwardpm-icon:hover, .rtl .buttons div.arrow-up-icon:hover {
+.rtl .buttons div.forwardpm-icon:hover {
 	background-position: 0 -125px;
 }
 
-.rtl .buttons div.reply-icon, .rtl .buttons div.pmreply-icon, .rtl .buttons div.arrow-down-icon {
+.rtl .buttons div.reply-icon, .rtl .buttons div.pmreply-icon {
 	background-position: 0 -150px;
 }
-.rtl .buttons div.reply-icon:hover, .rtl .buttons div.pmreply-icon:hover, .rtl .buttons div.arrow-down-icon:hover {
+.rtl .buttons div.reply-icon:hover, .rtl .buttons div.pmreply-icon:hover {
 	background-position: 0 -175px;
 }
 
-.rtl .buttons div.newpm-icon, .rtl .buttons div.post-icon, .rtl .buttons div.asterix-icon {
+.rtl .buttons div.newpm-icon, .rtl .buttons div.post-icon {
 	background-position: 0 -200px;
 }
-.rtl .buttons div.newpm-icon:hover, .rtl .buttons div.post-icon:hover, .rtl .buttons div.asterix-icon:hover {
+.rtl .buttons div.newpm-icon:hover, .rtl .buttons div.post-icon:hover {
 	background-position: 0 -225px;
 }
 
