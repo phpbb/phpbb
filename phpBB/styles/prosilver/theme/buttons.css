@@ -175,18 +175,23 @@ ul.profile-icons li.quote-icon a span {
 	display: block;
 	height: 100%;
 	line-height: 20px;
-	margin: 0 5.5px 0 11.5px; /* left and right background */
-	padding: 1px 5px 0 3px;
+	margin: 0 5px 0 13px; /* left and right background */
+	padding: 0 5px 0 3px;
 	background-image: url("./images/buttons_bg.png");
-	background-position: center -50px;
+	background-position: 50% -50px;
 	background-repeat: repeat-x;
+}
+
+/* smaller margin for the asterix */
+ul.profile-icons li.edit-icon a span {
+	margin: 0 5px 0 11px; /* left and right background */
 }
 
 ul.profile-icons li.edit-icon:hover a span,
 ul.profile-icons li.quote-icon:hover a span {
 	background-position: 0 -70px;
 }
-	
+
 ul.profile-icons li.edit-icon:hover,
 ul.profile-icons li.quote-icon:hover {
 	background-position: 100% -360px;
@@ -199,7 +204,8 @@ ul.profile-icons li.edit-icon:hover a {
 	background-position: 0 -400px;
 }
 
-ul.profile-icons li.edit-icon a span {
+ul.profile-icons li.edit-icon a span,
+ul.profile-icons li.quote-icon a span {
 	padding-left: 0;
 }
 
