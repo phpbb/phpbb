@@ -871,6 +871,8 @@ class phpbb_template_filter extends php_user_filter
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
+		$local_namespace = substr(strrchr($namespace, '.'), 1);
+		$local_namespace = ($local_namespace) ? $local_namespace : $namespace;
 
 		$expr = true;
 
@@ -880,19 +882,19 @@ class phpbb_template_filter extends php_user_filter
 		{
 			case 'S_ROW_NUM':
 			case 'S_ROW_COUNT':
-				$varref = "\$_${namespace}_i";
+				$varref = "\$_${local_namespace}_i";
 			break;
 
 			case 'S_NUM_ROWS':
-				$varref = "\$_${namespace}_count";
+				$varref = "\$_${local_namespace}_count";
 			break;
 
 			case 'S_FIRST_ROW':
-				$varref = "(\$_${namespace}_i == 0)";
+				$varref = "(\$_${local_namespace}_i == 0)";
 			break;
 
 			case 'S_LAST_ROW':
-				$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+				$varref = "(\$_${local_namespace}_i == \$_${local_namespace}_count - 1)";
 			break;
 
 			case 'S_BLOCK_NAME':
