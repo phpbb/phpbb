@@ -1,6 +1,4 @@
 /* Set profile icon dimensions */
-ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
-
 /* EN Language Pack */
 .imageset.icon_contact_pm {
 	background-image: url("./icon_contact_pm.gif");

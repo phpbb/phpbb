@@ -118,6 +118,7 @@ $lang = array_merge($lang, array(
 	'BUTTON_TOPIC_REPLY'	=> 'Post<strong>reply</strong>',
 	'PROFILE_BUTTON_EDIT'	=> '<strong>edit</strong>',
 	'PROFILE_BUTTON_QUOTE'	=> '<strong>quote</strong>',
+	'PROFILE_BUTTON_PM'		=> '<strong>pm</strong>',
 	'BYTES'					=> 'Bytes',
 
 	'CANCEL'				=> 'Cancel',

@@ -666,6 +666,10 @@ ul.profile-icons li.no-icon a,
 ul.profile-icons li.edit-icon a,
 ul.profile-icons li.quote-icon a { color: #D31141; }
 
+ul.profile-icons li.pm-icon a * { color: #253f61; }
+ul.profile-icons li.pm-icon a:hover * { color: #d53057; }
+
+
 a.print {
 	background-image: url("./images/icon_print.gif");
 }
@@ -698,7 +702,6 @@ a.sendemail {
 .msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
-.pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
 
 
 /* Moderator icons */

@@ -574,28 +574,25 @@ and set the background-positions for the "div" */
 
 .rtl ul.profile-icons li.no-icon,
 .rtl ul.profile-icons li.edit-icon,
-.rtl ul.profile-icons li.quote-icon {
+.rtl ul.profile-icons li.quote-icon,
+.rtl ul.profile-icons li.pm-icon {
 	float: right;
 	margin: 0 0 3px 6px;
 	background-image: url("./images/buttons_sprites_rtl.png");
+	background-position: 0 -340px;
 }
-
-.rtl ul.profile-icons li.no-icon {
-	background-position: 100% -300px;
-}
-.rtl ul.profile-icons li.edit-icon {
-	background-position: 100% -380px;
-}
-.rtl ul.profile-icons li.quote-icon {
-	background-position: 100% -420px;
+.rtl ul.profile-icons li.pm-icon {
+	background-position: 0 -540px;
 }
 
 .rtl ul.profile-icons li.no-icon a,
 .rtl ul.profile-icons li.edit-icon a,
 .rtl ul.profile-icons li.quote-icon a,
+.rtl ul.profile-icons li.pm-icon a,
 .rtl ul.profile-icons li.no-icon a:hover,
 .rtl ul.profile-icons li.edit-icon a:hover,
-.rtl ul.profile-icons li.quote-icon a:hover {
+.rtl ul.profile-icons li.quote-icon a:hover,
+.rtl ul.profile-icons li.pm-icon a:hover {
 	background-image: url("./images/buttons_sprites_rtl.png");
 }
 
@@ -603,8 +600,12 @@ and set the background-positions for the "div" */
 .rtl ul.profile-icons li.edit-icon a span,
 .rtl ul.profile-icons li.quote-icon a span {
 	margin: 0 13px 0 5px; /* left and right background */
-	padding: 1px 3px 0 5px;
-	background-position: 50% -50px;
+	padding: 0px 3px 0 5px;
+}
+
+.rtl ul.profile-icons li.pm-icon a span {
+	margin: 0 13px 0 4px; /* left and right background */
+	padding: 0 1px 0 0;
 }
 
 /* smaller margin for the asterix and without an icon */
@@ -613,31 +614,39 @@ and set the background-positions for the "div" */
 	margin: 0 10px 0 5px; /* left and right background */
 }
 
-.rtl ul.profile-icons li.no-icon:hover a span,
-.rtl ul.profile-icons li.edit-icon:hover a span,
-.rtl ul.profile-icons li.quote-icon:hover a span {
-	background-position: 0 -70px;
+.rtl ul.profile-icons li.no-icon:hover,
+.rtl ul.profile-icons li.edit-icon:hover,
+.rtl ul.profile-icons li.quote-icon:hover {
+	background-position: 0 -360px;
+}
+.rtl ul.profile-icons li.pm-icon:hover {
+	background-position: 0 -560px;
 }
 
-.rtl ul.profile-icons li.no-icon:hover {
+.rtl ul.profile-icons li.no-icon a {
+	background-position: 100% -300px;
+}
+.rtl ul.profile-icons li.edit-icon a {
+	background-position: 100% -380px;
+}
+.rtl ul.profile-icons li.quote-icon a {
+	background-position: 100% -420px;
+}
+.rtl ul.profile-icons li.pm-icon a {
+	background-position: 100% -500px;
+}
+
+.rtl ul.profile-icons li.no-icon:hover a {
 	background-position: 100% -320px;
 }
-.rtl ul.profile-icons li.edit-icon:hover {
+.rtl ul.profile-icons li.edit-icon:hover a{
 	background-position: 100% -400px;
 }
-.rtl ul.profile-icons li.quote-icon:hover {
+.rtl ul.profile-icons li.quote-icon:hover a {
 	background-position: 100% -440px;
 }
-
-.rtl ul.profile-icons li.no-icon a,
-.rtl ul.profile-icons li.edit-icon a,
-.rtl ul.profile-icons li.quote-icon a {
-	background-position: 0 -340px;
-}
-.rtl ul.profile-icons li.no-icon:hover a,
-.rtl ul.profile-icons li.edit-icon:hover a,
-.rtl ul.profile-icons li.quote-icon:hover a {
-	background-position: 0 -360px;
+.rtl ul.profile-icons li.pm-icon:hover a {
+	background-position: 100% -520px;
 }
 
 .rtl ul.profile-icons li.no-icon a span,
