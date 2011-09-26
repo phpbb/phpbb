@@ -4773,6 +4773,8 @@ function phpbb_pcre_utf8_support()
 /**
 * Build jQuery URL for remote CDNs
 * Reference: http://docs.jquery.com/Downloading_jQuery#CDN_Hosted_jQuery
+* HTTP protocols intentionally omitted for Google and Microsoft - its the best
+* way to reference third party content that is available via both HTTP and HTTPS
 *
 * @return string	Returns url to a jQuery library
 */
@@ -4781,15 +4783,14 @@ function remote_jquery_url($host)
 	switch($host)
 	{
 		case 'google':
-			// Google uses a 1.5.0, 1.5.1 format (it adds a .0 to new 1.X releases)
+			// Google uses a 1.5.0, 1.5.1 format (we need to add a .0 to new 1.X releases)
 			$version = (substr_count(JQUERY_VERSION, '.') == 1) ? JQUERY_VERSION . '.0' : JQUERY_VERSION;
-			// HTTP protocol intentionally omitted - its the best way to reference third party content that is available via both HTTP and HTTPS
 			$url = '//ajax.googleapis.com/ajax/libs/jquery/' . $version . '/jquery.min.js';
 		break;
 		
 		case 'microsoft':
 			// Microsoft uses a 1.5, 1.5.1 format
-			$url = 'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-' . JQUERY_VERSION . '.min.js';
+			$url = '//ajax.aspnetcdn.com/ajax/jQuery/jquery-' . JQUERY_VERSION . '.min.js';
 		break;
 		
 		case 'jquery':
