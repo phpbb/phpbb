@@ -871,8 +871,15 @@ class phpbb_template_filter extends php_user_filter
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
-		$local_namespace = substr(strrchr($namespace, '.'), 1);
-		$local_namespace = ($local_namespace) ? $local_namespace : $namespace;
+
+		if (($pos = strrpos($namespace, '.')) !== false)
+		{
+			$local_namespace = substr($namespace, $pos + 1);
+		}
+		else
+		{
+			$local_namespace = $namespace;
+		}
 
 		$expr = true;
 
