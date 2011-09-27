@@ -248,7 +248,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
 				// I don't completely understand this output, hopefully it's correct
-				"top-level content\nouter\n\ninner z\nfirst row\n\ninner zz",
+				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
 			),
 			array(
 				'loop_size.html',
