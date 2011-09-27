@@ -60,7 +60,7 @@ phpbb.alert = function(title, msg, fadedark) {
 		});
 		return false;
 	});
-	
+
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === 13 || e.keyCode === 27) {
 			dark.trigger('click');
@@ -68,7 +68,7 @@ phpbb.alert = function(title, msg, fadedark) {
 		}
 		return true;
 	});
-	
+
 	div.find('.alert_close').one('click', function() {
 		dark.trigger('click');
 	});
@@ -91,7 +91,7 @@ phpbb.alert = function(title, msg, fadedark) {
 		div.show();
 		dark.fadeIn(100);
 	}
-	
+
 	return div;
 }
 
@@ -133,7 +133,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		callback(false);
 		return false;
 	});
-	
+
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === 13) {
 			$('input[type="button"].button1').trigger('click');
@@ -144,11 +144,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		}
 		return true;
 	});
-	
+
 	div.find('.alert_close').one('click', function() {
 		dark.trigger('click');
 	});
-	
+
 	if (loading_alert.is(':visible'))
 	{
 		loading_alert.fadeOut(100, function() {
@@ -167,7 +167,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		div.show();
 		dark.fadeIn(100);
 	}
-	
+
 	return div;
 }
 
@@ -179,7 +179,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
  */
 phpbb.parse_querystring = function(string) {
 	var end = {}, i;
-	
+
 	string = string.split('&');
 	for (i = 0; i < string.length; i++)
 	{
@@ -204,15 +204,15 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	{
 		selector = selector.find('input:submit');
 	}
-	
+
 	selector.click(function() {
 		var act, data, path, that = this;
-		
+
 		if ($(this).data('ajax') == false)
 		{
 			return true;
 		}
-		
+
 		function return_handler(res)
 		{
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
@@ -226,7 +226,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				{
 					dark.fadeOut(100);
 				}
-				
+
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
 					phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
@@ -242,13 +242,13 @@ phpbb.ajaxify = function(options, refresh, callback) {
 					{
 						refresh = false;
 					}
-		
+
 					setTimeout(function() {
 						if (refresh)
 						{
 							window.location = res.REFRESH_DATA.url;
 						}
-						
+
 						dark.fadeOut(100, function() {
 							alert.hide();
 						});
@@ -268,14 +268,14 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				}, false);
 			}
 		}
-		
+
 		var run_exception = (typeof options.exception === 'function');
 		if (is_form)
 		{
 			act = /action\[([a-z]+)\]/.exec(this.name);
 			data = decodeURI($(this).closest('form').serialize());
 			path = $(this).closest('form').attr('action').replace('&amp;', '&');
-			
+
 			if (act)
 			{
 				act = act[1]
@@ -302,7 +302,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			phpbb.loading_alert();
 			$.get(this.href, return_handler);
 		}
-		
+
 		return false;
 	});
 	return this;
