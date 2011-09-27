@@ -2090,7 +2090,8 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
-			set_config('load_jquery_host', 'localhost');
+			set_config('load_jquery_cdn', 0);
+			set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
 			set_config('use_system_cron', 0);
 
 			$sql = 'UPDATE ' . GROUPS_TABLE . '

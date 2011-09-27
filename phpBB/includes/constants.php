@@ -30,9 +30,6 @@ define('PHPBB_VERSION', '3.1.0-dev');
 // QA-related
 // define('PHPBB_QA', 1);
 
-// jQuery Version
-define('JQUERY_VERSION', '1.6.2'); // Important follow jQuery versioning, ie: 1.6, 1.6.1, 1.6.2
-
 // User related
 define('ANONYMOUS', 1);
 

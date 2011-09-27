@@ -356,6 +356,8 @@ $lang = array_merge($lang, array(
 	'LOAD_CPF_PM'					=> 'Display custom profile fields in private messages',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
 	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
+	'LOAD_JQUERY_CDN'				=> 'Serve jQuery using Google’s CDN',
+	'LOAD_JQUERY_CDN_EXPLAIN'		=> 'If this setting is enabled, jQuery will be served from Google’s AJAX API CDN instead of the copy included with phpBB on your server. If the CDN fails, phpBB will attempt to fallback to the copy included with phpBB.',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 	'RECOMPILE_STYLES'				=> 'Recompile stale style components',
@@ -548,14 +550,4 @@ $lang = array_merge($lang, array(
 	'JAB_USE_SSL_EXPLAIN'		=> 'If enabled a secure connection is tried to be established. The Jabber port will be modified to 5223 if port 5222 is specified.',
 	'JAB_USERNAME'				=> 'Jabber username or JID',
 	'JAB_USERNAME_EXPLAIN'		=> 'Specify a registered username or a valid JID. The username will not be checked for validity. If you only specify a username, then your JID will be the username and the server you specified above. Else, specify a valid JID, for example user@jabber.org.',
-));
-
-// jQuery settings
-$lang = array_merge($lang, array(
-	'JQUERY_HOST'			=> 'Load jQuery from your server or a hosted CDN',
-	'JQUERY_HOST_EXPLAIN'	=> 'Load jQuery from the copy included with phpBB on your local server, or choose a remote copy hosted on a CDN (Content Delivery Network). If the CDN fails, phpBB will fall back to the copy included with phpBB.',
-	'JQUERY_HOST_LOCAL'		=> 'Included with phpBB on my server',
-	'JQUERY_HOST_GOOGLE'	=> 'Hosted CDN: Google AJAX API',
-	'JQUERY_HOST_JQUERY'	=> 'Hosted CDN: jQuery',
-	'JQUERY_HOST_MS'		=> 'Hosted CDN: Microsoft',
 ));
