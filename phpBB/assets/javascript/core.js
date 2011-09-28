@@ -2,6 +2,8 @@ var phpbb = {};
 
 (function($) {  // Avoid conflicts with other libraries
 
+// define a couple constants for keydown functions.
+var ENTER = 13, ESC = 27;
 
 
 var dark = $('#darkenwrapper'),
@@ -62,7 +64,7 @@ phpbb.alert = function(title, msg, fadedark) {
 	});
 
 	$(document).bind('keydown', function(e) {
-		if (e.keyCode === 13 || e.keyCode === 27) {
+		if (e.keyCode === ENTER || e.keyCode === ESC) {
 			dark.trigger('click');
 			return false;
 		}
@@ -135,10 +137,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	$(document).bind('keydown', function(e) {
-		if (e.keyCode === 13) {
+		if (e.keyCode === ENTER) {
 			$('input[type="button"].button1').trigger('click');
 			return false;
-		} else if (e.keyCode === 27) {
+		} else if (e.keyCode === ESC) {
 			$('input[type="button"].button2').trigger('click');
 			return false;
 		}
