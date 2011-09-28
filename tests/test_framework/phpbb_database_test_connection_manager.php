@@ -275,8 +275,6 @@ class phpbb_database_test_connection_manager
 
 	/**
 	* Removes comments from schema files
-	* 
-	* Note: This performs the functions of remove_remarks() and remove_comments() used during installation
 	*/
 	protected function remove_comments($sql)
 	{
