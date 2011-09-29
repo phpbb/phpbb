@@ -326,22 +326,30 @@ class phpbb_extension_finder
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($iterator as $file_info)
 			{
 				if ($file_info->isDir() == $is_dir)
 				{
-					$relative_path = ($is_dir) ? $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR:
-						$iterator->getInnerIterator()->getSubPathname();
-
-					$item_name = ($is_dir) ? basename($iterator->getInnerIterator()->getSubPath()) :
-						$file_info->getFilename();
+					if ($is_dir)
+					{
+						$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($file_info->getFilename()) . DIRECTORY_SEPARATOR;
+						if ($relative_path[0] !== DIRECTORY_SEPARATOR)
+						{
+							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
+						}
+					}
+					else
+					{
+						$relative_path = DIRECTORY_SEPARATOR . $iterator->getInnerIterator()->getSubPathname();
+					}
+					$item_name = $file_info->getFilename();
 
 					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
 						(!$prefix || substr($item_name, 0, strlen($prefix)) === $prefix) &&
-						(!$directory || preg_match($directory_pattern, DIRECTORY_SEPARATOR . $relative_path)))
+						(!$directory || preg_match($directory_pattern, $relative_path)))
 					{
-						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . $relative_path);
+						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1));
 					}
 				}
 			}
