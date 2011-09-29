@@ -55,7 +55,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
-	public function test_prefix_get_directories()
+	public function test_get_directories()
 	{
 		$dirs = $this->finder
 			->directory('/type')
@@ -64,6 +64,20 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($dirs);
 		$this->assertEquals(array(
 			dirname(__FILE__) . '/ext/foo/type/',
+		), $dirs);
+	}
+
+	public function test_prefix_get_directories()
+	{
+		$dirs = $this->finder
+            ->prefix('t')
+			->get_directories();
+
+		sort($dirs);
+		$this->assertEquals(array(
+			dirname(__FILE__) . '/ext/foo/sub/type/',
+			dirname(__FILE__) . '/ext/foo/type/',
+			dirname(__FILE__) . '/ext/foo/typewrong/',
 		), $dirs);
 	}
 
