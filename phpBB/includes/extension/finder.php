@@ -326,7 +326,7 @@ class phpbb_extension_finder
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($iterator as $file_info)
 			{
 				if ($file_info->isDir() == $is_dir)
