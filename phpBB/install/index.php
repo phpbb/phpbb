@@ -182,7 +182,7 @@ $user = new user();
 $auth = new auth();
 $cache = new cache();
 $template = new template();
-$php_ini = new phpbb_ini_reader();
+$phpbb_php_ini = new phpbb_ini_reader();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))

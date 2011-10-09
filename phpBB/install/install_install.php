@@ -119,7 +119,7 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $language, $config, $auth, $php_ini;
+		global $lang, $template, $phpbb_root_path, $phpEx, $language, $config, $auth, $phpbb_php_ini;
 
 		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
@@ -187,8 +187,8 @@ class install_install extends module
 						case 'PHP_SETTINGS':
 							$color = 'green';
 							$message = $lang['YES'];
-							$additional_message = ($setting == 'PHP_VERSION_REQD' && $php_ini->get_bool('safe_mode')) ? $lang['PHP_SAFE_MODE'] : '';
 							$additional_message_color = 'green';
+							$additional_message = ($setting == 'PHP_VERSION_REQD' && $phpbb_php_ini->get_bool('safe_mode')) ? $lang['PHP_SAFE_MODE'] : '';
 						break;
 
 						case 'FILES_REQUIRED':

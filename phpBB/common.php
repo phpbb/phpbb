@@ -103,7 +103,7 @@ $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
 $db			= new $sql_db();
-$php_ini	= new phpbb_ini_reader();
+$phpbb_php_ini	= new phpbb_ini_reader();
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
