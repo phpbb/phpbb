@@ -119,7 +119,7 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $language, $config, $auth;
+		global $lang, $template, $phpbb_root_path, $phpEx, $language, $config, $auth, $php_ini;
 
 		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
@@ -128,79 +128,12 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		// Load checker class
-		if (!class_exists('phpbb_environment_checker'))
-		{
-			include($phpbb_root_path . 'includes/environment_checker.' . $phpEx);
-		}
-
-		// Load phpBB reader of PHP ini values
-		if (!class_exists('phpbb_ini_reader'))
-		{
-			include($phpbb_root_path . 'includes/ini_reader.' . $phpEx);
-		}
-
 		// Initialize some variables and objects
 		$passed = $check_results = array();
-		$environment_checker = new phpbb_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
-		$php_ini = new phpbb_ini_reader;
-
-		// Set the required common PHP ini and version checks
-		$checks['PHP_SETTINGS'] = array(
-			'PHP_VERSION_REQD'				=> version_compare(PHP_VERSION, '4.3.3', '>='),
-			'PHP_REGISTER_GLOBALS'			=> !$php_ini->get_bool('register_globals'),
-			'PHP_URL_FOPEN_SUPPORT'			=> $php_ini->get_bool('allow_url_fopen'),
-			'PHP_GETIMAGESIZE_SUPPORT'		=> function_exists('getimagesize'),
-			'PCRE_UTF_SUPPORT'				=> preg_match('/\p{L}/u', 'a'),
-		);
-
-		// Set the required mbstring PHP ini checks
-		if (@extension_loaded('mbstring'))
-		{
-			$checks['MBSTRING_CHECK'] = array(
-				'MBSTRING_FUNC_OVERLOAD'		=> !($php_ini->get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
-				'MBSTRING_ENCODING_TRANSLATION'	=> !$php_ini->get_bool('mbstring.encoding_translation'),
-				'MBSTRING_HTTP_INPUT'			=> $php_ini->get_string('mbstring.http_input') == 'pass',
-				'MBSTRING_HTTP_OUTPUT'			=> $php_ini->get_string('mbstring.http_output') == 'pass',
-			);
-		}
-
-		// Set the available DBMS checks, at least 1 DBMS should be available
-		$available_dbms = get_available_dbms(false, true);
-		$any_db_support = $available_dbms['ANY_DB_SUPPORT'];
-		unset($available_dbms['ANY_DB_SUPPORT']);
-		foreach ($available_dbms as $db_name => $db_ary)
-		{
-			$checks['PHP_SUPPORTED_DB']['DLL_' . strtoupper($db_name)] = (bool) $db_ary['AVAILABLE'];
-		}
-
-		// Set the PHP optional modules checks
-		foreach ($this->php_dlls_other as $dll)
-		{
-			$checks['PHP_OPTIONAL_MODULE']['DLL_' . strtoupper($dll)] = (!@extension_loaded($dll)) ? can_load_dll($dll) : true;
-		}
-		$img_imagick = phpbb_search_imagemagick();
-		$checks['PHP_OPTIONAL_MODULE']['APP_MAGICK'] = $img_imagick;
-
-		// Set the required directories checks
-		$exists = $writable = array();
-		$directories = array('cache/', 'files/', 'store/');
-		foreach ($directories as $dir)
-		{
-			$checks['FILES_REQUIRED'][$dir] = ($exists[$dir] = phpbb_check_dir_exists($dir))
-												&& ($writable[$dir] = phpbb_create_dir($dir));
-		}
-
-		// Set the optional files/directories checks
-		$directories = array('config.' . $phpEx, 'images/avatars/upload/');
-		foreach ($directories as $dir)
-		{
-			$checks['FILES_OPTIONAL'][$dir] = ($exists[$dir] = file_exists($phpbb_root_path . $dir))
-												&& ($writable[$dir] = phpbb_is_writable($phpbb_root_path . $dir));
-		}
+		$install_checker = new phpbb_install_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		// Assert checks and dump results to template
-		foreach ($checks as $category => $settings)
+		foreach ($install_checker->categories as $category)
 		{
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -208,12 +141,13 @@ class install_install extends module
 				'LEGEND_EXPLAIN'	=> $lang[$category . '_EXPLAIN'],
 			));
 
-			$check_results[$category] = $environment_checker->get_errors($checks[$category], true);
+			$install_checker->set_errors($category);
+			$check_results[$category] = $install_checker->get_errors();
 
 			// If no error messages returned, checks have been passed
 			$passed[$category] = (empty($check_results[$category])) ? true : false;
 
-			foreach ($settings as $setting => $condition)
+			foreach ($install_checker->errors as $setting => $condition)
 			{
 				$additional_message = '';
 				if (in_array($setting, $check_results[$category]))
@@ -302,9 +236,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = (!in_array(false, $passed) && $any_db_support) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = (!in_array(false, $passed) && $any_db_support) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
-
+		$url = (!in_array(false, $passed) && $install_checker->any_db_support) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = (!in_array(false, $passed) && $install_checker->any_db_support) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,

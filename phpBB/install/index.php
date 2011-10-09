@@ -80,6 +80,7 @@ include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+include($phpbb_root_path . 'includes/ini_reader.' . $phpEx);
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
 $phpbb_class_loader_ext->register();
@@ -179,6 +180,9 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
+$cache = new cache();
+$template = new template();
+$php_ini = new phpbb_ini_reader();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
