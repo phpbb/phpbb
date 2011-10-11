@@ -655,7 +655,7 @@ function topic_generate_pagination($replies, $url)
 			$pagination .= '<a href="' . $url . ($j == 0 ? '' : '&amp;start=' . $j) . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 5)
 			{
-				$pagination .= ' ... ';
+				$pagination .= '<span class="page-dots"> ... </span>';
 
 				// Display the last three pages
 				$times = $total_pages - 3;
