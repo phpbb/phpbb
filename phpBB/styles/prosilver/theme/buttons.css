@@ -31,7 +31,7 @@
 	text-decoration: none;
 	text-transform: uppercase;
 
-	font-family: 'LiberationSans';
+	font: 60px/68px 'LiberationSans';
 	letter-spacing: 0.075em;
 	font-size: 1.05em;
 }
@@ -167,9 +167,12 @@ ul.profile-icons li.pm-icon a {
 	background-image: url("./images/buttons_sprites.png");
 	background-repeat: no-repeat;
 	text-decoration: none;
-	font-size: 0.9em;
 	text-transform: uppercase;
-	font-family: Helvetica,Arial,sans-serif;
+
+	font: 60px/68px 'LiberationSansBold';
+	letter-spacing: 0.25em;
+	font-size: 0.75em;
+	font-weight: bold;
 }
 
 ul.profile-icons li.no-icon a:hover,
@@ -194,7 +197,6 @@ ul.profile-icons li.pm-icon a span {
 	background-image: url("./images/buttons_bg.png");
 	background-position: 50% -50px;
 	background-repeat: repeat-x;
-	font-weight: bold;
 }
 
 ul.profile-icons li.pm-icon a span {
