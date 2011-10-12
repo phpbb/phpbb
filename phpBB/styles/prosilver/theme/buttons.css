@@ -27,10 +27,13 @@
 	background-color: transparent;
 	background-image: url("./images/buttons_sprites.png");
 	background-repeat: no-repeat;
+
 	text-decoration: none;
-	font-size: 1.05em;
 	text-transform: uppercase;
-	font-family: Helvetica,Arial,sans-serif;
+
+	font-family: 'LiberationSans';
+	letter-spacing: 0.075em;
+	font-size: 1.05em;
 }
 
 .buttons div span			{
@@ -38,7 +41,7 @@
 	display: block;
 	height: 100%;
 	line-height: 25px;
-	margin: 0 20px 0 5px; /* c */
+	margin: 0 20px 0 5px;
 	padding: 0 5px;
 	background-image: url("./images/buttons_bg.png");
 	background-position: 0 0;
@@ -191,6 +194,7 @@ ul.profile-icons li.pm-icon a span {
 	background-image: url("./images/buttons_bg.png");
 	background-position: 50% -50px;
 	background-repeat: repeat-x;
+	font-weight: bold;
 }
 
 ul.profile-icons li.pm-icon a span {

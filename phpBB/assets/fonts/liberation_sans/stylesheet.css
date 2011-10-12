@@ -1,0 +1,14 @@
+/**
+* Liberation Sans
+*/
+
+@font-face {
+	font-family: 'LiberationSans';
+	src: url('LiberationSans-Regular-webfont.eot');
+	src: url('LiberationSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('LiberationSans-Regular-webfont.woff') format('woff'),
+		 url('LiberationSans-Regular-webfont.ttf') format('truetype'),
+		 url('LiberationSans-Regular-webfont.svg#LiberationSansRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
