@@ -221,13 +221,15 @@ class p_master
 			// We need to prefix the functions to not create a naming conflict
 
 			// Function for building 'url_extra'
-			$url_func = '_module_' . $row['module_basename'] . '_url';
+			$short_name = $this->get_short_name($row['module_basename']);
+
+			$url_func = '_module_' . $short_name . '_url';
 
 			// Function for building the language name
-			$lang_func = '_module_' . $row['module_basename'] . '_lang';
+			$lang_func = '_module_' . $short_name . '_lang';
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $row['module_basename'];
+			$custom_func = '_module_' . $short_name;
 
 			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 
@@ -275,6 +277,11 @@ class p_master
 	*/
 	function loaded($module_basename, $module_mode = false)
 	{
+		if (!$this->is_full_class($module_basename))
+		{
+			$module_basename = $this->p_class . '_' . $module_basename;
+		}
+
 		if (empty($this->loaded_cache))
 		{
 			$this->loaded_cache = array();
@@ -381,6 +388,11 @@ class p_master
 			$id = request_var('icat', '');
 		}
 
+		if ($id && !is_numeric($id) && !$this->is_full_class($id))
+		{
+			$id = $this->p_class . '_' . $id;
+		}
+
 		$category = false;
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
@@ -389,9 +401,9 @@ class p_master
 			// If this is a module and no mode selected, select first mode
 			// If no category or module selected, go active for first module in first category
 			if (
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
+				(($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
 				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat && $item_ary['display']) ||
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
+				(($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
 				(!$id && !$mode && !$item_ary['cat'] && $item_ary['display'])
 				)
 			{
@@ -445,7 +457,6 @@ class p_master
 		{
 			if (!file_exists("$module_path/{$this->p_name}.$phpEx"))
 			{
-
 				trigger_error("Cannot find module $module_path/{$this->p_name}.$phpEx", E_USER_ERROR);
 			}
 
@@ -507,7 +518,8 @@ class p_master
 		// Users are able to call the main method after this function to be able to assign additional parameters manually
 		if ($execute_module)
 		{
-			$this->module->main($this->p_name, $this->p_mode);
+			$short_name = preg_replace("#^{$this->p_class}_#", '', $this->p_name);
+			$this->module->main($short_name, $this->p_mode);
 		}
 	}
 
@@ -546,7 +558,7 @@ class p_master
 		// If we find a name by this id and being enabled we have our active one...
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'])
+			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'] || $item_ary['name'] === $this->p_class . '_' . $id)
 			{
 				if ($mode === false || $mode === $item_ary['mode'])
 				{
@@ -840,7 +852,7 @@ class p_master
 	{
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
+			if (($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
 			}
@@ -877,5 +889,21 @@ class p_master
 				$user->add_lang($add_files);
 			}
 		}
+	}
+
+	function get_short_name($basename)
+	{
+		if (substr($basename, 0, 6) === 'phpbb_')
+		{
+			return $basename;
+		}
+
+		// strip xcp_ prefix from old classes
+		return substr($basename, strlen($this->p_class) + 1);
+	}
+
+	function is_full_class($basename)
+	{
+		return (substr($basename, 0, 6) === 'phpbb_' || substr($basename, 0, strlen($this->p_class) + 1) === $this->p_class . '_');
 	}
 }
