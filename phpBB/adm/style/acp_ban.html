@@ -86,10 +86,10 @@
 <fieldset>
 	<legend>{L_UNBAN_TITLE}</legend>
 
-<!-- IF S_BANNED_OPTIONS -->
+<!-- IF S_HAS_OPTIONS -->
 	<dl>
 		<dt><label for="unban">{L_BAN_CELL}:</label></dt>
-		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></dd>
+		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{OPTIONS}</select></dd>
 	</dl>
 	<dl>
 		<dt><label for="unbanlength">{L_BAN_LENGTH}:</label></dt>
