@@ -415,6 +415,9 @@ class acp_groups
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
 						// group. This prevents existing group members being updated if no changes
 						// were made.
+						// However there are some attributes that need to be set everytime,
+						// otherwise the group gets removed from the feature.
+						$set_attributes = array('legend', 'teampage');
 
 						$group_attributes = array();
 						$test_variables = array(
@@ -435,7 +438,7 @@ class acp_groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
