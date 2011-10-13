@@ -249,7 +249,13 @@ class dbal_mysqli extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id !== false) ? @mysqli_fetch_assoc($query_id) : false;
+		if ($query_id !== false)
+		{
+			$result = @mysqli_fetch_assoc($query_id);
+			return $result !== null ? $result : false;
+		}
+
+		return false;
 	}
 
 	/**
