@@ -2117,10 +2117,9 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 
-			if (!isset($config['use_system_cron']))
+			if (!isset($config['legend_sort_groupname']))
 			{
 				set_config('legend_sort_groupname', '0');
-				set_config('teampage_multiple', '1');
 				set_config('teampage_forums', '1');
 			}
 
@@ -2258,6 +2257,11 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['load_cpf_pm']))
 			{
 				set_config('load_cpf_pm', '0');
+			}
+
+			if (!isset($config['teampage_memberships']))
+			{
+				set_config('teampage_memberships', '1');
 			}
 
 			$no_updates = false;

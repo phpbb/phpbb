@@ -229,7 +229,7 @@ switch ($mode)
 					if (isset($user_ary[$user_id]))
 					{
 						$row = $user_ary[$user_id];
-						if (!$config['teampage_multiple'] && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
+						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['group_teampage'])
 						{
 							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
 							continue;
@@ -259,7 +259,7 @@ switch ($mode)
 							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 						));
 
-						if (!$config['teampage_multiple'])
+						if ($config['teampage_memberships'] != 2)
 						{
 							unset($user_ary[$user_id]);
 						}

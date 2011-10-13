@@ -243,7 +243,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_multiple', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_memberships', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
