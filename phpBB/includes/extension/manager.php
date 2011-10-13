@@ -94,7 +94,9 @@ class phpbb_extension_manager
 	*/
 	public function get_extension_path($name, $phpbb_relative = false)
 	{
-		return (($phpbb_relative) ? $this->phpbb_root_path : '') . 'ext/' . basename($name) . '/';
+		$name = str_replace('.', '', $name);
+
+		return (($phpbb_relative) ? $this->phpbb_root_path : '') . 'ext/' . $name . '/';
 	}
 
 	/**
@@ -106,7 +108,7 @@ class phpbb_extension_manager
 	*/
 	public function get_extension($name)
 	{
-		$extension_class_name = 'phpbb_ext_' . $name . '_ext';
+		$extension_class_name = 'phpbb_ext_' . str_replace('/', '_', $name) . '_ext';
 
 		if (class_exists($extension_class_name))
 		{
@@ -292,13 +294,17 @@ class phpbb_extension_manager
 	{
 		$available = array();
 
-		$iterator = new DirectoryIterator($this->phpbb_root_path . 'ext/');
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/'));
 		foreach ($iterator as $file_info)
 		{
-			$path = $this->phpbb_root_path . 'ext/' . $file_info->getBasename() . '/';
-			if (!$file_info->isDot() && $file_info->isDir() && file_exists($path))
+			if ($file_info->isFile() && $file_info->getFilename() == 'ext' . $this->phpEx)
 			{
-				$available[$file_info->getBasename()] = $path;
+				$ext_name = $iterator->getInnerIterator()->getSubPath();
+
+				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
+
+				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
