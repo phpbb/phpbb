@@ -106,7 +106,7 @@ class phpbb_extension_manager
 	*/
 	public function get_extension($name)
 	{
-		$extension_class_name = 'phpbb_ext_' . $name;
+		$extension_class_name = 'phpbb_ext_' . $name . '_ext';
 
 		if (class_exists($extension_class_name))
 		{
