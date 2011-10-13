@@ -1870,9 +1870,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_topic':
 		case 'edit_first_post':
-			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+			if (isset($poll['poll_options']))
 			{
-				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_start = ($poll['poll_start'] || empty($poll['poll_options'])) ? $poll['poll_start'] : $current_time;
 				$poll_length = $poll['poll_length'] * 86400;
 				if ($poll_length < 0)
 				{
@@ -2075,11 +2075,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update Poll Tables
-	if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+	if (isset($poll['poll_options']))
 	{
 		$cur_poll_options = array();
 
-		if ($poll['poll_start'] && $mode == 'edit')
+		if ($mode == 'edit')
 		{
 			$sql = 'SELECT *
 				FROM ' . POLL_OPTIONS_TABLE . '
