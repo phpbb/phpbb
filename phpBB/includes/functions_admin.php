@@ -3140,6 +3140,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 
+		$timer_stop = time() + $timeout;
 		stream_set_timeout($fsock, $timeout);
 
 		$file_info = '';
@@ -3167,7 +3168,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 
 			$stream_meta_data = stream_get_meta_data($fsock);
 
-			if (!empty($stream_meta_data['timed_out']))
+			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
 			{
 				$errstr = $user->lang['FSOCK_TIMEOUT'];
 				return false;
