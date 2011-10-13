@@ -4570,6 +4570,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
 		'T_THEME_NAME'			=> $user->theme['theme_path'],
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
