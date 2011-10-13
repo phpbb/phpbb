@@ -192,7 +192,7 @@ dd.extra {
 
 dd.mark {
 	float: right !important;
-	width: 9%;
+	width: 90px;
 	text-align: center;
 	line-height: 200%;
 	font-size: 1.2em;
