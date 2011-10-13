@@ -210,7 +210,7 @@ class phpbb_extension_finder
 		$files = $this->find($cache, false);
 
 		$classes = array();
-		foreach ($files as $file)
+		foreach ($files as $file => $ext_name)
 		{
 			$file = preg_replace('#^includes/#', '', $file);
 
@@ -253,7 +253,7 @@ class phpbb_extension_finder
 		$items = $this->find($cache, $is_dir);
 
 		$result = array();
-		foreach ($items as $item)
+		foreach ($items as $item => $ext_name)
 		{
 			$result[] = $this->phpbb_root_path . $item;
 		}
@@ -289,6 +289,8 @@ class phpbb_extension_finder
 
 		foreach ($extensions as $name => $path)
 		{
+			$ext_name = $name;
+
 			if (!file_exists($path))
 			{
 				continue;
@@ -349,7 +351,7 @@ class phpbb_extension_finder
 						(!$prefix || substr($item_name, 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, $relative_path)))
 					{
-						$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1));
+						$files[str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1))] = $ext_name;
 					}
 				}
 			}

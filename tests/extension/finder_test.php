@@ -154,12 +154,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/', $cache, '.php', '_custom_cache_name');
 		$files = $finder->suffix('_class.php')->get_files();
 
-		sort($files);
-
 		$expected_files = array(
-			'ext/bar/my/hidden_class.php',
-			'ext/foo/a_class.php',
-			'ext/foo/b_class.php',
+			'ext/bar/my/hidden_class.php' => 'bar',
+			'ext/foo/a_class.php' => 'foo',
+			'ext/foo/b_class.php' => 'foo',
 		);
 
 		$query = array(
@@ -175,7 +173,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		$cache->checkAssociativeVar($this, '_custom_cache_name', array(
 			md5(serialize($query)) => $expected_files,
-		));
+		), false);
 	}
 
 	public function test_cached_get_files()
@@ -193,7 +191,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		$finder = new phpbb_extension_finder($this->extension_manager, dirname(__FILE__) . '/', new phpbb_mock_cache(array(
 			'_ext_finder' => array(
-				md5(serialize($query)) => array('file_name'),
+				md5(serialize($query)) => array('file_name' => 'extension'),
 			),
 		)));
 
