@@ -208,7 +208,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
 		'U_WWW'			=> (!empty($user_info['user_website'])) ? $user_info['user_website'] : '',
-		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people' . urlencode($user_info['user_icq']) . '/' : '',
+		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/' . urlencode($user_info['user_icq']) . '/' : '',
 		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
 		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
 		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
