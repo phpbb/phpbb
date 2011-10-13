@@ -243,7 +243,7 @@ class ucp_pm
 				$num_not_moved = $num_removed = 0;
 				$release = request_var('release', 0);
 
-				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
+				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{
 					$return = place_pm_into_folder($global_privmsgs_rules, $release);
 					$num_not_moved = $return['not_moved'];
