@@ -865,30 +865,6 @@ class p_master
 	function add_mod_info($module_class)
 	{
 		global $user, $phpEx;
-/*
-		if (file_exists($user->lang_path . $user->lang_name . '/mods'))
-		{
-			$add_files = array();
-
-			$dir = @opendir($user->lang_path . $user->lang_name . '/mods');
-
-			if ($dir)
-			{
-				while (($entry = readdir($dir)) !== false)
-				{
-					if (strpos($entry, 'info_' . strtolower($module_class) . '_') === 0 && substr(strrchr($entry, '.'), 1) == $phpEx)
-					{
-						$add_files[] = 'mods/' . substr(basename($entry), 0, -(strlen($phpEx) + 1));
-					}
-				}
-				closedir($dir);
-			}
-
-			if (sizeof($add_files))
-			{
-				$user->add_lang($add_files);
-			}
-		}*/
 
 		global $phpbb_extension_manager;
 
