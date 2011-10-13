@@ -89,11 +89,12 @@ class phpbb_extension_manager
 	* Generates the path to an extension
 	*
 	* @param string $name The name of the extension
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
 	* @return string Path to an extension
 	*/
-	public function get_extension_path($name)
+	public function get_extension_path($name, $phpbb_relative = false)
 	{
-		return 'ext/' . basename($name) . '/';
+		return (($phpbb_relative) ? $this->phpbb_root_path : '') . 'ext/' . basename($name) . '/';
 	}
 
 	/**

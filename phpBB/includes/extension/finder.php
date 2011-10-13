@@ -268,7 +268,7 @@ class phpbb_extension_finder
 	* @param bool $is_dir Whether the found items should be directories
 	* @return array An array of paths to found items
 	*/
-	protected function find($cache = true, $is_dir = false)
+	public function find($cache = true, $is_dir = false)
 	{
 		$this->query['is_dir'] = $is_dir;
 		$query = md5(serialize($this->query));

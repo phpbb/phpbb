@@ -865,7 +865,7 @@ class p_master
 	function add_mod_info($module_class)
 	{
 		global $user, $phpEx;
-
+/*
 		if (file_exists($user->lang_path . $user->lang_name . '/mods'))
 		{
 			$add_files = array();
@@ -888,6 +888,23 @@ class p_master
 			{
 				$user->add_lang($add_files);
 			}
+		}*/
+
+		global $phpbb_extension_manager;
+
+		$finder = $phpbb_extension_manager->get_finder();
+
+		$lang_files = $finder
+			->prefix('info_' . strtolower($module_class) . '_')
+			->suffix(".$phpEx")
+			->directory('/language/' . $user->lang_name)
+			->default_path('language/' . $user->lang_name . '/mods/')
+			->default_directory('')
+			->find();
+
+		foreach ($lang_files as $lang_file => $ext_name)
+		{
+			$user->add_lang_ext($ext_name, $lang_file);
 		}
 	}
 
