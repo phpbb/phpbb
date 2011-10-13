@@ -2127,7 +2127,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ($start_cnt > 1) ? ' ... ' : $seperator;
+		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $seperator;
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
@@ -2138,7 +2138,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 		}
 
-		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : $seperator;
+		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $seperator;
 	}
 	else
 	{
