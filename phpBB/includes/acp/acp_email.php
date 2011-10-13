@@ -203,7 +203,7 @@ class acp_email
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'CONTACT_EMAIL' => $config['board_contact'],
+						'CONTACT_EMAIL' => generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin',
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
