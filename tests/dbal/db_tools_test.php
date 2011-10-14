@@ -258,6 +258,13 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_id'));
 	}
 
+	public function test_list_tables()
+	{
+		$tables = $this->tools->sql_list_tables();
+		$this->assertTrue(isset($tables['prefix_table_name']));
+		$this->assertFalse(isset($tables['prefix_does_not_exist']));
+	}
+
 	public function test_table_exists()
 	{
 		$this->assertTrue($this->tools->sql_table_exists('prefix_table_name'));

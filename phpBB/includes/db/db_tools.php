@@ -348,6 +348,66 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Gets a list of tables in the database.
+	*
+	* @return array		Array of table names  (all lower case)
+	*/
+	function sql_list_tables()
+	{
+		switch ($this->db->sql_layer)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$sql = 'SHOW TABLES';
+			break;
+
+			case 'sqlite':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"';
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$sql = "SELECT name
+					FROM sysobjects
+					WHERE type='U'";
+			break;
+
+			case 'postgres':
+				$sql = 'SELECT relname
+					FROM pg_stat_user_tables';
+			break;
+
+			case 'firebird':
+				$sql = 'SELECT rdb$relation_name
+					FROM rdb$relations
+					WHERE rdb$view_source is null
+						AND rdb$system_flag = 0';
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT table_name
+					FROM USER_TABLES';
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+
+		$tables = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$name = current($row);
+			$tables[$name] = $name;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $tables;
+	}
+
+	/**
 	* Check if table exists
 	*
 	*
