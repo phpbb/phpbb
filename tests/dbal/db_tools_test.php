@@ -234,6 +234,14 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertEquals($row2, $row_actual);
 	}
 
+	public function test_list_columns()
+	{
+		$this->assertEquals(
+			array_keys($this->table_data['COLUMNS']),
+			array_values($this->tools->sql_list_columns('prefix_table_name'))
+		);
+	}
+
 	public function test_column_exists()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_id'));

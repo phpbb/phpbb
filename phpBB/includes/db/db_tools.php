@@ -1071,34 +1071,21 @@ class phpbb_db_tools
 	}
 
 	/**
-	* Check if a specified column exist
+	* Gets a list of columns of a table.
 	*
-	* @param string	$table			Table to check the column at
-	* @param string	$column_name	The column to check
+	* @param string $table		Table name
 	*
-	* @return bool True if column exists, else false
+	* @return array				Array of column names (all lower case)
 	*/
-	function sql_column_exists($table, $column_name)
+	function sql_list_columns($table)
 	{
+		$columns = array();
+
 		switch ($this->sql_layer)
 		{
 			case 'mysql_40':
 			case 'mysql_41':
-
 				$sql = "SHOW COLUMNS FROM $table";
-				$result = $this->db->sql_query($sql);
-
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['Field']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			// PostgreSQL has a way of doing this in a much simpler way but would
@@ -1109,19 +1096,6 @@ class phpbb_db_tools
 					WHERE c.relname = '{$table}'
 						AND a.attnum > 0
 						AND a.attrelid = c.oid";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['attname']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-
-				return false;
 			break;
 
 			// same deal with PostgreSQL, we must perform more complex operations than
@@ -1132,62 +1106,26 @@ class phpbb_db_tools
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
 					WHERE o.name = '{$table}'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['name']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
 					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['column_name']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
 			case 'firebird':
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
 					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					// lower case just in case
-					if (strtolower($row['fname']) == $column_name)
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-				$this->db->sql_freeresult($result);
-				return false;
 			break;
 
-			// ugh, SQLite
 			case 'sqlite':
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
 						AND name = '{$table}'";
+
 				$result = $this->db->sql_query($sql);
 
 				if (!$result)
@@ -1211,14 +1149,39 @@ class phpbb_db_tools
 						continue;
 					}
 
-					if (strtolower($entities[0]) == $column_name)
-					{
-						return true;
-					}
+					$column = strtolower($entities[0]);
+					$columns[$column] = $column;
 				}
-				return false;
+
+				return $columns;
 			break;
 		}
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$column = strtolower(current($row));
+			$columns[$column] = $column;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $columns;
+	}
+
+	/**
+	* Check whether a specified column exist in a table
+	*
+	* @param string	$table			Table to check
+	* @param string	$column_name	Column to check
+	*
+	* @return bool		True if column exists, false otherwise
+	*/
+	function sql_column_exists($table, $column_name)
+	{
+		$columns = $this->sql_list_columns($table);
+
+		return isset($columns[$column_name]);
 	}
 
 	/**
