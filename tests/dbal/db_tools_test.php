@@ -333,4 +333,22 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			),
 		));
 	}
+
+	public function test_index_exists()
+	{
+		$db_tools = new phpbb_db_tools($this->db);
+
+		$this->assertTrue($db_tools->sql_index_exists('prefix_table_name', 'i_simple'));
+	}
+
+	public function test_create_index_against_index_exists()
+	{
+		$db_tools = new phpbb_db_tools($this->db);
+
+		$table_name = 'prefix_table_name';
+		$index_name = 'fookey';
+
+		$db_tools->sql_create_index($table_name, $index_name, array('c_timestamp', 'c_decimal'));
+		$this->assertTrue($db_tools->sql_index_exists($table_name, $index_name));
+	}
 }
