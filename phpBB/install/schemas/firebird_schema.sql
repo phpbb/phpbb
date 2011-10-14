@@ -3,10 +3,6 @@
 # To change the contents of this file, edit
 # phpBB/develop/create_schema_files.php and
 # run it.
-#
-# $Id: $
-#
-
 
 # Table: 'phpbb_attachments'
 CREATE TABLE phpbb_attachments (

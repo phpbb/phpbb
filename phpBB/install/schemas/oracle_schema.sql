@@ -7,12 +7,6 @@
  */
 
 /*
-
- $Id: $
-
-*/
-
-/*
   This first section is optional, however its probably the best method
   of running phpBB on Oracle. If you already have a tablespace and user created
   for phpBB you can leave this section commented out!

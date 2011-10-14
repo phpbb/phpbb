@@ -7,12 +7,6 @@
  */
 
 /*
-
- $Id: $
-
-*/
-
-/*
 	Table: 'phpbb_attachments'
 */
 CREATE TABLE [phpbb_attachments] (
