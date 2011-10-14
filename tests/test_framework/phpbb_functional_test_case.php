@@ -14,6 +14,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $client;
 	protected $root_url;
 
+	static protected $config;
+
 	public function setUp()
 	{
 		$this->client = new Goutte\Client();
@@ -29,35 +31,32 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		if (!isset($_SERVER['PHPBB_FUNCTIONAL_URL']))
+		self::$config = phpbb_test_case_helpers::get_test_config();
+
+		if (!isset(self::$config['phpbb_functional_url']))
 		{
-			self::markTestSkipped("The 'PHPBB_FUNCTIONAL_URL' environment variable was not set.");
+			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		if (!file_exists($phpbb_root_path . "config.$phpEx"))
+		self::$config['table_prefix'] = 'phpbb_';
+		self::recreate_database(self::$config);
+
+		if (file_exists($phpbb_root_path . "config.$phpEx"))
 		{
-			self::markTestSkipped("config.php does not exist, it is required for running functional tests.");
+			if (!file_exists($phpbb_root_path . "config_dev.$phpEx"))
+			{
+				rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_dev.$phpEx");
+			}
+			else
+			{
+				unlink($phpbb_root_path . "config.$phpEx");
+			}
 		}
-
-		require $phpbb_root_path . "config.$phpEx";
-
-		$db_config = array(
-			'dbhost'	=> $dbhost,
-			'dbport'	=> $dbport,
-			'dbname'	=> $dbname,
-			'dbuser'	=> $dbuser,
-			'dbpasswd'	=> $dbpasswd,
-			'dbms'		=> $dbms,
-			'table_prefix' => 'phpbb_',
-		);
-		self::recreate_database($db_config);
-
-		rename($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "_config.$phpEx");
 
 		// begin data
 		$data = array();
 
-		$data = array_merge($data, $db_config);
+		$data = array_merge($data, self::$config);
 
 		$data = array_merge($data, array(
 			'default_lang'	=> 'en',
@@ -68,7 +67,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'board_email2'	=> 'nobody@example.com',
 		));
 
-		$parseURL = parse_url($_SERVER['PHPBB_FUNCTIONAL_URL']);
+		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
 		$data = array_merge($data, array(
 			'email_enable'		=> false,
@@ -89,16 +88,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$content = self::do_request('install');
 		self::assertContains('Welcome to Installation', $content);
 
+		self::do_request('create_table', $data);
+
 		self::do_request('config_file', $data);
 
-		rename($phpbb_root_path . "_config.$phpEx", $phpbb_root_path . "config.$phpEx");
+		if (file_exists($phpbb_root_path . "config.$phpEx"))
+		{
+			copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+		}
 
-		self::do_request('create_table', $data);
 		self::do_request('final', $data);
 	}
 
 	static public function tearDownAfterClass()
 	{
+		global $phpbb_root_path, $phpEx;
+
+		copy($phpbb_root_path . "config_dev.$phpEx", $phpbb_root_path . "config.$phpEx");
 	}
 
 	static private function do_request($sub, $post_data = null)
@@ -117,7 +123,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			));
 		}
 
-		return file_get_contents($_SERVER['PHPBB_FUNCTIONAL_URL'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
+		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
 	}
 
 	static private function recreate_database($config)
