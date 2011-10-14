@@ -3111,7 +3111,7 @@ function get_database_size()
 /**
 * Retrieve contents from remotely stored file
 */
-function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 10)
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
 	global $user;
 
@@ -3120,6 +3120,9 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
+
+		$timer_stop = time() + $timeout;
+		stream_set_timeout($fsock, $timeout);
 
 		$file_info = '';
 		$get_info = false;
@@ -3142,6 +3145,14 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
 				}
+			}
+
+			$stream_meta_data = stream_get_meta_data($fsock);
+
+			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
+			{
+				$errstr = $user->lang['FSOCK_TIMEOUT'];
+				return false;
 			}
 		}
 		@fclose($fsock);
