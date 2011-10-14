@@ -211,61 +211,20 @@ function dbms_select($default = '', $only_20x_options = false)
 
 /**
 * Get tables of a database
+*
+* @deprecated
 */
-function get_tables($db)
+function get_tables(&$db)
 {
-	switch ($db->sql_layer)
+	if (!class_exists('phpbb_db_tools'))
 	{
-		case 'mysql':
-		case 'mysql4':
-		case 'mysqli':
-			$sql = 'SHOW TABLES';
-		break;
-
-		case 'sqlite':
-			$sql = 'SELECT name
-				FROM sqlite_master
-				WHERE type = "table"';
-		break;
-
-		case 'mssql':
-		case 'mssql_odbc':
-		case 'mssqlnative':
-			$sql = "SELECT name
-				FROM sysobjects
-				WHERE type='U'";
-		break;
-
-		case 'postgres':
-			$sql = 'SELECT relname
-				FROM pg_stat_user_tables';
-		break;
-
-		case 'firebird':
-			$sql = 'SELECT rdb$relation_name
-				FROM rdb$relations
-				WHERE rdb$view_source is null
-					AND rdb$system_flag = 0';
-		break;
-
-		case 'oracle':
-			$sql = 'SELECT table_name
-				FROM USER_TABLES';
-		break;
+		global $phpbb_root_path, $phpEx;
+		require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
 	}
 
-	$result = $db->sql_query($sql);
+	$db_tools = new phpbb_db_tools($db);
 
-	$tables = array();
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$tables[] = current($row);
-	}
-
-	$db->sql_freeresult($result);
-
-	return $tables;
+	return $db_tools->sql_list_tables();
 }
 
 /**
