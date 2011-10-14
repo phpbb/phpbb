@@ -18,10 +18,9 @@
     </testsuites>
 
     <groups>
-        <exclude>
+        <include>
             <group>functional</group>
-            <group>slow</group>
-        </exclude>
+        </include>
     </groups>
 
     <filter>
