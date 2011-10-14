@@ -8,18 +8,25 @@
 */
 
 require_once __DIR__ . '/../../vendor/goutte.phar';
+require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
 	protected $client;
 	protected $root_url;
 
-	static protected $config;
+	static protected $config = array();
+	static protected $already_installed = false;
 
 	public function setUp()
 	{
+		if (!isset(self::$config['phpbb_functional_url']))
+		{
+			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
+		}
+
 		$this->client = new Goutte\Client();
-		$this->root_url = $_SERVER['PHPBB_FUNCTIONAL_URL'];
+		$this->root_url = self::$config['phpbb_functional_url'];
 	}
 
 	public function request($method, $path)
@@ -27,7 +34,29 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->client->request($method, $this->root_url . $path);
 	}
 
-	static public function setUpBeforeClass()
+	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+
+		$this->backupStaticAttributesBlacklist += array(
+			'PHP_CodeCoverage' => array('instance'),
+			'PHP_CodeCoverage_Filter' => array('instance'),
+			'PHP_CodeCoverage_Util' => array('ignoredLines', 'templateMethods'),
+			'PHP_Timer' => array('startTimes',),
+			'PHP_Token_Stream' => array('customTokens'),
+			'PHP_Token_Stream_CachingFactory' => array('cache'),
+
+			'phpbb_functional_test_case' => array('config', 'already_installed'),
+		);
+
+		if (!self::$already_installed)
+		{
+			$this->install_board();
+			self::$already_installed = true;
+		}
+	}
+
+	protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -35,11 +64,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
-			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
+			return;
 		}
 
 		self::$config['table_prefix'] = 'phpbb_';
-		self::recreate_database(self::$config);
+		$this->recreate_database(self::$config);
 
 		if (file_exists($phpbb_root_path . "config.$phpEx"))
 		{
@@ -85,29 +114,21 @@ class phpbb_functional_test_case extends phpbb_test_case
 		));
 		// end data
 
-		$content = self::do_request('install');
-		self::assertContains('Welcome to Installation', $content);
+		$content = $this->do_request('install');
+		$this->assertContains('Welcome to Installation', $content);
 
-		self::do_request('create_table', $data);
+		$this->do_request('create_table', $data);
 
-		self::do_request('config_file', $data);
+		file_put_contents($phpbb_root_path . "config.$phpEx", phpbb_create_config_file_data($data, self::$config['dbms'], array(), true));
 
-		if (file_exists($phpbb_root_path . "config.$phpEx"))
-		{
-			copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
-		}
+		$this->do_request('config_file', $data);
 
-		self::do_request('final', $data);
+		copy($phpbb_root_path . "config.$phpEx", $phpbb_root_path . "config_test.$phpEx");
+
+		$this->do_request('final', $data);
 	}
 
-	static public function tearDownAfterClass()
-	{
-		global $phpbb_root_path, $phpEx;
-
-		copy($phpbb_root_path . "config_dev.$phpEx", $phpbb_root_path . "config.$phpEx");
-	}
-
-	static private function do_request($sub, $post_data = null)
+	private function do_request($sub, $post_data = null)
 	{
 		$context = null;
 
@@ -126,7 +147,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return file_get_contents(self::$config['phpbb_functional_url'] . 'install/index.php?mode=install&sub=' . $sub, false, $context);
 	}
 
-	static private function recreate_database($config)
+	private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();

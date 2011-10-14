@@ -58,7 +58,6 @@ class phpbb_test_case_helpers
 				'dbname'	=> '',
 				'dbuser'	=> '',
 				'dbpasswd'	=> '',
-				'phpbb_functional_url' => 'http://localhost/',
 			);
 		}
 
@@ -73,8 +72,12 @@ class phpbb_test_case_helpers
 				'dbname'	=> $dbname,
 				'dbuser'	=> $dbuser,
 				'dbpasswd'	=> $dbpasswd,
-				'phpbb_functional_url'	=> isset($phpbb_functional_url) ? $phpbb_functional_url : 'http://localhost/',
 			));
+
+			if (isset($phpbb_functional_url))
+			{
+				$config['phpbb_functional_url'] = $phpbb_functional_url;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
