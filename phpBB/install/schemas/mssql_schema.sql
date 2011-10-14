@@ -1307,7 +1307,7 @@ CREATE TABLE [phpbb_styles] (
 	[style_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_active] [int] DEFAULT (1) NOT NULL ,
 	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[theme_id] [int] DEFAULT (0) NOT NULL
+	[theme_id] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
