@@ -2115,7 +2115,7 @@ class phpbb_db_tools
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX (' . implode(', ', $column) . ')';
 			break;
 
 			case 'mssql':
