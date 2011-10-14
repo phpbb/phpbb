@@ -34,6 +34,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->client->request($method, $this->root_url . $path);
 	}
 
+	// bootstrap, called after board is set up
+	// once per test case class
+	// test cases can override this
+	protected function bootstrap()
+	{
+	}
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -45,6 +52,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		if (!static::$already_installed)
 		{
 			$this->install_board();
+			$this->bootstrap();
 			static::$already_installed = true;
 		}
 	}
