@@ -42,10 +42,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'phpbb_functional_test_case' => array('config', 'already_installed'),
 		);
 
-		if (!self::$already_installed)
+		if (!static::$already_installed)
 		{
 			$this->install_board();
-			self::$already_installed = true;
+			static::$already_installed = true;
 		}
 	}
 
