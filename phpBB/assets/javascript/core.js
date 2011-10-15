@@ -194,10 +194,20 @@ phpbb.parse_querystring = function(string) {
 /**
  * Makes a link use AJAX instead of loading an entire page.
  *
+ * This function will work for links (both standard links and links which
+ * invoke confirm_box) and forms. It will be called automatically for links
+ * and forms with the data-ajax attribute set, and will call the necessary
+ * callback.
+ *
+ * For more info, view the following page on the phpBB wiki:
+ * http://wiki.phpbb.com/JavaScript_Function.phpbb.ajaxify
+ *
  * @param object options Options, if a string will be the selector.
  * @param bool/function refresh If we are sent back a refresh, should it be
  * 	acted upon? This can either be true / false / a function.
- * @param function callback Callback.
+ * @param function callback Callback to call on completion of event. Has
+ * 	three parameters: the element that the event was evoked from, the JSON
+ * 	that was returned and (if it is a form) the form action.
  */
 phpbb.ajaxify = function(options, refresh, callback) {
 	var selector = $((typeof options === 'string') ? options : options.selector);
@@ -215,6 +225,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			return true;
 		}
 
+		/**
+		 * This is a private function used to handle the callbacks, refreshes
+		 * and alert. It cannot be called from outside this function, and is purely
+		 * here to avoid repetition of code.
+		 */
 		function return_handler(res)
 		{
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
@@ -311,6 +326,15 @@ phpbb.ajaxify = function(options, refresh, callback) {
 }
 
 phpbb.ajax_callbacks = {};
+
+/**
+ * Adds an AJAX callback to be used by phpbb.ajaxify.
+ *
+ * See the phpbb.ajaxify comments for information on stuff like parameters.
+ *
+ * @param string id The name of the callback.
+ * @param function callback The callback to be called.
+ */
 phpbb.add_ajax_callback = function(id, callback)
 {
 	if (typeof callback === 'function')
