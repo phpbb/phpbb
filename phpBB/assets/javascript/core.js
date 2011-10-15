@@ -25,6 +25,7 @@ phpbb.loading_alert = function() {
 	{
 		loading_alert.show();
 		dark.fadeIn(phpbb.alert_time, function() {
+			// Wait five seconds and display an error if nothing has been returned by then.
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
