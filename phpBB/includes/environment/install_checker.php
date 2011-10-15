@@ -16,9 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'includes/environment_checker.' . $phpEx);
-
-class phpbb_install_checker extends phpbb_environment_checker
+class phpbb_install_environment_checker extends phpbb_environment_checker
 {
 	var $php_dlls_other = array('zlib', 'ftp', 'gd', 'xml');
 	var $categories = array(
@@ -29,22 +27,32 @@ class phpbb_install_checker extends phpbb_environment_checker
 			'FILES_REQUIRED',
 			'FILES_OPTIONAL',
 		);
-	var $any_db_support;
+	var $writable = array();
+	var $exists = array();
+	var $category = '';
+	var $any_db_support = false;
+	var $img_imagick;
 
-	function set_errors($category)
+	function set_errors()
 	{
+		// Initialize checks if not set externally
+		if (empty($this->checks))
+		{
+			$this->check();
+		}
+
 		// Reset checks for every category
 		$this->errors = array();
-		switch ($category)
+		switch ($this->category)
 		{
 			// Set the required common PHP ini and version checks
 			case 'PHP_SETTINGS':
 				$this->errors = array(
 					'PHP_VERSION_REQD'				=> version_compare(PHP_VERSION, '4.3.3', '>='),
-					'PHP_REGISTER_GLOBALS'			=> !$this->php_ini->get_bool('register_globals'),
-					'PHP_URL_FOPEN_SUPPORT'			=> $this->php_ini->get_bool('allow_url_fopen'),
-					'PHP_GETIMAGESIZE_SUPPORT'		=> function_exists('getimagesize'),
-					'PCRE_UTF_SUPPORT'				=> preg_match('/\p{L}/u', 'a'),
+					'PHP_REGISTER_GLOBALS'			=> $this->checks['REGISTER_GLOBALS'],
+					'PHP_URL_FOPEN_SUPPORT'			=> $this->checks['URL_FOPEN_SUPPORT'],
+					'PHP_GETIMAGESIZE_SUPPORT'		=> $this->checks['GETIMAGESIZE_SUPPORT'],
+					'PCRE_UTF_SUPPORT'				=> $this->checks['PCRE_UTF_SUPPORT'],
 				);
 			break;
 
@@ -53,10 +61,10 @@ class phpbb_install_checker extends phpbb_environment_checker
 				if (@extension_loaded('mbstring'))
 				{
 					$this->errors = array(
-						'MBSTRING_FUNC_OVERLOAD'		=> !($this->php_ini->get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
-						'MBSTRING_ENCODING_TRANSLATION'	=> !$this->php_ini->get_bool('mbstring.encoding_translation'),
-						'MBSTRING_HTTP_INPUT'			=> $this->php_ini->get_string('mbstring.http_input') == 'pass',
-						'MBSTRING_HTTP_OUTPUT'			=> $this->php_ini->get_string('mbstring.http_output') == 'pass',
+						'MBSTRING_FUNC_OVERLOAD'		=> $this->checks['MBSTRING_FUNC_OVERLOAD'],
+						'MBSTRING_ENCODING_TRANSLATION'	=> $this->checks['MBSTRING_ENCODING_TRANSLATION'],
+						'MBSTRING_HTTP_INPUT'			=> $this->checks['MBSTRING_HTTP_INPUT'],
+						'MBSTRING_HTTP_OUTPUT'			=> $this->checks['MBSTRING_HTTP_OUTPUT'],
 					);
 				}
 			break;
@@ -78,18 +86,17 @@ class phpbb_install_checker extends phpbb_environment_checker
 				{
 					$this->errors['DLL_' . strtoupper($dll)] = (!@extension_loaded($dll)) ? can_load_dll($dll) : true;
 				}
-				$img_imagick = phpbb_search_imagemagick();
-				$this->errors['APP_MAGICK'] = $img_imagick;
+				$this->img_imagick = phpbb_search_imagemagick();
+				$this->errors['APP_MAGICK'] = $this->img_imagick;
 			break;
 
 			// Set the required directories checks
 			case 'FILES_REQUIRED':
-				$exists = $writable = array();
 				$directories = array('cache/', 'files/', 'store/');
 				foreach ($directories as $dir)
 				{
-					$this->errors[$dir] = ($exists[$dir] = phpbb_check_dir_exists($dir))
-														&& ($writable[$dir] = phpbb_create_dir($dir));
+					$this->errors[$dir] = ($this->exists[$dir] = phpbb_check_dir_exists($dir))
+											&& ($this->writable[$dir] = phpbb_create_dir($dir));
 				}
 			break;
 
@@ -98,8 +105,8 @@ class phpbb_install_checker extends phpbb_environment_checker
 				$directories = array('config.' . $this->phpEx, 'images/avatars/upload/');
 				foreach ($directories as $dir)
 				{
-					$this->errors[$dir] = ($exists[$dir] = file_exists($this->phpbb_root_path . $dir))
-														&& ($writable[$dir] = phpbb_is_writable($this->phpbb_root_path . $dir));
+					$this->errors[$dir] = ($this->exists[$dir] = file_exists($this->phpbb_root_path . $dir))
+											&& ($this->writable[$dir] = phpbb_is_writable($this->phpbb_root_path . $dir));
 				}
 			break;
 

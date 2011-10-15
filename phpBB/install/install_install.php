@@ -130,29 +130,35 @@ class install_install extends module
 
 		// Initialize some variables and objects
 		$passed = $check_results = array();
-		$install_checker = new phpbb_install_checker($phpbb_root_path, $phpEx, $config, $auth);
+
+		if (!class_exists('phpbb_install_environment_checker'))
+		{
+			include($phpbb_root_path . 'includes/environment/checker.' . $phpEx);
+			include($phpbb_root_path . 'includes/environment/install_checker.' . $phpEx);
+		}
+		$install_checker = new phpbb_install_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		// Assert checks and dump results to template
-		foreach ($install_checker->categories as $category)
+		foreach ($install_checker->categories as $install_checker->category)
 		{
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'LEGEND'			=> $lang[$category],
-				'LEGEND_EXPLAIN'	=> $lang[$category . '_EXPLAIN'],
+				'LEGEND'			=> $lang[$install_checker->category],
+				'LEGEND_EXPLAIN'	=> $lang[$install_checker->category . '_EXPLAIN'],
 			));
 
-			$install_checker->set_errors($category);
-			$check_results[$category] = $install_checker->get_errors();
+			$install_checker->set_errors();
+			$check_results[$install_checker->category] = $install_checker->get_errors();
 
 			// If no error messages returned, checks have been passed
-			$passed[$category] = (empty($check_results[$category])) ? true : false;
+			$passed[$install_checker->category] = (empty($check_results[$install_checker->category])) ? true : false;
 
 			foreach ($install_checker->errors as $setting => $condition)
 			{
 				$additional_message = '';
-				if (in_array($setting, $check_results[$category]))
+				if (in_array($setting, $check_results[$install_checker->category]))
 				{
-					switch ($category)
+					switch ($install_checker->category)
 					{
 						case 'PHP_SUPPORTED_DB':
 						case 'PHP_OPTIONAL_MODULE':
@@ -162,10 +168,10 @@ class install_install extends module
 
 						case 'FILES_REQUIRED':
 						case 'FILES_OPTIONAL':
-							$color = ($exists[$setting]) ? 'green' : 'red';
-							$message = ($exists[$setting]) ? $lang['FOUND'] : $lang['NOT_FOUND'];
-							$additional_message_color = ($writable[$setting]) ? 'green' : 'red';
-							$additional_message = ($writable[$setting]) ? $lang['WRITABLE'] : (($exists[$setting]) ? $lang['UNWRITABLE'] : '');
+							$color = ($install_checker->exists[$setting]) ? 'green' : 'red';
+							$message = ($install_checker->exists[$setting]) ? $lang['FOUND'] : $lang['NOT_FOUND'];
+							$additional_message_color = ($install_checker->writable[$setting]) ? 'green' : 'red';
+							$additional_message = ($install_checker->writable[$setting]) ? $lang['WRITABLE'] : (($install_checker->exists[$setting]) ? $lang['UNWRITABLE'] : '');
 						break;
 
 						default:
@@ -176,7 +182,7 @@ class install_install extends module
 				}
 				else
 				{
-					switch ($category)
+					switch ($install_checker->category)
 					{
 						case 'PHP_SUPPORTED_DB':
 						case 'PHP_OPTIONAL_MODULE':
@@ -234,7 +240,7 @@ class install_install extends module
 		unset($passed['PHP_SUPPORTED_DB']);
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
-		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields = ($install_checker->img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($install_checker->img_imagick) . '" />' : '';
 
 		$url = (!in_array(false, $passed) && $install_checker->any_db_support) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = (!in_array(false, $passed) && $install_checker->any_db_support) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
