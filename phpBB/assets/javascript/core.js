@@ -101,7 +101,7 @@ phpbb.alert = function(title, msg, fadedark) {
 /**
  * Display a simple yes / no box to the user.
  *
- * @param string msg Message to display. Can be HTML.
+ * @param string msg Message to display (HTML).
  * @param function callback Callback. Bool param, whether the user pressed
  * 	yes or no (or whatever their language is).
  * @param bool fadedark Remove the dark background when done? Defaults
