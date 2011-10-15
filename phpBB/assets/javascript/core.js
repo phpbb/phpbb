@@ -1,4 +1,5 @@
 var phpbb = {};
+phpbb.alert_time = 100;
 
 (function($) {  // Avoid conflicts with other libraries
 
@@ -18,12 +19,12 @@ var dark = $('#darkenwrapper'),
 phpbb.loading_alert = function() {
 	if (dark.is(':visible'))
 	{
-		loading_alert.fadeIn(100);
+		loading_alert.fadeIn(phpbb.alert_time);
 	}
 	else
 	{
 		loading_alert.show();
-		dark.fadeIn(100, function() {
+		dark.fadeIn(phpbb.alert_time, function() {
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
@@ -57,7 +58,7 @@ phpbb.alert = function(title, msg, fadedark) {
 	});
 	dark.one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
-		fade.fadeOut(100, function() {
+		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
 		return false;
@@ -77,21 +78,21 @@ phpbb.alert = function(title, msg, fadedark) {
 
 	if (loading_alert.is(':visible'))
 	{
-		loading_alert.fadeOut(100, function() {
+		loading_alert.fadeOut(phpbb.alert_time, function() {
 			dark.append(div);
-			div.fadeIn(100);
+			div.fadeIn(phpbb.alert_time);
 		});
 	}
 	else if (dark.is(':visible'))
 	{
 		dark.append(div);
-		div.fadeIn(100);
+		div.fadeIn(phpbb.alert_time);
 	}
 	else
 	{
 		dark.append(div);
 		div.show();
-		dark.fadeIn(100);
+		dark.fadeIn(phpbb.alert_time);
 	}
 
 	return div;
@@ -119,7 +120,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	div.find('input[type="button"]').one('click', function() {
 		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
-		fade.fadeOut(100, function() {
+		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
 		div.find('input[type="button"]').unbind('click');
@@ -129,7 +130,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	dark.one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
-		fade.fadeOut(100, function() {
+		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
 		callback(false);
@@ -153,21 +154,21 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	if (loading_alert.is(':visible'))
 	{
-		loading_alert.fadeOut(100, function() {
+		loading_alert.fadeOut(phpbb.alert_time, function() {
 			dark.append(div);
-			div.fadeIn(100);
+			div.fadeIn(phpbb.alert_time);
 		});
 	}
 	else if (dark.is(':visible'))
 	{
 		dark.append(div);
-		div.fadeIn(100);
+		div.fadeIn(phpbb.alert_time);
 	}
 	else
 	{
 		dark.append(div);
 		div.show();
-		dark.fadeIn(100);
+		dark.fadeIn(phpbb.alert_time);
 	}
 
 	return div;
@@ -241,7 +242,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				}
 				else
 				{
-					dark.fadeOut(100);
+					dark.fadeOut(phpbb.alert_time);
 				}
 
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
@@ -266,7 +267,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 							window.location = res.REFRESH_DATA.url;
 						}
 
-						dark.fadeOut(100, function() {
+						dark.fadeOut(phpbb.alert_time, function() {
 							alert.hide();
 						});
 					}, res.REFRESH_DATA.time * 1000);
