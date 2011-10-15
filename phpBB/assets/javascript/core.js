@@ -312,7 +312,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		}
 		else
 		{
-			if (run_exception && options.exception($(this).parents('form')))
+			if (run_exception && options.exception($(this)))
 			{
 				return true;
 			}
