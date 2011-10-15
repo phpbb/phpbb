@@ -48,8 +48,8 @@ phpbb.loading_alert = function() {
  */
 phpbb.alert = function(title, msg, fadedark) {
 	var div = $('#phpbb_alert');
-	div.find('h3').html(title);
-	div.find('p').html(msg);
+	div.find('.alert_title').html(title);
+	div.find('.alert_text').html(msg);
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -110,7 +110,7 @@ phpbb.alert = function(title, msg, fadedark) {
  */
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
-	div.find('p').html(msg);
+	div.find('.alert_text').html(msg);
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
