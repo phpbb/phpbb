@@ -12,7 +12,7 @@
 * If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
-$schema_path = dirname(__FILE__).'/../install/schemas/';
+$schema_path = dirname(__FILE__) . '/../install/schemas/';
 
 if (!is_writable($schema_path))
 {
@@ -238,7 +238,7 @@ $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', '
 
 foreach ($supported_dbms as $dbms)
 {
-	$fp = fopen($schema_path . '' . $dbms . '_schema.sql', 'wt');
+	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wt');
 
 	$line = '';
 
