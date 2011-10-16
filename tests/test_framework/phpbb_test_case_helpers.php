@@ -49,16 +49,18 @@ class phpbb_test_case_helpers
 
 	static public function get_test_config()
 	{
+		$config = array();
+
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
-			$config = array(
+			$config = array_merge($config, array(
 				'dbms'		=> 'sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
 				'dbuser'	=> '',
 				'dbpasswd'	=> '',
-			);
+			));
 		}
 
 		if (file_exists(dirname(__FILE__) . '/../test_config.php'))
