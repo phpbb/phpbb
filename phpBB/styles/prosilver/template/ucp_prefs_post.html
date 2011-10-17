@@ -9,6 +9,13 @@
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 	<dl>
+		<dt><label for="wysiwyg1">{L_EDITOR_INTERFACE}:</label></dt>
+		<dd>
+			<label for="wysiwyg1"><input type="radio" name="wysiwyg" id="wysiwyg1" value="1"<!-- IF S_WYSIWYG --> checked="checked"<!-- ENDIF --> /> {L_WYSIWYG}</label>
+			<label for="wysiwyg0"><input type="radio" name="wysiwyg" id="wysiwyg0" value="0"<!-- IF not S_WYSIWYG --> checked="checked"<!-- ENDIF --> /> {L_SIMPLE}</label>
+		</dd>
+	</dl>
+	<dl>
 		<dt><label for="bbcode1">{L_DEFAULT_BBCODE}:</label></dt>
 		<dd>
 			<label for="bbcode1"><input type="radio" name="bbcode" id="bbcode1" value="1"<!-- IF S_BBCODE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
