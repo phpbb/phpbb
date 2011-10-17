@@ -33,6 +33,3 @@ class acp_bots_info
 	{
 	}
 }
-
-
-?>

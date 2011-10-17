@@ -33,5 +33,3 @@ class acp_inactive_info
 	{
 	}
 }
-
-?>

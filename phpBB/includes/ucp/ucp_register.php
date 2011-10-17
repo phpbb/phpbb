@@ -28,6 +28,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $request;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -37,9 +38,9 @@ class ucp_register
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit			= (isset($_POST['submit'])) ? true : false;
+		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
+		$agreed			= (int) $request->variable('agreed', false);
+		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
@@ -63,7 +64,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+					$agreed = ($request->variable('change_lang', false)) ? 0 : $agreed;
 				}
 
 				$user->lang_name = $user_lang = $use_lang;
@@ -155,13 +156,12 @@ class ucp_register
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
-		
-		
-		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change. 
+
+		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change.
 		if ($config['enable_confirm'])
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
 
@@ -219,7 +219,7 @@ class ucp_register
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+			$error = array_map(array($user, 'lang'), $error);
 
 			if ($config['enable_confirm'])
 			{
@@ -501,5 +501,3 @@ class ucp_register
 		$this->page_title = 'UCP_REGISTRATION';
 	}
 }
-
-?>

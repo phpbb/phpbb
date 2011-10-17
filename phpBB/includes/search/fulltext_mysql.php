@@ -42,13 +42,10 @@ class fulltext_mysql extends search_backend
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
 
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+		// PHP may not be linked with the bundled PCRE lib and instead with an older version
+		if (phpbb_pcre_utf8_support())
 		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$this->pcre_properties = true;
-			}
+			$this->pcre_properties = true;
 		}
 
 		if (function_exists('mb_ereg'))
@@ -936,5 +933,3 @@ class fulltext_mysql extends search_backend
 		);
 	}
 }
-
-?>

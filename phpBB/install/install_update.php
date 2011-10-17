@@ -73,6 +73,7 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
+		global $request;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -100,17 +101,10 @@ class install_update extends module
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
 
-		$config = array();
-
-		$sql = 'SELECT config_name, config_value
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		// Force template recompile
 		$config['load_tplcompile'] = 1;
@@ -139,9 +133,6 @@ class install_update extends module
 
 		// Set custom template again. ;)
 		$template->set_custom_template('../adm/style', 'admin');
-
-		// still, the acp template is never stored in the database
-		$user->theme['template_storedb'] = false;
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],
@@ -251,7 +242,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . $phpEx);
 
 		// Make sure we stay at the file check if checking the files again
-		if (!empty($_POST['check_again']))
+		if ($request->variable('check_again', false, false, phpbb_request_interface::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -358,7 +349,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (!empty($_POST['check_again'])) ? false : $cache->get('_update_list');
+				$update_list = ($request->variable('check_again', false, false, phpbb_request_interface::POST)) ? false : $cache->get('_update_list');
 				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
 
 				// Make sure the list is up-to-date
@@ -714,7 +705,7 @@ class install_update extends module
 							{
 								$cache->put('_diff_files', $file_list);
 
-								if (!empty($_REQUEST['download']))
+								if ($request->variable('download', false))
 								{
 									$params[] = 'download=1';
 								}
@@ -829,7 +820,7 @@ class install_update extends module
 				$file_list['status'] = -1;
 				$cache->put('_diff_files', $file_list);
 
-				if (!empty($_REQUEST['download']))
+				if ($request->variable('download', false))
 				{
 					$this->include_file('includes/functions_compress.' . $phpEx);
 
@@ -963,7 +954,7 @@ class install_update extends module
 								'DATA'		=> $data,
 								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-								'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+								'DEFAULT'	=> $request->variable($data, (string) $default),
 							));
 						}
 
@@ -1795,5 +1786,3 @@ class install_update extends module
 		return $diff;
 	}
 }
-
-?>

@@ -27,6 +27,7 @@ class acp_logs
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang('mcp');
 
@@ -35,8 +36,8 @@ class acp_logs
 		$forum_id	= request_var('f', 0);
 		$topic_id	= request_var('t', 0);
 		$start		= request_var('start', 0);
-		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
-		$deleteall	= (!empty($_POST['delall'])) ? true : false;
+		$deletemark = $request->variable('delmarked', false, false, phpbb_request_interface::POST);
+		$deleteall	= $request->variable('delall', false, false, phpbb_request_interface::POST);
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
@@ -172,5 +173,3 @@ class acp_logs
 		}
 	}
 }
-
-?>

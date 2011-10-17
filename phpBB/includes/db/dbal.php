@@ -458,6 +458,28 @@ class dbal
 	}
 
 	/**
+	* Returns SQL string to cast a string expression to an int.
+	*
+	* @param  string $expression An expression evaluating to string
+	* @return string             Expression returning an int
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Returns SQL string to cast an integer expression to a string.
+	*
+	* @param  string $expression An expression evaluating to int
+	* @return string             Expression returning a string
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return $expression;
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
@@ -721,8 +743,9 @@ class dbal
 	function sql_report($mode, $query = '')
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
+		global $request;
 
-		if (empty($_REQUEST['explain']))
+		if (is_object($request) && !$request->variable('explain', false))
 		{
 			return false;
 		}
@@ -744,12 +767,10 @@ class dbal
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-					<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+				echo '<!DOCTYPE html>
+					<html dir="ltr">
 					<head>
-						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-						<meta http-equiv="Content-Style-Type" content="text/css" />
-						<meta http-equiv="imagetoolbar" content="no" />
+						<meta charset="utf-8">
 						<title>SQL Report</title>
 						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
@@ -911,5 +932,3 @@ class dbal
 * This variable holds the class name to use later
 */
 $sql_db = (!empty($dbms)) ? 'dbal_' . basename($dbms) : 'dbal';
-
-?>

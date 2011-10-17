@@ -35,5 +35,3 @@ class mcp_logs_info
 	{
 	}
 }
-
-?>

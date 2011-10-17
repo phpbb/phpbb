@@ -610,5 +610,3 @@ class acp_main
 		$this->page_title = 'ACP_MAIN';
 	}
 }
-
-?>

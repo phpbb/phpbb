@@ -33,5 +33,3 @@ class acp_send_statistics_info
 	{
 	}
 }
-
-?>

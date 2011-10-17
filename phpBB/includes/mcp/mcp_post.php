@@ -497,5 +497,3 @@ function change_poster(&$post_info, $userdata)
 	// Now add log entry
 	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
 }
-
-?>

@@ -493,6 +493,23 @@ class dbal_firebird extends dbal
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		// Precision must be from 1 to 18
+		return 'CAST(' . $expression . ' as DECIMAL(18, 0))';
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return 'CAST(' . $expression . ' as VARCHAR(255))';
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/
@@ -565,5 +582,3 @@ class dbal_firebird extends dbal
 		}
 	}
 }
-
-?>

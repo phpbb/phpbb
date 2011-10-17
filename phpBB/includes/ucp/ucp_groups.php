@@ -28,14 +28,15 @@ class ucp_groups
 	{
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $cache, $template;
+		global $request;
 
 		$user->add_lang('groups');
 
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
 		$error = $data = array();
 
 		switch ($mode)
@@ -1113,5 +1114,3 @@ class ucp_groups
 		$this->tpl_name = 'ucp_groups_' . $mode;
 	}
 }
-
-?>

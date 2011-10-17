@@ -488,5 +488,3 @@ class dbal_mysql extends dbal
 		}
 	}
 }
-
-?>

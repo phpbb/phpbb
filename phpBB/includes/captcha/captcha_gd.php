@@ -2636,5 +2636,3 @@ class colour_manager
 		}
 	}
 }
-
-?>

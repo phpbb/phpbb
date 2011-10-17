@@ -205,5 +205,3 @@ foreach ($sql_ary as $sql)
 }
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

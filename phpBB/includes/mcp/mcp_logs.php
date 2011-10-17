@@ -214,5 +214,3 @@ class mcp_logs
 		}
 	}
 }
-
-?>

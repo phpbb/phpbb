@@ -902,5 +902,3 @@ class ftp_fsock extends transfer
 		return ($return) ? $response : true;
 	}
 }
-
-?>

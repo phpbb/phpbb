@@ -458,5 +458,3 @@ function make_user($username)
 	}
 
 }
-
-?>

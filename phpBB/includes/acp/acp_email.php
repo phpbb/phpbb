@@ -283,5 +283,3 @@ class acp_email
 
 	}
 }
-
-?>

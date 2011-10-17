@@ -622,6 +622,7 @@ class custom_profile
 	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
+		global $request;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
@@ -634,7 +635,7 @@ class custom_profile
 		{
 			if (isset($_REQUEST[$profile_row['field_ident']]))
 			{
-				$value = ($_REQUEST[$profile_row['field_ident']] === '') ? NULL : request_var($profile_row['field_ident'], $default_value);
+				$value = ($request->variable($profile_row['field_ident'], '') === '') ? NULL : $request->variable($profile_row['field_ident'], $default_value);
 			}
 			else
 			{
@@ -911,6 +912,7 @@ class custom_profile
 	{
 		global $phpbb_root_path, $phpEx;
 		global $config;
+		global $request;
 
 		$var_name = 'pf_' . $profile_row['field_ident'];
 
@@ -955,7 +957,7 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (isset($_REQUEST[$var_name]) && $_REQUEST[$var_name] === '')
+				if (isset($_REQUEST[$var_name]) && $request->variable($var_name, '') === '')
 				{
 					$var = NULL;
 				}
@@ -1158,5 +1160,3 @@ class custom_profile_admin extends custom_profile
 		return $options;
 	}
 }
-
-?>

@@ -30,7 +30,6 @@ class bbcode
 	var $bbcodes = array();
 
 	var $template_bitfield;
-	var $template_filename = '';
 
 	/**
 	* Constructor
@@ -128,28 +127,17 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $template, $user;
+		global $phpbb_root_path, $phpEx, $config, $user;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
-			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 
-			if (!@file_exists($this->template_filename))
-			{
-				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
-				{
-					$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template/bbcode.html';
-					if (!@file_exists($this->template_filename))
-					{
-						trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-					}
-				}
-				else
-				{
-					trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-				}
-			}
+			$template_locator = new phpbb_template_locator();
+			$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+			$template->set_template();
+			$template_locator->set_filenames(array('bbcode.html' => 'bbcode.html'));
+			$this->template_filename = $template_locator->get_source_file_for_handle('bbcode.html');
 		}
 
 		$bbcode_ids = $rowset = $sql = array();
@@ -605,5 +593,3 @@ class bbcode
 		return $code;
 	}
 }
-
-?>

@@ -88,5 +88,3 @@ class acp_php_info
 		return '<a name="' . str_replace(' ', '_', $matches[1]) . '">';
 	}
 }
-
-?>

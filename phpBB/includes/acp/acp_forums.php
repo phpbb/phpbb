@@ -1950,5 +1950,3 @@ class acp_forums
 	}
 
 }
-
-?>

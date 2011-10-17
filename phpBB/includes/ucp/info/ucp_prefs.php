@@ -35,5 +35,3 @@ class ucp_prefs_info
 	{
 	}
 }
-
-?>

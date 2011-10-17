@@ -246,5 +246,3 @@ class phpbb_hook
 		}
 	}
 }
-
-?>

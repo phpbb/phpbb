@@ -345,5 +345,3 @@ function acp_ldap(&$new)
 		'config'	=> array('ldap_server', 'ldap_port', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
 	);
 }
-
-?>

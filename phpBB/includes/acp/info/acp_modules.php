@@ -35,5 +35,3 @@ class acp_modules_info
 	{
 	}
 }
-
-?>

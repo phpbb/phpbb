@@ -36,5 +36,3 @@ class ucp_pm_info
 	{
 	}
 }
-
-?>

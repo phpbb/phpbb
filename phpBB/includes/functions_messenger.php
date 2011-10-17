@@ -175,7 +175,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $user;
+		global $config, $phpbb_root_path, $phpEx, $user;
 
 		if (!trim($template_file))
 		{
@@ -193,7 +193,8 @@ class messenger
 		// tpl_msg now holds a template object we can use to parse the template file
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$this->tpl_msg[$template_lang . $template_file] = new template();
+			$template_locator = new phpbb_template_locator();
+			$this->tpl_msg[$template_lang . $template_file] = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
 			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
 			$fallback_template_path = false;
@@ -333,7 +334,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config;
+		global $user, $phpEx, $phpbb_root_path, $config, $request;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -341,7 +342,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
 		$message = '';
 		switch ($type)
@@ -1639,5 +1640,3 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 
 	return $result;
 }
-
-?>

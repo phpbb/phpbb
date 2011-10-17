@@ -112,5 +112,3 @@ $help = array(
 		1 => 'If you are an administrator on this board and have the proper permissions, you can add further BBCodes through the Custom BBCodes section.'
 	)
 );
-
-?>

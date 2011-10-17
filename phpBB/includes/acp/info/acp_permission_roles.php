@@ -36,5 +36,3 @@ class acp_permission_roles_info
 	{
 	}
 }
-
-?>

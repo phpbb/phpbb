@@ -80,5 +80,3 @@ echo 'www.URL: ' . $www_url . "<br />\n";
 // no schema and no authority
 $relative_url = "$segment$path_abempty(?:\?$query)?(?:\#$fragment)?";
 echo 'relative URL: ' . $relative_url . "<br />\n";
-
-?>

@@ -461,7 +461,8 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INT2 DEFAULT '0' NOT NULL CHECK (group_receive_pm >= 0),
 	group_message_limit INT4 DEFAULT '0' NOT NULL CHECK (group_message_limit >= 0),
 	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
-	group_legend INT2 DEFAULT '1' NOT NULL CHECK (group_legend >= 0),
+	group_legend INT4 DEFAULT '0' NOT NULL CHECK (group_legend >= 0),
+	group_teampage INT4 DEFAULT '0' NOT NULL CHECK (group_teampage >= 0),
 	PRIMARY KEY (group_id)
 );
 
@@ -521,6 +522,7 @@ CREATE TABLE phpbb_log (
 );
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type);
+CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time);
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
@@ -762,6 +764,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required INT2 DEFAULT '0' NOT NULL CHECK (field_required >= 0),
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
+	field_show_on_pm INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_pm >= 0),
 	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
 	field_show_profile INT2 DEFAULT '0' NOT NULL CHECK (field_show_profile >= 0),
 	field_hide INT2 DEFAULT '0' NOT NULL CHECK (field_hide >= 0),
@@ -982,14 +985,12 @@ CREATE TABLE phpbb_styles (
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
 	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
 	theme_id INT4 DEFAULT '0' NOT NULL CHECK (theme_id >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
 	PRIMARY KEY (style_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 
 /*
 	Table: 'phpbb_styles_template'
@@ -1002,27 +1003,12 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb INT2 DEFAULT '0' NOT NULL CHECK (template_storedb >= 0),
 	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
 	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
-
-/*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE phpbb_styles_template_data (
-	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
-	template_filename varchar(100) DEFAULT '' NOT NULL,
-	template_included varchar(8000) DEFAULT '' NOT NULL,
-	template_mtime INT4 DEFAULT '0' NOT NULL CHECK (template_mtime >= 0),
-	template_data TEXT DEFAULT '' NOT NULL
-);
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
 
 /*
 	Table: 'phpbb_styles_theme'
@@ -1034,46 +1020,10 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name varchar(255) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
-	theme_storedb INT2 DEFAULT '0' NOT NULL CHECK (theme_storedb >= 0),
-	theme_mtime INT4 DEFAULT '0' NOT NULL CHECK (theme_mtime >= 0),
-	theme_data TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (theme_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_seq;
-
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id INT4 DEFAULT nextval('phpbb_styles_imageset_seq'),
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
-	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
-	imageset_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE SEQUENCE phpbb_styles_imageset_data_seq;
-
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id INT4 DEFAULT nextval('phpbb_styles_imageset_data_seq'),
-	image_name varchar(200) DEFAULT '' NOT NULL,
-	image_filename varchar(200) DEFAULT '' NOT NULL,
-	image_lang varchar(30) DEFAULT '' NOT NULL,
-	image_height INT2 DEFAULT '0' NOT NULL CHECK (image_height >= 0),
-	image_width INT2 DEFAULT '0' NOT NULL CHECK (image_width >= 0),
-	imageset_id INT4 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
-	PRIMARY KEY (image_id)
-);
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id);
 
 /*
 	Table: 'phpbb_topics'

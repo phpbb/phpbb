@@ -23,6 +23,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
+	global $request;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -34,7 +35,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	if ($merge_select)
 	{
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
+		$request->overwrite('sk', null);
+		$request->overwrite('sd', null);
+		$request->overwrite('sk', null, phpbb_request_interface::POST);
+		$request->overwrite('sd', null, phpbb_request_interface::POST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];
@@ -146,10 +150,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
-	$sql = "SELECT t.topic_id
-		FROM " . TOPICS_TABLE . " t
-		WHERE t.forum_id IN($forum_id, 0)
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+	$sql = 'SELECT t.topic_id
+		FROM ' . TOPICS_TABLE . ' t
+		WHERE t.forum_id = ' . $forum_id . '
+			' . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
@@ -184,11 +188,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		if ($config['load_db_lastread'])
 		{
-			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']));
 		}
 		else
 		{
-			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list);
 		}
 	}
 
@@ -221,8 +225,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_row = array(
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
@@ -443,5 +447,3 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
-
-?>

@@ -34,5 +34,3 @@ class mcp_notes_info
 	{
 	}
 }
-
-?>

@@ -207,7 +207,6 @@ class phpbb_default_captcha
 		{
 			if ($this->check_code())
 			{
-				// $this->delete_code(); commented out to allow posting.php to repeat the question
 				$this->solved = true;
 			}
 			else
@@ -329,17 +328,6 @@ class phpbb_default_captcha
 		return (strcasecmp($this->code, $this->confirm_code) === 0);
 	}
 
-	function delete_code()
-	{
-		global $db, $user;
-
-		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-			WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND confirm_type = " . $this->type;
-		$db->sql_query($sql);
-	}
-
 	function get_attempt_count()
 	{
 		return $this->attempts;
@@ -376,5 +364,3 @@ class phpbb_default_captcha
 	}
 
 }
-
-?>

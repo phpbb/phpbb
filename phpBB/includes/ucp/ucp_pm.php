@@ -412,5 +412,3 @@ class ucp_pm
 		$this->page_title = 'UCP_PM_' . strtoupper($mode);
 	}
 }
-
-?>

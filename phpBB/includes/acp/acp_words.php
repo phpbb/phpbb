@@ -186,5 +186,3 @@ class acp_words
 		$db->sql_freeresult($result);
 	}
 }
-
-?>

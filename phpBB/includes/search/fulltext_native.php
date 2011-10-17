@@ -1754,5 +1754,3 @@ class fulltext_native extends search_backend
 		);
 	}
 }
-
-?>

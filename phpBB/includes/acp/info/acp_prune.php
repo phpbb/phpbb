@@ -34,5 +34,3 @@ class acp_prune_info
 	{
 	}
 }
-
-?>

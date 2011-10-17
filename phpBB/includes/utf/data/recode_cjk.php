@@ -45175,5 +45175,3 @@ function big5($string)
 	);
 	return strtr($string, $transform);
 }
-
-?>

@@ -427,7 +427,7 @@ $lang = array_merge($lang, array(
 	'UCP_MAIN_FRONT'			=> 'Front page',
 	'UCP_MAIN_SUBSCRIBED'		=> 'Manage subscriptions',
 
-	'UCP_MSNM'					=> 'WL/MSN Messenger',
+	'UCP_MSNM'					=> 'Windows Live Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files.',
 
 	'UCP_PREFS'					=> 'Board preferences',
@@ -554,5 +554,3 @@ $lang = array_merge($lang, array(
 	'NO_PENDING'	=> 'No pending memberships',
 	'NO_NONMEMBER'	=> 'No non-member groups',
 ));
-
-?>

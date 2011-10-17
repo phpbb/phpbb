@@ -36,5 +36,3 @@ class mcp_warn_info
 	{
 	}
 }
-
-?>

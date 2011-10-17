@@ -389,6 +389,22 @@ class dbal_postgres extends dbal
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return 'CAST(' . $expression . ' as DECIMAL(255, 0))';
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return 'CAST(' . $expression . ' as VARCHAR(255))';
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/
@@ -481,5 +497,3 @@ class dbal_postgres extends dbal
 		}
 	}
 }
-
-?>

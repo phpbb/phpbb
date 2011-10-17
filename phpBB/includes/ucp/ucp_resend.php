@@ -166,5 +166,3 @@ class ucp_resend
 		$this->page_title = 'UCP_RESEND';
 	}
 }
-
-?>

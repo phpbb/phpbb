@@ -46,7 +46,7 @@ class acp_captcha
 		// Delegate
 		if ($configure)
 		{
-			$config_captcha =& phpbb_captcha_factory::get_instance($selected);
+			$config_captcha = phpbb_captcha_factory::get_instance($selected);
 			$config_captcha->acp_page($id, $this);
 		}
 		else
@@ -78,11 +78,11 @@ class acp_captcha
 					// sanity check
 					if (isset($captchas['available'][$selected]))
 					{
-						$old_captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$old_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 						$old_captcha->uninstall();
 
 						set_config('captcha_plugin', $selected);
-						$new_captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$new_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 						$new_captcha->install();
 
 						add_log('admin', 'LOG_CONFIG_VISUAL');
@@ -113,7 +113,7 @@ class acp_captcha
 					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang[$title] . '</option>';
 				}
 
-				$demo_captcha =& phpbb_captcha_factory::get_instance($selected);
+				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
 
 				foreach ($config_vars as $config_var => $options)
 				{
@@ -136,7 +136,7 @@ class acp_captcha
 	{
 		global $db, $user, $config;
 
-		$captcha =& phpbb_captcha_factory::get_instance($selected);
+		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
 
@@ -144,5 +144,3 @@ class acp_captcha
 		exit_handler();
 	}
 }
-
-?>

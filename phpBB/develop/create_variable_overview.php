@@ -44,7 +44,7 @@ fwrite($fp, $contents);
 fclose($fp);
 
 $html_skeleton = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -362,7 +362,7 @@ echo '<br>Store Files';
 $fp = fopen($store_dir . 'index.html', 'w');
 
 $html_data = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -427,7 +427,7 @@ fwrite($common_fp, "<?php\n\n \$lang = array(\n");
 $fp = fopen($store_dir . 'lang_index.html', 'w');
 
 $html_data = '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="subSilver.css" type="text/css">
@@ -543,5 +543,3 @@ fclose($fp);
 
 echo '<br>Finished!';
 flush();
-
-?>
