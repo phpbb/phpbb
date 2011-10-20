@@ -301,7 +301,7 @@ class ucp_prefs
 					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
 					'sig'		=> request_var('sig', $user->optionget('attachsig')),
 					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
-					'wysiwyg'	=> request_var('wysiwyg', $user->optionget('wysiwyg')),
+					'rich_text'	=> request_var('rich_text', $user->optionget('rich_text')),
 				);
 				add_form_key('ucp_prefs_post');
 
@@ -312,7 +312,7 @@ class ucp_prefs
 						$user->optionset('bbcode', $data['bbcode']);
 						$user->optionset('smilies', $data['smilies']);
 						$user->optionset('attachsig', $data['sig']);
-						$user->optionset('wysiwyg', $data['wysiwyg']);
+						$user->optionset('rich_text', $data['rich_text']);
 
 						$sql_ary = array(
 							'user_options'	=> $user->data['user_options'],
@@ -340,7 +340,7 @@ class ucp_prefs
 					'S_SMILIES'	=> $data['smilies'],
 					'S_SIG'		=> $data['sig'],
 					'S_NOTIFY'	=> $data['notify'],
-					'S_WYSIWYG' => $data['wysiwyg'],
+					'S_RICH_TEXT' => $data['rich_text'],
 				));
 			break;
 		}

@@ -1,5 +1,5 @@
 /**
- * Sets up the WYSIWYG editor for posts
+ * Sets up the Rich Text Editor for posts
  */
 (function($) {	
 	$(function() {
@@ -64,13 +64,13 @@
 			editor = null;
 		}
 		
-		// if the format buttons are hidden then the user has the WYSIWYG editor on by default
+		// if the format buttons are hidden then the user has the rich text editor on by default
 		if (format_buttons.is(':hidden')) {
 			createEditor();
 		}
 		
-		// switches to WYSIWYG mode
-		$('#mode-wysiwyg').click(function() {
+		// switches to RTE mode
+		$('#mode-rte').click(function() {
 			format_buttons.hide();
 			colour_palette.hide();
 			
