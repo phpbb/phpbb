@@ -99,6 +99,7 @@ class acp_board
 						'load_cpf_pm'			=> array('lang' => 'LOAD_CPF_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain'	=> false),
 						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_jquery_cdn'		=> array('lang' => 'LOAD_JQUERY_CDN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
