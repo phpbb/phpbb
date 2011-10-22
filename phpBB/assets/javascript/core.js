@@ -42,8 +42,10 @@ phpbb.loading_alert = function() {
 /**
  * Display a simple alert similar to JSs native alert().
  *
- * @param string title Title of the message, eg "Information"
- * @param string msg Message to display. Can be HTML.
+ * You can only call one alert or confirm box at any one time.
+ *
+ * @param string title Title of the message, eg "Information" (HTML).
+ * @param string msg Message to display (HTML).
  * @param bool fadedark Remove the dark background when done? Defaults
  * 	to yes.
  *
@@ -102,6 +104,8 @@ phpbb.alert = function(title, msg, fadedark) {
 
 /**
  * Display a simple yes / no box to the user.
+ *
+ * You can only call one alert or confirm box at any one time.
  *
  * @param string msg Message to display (HTML).
  * @param function callback Callback. Bool param, whether the user pressed
