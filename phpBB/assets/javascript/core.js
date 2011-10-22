@@ -235,8 +235,13 @@ phpbb.ajaxify = function(options, refresh, callback) {
 
 		/**
 		 * This is a private function used to handle the callbacks, refreshes
-		 * and alert. It cannot be called from outside this function, and is purely
-		 * here to avoid repetition of code.
+		 * and alert. It calls the callback, refreshes the page if necessary, and
+		 * displays an alert to the user and removes it after an amount of time.
+		 *
+		 * It cannot be called from outside this function, and is purely here to
+		 * avoid repetition of code.
+		 *
+		 * @param object res The object sent back by the server.
 		 */
 		function return_handler(res)
 		{
