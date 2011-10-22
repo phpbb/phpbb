@@ -35,16 +35,18 @@ phpbb.add_ajax_callback('row_delete', function(el) {
 // This handles friend / foe additions removals.
 phpbb.add_ajax_callback('zebra', function(el, res) {
 	if (res.success) {
-		$('.zebra').html(res.MESSAGE_TEXT);
-		$($('.zebra').get(1)).remove();
+		var zebra = $('.zebra');
+		zebra.html(res.MESSAGE_TEXT);
+		$(zebra.get(1)).remove();
 	}
 });;
 
 
 
 $('[data-ajax]').each(function() {
-	var fn = ($(this).data('ajax') !== 'true') ? $(this).data('ajax') : null;
-	phpbb.ajaxify({selector: this}, $(this).data('refresh') !== undefined, fn);
+	var $this = $(this);
+	var fn = ($this.data('ajax') !== 'true') ? $this.data('ajax') : null;
+	phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
 });
 
 
