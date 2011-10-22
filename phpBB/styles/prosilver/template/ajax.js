@@ -2,38 +2,38 @@
 
 
 //This callback finds the post from the delete link, and removes it.
-phpbb.add_ajax_callback('post_delete', function(el) {
-	if ($(this).data('refresh') === undefined)
+phpbb.add_ajax_callback('post_delete', function() {
+	var el = $(this);
+	if (el.data('refresh') === undefined)
 	{
-		var pid = el.href.split('&p=')[1];
-		$(el).parents('div #p' + pid).fadeOut(function() {
+		var pid = el[0].href.split('&p=')[1];
+		el.parents('div #p' + pid).fadeOut(function() {
 			$(this).remove();
 		});
 	}
 });
 
 // This callback removes the approve / disapprove div or link.
-phpbb.add_ajax_callback('post_approve', function(el, res, act) {
-	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
+phpbb.add_ajax_callback('post_approve', function(res, act) {
+	$(this).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
 		$(this).remove();
 	});
 });
 
 // This callback handles the removal of the quick reply form.
-phpbb.add_ajax_callback('qr-submit', function(el) {
-	$(el).parents('form').fadeOut(function() {
+phpbb.add_ajax_callback('qr-submit', function() {
+	$(this).parents('form').fadeOut(function() {
 		$(this).remove();
 	});
 });
 
 // This removes the parent row of the link or form that fired the callback.
-phpbb.add_ajax_callback('row_delete', function(el) {
-	var tr = $(el).parents('tr');
-	tr.remove();
+phpbb.add_ajax_callback('row_delete', function() {
+	$(this).parents('tr').remove();
 });
 
 // This handles friend / foe additions removals.
-phpbb.add_ajax_callback('zebra', function(el, res) {
+phpbb.add_ajax_callback('zebra', function(res) {
 	if (res.success) {
 		var zebra = $('.zebra');
 		zebra.html(res.MESSAGE_TEXT);
@@ -61,11 +61,11 @@ $('[data-ajax]').each(function() {
  */
 phpbb.ajaxify({
 	selector: '#quickmodform',
-	exception: function(el, act, data) {
+	exception: function(act, data) {
 		var action = phpbb.parse_querystring(data).action;
 		if (action === 'make_normal')
 		{
-			return !(el.find('select option[value="make_global"]').length);
+			return !($(this).find('select option[value="make_global"]').length);
 		}
 		else if (action.slice(-4) === 'lock')
 		{
