@@ -4,7 +4,8 @@ phpbb.alert_time = 100;
 (function($) {  // Avoid conflicts with other libraries
 
 // define a couple constants for keydown functions.
-var ENTER = 13, ESC = 27;
+var ENTER = 13,
+	ESC = 27;
 
 
 var dark = $('#darkenwrapper'),
