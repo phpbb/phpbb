@@ -265,7 +265,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
-					phpbb.ajax_callbacks[callback](that, res, (is_form) ? act : null);
+					phpbb.ajax_callbacks[callback].call(that, res, (is_form) ? act : null);
 				}
 
 				if (res.REFRESH_DATA)
@@ -322,7 +322,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				data += '&' + this.name + '=' + this.value;
 			}
 
-			if (run_exception && options.exception($this.parents('form'), action, data))
+			if (run_exception && options.exception.call($this.parents('form')[0], action, data))
 			{
 				return true;
 			}
@@ -331,7 +331,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		}
 		else
 		{
-			if (run_exception && options.exception($this))
+			if (run_exception && options.exception.call(this))
 			{
 				return true;
 			}

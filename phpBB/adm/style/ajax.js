@@ -7,8 +7,8 @@
  * a forum is moved up. It moves the row up or down, and deactivates /
  * activates any up / down icons that require it (the ones at the top or bottom).
  */
-phpbb.add_ajax_callback('forum_down', function(el) {
-	el = $(el);
+phpbb.add_ajax_callback('forum_down', function() {
+	el = $(this);
 	var tr = el.parents('tr');
 	if (tr.is(':first-child'))
 	{
@@ -23,8 +23,8 @@ phpbb.add_ajax_callback('forum_down', function(el) {
 		tr.prev().find('.down').html('<a href="' + tr.data('down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
 		phpbb.ajaxify({selector: tr.prev().find('.down').children('a')}, false, 'forum_down');
 	}
-}).add_ajax_callback('forum_up', function(el) {
-	el = $(el);
+}).add_ajax_callback('forum_up', function() {
+	el = $(this);
 	var tr = el.parents('tr');
 	if (tr.is(':last-child'))
 	{
@@ -46,8 +46,8 @@ phpbb.add_ajax_callback('forum_down', function(el) {
  * It does this by replacing the text, and replacing all instances of "activate"
  * in the href with "deactivate", and vice versa.
  */
-phpbb.add_ajax_callback('act_deact', function(el, res) {
-	el = $(el);
+phpbb.add_ajax_callback('act_deact', function(res) {
+	el = $(this);
 	el.text(res.text);
 	var new_href = el.attr('href');
 	if (new_href.indexOf('deactivate') !== -1)
@@ -65,9 +65,8 @@ phpbb.add_ajax_callback('act_deact', function(el, res) {
  * The removes the parent row of the link or form that triggered the callback,
  * and is good for stuff like the removal of forums.
  */
-phpbb.add_ajax_callback('row_delete', function(el) {
-	var tr = $(el).parents('tr');
-	tr.remove();
+phpbb.add_ajax_callback('row_delete', function() {
+	$(this).parents('tr').remove();
 });
 
 
