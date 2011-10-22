@@ -1,7 +1,7 @@
 (function($) {  // Avoid conflicts with other libraries
 
 
-
+//This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function(el) {
 	if ($(this).data('refresh') === undefined)
 	{
@@ -10,18 +10,30 @@ phpbb.add_ajax_callback('post_delete', function(el) {
 			$(this).remove();
 		});
 	}
-}).add_ajax_callback('post_approve', function(el, res, act) {
+});
+
+// This callback removes the approve / disapprove div or link.
+phpbb.add_ajax_callback('post_approve', function(el, res, act) {
 	$(el).parents((act === 'approve') ? '.rules' : '.post').fadeOut(function() {
 		$(this).remove();
 	});
-}).add_ajax_callback('qr-submit', function(el) {
+});
+
+// This callback handles the removal of the quick reply form.
+phpbb.add_ajax_callback('qr-submit', function(el) {
 	$(el).parents('form').fadeOut(function() {
 		$(this).remove();
 	});
-}).add_ajax_callback('row_delete', function(el) {
+});
+
+// This removes the parent row of the link or form that fired the callback.
+phpbb.add_ajax_callback('row_delete', function(el) {
 	var tr = $(el).parents('tr');
 	tr.remove();
-}).add_ajax_callback('zebra', function(el, res) {
+});
+
+// This handles friend / foe additions removals.
+phpbb.add_ajax_callback('zebra', function(el, res) {
 	if (res.success) {
 		$('.zebra').html(res.MESSAGE_TEXT);
 		$($('.zebra').get(1)).remove();
@@ -37,6 +49,11 @@ $('[data-ajax]').each(function() {
 
 
 
+/**
+ * This AJAXifies the quick-mod tools. The reason it cannot be a standard
+ * callback / data attribute is that it requires exceptions - some of the options
+ * can be ajaxified, while others cannot.
+ */
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(el, act, data) {
