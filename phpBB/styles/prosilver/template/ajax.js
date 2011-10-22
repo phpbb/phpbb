@@ -62,12 +62,16 @@ $('[data-ajax]').each(function() {
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(el, act, data) {
-		var d = phpbb.parse_querystring(data).action;
-		if (d == 'make_normal')
+		var action = phpbb.parse_querystring(data).action;
+		if (action === 'make_normal')
 		{
 			return !(el.find('select option[value="make_global"]').length);
 		}
-		return !(d == 'lock' || d == 'unlock' || d == 'delete_topic' || d.slice(0, 5) == 'make_');
+		else if (action.slice(-4) === 'lock')
+		{
+			return false;
+		}
+		return !(action === 'delete_topic' || action.slice(0, 5) === 'make_');
 	}
 }, true);
 
