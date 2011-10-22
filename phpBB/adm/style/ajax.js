@@ -74,8 +74,11 @@ phpbb.add_ajax_callback('row_delete', function(el) {
 
 $('[data-ajax]').each(function() {
 	var $this = $(this);
-	var fn = ($this.data('ajax') !== 'true') ? $this.data('ajax') : null;
-	phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
+	if ($this.data('ajax') !== 'false')
+	{
+		var fn = ($this.data('ajax') !== 'true') ? $this.data('ajax') : null;
+		phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
+	}
 });
 
 
