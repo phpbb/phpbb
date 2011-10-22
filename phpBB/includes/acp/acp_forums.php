@@ -881,7 +881,7 @@ class acp_forums
 
 		$errors = array();
 
-		if (!$forum_data['forum_name'])
+		if ($forum_data['forum_name'] == '')
 		{
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}

@@ -1901,7 +1901,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ($start_cnt > 1) ? ' ... ' : $separator;
+		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
@@ -1912,7 +1912,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 		}
 
-		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : $separator;
+		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
 	}
 	else
 	{
@@ -1951,6 +1951,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
 		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
+		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	));
 
 	return $page_string;
@@ -4608,6 +4609,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
 		'T_THEME_NAME'			=> $user->theme['theme_path'],
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -4665,15 +4668,13 @@ function page_footer($run_cron = true)
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
-			if (function_exists('memory_get_usage'))
+			if (function_exists('memory_get_peak_usage'))
 			{
-				if ($memory_usage = memory_get_usage())
+				if ($memory_usage = memory_get_peak_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
 					$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;
+					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
 				}
 			}
 

@@ -899,22 +899,20 @@ html>body dd label input { vertical-align: text-bottom;}	/* Tweak for Moz to ali
 dd input {
 	font-size: 1.00em;
 	max-width: 100%;
+	margin: 2px 0;
 }
 
 dd select {
 	font-size: 100%;
+	font-size: 1em;
 	width: auto;
 	max-width: 100%;
+	margin: 2px 0;
 }
 
 dd textarea {
 	font-size: 0.90em;
 	width: 90%;
-}
-
-dd select {
-	width: auto;
-	font-size: 1.00em;
 }
 
 fieldset dl {

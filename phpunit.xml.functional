@@ -21,6 +21,12 @@
         </testsuite>
     </testsuites>
 
+    <groups>
+        <include>
+            <group>functional</group>
+        </include>
+    </groups>
+
     <filter>
         <blacklist>
             <directory>./tests/</directory>

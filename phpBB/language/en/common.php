@@ -202,6 +202,7 @@ $lang = array_merge($lang, array(
 	'FORUM_RULES_LINK'		=> 'Please click here to view the forum rules',
 	'FROM'					=> 'from',
 	'FSOCK_DISABLED'		=> 'The operation could not be completed because the <var>fsockopen</var> function has been disabled or the server being queried could not be found.',
+	'FSOCK_TIMEOUT'			=> 'A timeout occurred while reading from the network stream.',
 
 	'FTP_FSOCK_HOST'				=> 'FTP host',
 	'FTP_FSOCK_HOST_EXPLAIN'		=> 'FTP server used to connect your site.',

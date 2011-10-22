@@ -104,7 +104,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
-		),			
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -211,61 +211,20 @@ function dbms_select($default = '', $only_20x_options = false)
 
 /**
 * Get tables of a database
+*
+* @deprecated
 */
-function get_tables($db)
+function get_tables(&$db)
 {
-	switch ($db->sql_layer)
+	if (!class_exists('phpbb_db_tools'))
 	{
-		case 'mysql':
-		case 'mysql4':
-		case 'mysqli':
-			$sql = 'SHOW TABLES';
-		break;
-
-		case 'sqlite':
-			$sql = 'SELECT name
-				FROM sqlite_master
-				WHERE type = "table"';
-		break;
-
-		case 'mssql':
-		case 'mssql_odbc':
-		case 'mssqlnative':
-			$sql = "SELECT name
-				FROM sysobjects
-				WHERE type='U'";
-		break;
-
-		case 'postgres':
-			$sql = 'SELECT relname
-				FROM pg_stat_user_tables';
-		break;
-
-		case 'firebird':
-			$sql = 'SELECT rdb$relation_name
-				FROM rdb$relations
-				WHERE rdb$view_source is null
-					AND rdb$system_flag = 0';
-		break;
-
-		case 'oracle':
-			$sql = 'SELECT table_name
-				FROM USER_TABLES';
-		break;
+		global $phpbb_root_path, $phpEx;
+		require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
 	}
 
-	$result = $db->sql_query($sql);
+	$db_tools = new phpbb_db_tools($db);
 
-	$tables = array();
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$tables[] = current($row);
-	}
-
-	$db->sql_freeresult($result);
-
-	return $tables;
+	return $db_tools->sql_list_tables();
 }
 
 /**
@@ -554,4 +513,46 @@ function adjust_language_keys_callback($matches)
 
 		return (!empty($lang[$matches[1]])) ? $db->sql_escape($lang[$matches[1]]) : $db->sql_escape($matches[1]);
 	}
+}
+
+function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
+{
+	$load_extensions = implode(',', $load_extensions);
+
+	$config_data = "<?php\n";
+	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+
+	$config_data_array = array(
+		'dbms'			=> $dbms,
+		'dbhost'		=> $data['dbhost'],
+		'dbport'		=> $data['dbport'],
+		'dbname'		=> $data['dbname'],
+		'dbuser'		=> $data['dbuser'],
+		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
+		'table_prefix'	=> $data['table_prefix'],
+		'acm_type'		=> 'file',
+		'load_extensions'	=> $load_extensions,
+	);
+
+	foreach ($config_data_array as $key => $value)
+	{
+		$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
+	}
+
+	$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
+
+	if ($debug)
+	{
+		$config_data .= "@define('DEBUG', true);\n";
+		$config_data .= "@define('DEBUG_EXTRA', true);\n";
+	}
+	else
+	{
+		$config_data .= "// @define('DEBUG', true);\n";
+		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+
+	return $config_data;
 }

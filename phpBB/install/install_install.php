@@ -876,33 +876,8 @@ class install_install extends module
 
 		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
-		$load_extensions = implode(',', $load_extensions);
-
 		// Time to convert the data provided into a config file
-		$config_data = "<?php\n";
-		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-
-		$config_data_array = array(
-			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
-			'dbhost'		=> $data['dbhost'],
-			'dbport'		=> $data['dbport'],
-			'dbname'		=> $data['dbname'],
-			'dbuser'		=> $data['dbuser'],
-			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
-			'table_prefix'	=> $data['table_prefix'],
-			'acm_type'		=> 'file',
-			'load_extensions'	=> $load_extensions,
-		);
-
-		foreach ($config_data_array as $key => $value)
-		{
-			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
-		}
-		unset($config_data_array);
-
-		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER'], $load_extensions);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
