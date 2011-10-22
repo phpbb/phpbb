@@ -184,7 +184,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
  * Turn a querystring into an array.
  *
  * @argument string string The querystring to parse.
- * @returns array The array created.
+ * @returns object The object created.
  */
 phpbb.parse_querystring = function(string) {
 	var params = {}, i, split;
