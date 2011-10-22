@@ -187,12 +187,13 @@ phpbb.confirm = function(msg, callback, fadedark) {
  * @returns array The array created.
  */
 phpbb.parse_querystring = function(string) {
-	var end = {}, i;
+	var end = {}, i, split;
 
 	string = string.split('&');
 	for (i = 0; i < string.length; i++)
 	{
-		end[string[i].split('=')[0]] = decodeURIComponent(string[i].split('=')[1]);
+		split = string[i].split('=');
+		end[split[0]] = decodeURIComponent(split[1]);
 	}
 	return end;
 }
