@@ -61,6 +61,7 @@ phpbb.alert = function(title, msg, fadedark) {
 		return true;
 	});
 	dark.one('click', function(e) {
+		div.find('.alert_close').unbind('click');
 		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
@@ -135,6 +136,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	dark.one('click', function(e) {
+		div.find('.alert_close').unbind('click');
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
@@ -155,7 +157,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	div.find('.alert_close').one('click', function() {
-		dark.trigger('click');
+		var fade = (typeof fadedark !== 'undefined' && fadedark) ? div : dark;
+		fade.fadeOut(phpbb.alert_time, function() {
+			div.hide();
+		});
+		callback(false);
 	});
 
 	if (loading_alert.is(':visible'))
