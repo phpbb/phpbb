@@ -226,9 +226,9 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	}
 
 	selector.click(function() {
-		var action, data, path, that = this;
+		var action, data, path, that = this, $this = $(this);
 
-		if ($(this).data('ajax') == false)
+		if ($this.data('ajax') == false)
 		{
 			return true;
 		}
@@ -303,8 +303,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		if (is_form)
 		{
 			action = /action\[([a-z]+)\]/.exec(this.name);
-			data = decodeURI($(this).closest('form').serialize());
-			path = $(this).closest('form').attr('action').replace('&amp;', '&');
+			data = decodeURI($this.closest('form').serialize());
+			path = $this.closest('form').attr('action').replace('&amp;', '&');
 
 			if (action)
 			{
@@ -316,7 +316,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				data += '&' + this.name + '=' + this.value;
 			}
 
-			if (run_exception && options.exception($(this).parents('form'), action, data))
+			if (run_exception && options.exception($this.parents('form'), action, data))
 			{
 				return true;
 			}
@@ -325,7 +325,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		}
 		else
 		{
-			if (run_exception && options.exception($(this)))
+			if (run_exception && options.exception($this))
 			{
 				return true;
 			}
