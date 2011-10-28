@@ -86,14 +86,10 @@ function bbfontstyle(bbopen, bbclose)
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
 		// Get text selection
-		theSelection = document.selection.createRange().text;
-
-		if (theSelection)
+		textarea = document.forms[form_name].elements[text_name];
+		if (textarea.createTextRange && textarea.caretPos)
 		{
-			// Add tags around selection
-			document.selection.createRange().text = bbopen + theSelection + bbclose;
-			document.forms[form_name].elements[text_name].focus();
-			theSelection = '';
+			textarea.caretPos.text = bbopen + textarea.caretPos.text + bbclose;
 			return;
 		}
 	}
@@ -107,7 +103,7 @@ function bbfontstyle(bbopen, bbclose)
 	
 	//The new position for the cursor after adding the bbcode
 	var caret_pos = getCaretPosition(textarea).start;
-	var new_pos = caret_pos + bbopen.length;		
+	var new_pos = caret_pos + bbopen.length;
 
 	// Open tag
 	insert_text(bbopen + bbclose);
@@ -347,7 +343,15 @@ function mozWrap(txtarea, open, close)
 */
 function storeCaret(textEl)
 {
-	if (textEl.createTextRange)
+	var keyCode = false;
+	if (is_ie)
+	{
+		keyCode = (event.keyCode) ? event.keyCode : event.charCode;
+	}
+
+	// Did the user press Shift (16), Ctrl (17) or Alt (18)?
+	// If so, we do not update the caretPos, so BBCodes can still be applied correctly.
+	if ((!is_ie || (keyCode != 16 && keyCode != 17 && keyCode != 18)) && (textEl.createTextRange))
 	{
 		textEl.caretPos = document.selection.createRange().duplicate();
 	}
@@ -425,7 +429,7 @@ function getCaretPosition(txtarea)
 	var caretPos = new caretPosition();
 	
 	// simple Gecko/Opera way
-	if(txtarea.selectionStart || txtarea.selectionStart == 0)
+	if(!is_ie && (txtarea.selectionStart || txtarea.selectionStart == 0))
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
@@ -452,7 +456,7 @@ function getCaretPosition(txtarea)
 	
 		// we ignore the end value for IE, this is already dirty enough and we don't need it
 		caretPos.start = txtarea.sel_start;
-		caretPos.end = txtarea.sel_start;			
+		caretPos.end = txtarea.sel_start;
 	}
 
 	return caretPos;
