@@ -18,6 +18,7 @@
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	background-image: url("./images/buttons_sprites.png");
+	font-size: 1.1em;
 }
 
 /* Rolloff state */
@@ -31,7 +32,7 @@
 	text-decoration: none;
 	text-transform: uppercase;
 
-	font: 60px/68px 'LiberationSans';
+	font: 60px/68px 'LiberationSans', Arial, Helvetica, sans-serif;
 	letter-spacing: 0.075em;
 	font-size: 1.05em;
 }
@@ -169,9 +170,9 @@ ul.profile-icons li.pm-icon a {
 	text-decoration: none;
 	text-transform: uppercase;
 
-	font: 60px/68px 'LiberationSansBold';
-	letter-spacing: 0.25em;
-	font-size: 0.75em;
+	font-family: ArialBold, Helvetica, sans-serif;
+	letter-spacing: 0.1em;
+	font-size: 1em;
 	font-weight: bold;
 }
 
@@ -193,7 +194,8 @@ ul.profile-icons li.pm-icon a span {
 	height: 100%;
 	line-height: 20px;
 	margin: 0 5px 0 13px; /* left and right background */
-	padding: 0 5px 0 3px;
+	/* 0.07em padding-top are needed, to fix a rounding issue with the font-size/line-height on Browsers.*/
+	padding: 0.07em 5px 0 3px;
 	background-image: url("./images/buttons_bg.png");
 	background-position: 50% -50px;
 	background-repeat: repeat-x;

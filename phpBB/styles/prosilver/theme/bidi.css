@@ -600,7 +600,8 @@ and set the background-positions for the "div" */
 .rtl ul.profile-icons li.edit-icon a span,
 .rtl ul.profile-icons li.quote-icon a span {
 	margin: 0 13px 0 5px; /* left and right background */
-	padding: 0px 3px 0 5px;
+	/* 0.07em padding-top are needed, to fix a rounding issue with the font-size/line-height on Browsers.*/
+	padding: 0.07em 3px 0 5px;
 }
 
 .rtl ul.profile-icons li.pm-icon a span {
