@@ -69,6 +69,11 @@ class phpbb_database_test_connection_manager
 			default:
 				$dsn .= 'host=' . $this->config['dbhost'];
 
+				if ($this->config['dbport'])
+				{
+					$dsn .= ';port=' . $this->config['dbport'];
+				}
+
 				if ($use_db)
 				{
 					$dsn .= ';dbname=' . $this->config['dbname'];
