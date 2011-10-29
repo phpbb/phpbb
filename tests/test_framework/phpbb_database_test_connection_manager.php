@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
+
 class phpbb_database_test_connection_manager
 {
 	private $config;
@@ -236,55 +238,14 @@ class phpbb_database_test_connection_manager
 		$filename = $directory . $schema . '_schema.sql';
 
 		$queries = file_get_contents($filename);
-		$sql = $this->remove_comments($queries);
+		$sql = remove_comments($queries);
 		
-		$sql = $this->split_sql($sql);
+		$sql = split_sql_file($sql, $this->dbms['DELIM']);
 
 		foreach ($sql as $query)
 		{
 			$this->pdo->exec($query);
 		}
-	}
-
-	/**
-	* Split contents of an SQL file into an array of SQL statements
-	*
-	* Note: This method is not the same as split_sql_file from functions_install.
-	*
-	* @param	string	$sql	Raw contents of an SQL file
-	*
-	* @return Array of runnable SQL statements
-	*/
-	protected function split_sql($sql)
-	{
-		$sql = str_replace("\r" , '', $sql);
-		$data = preg_split('/' . preg_quote($this->dbms['DELIM'], '/') . '$/m', $sql);
-
-		$data = array_map('trim', $data);
-
-		// The empty case
-		$end_data = end($data);
-
-		if (empty($end_data))
-		{
-			unset($data[key($data)]);
-		}
-
-		return $data;
-	}
-
-	/**
-	* Removes comments from schema files
-	*/
-	protected function remove_comments($sql)
-	{
-		// Remove /* */ comments (http://ostermiller.org/findcomment.html)
-		$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
-
-		// Remove # style comments
-		$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-
-		return $sql;
 	}
 
 	/**

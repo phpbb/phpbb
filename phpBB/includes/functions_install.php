@@ -506,7 +506,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 /**
 * Removes comments from schema files
-*
 */
 function remove_comments($sql)
 {
