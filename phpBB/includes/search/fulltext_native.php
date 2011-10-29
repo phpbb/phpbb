@@ -1461,17 +1461,35 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$sql = 'SELECT COUNT(*) as total_words
-			FROM ' . SEARCH_WORDLIST_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
-		$db->sql_freeresult($result);
+		switch ($db->sql_layer)
+		{
+			case 'mysql4':
+			case 'mysqli':
+				$sql = "SHOW TABLE STATUS LIKE '" . SEARCH_WORDLIST_TABLE . "'";
+				$result = $db->sql_query($sql);
+				$this->stats['total_words'] = (int) $db->sql_fetchfield('Rows');
+				$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(*) as total_matches
-			FROM ' . SEARCH_WORDMATCH_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
-		$db->sql_freeresult($result);
+				$sql = "SHOW TABLE STATUS LIKE '" . SEARCH_WORDMATCH_TABLE . "'";
+				$result = $db->sql_query($sql);
+				$this->stats['total_matches'] = (int) $db->sql_fetchfield('Rows');
+				$db->sql_freeresult($result);
+			break;
+
+			default:
+				$sql = 'SELECT COUNT(*) as total_words
+					FROM ' . SEARCH_WORDLIST_TABLE;
+				$result = $db->sql_query($sql);
+				$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT COUNT(*) as total_matches
+					FROM ' . SEARCH_WORDMATCH_TABLE;
+				$result = $db->sql_query($sql);
+				$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
+				$db->sql_freeresult($result);
+			break;
+		}
 	}
 
 	/**
