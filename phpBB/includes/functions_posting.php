@@ -117,8 +117,11 @@ function generate_smilies($mode, $forum_id)
 		foreach ($smilies as $row)
 		{
 			$template->assign_block_vars('smiley', array(
-				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
+				'A_SMILEY_URL'	=> addslashes($row['smiley_url']),
+				'A_SMILEY_DESC'	=> addslashes($row['emotion']),
+
+				'SMILEY_CODE'	=> $row['code'],
 				'SMILEY_IMG'	=> $root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
 				'SMILEY_WIDTH'	=> $row['smiley_width'],
 				'SMILEY_HEIGHT'	=> $row['smiley_height'],
@@ -126,6 +129,10 @@ function generate_smilies($mode, $forum_id)
 			);
 		}
 	}
+
+	$template->assign_vars(array(
+		'UA_SMILEY_PATH'		=> $root_path . $config['smilies_path'] . '/',
+	));
 
 	if ($mode == 'inline' && $display_link)
 	{

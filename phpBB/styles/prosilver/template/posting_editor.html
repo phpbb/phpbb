@@ -113,12 +113,32 @@
 
 	<!-- INCLUDE posting_buttons.html -->
 
-	<div id="smiley-box">
+	<div id="smiley-box"<!-- IF S_RICH_TEXT --> style="display: none;"<!-- ENDIF -->>
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
 				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 			<!-- END smiley -->
+			<script type="text/javascript">
+				phpbb.smiley_path = '{UA_SMILEY_PATH}',
+				phpbb.smilies = {
+					desc : [
+						<!-- BEGIN smiley -->
+						"{smiley.A_SMILEY_DESC}"<!-- IF not smiley.S_LAST_ROW -->,<!-- ENDIF -->
+						<!-- END smiley -->
+					],
+					img : [
+						<!-- BEGIN smiley -->
+						"{smiley.A_SMILEY_URL}"<!-- IF not smiley.S_LAST_ROW -->,<!-- ENDIF -->
+						<!-- END smiley -->
+					],
+					code : [
+						<!-- BEGIN smiley -->
+						"{smiley.A_SMILEY_CODE}"<!-- IF not smiley.S_LAST_ROW -->,<!-- ENDIF -->
+						<!-- END smiley -->
+					]
+				};
+			</script>
 		<!-- ENDIF -->
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>

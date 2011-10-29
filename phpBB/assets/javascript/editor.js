@@ -5,7 +5,15 @@
 	$(function() {
 		var editor = null,
 			format_buttons = $('#format-buttons'),
-			colour_palette = $('#colour_palette');
+			colour_palette = $('#colour_palette'),
+			smilies_box = $('#smiley-box'),
+			smiley_map = {};
+
+		if (phpbb.smilies) {
+			for(var i = 0; i < phpbb.smilies.code.length; i++) {
+				smiley_map[phpbb.smilies.desc[i]] = phpbb.smilies.code[i];
+			}
+		}
 		
 		/**
 		 * creates/shows the editor
@@ -22,7 +30,7 @@
 				customConfig : phpbb.board_url + phpbb.theme_path + '/ckeditor-config.js',
 				
 				// setup ckeditor
-				extraPlugins : 'bbcode,buttonpre',
+				extraPlugins : 'phpbb,buttonpre',
 				toolbar : [
 					{
 						name: 'basicstyles',
@@ -46,7 +54,13 @@
 					}
 				],
 				fontSize_defaultLabel : 'Normal',
-				fontSize_sizes : 'Tiny/50%;Small/85%;Normal/100%;Large/150%;Huge/200%'
+				fontSize_sizes : 'Tiny/50%;Small/85%;Normal/100%;Large/150%;Huge/200%',
+
+				smiley_descriptions : phpbb.smilies.desc,
+				smiley_images : phpbb.smilies.img,
+				smiley_path : phpbb.board_url + phpbb.smiley_path,
+				smiley_map : smiley_map,
+				bbcode : phpbb.bbcode || null
 			});
 		}
 		
@@ -73,6 +87,7 @@
 		$('#mode-rte').click(function() {
 			format_buttons.hide();
 			colour_palette.hide();
+			smilies_box.hide();
 			
 			createEditor();
 			
@@ -82,6 +97,7 @@
 		// switches to bbcode mode
 		$('#mode-bbcode').click(function() {
 			format_buttons.show();
+			smilies_box.show();
 			removeEditor();
 			
 			return false;
