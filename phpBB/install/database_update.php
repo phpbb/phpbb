@@ -2088,6 +2088,11 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.9-RC4':
 		break;
 
+		// Changes from 3.0.9 to 3.0.10-RC1
+		case '3.0.9':
+			set_config('email_max_chunk_size', '50');
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 			set_config('load_jquery_cdn', 0);
