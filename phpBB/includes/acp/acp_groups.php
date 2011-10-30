@@ -835,7 +835,7 @@ class acp_groups
 
 			case 'set_config_teampage':
 				set_config('teampage_forums', request_var('teampage_forums', 0));
-				set_config('teampage_multiple', request_var('teampage_multiple', 0));
+				set_config('teampage_memberships', request_var('teampage_memberships', 0));
 			break;
 
 			case 'add':
@@ -916,11 +916,11 @@ class acp_groups
 			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
 			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
 
-			'S_GROUP_SELECT_LEGEND' => $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE' => $s_group_select_teampage,
-			'DISPLAY_FORUMS' => ($config['teampage_forums']) ? true : false,
-			'DISPLAY_MULTIPLE' => ($config['teampage_multiple']) ? true : false,
-			'LEGEND_SORT_GROUPNAME' => ($config['legend_sort_groupname']) ? true : false,
+			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
+			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
+			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
+			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
+			'LEGEND_SORT_GROUPNAME'		=> ($config['legend_sort_groupname']) ? true : false,
 		));
 	}
 }
