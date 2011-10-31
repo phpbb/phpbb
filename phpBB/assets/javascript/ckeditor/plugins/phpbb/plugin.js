@@ -30,11 +30,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 		}
 	});
 
-	var bbcodeMap = { 'b' : 'strong', 'u': 'u', 'i' : 'em', 'color' : 'span', 'size' : 'span', 'quote' : 'blockquote', 'code' : 'pre', 'url' : 'a', 'email' : 'span', 'img' : 'span', '*' : 'li', 'list' : 'ol' },
+	var bbcodeMap = { 'b' : 'strong', 'u': 'u', 'i' : 'em', 'color' : 'span', 'size' : 'span', 'quote' : 'blockquote', 'code' : 'pre', 'url' : 'a', 'email' : 'span', 'img' : 'span', '*' : 'li', 'list' : 'ol', 'attachment' : 'attachment' },
 			convertMap = { 'strong' : 'b' , 'b' : 'b', 'u': 'u', 'em' : 'i', 'i': 'i', 'code' : 'code', 'pre' : 'code', 'li' : '*' },
-			tagnameMap = { 'strong' : 'b', 'em' : 'i', 'u' : 'u', 'li' : '*', 'ul' : 'list', 'ol' : 'list', 'pre' : 'code', 'code' : 'code', 'a' : 'link', 'img' : 'img', 'blockquote' : 'quote' },
+			tagnameMap = { 'strong' : 'b', 'em' : 'i', 'u' : 'u', 'li' : '*', 'ul' : 'list', 'ol' : 'list', 'pre' : 'code', 'code' : 'code', 'a' : 'link', 'img' : 'img', 'blockquote' : 'quote', 'div' : 'div' },
 			stylesMap = { 'color' : 'color', 'size' : 'font-size' },
-			attributesMap = { 'url' : 'href', 'email' : 'mailhref', 'quote': 'cite', 'list' : 'listType' };
+			attributesMap = { 'url' : 'href', 'email' : 'mailhref', 'quote': 'cite', 'list' : 'listType', 'attachment' : 'attachment' };
 
 	// List of block-like tags.
 	var dtd =  CKEDITOR.dtd,
@@ -533,6 +533,22 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			   breakBeforeClose : 0,
 			   breakAfterClose : 1
 		   } );
+
+			this.setRules( 'code',
+		   {
+			   breakBeforeOpen : 1,
+			   breakAfterOpen : 0,
+			   breakBeforeClose : 0,
+			   breakAfterClose : 1
+		   } );
+
+			this.setRules( 'attachment',
+		   {
+			   breakBeforeOpen : 1,
+			   breakAfterOpen : 0,
+			   breakBeforeClose : 0,
+			   breakAfterClose : 1
+		   } );
 		},
 
 		proto :
@@ -769,6 +785,26 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							  title :  description,
 							  alt : description
 						  };
+					  },
+					  'attachment' : function ( element )
+					  {
+							element.name = 'div';
+
+							var description = element.children [ 0 ].value,
+								attachment = element.attributes.attachment;
+
+							var inner = new CKEDITOR.htmlParser.element( 'div' );
+							inner.attributes = {
+								contenteditable : 'false'
+							}
+							inner.children = element.children;
+							element.children = [ inner ];
+
+							element.attributes = {
+								title : description,
+								'data-cke-saved-attachment' : attachment,
+								class : 'cke_attachment'
+							};
 					  }
 				  }
 			  } );
@@ -878,6 +914,14 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							else
 								element.children = [ new CKEDITOR.htmlParser.text( src ) ];
 						}
+						else if ( tagName == 'div' )
+						{
+							if ( ( value = attributes[ 'data-cke-saved-attachment' ] ) )
+							{
+								tagName = 'attachment';
+								element.children = [ new CKEDITOR.htmlParser.text( attributes.title ) ];
+							}
+						}
 
 						element.name = tagName;
 						value && ( element.attributes.option = value );
@@ -940,6 +984,17 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 								var src = element.data( 'cke-saved-src' );
 								if ( src && src.indexOf( editor.config.smiley_path ) === 0 )
 									name = 'smiley';
+							}
+							else if ( name == 'div' )
+							{
+								if ( element.data( 'cke-saved-attachment' ) )
+								{
+									name = 'attachment';
+								}
+								else
+								{
+									name = false;
+								}
 							}
 
 							return name;

@@ -30,7 +30,7 @@
 				customConfig : phpbb.board_url + phpbb.theme_path + '/ckeditor-config.js',
 				
 				// setup ckeditor
-				extraPlugins : 'phpbb,buttonpre',
+				extraPlugins : 'phpbb,phpbbattachment,buttonpre',
 				toolbar : [
 					{
 						name: 'basicstyles',
