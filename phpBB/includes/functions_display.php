@@ -446,6 +446,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_NO_CAT'			=> $catless && !$last_catless,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_UNREAD_FORUM'	=> $forum_unread,
+			'S_AUTH_READ'		=> $auth->acl_get('f_read', $row['forum_id']),
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
