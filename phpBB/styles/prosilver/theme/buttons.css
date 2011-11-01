@@ -313,6 +313,6 @@ ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
 
 /* Fix profile icon default margins */
 ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }
-ul.profile-icons li.quote-icon	{ margin: 0 0 0 10px; }
+ul.profile-icons li.quote-icon	{ margin: 0; }
 ul.profile-icons li.info-icon, ul.profile-icons li.report-icon	{ margin: 0 3px 0 0; }
 
