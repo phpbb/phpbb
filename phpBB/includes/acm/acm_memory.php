@@ -28,6 +28,7 @@ class acm_memory
 	var $is_modified = false;
 
 	var $sql_rowset = array();
+	var $sql_rowcount = array();
 	var $sql_row_pointer = array();
 	var $cache_dir = '';
 
@@ -81,10 +82,12 @@ class acm_memory
 		unset($this->vars);
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
+		unset($this->sql_rowcount);
 
 		$this->vars = array();
 		$this->sql_rowset = array();
 		$this->sql_row_pointer = array();
+		$this->sql_rowcount = array();
 	}
 
 	/**
@@ -274,6 +277,7 @@ class acm_memory
 
 		$this->sql_rowset[$query_id] = $result;
 		$this->sql_row_pointer[$query_id] = 0;
+		$this->sql_rowcount[$query_id] = sizeof($result);
 
 		return $query_id;
 	}
@@ -333,6 +337,8 @@ class acm_memory
 		}
 		$db->sql_freeresult($query_result);
 
+		$this->sql_rowcount[$query_id] = sizeof($this->sql_rowset[$query_id]);
+
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
 		$query_result = $query_id;
@@ -351,7 +357,7 @@ class acm_memory
 	*/
 	function sql_fetchrow($query_id)
 	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->sql_row_pointer[$query_id] < $this->sql_rowcount[$query_id])
 		{
 			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
 		}
@@ -364,7 +370,7 @@ class acm_memory
 	*/
 	function sql_fetchfield($query_id, $field)
 	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		if ($this->sql_row_pointer[$query_id] < $this->sql_rowcount[$query_id])
 		{
 			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
 		}
@@ -377,7 +383,7 @@ class acm_memory
 	*/
 	function sql_rowseek($rownum, $query_id)
 	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
+		if ($rownum >= $this->sql_rowcount[$query_id])
 		{
 			return false;
 		}
@@ -398,6 +404,7 @@ class acm_memory
 
 		unset($this->sql_rowset[$query_id]);
 		unset($this->sql_row_pointer[$query_id]);
+		unset($this->sql_rowcount[$query_id]);
 
 		return true;
 	}
