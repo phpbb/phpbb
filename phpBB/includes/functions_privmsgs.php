@@ -1688,8 +1688,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 
-			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id")
-		);
+			'U_INBOX'			=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox",
+			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id",
+		));
 
 		$messenger->send($addr['method']);
 	}
