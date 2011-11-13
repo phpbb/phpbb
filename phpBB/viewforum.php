@@ -567,10 +567,13 @@ if ($s_display_active)
 	$topics_count = 1;
 }
 
+// We need to readd the local announcements to the forums total topic count, otherwise the number is different from the one on the forum list
+$total_topic_count = $topics_count + sizeof($announcement_list) - sizeof($global_announce_list);
+
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, $config['topics_per_page'], $start),
 	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
+	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($total_topic_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $total_topic_count)))
 );
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
