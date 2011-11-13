@@ -175,12 +175,21 @@ class acp_ban
 		}
 		$result = $db->sql_query($sql);
 
-		$banned_options = '';
+		$banned_options = $excluded_options = array();
 		$ban_length = $ban_reasons = $ban_give_reasons = array();
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$banned_options .= '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
+			$option = '<option value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
+
+			if ($row['ban_exclude'])
+			{
+				$excluded_options[] = $option;
+			}
+			else
+			{
+				$banned_options[] = $option;
+			}
 
 			$time_length = ($row['ban_end']) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
 
@@ -241,11 +250,26 @@ class acp_ban
 			}
 		}
 
+		$options = '';
+		if ($excluded_options)
+		{
+			$options .= '<optgroup label="' . $user->lang['OPTIONS_EXCLUDED'] . '">';
+			$options .= implode('', $excluded_options);
+			$options .= '</optgroup>';
+		}
+
+		if ($banned_options)
+		{
+			$options .= '<optgroup label="' . $user->lang['OPTIONS_BANNED'] . '">';
+			$options .= implode('', $banned_options);
+			$options .= '</optgroup>';
+		}
+
 		$template->assign_vars(array(
 			'S_BAN_END_OPTIONS'	=> $ban_end_options,
-			'S_BANNED_OPTIONS'	=> ($banned_options) ? true : false,
-			'BANNED_OPTIONS'	=> $banned_options)
-		);
+			'S_BANNED_OPTIONS'	=> ($banned_options || $excluded_options) ? true : false,
+			'BANNED_OPTIONS'	=> $options,
+		));
 	}
 }
 
