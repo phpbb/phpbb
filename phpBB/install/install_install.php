@@ -546,7 +546,7 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
-			else if (!preg_match('#^[a-zA-Z][a-zA-Z0-9_]*$#', $data['table_prefix'], $result))
+			else if (!preg_match(get_preg_expression('table_prefix'), $data['table_prefix']))
 			{
 				$error[] = $lang['INST_ERR_DB_INVALID_PREFIX'];
 				$connect_test = false;
