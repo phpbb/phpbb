@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $phpbb_root_path, $request, $phpEx, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
