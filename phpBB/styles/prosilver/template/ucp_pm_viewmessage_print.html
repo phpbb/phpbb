@@ -1,120 +1,57 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
 <head>
+
 <meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="content-language" content="{S_USER_LANG}" />
-<title>{SITENAME} :: {PAGE_TITLE}</title>
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="resource-type" content="document" />
+<meta name="distribution" content="global" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta name="robots" content="noindex" />
+{META}
+<title>{SITENAME} &bull; {PAGE_TITLE}</title>
 
-<style type="text/css">
-/* <![CDATA[ */
-body {
-	font-family: Verdana,serif;
-	font-size: 10pt;
-}
-
-td {
-	font-family: Verdana,serif;
-	font-size: 10pt;
-	line-height: 150%;
-}
-
-.code, .quote {
-	font-size: smaller;
-	border: black solid 1px;
-}
-
-.forum {
-	font-family: Arial,Helvetica,sans-serif;
-	font-weight: bold;
-	font-size: 18pt;
-}
-
-.topic {
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14pt;
-	font-weight: bold;
-}
-
-.gensmall {
-	font-size: 8pt;
-}
-
-hr {
-	color: #888888;
-	height: 3px;
-	border-style: solid;
-}
-
-hr.sep	{
-	color: #AAAAAA;
-	height: 1px;
-	border-style: dashed;
-}
-/* ]]> */
-</style>
-
+<link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
 
-<table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
-<tr>
-	<td colspan="2" align="center"><span class="forum">{SITENAME}</span><br /><span class="gensmall">{L_PRIVATE_MESSAGING}</a></span></td>
-</tr>
-<tr>
-	<td colspan="2"><br /></td>
-</tr>
-<tr>
-	<td><span class="topic">{SUBJECT}</span><br /></td>
-	<td align="right" valign="bottom"><span class="gensmall">{PAGE_NUMBER}</span></td>
-</tr>
-</table>
+<body id="phpbb">
+<div id="wrap">
+	<a id="top" name="top" accesskey="t"></a>
 
-<hr width="85%" />
+	<div id="page-header">
+		<h1>{SITENAME}</h1>
+		<p>{SITE_DESCRIPTION}<br /><a href="{U_FORUM}">{U_FORUM}</a></p>
 
-<table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
-<tr>
-	<td width="10%" nowrap="nowrap">{L_PM_FROM}:&nbsp;</td>
-	<td><strong>{MESSAGE_AUTHOR}</strong> [ {SENT_DATE} ]</td>
-</tr>
+		<h2>{TOPIC_TITLE}</h2>
+		<p><a href="{U_TOPIC}">{U_TOPIC}</a></p>
+	</div>
 
-<!-- IF S_TO_RECIPIENT -->
-	<tr>
-		<td width="10%" nowrap="nowrap">{L_TO}:</td>
-		<td>
-		<!-- BEGIN to_recipient -->
-			<span<!-- IF to_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->>{to_recipient.NAME}</span>&nbsp;
-		<!-- END to_recipient -->
-		</td>
-	</tr>
-<!-- ENDIF -->
+	<div id="page-body">
+		<div class="page-number">{PAGE_NUMBER}</div>
+			<div class="post">
+				<h3>{SUBJECT}</h3>
+				<div class="date">{L_SENT_AT} <strong>{SENT_DATE}</strong></div>
+				<div class="author">{L_PM_FROM} <strong>{MESSAGE_AUTHOR}</strong></div>
+				<!-- IF S_TO_RECIPIENT -->
+					<div class="author">{L_TO} <strong><!-- BEGIN to_recipient -->{to_recipient.NAME}&nbsp;<!-- END to_recipient --></strong></div>
+				<!-- ENDIF -->
+				<!-- IF S_BCC_RECIPIENT -->
+					<div class="author">{L_BCC} <strong><!-- BEGIN bcc_recipient -->{bcc_recipient.NAME}&nbsp;<!-- END bcc_recipient --></strong></div>
+				<!-- ENDIF -->
+				<hr />
+				<div class="content">{MESSAGE}</div>
+			</div>
+			<hr />
+	</div>
 
-<!-- IF S_BCC_RECIPIENT -->
-	<tr>
-		<td width="10%" nowrap="nowrap">{L_BCC}:</td>
-		<td>
-		<!-- BEGIN bcc_recipient -->
-			<!-- IF bcc_recipient.COLOUR --><span style="color:{bcc_recipient.COLOUR}"><!-- ELSE --><span<!-- IF bcc_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</span>&nbsp;
-		<!-- END bcc_recipient -->
-		</td>
-	</tr>
-<!-- ENDIF -->
-<tr>
-	<td colspan="2"><hr class="sep" />{MESSAGE}</td>
-</tr>
-</table>
-
-<hr width="85%" />
-
-<table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
-<tr>
-	<td><span class="gensmall">{PAGE_NUMBER}</span></td>
-	<td align="{S_CONTENT_FLOW_END}"><span class="gensmall">{S_TIMEZONE}</span></td>
-</tr>
-<tr>
-	<td colspan="2" align="center"><span class="gensmall">Powered by phpBB&reg; Forum Software &copy; phpBB Group<br />http://www.phpbb.com/</span></td>
-</tr>
-</table>
+	<div id="page-footer">
+		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
+		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Group<br />http://www.phpbb.com/</div>
+	</div>
+</div>
 
 </body>
 </html>
