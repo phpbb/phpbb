@@ -546,6 +546,11 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
+			else if (!preg_match(get_preg_expression('table_prefix'), $data['table_prefix']))
+			{
+				$error[] = $lang['INST_ERR_DB_INVALID_PREFIX'];
+				$connect_test = false;
+			}
 			else
 			{
 				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport']);
@@ -2032,7 +2037,7 @@ class install_install extends module
 		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
 		'dbuser'				=> array('lang' => 'DB_USERNAME',	'type' => 'text:25:100', 'explain' => false),
 		'dbpasswd'				=> array('lang' => 'DB_PASSWORD',	'type' => 'password:25:100', 'explain' => false),
-		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
+		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => true),
 	);
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',
