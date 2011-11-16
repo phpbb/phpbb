@@ -1,0 +1,3 @@
+[submodule "phpBB/assets/javascript/ckeditor"]
+	path = phpBB/assets/javascript/ckeditor
+	url = git://github.com/wGEric/CKEditor.git
