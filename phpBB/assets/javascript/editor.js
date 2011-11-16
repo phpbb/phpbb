@@ -15,6 +15,9 @@
 			}
 		}
 		
+		CKEDITOR.plugins.addExternal('phpbb', phpbb.board_url + 'assets/javascript/ckeditor-plugins/phpbb/');
+		CKEDITOR.plugins.addExternal('phpbbattachment', phpbb.board_url + 'assets/javascript/ckeditor-plugins/phpbbattachment/');
+
 		/**
 		 * creates/shows the editor
 		 */
@@ -30,7 +33,7 @@
 				customConfig : phpbb.board_url + phpbb.theme_path + '/ckeditor-config.js',
 				
 				// setup ckeditor
-				extraPlugins : 'phpbb,phpbbattachment,buttonpre',
+				extraPlugins : 'phpbb,phpbbattachment',
 				toolbar : [
 					{
 						name: 'basicstyles',
@@ -38,7 +41,7 @@
 					},
 					{
 						name: 'paragraph',
-						items: ['NumberedList', 'BulletedList', 'Blockquote', 'buttonpre']
+						items: ['NumberedList', 'BulletedList', 'Blockquote']
 					},
 					{
 						name: 'links',
