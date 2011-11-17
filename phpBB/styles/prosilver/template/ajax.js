@@ -69,8 +69,10 @@ phpbb.ajaxify({
 		}
 		else if (action.slice(-4) === 'lock')
 		{
+			// Return false for both lock and unlock
 			return false;
 		}
+		// make_sticky, make_announce and make_global all use AJAX.
 		return !(action === 'delete_topic' || action.slice(0, 5) === 'make_');
 	}
 }, true);
