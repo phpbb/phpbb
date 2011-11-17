@@ -46,7 +46,7 @@ phpbb.add_ajax_callback('forum_down', function() {
  * It does this by replacing the text, and replacing all instances of "activate"
  * in the href with "deactivate", and vice versa.
  */
-phpbb.add_ajax_callback('act_deact', function(res) {
+phpbb.add_ajax_callback('activate_deactivate', function(res) {
 	el = $(this);
 	el.text(res.text);
 	var new_href = el.attr('href');
