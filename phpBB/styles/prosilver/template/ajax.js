@@ -7,7 +7,7 @@ phpbb.add_ajax_callback('post_delete', function() {
 	if (el.data('refresh') === undefined)
 	{
 		var post_id = el[0].href.split('&p=')[1];
-		el.parents('div #p' + post_id).fadeOut(function() {
+		el.parents('#p' + post_id).fadeOut(function() {
 			$(this).remove();
 		});
 	}
