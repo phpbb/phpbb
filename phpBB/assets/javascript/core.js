@@ -30,7 +30,7 @@ phpbb.loading_alert = function() {
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
-					phpbb.alert($('body').data('l-err'), $('body').data('l-err-processing-req'));
+					phpbb.alert($('body').data('l-err'), $('body').data('l-timeout-processing-req'));
 				}
 			}, 5000);
 		});

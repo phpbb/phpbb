@@ -179,7 +179,6 @@ $lang = array_merge($lang, array(
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server.',
 	'ERR_JAB_AUTH'						=> 'Could not authorise on Jabber server.',
 	'ERR_JAB_CONNECT'					=> 'Could not connect to Jabber server.',
-	'ERR_PROCESSING_REQ'			=> 'There was an error processing your request. Please try again.',
 	'ERR_UNABLE_TO_LOGIN'				=> 'The specified username or password is incorrect.',
 	'ERR_UNWATCHING'					=> 'An error occured while trying to unsubscribe.',
 	'ERR_WATCHING'						=> 'An error occured while trying to subscribe.',
@@ -601,6 +600,7 @@ $lang = array_merge($lang, array(
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
+	'TIMEOUT_PROCESSING_REQ'			=> 'Request timed out.',
 	
 	'TOO_LARGE'						=> 'The value you entered is too large.',
 	'TOO_LARGE_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too large.',
