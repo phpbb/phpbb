@@ -124,21 +124,22 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.stopPropagation();
 		return true;
 	});
-	div.find('input[type="button"]').one('click', function() {
+	
+	var click_handler = function() {
 		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
-		div.find('input[type="button"]').unbind('click');
+		div.find('input[type="button"]').unbind('click', click_handler);
 		callback(res);
 		return false;
-	});
+	};
+	div.find('input[type="button"]').one('click', click_handler);
 
 	dark.one('click', function(e) {
 		div.find('.alert_close').unbind('click');
-		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		dark.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
 		callback(false);
