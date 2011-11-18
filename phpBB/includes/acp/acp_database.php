@@ -221,6 +221,7 @@ class acp_database
 					case 'submit':
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
+						$download = request_var('download', '');
 
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
@@ -249,8 +250,6 @@ class acp_database
 						}
 						else if ($download || confirm_box(true))
 						{
-							$download = request_var('download', '');
-
 							if ($download)
 							{
 								$name = $matches[0];
