@@ -884,7 +884,14 @@ class p_master
 		}
 	}
 
-	function get_short_name($basename)
+	/**
+	* Retrieve shortened module basename for legacy basenames (with xcp_ prefix)
+	*
+	* @param string $basename A module basename
+	* @return string The basename if it starts with phpbb_ or the basename with
+	*                the current p_class (e.g. acp_) stripped.
+	*/
+	protected function get_short_name($basename)
 	{
 		if (substr($basename, 0, 6) === 'phpbb_')
 		{
@@ -895,7 +902,13 @@ class p_master
 		return substr($basename, strlen($this->p_class) + 1);
 	}
 
-	function is_full_class($basename)
+	/**
+	* Checks whether the given module basename is a correct class name
+	*
+	* @param string $basename A module basename
+	* @return bool True if the basename starts with phpbb_ or (x)cp_, false otherwise
+	*/
+	protected function is_full_class($basename)
 	{
 		return (substr($basename, 0, 6) === 'phpbb_' || substr($basename, 0, strlen($this->p_class) + 1) === $this->p_class . '_');
 	}
