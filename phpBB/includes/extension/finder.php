@@ -196,9 +196,12 @@ class phpbb_extension_finder
 	}
 
 	/**
-	* Finds auto loadable php classes matching the configured options.
+	* Finds classes matching the configured options if they follow phpBB naming rules.
 	*
 	* The php file extension is automatically added to suffixes.
+	*
+	* Note: If a file is matched but contains a class name not following the
+	* phpBB naming rules an incorrect class name will be returned.
 	*
 	* @param bool $cache Whether the result should be cached
 	* @return array An array of found class names
