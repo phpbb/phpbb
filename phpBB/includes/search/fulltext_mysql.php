@@ -52,7 +52,12 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 		$error = false;
 	}
 
-	function get_name()
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
 	{
 		return 'MySQL Fulltext';
 	}
