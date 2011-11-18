@@ -77,7 +77,7 @@ class phpbb_extension_finder
 	/**
 	* Sets a default path to be searched in addition to extensions
 	*
-	* @param string $default_path The path relative to /
+	* @param string $default_path The path relative to phpbb_root_path
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
 	public function default_path($default_path)
@@ -162,8 +162,9 @@ class phpbb_extension_finder
 	public function directory($directory)
 	{
 		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
+		$dir_len = strlen($directory);
 
-		if (strlen($directory) > 1 && $directory[strlen($directory) - 1] === '/')
+		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')
 		{
 			$directory = substr($directory, 0, -1);
 		}
