@@ -4,12 +4,12 @@ phpbb.alert_time = 100;
 (function($) {  // Avoid conflicts with other libraries
 
 // define a couple constants for keydown functions.
-var ENTER = 13,
-	ESC = 27;
+var ENTER = 13;
+var ESC = 27;
 
 
-var dark = $('#darkenwrapper'),
-	loading_alert = $('#loadingalert');
+var dark = $('#darkenwrapper');
+var loading_alert = $('#loadingalert');
 
 
 /**
@@ -30,7 +30,7 @@ phpbb.loading_alert = function() {
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
-					phpbb.alert($('body').data('l-err'), $('body').data('l-timeout-processing-req'));
+					phpbb.alert($('#phpbb_alert').data('l-err'), $('#phpbb_alert').data('l-timeout-processing-req'));
 				}
 			}, 5000);
 		});
