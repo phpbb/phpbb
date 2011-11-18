@@ -249,7 +249,8 @@ class phpbb_extension_finder
 	* A wrapper around the general find which prepends a root path to results
 	*
 	* @param bool $cache Whether the result should be cached
-	* @param bool $is_dir Whether the found items should be directories
+	* @param bool $is_dir Directories will be returned when true, only files
+	*                     otherwise
 	* @return array An array of paths to found items
 	*/
 	protected function find_with_root_path($cache = true, $is_dir = false)
@@ -269,7 +270,8 @@ class phpbb_extension_finder
 	* Finds all file system entries matching the configured options
 	*
 	* @param bool $cache Whether the result should be cached
-	* @param bool $is_dir Whether the found items should be directories
+	* @param bool $is_dir Directories will be returned when true, only files
+	*                     otherwise
 	* @return array An array of paths to found items
 	*/
 	public function find($cache = true, $is_dir = false)
