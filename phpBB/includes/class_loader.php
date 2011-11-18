@@ -38,6 +38,8 @@ class phpbb_class_loader
 
 	/**
 	* A map of looked up class names to paths relative to $this->path.
+	* This map is stored in cache and looked up if the cache is available.
+	*
 	* @var array
 	*/
 	private $cached_paths = array();
