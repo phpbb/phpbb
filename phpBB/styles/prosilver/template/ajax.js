@@ -62,7 +62,7 @@ $('[data-ajax]').each(function() {
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(act, data) {
-		var action = phpbb.parse_querystring(data).action;
+		var action = $('#quick-mod-select').val()
 		if (action === 'make_normal')
 		{
 			return !($(this).find('select option[value="make_global"]').length);
