@@ -72,10 +72,10 @@ phpbb.add_ajax_callback('row_delete', function() {
 
 
 $('[data-ajax]').each(function() {
-	var $this = $(this);
-	if ($this.data('ajax') !== 'false')
+	var $this = $(this), ajax = $this.data('ajax');
+	if (ajax !== 'false')
 	{
-		var fn = ($this.data('ajax') !== 'true') ? $this.data('ajax') : null;
+		var fn = (ajax !== 'true') ? ajax : null;
 		phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
 	}
 });
