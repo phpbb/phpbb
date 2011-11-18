@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* A base class for extensions without custom enable/disbale/purge code.
+* A base class for extensions without custom enable/disable/purge code.
 *
 * @package extension
 */
