@@ -40,11 +40,14 @@ interface phpbb_extension_interface
 	/**
 	* Disables the extension.
 	*
-	* Must be a quick operation, that finishes within max_execution_time.
+	* Calls to this function can be made in subsequent requests, when the
+	* function is invoked through a webserver with a too low max_execution_time.
 	*
+	* @param	mixed	$old_state	The return value of the previous call
+	*								of this method, or false on the first call
 	* @return null
 	*/
-	public function disable();
+	public function disable_step($old_state);
 
 	/**
 	* purge_step is executed on purging an extension until it returns false.

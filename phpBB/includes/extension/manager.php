@@ -128,7 +128,7 @@ class phpbb_extension_manager
 	* in the extensions table.
 	*
 	* @param	string	$name	The extension's name
-	* @return	bool			Whether another run of enable_step is required
+	* @return	bool			False if enabling is finished, true otherwise
 	*/
 	public function enable_step($name)
 	{
@@ -191,18 +191,36 @@ class phpbb_extension_manager
 	* process the event.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return bool False if disabling is finished, true otherwise
 	*/
-	public function disable($name)
+	public function disable_step($name)
 	{
 		// ignore extensions that are already disabled
 		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
 		{
-			return;
+			return false;
 		}
 
+		$old_state = unserialize($this->extensions[$name]['ext_state']);
+
 		$extension = $this->get_extension($name);
-		$extension->disable();
+		$state = $extension->disable_step($old_state);
+
+		// continue until the state is false
+		if ($state !== false)
+		{
+			$extension_data = array(
+				'ext_state'		=> serialize($state),
+			);
+			$this->extensions[$name]['ext_state'] = serialize($state);
+
+			$sql = 'UPDATE ' . $this->extension_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
+				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			$this->db->sql_query($sql);
+
+			return true;
+		}
 
 		$extension_data = array(
 			'ext_active'	=> false,
@@ -215,6 +233,22 @@ class phpbb_extension_manager
 			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
+
+		return false;
+	}
+
+	/**
+	* Disables an extension
+	*
+	* Disables an extension completely at once. This process could run for a
+	* while so never call this in a script that has a max_execution time.
+	*
+	* @param string $name The extension's name
+	* @return null
+	*/
+	public function disable($name)
+	{
+		while ($this->disable_step($name));
 	}
 
 	/**
@@ -224,7 +258,7 @@ class phpbb_extension_manager
 	* extension's meta class to delete the extension's database content.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return bool False if purging is finished, true otherwise
 	*/
 	public function purge_step($name)
 	{

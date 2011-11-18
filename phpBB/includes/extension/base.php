@@ -25,6 +25,7 @@ class phpbb_extension_base implements phpbb_extension_interface
 	/**
 	* Single enable step that does nothing
 	*
+	* @param mixed $old_state State returned by previous call of this method
 	* @return false Indicates no further steps are required
 	*/
 	public function enable_step($old_state)
@@ -33,17 +34,20 @@ class phpbb_extension_base implements phpbb_extension_interface
 	}
 
 	/**
-	* Empty disable method
+	* Single disable step that does nothing
 	*
-	* @return null
+	* @param mixed $old_state State returned by previous call of this method
+	* @return false Indicates no further steps are required
 	*/
-	public function disable()
+	public function disable_step($old_state)
 	{
+		return false;
 	}
 
 	/**
 	* Single purge step that does nothing
 	*
+	* @param mixed $old_state State returned by previous call of this method
 	* @return false Indicates no further steps are required
 	*/
 	public function purge_step($old_state)

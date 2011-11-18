@@ -9,6 +9,7 @@
 
 require_once dirname(__FILE__) . '/../mock/cache.php';
 require_once dirname(__FILE__) . '/ext/bar/ext.php';
+require_once dirname(__FILE__) . '/ext/foo/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
 
 class phpbb_extension_manager_test extends phpbb_database_test_case
@@ -63,10 +64,14 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_disable()
 	{
+		phpbb_ext_foo_ext::$disabled = false;
+
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->disable('foo');
 		$this->assertEquals(array(), array_keys($this->extension_manager->all_enabled()));
 		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
+
+		$this->assertTrue(phpbb_ext_foo_ext::$disabled);
 	}
 
 	public function test_purge()
