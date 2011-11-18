@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Provides a template locator with template paths and extension template paths
+* Provides a template locator with core template paths and extension template paths
 *
 * Finds installed template paths and makes them available to the locator.
 *
@@ -24,24 +24,41 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_template_extension_path_provider extends phpbb_extension_provider implements phpbb_template_path_provider_interface
 {
+	/**
+	* Optional prefix for template paths searched within extensions.
+	*
+	* Empty by default. Relative to the extension directory. As an example, it
+	* could be adm/ for admin templates.
+	*
+	* @var string
+	*/
 	protected $ext_dir_prefix = '';
-	protected $base_paths;
+
+	/**
+	* A provider of paths to be searched for templates
+	* @var phpbb_template_path_provider
+	*/
+	protected $base_path_provider;
 
 	/**
 	* Constructor stores extension manager
 	*
 	* @param phpbb_extension_manager $extension_manager phpBB extension manager
-	* @param phpbb_template_path_provider $base_paths A simple path provider
+	* @param phpbb_template_path_provider $base_path_provider A simple path provider
 	*            to provide paths to be located in extensions
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_template_path_provider $base_paths)
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_template_path_provider $base_path_provider)
 	{
 		parent::__construct($extension_manager);
-		$this->base_paths = $base_paths;
+		$this->base_path_provider = $base_path_provider;
 	}
 
 	/**
-	* Defines a prefix to use for template paths in extensions
+	* Sets a prefix for template paths searched within extensions.
+	*
+	* The prefix is inserted between the extension's path e.g. ext/foo/ and
+	* the looked up template path, e.g. styles/bar/template/some.html. So it
+	* should not have a leading slash, but should have a trailing slash.
 	*
 	* @param string $ext_dir_prefix The prefix including trailing slash
 	* @return null
@@ -54,9 +71,9 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	/**
 	* Finds template paths using the extension manager
 	*
-	* Finds paths with the same name (e.g. styles/prosilver/template/) in all
-	* active extensions. Then appends the actual template paths based in the
-	* current working directory.
+	* Locates a path (e.g. styles/prosilver/template/) in all active extensions.
+	* Then appends the core template paths based in the current working
+	* directory.
 	*
 	* @return array     List of template paths
 	*/
@@ -65,7 +82,7 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 		$directories = array();
 
 		$finder = $this->extension_manager->get_finder();
-		foreach ($this->base_paths as $path)
+		foreach ($this->base_path_provider as $path)
 		{
 			if ($path && !phpbb_is_absolute($path))
 			{
@@ -76,7 +93,7 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 			}
 		}
 
-		foreach ($this->base_paths as $path)
+		foreach ($this->base_path_provider as $path)
 		{
 			$directories[] = $path;
 		}
@@ -97,7 +114,7 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	*/
 	public function set_templates(array $templates, $style_root_path)
 	{
-		$this->base_paths->set_templates($templates, $style_root_path);
+		$this->base_path_provider->set_templates($templates, $style_root_path);
 		$this->items = null;
 	}
 
@@ -108,6 +125,6 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	*/
 	public function get_main_template_path()
 	{
-		return $this->base_paths->get_main_template_path();
+		return $this->base_path_provider->get_main_template_path();
 	}
 }

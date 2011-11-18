@@ -71,8 +71,8 @@ class phpbb_template_locator
 	* Sets the list of template paths
 	*
 	* These paths will be searched for template files in the provided order.
-	* Paths may be outside of phpBB, but will still be cached to phpBB cache
-	* directory.
+	* Paths may be outside of phpBB, but templates loaded from these paths
+	* will still be cached.
 	*
 	* @param array $template_paths An array of paths to template directories
 	* @return null

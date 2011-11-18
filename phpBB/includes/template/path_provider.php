@@ -40,6 +40,9 @@ class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_
 	/**
 	* Overwrites the current template names and paths
 	*
+	* The first element of the passed templates map, is considered the main
+	* template and can be retrieved through get_main_template_path().
+	*
 	* @param array $templates An associative map from template names to paths.
 	*                         The first element is the main template.
 	*                         If the path is false, it will be generated from
