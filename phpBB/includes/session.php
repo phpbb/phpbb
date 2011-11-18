@@ -1901,7 +1901,7 @@ class user extends session
 	* @param mixed $lang_set specifies the language entries to include
 	* @param bool $use_db internal variable for recursion, do not use
 	* @param bool $use_help internal variable for recursion, do not use
-	* @param string $ext_name The extension to load language from, or empty for global files
+	* @param string $ext_name The extension to load language from, or empty for core files
 	*
 	* Examples:
 	* <code>
@@ -1952,7 +1952,7 @@ class user extends session
 	/**
 	* Add Language Items from an extension - use_db and use_help are assigned where needed (only use them to force inclusion)
 	*
-	* @param string $ext_name The extension to load language from, or empty for global files
+	* @param string $ext_name The extension to load language from, or empty for core files
 	* @param mixed $lang_set specifies the language entries to include
 	* @param bool $use_db internal variable for recursion, do not use
 	* @param bool $use_help internal variable for recursion, do not use
