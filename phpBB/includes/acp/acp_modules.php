@@ -544,12 +544,10 @@ class acp_modules
 			$finder = $phpbb_extension_manager->get_finder();
 
 			$modules = $finder
-				->suffix('_module')
-				->directory("/$module_class")
-				->default_path("includes/$module_class/info/")
-				->default_suffix('')
-				->default_prefix($module_class . '_')
-				->default_directory('')
+				->extension_suffix('_module')
+				->extension_directory("/$module_class")
+				->core_path("includes/$module_class/info/")
+				->core_prefix($module_class . '_')
 				->get_classes();
 
 			foreach ($modules as $module)

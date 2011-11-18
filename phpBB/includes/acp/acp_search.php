@@ -559,11 +559,9 @@ class acp_search
 		$finder = $phpbb_extension_manager->get_finder();
 
 		return $finder
-			->suffix('_backend')
-			->directory('/search')
-			->default_path('includes/search/')
-			->default_suffix('')
-			->default_directory('')
+			->extension_suffix('_backend')
+			->extension_directory('/search')
+			->core_path('includes/search/')
 			->get_classes();
 
 /*

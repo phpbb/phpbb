@@ -40,11 +40,9 @@ class phpbb_cron_task_provider extends phpbb_extension_provider
 		$finder = $this->extension_manager->get_finder();
 
 		return $finder
-			->suffix('_task')
-			->directory('/cron')
-			->default_path('includes/cron/task/core/')
-			->default_suffix('')
-			->default_directory('')
+			->extension_suffix('_task')
+			->extension_directory('/cron')
+			->core_path('includes/cron/task/core/')
 			->get_classes();
 	}
 }

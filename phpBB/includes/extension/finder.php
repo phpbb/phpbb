@@ -62,112 +62,163 @@ class phpbb_extension_finder
 		$this->cache_name = $cache_name;
 
 		$this->query = array(
-			'default_path' => false,
-			'default_suffix' => false,
-			'default_prefix' => false,
-			'default_directory' => false,
-			'suffix' => false,
-			'prefix' => false,
-			'directory' => false,
+			'core_path' => false,
+			'core_suffix' => false,
+			'core_prefix' => false,
+			'core_directory' => false,
+			'extension_suffix' => false,
+			'extension_prefix' => false,
+			'extension_directory' => false,
 		);
 
 		$this->cached_queries = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 	}
 
 	/**
-	* Sets a default path to be searched in addition to extensions
+	* Sets a core path to be searched in addition to extensions
 	*
-	* @param string $default_path The path relative to phpbb_root_path
+	* @param string $core_path The path relative to phpbb_root_path
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
-	public function default_path($default_path)
+	public function core_path($core_path)
 	{
-		$this->query['default_path'] = $default_path;
+		$this->query['core_path'] = $core_path;
 		return $this;
 	}
 
 	/**
-	* Sets a suffix all files found in extensions must match.
+	* Sets the suffix all files found in extensions and core must match.
 	*
 	* There is no default file extension, so to find PHP files only, you will
 	* have to specify .php as a suffix. However when using get_classes, the .php
 	* file extension is automatically added to suffixes.
-	*
-	* Automatically sets the default_suffix if its value does not differ from
-	* the current suffix.
 	*
 	* @param string $suffix A filename suffix
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
 	public function suffix($suffix)
 	{
-		if ($this->query['default_suffix'] === $this->query['suffix'])
-		{
-			$this->query['default_suffix'] = $suffix;
-		}
-
-		$this->query['suffix'] = $suffix;
+		$this->core_suffix($suffix);
+		$this->extension_suffix($suffix);
 		return $this;
 	}
 
 	/**
-	* Sets a suffix all files found in the default path must match
+	* Sets a suffix all files found in extensions must match
 	*
 	* There is no default file extension, so to find PHP files only, you will
 	* have to specify .php as a suffix. However when using get_classes, the .php
 	* file extension is automatically added to suffixes.
 	*
-	* @param string $default_suffix A filename suffix
+	* @param string $extension_suffix A filename suffix
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
-	public function default_suffix($default_suffix)
+	public function extension_suffix($extension_suffix)
 	{
-		$this->query['default_suffix'] = $default_suffix;
+		$this->query['extension_suffix'] = $extension_suffix;
 		return $this;
 	}
 
 	/**
-	* Sets a prefix all files found in extensions must match
+	* Sets a suffix all files found in the core path must match
 	*
-	* Automatically sets the default_prefix if its value does not differ from
-	* the current prefix.
+	* There is no default file extension, so to find PHP files only, you will
+	* have to specify .php as a suffix. However when using get_classes, the .php
+	* file extension is automatically added to suffixes.
+	*
+	* @param string $core_suffix A filename suffix
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function core_suffix($core_suffix)
+	{
+		$this->query['core_suffix'] = $core_suffix;
+		return $this;
+	}
+
+	/**
+	* Sets the prefix all files found in extensions and core must match
 	*
 	* @param string $prefix A filename prefix
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
 	public function prefix($prefix)
 	{
-		if ($this->query['default_prefix'] === $this->query['prefix'])
-		{
-			$this->query['default_prefix'] = $prefix;
-		}
-
-		$this->query['prefix'] = $prefix;
+		$this->core_prefix($prefix);
+		$this->extension_prefix($prefix);
 		return $this;
 	}
 
 	/**
-	* Sets a prefix all files found in the default path must match
+	* Sets a prefix all files found in extensions must match
 	*
-	* @param string $default_prefix A filename prefix
+	* @param string $extension_prefix A filename prefix
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
-	public function default_prefix($default_prefix)
+	public function extension_prefix($extension_prefix)
 	{
-		$this->query['default_prefix'] = $default_prefix;
+		$this->query['extension_prefix'] = $extension_prefix;
 		return $this;
 	}
 
 	/**
-	* Sets a directory all files found in extensions must be contained in
+	* Sets a prefix all files found in the core path must match
 	*
-	* Automatically sets the default_directory if its value does not differ from
+	* @param string $core_prefix A filename prefix
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function core_prefix($core_prefix)
+	{
+		$this->query['core_prefix'] = $core_prefix;
+		return $this;
+	}
+
+	/**
+	* Sets a directory all files found in extensions and core must be contained in
+	*
+	* Automatically sets the core_directory if its value does not differ from
 	* the current directory.
 	*
 	* @param string $directory
 	* @return phpbb_extension_finder This object for chaining calls
 	*/
 	public function directory($directory)
+	{
+		$this->core_directory($directory);
+		$this->extension_directory($directory);
+		return $this;
+	}
+
+	/**
+	* Sets a directory all files found in extensions must be contained in
+	*
+	* @param string $extension_directory
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function extension_directory($extension_directory)
+	{
+		$this->query['extension_directory'] = $this->sanitise_directory($extension_directory);
+		return $this;
+	}
+
+	/**
+	* Sets a directory all files found in the core path must be contained in
+	*
+	* @param string $core_directory
+	* @return phpbb_extension_finder This object for chaining calls
+	*/
+	public function core_directory($core_directory)
+	{
+		$this->query['core_directory'] = $this->sanitise_directory($core_directory);
+		return $this;
+	}
+
+	/**
+	* Removes occurances of /./ and makes sure path ends without trailing slash
+	*
+	* @param string $directory A directory pattern
+	* @return string A cleaned up directory pattern
+	*/
+	protected function sanitise_directory($directory)
 	{
 		$directory = preg_replace('#(?:^|/)\./#', '/', $directory);
 		$dir_len = strlen($directory);
@@ -177,30 +228,7 @@ class phpbb_extension_finder
 			$directory = substr($directory, 0, -1);
 		}
 
-		if ($this->query['default_directory'] === $this->query['directory'])
-		{
-			$this->query['default_directory'] = $directory;
-		}
-
-		$this->query['directory'] = $directory;
-		return $this;
-	}
-
-	/**
-	* Sets a directory all files found in the default path must be contained in
-	*
-	* @param string $default_directory
-	* @return phpbb_extension_finder This object for chaining calls
-	*/
-	public function default_directory($default_directory)
-	{
-		if (strlen($default_directory) > 1 && $default_directory[strlen($default_directory) - 1] === '/')
-		{
-			$default_directory = substr($default_directory, 0, -1);
-		}
-
-		$this->query['default_directory'] = $default_directory;
-		return $this;
+		return $directory;
 	}
 
 	/**
@@ -216,8 +244,8 @@ class phpbb_extension_finder
 	*/
 	public function get_classes($cache = true)
 	{
-		$this->query['suffix'] .= $this->phpEx;
-		$this->query['default_suffix'] .= $this->phpEx;
+		$this->query['extension_suffix'] .= $this->phpEx;
+		$this->query['core_suffix'] .= $this->phpEx;
 
 		$files = $this->find($cache, false);
 
@@ -296,9 +324,9 @@ class phpbb_extension_finder
 
 		$extensions = $this->extension_manager->all_enabled();
 
-		if ($this->query['default_path'])
+		if ($this->query['core_path'])
 		{
-			$extensions['/'] = $this->phpbb_root_path . $this->query['default_path'];
+			$extensions['/'] = $this->phpbb_root_path . $this->query['core_path'];
 		}
 
 		foreach ($extensions as $name => $path)
@@ -312,19 +340,19 @@ class phpbb_extension_finder
 
 			if ($name === '/')
 			{
-				$location = $this->query['default_path'];
+				$location = $this->query['core_path'];
 				$name = '';
-				$suffix = $this->query['default_suffix'];
-				$prefix = $this->query['default_prefix'];
-				$directory = $this->query['default_directory'];
+				$suffix = $this->query['core_suffix'];
+				$prefix = $this->query['core_prefix'];
+				$directory = $this->query['core_directory'];
 			}
 			else
 			{
 				$location = 'ext/';
 				$name .= '/';
-				$suffix = $this->query['suffix'];
-				$prefix = $this->query['prefix'];
-				$directory = $this->query['directory'];
+				$suffix = $this->query['extension_suffix'];
+				$prefix = $this->query['extension_prefix'];
+				$directory = $this->query['extension_directory'];
 			}
 
 			// match only first directory if leading slash is given

@@ -873,9 +873,8 @@ class p_master
 		$lang_files = $finder
 			->prefix('info_' . strtolower($module_class) . '_')
 			->suffix(".$phpEx")
-			->directory('/language/' . $user->lang_name)
-			->default_path('language/' . $user->lang_name . '/mods/')
-			->default_directory('')
+			->extension_directory('/language/' . $user->lang_name)
+			->core_path('language/' . $user->lang_name . '/mods/')
 			->find();
 
 		foreach ($lang_files as $lang_file => $ext_name)

@@ -68,10 +68,9 @@ class phpbb_captcha_factory
 
 		$finder = $phpbb_extension_manager->get_finder();
 		$captcha_plugin_classes = $finder
-			->directory('/captcha')
+			->extension_directory('/captcha')
 			->suffix('_plugin')
-			->default_path('includes/captcha/plugins/')
-			->default_directory('')
+			->core_path('includes/captcha/plugins/')
 			->get_classes();
 
 		foreach ($captcha_plugin_classes as $class)
