@@ -35,6 +35,11 @@ class phpbb_class_loader
 	private $path;
 	private $php_ext;
 	private $cache;
+
+	/**
+	* A map of looked up class names to paths relative to $this->path.
+	* @var array
+	*/
 	private $cached_paths = array();
 
 	/**
