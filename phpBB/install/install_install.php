@@ -1604,7 +1604,7 @@ class install_install extends module
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'main'
+					WHERE module_basename = 'acp_main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1616,7 +1616,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'permissions'
+					WHERE module_basename = 'acp_permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1628,7 +1628,7 @@ class install_install extends module
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'users'
+					WHERE module_basename = 'acp_users'
 						AND module_class = 'acp'
 						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
@@ -1643,7 +1643,7 @@ class install_install extends module
 				// Move attachment module 4 down...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'attachments'
+					WHERE module_basename = 'ucp_attachments'
 						AND module_class = 'ucp'
 						AND module_mode = 'attachments'";
 				$result = $db->sql_query($sql);
