@@ -1901,6 +1901,7 @@ class user extends session
 	* @param mixed $lang_set specifies the language entries to include
 	* @param bool $use_db internal variable for recursion, do not use
 	* @param bool $use_help internal variable for recursion, do not use
+	* @param string $ext_name The extension to load language from, or empty for core files
 	*
 	* Examples:
 	* <code>
@@ -1911,7 +1912,7 @@ class user extends session
 	* $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
 	* </code>
 	*/
-	function add_lang($lang_set, $use_db = false, $use_help = false)
+	function add_lang($lang_set, $use_db = false, $use_help = false, $ext_name = '')
 	{
 		global $phpEx;
 
@@ -1925,36 +1926,54 @@ class user extends session
 
 				if ($key == 'db')
 				{
-					$this->add_lang($lang_file, true, $use_help);
+					$this->add_lang($lang_file, true, $use_help, $ext_name);
 				}
 				else if ($key == 'help')
 				{
-					$this->add_lang($lang_file, $use_db, true);
+					$this->add_lang($lang_file, $use_db, true, $ext_name);
 				}
 				else if (!is_array($lang_file))
 				{
-					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help);
+					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 				else
 				{
-					$this->add_lang($lang_file, $use_db, $use_help);
+					$this->add_lang($lang_file, $use_db, $use_help, $ext_name);
 				}
 			}
 			unset($lang_set);
 		}
 		else if ($lang_set)
 		{
-			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help);
+			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
 		}
+	}
+
+	/**
+	* Add Language Items from an extension - use_db and use_help are assigned where needed (only use them to force inclusion)
+	*
+	* @param string $ext_name The extension to load language from, or empty for core files
+	* @param mixed $lang_set specifies the language entries to include
+	* @param bool $use_db internal variable for recursion, do not use
+	* @param bool $use_help internal variable for recursion, do not use
+	*/
+	function add_lang_ext($ext_name, $lang_set, $use_db = false, $use_help = false)
+	{
+		if ($ext_name === '/')
+		{
+			$ext_name = '';
+		}
+
+		$this->add_lang($lang_set, $use_db, $use_help, $ext_name);
 	}
 
 	/**
 	* Set language entry (called by add_lang)
 	* @access private
 	*/
-	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
+	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false, $ext_name = '')
 	{
-		global $phpEx;
+		global $phpbb_root_path, $phpEx;
 
 		// Make sure the language name is set (if the user setup did not happen it is not set)
 		if (!$this->lang_name)
@@ -1970,11 +1989,32 @@ class user extends session
 		{
 			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				$language_filename = $this->lang_path . $this->lang_name . '/' . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+				$filename = dirname($lang_file) . '/help_' . basename($lang_file);
 			}
 			else
 			{
-				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+				$filename = (($use_help) ? 'help_' : '') . $lang_file;
+			}
+
+			if ($ext_name)
+			{
+				global $phpbb_extension_manager;
+				$ext_path = $phpbb_extension_manager->get_extension_path($ext_name, true);
+
+				$lang_path = $ext_path . 'language/';
+			}
+			else
+			{
+				$lang_path = $this->lang_path;
+			}
+
+			if (strpos($phpbb_root_path . $filename, $lang_path . $this->lang_name . '/') === 0)
+			{
+				$language_filename = $phpbb_root_path . $filename;
+			}
+			else
+			{
+				$language_filename = $lang_path . $this->lang_name . '/' . $filename . '.' . $phpEx;
 			}
 
 			if (!file_exists($language_filename))
@@ -1984,24 +2024,24 @@ class user extends session
 				if ($this->lang_name == 'en')
 				{
 					// The user's selected language is missing the file, the board default's language is missing the file, and the file doesn't exist in /en.
-					$language_filename = str_replace($this->lang_path . 'en', $this->lang_path . $this->data['user_lang'], $language_filename);
+					$language_filename = str_replace($lang_path . 'en', $lang_path . $this->data['user_lang'], $language_filename);
 					trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
 				}
 				else if ($this->lang_name == basename($config['default_lang']))
 				{
 					// Fall back to the English Language
 					$this->lang_name = 'en';
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 				else if ($this->lang_name == $this->data['user_lang'])
 				{
 					// Fall back to the board default language
 					$this->lang_name = basename($config['default_lang']);
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 
 				// Reset the lang name
-				$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+				$this->lang_name = (file_exists($lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 				return;
 			}
 

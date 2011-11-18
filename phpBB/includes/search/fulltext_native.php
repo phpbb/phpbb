@@ -17,16 +17,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_native
 * phpBB's own db driven fulltext search, version 2
 * @package search
 */
-class fulltext_native extends search_backend
+class phpbb_search_fulltext_native extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
@@ -41,10 +36,8 @@ class fulltext_native extends search_backend
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
-	*
-	* @access	public
 	*/
-	function fulltext_native(&$error)
+	public function __construct(&$error)
 	{
 		global $phpbb_root_path, $phpEx, $config;
 
@@ -58,8 +51,17 @@ class fulltext_native extends search_backend
 			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 		}
 
-
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'phpBB Native Fulltext';
 	}
 
 	/**
