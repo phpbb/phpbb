@@ -87,7 +87,11 @@ class phpbb_extension_finder
 	}
 
 	/**
-	* Sets a suffix all files found in extensions must match
+	* Sets a suffix all files found in extensions must match.
+	*
+	* There is no default file extension, so to find PHP files only, you will
+	* have to specify .php as a suffix. However when using get_classes, the .php
+	* file extension is automatically added to suffixes.
 	*
 	* Automatically sets the default_suffix if its value does not differ from
 	* the current suffix.
@@ -108,6 +112,10 @@ class phpbb_extension_finder
 
 	/**
 	* Sets a suffix all files found in the default path must match
+	*
+	* There is no default file extension, so to find PHP files only, you will
+	* have to specify .php as a suffix. However when using get_classes, the .php
+	* file extension is automatically added to suffixes.
 	*
 	* @param string $default_suffix A filename suffix
 	* @return phpbb_extension_finder This object for chaining calls
