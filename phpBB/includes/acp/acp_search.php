@@ -563,28 +563,6 @@ class acp_search
 			->extension_directory('/search')
 			->core_path('includes/search/')
 			->get_classes();
-
-/*
-		$search_types = array();
-
-		$dp = @opendir($phpbb_root_path . 'includes/search');
-
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
-				{
-					$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
-				}
-			}
-			closedir($dp);
-
-			sort($search_types);
-		}
-
-		return $search_types;
-*/
 	}
 
 	function get_max_post_id()
