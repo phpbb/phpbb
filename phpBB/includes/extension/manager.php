@@ -100,7 +100,7 @@ class phpbb_extension_manager
 	}
 
 	/**
-	* Instantiates the extension meta class for the given name.
+	* Instantiates the extension meta class for the extension with the given name
 	*
 	* @param string $name The extension name
 	* @return phpbb_extension_interface Instance of the extension meta class or
