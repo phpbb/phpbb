@@ -26,6 +26,13 @@ class phpbb_extension_finder
 	protected $phpbb_root_path;
 	protected $cache;
 	protected $phpEx;
+
+	/**
+	* The cache variable name used to store $this->cached_queries in $this->cache.
+	*
+	* Allows the use of multiple differently configured finders with the same cache.
+	* @var string
+	*/
 	protected $cache_name;
 
 	/**
