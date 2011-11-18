@@ -546,6 +546,11 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
+			else if (!preg_match(get_preg_expression('table_prefix'), $data['table_prefix']))
+			{
+				$error[] = $lang['INST_ERR_DB_INVALID_PREFIX'];
+				$connect_test = false;
+			}
 			else
 			{
 				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport']);
@@ -876,33 +881,8 @@ class install_install extends module
 
 		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
-		$load_extensions = implode(',', $load_extensions);
-
 		// Time to convert the data provided into a config file
-		$config_data = "<?php\n";
-		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-
-		$config_data_array = array(
-			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
-			'dbhost'		=> $data['dbhost'],
-			'dbport'		=> $data['dbport'],
-			'dbname'		=> $data['dbname'],
-			'dbuser'		=> $data['dbuser'],
-			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
-			'table_prefix'	=> $data['table_prefix'],
-			'acm_type'		=> 'file',
-			'load_extensions'	=> $load_extensions,
-		);
-
-		foreach ($config_data_array as $key => $value)
-		{
-			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
-		}
-		unset($config_data_array);
-
-		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER'], $load_extensions);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
@@ -1947,7 +1927,7 @@ class install_install extends module
 		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
 		'dbuser'				=> array('lang' => 'DB_USERNAME',	'type' => 'text:25:100', 'explain' => false),
 		'dbpasswd'				=> array('lang' => 'DB_PASSWORD',	'type' => 'password:25:100', 'explain' => false),
-		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
+		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => true),
 	);
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',

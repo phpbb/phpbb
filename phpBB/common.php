@@ -59,15 +59,6 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
-	{
-		$base_memory_usage = memory_get_usage();
-	}
-}
-
 // Load Extensions
 // dl() is deprecated and disabled by default as of PHP 5.3.
 if (!empty($load_extensions) && function_exists('dl'))

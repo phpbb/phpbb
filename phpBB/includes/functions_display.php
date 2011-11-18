@@ -446,6 +446,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_NO_CAT'			=> $catless && !$last_catless,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_UNREAD_FORUM'	=> $forum_unread,
+			'S_AUTH_READ'		=> $auth->acl_get('f_read', $row['forum_id']),
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
@@ -655,7 +656,7 @@ function topic_generate_pagination($replies, $url)
 			$pagination .= '<a href="' . $url . ($j == 0 ? '' : '&amp;start=' . $j) . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 5)
 			{
-				$pagination .= ' ... ';
+				$pagination .= '<span class="page-dots"> ... </span>';
 
 				// Display the last three pages
 				$times = $total_pages - 3;
@@ -1065,6 +1066,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
 	$u_url = "uid={$user->data['user_id']}";
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
+	$is_watching = 0;
 
 	// Is user watching this thread?
 	if ($user_id != ANONYMOUS)
@@ -1090,9 +1092,9 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				$uid = request_var('uid', 0);
 				$token = request_var('hash', '');
 
-				if (($token && check_link_hash($token, "{$mode}_$match_id")) || confirm_box(true))
+				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if (($uid != $user_id) || ($request->variable('unwatch', '', false, phpbb_request_interface::GET) != $mode))
+					if ($uid != $user_id || $request->variable('unwatch', '', false, phpbb_request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
@@ -1105,7 +1107,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />';
+					$message .= sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 					meta_refresh(3, $redirect_url);
 					trigger_error($message);
 				}
@@ -1122,7 +1125,14 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 						$s_hidden_fields['t'] = $topic_id;
 					}
 
-					$confirm_box_message = (($item_title == '') ? 'UNWATCH_' . strtoupper($mode) : $user->lang('UNWATCH_' . strtoupper($mode) . '_DETAILED', $item_title));
+					if ($item_title == '')
+					{
+						$confirm_box_message = 'UNWATCH_' . strtoupper($mode);
+					}
+					else
+					{
+						$confirm_box_message = $user->lang('UNWATCH_' . strtoupper($mode) . '_DETAILED', $item_title);
+					}
 					confirm_box(false, $confirm_box_message, build_hidden_fields($s_hidden_fields));
 				}
 			}
@@ -1147,9 +1157,9 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				$uid = request_var('uid', 0);
 				$token = request_var('hash', '');
 
-				if (($token && check_link_hash($token, "{$mode}_$match_id")) || confirm_box(true))
+				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if (($uid != $user_id) || ($request->variable('watch', '', false, phpbb_request_interface::GET) != $mode))
+					if ($uid != $user_id || $request->variable('watch', '', false, phpbb_request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');

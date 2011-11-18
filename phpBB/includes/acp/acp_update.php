@@ -37,7 +37,7 @@ class acp_update
 		$errstr = '';
 		$errno = 0;
 
-		$info = obtain_latest_version_info(request_var('versioncheck_force', false), true);
+		$info = obtain_latest_version_info(request_var('versioncheck_force', false));
 
 		if ($info === false)
 		{

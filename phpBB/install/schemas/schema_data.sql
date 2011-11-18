@@ -94,6 +94,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
@@ -165,6 +166,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');
@@ -243,7 +246,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_multiple', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_memberships', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');

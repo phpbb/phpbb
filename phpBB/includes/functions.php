@@ -1654,7 +1654,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $request;
+	global $db, $tracking_topics, $user, $config, $auth, $request;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1677,6 +1677,10 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 	}
 
+	// Handle update of unapproved topics info.
+	// Only update for moderators having m_approve permission for the forum.
+	$sql_update_unapproved = ($auth->acl_get('m_approve', $forum_id)) ? '': 'AND t.topic_approved = 1';
+
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -1692,7 +1696,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0
+					AND t.topic_moved_id = 0 ' .
+					$sql_update_unapproved . '
 					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1716,7 +1721,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id = ' . $forum_id . '
 					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0';
+					AND topic_moved_id = 0 ' .
+					$sql_update_unapproved;
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
@@ -1901,7 +1907,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ($start_cnt > 1) ? ' ... ' : $separator;
+		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
@@ -1912,7 +1918,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 		}
 
-		$page_string .= ($end_cnt < $total_pages) ? ' ... ' : $separator;
+		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
 	}
 	else
 	{
@@ -3256,6 +3262,10 @@ function get_preg_expression($mode)
 			$inline = ($mode == 'relative_url') ? ')' : '';
 			return "(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
+
+		case 'table_prefix':
+			return '#^[a-zA-Z][a-zA-Z0-9_]*$#';
+		break;
 	}
 
 	return '';
@@ -4570,6 +4580,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
 		'T_THEME_NAME'			=> $user->theme['theme_path'],
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -4627,15 +4639,13 @@ function page_footer($run_cron = true)
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
-			if (function_exists('memory_get_usage'))
+			if (function_exists('memory_get_peak_usage'))
 			{
-				if ($memory_usage = memory_get_usage())
+				if ($memory_usage = memory_get_peak_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
 					$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;
+					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
 				}
 			}
 

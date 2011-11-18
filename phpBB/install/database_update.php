@@ -2113,6 +2113,11 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.9-RC4':
 		break;
 
+		// Changes from 3.0.9 to 3.0.10-RC1
+		case '3.0.9':
+			set_config('email_max_chunk_size', '50');
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2146,46 +2151,80 @@ function change_database_data(&$no_updates, $version)
 
 			$db->sql_freeresult($result);
 
-			// try to guess the new auto loaded search class name
-			// works for native and mysql fulltext
-			set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			if (substr($config['search_type'], 0, 6) !== 'phpbb_')
+			{
+				// try to guess the new auto loaded search class name
+				// works for native and mysql fulltext
+				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
 
-			set_config('use_system_cron', 0);
+			if (!isset($config['load_jquery_cdn']))
+			{
+				set_config('load_jquery_cdn', 0);
+				set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+			}
 
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_teampage = 1
-				WHERE group_type = ' . GROUP_SPECIAL . "
-					AND group_name = 'ADMINISTRATORS'";
-			_sql($sql, $errored, $error_ary);
+			if (!isset($config['use_system_cron']))
+			{
+				set_config('use_system_cron', 0);
+			}
 
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_teampage = 2
-				WHERE group_type = ' . GROUP_SPECIAL . "
-					AND group_name = 'GLOBAL_MODERATORS'";
-			_sql($sql, $errored, $error_ary);
-
-			set_config('legend_sort_groupname', '0');
-			set_config('teampage_multiple', '1');
-			set_config('teampage_forums', '1');
-
-			$sql = 'SELECT group_id
+			$sql = 'SELECT group_teampage
 				FROM ' . GROUPS_TABLE . '
-				WHERE group_legend = 1
-				ORDER BY group_name ASC';
-			$result = $db->sql_query($sql);
+				WHERE group_teampage > 0';
+			$result = $db->sql_query_limit($sql, 1);
+			$added_groups_teampage = (bool) $db->sql_fetchfield('group_teampage');
+			$db->sql_freeresult($result);
 
-			$next_legend = 1;
-			while ($row = $db->sql_fetchrow($result))
+			if (!$added_groups_teampage)
 			{
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_legend = ' . $next_legend . '
-					WHERE group_id = ' . (int) $row['group_id'];
+					SET group_teampage = 1
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'ADMINISTRATORS'";
 				_sql($sql, $errored, $error_ary);
 
-				$next_legend++;
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 2
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'GLOBAL_MODERATORS'";
+				_sql($sql, $errored, $error_ary);
 			}
+
+			if (!isset($config['legend_sort_groupname']))
+			{
+				set_config('legend_sort_groupname', '0');
+				set_config('teampage_forums', '1');
+			}
+
+			$sql = 'SELECT group_legend
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 1';
+			$result = $db->sql_query_limit($sql, 1);
+			$updated_group_legend = (bool) $db->sql_fetchfield('group_teampage');
 			$db->sql_freeresult($result);
-			unset($next_legend);
+
+			if (!$updated_group_legend)
+			{
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_legend = 1
+					ORDER BY group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$next_legend = 1;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . GROUPS_TABLE . '
+						SET group_legend = ' . $next_legend . '
+						WHERE group_id = ' . (int) $row['group_id'];
+					_sql($sql, $errored, $error_ary);
+
+					$next_legend++;
+				}
+				$db->sql_freeresult($result);
+				unset($next_legend);
+			}
 
 			// Install modules
 			$modules_to_install = array(
@@ -2206,7 +2245,7 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
-			
+
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 			    WHERE module_basename = 'styles' AND module_mode = 'imageset'";
 			_sql($sql, $errored, $error_ary);
@@ -2289,7 +2328,15 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			// Allow custom profile fields in pm templates
-			set_config('load_cpf_pm', '0');
+			if (!isset($config['load_cpf_pm']))
+			{
+				set_config('load_cpf_pm', '0');
+			}
+
+			if (!isset($config['teampage_memberships']))
+			{
+				set_config('teampage_memberships', '1');
+			}
 
 			$no_updates = false;
 		break;
