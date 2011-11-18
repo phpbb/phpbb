@@ -609,7 +609,7 @@ class dbal
 					}
 				}
 
-				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
+				$sql .= $this->_sql_custom_build('FROM', implode(' CROSS JOIN ', $table_array));
 
 				if (!empty($array['LEFT_JOIN']))
 				{
