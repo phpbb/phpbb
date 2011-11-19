@@ -82,13 +82,16 @@ include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
-$class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory('file');
 $cache = $cache_factory->get_service();
-$class_loader->set_cache($cache->get_driver());
+$phpbb_class_loader_ext->set_cache($cache->get_driver());
+$phpbb_class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 
@@ -199,8 +202,10 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$template_locator = new phpbb_template_locator();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+$phpbb_template_locator = new phpbb_template_locator();
+$phpbb_template_path_provider = new phpbb_template_path_provider();
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
+$template->set_ext_dir_prefix('adm/');
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');

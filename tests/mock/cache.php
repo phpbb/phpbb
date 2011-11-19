@@ -59,6 +59,21 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 		$test->assertEquals($data, $this->data[$var_name]);
 	}
 
+	public function checkAssociativeVar(PHPUnit_Framework_Assert $test, $var_name, $data, $sort = true)
+	{
+		$test->assertTrue(isset($this->data[$var_name]));
+
+		if ($sort)
+		{
+			foreach ($this->data[$var_name] as &$content)
+			{
+				sort($content);
+			}
+		}
+
+		$test->assertEquals($data, $this->data[$var_name]);
+	}
+
 	public function checkVarUnset(PHPUnit_Framework_Assert $test, $var_name)
 	{
 		$test->assertFalse(isset($this->data[$var_name]));

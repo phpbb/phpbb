@@ -2350,16 +2350,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($update_search_index && $data['enable_indexing'])
 	{
 		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = basename($config['search_type']);
-
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
-		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
-		}
+		$search_type = $config['search_type'];
 
 		if (!class_exists($search_type))
 		{
-			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
 		$error = false;

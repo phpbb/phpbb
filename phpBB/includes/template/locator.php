@@ -28,62 +28,70 @@ if (!defined('IN_PHPBB'))
 class phpbb_template_locator
 {
 	/**
-	* @var string Path to directory that templates are stored in.
+	* Paths to directories that templates are stored in.
+	* @var array
 	*/
-	private $root = '';
+	private $roots = array();
 
 	/**
-	* @var string Path to parent/fallback template directory.
+	* Index of the main template in the roots array
+	* @var int
 	*/
-	private $inherit_root = '';
+	private $main_root_id = 0;
 
 	/**
-	* @var array Map from handles to source template file paths.
+	* Map from root index to handles to source template file paths.
 	* Normally it only contains paths for handles that are used
 	* (or are likely to be used) by the page being rendered and not
 	* all templates that exist on the filesystem.
+	* @var array
 	*/
 	private $files = array();
 
 	/**
-	* @var array Map from handles to source template file names.
+	* Map from handles to source template file names.
 	* Covers the same data as $files property but maps to basenames
 	* instead of paths.
+	* @var array
 	*/
 	private $filenames = array();
 
 	/**
-	* @var array Map from handles to parent/fallback source template
-	* file paths. Covers the same data as $files.
-	*/
-	private $files_inherit = array();
-
-	/**
-	* Set custom template location (able to use directory outside of phpBB).
-	*
-	* Note: Templates are still compiled to phpBB's cache directory.
+	* Set main template location (must have been added through set_paths first).
 	*
 	* @param string $template_path Path to template directory
-	* @param string|bool $fallback_template_path Path to fallback template, or false to disable fallback
+	* @return null
 	*/
-	public function set_custom_template($template_path, $fallback_template_path = false)
+	public function set_main_template($template)
 	{
-		// Make sure $template_path has no ending slash
-		if (substr($template_path, -1) == '/')
-		{
-			$template_path = substr($template_path, 0, -1);
-		}
+		$this->main_root_id = array_search($template, $this->roots, true);
+	}
 
-		$this->root = $template_path;
+	/**
+	* Sets the list of template paths
+	*
+	* These paths will be searched for template files in the provided order.
+	* Paths may be outside of phpBB, but templates loaded from these paths
+	* will still be cached.
+	*
+	* @param array $template_paths An array of paths to template directories
+	* @return null
+	*/
+	public function set_paths($template_paths)
+	{
+		$this->roots = array();
+		$this->files = array();
+		$this->filenames = array();
+		$this->main_root_id = 0;
 
-		if ($fallback_template_path !== false)
+		foreach ($template_paths as $path)
 		{
-			if (substr($fallback_template_path, -1) == '/')
+			// Make sure $path has no ending slash
+			if (substr($path, -1) === '/')
 			{
-				$fallback_template_path = substr($fallback_template_path, 0, -1);
+				$path = substr($path, 0, -1);
 			}
-
-			$this->inherit_root = $fallback_template_path;
+			$this->roots[] = $path;
 		}
 	}
 
@@ -103,11 +111,10 @@ class phpbb_template_locator
 			}
 
 			$this->filename[$handle] = $filename;
-			$this->files[$handle] = $this->root . '/' . $filename;
 
-			if ($this->inherit_root)
+			foreach ($this->roots as $root_index => $root)
 			{
-				$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
+				$this->files[$root_index][$handle] = $root . '/' . $filename;
 			}
 		}
 	}
@@ -154,12 +161,12 @@ class phpbb_template_locator
 	public function get_virtual_source_file_for_handle($handle)
 	{
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
+		if (!isset($this->files[$this->main_root_id][$handle]))
 		{
 			trigger_error("template locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		$source_file = $this->files[$handle];
+		$source_file = $this->files[$this->main_root_id][$handle];
 		return $source_file;
 	}
 
@@ -182,30 +189,26 @@ class phpbb_template_locator
 	public function get_source_file_for_handle($handle)
 	{
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
+		if (!isset($this->files[$this->main_root_id][$handle]))
 		{
 			trigger_error("template locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		$source_file = $this->files[$handle];
+		// locate a source file that exists
+		$source_file = $this->files[0][$handle];
+		$tried = $source_file;
+		for ($i = 1, $n = count($this->roots); $i < $n && !file_exists($source_file); $i++)
+		{
+			$source_file = $this->files[$i][$handle];
+			$tried .= ', ' . $source_file;
+		}
 
-		// Try and open template for reading
+		// search failed
 		if (!file_exists($source_file))
 		{
-			if (isset($this->files_inherit[$handle]) && $this->files_inherit[$handle])
-			{
-				$parent_source_file = $this->files_inherit[$handle];
-				if (!file_exists($parent_source_file))
-				{
-					trigger_error("template locator: Neither $source_file nor $parent_source_file exist", E_USER_ERROR);
-				}
-				$source_file = $parent_source_file;
-			}
-			else
-			{
-				trigger_error("template locator: File $source_file does not exist", E_USER_ERROR);
-			}
+			trigger_error("template locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
 		}
+
 		return $source_file;
 	}
 }

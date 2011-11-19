@@ -73,7 +73,7 @@ switch ($search_id)
 			login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
 		}
 	break;
-	
+
 	// The "new posts" search uses user_lastvisit which is user based, so it should require user to log in.
 	case 'newposts':
 		if ($user->data['user_id'] == ANONYMOUS)
@@ -81,7 +81,7 @@ switch ($search_id)
 			login_box('', $user->lang['LOGIN_EXPLAIN_NEWPOSTS']);
 		}
 	break;
-	
+
 	default:
 		// There's nothing to do here for now ;)
 	break;
@@ -273,15 +273,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!class_exists($search_type))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
-
-	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
 	$search = new $search_type($error);

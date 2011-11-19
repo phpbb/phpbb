@@ -1445,7 +1445,7 @@ class install_install extends module
 		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new fulltext_native($error);
+		$search = new phpbb_search_fulltext_native($error);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1463,7 +1463,13 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+
+		// modules require an extension manager
+		if (empty($phpbb_extension_manager))
+		{
+			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -1578,7 +1584,7 @@ class install_install extends module
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'main'
+					WHERE module_basename = 'acp_main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1590,7 +1596,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'permissions'
+					WHERE module_basename = 'acp_permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1602,7 +1608,7 @@ class install_install extends module
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'users'
+					WHERE module_basename = 'acp_users'
 						AND module_class = 'acp'
 						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
@@ -1617,7 +1623,7 @@ class install_install extends module
 				// Move attachment module 4 down...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'attachments'
+					WHERE module_basename = 'ucp_attachments'
 						AND module_class = 'ucp'
 						AND module_mode = 'attachments'";
 				$result = $db->sql_query($sql);

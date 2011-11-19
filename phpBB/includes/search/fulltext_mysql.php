@@ -17,16 +17,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_mysql
 * Fulltext search for MySQL
 * @package search
 */
-class fulltext_mysql extends search_backend
+class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
@@ -36,7 +31,7 @@ class fulltext_mysql extends search_backend
 	var $pcre_properties = false;
 	var $mbstring_regex = false;
 
-	function fulltext_mysql(&$error)
+	public function __construct(&$error)
 	{
 		global $config;
 
@@ -55,6 +50,16 @@ class fulltext_mysql extends search_backend
 		}
 
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'MySQL Fulltext';
 	}
 
 	/**

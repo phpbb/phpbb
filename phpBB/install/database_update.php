@@ -104,14 +104,21 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('EXT_TABLE'))
+{
+	define('EXT_TABLE', $table_prefix . 'ext');
+}
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
-$class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
 $cache = $cache_factory->get_service();
-$class_loader->set_cache($cache->get_driver());
+$phpbb_class_loader_ext->set_cache($cache->get_driver());
+$phpbb_class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 $user = new user();
@@ -671,7 +678,13 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+
+	// modules require an extension manager
+	if (empty($phpbb_extension_manager))
+	{
+		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -1048,6 +1061,18 @@ function database_update_info()
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
+			'add_tables'		=> array(
+				EXT_TABLE				=> array(
+					'COLUMNS'			=> array(
+						'ext_name'		=> array('VCHAR', ''),
+						'ext_active'	=> array('BOOL', 0),
+						'ext_state'		=> array('TEXT', ''),
+					),
+					'KEYS'				=> array(
+						'ext_name'		=> array('UNIQUE', 'ext_name'),
+					),
+				),
+			),
 			'add_columns'		=> array(
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
@@ -2095,8 +2120,49 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
-			set_config('load_jquery_cdn', 0);
-			set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+
+			// rename all module basenames to full classname
+			$sql = 'SELECT module_id, module_basename, module_class
+				FROM ' . MODULES_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$module_id = (int) $row['module_id'];
+				unset($row['module_id']);
+
+				if (!empty($row['module_basename']) && !empty($row['module_class']))
+				{
+					// all the class names start with class name or with phpbb_ for auto loading
+					if (strpos($row['module_basename'], $row['module_class'] . '_') !== 0 &&
+						strpos($row['module_basename'], 'phpbb_') !== 0)
+					{
+						$row['module_basename'] = $row['module_class'] . '_' . $row['module_basename'];
+
+						$sql_update = $db->sql_build_array('UPDATE', $row);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . '
+							SET ' . $sql_update . '
+							WHERE module_id = ' . $module_id;
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			$db->sql_freeresult($result);
+
+			if (substr($config['search_type'], 0, 6) !== 'phpbb_')
+			{
+				// try to guess the new auto loaded search class name
+				// works for native and mysql fulltext
+				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
+
+			if (!isset($config['load_jquery_cdn']))
+			{
+				set_config('load_jquery_cdn', 0);
+				set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+			}
 
 			if (!isset($config['use_system_cron']))
 			{
@@ -2163,14 +2229,14 @@ function change_database_data(&$no_updates, $version)
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
-					'base'		=> 'groups',
+					'base'		=> 'acp_groups',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_GROUPS_POSITION',
 					'auth'		=> 'acl_a_group',
 					'cat'		=> 'ACP_GROUPS',
 				),
 				'manage'	=> array(
-					'base'		=> 'attachments',
+					'base'		=> 'acp_attachments',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_MANAGE_ATTACHMENTS',
 					'auth'		=> 'acl_a_attach',
@@ -2179,7 +2245,7 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
-			
+
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 			    WHERE module_basename = 'styles' AND module_mode = 'imageset'";
 			_sql($sql, $errored, $error_ary);

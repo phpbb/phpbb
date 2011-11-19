@@ -410,6 +410,18 @@ END;
 
 
 /*
+	Table: 'phpbb_ext'
+*/
+CREATE TABLE phpbb_ext (
+	ext_name varchar2(255) DEFAULT '' ,
+	ext_active number(1) DEFAULT '0' NOT NULL,
+	ext_state clob DEFAULT '' ,
+	CONSTRAINT u_phpbb_ext_name UNIQUE (ext_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_extensions'
 */
 CREATE TABLE phpbb_extensions (

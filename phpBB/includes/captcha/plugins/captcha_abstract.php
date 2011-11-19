@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package VC
 */
-class phpbb_default_captcha
+class phpbb_captcha_plugins_captcha_abstract
 {
 	var $confirm_id;
 	var $confirm_code;
@@ -363,4 +363,11 @@ class phpbb_default_captcha
 		return false;
 	}
 
+}
+
+/**
+* Old class name for legacy use. The new class name is auto loadable.
+*/
+class phpbb_default_captcha extends phpbb_captcha_plugins_captcha_abstract
+{
 }

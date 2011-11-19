@@ -13,20 +13,26 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		global $class_loader;
-		$class_loader->unregister();
+		global $phpbb_class_loader;
+		$phpbb_class_loader->unregister();
+
+		global $phpbb_class_loader_ext;
+		$phpbb_class_loader_ext->unregister();
 	}
 
 	public function tearDown()
 	{
-		global $class_loader;
-		$class_loader->register();
+		global $phpbb_class_loader_ext;
+		$phpbb_class_loader_ext->register();
+
+		global $phpbb_class_loader;
+		$phpbb_class_loader->register();
 	}
 
 	public function test_resolve_path()
 	{
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader($prefix);
+		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'includes/');
 
 		$prefix .= 'includes/';
 
@@ -60,11 +66,15 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 
 	public function test_resolve_cached()
 	{
-		$cacheMap = array('class_loader' => array('phpbb_a_cached_name' => 'a/cached_name'));
-		$cache = new phpbb_mock_cache($cacheMap);
+		$cache_map = array(
+			'class_loader_phpbb_' => array('phpbb_a_cached_name' => 'a/cached_name'),
+			'class_loader_phpbb_ext_' => array('phpbb_ext_foo' => 'foo'),
+		);
+		$cache = new phpbb_mock_cache($cache_map);
 
 		$prefix = dirname(__FILE__) . '/';
-		$class_loader = new phpbb_class_loader($prefix, '.php', $cache);
+		$class_loader = new phpbb_class_loader('phpbb_', $prefix . 'includes/', '.php', $cache);
+		$class_loader_ext = new phpbb_class_loader('phpbb_ext_', $prefix . 'includes/', '.php', $cache);
 
 		$prefix .= 'includes/';
 
@@ -74,13 +84,22 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 			'Class in a directory'
 		);
 
+		$this->assertFalse($class_loader->resolve_path('phpbb_ext_foo'));
+		$this->assertFalse($class_loader_ext->resolve_path('phpbb_a_cached_name'));
+
 		$this->assertEquals(
 			$prefix . 'a/cached_name.php',
 			$class_loader->resolve_path('phpbb_a_cached_name'),
-			'Class in a directory'
+			'Cached class found'
 		);
 
-		$cacheMap['class_loader']['phpbb_dir_class_name'] = 'dir/class_name';
-		$cache->check($this, $cacheMap);
+		$this->assertEquals(
+			$prefix . 'foo.php',
+			$class_loader_ext->resolve_path('phpbb_ext_foo'),
+			'Cached class found in alternative loader'
+		);
+
+		$cache_map['class_loader_phpbb_']['phpbb_dir_class_name'] = 'dir/class_name';
+		$cache->check($this, $cache_map);
 	}
 }
