@@ -366,7 +366,7 @@ class ucp_register
 
 					$messenger->to($data['email'], $data['username']);
 
-					$messenger->anti_abuse_headers();
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
 						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),

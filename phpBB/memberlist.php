@@ -899,7 +899,7 @@ switch ($mode)
 						$notify_type = NOTIFY_EMAIL;
 					}
 
-					$messenger->anti_abuse_headers();
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
 						'BOARD_CONTACT'	=> $config['board_contact'],

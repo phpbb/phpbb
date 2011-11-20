@@ -195,7 +195,7 @@ class acp_email
 
 					$messenger->template('admin_send_email', $used_lang);
 
-					$messenger->anti_abuse_headers();
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);

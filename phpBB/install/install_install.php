@@ -1945,7 +1945,7 @@ class install_install extends module
 
 			$messenger->to($data['board_email1'], $data['admin_name']);
 
-			$messenger->anti_abuse_headers();
+			$messenger->anti_abuse_headers($config, $user);
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($data['admin_name']),

@@ -118,7 +118,7 @@ class acp_inactive
 
 								$messenger->to($row['user_email'], $row['username']);
 
-								$messenger->anti_abuse_headers();
+								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
 									'USERNAME'	=> htmlspecialchars_decode($row['username']))
@@ -206,7 +206,7 @@ class acp_inactive
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 
-							$messenger->anti_abuse_headers();
+							$messenger->anti_abuse_headers($config, $user);
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),

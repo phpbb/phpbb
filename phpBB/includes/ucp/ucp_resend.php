@@ -94,7 +94,7 @@ class ucp_resend
 				$messenger->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
 				$messenger->to($user_row['user_email'], $user_row['username']);
 
-				$messenger->anti_abuse_headers();
+				$messenger->anti_abuse_headers($config, $user);
 
 				$messenger->assign_vars(array(
 					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
@@ -130,7 +130,7 @@ class ucp_resend
 					$messenger->to($row['user_email'], $row['username']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
-					$messenger->anti_abuse_headers();
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),

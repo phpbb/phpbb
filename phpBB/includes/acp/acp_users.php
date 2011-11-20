@@ -348,7 +348,7 @@ class acp_users
 
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
-								$messenger->anti_abuse_headers();
+								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
 									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
@@ -403,7 +403,7 @@ class acp_users
 
 									$messenger->to($user_row['user_email'], $user_row['username']);
 
-									$messenger->anti_abuse_headers();
+									$messenger->anti_abuse_headers($config, $user);
 
 									$messenger->assign_vars(array(
 										'USERNAME'	=> htmlspecialchars_decode($user_row['username']))

@@ -150,7 +150,7 @@ class ucp_profile
 
 							$messenger->to($data['email'], $data['username']);
 
-							$messenger->anti_abuse_headers();
+							$messenger->anti_abuse_headers($config, $user);
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
