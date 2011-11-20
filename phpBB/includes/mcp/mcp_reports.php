@@ -368,7 +368,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -403,8 +403,9 @@ class mcp_reports
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
-							'TOPIC_TITLE'	=> $row['topic_title'])
-						);
+							'TOPIC_TITLE'	=> $row['topic_title'],
+							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						));
 					}
 					$db->sql_freeresult($result);
 					unset($report_ids, $row);
