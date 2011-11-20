@@ -155,8 +155,8 @@ class ucp_register
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
-		
-		
+
+
 		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change. 
 		if ($config['enable_confirm'])
 		{
@@ -366,10 +366,7 @@ class ucp_register
 
 					$messenger->to($data['email'], $data['username']);
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
 						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
