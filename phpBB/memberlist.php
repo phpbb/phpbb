@@ -899,10 +899,7 @@ switch ($mode)
 						$notify_type = NOTIFY_EMAIL;
 					}
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->anti_abuse_headers();
 
 					$messenger->assign_vars(array(
 						'BOARD_CONTACT'	=> $config['board_contact'],

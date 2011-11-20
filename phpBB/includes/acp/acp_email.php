@@ -195,10 +195,7 @@ class acp_email
 
 					$messenger->template('admin_send_email', $used_lang);
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->anti_abuse_headers();
 
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);

@@ -163,6 +163,18 @@ class messenger
 	}
 
 	/**
+	* Adds X-AntiAbuse headers
+	*/
+	function anti_abuse_headers($headers)
+	{
+		global $config, $user;
+		$this->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+		$this->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+		$this->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+		$this->headers('X-AntiAbuse: User IP - ' . $user->ip);
+	}
+
+	/**
 	* Set the email priority
 	*/
 	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
