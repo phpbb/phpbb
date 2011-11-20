@@ -59,6 +59,7 @@ $lang = array_merge($lang, array(
 
 	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',
 	'RESTORE_OPTIONS'		=> 'Restore options',
+	'RESTORE_SELECTED_BACKUP'	=> 'Are you sure you want to restore the selected backup?',
 	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
 
 	'SELECT_ALL'			=> 'Select all',
