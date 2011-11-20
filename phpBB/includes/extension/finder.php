@@ -380,7 +380,8 @@ class phpbb_extension_finder
 			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($iterator as $file_info)
 			{
-				if (in_array($file_info, array('.', '..')))
+				$filename = $file_info->getFilename();
+				if ($filename == '.' || $filename == '..')
 				{
 					continue;
 				}
@@ -389,7 +390,7 @@ class phpbb_extension_finder
 				{
 					if ($is_dir)
 					{
-						$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($file_info->getFilename()) . DIRECTORY_SEPARATOR;
+						$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($filename) . DIRECTORY_SEPARATOR;
 						if ($relative_path[0] !== DIRECTORY_SEPARATOR)
 						{
 							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
@@ -399,10 +400,9 @@ class phpbb_extension_finder
 					{
 						$relative_path = DIRECTORY_SEPARATOR . $iterator->getInnerIterator()->getSubPathname();
 					}
-					$item_name = $file_info->getFilename();
 
 					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
-						(!$prefix || substr($item_name, 0, strlen($prefix)) === $prefix) &&
+						(!$prefix || substr($filename, 0, strlen($prefix)) === $prefix) &&
 						(!$directory || preg_match($directory_pattern, $relative_path)))
 					{
 						$files[str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1))] = $ext_name;
