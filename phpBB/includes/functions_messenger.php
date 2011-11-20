@@ -168,9 +168,9 @@ class messenger
 	function anti_abuse_headers($headers)
 	{
 		global $config, $user;
-		$this->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+		$this->headers('X-AntiAbuse: Board servername - ' . mail_encode($config['server_name']));
 		$this->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-		$this->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+		$this->headers('X-AntiAbuse: Username - ' . mail_encode($user->data['username']));
 		$this->headers('X-AntiAbuse: User IP - ' . $user->ip);
 	}
 
