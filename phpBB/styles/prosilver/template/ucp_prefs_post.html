@@ -9,6 +9,13 @@
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 	<dl>
+		<dt><label for="rich_text1">{L_EDITOR_INTERFACE}:</label></dt>
+		<dd>
+			<label for="rich_text1"><input type="radio" name="rich_text" id="rich_text1" value="1"<!-- IF S_RICH_TEXT --> checked="checked"<!-- ENDIF --> /> {L_RICH_TEXT_EDITOR}</label>
+			<label for="rich_text0"><input type="radio" name="rich_text" id="rich_text0" value="0"<!-- IF not S_RICH_TEXT --> checked="checked"<!-- ENDIF --> /> {L_SIMPLE}</label>
+		</dd>
+	</dl>
+	<dl>
 		<dt><label for="bbcode1">{L_DEFAULT_BBCODE}:</label></dt>
 		<dd>
 			<label for="bbcode1"><input type="radio" name="bbcode" id="bbcode1" value="1"<!-- IF S_BBCODE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label> 

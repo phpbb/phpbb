@@ -185,8 +185,34 @@ function insert_text(text, spaces, popup)
 */
 function attach_inline(index, filename)
 {
-	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
-	document.forms[form_name].elements[text_name].focus();
+	var rich_editor = CKEDITOR.instances.message || CKEDITOR.instances.signature;
+
+	if (rich_editor) {
+		var element = new CKEDITOR.dom.element( 'div' ),
+			writer = new CKEDITOR.htmlWriter();
+
+		var description = filename,
+			attachment = index;
+
+		var inner = new CKEDITOR.dom.element( 'div' );
+		inner.setText(filename);
+		inner.setAttributes({
+			contenteditable : 'false'
+		});
+
+		element.append(inner);
+
+		element.setAttributes({
+			title : description,
+			'data-cke-saved-attachment' : attachment,
+			class : 'cke_attachment'
+		});
+
+		rich_editor.insertHtml(element.getOuterHtml());
+	} else {
+		insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
+		document.forms[form_name].elements[text_name].focus();
+	}
 }
 
 /**
