@@ -1005,7 +1005,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$mode = 'post_review';
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
 
 		'FROM'		=> array(
@@ -1016,14 +1016,15 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
-				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
-			)
+				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
-			AND u.user_id = p.poster_id'
-	));
+			AND u.user_id = p.poster_id',
+	);
 
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	$bbcode_bitfield = '';

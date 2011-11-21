@@ -943,7 +943,7 @@ if (!sizeof($post_list))
 // We need to grab it because we do reverse ordering sometimes
 $max_post_time = 0;
 
-$sql = $db->sql_build_query('SELECT', array(
+$sql_ary = array(
 	'SELECT'	=> 'u.*, z.friend, z.foe, p.*',
 
 	'FROM'		=> array(
@@ -954,14 +954,15 @@ $sql = $db->sql_build_query('SELECT', array(
 	'LEFT_JOIN'	=> array(
 		array(
 			'FROM'	=> array(ZEBRA_TABLE => 'z'),
-			'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
-		)
+			'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+		),
 	),
 
 	'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
-		AND u.user_id = p.poster_id'
-));
+		AND u.user_id = p.poster_id',
+);
 
+$sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
 
 $now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
