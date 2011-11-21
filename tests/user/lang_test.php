@@ -89,7 +89,7 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 1, 2), '1 post');
 		$this->assertEquals($user->lang('ARRY', 1, 's', 2), '1 post');
 
-		// ticket PHPBB3-10345 - different plrual rules, not just 0/1/2+
+		// ticket PHPBB3-10345 - different plural rules, not just 0/1/2+
 		$user = new user;
 		$user->lang = array(
 			'PLURAL_RULE'		=> 13,
