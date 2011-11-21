@@ -11,9 +11,9 @@
 		<div class="forabg">
 			<div class="inner"><span class="corners-top"><span></span></span>
 			<ul class="topiclist">
-				<li class="header">
+				<li class="header widescreen-optimised">
 					<dl class="icon">
-						<dt><div class="wrap-content"><!-- IF forumrow.S_IS_CAT --><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><!-- ELSE -->{L_FORUM}<!-- ENDIF --></div></dt>
+						<dt><span class="wrap-content"><!-- IF forumrow.S_IS_CAT --><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><!-- ELSE -->{L_FORUM}<!-- ENDIF --></span></dt>
 						<dd class="topics">{L_TOPICS}</dd>
 						<dd class="posts">{L_POSTS}</dd>
 						<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
@@ -25,8 +25,8 @@
 
 	<!-- IF not forumrow.S_IS_CAT -->
 		<li class="row">
-			<dl class="icon" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
-				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}"><div class="wrap-content">
+			<dl class="icon widescreen-optimised" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
+				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}"><span class="wrap-content">
 				<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED --><!-- <a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}"><img src="{T_THEME_PATH}/images/feed.gif" alt="{L_FEED} - {forumrow.FORUM_NAME}" /></a> --><!-- ENDIF -->
 
 					<!-- IF forumrow.FORUM_IMAGE --><span class="forum-image">{forumrow.FORUM_IMAGE}</span><!-- ENDIF -->
@@ -36,7 +36,7 @@
 						<br /><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}
 					<!-- ENDIF -->
 					<!-- IF forumrow.SUBFORUMS and forumrow.S_LIST_SUBFORUMS --><br /><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}<!-- ENDIF -->
-				</div></dt>
+				</span></dt>
 				<!-- IF forumrow.CLICKS -->
 					<dd class="redirect"><span>{L_REDIRECTS}: {forumrow.CLICKS}</span></dd>
 				<!-- ELSEIF not forumrow.S_IS_LINK -->
