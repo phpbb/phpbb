@@ -2609,7 +2609,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$db->sql_freeresult($result);
 	}
 
-	if ($log_count == 0)
+	if ($log_count === 0)
 	{
 		// Save the queries, because there are no logs to display
 		return 0;
