@@ -1999,7 +1999,12 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.0.9 to 3.0.10-RC1
 		case '3.0.9':
-			set_config('email_max_chunk_size', '50');
+			if (!isset($config['email_max_chunk_size']))
+			{
+				set_config('email_max_chunk_size', '50');
+			}
+
+			$no_updates = false;
 		break;
 	}
 }
