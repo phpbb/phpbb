@@ -7,7 +7,6 @@
 *
 */
 
-require_once __DIR__ . '/../../vendor/goutte.phar';
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
@@ -17,6 +16,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	static protected $config = array();
 	static protected $already_installed = false;
+
+	static public function setUpBeforeClass()
+	{
+		if (!extension_loaded('phar'))
+		{
+			self::markTestSkipped('phar extension is not loaded');
+		}
+
+		require_once __DIR__ . '/../../vendor/goutte.phar';
+	}
 
 	public function setUp()
 	{
