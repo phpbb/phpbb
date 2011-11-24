@@ -2609,7 +2609,11 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$db->sql_freeresult($result);
 	}
 
-	if ($log_count == 0)
+	// $log_count may be false here if false was passed in for it,
+	// because in this case we did not run the COUNT() query above.
+	// If we ran the COUNT() query and it returned zero rows, return;
+	// otherwise query for logs below.
+	if ($log_count === 0)
 	{
 		// Save the queries, because there are no logs to display
 		return 0;
