@@ -159,7 +159,7 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total)
 			{
-				$sql = $db->sql_build_query('SELECT', array(
+				$sql_ary = array(
 					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 					'FROM'		=> array(
@@ -167,14 +167,14 @@ function mcp_front_view($id, $mode, $action)
 						REPORTS_REASONS_TABLE	=> 'rr',
 						TOPICS_TABLE			=> 't',
 						USERS_TABLE				=> array('u', 'u2'),
-						POSTS_TABLE				=> 'p'
+						POSTS_TABLE				=> 'p',
 					),
 
 					'LEFT_JOIN'	=> array(
 						array(
 							'FROM'	=> array(FORUMS_TABLE => 'f'),
-							'ON'	=> 'f.forum_id = p.forum_id'
-						)
+							'ON'	=> 'f.forum_id = p.forum_id',
+						),
 					),
 
 					'WHERE'		=> 'r.post_id = p.post_id
@@ -186,8 +186,9 @@ function mcp_front_view($id, $mode, $action)
 						AND p.poster_id = u2.user_id
 						AND ' . $db->sql_in_set('p.forum_id', $forum_list),
 
-					'ORDER_BY'	=> 'p.post_time DESC'
-				));
+					'ORDER_BY'	=> 'p.post_time DESC',
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query_limit($sql, 5);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -255,14 +256,14 @@ function mcp_front_view($id, $mode, $action)
 		{
 			include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
-			$sql = $db->sql_build_query('SELECT', array(
+			$sql_ary = array(
 				'SELECT'	=> 'r.report_id, r.report_time, p.msg_id, p.message_subject, p.message_time, p.to_address, p.bcc_address, p.message_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id',
 
 				'FROM'		=> array(
 					REPORTS_TABLE			=> 'r',
 					REPORTS_REASONS_TABLE	=> 'rr',
 					USERS_TABLE				=> array('u', 'u2'),
-					PRIVMSGS_TABLE				=> 'p'
+					PRIVMSGS_TABLE				=> 'p',
 				),
 
 				'WHERE'		=> 'r.pm_id = p.msg_id
@@ -272,8 +273,9 @@ function mcp_front_view($id, $mode, $action)
 					AND r.user_id = u.user_id
 					AND p.author_id = u2.user_id',
 
-				'ORDER_BY'	=> 'p.message_time DESC'
-			));
+				'ORDER_BY'	=> 'p.message_time DESC',
+			);
+			$sql_ary = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query_limit($sql, 5);
 
 			$pm_by_id = $pm_list = array();

@@ -375,7 +375,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 	$sql_anounce_array['SELECT'] = $sql_array['SELECT'] . ', f.forum_name';
 
 	// Obtain announcements ... removed sort ordering, sort by time in all cases
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> $sql_anounce_array['SELECT'],
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_anounce_array['LEFT_JOIN'],
@@ -386,7 +386,8 @@ if ($forum_data['forum_type'] == FORUM_POST)
 				AND t.topic_type = ' . POST_GLOBAL . ')',
 
 		'ORDER_BY'	=> 't.topic_time DESC',
-	));
+	);
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

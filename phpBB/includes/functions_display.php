@@ -110,7 +110,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$sql_array['SELECT'] .= ', fa.user_id';
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> $sql_array['SELECT'],
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
@@ -118,8 +118,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'WHERE'		=> $sql_where,
 
 		'ORDER_BY'	=> 'f.left_id',
-	));
+	);
 
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	$forum_tracking_info = array();

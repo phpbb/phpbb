@@ -2366,7 +2366,7 @@ function cache_moderators()
 		$ug_id_ary = array_keys($hold_ary);
 
 		// Remove users who have group memberships with DENY moderator permissions
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary = array(
 			'SELECT'	=> 'a.forum_id, ug.user_id, g.group_id',
 
 			'FROM'		=> array(
@@ -2379,8 +2379,8 @@ function cache_moderators()
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
+					'ON'	=> 'a.auth_role_id = r.role_id',
+				),
 			),
 
 			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
@@ -2392,7 +2392,8 @@ function cache_moderators()
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
-		));
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -2796,18 +2797,18 @@ function update_foes($group_id = false, $user_id = false)
 	if (is_array($group_id) && sizeof($group_id))
 	{
 		// Grab group settings...
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary = array(
 			'SELECT'	=> 'a.group_id',
 
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
+					'ON'	=> 'a.auth_role_id = r.role_id',
 				),
 			),
 
@@ -2815,8 +2816,9 @@ function update_foes($group_id = false, $user_id = false)
 				AND ' . $db->sql_in_set('a.group_id', $group_id) . "
 				AND ao.auth_option IN ('a_', 'm_')",
 
-			'GROUP_BY'	=> 'a.group_id'
-		));
+			'GROUP_BY'	=> 'a.group_id',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql);
 
 		$groups = array();
