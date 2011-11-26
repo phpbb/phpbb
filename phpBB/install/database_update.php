@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.10-RC1');
+define('UPDATES_TO_VERSION', '3.0.10-RC2');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -987,6 +987,9 @@ function database_update_info()
 		'3.0.9-RC4'     => array(),
 		// No changes from 3.0.9 to 3.0.10-RC1
 		'3.0.9'			=> array(),
+		// No changes from 3.0.10-RC1 to 3.0.10-RC2
+		'3.0.10-RC1'	=> array(),
+
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
 	);
@@ -2005,6 +2008,10 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$no_updates = false;
+		break;
+
+		// No changes from 3.0.10-RC1 to 3.0.10-RC2
+		case '3.0.10-RC1':
 		break;
 	}
 }
