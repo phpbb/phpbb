@@ -254,7 +254,7 @@ do
 		echo ">> $line" >&2;
 		echo -n "Expecting: " >&2;
 		echo "$expecting" | sed 's/ /, /g' >&2;
-		exit $err;
+		quit $err;
 	fi
 
 	i=$(( $i + 1 ));
