@@ -60,6 +60,11 @@ quit()
 	fi
 }
 
+complain()
+{
+	echo "$@"
+}
+
 # Check for empty commit message
 if ! grep -qv '^#' "$1"
 then
@@ -75,9 +80,9 @@ msg=$(grep -v '^#' "$1" |grep -nE '.{81,}')
 
 if [ $? -eq 0 ]
 then
-	echo "The following lines are greater than 80 characters long:" >&2;
-	echo >&2
-	echo "$msg" >&2;
+	complain "The following lines are greater than 80 characters long:" >&2;
+	complain >&2
+	complain "$msg" >&2;
 
 	quit $ERR_LENGTH;
 fi
@@ -131,9 +136,9 @@ do
 					# Don't be too strict.
 					# Commits may be temporary, intended to be squashed later.
 					# Just issue a warning here.
-					echo "Warning: heading should be a sentence beginning with a capital letter." 1>&2
-					echo "You entered:" 1>&2
-					echo "$line" 1>&2
+					complain "Warning: heading should be a sentence beginning with a capital letter." 1>&2
+					complain "You entered:" 1>&2
+					complain "$line" 1>&2
 				fi
 				# restore exit code
 				(exit $result)
@@ -165,7 +170,7 @@ do
 				echo "$line" | grep -Eq "^#";
 			;;
 			*)
-				echo "Unrecognised token $expect" >&2;
+				complain "Unrecognised token $expect" >&2;
 				quit $err;
 			;;
 		esac
@@ -236,7 +241,7 @@ do
 				expecting="eof";
 			;;
 			*)
-				echo "Unrecognised token $expect" >&2;
+				complain "Unrecognised token $expect" >&2;
 				quit 254;
 			;;
 		esac
@@ -250,10 +255,10 @@ do
 	else
 		# None of the expected line formats matched
 		# Guess we'll call it a day here then
-		echo "Syntax error on line $i:" >&2;
-		echo ">> $line" >&2;
-		echo -n "Expecting: " >&2;
-		echo "$expecting" | sed 's/ /, /g' >&2;
+		complain "Syntax error on line $i:" >&2;
+		complain ">> $line" >&2;
+		complain -n "Expecting: " >&2;
+		complain "$expecting" | sed 's/ /, /g' >&2;
 		quit $err;
 	fi
 
@@ -263,7 +268,7 @@ done
 # If EOF is expected exit cleanly
 echo "$expecting" | grep -q "eof" || (
 	# Unexpected EOF, error
-	echo "Unexpected EOF encountered" >&2;
+	complain "Unexpected EOF encountered" >&2;
 	quit $ERR_EOF;
 ) && (
 	# Do post scan checks
@@ -274,8 +279,8 @@ echo "$expecting" | grep -q "eof" || (
 
 		if [ ! -z "$dupes" ]
 		then
-			echo "The following tickets are repeated:" >&2;
-			echo "$dupes" | sed 's/ /\n/g;s/^/* /g' >&2;
+			complain "The following tickets are repeated:" >&2;
+			complain "$dupes" | sed 's/ /\n/g;s/^/* /g' >&2;
 			quit $ERR_FOOTER;
 		fi
 	fi
@@ -283,8 +288,8 @@ echo "$expecting" | grep -q "eof" || (
 	if [ $ticket -gt 0 ]
 	then
 		echo "$tickets" | grep -Eq "\bPHPBB3-$ticket\b" || (
-			echo "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
-			echo "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
+			complain "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
+			complain "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
 			quit $ERR_FOOTER;
 		) || exit $?;
 	fi
