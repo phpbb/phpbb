@@ -11,6 +11,11 @@
 #
 # ln -s ../../git-tools/hooks/commit-msg \\
 #   .git/hooks/commit-msg
+#
+# You can configure whether invalid commit messages abort commits:
+#
+# git config phpbb.hooks.commit-msg.fatal true	(abort, this is the default)
+# git config phpbb.hooks.commit-msg.fatal false (warn only, do not abort)
 
 config_ns="phpbb.hooks.commit-msg";
 
