@@ -16,6 +16,13 @@
 #
 # git config phpbb.hooks.commit-msg.fatal true	(abort, this is the default)
 # git config phpbb.hooks.commit-msg.fatal false (warn only, do not abort)
+#
+# Warning/error messages use color by default if the output is a terminal
+# ("output" here is normally standard error when you run git commit).
+# To force or disable the use of color:
+#
+# git config phpbb.hooks.commit-msg.color true	(force color output)
+# git config phpbb.hooks.commit-msg.color false (disable color output)
 
 config_ns="phpbb.hooks.commit-msg";
 
@@ -60,9 +67,51 @@ quit()
 	fi
 }
 
+use_color()
+{
+	if [ -z "$use_color_cached" ]
+	then
+		case $(git config --bool $config_ns.color)
+		in
+		false)
+			use_color_cached=1
+			;;
+		true)
+			use_color_cached=0
+			;;
+		*)
+			# tty detection in shell:
+			# http://hwi.ath.cx/jsh/list/shext/isatty.sh.html
+			tty 0>/dev/stdout >/dev/null 2>&1
+			use_color_cached=$?
+			;;
+		esac
+	fi
+	# return value is the flag inverted -
+	# if return value is 0, this means use color
+	return $use_color_cached
+}
+
 complain()
 {
-	echo "$@"
+	if use_color
+	then
+		# Careful: our argument may include arguments to echo like -n
+		# ANSI color codes:
+		# http://pueblo.sourceforge.net/doc/manual/ansi_color_codes.html
+		printf "\033[31m\033[1m"
+		if [ "$1" = "-n" ]
+		then
+			echo "$@"
+			printf "\033[10m"
+		else
+			# This will print one trailing space.
+			# Not sure how to avoid this at the moment.
+			echo "$@" $(printf "\033[10m")
+		fi
+	else
+		echo "$@"
+	fi
 }
 
 # Check for empty commit message
