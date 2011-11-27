@@ -834,6 +834,26 @@ class phpbb_template_filter extends php_user_filter
 			var_dump($tag_args);
 		}
 		$location = $tag_args;
+
+		if ($this->phpbb_extension_manager)
+		{
+			$finder = $this->phpbb_extension_manager->get_finder();
+
+			$files = $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				->extension_directory("/styles/universal/template")
+				->get_files();
+
+			$all_compiled = '';
+			foreach ($files as $file)
+			{
+				$compiled = $this->template_compile->compile_file($file);
+				$all_compiled .= $compiled;
+			}
+			return '?>' . $all_compiled . '<?php';
+		}
+
 		// 1. find all mods defining hooks for location
 		// 2. obtain mods' template fragments
 		// 3. compile template fragments
