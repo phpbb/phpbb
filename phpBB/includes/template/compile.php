@@ -116,7 +116,10 @@ class phpbb_template_compile
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
-		stream_filter_append($source_stream, 'phpbb_template', null, array('allow_php' => $this->allow_php));
+		$params = array(
+		  'allow_php' => $this->allow_php,
+		);
+		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }
