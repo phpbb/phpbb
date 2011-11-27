@@ -35,16 +35,18 @@ class phpbb_template_compile
 	/**
 	* Constructor.
 	*
-	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param bool $allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
 	* @param phpbb_style_resource_locator $locator Resource locator
 	* @param string $phpbb_root_path Path to phpBB root directory
+	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
 	*/
-	public function __construct($allow_php, $locator, $phpbb_root_path)
+	public function __construct($allow_php, $locator, $phpbb_root_path, $extension_manager = null)
 	{
 		$this->filter_params = array(
 			'allow_php'	=> $allow_php,
 			'locator'	=> $locator,
-			'phpbb_root_path'	=> $phpbb_root_path
+			'phpbb_root_path'	=> $phpbb_root_path,
+			'extension_manager'	=> $extension_manager,
 		);
 	}
 

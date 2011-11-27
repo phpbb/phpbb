@@ -88,6 +88,13 @@ class phpbb_template_filter extends php_user_filter
 	private $phpbb_root_path;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -148,6 +155,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->allow_php = $this->params['allow_php'];
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
+		$this->extension_manager = $this->params['extension_manager'];
 		return true;
 	}
 

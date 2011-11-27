@@ -128,6 +128,7 @@ services:
             - @user
             - @style.resource_locator
             - @template_context
+            - @ext.manager
 
     template_context:
         class: phpbb_template_context
