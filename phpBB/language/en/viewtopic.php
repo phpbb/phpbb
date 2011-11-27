@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 	'EDITED_TIMES_TOTAL'	=> array(
 		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
 		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
-	)
+	),
 	'EMAIL_TOPIC'			=> 'E-mail friend',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
