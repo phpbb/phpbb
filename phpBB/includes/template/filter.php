@@ -76,6 +76,13 @@ class phpbb_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -134,6 +141,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->chunk = '';
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
+		$this->extension_manager = $this->params['extension_manager'];
 		return true;
 	}
 
