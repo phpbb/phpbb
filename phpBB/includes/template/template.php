@@ -75,14 +75,22 @@ class phpbb_template
 	private $provider;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
 	* @param phpbb_template_path_provider $provider template path provider
+	* @param phpbb_extension_manager $extension_manager extension manager, if null then template hooks will not be invoked
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider_interface $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider_interface $provider, phpbb_extension_manager $extension_manager = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -90,6 +98,7 @@ class phpbb_template
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->provider = $provider;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
@@ -333,7 +342,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->extension_manager);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{

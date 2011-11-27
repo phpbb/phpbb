@@ -33,13 +33,22 @@ class phpbb_template_compile
 	private $allow_php;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
 	* Constructor.
 	*
-	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param bool $allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
 	*/
-	public function __construct($allow_php)
+	public function __construct($allow_php, $extension_manager = null)
 	{
 		$this->allow_php = $allow_php;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
@@ -118,6 +127,7 @@ class phpbb_template_compile
 	{
 		$params = array(
 		  'allow_php' => $this->allow_php,
+		  'extension_manager' => $this->extension_manager,
 		);
 		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);
