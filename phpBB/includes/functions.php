@@ -1943,11 +1943,11 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else
 		{
-			$sql = 'SELECT topic_id
-				FROM ' . TOPICS_TABLE . '
-				WHERE forum_id = ' . $forum_id . '
-					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0 ' .
+			$sql = 'SELECT t.topic_id
+				FROM ' . TOPICS_TABLE . ' t
+				WHERE t.forum_id = ' . $forum_id . '
+					AND t.topic_last_post_time > ' . $mark_time_forum . '
+					AND t.topic_moved_id = 0 ' .
 					$sql_update_unapproved;
 			$result = $db->sql_query($sql);
 
