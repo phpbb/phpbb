@@ -306,7 +306,7 @@ class phpbb_template
 	*
 	* @param string $handle Handle of the template to load
 	* @return phpbb_template_renderer Template renderer object, or null on failure
-	* @uses template_compile is used to compile template source
+	* @uses phpbb_template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
