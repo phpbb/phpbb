@@ -232,7 +232,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR'					=> 'Installation error',
 	'INST_ERR_DB_CONNECT'		=> 'Could not connect to the database, see error message below.',
 	'INST_ERR_DB_FORUM_PATH'	=> 'The database file specified is within your board directory tree. You should put this file in a non web-accessible location.',
-	'INST_ERR_DB_INVALID_PREFIX'=> 'The prefix you entered is invalid. It must start with an alphanumeric character and must only contain alphanumeric characters, numbers and underscores.',
+	'INST_ERR_DB_INVALID_PREFIX'=> 'The prefix you entered is invalid. It must start with a letter and must only contain letters, numbers and underscores.',
 	'INST_ERR_DB_NO_ERROR'		=> 'No error message given.',
 	'INST_ERR_DB_NO_MYSQLI'		=> 'The version of MySQL installed on this machine is incompatible with the “MySQL with MySQLi Extension” option you have selected. Please try the “MySQL” option instead.',
 	'INST_ERR_DB_NO_SQLITE'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 2.8.2.',
@@ -353,7 +353,7 @@ $lang = array_merge($lang, array(
 
 	'TABLES_MISSING'			=> 'Could not find these tables<br />» <strong>%s</strong>.',
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',
-	'TABLE_PREFIX_EXPLAIN'		=> 'The prefix must start with an alphanumeric character and must only contain alphanumeric characters, numbers and underscores.',
+	'TABLE_PREFIX_EXPLAIN'		=> 'The prefix must start with a letter and must only contain letters, numbers and underscores.',
 	'TABLE_PREFIX_SAME'			=> 'The table prefix needs to be the one used by the software you are converting from.<br />» Specified table prefix was %s.',
 	'TESTS_PASSED'				=> 'Tests passed',
 	'TESTS_FAILED'				=> 'Tests failed',
