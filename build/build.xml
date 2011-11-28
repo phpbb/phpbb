@@ -138,6 +138,12 @@
 				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
 	</target>
 
+	<target name="changelog" depends="prepare">
+		<exec dir="build" escape="false"
+			command="php -f build_changelog.php '${newversion}' >
+				save/changelog_${newversion}.html"  />
+	</target>
+
 	<!--
 		This target can be called using phingcall to retrieve a clean
 		checkout of a commit from git. It will only export the phpBB directory.
