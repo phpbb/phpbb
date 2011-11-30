@@ -1862,6 +1862,11 @@ class user extends session
 			$args[0] = $lang;
 			return call_user_func_array('sprintf', $args);
 		}
+		else if (sizeof($lang) == 0)
+		{
+			// If the language entry is an empty array, we just return the language key
+			return $args[0];
+		}
 
 		// It is an array... now handle different nullar/singular/plural forms
 		$key_found = false;

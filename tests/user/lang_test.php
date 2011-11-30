@@ -38,6 +38,8 @@ class phpbb_user_lang_test extends phpbb_test_case
 				1		=> '1 post',		// 1.x
 				2		=> '%1$.1f posts',	// 0.x, 2+.x
 			),
+			'ARRY_EMPTY'	=> array(
+			),
 			'dateformat'	=> array(
 				'AGO'	=> array(
 					1	=> '%d second',
@@ -68,6 +70,9 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 1), '1 post');
 		$this->assertEquals($user->lang('ARRY', 2), '2 posts');
 		$this->assertEquals($user->lang('ARRY', 123), '123 posts');
+
+		// Empty array returns the language key
+		$this->assertEquals($user->lang('ARRY_EMPTY', 123), 'ARRY_EMPTY');
 
 		// No 0 key defined
 		$this->assertEquals($user->lang('ARRY_NO_ZERO', 0), '0 posts');
