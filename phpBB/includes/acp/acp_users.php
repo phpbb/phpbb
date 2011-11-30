@@ -1748,7 +1748,7 @@ class acp_users
 					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
 					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
 
-					'L_AVATAR_EXPLAIN'	=> avatar_explanation_string()
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));
 
 			break;
