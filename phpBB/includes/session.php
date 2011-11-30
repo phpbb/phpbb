@@ -1925,10 +1925,6 @@ class user extends session
 
 		// Default to English system
 		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
-		if ($plural_rule > 15 || $plural_rule < 0)
-		{
-			trigger_error('INVALID_PLURAL_RULE');
-		}
 
 		return phpbb_get_plural_form($plural_rule, $number);
 	}
