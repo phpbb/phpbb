@@ -1914,7 +1914,7 @@ class user extends session
 	* Determine which plural form we should use.
 	* For some languages this is not as simple as for English.
 	*
-	* @param $number		int|float	The number we want to get the plural case for
+	* @param $number		int|float	The number we want to get the plural case for. Float numbers are floored.
 	* @param $force_rule	mixed	False to use the plural rule of the language package
 	*								or an integer to force a certain plural rule
 	* @return	int		The plural-case we need to use for the number plural-rule combination
