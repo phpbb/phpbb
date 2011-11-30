@@ -252,9 +252,11 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		 */
 		function return_handler(res)
 		{
+			// Is a confirmation required?
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
-				// It is a standard link, no confirm_box required.
+				// If a confirmation is not required, display an alert and call the
+				// callbacks.
 				if (typeof res.MESSAGE_TITLE !== 'undefined')
 				{
 					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
@@ -269,6 +271,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 					phpbb.ajax_callbacks[callback].call(that, res, (is_form) ? act : null);
 				}
 
+				// If the server says to refresh the page, check whether the page should
+				// be refreshed and refresh page after specified time if required.
 				if (res.REFRESH_DATA)
 				{
 					if (typeof refresh === 'function')
@@ -286,15 +290,17 @@ phpbb.ajaxify = function(options, refresh, callback) {
 							window.location = res.REFRESH_DATA.url;
 						}
 
+						// Hide the alert even if we refresh the page, in case the user
+						// presses the back button.
 						dark.fadeOut(phpbb.alert_time, function() {
 							alert.hide();
 						});
-					}, res.REFRESH_DATA.time * 1000);
+					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
 			}
 			else
 			{
-				// confirm_box - confirm with the user and send back
+				// If confirmation is required, display a diologue to the user.
 				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
 					if (del)
 					{
@@ -306,6 +312,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 			}
 		}
 
+		// If the element is a form, POST must be used and some extra data must
+		// be taken from the form.
 		var run_exception = (typeof options.exception === 'function');
 		if (is_form)
 		{
@@ -323,6 +331,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				data += '&' + this.name + '=' + this.value;
 			}
 
+			// If exception function returns true, cancel the AJAX functionality,
+			// and return true (meaning that the HTTP request will be sent normally).
 			if (run_exception && options.exception.call($this.parents('form')[0], action, data))
 			{
 				return true;
@@ -332,6 +342,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		}
 		else
 		{
+			// If exception function returns true, cancel the AJAX functionality,
+			// and return true (meaning that the HTTP request will be sent normally).
 			if (run_exception && options.exception.call(this))
 			{
 				return true;
