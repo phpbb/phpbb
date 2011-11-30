@@ -225,14 +225,14 @@ phpbb.parse_querystring = function(string) {
  * 	that was returned and (if it is a form) the form action.
  */
 phpbb.ajaxify = function(options, refresh, callback) {
-	var selector = $((typeof options === 'string') ? options : options.selector);
-	var is_form = selector.is('form');
+	var elements = $((typeof options === 'string') ? options : options.selector);
+	var is_form = elements.is('form');
 	if (is_form)
 	{
-		selector = selector.find('input:submit');
+		elements = elements.find('input:submit');
 	}
 
-	selector.click(function() {
+	elements.click(function() {
 		var action, data, path, that = this, $this = $(this);
 
 		if ($this.data('ajax') == false)
