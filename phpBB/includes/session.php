@@ -1886,17 +1886,25 @@ class user extends session
 				else
 				{
 					$use_plural_form = $this->get_plural_form($args[$i]);
-					$numbers = array_keys($lang);
-
-					foreach ($numbers as $num)
+					if (isset($lang[$use_plural_form]))
 					{
-						if ($num > $use_plural_form)
-						{
-							// If the key we need to use does not exist, we fall back to the previous one.
-							break;
-						}
+						// The key we should use exists, so we use it.
+						$key_found = $use_plural_form;
+					}
+					else
+					{
+						// If the key we need to use does not exist, we fall back to the previous one.
+						$numbers = array_keys($lang);
 
-						$key_found = $num;
+						foreach ($numbers as $num)
+						{
+							if ($num > $use_plural_form)
+							{
+								break;
+							}
+
+							$key_found = $num;
+						}
 					}
 					break;
 				}
