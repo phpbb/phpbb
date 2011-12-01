@@ -14,40 +14,82 @@
 .buttons div {
 	float: left;
 	margin: 0 5px 0 0;
-	background-position: 0 100%;
+	height: 25px;
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	background-image: url("./images/buttons_sprites.png");
+	font-size: 1.1em;
 }
 
 /* Rolloff state */
 .buttons div a {
 	display: block;
-	width: 100%;
 	height: 100%;
-	background-position: 0 0;
-	position: relative;
-	overflow: hidden;
+	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
+	background-repeat: no-repeat;
+
+	text-decoration: none;
+	text-transform: uppercase;
+
+	font: 60px/68px 'LiberationSans', Arial, Helvetica, sans-serif;
+	letter-spacing: 0.075em;
+	font-size: 1.05em;
 }
 
-/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
-/*.buttons div span		{ display: none; }*/
-/*.buttons div a:hover	{ background-image: none; }*/
-.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
-.buttons div a:hover span	{ background-position: 0 100%; }
+.buttons div span			{
+	cursor: pointer;
+	display: block;
+	height: 100%;
+	line-height: 25px;
+	margin: 0 20px 0 5px;
+	padding: 0 5px;
+	background-image: url("./images/buttons_bg.png");
+	background-position: 0 0;
+	background-repeat: repeat-x;
+}
+
+.buttons div.no-icon span	{
+	margin-right: 5px; /* right background image */
+}
+
+.buttons div:hover, .buttons div:hover a span { background-position: 0 -25px; }
 
 /* Big button images */
-.reply-icon span	{ background: transparent none 0 0 no-repeat; }
-.post-icon span		{ background: transparent none 0 0 no-repeat; }
-.locked-icon span	{ background: transparent none 0 0 no-repeat; }
-.pmreply-icon span	{ background: none 0 0 no-repeat; }
-.newpm-icon span 	{ background: none 0 0 no-repeat; }
-.forwardpm-icon span 	{ background: none 0 0 no-repeat; }
+.buttons div.no-icon a {
+	background-position: 100% -50px;
+}
+.buttons div.no-icon:hover a {
+	background-position: 100% -75px;
+}
 
-/* Set big button dimensions */
-.buttons div.reply-icon		{ width: 96px; height: 25px; }
-.buttons div.post-icon		{ width: 96px; height: 25px; }
-.buttons div.locked-icon	{ width: 88px; height: 25px; }
-.buttons div.pmreply-icon	{ width: 96px; height: 25px; }
-.buttons div.newpm-icon		{ width: 84px; height: 25px; }
-.buttons div.forwardpm-icon	{ width: 96px; height: 25px; }
+.buttons div.forwardpm-icon a {
+	background-position: 100% -100px;
+}
+.buttons div.forwardpm-icon:hover a {
+	background-position: 100% -125px;
+}
+
+.buttons div.reply-icon a, .buttons div.pmreply-icon a {
+	background-position: 100% -150px;
+}
+.buttons div.reply-icon:hover a, .buttons div.pmreply-icon:hover a {
+	background-position: 100% -175px;
+}
+
+.buttons div.newpm-icon a, .buttons div.post-icon a {
+	background-position: 100% -200px;
+}
+.buttons div.newpm-icon:hover a, .buttons div.post-icon:hover a {
+	background-position: 100% -225px;
+}
+
+.buttons div.locked-icon a {
+	background-position: 100% -250px;
+}
+.buttons div.locked-icon:hover a {
+	background-position: 100% -275px;
+}
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
@@ -94,12 +136,136 @@ ul.profile-icons li {
 	background-position: 0 100%;
 }
 
+ul.profile-icons li.no-icon,
+ul.profile-icons li.edit-icon,
+ul.profile-icons li.quote-icon,
+ul.profile-icons li.pm-icon {
+	float: left;
+	height: 20px;
+	background-repeat: no-repeat;
+	background-position: 100% -340px;
+	background-image: url("./images/buttons_sprites.png");
+}
+
+ul.profile-icons li.pm-icon {
+	background-position: 100% -540px;
+}
+
 /* Rolloff state */
 ul.profile-icons li a {
 	display: block;
-	width: 100%;
 	height: 100%;
 	background-position: 0 0;
+}
+
+ul.profile-icons li.no-icon a,
+ul.profile-icons li.edit-icon a,
+ul.profile-icons li.quote-icon a,
+ul.profile-icons li.pm-icon a {
+	display: block;
+	height: 100%;
+	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
+	background-repeat: no-repeat;
+	text-decoration: none;
+	text-transform: uppercase;
+
+	font-family: ArialBold, Helvetica, sans-serif;
+	letter-spacing: 0.1em;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+ul.profile-icons li.no-icon a:hover,
+ul.profile-icons li.edit-icon a:hover,
+ul.profile-icons li.quote-icon a:hover,
+ul.profile-icons li.pm-icon a:hover {
+	background-color: transparent;
+	background-image: url("./images/buttons_sprites.png");
+	background-repeat: no-repeat;
+}
+
+ul.profile-icons li.no-icon a span,
+ul.profile-icons li.edit-icon a span,
+ul.profile-icons li.quote-icon a span,
+ul.profile-icons li.pm-icon a span {
+	cursor: pointer;
+	display: block;
+	height: 100%;
+	line-height: 20px;
+	margin: 0 5px 0 13px; /* left and right background */
+	/* 0.07em padding-top are needed, to fix a rounding issue with the font-size/line-height on Browsers.*/
+	padding: 0.07em 5px 0 3px;
+	background-image: url("./images/buttons_bg.png");
+	background-position: 50% -50px;
+	background-repeat: repeat-x;
+}
+
+ul.profile-icons li.pm-icon a span {
+	background-position: 50% -90px;
+	margin: 0 4px 0 13px; /* left and right background */
+	padding: 0 0 0 1px;
+}
+
+/* smaller margin for the asterix and without an icon */
+ul.profile-icons li.no-icon a span,
+ul.profile-icons li.edit-icon a span {
+	margin: 0 5px 0 10px; /* left and right background */
+}
+
+ul.profile-icons li.no-icon:hover a span,
+ul.profile-icons li.edit-icon:hover a span,
+ul.profile-icons li.quote-icon:hover a span {
+	background-position: 50% -70px;
+}
+
+ul.profile-icons li.pm-icon:hover a span {
+	background-position: 50% -110px;
+}
+
+ul.profile-icons li.no-icon:hover,
+ul.profile-icons li.edit-icon:hover,
+ul.profile-icons li.quote-icon:hover {
+	background-position: 100% -360px;
+}
+
+ul.profile-icons li.pm-icon:hover {
+	background-position: 100% -560px;
+}
+
+ul.profile-icons li.no-icon a {
+	background-position: 0 -300px;
+}
+ul.profile-icons li.no-icon:hover a {
+	background-position: 0 -320px;
+}
+
+ul.profile-icons li.edit-icon a {
+	background-position: 0 -380px;
+}
+ul.profile-icons li.edit-icon:hover a {
+	background-position: 0 -400px;
+}
+
+ul.profile-icons li.quote-icon a {
+	background-position: 0 -420px;
+}
+ul.profile-icons li.quote-icon:hover a {
+	background-position: 0 -440px;
+}
+
+ul.profile-icons li.pm-icon a {
+	background-position: 0 -500px;
+}
+ul.profile-icons li.pm-icon:hover a {
+	background-position: 0 -520px;
+}
+ul.profile-icons li.pm-icon a * { font-weight: bold; }
+
+ul.profile-icons li.no-icon a span,
+ul.profile-icons li.edit-icon a span,
+ul.profile-icons li.quote-icon a span {
+	padding-left: 0;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
@@ -125,13 +291,10 @@ ul.profile-icons li a:hover { background: none; }
 .msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
 .icq-icon, .icq-icon a			{ background: none top left no-repeat; }
 .jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
-.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
-.quote-icon, .quote-icon a		{ background: none top left no-repeat; }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background: none top left no-repeat; }
 .warn-icon, .warn-icon a			{ background: none top left no-repeat; }
-.edit-icon, .edit-icon a			{ background: none top left no-repeat; }
 .delete-icon, .delete-icon a		{ background: none top left no-repeat; }
 .info-icon, .info-icon a			{ background: none top left no-repeat; }
 
@@ -143,16 +306,13 @@ ul.profile-icons li.web-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.msnm-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.icq-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.jabber-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
-ul.profile-icons li.quote-icon	{ width: 54px; height: 20px; }
 ul.profile-icons li.report-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
 ul.profile-icons li.delete-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.info-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
 
 /* Fix profile icon default margins */
 ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }
-ul.profile-icons li.quote-icon	{ margin: 0 0 0 10px; }
+ul.profile-icons li.quote-icon	{ margin: 0; }
 ul.profile-icons li.info-icon, ul.profile-icons li.report-icon	{ margin: 0 3px 0 0; }
 

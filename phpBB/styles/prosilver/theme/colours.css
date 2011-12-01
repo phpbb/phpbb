@@ -661,12 +661,14 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.reply-icon span	{ background-image: url("./en/button_topic_reply.gif"); }
-.post-icon span		{ background-image: url("./en/button_topic_new.gif"); }
-.locked-icon span	{ background-image: url("./en/button_topic_locked.gif"); }
-.pmreply-icon span	{ background-image: url("./en/button_pm_reply.gif") ;}
-.newpm-icon span 	{ background-image: url("./en/button_pm_new.gif") ;}
-.forwardpm-icon span	{ background-image: url("./en/button_pm_forward.gif") ;}
+.buttons div a,
+ul.profile-icons li.no-icon a,
+ul.profile-icons li.edit-icon a,
+ul.profile-icons li.quote-icon a { color: #D31141; }
+
+ul.profile-icons li.pm-icon a * { color: #253f61; }
+ul.profile-icons li.pm-icon a:hover * { color: #d53057; }
+
 
 a.print {
 	background-image: url("./images/icon_print.gif");
@@ -700,12 +702,10 @@ a.sendemail {
 .msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
-.pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
-.quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
+
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
-.edit-icon, .edit-icon a			{ background-image: url("./en/icon_post_edit.gif"); }
 .delete-icon, .delete-icon a		{ background-image: url("./images/icon_post_delete.gif"); }
 .info-icon, .info-icon a			{ background-image: url("./images/icon_post_info.gif"); }
 .warn-icon, .warn-icon a			{ background-image: url("./images/icon_user_warn.gif"); } /* Need updated warn icon */
