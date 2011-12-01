@@ -29,15 +29,10 @@ ul.topiclist li.row dl {
 ul.topiclist dt {
 	display: block;
 	float: left;
-	width: 100%;
+	width: 50%;
 	font-size: 1.1em;
 	padding-left: 5px;
 	padding-right: 5px;
-	margin-right: -465px;
-}
-
-ul.topiclist dt .wrap-content {
-	padding-right: 465px;
 }
 
 ul.topiclist dd {
@@ -101,7 +96,6 @@ li.header dt, li.header dd {
 
 li.header dt {
 	font-weight: bold;
-	margin-right: -465px;
 }
 
 li.header dd {
@@ -132,7 +126,7 @@ dl.icon dt {
 }
 
 dd.posts, dd.topics, dd.views {
-	width: 90px;
+	width: 8%;
 	text-align: center;
 	line-height: 2.2em;
 	font-size: 1.2em;
@@ -151,7 +145,7 @@ dl.icon dt li {
 }
 
 dd.lastpost {
-	width: 230px;
+	width: 25%;
 	font-size: 1.1em;
 }
 
