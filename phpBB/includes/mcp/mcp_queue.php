@@ -436,7 +436,7 @@ class mcp_queue
 					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
+					'TOTAL'					=> $user->lang((($mode == 'unapproved_posts') ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
 
 				$this->tpl_name = 'mcp_queue';

@@ -315,32 +315,32 @@ class custom_profile
 					case 'FIELD_INVALID_DATE':
 					case 'FIELD_INVALID_VALUE':
 					case 'FIELD_REQUIRED':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name']);
+						$error = $user->lang($cp_result, $row['lang_name']);
 					break;
 
 					case 'FIELD_TOO_SHORT':
 					case 'FIELD_TOO_SMALL':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
+						$error = $user->lang($cp_result, (int) $row['field_minlen'], $row['lang_name']);
 					break;
 
 					case 'FIELD_TOO_LONG':
 					case 'FIELD_TOO_LARGE':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
+						$error = $user->lang($cp_result, (int) $row['field_maxlen'], $row['lang_name']);
 					break;
 
 					case 'FIELD_INVALID_CHARS':
 						switch ($row['field_validation'])
 						{
 							case '[0-9]+':
-								$error = sprintf($user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_NUMBERS_ONLY', $row['lang_name']);
 							break;
 
 							case '[\w]+':
-								$error = sprintf($user->lang[$cp_result . '_ALPHA_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_ALPHA_ONLY', $row['lang_name']);
 							break;
 
 							case '[\w_\+\. \-\[\]]+':
-								$error = sprintf($user->lang[$cp_result . '_SPACERS_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_SPACERS_ONLY', $row['lang_name']);
 							break;
 						}
 					break;

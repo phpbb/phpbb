@@ -343,32 +343,6 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
 
-// Generate reg/hidden/guest online text
-$vars_online = array(
-	'REG'	=> array('logged_visible_online', 'l_r_user_s'),
-	'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
-	'GUEST'	=> array('guest_counter', 'l_g_user_s')
-);
-
-foreach ($vars_online as $l_prefix => $var_ary)
-{
-	switch ($$var_ary[0])
-	{
-		case 0:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_ONLINE'];
-		break;
-
-		case 1:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USER_ONLINE'];
-		break;
-
-		default:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ONLINE'];
-		break;
-	}
-}
-unset($vars_online);
-
 $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
@@ -415,8 +389,8 @@ meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_gue
 
 // Send data to template
 $template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
-	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
+	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),
+	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
 	'PAGINATION'					=> $pagination,
 	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),

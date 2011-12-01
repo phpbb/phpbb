@@ -1053,7 +1053,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,

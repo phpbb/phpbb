@@ -1010,8 +1010,8 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
@@ -1748,8 +1748,8 @@ class acp_users
 					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
 					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
-				);
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
+				));
 
 			break;
 
@@ -1881,7 +1881,7 @@ class acp_users
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],

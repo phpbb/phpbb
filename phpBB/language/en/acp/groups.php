@@ -54,8 +54,10 @@ $lang = array_merge($lang, array(
 	'GROUP_CLOSED'					=> 'Closed',
 	'GROUP_COLOR'					=> 'Group colour',
 	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members’ usernames will appear in, leave blank for user default.',
-	'GROUP_CONFIRM_ADD_USER'		=> 'Are you sure that you want to add the user %1$s to the group?',
-	'GROUP_CONFIRM_ADD_USERS'		=> 'Are you sure that you want to add the users %1$s to the group?',
+	'GROUP_CONFIRM_ADD_USERS'		=> array(
+		1	=> 'Are you sure that you want to add the user %2$s to the group?',
+		2	=> 'Are you sure that you want to add the users %2$s to the group?',
+	),
 	'GROUP_CREATED'					=> 'Group has been created successfully.',
 	'GROUP_DEFAULT'					=> 'Make group default for member',
 	'GROUP_DEFS_UPDATED'			=> 'Default group set for all selected members.',

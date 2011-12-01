@@ -194,8 +194,8 @@ class ucp_main
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
-					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+					'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
@@ -674,8 +674,8 @@ class ucp_main
 			$template->assign_vars(array(
 				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-				'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
-			);
+				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
+			));
 		}
 
 		if ($mode == 'subscribed')
