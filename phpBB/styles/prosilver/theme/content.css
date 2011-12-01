@@ -29,19 +29,14 @@ ul.topiclist li.row dl {
 ul.topiclist dt {
 	display: block;
 	float: left;
-	width: 50%;
+	width: 100%;
 	font-size: 1.1em;
 	padding-left: 5px;
 	padding-right: 5px;
-}
-
-ul.topiclist .widescreen-optimised dt {
-	width: 100%;
 	margin-right: -465px;
 }
 
-ul.topiclist .widescreen-optimised dt .wrap-content {
-	display: block;
+ul.topiclist dt .wrap-content {
 	padding-right: 465px;
 }
 
@@ -106,9 +101,6 @@ li.header dt, li.header dd {
 
 li.header dt {
 	font-weight: bold;
-}
-
-li.header .widescreen-optimised dt {
 	margin-right: -465px;
 }
 
