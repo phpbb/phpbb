@@ -254,10 +254,26 @@
 
 <!-- INCLUDE jumpbox.html -->
 
-<!-- IF S_TOPIC_MOD -->
+<!-- IF S_TOPIC_MOD_LOCK or S_TOPIC_MOD_DELETE or S_TOPIC_MOD_MOVE or S_TOPIC_MOD_SPLIT or S_TOPIC_MOD_MERGE or S_TOPIC_MOD_MERGE_TOPIC or S_TOPIC_MOD_FORK or S_TOPIC_MOD_MAKE_NORMAL or S_TOPIC_MOD_MAKE_STICKY or S_TOPIC_MOD_MAKE_ANNOUNCE or S_TOPIC_MOD_MAKE_GLOBAL or S_TOPIC_MOD_TOPIC_LOGS -->
 	<form method="post" action="{S_MOD_ACTION}">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}:</label> {S_TOPIC_MOD} <input type="submit" value="{L_GO}" class="button2" />
+		<label for="quick-mod-select">{L_QUICK_MOD}:</label>
+		<select name="action" id="quick-mod-select">
+			<!-- IF S_TOPIC_MOD_LOCK eq 'lock' --><option value="lock">{L_LOCK_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_LOCK eq 'unlock' --><option value="unlock">{L_UNLOCK_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_DELETE --><option value="delete_topic">{L_DELETE_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MOVE --><option value="move">{L_MOVE_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_SPLIT--><option value="split">{L_SPLIT_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MERGE --><option value="merge">{L_MERGE_POSTS}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MERGE_TOPIC --><option value="merge_topic">{L_MERGE_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_FORK --><option value="fork">{L_FORK_TOPIC}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MAKE_NORMAL --><option value="make_normal">{L_MAKE_NORMAL}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MAKE_STICKY --><option value="make_sticky">{L_MAKE_STICKY}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MAKE_ANNOUNCE --><option value="make_announce">{L_MAKE_ANNOUNCE}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_MAKE_GLOBAL --><option value="make_global">{L_MAKE_GLOBAL}</option><!-- ENDIF -->
+			<!-- IF S_TOPIC_MOD_TOPIC_LOGS --><option value="topic_logs">{L_VIEW_TOPIC_LOGS}</option><!-- ENDIF -->
+		</select>
+		<input type="submit" value="{L_GO}" class="button2" />
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
