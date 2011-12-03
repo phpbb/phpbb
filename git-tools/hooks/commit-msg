@@ -12,11 +12,6 @@
 # ln -s ../../git-tools/hooks/commit-msg \\
 #   .git/hooks/commit-msg
 #
-# You can configure whether invalid commit messages abort commits:
-#
-# git config phpbb.hooks.commit-msg.fatal true	(abort, this is the default)
-# git config phpbb.hooks.commit-msg.fatal false (warn only, do not abort)
-#
 # Warning/error messages use color by default if the output is a terminal
 # ("output" here is normally standard error when you run git commit).
 # To force or disable the use of color:
@@ -25,13 +20,6 @@
 # git config phpbb.hooks.commit-msg.color false (disable color output)
 
 config_ns="phpbb.hooks.commit-msg";
-
-if [ "$(git config --bool $config_ns.fatal)" = "false" ]
-then
-	fatal=0;
-else
-	fatal=1;
-fi
 
 debug_level=$(git config --int $config_ns.debug || echo 0);
 
@@ -59,12 +47,9 @@ debug()
 
 quit()
 {
-	if [ $1 -gt 0 ] && [ $1 -ne $ERR_UNKNOWN ] && [ $fatal -eq 0 ]
-	then
-		exit 0;
-	else
-		exit $1;
-	fi
+	# Now we always exit with success, since git will trash
+	# entered commit message if commit-msg hook exits with a failure.
+	exit 0
 }
 
 use_color()
