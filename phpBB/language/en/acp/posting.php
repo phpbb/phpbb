@@ -121,15 +121,19 @@ $lang = array_merge($lang, array(
 	'FIRST'			=> 'First',
 
 	'ICONS_ADD'				=> 'Add a new icon',
-	'ICONS_NONE_ADDED'		=> 'No icons were added.',
-	'ICONS_ONE_ADDED'		=> 'The icon has been added successfully.',
-	'ICONS_ADDED'			=> 'The icons have been added successfully.',
+	'ICONS_ADDED'			=> array(
+		0	=> 'No icons were added.',
+		1	=> 'The icon has been added successfully.',
+		2	=> 'The icons have been added successfully.',
+	),
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
 	'ICONS_EDIT'			=> 'Edit icon',
-	'ICONS_ONE_EDITED'		=> 'The icon has been updated successfully.',
-	'ICONS_NONE_EDITED'		=> 'No icons were updated.',
-	'ICONS_EDITED'			=> 'The icons have been updated successfully.',
+	'ICONS_EDITED'			=> array(
+		0	=> 'No icons were updated.',
+		1	=> 'The icon has been updated successfully.',
+		2	=> 'The icons have been updated successfully.',
+	),
 	'ICONS_HEIGHT'			=> 'Icon height',
 	'ICONS_IMAGE'			=> 'Icon image',
 	'ICONS_IMPORTED'		=> 'The icons pack has been installed successfully.',
@@ -161,9 +165,11 @@ $lang = array_merge($lang, array(
 
 	'SELECT_PACKAGE'			=> 'Select a package file',
 	'SMILIES_ADD'				=> 'Add a new smiley',
-	'SMILIES_NONE_ADDED'		=> 'No smilies were added.',
-	'SMILIES_ONE_ADDED'			=> 'The smiley has been added successfully.',
-	'SMILIES_ADDED'				=> 'The smilies have been added successfully.',
+	'SMILIES_ADDED'				=> array(
+		0	=> 'No smilies were added.',
+		1	=> 'The smiley has been added successfully.',
+		2	=> 'The smilies have been added successfully.',
+	),
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
@@ -171,9 +177,11 @@ $lang = array_merge($lang, array(
 	'SMILIE_NO_CODE'			=> 'The smiley “%s” was ignored, as there was no code entered.',
 	'SMILIE_NO_EMOTION'			=> 'The smiley “%s” was ignored, as there was no emotion entered.',
 	'SMILIE_NO_FILE'			=> 'The smiley “%s” was ignored, as the file is missing.',
-	'SMILIES_NONE_EDITED'		=> 'No smilies were updated.',
-	'SMILIES_ONE_EDITED'		=> 'The smiley has been updated successfully.',
-	'SMILIES_EDITED'			=> 'The smilies have been updated successfully.',
+	'SMILIES_EDITED'			=> array(
+		0	=> 'No smilies were updated.',
+		1	=> 'The smiley has been updated successfully.',
+		2	=> 'The smilies have been updated successfully.',
+	),
 	'SMILIES_EMOTION'			=> 'Emotion',
 	'SMILIES_HEIGHT'			=> 'Smiley height',
 	'SMILIES_IMAGE'				=> 'Smiley image',
@@ -185,7 +193,10 @@ $lang = array_merge($lang, array(
 	'SMILIES_URL'				=> 'Smiley image file',
 	'SMILIES_WIDTH'				=> 'Smiley width',
 
-	'TOO_MANY_SMILIES'			=> 'Limit of %d smilies reached.',
+	'TOO_MANY_SMILIES'			=> array(
+		1	=> 'Limit of %d smiley reached.',
+		2	=> 'Limit of %d smilies reached.',
+	),
 
 	'WRONG_PAK_TYPE'	=> 'The specified package does not contain the appropriate data.',
 ));

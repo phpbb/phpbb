@@ -1821,6 +1821,9 @@ class user extends session
 	* This function/functionality is inspired by SHS` and Ashe.
 	*
 	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
+	*
+	* If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
+	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
 	*/
 	function lang()
 	{
@@ -1859,6 +1862,11 @@ class user extends session
 			$args[0] = $lang;
 			return call_user_func_array('sprintf', $args);
 		}
+		else if (sizeof($lang) == 0)
+		{
+			// If the language entry is an empty array, we just return the language key
+			return $args[0];
+		}
 
 		// It is an array... now handle different nullar/singular/plural forms
 		$key_found = false;
@@ -1866,20 +1874,40 @@ class user extends session
 		// We now get the first number passed and will select the key based upon this number
 		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
 		{
-			if (is_int($args[$i]))
+			if (is_int($args[$i]) || is_float($args[$i]))
 			{
-				$numbers = array_keys($lang);
-
-				foreach ($numbers as $num)
+				if ($args[$i] == 0 && isset($lang[0]))
 				{
-					if ($num > $args[$i])
-					{
-						break;
-					}
-
-					$key_found = $num;
+					// We allow each translation using plural forms to specify a version for the case of 0 things,
+					// so that "0 users" may be displayed as "No users".
+					$key_found = 0;
+					break;
 				}
-				break;
+				else
+				{
+					$use_plural_form = $this->get_plural_form($args[$i]);
+					if (isset($lang[$use_plural_form]))
+					{
+						// The key we should use exists, so we use it.
+						$key_found = $use_plural_form;
+					}
+					else
+					{
+						// If the key we need to use does not exist, we fall back to the previous one.
+						$numbers = array_keys($lang);
+
+						foreach ($numbers as $num)
+						{
+							if ($num > $use_plural_form)
+							{
+								break;
+							}
+
+							$key_found = $num;
+						}
+					}
+					break;
+				}
 			}
 		}
 
@@ -1893,6 +1921,25 @@ class user extends session
 		// Use the language string we determined and pass it to sprintf()
 		$args[0] = $lang[$key_found];
 		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
+	* Determine which plural form we should use.
+	* For some languages this is not as simple as for English.
+	*
+	* @param $number		int|float	The number we want to get the plural case for. Float numbers are floored.
+	* @param $force_rule	mixed	False to use the plural rule of the language package
+	*								or an integer to force a certain plural rule
+	* @return	int		The plural-case we need to use for the number plural-rule combination
+	*/
+	function get_plural_form($number, $force_rule = false)
+	{
+		$number = (int) $number;
+
+		// Default to English system
+		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
+
+		return phpbb_get_plural_form($plural_rule, $number);
 	}
 
 	/**
@@ -2099,9 +2146,9 @@ class user extends session
 		// Zone offset
 		$zone_offset = $this->timezone + $this->dst;
 
-		// Show date <= 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
+		// Show date < 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
 		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
-		if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
+		if ($delta < 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
 		{
 			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 		}

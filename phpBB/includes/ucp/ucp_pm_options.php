@@ -231,7 +231,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 					// Something went wrong, only partially moved?
 					if ($num_moved != $folder_row['pm_count'])
 					{
-						trigger_error(sprintf($user->lang['MOVE_PM_ERROR'], $num_moved, $folder_row['pm_count']));
+						trigger_error($user->lang('MOVE_PM_ERROR', (int) $folder_row['pm_count'], $num_moved));
 					}
 				break;
 
@@ -409,7 +409,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	
 	$folder[PRIVMSGS_INBOX] = array(
 		'folder_name'		=> $user->lang['PM_INBOX'],
-		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
+		'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $num_messages),
 	);
 
 	$sql = 'SELECT folder_id, folder_name, pm_count
@@ -423,7 +423,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
 			'folder_name'		=> $row['folder_name'],
-			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
+			'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $row['pm_count']),
 		);
 	}
 	$db->sql_freeresult($result);

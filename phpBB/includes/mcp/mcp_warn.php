@@ -185,7 +185,7 @@ class mcp_warn
 
 			'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
 			'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start),
-			'TOTAL_USERS'		=> ($user_count == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $user_count),
+			'TOTAL_USERS'		=> $user->lang('LIST_USERS', (int) $user_count),
 		));
 	}
 

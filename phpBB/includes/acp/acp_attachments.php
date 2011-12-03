@@ -1159,7 +1159,7 @@ class acp_attachments
 				// Issue warning message if files stats are inaccurate
 				if (($num_files != $num_files_real) || ($total_size != $total_size_real))
 				{
-					$error[] = sprintf($user->lang['FILES_STATS_WRONG'], $num_files_real, get_formatted_filesize($total_size_real));
+					$error[] = $user->lang('FILES_STATS_WRONG', (int) $num_files_real, get_formatted_filesize($total_size_real));
 
 					$template->assign_vars(array(
 						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
@@ -1244,8 +1244,7 @@ class acp_attachments
 					$row['extension'] = strtolower(trim((string) $row['extension']));
 					$comment = ($row['attach_comment'] && !$row['in_message']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
 					$display_cat = $extensions[$row['extension']]['display_cat'];
-					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNT' : 'VIEWED_COUNT';
-					$l_download_count = (!isset($row['download_count']) || (int) $row['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (((int) $row['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $row['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $row['download_count']));
+					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
 
 					$template->assign_block_vars('attachments', array(
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
@@ -1261,7 +1260,7 @@ class acp_attachments
 						'TOPIC_ID'			=> (int) $row['topic_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? (int) $post_ids[$row['attach_id']] : '',
 
-						'L_DOWNLOAD_COUNT'	=> $l_download_count,
+						'L_DOWNLOAD_COUNT'	=> $user->lang($l_downloaded_viewed, (int) $row['download_count']),
 
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 

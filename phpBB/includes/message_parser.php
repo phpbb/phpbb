@@ -210,7 +210,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
-			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+			$this->warn_msg[] = $user->lang('MAX_FONT_SIZE_EXCEEDED', (int) $config['max_' . $this->mode . '_font_size']);
 
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
@@ -319,13 +319,13 @@ class bbcode_firstpass extends bbcode
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
@@ -374,13 +374,13 @@ class bbcode_firstpass extends bbcode
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
@@ -772,7 +772,7 @@ class bbcode_firstpass extends bbcode
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
+						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -1117,7 +1117,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1126,7 +1126,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : $user->lang('TOO_FEW_CHARS_LIMIT', $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1445,7 +1445,7 @@ class parse_message extends bbcode_firstpass
 			}
 			else
 			{
-				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+				$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 			}
 		}
 
@@ -1536,7 +1536,7 @@ class parse_message extends bbcode_firstpass
 				}
 				else
 				{
-					$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 				}
 			}
 		}
