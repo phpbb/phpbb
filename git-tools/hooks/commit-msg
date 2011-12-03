@@ -88,11 +88,11 @@ complain()
 		if [ "$1" = "-n" ]
 		then
 			echo "$@"
-			printf "\033[10m"
+			printf "\033[0m"
 		else
 			# This will print one trailing space.
 			# Not sure how to avoid this at the moment.
-			echo "$@" $(printf "\033[10m")
+			echo "$@" $(printf "\033[0m")
 		fi
 	else
 		echo "$@"
