@@ -893,7 +893,7 @@ if ($submit || $preview || $refresh)
 
 		$message_parser->parse_poll($poll);
 
-		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : array();
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 
 		/* We reset votes, therefore also allow removing options
@@ -916,7 +916,8 @@ if ($submit || $preview || $refresh)
 			'poll_options'		=> array(),
 		);
 
-		$post_data['poll_options'] = $post_data['poll_title'] = '';
+		$post_data['poll_options'] = array();
+		$post_data['poll_title'] = '';
 		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_max_options'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
 	}
 	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
@@ -932,7 +933,7 @@ if ($submit || $preview || $refresh)
 
 		$message_parser->parse_poll($poll);
 
-		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : array();
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 	}
 	else
