@@ -11,15 +11,15 @@
 #
 # ln -s ../../git-tools/hooks/commit-msg \\
 #   .git/hooks/commit-msg
+#
+# Warning/error messages use color by default if the output is a terminal
+# ("output" here is normally standard error when you run git commit).
+# To force or disable the use of color:
+#
+# git config phpbb.hooks.commit-msg.color true	(force color output)
+# git config phpbb.hooks.commit-msg.color false (disable color output)
 
 config_ns="phpbb.hooks.commit-msg";
-
-if [ "$(git config --bool $config_ns.fatal)" = "false" ]
-then
-	fatal=0;
-else
-	fatal=1;
-fi
 
 debug_level=$(git config --int $config_ns.debug || echo 0);
 
@@ -47,11 +47,55 @@ debug()
 
 quit()
 {
-	if [ $1 -gt 0 ] && [ $1 -ne $ERR_UNKNOWN ] && [ $fatal -eq 0 ]
+	# Now we always exit with success, since git will trash
+	# entered commit message if commit-msg hook exits with a failure.
+	exit 0
+}
+
+use_color()
+{
+	if [ -z "$use_color_cached" ]
 	then
-		exit 0;
+		case $(git config --bool $config_ns.color)
+		in
+		false)
+			use_color_cached=1
+			;;
+		true)
+			use_color_cached=0
+			;;
+		*)
+			# tty detection in shell:
+			# http://hwi.ath.cx/jsh/list/shext/isatty.sh.html
+			tty 0>/dev/stdout >/dev/null 2>&1
+			use_color_cached=$?
+			;;
+		esac
+	fi
+	# return value is the flag inverted -
+	# if return value is 0, this means use color
+	return $use_color_cached
+}
+
+complain()
+{
+	if use_color
+	then
+		# Careful: our argument may include arguments to echo like -n
+		# ANSI color codes:
+		# http://pueblo.sourceforge.net/doc/manual/ansi_color_codes.html
+		printf "\033[31m\033[1m"
+		if [ "$1" = "-n" ]
+		then
+			echo "$@"
+			printf "\033[0m"
+		else
+			# This will print one trailing space.
+			# Not sure how to avoid this at the moment.
+			echo "$@" $(printf "\033[0m")
+		fi
 	else
-		exit $1;
+		echo "$@"
 	fi
 }
 
@@ -70,9 +114,9 @@ msg=$(grep -v '^#' "$1" |grep -nE '.{81,}')
 
 if [ $? -eq 0 ]
 then
-	echo "The following lines are greater than 80 characters long:" >&2;
-	echo >&2
-	echo "$msg" >&2;
+	complain "The following lines are greater than 80 characters long:" >&2;
+	complain >&2
+	complain "$msg" >&2;
 
 	quit $ERR_LENGTH;
 fi
@@ -126,9 +170,9 @@ do
 					# Don't be too strict.
 					# Commits may be temporary, intended to be squashed later.
 					# Just issue a warning here.
-					echo "Warning: heading should be a sentence beginning with a capital letter." 1>&2
-					echo "You entered:" 1>&2
-					echo "$line" 1>&2
+					complain "Warning: heading should be a sentence beginning with a capital letter." 1>&2
+					complain "You entered:" 1>&2
+					complain "$line" 1>&2
 				fi
 				# restore exit code
 				(exit $result)
@@ -160,7 +204,7 @@ do
 				echo "$line" | grep -Eq "^#";
 			;;
 			*)
-				echo "Unrecognised token $expect" >&2;
+				complain "Unrecognised token $expect" >&2;
 				quit $err;
 			;;
 		esac
@@ -231,7 +275,7 @@ do
 				expecting="eof";
 			;;
 			*)
-				echo "Unrecognised token $expect" >&2;
+				complain "Unrecognised token $expect" >&2;
 				quit 254;
 			;;
 		esac
@@ -245,11 +289,11 @@ do
 	else
 		# None of the expected line formats matched
 		# Guess we'll call it a day here then
-		echo "Syntax error on line $i:" >&2;
-		echo ">> $line" >&2;
-		echo -n "Expecting: " >&2;
-		echo "$expecting" | sed 's/ /, /g' >&2;
-		exit $err;
+		complain "Syntax error on line $i:" >&2;
+		complain ">> $line" >&2;
+		complain -n "Expecting: " >&2;
+		complain "$expecting" | sed 's/ /, /g' >&2;
+		quit $err;
 	fi
 
 	i=$(( $i + 1 ));
@@ -258,7 +302,7 @@ done
 # If EOF is expected exit cleanly
 echo "$expecting" | grep -q "eof" || (
 	# Unexpected EOF, error
-	echo "Unexpected EOF encountered" >&2;
+	complain "Unexpected EOF encountered" >&2;
 	quit $ERR_EOF;
 ) && (
 	# Do post scan checks
@@ -269,8 +313,8 @@ echo "$expecting" | grep -q "eof" || (
 
 		if [ ! -z "$dupes" ]
 		then
-			echo "The following tickets are repeated:" >&2;
-			echo "$dupes" | sed 's/ /\n/g;s/^/* /g' >&2;
+			complain "The following tickets are repeated:" >&2;
+			complain "$dupes" | sed 's/ /\n/g;s/^/* /g' >&2;
 			quit $ERR_FOOTER;
 		fi
 	fi
@@ -278,8 +322,8 @@ echo "$expecting" | grep -q "eof" || (
 	if [ $ticket -gt 0 ]
 	then
 		echo "$tickets" | grep -Eq "\bPHPBB3-$ticket\b" || (
-			echo "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
-			echo "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
+			complain "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
+			complain "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
 			quit $ERR_FOOTER;
 		) || exit $?;
 	fi
