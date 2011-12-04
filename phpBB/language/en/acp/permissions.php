@@ -171,7 +171,7 @@ $lang = array_merge($lang, array(
 	'ROLE_FORUM_POLLS'			=> 'Standard Access + Polls',
 	'ROLE_FORUM_READONLY'		=> 'Read Only Access',
 	'ROLE_FORUM_STANDARD'		=> 'Standard Access',
-	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly Registered User Access',
 	'ROLE_MOD_FULL'				=> 'Full Moderator',
 	'ROLE_MOD_QUEUE'			=> 'Queue Moderator',
 	'ROLE_MOD_SIMPLE'			=> 'Simple Moderator',
@@ -181,7 +181,7 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_NOAVATAR'		=> 'No Avatar',
 	'ROLE_USER_NOPM'			=> 'No Private Messages',
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
-	'ROLE_USER_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_USER_NEW_MEMBER'		=> 'Newly Registered User Features',
 
 
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
