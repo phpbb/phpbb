@@ -128,6 +128,7 @@ class phpbb_template_compile
 		$params = array(
 		  'allow_php' => $this->allow_php,
 		  'extension_manager' => $this->extension_manager,
+		  'template_compile' => $this,
 		);
 		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);

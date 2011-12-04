@@ -83,6 +83,13 @@ class phpbb_template_filter extends php_user_filter
 	private $extension_manager;
 
 	/**
+	* Template compiler.
+	*
+	* @var phpbb_template_compile
+	*/
+	private $template_compile;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -142,6 +149,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
 		$this->extension_manager = $this->params['extension_manager'];
+		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
 
