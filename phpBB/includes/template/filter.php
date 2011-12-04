@@ -95,6 +95,13 @@ class phpbb_template_filter extends php_user_filter
 	private $extension_manager;
 
 	/**
+	* Template compiler.
+	*
+	* @var phpbb_template_compile
+	*/
+	private $template_compile;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -156,6 +163,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
 		$this->extension_manager = $this->params['extension_manager'];
+		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
 
