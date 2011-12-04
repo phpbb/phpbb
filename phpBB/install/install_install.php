@@ -1152,14 +1152,13 @@ class install_install extends module
 		$dbms_schema = 'schemas/' . $available_dbms[$data['dbms']]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $available_dbms[$data['dbms']]['COMMENTS'];
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
 
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
 
-		$remove_remarks($sql_query);
+		$sql_query = remove_comments($sql_query);
 
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
@@ -1197,8 +1196,7 @@ class install_install extends module
 		// Change language strings...
 		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
-		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
-		remove_remarks($sql_query);
+		$sql_query = remove_comments($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
