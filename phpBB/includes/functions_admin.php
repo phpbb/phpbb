@@ -2294,41 +2294,6 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* remove_comments will strip the sql comment lines out of an uploaded sql file
-* specifically for mssql and postgres type files in the install....
-*/
-function remove_comments(&$output)
-{
-	$lines = explode("\n", $output);
-	$output = '';
-
-	// try to keep mem. use down
-	$linecount = sizeof($lines);
-
-	$in_comment = false;
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if (trim($lines[$i]) == '/*')
-		{
-			$in_comment = true;
-		}
-
-		if (!$in_comment)
-		{
-			$output .= $lines[$i] . "\n";
-		}
-
-		if (trim($lines[$i]) == '*/')
-		{
-			$in_comment = false;
-		}
-	}
-
-	unset($lines);
-	return $output;
-}
-
-/**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
 */
