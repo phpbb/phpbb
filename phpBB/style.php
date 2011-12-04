@@ -216,10 +216,10 @@ if ($id)
 
 	// Parse Theme Data
 	$replace = array(
-		'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
-		'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
-		'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
-		'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user_image_lang,
+		'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . rawurlencode($theme['theme_path']) . '/theme',
+		'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . rawurlencode($theme['template_path']) . '/template',
+		'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . rawurlencode($theme['imageset_path']) . '/imageset',
+		'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . rawurlencode($theme['imageset_path']) . '/imageset/' . $user_image_lang,
 		'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
 		'{S_USER_LANG}'				=> $user['user_lang']
 	);
@@ -248,7 +248,7 @@ if ($id)
 				$img_data = &$img_array[$img];
 				$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
 				$imgs[$img] = array(
-					'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
+					'src'		=> $phpbb_root_path . 'styles/' . rawurlencode($theme['imageset_path']) . '/imageset/' . $imgsrc,
 					'width'		=> $img_data['image_width'],
 					'height'	=> $img_data['image_height'],
 				);
