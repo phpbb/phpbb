@@ -4461,7 +4461,7 @@ function phpbb_http_login($param)
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
-	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
+	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -4609,6 +4609,15 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	if ($_SID)
 	{
 		$s_search_hidden_fields['sid'] = $_SID;
+	}
+
+	if (!empty($_EXTRA_URL))
+	{
+		foreach ($_EXTRA_URL as $url_param)
+		{
+			$url_param = explode('=', $url_param, 2);
+			$s_hidden_fields[$url_param[0]] = $url_param[1];
+		}
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
