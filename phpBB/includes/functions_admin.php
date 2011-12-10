@@ -3321,3 +3321,69 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 		' . $sql_more;
 	$db->sql_query($sql);
 }
+
+/**
+ * Pulls the latest announcements from the phpBB.com RSS Announcements forum feed
+ *
+ * @return void
+ */
+function get_announcements_feed()
+{
+    // check server configuration to see how we have to do this
+    $allow_url_fopen = ini_get('allow_url_fopen');
+    if (empty($allow_url_fopen))
+    {
+        // variables to be filled by reference in get_remote_file() upon error
+        $err_str = $err_num = null;
+        // yes, we use .php instead of $phpEx here because the file is always going to be index.php
+        return new SimpleXMLElement(get_remote_file('www.phpbb.com', '/feeds/', 'index.php', $err_str, $err_num));
+    }
+    else
+    {
+        // if we can, let's just use simplexml_load_file()
+        // it returns a SimpleXMLElement object like we do above
+        return simplexml_load_file('http://www.phpbb.com/feeds/index.php');
+    }
+}
+/**
+ * Parses the feed created by get_announcements_feed() for display in the ACP
+ *
+ * @param int $limit The maximum number of announcements to display at a time
+ *
+ * @return void
+ */
+function announcement_feed($limit = 10)
+{
+    global $template, $user;
+	$news_array = get_announcements_feed();
+	if (empty($news_array))
+	{
+		$template->assign_var('S_NEWS_CONNECT_FAIL', true);
+	}
+	$current = 0;
+	$children = $news_array->children();
+	foreach ($children as $child)
+	{
+		foreach ($child as $news)
+		{
+            // NOTE: This language is hardcoded because it is the expected result.
+            // If the title is not equivalent to that, then this isn't the right feed and/or something went wrong
+            // If we are going to allow people to change the feed location, we'll need to remove the first condition
+            // but for now it's just to be sure everything got pulled correctly
+			if ($news->title != 'Latest phpBB.com announcements' && !empty($news->title))
+			{
+				if ($current < $limit)
+				{
+					$template->assign_block_vars('news_feed', array(
+							'TITLE'		=> $news->title, // Post title
+							'DATE'		=> $user->format_date(strtotime($news->pubDate)), // Date posted
+							'U_NEWS'	=> $news->link, // Link to the post
+							'AUTHOR'	=> $news->author, // name of the author
+							'U_AUTHOR'	=> 'http://www.phpbb.com/community/memberlist.php?mode=viewprofile&amp;un=' . $news->author, // link to author's profile
+					));
+					$current++;
+				}
+			}
+		}
+	}
+}

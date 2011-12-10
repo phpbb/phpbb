@@ -419,7 +419,11 @@ class acp_main
 				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
 			));
 		}
-
+        // Get latest phpBB.com Announcements
+        // @todo implement way to limit number of items to display
+        // current default is 10
+        announcement_feed();
+        
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
 		$total_topics = $config['num_topics'];

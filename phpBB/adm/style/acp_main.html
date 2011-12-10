@@ -75,7 +75,37 @@
 			<p>{L_PHP_VERSION_OLD}</p>
 		</div>
 	<!-- ENDIF -->
+    
+    <h2>{L_ACP_NEWS_FEED}</h2>
 
+    <table cellspacing="1">
+    <thead>
+    <tr>
+        <th>{L_ACP_NEWS_TITLE}</th>
+        <th>{L_ACP_NEWS_AUTHOR}</th>
+        <th>{L_ACP_NEWS_DATE}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- IF S_NEWS_CONNECT_FAIL -->
+        <tr class="row1"><td colspan="3" style="color:#CC0000;">{L_ACP_NEWS_FEED_ERROR}</td></tr>
+    <!-- ELSE -->
+        <!-- BEGIN news_feed -->
+            <!-- IF news_feed.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+    
+                <td><strong><a href="{news_feed.U_NEWS}">{news_feed.TITLE}</a></strong></td>
+                <td><a href="{news_feed.U_AUTHOR}">{news_feed.AUTHOR}</a></td>
+                <td>{news_feed.DATE}</td>
+            </tr>
+        <!-- BEGINELSE --> <!-- Should never happen, since there are definitely things in the feed. But might as well be safe -->
+            <tr class="row1"><td colspan="3">{L_ACP_NO_ITEMS}</td></tr>
+        <!-- END news_feed -->
+    <!-- ENDIF -->
+    </tbody>
+    </table>
+    
+    <br />
+    
 	<table cellspacing="1">
 		<caption>{L_FORUM_STATS}</caption>
 		<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
