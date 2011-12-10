@@ -4923,3 +4923,73 @@ function phpbb_pcre_utf8_support()
 	}
 	return $utf8_pcre_properties;
 }
+
+/**
+* Build an array with all users that can be banned
+*/
+function build_user_ban_array()
+{
+	global $db, $template, $user_ban_array;
+
+	$sql_array = array(
+		'SELECT'	=> 'g.group_id, g.group_warn, ug.user_id, ug.group_id',
+
+		'FROM'		=> array(
+			GROUPS_TABLE	=> 'g',
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(
+					USER_GROUP_TABLE	=> 'ug'
+				),
+				'ON'	=> 'g.group_id = ug.group_id'
+			),
+		),
+
+		'WHERE'		=> 'g.group_ban = 0'
+	);
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$result = $db->sql_query($sql);
+	$user_ban_array = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_ban_array[] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+}
+
+/**
+* Build an array with all users that can be warned
+*/
+function build_user_warn_array()
+{
+	global $db, $template, $user_warn_array;
+
+	$sql_array = array(
+		'SELECT'	=> 'g.group_id, g.group_warn, ug.user_id, ug.group_id',
+
+		'FROM'		=> array(
+			GROUPS_TABLE	=> 'g',
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(
+					USER_GROUP_TABLE	=> 'ug'
+				),
+				'ON'	=> 'g.group_id = ug.group_id'
+			),
+		),
+
+		'WHERE'		=> 'g.group_warn = 0'
+	);
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$result = $db->sql_query($sql);
+	$user_warn_array = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_warn_array[] = $row['user_id'];
+	}
+	$db->sql_freeresult($result);
+}

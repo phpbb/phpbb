@@ -455,7 +455,9 @@ CREATE TABLE phpbb_groups (
 	group_message_limit INTEGER DEFAULT 0 NOT NULL,
 	group_max_recipients INTEGER DEFAULT 0 NOT NULL,
 	group_legend INTEGER DEFAULT 0 NOT NULL,
-	group_teampage INTEGER DEFAULT 0 NOT NULL
+	group_teampage INTEGER DEFAULT 0 NOT NULL,
+	group_ban INTEGER DEFAULT 1 NOT NULL,
+	group_warn INTEGER DEFAULT 1 NOT NULL
 );;
 
 ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;

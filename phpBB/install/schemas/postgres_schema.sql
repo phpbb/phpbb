@@ -474,6 +474,8 @@ CREATE TABLE phpbb_groups (
 	group_max_recipients INT4 DEFAULT '0' NOT NULL CHECK (group_max_recipients >= 0),
 	group_legend INT4 DEFAULT '0' NOT NULL CHECK (group_legend >= 0),
 	group_teampage INT4 DEFAULT '0' NOT NULL CHECK (group_teampage >= 0),
+	group_ban INT4 DEFAULT '1' NOT NULL CHECK (group_ban >= 0),
+	group_warn INT4 DEFAULT '1' NOT NULL CHECK (group_ban >= 0),
 	PRIMARY KEY (group_id)
 );
 

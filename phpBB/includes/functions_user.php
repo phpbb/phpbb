@@ -778,6 +778,24 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				if ($username != '')
 				{
 					$clean_name = utf8_clean_string($username);
+
+					$sql = 'SELECT *
+						FROM ' . USERS_TABLE . "
+					WHERE username_clean = '" . $db->sql_escape($clean_name) . "'";
+					$result = $db->sql_query($sql, 1);
+					$ban_user_id = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					build_user_ban_array();
+					global $user_ban_array;
+
+					// Prevent users in groups that can't be banned from being banned
+					// FOUNDERS CAN WARN ANYONE, REGARDLESS OF SETTING!
+					if ((in_array($ban_user_id['user_id'], $user_ban_array)) && ($user->data['user_type'] != USER_FOUNDER))
+					{
+						trigger_error('CANNOT_BAN_USER_GROUP');
+					}
+
 					if ($clean_name == $user->data['username_clean'])
 					{
 						trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
@@ -943,6 +961,23 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					if (strlen($ban_item) > 100)
 					{
 						continue;
+					}
+
+					$sql = "SELECT *
+						FROM " . USERS_TABLE . "
+					WHERE user_email = '" . $db->sql_escape($ban_item) . "'";
+					$result = $db->sql_query($sql, 1);
+					$ban_user_id = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					build_user_ban_array();
+					global $user_ban_array;
+
+					// Prevent users in groups that can't be banned from being banned
+					// FOUNDERS CAN WARN ANYONE, REGARDLESS OF SETTING!
+					if ((in_array($ban_user_id['user_id'], $user_ban_array)) && ($user->data['user_type'] != USER_FOUNDER))
+					{
+						trigger_error('CANNOT_BAN_USER_GROUP');
 					}
 
 					if (!sizeof($founder) || !in_array($ban_item, $founder))

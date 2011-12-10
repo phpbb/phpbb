@@ -227,6 +227,15 @@ class mcp_warn
 			trigger_error('CANNOT_WARN_SELF');
 		}
 
+		// Prevent users in groups that can't be warned from being warned
+		// FOUNDERS CAN WARN ANYONE, REGARDLESS OF SETTING!
+		build_user_warn_array();
+		global $user_warn_array;
+		if ((in_array($user_row['user_id'], $user_warn_array)) && ($user->data['user_type'] != USER_FOUNDER))
+		{
+			trigger_error('CANNOT_WARN_USER_GROUP');
+		}
+
 		// Check if there is already a warning for this post to prevent multiple
 		// warnings for the same offence
 		$sql = 'SELECT post_id
@@ -362,6 +371,15 @@ class mcp_warn
 		if ($user_row['user_id'] == $user->data['user_id'])
 		{
 			trigger_error('CANNOT_WARN_SELF');
+		}
+
+		// Prevent users in groups that can't be warned from being warned
+		// FOUNDERS CAN WARN ANYONE, REGARDLESS OF SETTING!
+		build_user_warn_array();
+		global $user_warn_array;
+		if ((in_array($user_row['user_id'], $user_warn_array)) && ($user->data['user_type'] != USER_FOUNDER))
+		{
+			trigger_error('CANNOT_WARN_USER_GROUP');
 		}
 
 		$user_id = $user_row['user_id'];
