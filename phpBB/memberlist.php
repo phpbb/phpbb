@@ -609,39 +609,8 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
-
-
-
-
-
-
-
-
-
-						//global $member, $user_ban_array, $user_warn_array;
-
-						// Founders can always ban / warn
-						//if ($user->data['user_type'] == USER_FOUNDER)
-						//{
-						//	return;
-						//}
-
-						build_user_ban_array();
-						build_user_warn_array();
-
-			//			$template->assign_vars(array(
-				//			'S_USER_BAN'	=> ((in_array($member['user_id'], $user_ban_array)) && $user->data['user_type'] != USER_FOUNDER) ? true : false,
-					//		'S_USER_WARN'	=> ((in_array($member['user_id'], $user_warn_array)) && $user->data['user_type'] != USER_FOUNDER) ? true : false,
-						//));
-
-
-
-
-
-
-
-
-
+		build_user_ban_array();
+		build_user_warn_array();
 
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
@@ -668,27 +637,8 @@ switch ($mode)
 			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
-
-
-
-
-
-
-
-
-
-
 			'S_USER_BAN'	=> ((in_array($member['user_id'], $user_ban_array)) && $user->data['user_type'] != USER_FOUNDER) ? true : false,
 			'S_USER_WARN'	=> ((in_array($member['user_id'], $user_warn_array)) && $user->data['user_type'] != USER_FOUNDER) ? true : false,
-
-
-
-
-
-
-
-
-
 
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
