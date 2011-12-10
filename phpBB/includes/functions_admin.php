@@ -3327,35 +3327,47 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
  *
  * @return SimpleXMLElement object containing the contents of the feed.
  */
-function get_announcements_feed()
+function phpbb_get_announcement_feed()
 {
-    // check server configuration to see how we have to do this
-    $allow_url_fopen = ini_get('allow_url_fopen');
-    if (empty($allow_url_fopen))
-    {
-        // variables to be filled by reference in get_remote_file() upon error
-        $err_str = $err_num = null;
-        // yes, we use .php instead of $phpEx here because the file is always going to be index.php
-        return new SimpleXMLElement(get_remote_file('www.phpbb.com', '/feeds/', 'index.php', $err_str, $err_num));
-    }
-    else
-    {
-        // if we can, let's just use simplexml_load_file()
-        // it returns a SimpleXMLElement object like we do above
-        return simplexml_load_file('http://www.phpbb.com/feeds/index.php');
-    }
+	// check server configuration to see how we have to do this
+	$allow_url_fopen = ini_get('allow_url_fopen');
+	// not having the simplexml_load_file function available is okay as long as the class exists
+	// we check for the class first thing before calling this in the other function, so it won't create ugly errors
+	if (!function_exists('simplexml_load_file') || empty($allow_url_fopen))
+	{
+		// variables to be filled by reference in get_remote_file() upon error
+		$err_str = $err_num = null;
+		// yes, we use .php instead of $phpEx here because the file is always going to be index.php
+		return new SimpleXMLElement(get_remote_file('www.phpbb.com', '/feeds/', 'index.php', $err_str, $err_num));
+	}
+	else
+	{
+		// if we can, let's just use simplexml_load_file()
+		// it returns a SimpleXMLElement object like we do above
+		return simplexml_load_file('http://www.phpbb.com/feeds/index.php');
+	}
 }
 /**
- * Parses the feed created by get_announcements_feed() for display in the ACP
+ * Parse feed SimpleXMLElement object returned from phpbb_get_announcement_feed() for display in ACP
  *
  * @param int $limit The maximum number of announcements to display at a time
  *
- * @return void
+ * @return boolean false if SimpleXMLElement class does not exist, null otherwise
  */
-function announcement_feed($limit = 10)
+function phpbb_announcement_feed($limit = 10)
 {
-    global $template, $user;
-	$news_array = get_announcements_feed();
+	global $template, $user;
+	// if the SimpleXMLElement class is not available on this server, we can't continue
+	if(!class_exists('SimpleXMLElement'))
+	{
+		$template->assign_var('S_DISPLAY_ACP_NEWS_FEED', false);
+		return false;
+	}
+	else
+	{
+		$template->assign_var('S_DISPLAY_ACP_NEWS_FEED', true);
+	}
+	$news_array = get_announcement_feed();
 	if (empty($news_array))
 	{
 		$template->assign_var('S_NEWS_CONNECT_FAIL', true);
@@ -3366,10 +3378,10 @@ function announcement_feed($limit = 10)
 	{
 		foreach ($child as $news)
 		{
-            // NOTE: This language is hardcoded because it is the expected result.
-            // If the title is not equivalent to that, then this isn't the right feed and/or something went wrong
-            // If we are going to allow people to change the feed location, we'll need to remove the first condition
-            // but for now it's just to be sure everything got pulled correctly
+			// NOTE: This language is hardcoded because it is the expected result.
+			// If the title is not equivalent to that, then this isn't the right feed and/or something went wrong
+			// If we are going to allow people to change the feed location, we'll need to remove the first condition
+			// but for now it's just to be sure everything got pulled correctly
 			if ($news->title != 'Latest phpBB.com announcements' && !empty($news->title))
 			{
 				if ($current < $limit)
@@ -3386,4 +3398,5 @@ function announcement_feed($limit = 10)
 			}
 		}
 	}
+	return null;
 }
