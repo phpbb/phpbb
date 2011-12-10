@@ -3325,7 +3325,7 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 /**
  * Pulls the latest announcements from the phpBB.com RSS Announcements forum feed
  *
- * @return void
+ * @return SimpleXMLElement object containing the contents of the feed.
  */
 function get_announcements_feed()
 {
