@@ -1584,7 +1584,15 @@ class user extends session
 		}
 		else
 		{
-			$this->lang_name = basename($config['default_lang']);
+			// if the language is specified in the URL, check to see if it exists. Default to the board's default language
+			$this->lang_name = request_var('lang', basename($config['default_lang']), true);
+			if($this->lang_name != basename($config['default_lang']))
+			{
+				$result = $db->sql_query('SELECT lang_dir FROM ' . LANG_TABLE . ' WHERE lang_iso = \'' . $db->sql_escape($this->lang_name) . '\'');
+				$dir = $db->sql_fetchfield('lang_dir');
+				$db->sql_freeresult($result);
+				$this->lang_name = (file_exists($this->lang_path . $dir . "/common.$phpEx")) ? $this->lang_name : basename($config['default_lang']);
+			}
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
