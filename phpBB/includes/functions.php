@@ -4634,6 +4634,24 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
+	if ($user->data['user_id'] == ANONYMOUS)
+	{
+		// pull all installed language packs for header dropdown for guests
+		$sql = 'SELECT lang_english_name, lang_iso FROM ' . LANG_TABLE . ' ORDER BY lang_english_name ASC';
+		$result = $db->sql_query($sql);
+		while($lang = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('lang_select', array(
+				'LANG_NAME'		=> $lang['lang_english_name'],
+				'LANG_ISO'		=> $lang['lang_iso'],
+				'LANG_URL'		=> $phpbb_root_path . $user->page['page_name'],
+				'LANG_SELECTED'	=> ($lang['lang_iso'] == request_var('lang', '', true)) ? ' selected="selected"' : '',
+			));
+		}
+		$db->sql_freeresult($result);
+		$template->assign_var('S_LANG_SELECT', true);
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
