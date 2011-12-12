@@ -2004,12 +2004,26 @@ function on_page($num_items, $per_page, $start)
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $db, $user, $phpEx;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
 		// Do not append the ? if the param-list is empty anyway.
 		$params = false;
+	}
+
+	// Is the language in the current url? If so, we add it to new links
+	if($url_lang = request_var('lang', '', true))
+	{
+		// First, we make sure the requested language is in the database
+		$result = $db->sql_query('SELECT lang_dir FROM ' . LANG_TABLE . ' WHERE lang_iso = \'' . $url_lang . '\'');
+		$dir = $db->sql_fetchfield('lang_dir');
+		// Now we make sure that the files exist on the filesystem
+		if(!empty($dir) && file_exists($user->lang_path . $dir . "/common.$phpEx") && !in_array('lang=' . $url_lang, $_EXTRA_URL))
+		{
+			// if so, we append lang=xx to the URL (where xx is the language code)
+			$_EXTRA_URL[] = 'lang=' . $url_lang;
+		}
 	}
 
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
