@@ -1459,37 +1459,52 @@ class fulltext_native extends search_backend
 
 	function get_stats()
 	{
+		$this->stats['total_words']		= $this->get_table_row_count(SEARCH_WORDLIST_TABLE);
+		$this->stats['total_matches']	= $this->get_table_row_count(SEARCH_WORDMATCH_TABLE);
+	}
+
+	/**
+	* Gets statistics for a specific database table.
+	*
+	* @param string $table_name		Table name
+	*
+	* @return string				Row count. Prefixed with ~ if estimated.
+	*
+	* @access protected
+	*/
+	function get_table_row_count($table_name)
+	{
 		global $db;
 
-		switch ($db->sql_layer)
+		if (stripos($db->sql_layer, 'mysql') === 0)
 		{
-			case 'mysql4':
-			case 'mysqli':
-				$sql = "SHOW TABLE STATUS LIKE '" . SEARCH_WORDLIST_TABLE . "'";
-				$result = $db->sql_query($sql);
-				$this->stats['total_words'] = (int) $db->sql_fetchfield('Rows');
-				$db->sql_freeresult($result);
+			$sql = "SHOW TABLE STATUS
+				LIKE '" . $table_name . "'";
+			$result = $db->sql_query($sql);
+			$table_status = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-				$sql = "SHOW TABLE STATUS LIKE '" . SEARCH_WORDMATCH_TABLE . "'";
-				$result = $db->sql_query($sql);
-				$this->stats['total_matches'] = (int) $db->sql_fetchfield('Rows');
-				$db->sql_freeresult($result);
-			break;
-
-			default:
-				$sql = 'SELECT COUNT(*) as total_words
-					FROM ' . SEARCH_WORDLIST_TABLE;
-				$result = $db->sql_query($sql);
-				$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT COUNT(*) as total_matches
-					FROM ' . SEARCH_WORDMATCH_TABLE;
-				$result = $db->sql_query($sql);
-				$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
-				$db->sql_freeresult($result);
-			break;
+			if (isset($table_status['Engine']))
+			{
+				if ($table_status['Engine'] === 'MyISAM')
+				{
+					return $table_status['Rows'];
+				}
+				else if ($table_status['Engine'] === 'InnoDB' && $table_status['Rows'] > 100000)
+				{
+					return '~' . $table_status['Rows'];
+				}
+			}
 		}
+
+		// Get exact row count by actually counting rows
+		$sql = 'SELECT COUNT(*) AS rows_total
+			FROM ' . $table_name;
+		$result = $db->sql_query($sql);
+		$rows_total = $db->sql_fetchfield('rows_total');
+		$db->sql_freeresult($result);
+
+		return $rows_total;
 	}
 
 	/**
