@@ -245,7 +245,6 @@ class acp_prune
 				$user_ids = $usernames = array();
 
 				$this->get_prune_users($user_ids, $usernames);
-
 				if (sizeof($user_ids))
 				{
 					if ($action == 'deactivate')
@@ -311,17 +310,7 @@ class acp_prune
 					'mode'			=> $mode,
 					'prune'			=> 1,
 
-					'users'			=> request_var('users', '', true),
-					'username'		=> request_var('username', '', true),
-					'email'			=> request_var('email', ''),
-					'joined_select'	=> request_var('joined_select', ''),
-					'joined'		=> request_var('joined', ''),
-					'active_select'	=> request_var('active_select', ''),
-					'active'		=> request_var('active', ''),
-					'count_select'	=> request_var('count_select', ''),
-					'count'			=> request_var('count', ''),
 					'deleteposts'	=> request_var('deleteposts', 0),
-
 					'action'		=> request_var('action', ''),
 				)), 'confirm_body_prune.html');
 			}
@@ -343,7 +332,7 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$s_group_list = '<option value="0" selected="selected">' . $user->lang['SELECT_OPTION'] . '</option>';
+		$s_group_list = '';
 		$sql = 'SELECT group_id, group_name FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
 			ORDER BY group_name ASC';
@@ -372,6 +361,8 @@ class acp_prune
 
 		$users_by_name = request_var('users', '', true);
 		$users_by_id = request_var('user_ids', array(0));
+		$group_id = request_var('group_id', 0);
+		$posts_on_queue = request_var('posts_on_queue', 0);
 
 		if ($users_by_name)
 		{
@@ -399,7 +390,6 @@ class acp_prune
 			$active = request_var('active', '');
 
 			$count = request_var('count', 0);
-			$posts_on_queue = request_var('posts_on_queue', 0);
 
 			$active = ($active) ? explode('-', $active) : array();
 			$joined_before = ($joined_before) ? explode('-', $joined_before) : array();
@@ -424,7 +414,7 @@ class acp_prune
 			}
 			else if (empty($joined_after) && !empty($joined_before))
 			{
-				$joined_sql = ' AND user_regdate < ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[3]);
+				$joined_sql = ' AND user_regdate < ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
 			}
 			// implicit else when both arrays are empty do nothing
 

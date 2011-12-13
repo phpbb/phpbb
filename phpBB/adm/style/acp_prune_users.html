@@ -41,10 +41,12 @@
 	<dt><label for="posts_on_queue">{L_POSTS_ON_QUEUE}:</label></dt>
 	<dd><select name="queue_select">{S_COUNT_OPTIONS}</select> <input type="text" id="posts_on_queue" name="posts_on_queue" /></select>
 </dl>
+<!-- IF S_GROUP_LIST -->
 <dl>
 	<dt><label for="group_id">{L_GROUP}:</label><br /><span>{L_PRUNE_USERS_GROUP_EXPLAIN}</dt>
 	<dd><select name="group_id">{S_GROUP_LIST}</select></dd>
 </dl>
+<!-- ENDIF -->
 </fieldset>
 
 <fieldset>
