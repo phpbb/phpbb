@@ -131,6 +131,12 @@ $lang = array_merge($lang, array(
 	'ACP_MOD_LOGS'				=> 'Moderator log',
 	'ACP_MOD_ROLES'				=> 'Moderator roles',
 
+	'ACP_NEWS_AUTHOR'			=> 'Author',
+	'ACP_NEWS_DATE'				=> 'Date',
+	'ACP_NEWS_FEED'				=> 'phpBB.com Announcements',
+	'ACP_NEWS_FEED_ERROR'		=> 'The news feed is currently unavailable. Please visit <a href="http://www.phpbb.com/">phpBB.com</a> for the latest announcements.',
+	'ACP_NEWS_TITLE'			=> 'Title',
+
 	'ACP_NO_ITEMS'				=> 'There are no items yet.',
 
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphaned attachments',
