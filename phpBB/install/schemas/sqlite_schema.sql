@@ -319,7 +319,9 @@ CREATE TABLE phpbb_groups (
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	group_ban INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	group_warn INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);

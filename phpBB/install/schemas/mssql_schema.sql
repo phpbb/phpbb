@@ -563,7 +563,9 @@ CREATE TABLE [phpbb_groups] (
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
 	[group_legend] [int] DEFAULT (0) NOT NULL ,
-	[group_teampage] [int] DEFAULT (0) NOT NULL 
+	[group_teampage] [int] DEFAULT (0) NOT NULL ,
+	[group_ban] [int] DEFAULT (1) NOT NULL ,
+	[group_warn] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO
 

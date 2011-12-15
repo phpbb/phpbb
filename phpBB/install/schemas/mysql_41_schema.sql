@@ -328,6 +328,8 @@ CREATE TABLE phpbb_groups (
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_teampage mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	group_ban mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
+	group_warn mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;

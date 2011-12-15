@@ -621,6 +621,8 @@ CREATE TABLE phpbb_groups (
 	group_max_recipients number(8) DEFAULT '0' NOT NULL,
 	group_legend number(8) DEFAULT '0' NOT NULL,
 	group_teampage number(8) DEFAULT '0' NOT NULL,
+	group_ban number(8) UNSIGNED DEFAULT '1' NOT NULL,
+	group_warn number(8) UNSIGNED DEFAULT '1' NOT NULL,
 	CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
 )
 /
