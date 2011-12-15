@@ -2400,7 +2400,7 @@ version = {VERSION}
 				$select_bf = '';
 			}
 
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, $select_bf
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
