@@ -540,6 +540,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql_from = '';
+		$sql_sort = 'LOWER(' . $mode . '_name)';
 		$style_count = array();
 
 		switch ($mode)
@@ -571,6 +572,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			case 'imageset':
 				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
+			
+			default:
+				trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$l_prefix = strtoupper($mode);
@@ -594,7 +598,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		);
 
 		$sql = "SELECT *
-			FROM $sql_from";
+			FROM $sql_from
+			ORDER BY $sql_sort ASC";
 		$result = $db->sql_query($sql);
 
 		$installed = array();
