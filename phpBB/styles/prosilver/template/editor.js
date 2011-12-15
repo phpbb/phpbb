@@ -28,8 +28,8 @@ function helpline(help)
 /**
 * Fix a bug involving the TextRange object. From
 * http://www.frostjedi.com/terra/scripts/demo/caretBug.html
-*/
-function initInsertions()
+*/ 
+function initInsertions() 
 {
 	var doc;
 
@@ -37,7 +37,7 @@ function initInsertions()
 	{
 		doc = document;
 	}
-	else
+	else 
 	{
 		doc = opener.document;
 	}
@@ -60,12 +60,12 @@ function initInsertions()
 * bbstyle
 */
 function bbstyle(bbnumber)
-{
+{	
 	if (bbnumber != -1)
 	{
 		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
-	}
-	else
+	} 
+	else 
 	{
 		insert_text('[*]');
 		document.forms[form_name].elements[text_name].focus();
@@ -86,10 +86,10 @@ function bbfontstyle(bbopen, bbclose)
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
 		// Get text selection
+		textarea = document.forms[form_name].elements[text_name];
 		if (textarea.createTextRange && textarea.caretPos)
 		{
 			textarea.caretPos.text = bbopen + textarea.caretPos.text + bbclose;
-			textarea.focus();
 			return;
 		}
 	}
@@ -100,7 +100,7 @@ function bbfontstyle(bbopen, bbclose)
 		theSelection = '';
 		return;
 	}
-
+	
 	//The new position for the cursor after adding the bbcode
 	var caret_pos = getCaretPosition(textarea).start;
 	var new_pos = caret_pos + bbopen.length;
@@ -114,12 +114,12 @@ function bbfontstyle(bbopen, bbclose)
 	{
 		textarea.selectionStart = new_pos;
 		textarea.selectionEnd = new_pos;
-	}
+	}	
 	// IE
 	else if (document.selection)
 	{
-		var range = textarea.createTextRange();
-		range.move("character", new_pos);
+		var range = textarea.createTextRange(); 
+		range.move("character", new_pos); 
 		range.select();
 		storeCaret(textarea);
 	}
@@ -134,16 +134,16 @@ function bbfontstyle(bbopen, bbclose)
 function insert_text(text, spaces, popup)
 {
 	var textarea;
-
-	if (!popup)
+	
+	if (!popup) 
 	{
 		textarea = document.forms[form_name].elements[text_name];
-	}
-	else
+	} 
+	else 
 	{
 		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	if (spaces)
+	if (spaces) 
 	{
 		text = ' ' + text + ' ';
 	}
@@ -161,7 +161,7 @@ function insert_text(text, spaces, popup)
 	}
 	else if (textarea.createTextRange && textarea.caretPos)
 	{
-		if (baseHeight != textarea.caretPos.boundingHeight)
+		if (baseHeight != textarea.caretPos.boundingHeight) 
 		{
 			textarea.focus();
 			storeCaret(textarea);
@@ -174,7 +174,7 @@ function insert_text(text, spaces, popup)
 	{
 		textarea.value = textarea.value + text;
 	}
-	if (!popup)
+	if (!popup) 
 	{
 		textarea.focus();
 	}
@@ -291,7 +291,7 @@ function split_lines(text)
 			do
 			{
 				var splitAt = line.indexOf(' ', 80);
-
+				
 				if (splitAt == -1)
 				{
 					splitLines[j] = line;
@@ -319,7 +319,7 @@ function mozWrap(txtarea, open, close)
 	var selEnd = txtarea.selectionEnd;
 	var scrollTop = txtarea.scrollTop;
 
-	if (selEnd == 1 || selEnd == 2)
+	if (selEnd == 1 || selEnd == 2) 
 	{
 		selEnd = selLength;
 	}
@@ -351,9 +351,7 @@ function storeCaret(textEl)
 
 	// Did the user press Shift (16), Ctrl (17) or Alt (18)?
 	// If so, we do not update the caretPos, so BBCodes can still be applied correctly.
-	var is_control_key = (keyCode == 16 || keyCode == 17 || keyCode == 18);
-
-	if ((!is_ie || !is_control_key) && (textEl.createTextRange))
+	if ((!is_ie || (keyCode != 16 && keyCode != 17 && keyCode != 18)) && (textEl.createTextRange))
 	{
 		textEl.caretPos = document.selection.createRange().duplicate();
 	}
@@ -389,7 +387,7 @@ function colorPalette(dir, width, height)
 			{
 				document.writeln('<tr>');
 			}
-
+			
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
@@ -429,32 +427,33 @@ function caretPosition()
 function getCaretPosition(txtarea)
 {
 	var caretPos = new caretPosition();
-
+	
 	// simple Gecko/Opera way
-	if (!is_ie && (txtarea.selectionStart || txtarea.selectionStart == 0))
+	if(!is_ie && (txtarea.selectionStart || txtarea.selectionStart == 0))
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
 	}
 	// dirty and slow IE way
-	else if (document.selection)
+	else if(document.selection)
 	{
+	
 		// get current selection
 		var range = document.selection.createRange();
 
 		// a new selection of the whole textarea
 		var range_all = document.body.createTextRange();
 		range_all.moveToElementText(txtarea);
-
+		
 		// calculate selection start point by moving beginning of range_all to beginning of range
 		var sel_start;
 		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
-		{
+		{		
 			range_all.moveStart('character', 1);
 		}
-
+	
 		txtarea.sel_start = sel_start;
-
+	
 		// we ignore the end value for IE, this is already dirty enough and we don't need it
 		caretPos.start = txtarea.sel_start;
 		caretPos.end = txtarea.sel_start;
