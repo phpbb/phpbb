@@ -4645,11 +4645,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 				'LANG_NAME'		=> $lang['lang_english_name'],
 				'LANG_ISO'		=> $lang['lang_iso'],
 				'LANG_URL'		=> $phpbb_root_path . $user->page['page_name'],
-				'LANG_SELECTED'	=> ($lang['lang_iso'] == request_var('lang', '', true)) ? ' selected="selected"' : '',
+				'LANG_SELECTED'	=> ($lang['lang_iso'] == $request->variable('lang', '')) ? ' selected="selected"' : '',
 			));
 		}
 		$db->sql_freeresult($result);
-		$template->assign_var('S_LANG_SELECT', true);
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
