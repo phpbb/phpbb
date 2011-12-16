@@ -962,6 +962,13 @@ version = {VERSION}
 			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		$s_only_component = $this->display_component_options($mode, $style_row[$mode . '_id'], $style_row);
+
+		if ($s_only_component)
+		{
+			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		if ($update)
 		{
 			if ($mode == 'style')
@@ -1005,8 +1012,6 @@ version = {VERSION}
 			$message = ($mode != 'style') ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
 			trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 		}
-
-		$this->display_component_options($mode, $style_row[$mode . '_id'], $style_row);
 
 		$this->page_title = 'DELETE_' . $l_prefix;
 
@@ -1082,11 +1087,14 @@ version = {VERSION}
 
 	/**
 	* Display the options which can be used to replace a style/template/theme
+	*
+	* @return boolean Returns true if the component is the only component and can not be deleted.
 	*/
 	function display_component_options($component, $component_id, $style_row = false, $style_id = false)
 	{
 		global $db, $template, $user;
 
+		$is_only_component = true;
 		$component_in_use = array();
 		if ($component != 'style')
 		{
@@ -1114,6 +1122,9 @@ version = {VERSION}
 		$s_options = '';
 		if (($component != 'style') && empty($component_in_use))
 		{
+			// If it is not in use, there must be another component
+			$is_only_component = false;
+
 			$sql = "SELECT {$component}_id, {$component}_name
 				FROM $sql_from
 				WHERE {$component}_id = {$component_id}";
@@ -1137,6 +1148,7 @@ version = {VERSION}
 			{
 				if ($row[$component . '_id'] != $component_id)
 				{
+					$is_only_component = false;
 					$s_options .= '<option value="' . $row[$component . '_id'] . '">' . sprintf($user->lang['REPLACE_WITH_OPTION'], $row[$component . '_name']) . '</option>';
 				}
 				else if ($component != 'style')
@@ -1164,6 +1176,8 @@ version = {VERSION}
 				}
 			}
 		}
+
+		return $is_only_component;
 	}
 
 	/**
