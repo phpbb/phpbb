@@ -5,7 +5,7 @@
 //
 // FILENAME  : add_permissions.php
 // STARTED   : Sat Nov 06, 2004
-// COPYRIGHT : © 2004 phpBB Group
+// COPYRIGHT : ï¿½ 2004 phpBB Group
 // WWW       : http://www.phpbb.com/
 // LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
 // 
@@ -163,7 +163,6 @@ $u_permissions = array(
 	'u_pm_printpm'	=> array(0, 1),
 	'u_pm_emailpm'	=> array(0, 1),
 	'u_pm_forward'	=> array(0, 1),
-	'u_pm_delete'	=> array(0, 1),
 	'u_pm_img'		=> array(0, 1),
 	'u_pm_flash'	=> array(0, 1),
 );
