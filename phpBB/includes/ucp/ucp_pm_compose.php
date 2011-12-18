@@ -191,11 +191,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		break;
 
 		case 'delete':
-			if (!$auth->acl_get('u_pm_delete'))
-			{
-				trigger_error('NO_AUTH_DELETE_MESSAGE');
-			}
-
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
