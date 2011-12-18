@@ -941,11 +941,6 @@ function handle_mark_actions($user_id, $mark_action)
 
 			global $auth;
 
-			if (!$auth->acl_get('u_pm_delete'))
-			{
-				trigger_error('NO_AUTH_DELETE_MESSAGE');
-			}
-
 			if (confirm_box(true))
 			{
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
