@@ -471,26 +471,33 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if ($search_id)
 	{
-		if ($sql)
+		if ($sql || $search_id == 'unreadposts')
 		{
-			// only return up to 1000 ids (the last one will be removed later)
-			$result = $db->sql_query_limit($sql, 1001 - $start, $start);
-
-			while ($row = $db->sql_fetchrow($result))
+			if ($sql)
 			{
-				$id_ary[] = (int) $row[$field];
+				// only return up to 1000 ids (the last one will be removed later)
+				$result = $db->sql_query_limit($sql, 1001);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$id_ary[] = (int) $row[$field];
+				}
+				$db->sql_freeresult($result);
 			}
-			$db->sql_freeresult($result);
+			else if ($search_id == 'unreadposts')
+			{
+				$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, 1001));
+			}
 
-			$total_match_count = sizeof($id_ary) + $start;
-			$id_ary = array_slice($id_ary, 0, $per_page);
-		}
-		else if ($search_id == 'unreadposts')
-		{
-			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, 1001 - $start, $start));
-
-			$total_match_count = sizeof($id_ary) + $start;
-			$id_ary = array_slice($id_ary, 0, $per_page);
+			if ($total_match_count = sizeof($id_ary))
+			{
+				// Make sure $start is set to the last page if it exceeds the amount
+				if ($start < 0 || $start >= $total_match_count)
+				{
+					$start = ($start < 0) ? 0 : floor(($total_match_count - 1) / $per_page) * $per_page;
+				}
+				$id_ary = array_slice($id_ary, $start, $per_page);
+			}
 		}
 		else
 		{
