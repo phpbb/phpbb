@@ -3396,17 +3396,19 @@ function phpbb_check_requirements($checks_array)
 }
 
 /*
-* Search Imagick
+* Search ImageMagick
+*
+* @return string	Path to imagemagic if exists, empty string otherwise
 */
 function phpbb_search_imagemagick()
 {
-	$imagick = '';
+	$imagemagick = '';
 
 	$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
 
-	$magic_home = getenv('MAGICK_HOME');
+	$imagemagick_path = getenv('MAGICK_HOME');
 
-	if (empty($magic_home))
+	if (empty($imagemagick_path))
 	{
 		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
 		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
@@ -3423,17 +3425,17 @@ function phpbb_search_imagemagick()
 
 			if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
 			{
-				$imagick = str_replace('\\', '/', $location);
+				$imagemagick = str_replace('\\', '/', $location);
 				continue;
 			}
 		}
 	}
 	else
 	{
-		$imagick = str_replace('\\', '/', $magic_home);
+		$imagemagick = str_replace('\\', '/', $imagemagick_path);
 	}
 
-	return $imagick;
+	return $imagemagick;
 }
 
 ?>

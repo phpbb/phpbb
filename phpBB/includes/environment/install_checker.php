@@ -2,7 +2,6 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -18,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_install_environment_checker extends phpbb_environment_checker
 {
-	var $php_dlls_other = array('zlib', 'ftp', 'gd', 'xml');
+	var $php_optional_modules = array('zlib', 'ftp', 'gd', 'xml');
 	var $categories = array(
 			'PHP_SETTINGS',
 			'MBSTRING_CHECK',
@@ -27,11 +26,11 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 			'FILES_REQUIRED',
 			'FILES_OPTIONAL',
 		);
-	var $writable = array();
-	var $exists = array();
+	var $dir_is_writable = array();
+	var $dir_exists = array();
 	var $category = '';
 	var $any_db_support = false;
-	var $img_imagick;
+	var $imagemagic;
 
 	function set_errors()
 	{
@@ -58,7 +57,7 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 
 			// Set the required mbstring PHP ini checks
 			case 'MBSTRING_CHECK':
-				if (@extension_loaded('mbstring'))
+				if (extension_loaded('mbstring'))
 				{
 					$this->errors = array(
 						'MBSTRING_FUNC_OVERLOAD'		=> $this->checks['MBSTRING_FUNC_OVERLOAD'],
@@ -82,12 +81,12 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 
 			// Set the PHP optional modules checks
 			case 'PHP_OPTIONAL_MODULE':
-				foreach ($this->php_dlls_other as $dll)
+				foreach ($this->php_optional_modules as $dll)
 				{
 					$this->errors['DLL_' . strtoupper($dll)] = (!@extension_loaded($dll)) ? can_load_dll($dll) : true;
 				}
-				$this->img_imagick = phpbb_search_imagemagick();
-				$this->errors['APP_MAGICK'] = $this->img_imagick;
+				$this->imagemagic = phpbb_search_imagemagick();
+				$this->errors['APP_MAGICK'] = $this->imagemagic;
 			break;
 
 			// Set the required directories checks
@@ -95,8 +94,8 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 				$directories = array('cache/', 'files/', 'store/');
 				foreach ($directories as $dir)
 				{
-					$this->errors[$dir] = ($this->exists[$dir] = phpbb_check_dir_exists($dir))
-											&& ($this->writable[$dir] = phpbb_create_dir($dir));
+					$this->errors[$dir] = ($this->dir_exists[$dir] = phpbb_check_dir_exists($dir))
+											&& ($this->dir_is_writable[$dir] = phpbb_test_dir_is_writable($dir));
 				}
 			break;
 
@@ -105,8 +104,8 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 				$directories = array('config.' . $this->phpEx, 'images/avatars/upload/');
 				foreach ($directories as $dir)
 				{
-					$this->errors[$dir] = ($this->exists[$dir] = file_exists($this->phpbb_root_path . $dir))
-											&& ($this->writable[$dir] = phpbb_is_writable($this->phpbb_root_path . $dir));
+					$this->errors[$dir] = ($this->dir_exists[$dir] = file_exists($this->phpbb_root_path . $dir))
+											&& ($this->dir_is_writable[$dir] = phpbb_is_writable($this->phpbb_root_path . $dir));
 				}
 			break;
 

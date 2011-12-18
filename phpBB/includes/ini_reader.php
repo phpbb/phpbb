@@ -54,7 +54,7 @@ class phpbb_ini_reader
 			return false;
 		}
 
-		return strtolower(trim($value));
+		return trim($value);
 	}
 
 	/**
@@ -68,7 +68,7 @@ class phpbb_ini_reader
 	*/
 	function get_bool($varname)
 	{
-		$value = $this->get_string($varname);
+		$value = strtolower($this->get_string($varname));
 
 		if (empty($value) || $value == 'off')
 		{
@@ -87,7 +87,7 @@ class phpbb_ini_reader
 	*/
 	function get_int($varname)
 	{
-		$value = $this->get_string($varname);
+		$value = strtolower($this->get_string($varname));
 
 		if (!is_numeric($value))
 		{
@@ -106,7 +106,7 @@ class phpbb_ini_reader
 	*/
 	function get_float($varname)
 	{
-		$value = $this->get_string($varname);
+		$value = strtolower($this->get_string($varname));
 
 		if (!is_numeric($value))
 		{
@@ -126,7 +126,7 @@ class phpbb_ini_reader
 	*/
 	function get_bytes($varname)
 	{
-		$value = $this->get_string($varname);
+		$value = strtolower($this->get_string($varname));
 
 		if ($value === false)
 		{

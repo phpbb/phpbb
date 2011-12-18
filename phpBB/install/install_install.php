@@ -131,11 +131,6 @@ class install_install extends module
 		// Initialize some variables and objects
 		$passed = $check_results = array();
 
-		if (!class_exists('phpbb_install_environment_checker'))
-		{
-			include($phpbb_root_path . 'includes/environment/checker.' . $phpEx);
-			include($phpbb_root_path . 'includes/environment/install_checker.' . $phpEx);
-		}
 		$install_checker = new phpbb_install_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		// Assert checks and dump results to template
@@ -240,7 +235,7 @@ class install_install extends module
 		unset($passed['PHP_SUPPORTED_DB']);
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
-		$s_hidden_fields = ($install_checker->img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($install_checker->img_imagick) . '" />' : '';
+		$s_hidden_fields = ($install_checker->imagemagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($install_checker->imagemagick) . '" />' : '';
 
 		$url = (!in_array(false, $passed) && $install_checker->any_db_support) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = (!in_array(false, $passed) && $install_checker->any_db_support) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];

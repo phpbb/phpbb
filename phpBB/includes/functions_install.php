@@ -555,50 +555,64 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 
 /**
 * Tests if directory exists, if not, tries to create it.
+* Sets write/read permissions for the created or existing directory.
+* Should be used to handle directories supposed to have 0777 permissions.
+*
+* @param	string	$dir	The directory name to be checked for existance.
+*							Relative to the board root path.
+*
+* @return	bool			True on success, otherwise false
+*
 */
 function phpbb_check_dir_exists($dir)
 {
 	global $phpbb_root_path;
 
+	// Set umask to 0 for the case it is not
+	// It allows to create directory with 0777 permissions
+	// for the case phpbb_chmod() is failed for some reason
 	umask(0);
-	$exists = false;
+	$dir_exists = false;
 
 	// Try to create the directory if it does not exist
 	if (!file_exists($phpbb_root_path . $dir))
 	{
 		@mkdir($phpbb_root_path . $dir, 0777);
+		
+		// Try to make directory readable/writable if it is not yet
 		phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
 	}
 
 	// Now really check
 	if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 	{
+		// Try to make directory readable/writable if it is not yet
 		phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
-		$exists = true;
+		$dir_exists = true;
 	}
-	
-	return $exists;
+
+	return $dir_exists;
 }
 
 /**
 * Tests if directory is writable by storing simple file.
 */
-function phpbb_create_dir($dir)
+function phpbb_test_dir_is_writable($dir)
 {
 	global $phpbb_root_path;
 
-	$writable = false;
+	$dir_is_writable = false;
 
 	// Now check if it is writable by storing a simple file
 	$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
 	if ($fp !== false)
 	{
-		$writable = true;
+		$dir_is_writable = true;
 	}
 	@fclose($fp);
 	@unlink($phpbb_root_path . $dir . 'test_lock');
 
-	return $writable;
+	return $dir_is_writable;
 }
 
 ?>

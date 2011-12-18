@@ -32,16 +32,7 @@ class phpbb_environment_checker
 		$this->config = $config;
 		$this->auth = $auth;
 
-		if (!class_exists('phpbb_assertion_manager'))
-		{
-			include($this->phpbb_root_path . 'includes/assertion_manager.' . $this->phpEx);
-		}
 		$this->asserter =  new phpbb_assertion_manager();
-
-		if (!class_exists('phpbb_ini_reader'))
-		{
-			include($this->phpbb_root_path . 'includes/ini_reader.' . $this->phpEx);
-		}
 		$this->php_ini =  new phpbb_ini_reader();
 	}
 
@@ -78,8 +69,8 @@ class phpbb_environment_checker
 			$this->set_errors();
 		}
 
-		// Empty previous results
-		$this->asserter->assertions_failed = array();
+		// Clear previous results
+		$this->asserter->failed_assertions = array();
 
 		foreach ($this->errors as $message => $assertion)
 		{
@@ -97,8 +88,8 @@ class phpbb_environment_checker
 			$this->set_notices();
 		}
 
-		// Empty previous results
-		$this->asserter->assertions_failed = array();
+		// Clear previous results
+		$this->asserter->failed_assertions = array();
 
 		foreach ($this->notices as $message => $assertion)
 		{

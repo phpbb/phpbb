@@ -17,18 +17,18 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_assertion_manager
 {
-	var $assertions_failed = array();
+	var $failed_assertions = array();
 
 	function assert($assertion, $error_message)
 	{
 		if (!$assertion)
 		{
-			$this->assertions_failed[] = $error_message;
+			$this->failed_assertions[] = $error_message;
 		}
 	}
 
 	function get_failed_assertions()
 	{
-		return $this->assertions_failed;
+		return $this->failed_assertions;
 	}
 }
