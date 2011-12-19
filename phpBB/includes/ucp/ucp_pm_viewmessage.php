@@ -265,7 +265,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
 		'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
-		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
+		'U_PRINT_PM'		=> $config['print_pm'] ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
 

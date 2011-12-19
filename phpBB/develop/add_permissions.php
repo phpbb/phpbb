@@ -155,7 +155,6 @@ $u_permissions = array(
 	'u_pm_smilies'	=> array(0, 1),
 	'u_pm_download'	=> array(0, 1),
 	'u_pm_edit'		=> array(0, 1),
-	'u_pm_printpm'	=> array(0, 1),
 	'u_pm_emailpm'	=> array(0, 1),
 	'u_pm_forward'	=> array(0, 1),
 	'u_pm_img'		=> array(0, 1),
