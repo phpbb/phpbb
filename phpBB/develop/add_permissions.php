@@ -71,7 +71,6 @@ $f_permissions = array(
 	'f_sigs'	=> array(1, 0),
 	'f_search'	=> array(1, 0),
 	'f_email'	=> array(1, 0),
-	'f_print'	=> array(1, 0),
 	'f_ignoreflood'	=> array(1, 0),
 	'f_postcount'	=> array(1, 0),
 	'f_noapprove'=> array(1, 0),
