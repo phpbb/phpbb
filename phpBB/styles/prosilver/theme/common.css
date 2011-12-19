@@ -133,6 +133,19 @@ a#logo:hover {
 	text-decoration: none;
 }
 
+/* Language selection box
+--------------------------------------------- */
+#lang-select {
+	color: #FFFFFF;
+	position: relative;
+	margin-top: 30px;
+	margin-right: 5px;
+	display: block;
+	float: left;
+	text-align: right;
+	white-space: nowrap; /* For Opera */
+}
+
 /* Search box
 --------------------------------------------- */
 #search-box {
