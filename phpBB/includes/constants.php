@@ -51,6 +51,7 @@ define('INACTIVE_REGISTER', 1);
 define('INACTIVE_PROFILE', 2);
 define('INACTIVE_MANUAL', 3);
 define('INACTIVE_REMIND', 4);
+define('INACTIVE_SOFT_DELETE', 5);
 
 // ACL
 define('ACL_NEVER', 0);
@@ -210,6 +211,12 @@ define('CAPTCHA_MAX_CHARS', 7);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);
+
+// Self Account Deletion
+define('SELF_ACCOUNT_DELETE_NONE', 0);
+define('SELF_ACCOUNT_DELETE_SOFT', 1);
+define('SELF_ACCOUNT_DELETE_PROFILE', 2);
+define('SELF_ACCOUNT_DELETE_HARD', 3);
 
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');

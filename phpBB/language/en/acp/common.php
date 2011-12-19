@@ -416,6 +416,7 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_PROFILE'		=> 'Profile details changed',
 	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
+	'INACTIVE_REASON_SOFT_DELETE'	=> 'User soft deleted',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
 	'INACTIVE_USERS'				=> 'Inactive users',
 	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an e-mail) these users if you wish.',

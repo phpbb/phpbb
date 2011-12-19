@@ -55,6 +55,34 @@ class ucp_profile
 
 				add_form_key('ucp_reg_details');
 
+				$self_delete_lang = 'DELETE_ACCOUNT_';
+				$self_delete_allowed = ($config['account_delete_method'] && $auth->acl_get('u_delete_self'));
+				switch($config['account_delete_method'])
+				{
+					case SELF_ACCOUNT_DELETE_SOFT:
+						$self_delete_lang .= 'SOFT';
+					break;
+
+					case SELF_ACCOUNT_DELETE_PROFILE:
+						$self_delete_lang .= 'PROFILE';
+					break;
+
+					case SELF_ACCOUNT_DELETE_HARD:
+						$self_delete_lang .= 'HARD';
+					break;
+					// This will never show up because the HTML is hidden when there is no permission or it's disabled
+					// But this is here anyway just to be safe.
+					case SELF_ACCOUNT_DELETE_NONE:
+					default:
+						$self_delete_lang .= 'FAIL';
+					break;
+				}
+				$delete_account = request_var('delete_account', false);
+				$template->assign_vars(array(
+					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
+					'DELETE_ACCOUNT_ALLOWED'		=> $self_delete_allowed,
+				));
+
 				if ($submit)
 				{
 					// Do not check cur_password, it is the old one.
@@ -89,6 +117,11 @@ class ucp_profile
 						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
+					if ($delete_account && !$auth->acl_get('u_delete_self'))
+					{
+						$error[] = 'DELETE_ACCOUNT_FAIL';
+					}
+
 					// Only check the new password against the previous password if there have been no errors
 					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], $user->data['user_password']))
 					{
@@ -107,6 +140,13 @@ class ucp_profile
 
 					if (!sizeof($error))
 					{
+						// If we're deleting the account, no need to let a bunch of other stuff happen first. Let's jump on in
+						// We've already made sure they entered their current password, so now we just check for the checkbox
+						// since the global setting was checked earlier
+						if ($delete_account)
+						{
+							$this->delete_account();
+						}
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
@@ -638,5 +678,54 @@ class ucp_profile
 		// Set desired template
 		$this->tpl_name = 'ucp_profile_' . $mode;
 		$this->page_title = 'UCP_PROFILE_' . strtoupper($mode);
+	}
+
+	/**
+	* Delete a user, based on global config and user's permissions.
+	* Note that none of that is checked in this function, so check
+	* that before calling it. This function just does what it says
+	* it's going to do.
+	*
+	* @return null
+	*/
+	function delete_account()
+	{
+		global $db, $user, $config;
+		global $phpbb_root_path, $phpEx;
+		
+		if(!function_exists('user_active_flip') || !function_exists('user_delete'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
+		}
+		switch($config['account_delete_method'])
+		{
+			// We partner these three together because this is the most undoable one
+			// Even if somehow someone bypassed the global setting being off or not having permission
+			// the most they could do is deactivate their account. None of their info would be gone
+			// and to undo, they can just log back in.
+			case SELF_ACCOUNT_DELETE_NONE:
+			case SELF_ACCOUNT_DELETE_SOFT:
+			default:
+				user_active_flip('deactivate', array($user->data['user_id']), INACTIVE_SOFT_DELETE);
+				// Log out the user
+				$user->reset_login_keys($user->data['user_id']);
+				$user->session_kill();
+				trigger_error('DELETE_ACCOUNT_SOFT_DONE');
+			break;
+			
+			case SELF_ACCOUNT_DELETE_PROFILE:
+				// Remove user's account and profile data and private messages
+				// Keep posts and topics
+				// Should work just like the normal user delete function in the ACP
+				user_delete('retain', $user->data['user_id'], $user->data['username']); // last argument controls username in posts
+				trigger_error('DELETE_ACCOUNT_PROFILE_DONE');
+			break;
+			
+			case SELF_ACCOUNT_DELETE_HARD:
+				// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
+				user_delete('remove', $user->data['user_id']);
+				trigger_error('DELETE_ACCOUNT_HARD_DONE');
+			break;
+		}
 	}
 }

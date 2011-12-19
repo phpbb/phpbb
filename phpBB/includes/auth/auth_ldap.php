@@ -193,11 +193,30 @@ function login_ldap(&$username, &$password)
 				// User inactive...
 				if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
 				{
-					return array(
-						'status'		=> LOGIN_ERROR_ACTIVE,
-						'error_msg'		=> 'ACTIVE_ERROR',
-						'user_row'		=> $row,
-					);
+					// If the user has simply been soft deleted and wishes to reactivate their account
+					// Let them
+					if ($row['user_type'] == USER_INACTIVE && $row['inactive_type'] != INACTIVE_SOFT_DELETE)
+					{
+						if (!function_exists('user_active_flip'))
+						{
+							include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+						}
+						user_active_flip('activate', array($row['user_id']));
+						return array(
+							'status'		=> LOGIN_SUCCESS,
+							'error_msg'		=> false,
+							'user_row'		=> $row,
+						);
+					}
+					// Otherwise, act as normal
+					else
+					{
+						return array(
+							'status'		=> LOGIN_ERROR_ACTIVE,
+							'error_msg'		=> 'ACTIVE_ERROR',
+							'user_row'		=> $row,
+						);
+					}
 				}
 
 				// Successful login... set user_login_attempts to zero...

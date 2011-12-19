@@ -687,6 +687,10 @@ switch ($mode)
 				case INACTIVE_REMIND:
 					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
 				break;
+
+				case INACTIVE_SOFT_DELETE:
+					$inactive_reason = $user->lang['INACTIVE_REASON_SOFT_DELETE'];
+				break;
 			}
 
 			$template->assign_vars(array(
