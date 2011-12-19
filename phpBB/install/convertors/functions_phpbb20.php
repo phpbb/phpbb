@@ -641,7 +641,7 @@ function phpbb_convert_authentication($mode)
 	$auth_map = array(
 		'auth_view'			=> array('f_', 'f_list'),
 		'auth_read'			=> array('f_read', 'f_search'),
-		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_postcount', 'f_report', 'f_subscribe', 'f_email'),
+		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_postcount', 'f_report', 'f_email'),
 		'auth_reply'		=> 'f_reply',
 		'auth_edit'			=> 'f_edit',
 		'auth_delete'		=> 'f_delete',

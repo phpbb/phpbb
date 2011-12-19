@@ -75,7 +75,6 @@ $f_permissions = array(
 	'f_postcount'	=> array(1, 0),
 	'f_noapprove'=> array(1, 0),
 	'f_report'	=> array(1, 0),
-	'f_subscribe'	=> array(1, 0),
 );
 
 $m_permissions = array(
