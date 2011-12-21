@@ -404,6 +404,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_forward', 1
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_img', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_printpm', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_smilies', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_reply', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_readpm', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_savedrafts', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_search', 1);
