@@ -145,7 +145,7 @@ class ucp_profile
 						// since the global setting was checked earlier
 						if ($delete_account)
 						{
-							$this->delete_account();
+							$this->phpbb_delete_account();
 						}
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
@@ -688,7 +688,7 @@ class ucp_profile
 	*
 	* @return null
 	*/
-	function delete_account()
+	function phpbb_delete_account()
 	{
 		global $db, $user, $config;
 		global $phpbb_root_path, $phpEx;
@@ -717,7 +717,7 @@ class ucp_profile
 				// Remove user's account and profile data and private messages
 				// Keep posts and topics
 				// Should work just like the normal user delete function in the ACP
-				user_delete('retain', $user->data['user_id'], $user->data['username']); // last argument controls username in posts
+				user_delete('retain', $user->data['user_id'], $user->data['username']);
 				trigger_error('DELETE_ACCOUNT_PROFILE_DONE');
 			break;
 			
