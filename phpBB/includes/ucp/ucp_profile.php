@@ -80,7 +80,7 @@ class ucp_profile
 				$delete_account = request_var('delete_account', false);
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
-					'DELETE_ACCOUNT_ALLOWED'		=> $self_delete_allowed,
+					'S_DELETE_ACCOUNT_ALLOWED'		=> $self_delete_allowed,
 				));
 
 				if ($submit)
