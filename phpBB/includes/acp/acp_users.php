@@ -120,7 +120,7 @@ class acp_users
 		// Build modes dropdown list
 		$sql = 'SELECT module_mode, module_auth
 			FROM ' . MODULES_TABLE . "
-			WHERE module_basename = 'users'
+			WHERE module_basename = 'acp_users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
 			ORDER BY left_id, module_mode";
