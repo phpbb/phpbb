@@ -1623,7 +1623,8 @@ CREATE TABLE [phpbb_users] (
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_new] [int] DEFAULT (1) NOT NULL ,
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,
-	[user_reminded_time] [int] DEFAULT (0) NOT NULL 
+	[user_reminded_time] [int] DEFAULT (0) NOT NULL ,
+	[user_pending_delete] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

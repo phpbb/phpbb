@@ -962,6 +962,7 @@ CREATE TABLE phpbb_users (
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_reminded tinyint(4) DEFAULT '0' NOT NULL,
 	user_reminded_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	user_pending_delete int(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

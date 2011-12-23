@@ -691,13 +691,25 @@ class ucp_profile
 	function phpbb_delete_account()
 	{
 		global $db, $user, $config;
-		global $phpbb_root_path, $phpEx;
-		
-		if(!function_exists('user_active_flip') || !function_exists('user_delete'))
+
+		if (!function_exists('user_active_flip') || !function_exists('user_delete'))
 		{
+			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
 		}
-		switch($config['account_delete_method'])
+		if ($config['account_delete_approval'] && $config['account_delete_method'] != SELF_ACCOUNT_DELETE_NONE)
+		{
+			// User is already asking to be deleted,
+			// Skip this and fail gracefully
+			if (!$user->data['user_pending_delete'])
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_pending_delete = 1 WHERE user_id = ' . $user->data['user_id'];
+				$db->sql_query($sql);
+			}
+
+			trigger_error('ACCOUNT_DELETE_APPROVAL');
+		}
+		switch ($config['account_delete_method'])
 		{
 			// We partner these three together because this is the most undoable one
 			// Even if somehow someone bypassed the global setting being off or not having permission
@@ -712,7 +724,7 @@ class ucp_profile
 				$user->session_kill();
 				trigger_error('DELETE_ACCOUNT_SOFT_DONE');
 			break;
-			
+
 			case SELF_ACCOUNT_DELETE_PROFILE:
 				// Remove user's account and profile data and private messages
 				// Keep posts and topics
@@ -720,7 +732,7 @@ class ucp_profile
 				user_delete('retain', $user->data['user_id'], $user->data['username']);
 				trigger_error('DELETE_ACCOUNT_PROFILE_DONE');
 			break;
-			
+
 			case SELF_ACCOUNT_DELETE_HARD:
 				// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
 				user_delete('remove', $user->data['user_id']);

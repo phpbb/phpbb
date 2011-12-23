@@ -896,6 +896,23 @@ class acp_board
 			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $user->lang['ALLOW_QUICK_REPLY_BUTTON'] . '" />';
 	}
 
+	/**
+	* Select type of account deletion allowed
+	*/
+	function account_delete_method($value, $key)
+	{
+		global $user;
+
+		// The constants stand for 0, 1, 2, and 3, respectively
+		$radio_ary = array(
+			SELF_ACCOUNT_DELETE_NONE		=> 'ACP_DELETE_ACCOUNT_NONE',
+			SELF_ACCOUNT_DELETE_SOFT		=> 'ACP_DELETE_ACCOUNT_SOFT',
+			SELF_ACCOUNT_DELETE_PROFILE		=> 'ACP_DELETE_ACCOUNT_PROFILE',
+			SELF_ACCOUNT_DELETE_HARD		=> 'ACP_DELETE_ACCOUNT_HARD',
+		);
+
+		return h_radio('config[account_delete_method]', $radio_ary, $value);
+	}
 
 	/**
 	* Select default dateformat

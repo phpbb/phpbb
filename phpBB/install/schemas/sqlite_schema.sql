@@ -933,7 +933,8 @@ CREATE TABLE phpbb_users (
 	user_form_salt varchar(32) NOT NULL DEFAULT '',
 	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_reminded tinyint(4) NOT NULL DEFAULT '0',
-	user_reminded_time INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	user_reminded_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_pending_delete INTEGER UNSIGNED NOT NULL DEFAULT '0',
 );
 
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);
