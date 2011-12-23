@@ -2341,7 +2341,7 @@ class user extends session
 	function optionget($key, $data = false)
 	{
 		$var = ($data !== false) ? $data : $this->data['user_options'];
-		return ($var & 1 << $this->keyoptions[$key]) ? true : false;
+		return phpbb_optionget($this->keyoptions[$key], $var);
 	}
 
 	/**
@@ -2351,27 +2351,23 @@ class user extends session
 	{
 		$var = ($data !== false) ? $data : $this->data['user_options'];
 
-		if ($value && !($var & 1 << $this->keyoptions[$key]))
-		{
-			$var += 1 << $this->keyoptions[$key];
-		}
-		else if (!$value && ($var & 1 << $this->keyoptions[$key]))
-		{
-			$var -= 1 << $this->keyoptions[$key];
-		}
-		else
-		{
-			return ($data !== false) ? $var : false;
-		}
+		$new_var = phpbb_optionset($this->keyoptions[$key], $value, $var);
 
 		if ($data === false)
 		{
-			$this->data['user_options'] = $var;
-			return true;
+			if ($new_var != $var)
+			{
+				$this->data['user_options'] = $new_var;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return $var;
+			return $new_var;
 		}
 	}
 

@@ -2347,27 +2347,23 @@ class acp_users
 
 		$var = ($data !== false) ? $data : $user_row['user_options'];
 
-		if ($value && !($var & 1 << $user->keyoptions[$key]))
-		{
-			$var += 1 << $user->keyoptions[$key];
-		}
-		else if (!$value && ($var & 1 << $user->keyoptions[$key]))
-		{
-			$var -= 1 << $user->keyoptions[$key];
-		}
-		else
-		{
-			return ($data !== false) ? $var : false;
-		}
+		$new_var = phpbb_optionset($user->keyoptions[$key], $value, $var);
 
 		if ($data === false)
 		{
-			$user_row['user_options'] = $var;
-			return true;
+			if ($new_var != $var)
+			{
+				$user_row['user_options'] = $new_var;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return $var;
+			return $new_var;
 		}
 	}
 
@@ -2379,7 +2375,7 @@ class acp_users
 		global $user;
 
 		$var = ($data !== false) ? $data : $user_row['user_options'];
-		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
+		return phpbb_optionget($user->keyoptions[$key], $var);
 	}
 }
 
