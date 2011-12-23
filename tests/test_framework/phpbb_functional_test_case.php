@@ -102,8 +102,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'admin_name'	=> 'admin',
 			'admin_pass1'	=> 'admin',
 			'admin_pass2'	=> 'admin',
-			'board_email1'	=> 'nobody@example.com',
-			'board_email2'	=> 'nobody@example.com',
+			'board_email'	=> 'nobody@example.com',
 		));
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);

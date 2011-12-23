@@ -72,7 +72,6 @@ $lang = array_merge($lang, array(
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written. You may now proceed to the next step of the installation.',
 	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for “%s” is empty.',
 	'CONFIG_RETRY'				=> 'Retry',
-	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact e-mail',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
 	'CONTINUE_CONVERT_BODY'		=> 'A previous conversion attempt has been determined. You are now able to choose between starting a new conversion or continuing the conversion.',
 	'CONTINUE_LAST'				=> 'Continue last statements',
