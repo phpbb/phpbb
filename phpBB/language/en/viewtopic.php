@@ -49,6 +49,7 @@ $lang = array_merge($lang, array(
 
 	'CODE'					=> 'Code',
 	'COLLAPSE_QR'			=> 'Hide Quick Reply',
+	'COPY_TOPIC'			=> 'Copy topic',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
@@ -61,7 +62,6 @@ $lang = array_merge($lang, array(
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
-	'FORK_TOPIC'			=> 'Copy topic',
 	'FULL_EDITOR'			=> 'Full Editor',
 	
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
