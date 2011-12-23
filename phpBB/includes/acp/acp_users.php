@@ -2345,7 +2345,7 @@ class acp_users
 	{
 		global $user;
 
-		$var = ($data) ? $data : $user_row['user_options'];
+		$var = ($data !== false) ? $data : $user_row['user_options'];
 
 		if ($value && !($var & 1 << $user->keyoptions[$key]))
 		{
@@ -2357,10 +2357,10 @@ class acp_users
 		}
 		else
 		{
-			return ($data) ? $var : false;
+			return ($data !== false) ? $var : false;
 		}
 
-		if (!$data)
+		if ($data === false)
 		{
 			$user_row['user_options'] = $var;
 			return true;
@@ -2378,7 +2378,7 @@ class acp_users
 	{
 		global $user;
 
-		$var = ($data) ? $data : $user_row['user_options'];
+		$var = ($data !== false) ? $data : $user_row['user_options'];
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
 	}
 }

@@ -2343,7 +2343,7 @@ class user extends session
 	{
 		if (!isset($this->keyvalues[$key]))
 		{
-			$var = ($data) ? $data : $this->data['user_options'];
+			$var = ($data !== false) ? $data : $this->data['user_options'];
 			$this->keyvalues[$key] = ($var & 1 << $this->keyoptions[$key]) ? true : false;
 		}
 
@@ -2355,7 +2355,7 @@ class user extends session
 	*/
 	function optionset($key, $value, $data = false)
 	{
-		$var = ($data) ? $data : $this->data['user_options'];
+		$var = ($data !== false) ? $data : $this->data['user_options'];
 
 		if ($value && !($var & 1 << $this->keyoptions[$key]))
 		{
@@ -2367,10 +2367,10 @@ class user extends session
 		}
 		else
 		{
-			return ($data) ? $var : false;
+			return ($data !== false) ? $var : false;
 		}
 
-		if (!$data)
+		if ($data === false)
 		{
 			$this->data['user_options'] = $var;
 			return true;
