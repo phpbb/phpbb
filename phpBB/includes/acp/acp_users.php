@@ -2339,7 +2339,19 @@ class acp_users
 	}
 
 	/**
-	* Optionset replacement for this module based on $user->optionset
+	* Set option bit field for user options in a user row array.
+	*
+	* Optionset replacement for this module based on $user->optionset.
+	*
+	* @param array $user_row Row from the users table.
+	* @param int $key Option key, as defined in $user->keyoptions property.
+	* @param bool $value True to set the option, false to clear the option.
+	* @param int $data Current bit field value, or false to use $user_row['user_options']
+	* @return int|bool If $data is false, the bit field is modified and
+	*                  written back to $user_row['user_options'], and
+	*                  return value is true if the bit field changed and
+	*                  false otherwise. If $data is not false, the new
+	*                  bitfield value is returned.
 	*/
 	function optionset(&$user_row, $key, $value, $data = false)
 	{
@@ -2368,7 +2380,14 @@ class acp_users
 	}
 
 	/**
-	* Optionget replacement for this module based on $user->optionget
+	* Get option bit field from user options in a user row array.
+	*
+	* Optionget replacement for this module based on $user->optionget.
+	*
+	* @param array $user_row Row from the users table.
+	* @param int $key option key, as defined in $user->keyoptions property.
+	* @param int $data bit field value to use, or false to use $user_row['user_options']
+	* @return bool true if the option is set in the bit field, false otherwise
 	*/
 	function optionget(&$user_row, $key, $data = false)
 	{
