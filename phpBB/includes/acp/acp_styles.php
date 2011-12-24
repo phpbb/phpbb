@@ -258,6 +258,7 @@ version = {VERSION}
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql_from = '';
+		$sql_sort = 'LOWER(' . $mode . '_name)';
 		$style_count = array();
 
 		switch ($mode)
@@ -285,6 +286,9 @@ version = {VERSION}
 			case 'theme':
 				$sql_from = STYLES_THEME_TABLE;
 			break;
+
+			default:
+				trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$l_prefix = strtoupper($mode);
@@ -308,7 +312,8 @@ version = {VERSION}
 		);
 
 		$sql = "SELECT *
-			FROM $sql_from";
+			FROM $sql_from
+			ORDER BY $sql_sort ASC";
 		$result = $db->sql_query($sql);
 
 		$installed = array();
