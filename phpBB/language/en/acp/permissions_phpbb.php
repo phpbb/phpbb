@@ -116,7 +116,6 @@ $lang = array_merge($lang, array(
 	'acl_u_readpm'		=> array('lang' => 'Can read private messages', 'cat' => 'pm'),
 	'acl_u_pm_edit'		=> array('lang' => 'Can edit own private messages', 'cat' => 'pm'),
 	'acl_u_pm_forward'	=> array('lang' => 'Can forward private messages', 'cat' => 'pm'),
-	'acl_u_pm_emailpm'	=> array('lang' => 'Can email private messages', 'cat' => 'pm'),
 	'acl_u_pm_attach'	=> array('lang' => 'Can attach files in private messages', 'cat' => 'pm'),
 	'acl_u_pm_download'	=> array('lang' => 'Can download files in private messages', 'cat' => 'pm'),
 	'acl_u_pm_bbcode'	=> array('lang' => 'Can use BBCode in private messages', 'cat' => 'pm'),
