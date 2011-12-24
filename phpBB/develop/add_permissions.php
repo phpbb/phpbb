@@ -71,12 +71,10 @@ $f_permissions = array(
 	'f_sigs'	=> array(1, 0),
 	'f_search'	=> array(1, 0),
 	'f_email'	=> array(1, 0),
-	'f_print'	=> array(1, 0),
 	'f_ignoreflood'	=> array(1, 0),
 	'f_postcount'	=> array(1, 0),
 	'f_noapprove'=> array(1, 0),
 	'f_report'	=> array(1, 0),
-	'f_subscribe'	=> array(1, 0),
 );
 
 $m_permissions = array(
@@ -156,9 +154,7 @@ $u_permissions = array(
 	'u_pm_smilies'	=> array(0, 1),
 	'u_pm_download'	=> array(0, 1),
 	'u_pm_edit'		=> array(0, 1),
-	'u_pm_printpm'	=> array(0, 1),
 	'u_pm_forward'	=> array(0, 1),
-	'u_pm_delete'	=> array(0, 1),
 	'u_pm_img'		=> array(0, 1),
 	'u_pm_flash'	=> array(0, 1),
 );
