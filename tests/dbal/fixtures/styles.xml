@@ -7,12 +7,10 @@
 		<column>style_active</column>
 		<column>template_id</column>
 		<column>theme_id</column>
-		<column>imageset_id</column>
 		<row>
 			<value>1</value>
 			<value>prosilver</value>
 			<value>&amp;copy; phpBB Group</value>
-			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
@@ -24,14 +22,12 @@
 			<value>0</value>
 			<value>2</value>
 			<value>2</value>
-			<value>2</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>Prosilver1</value>
 			<value>&amp;copy; phpBB Group</value>
 			<value>0</value>
-			<value>3</value>
 			<value>3</value>
 			<value>3</value>
 		</row>
