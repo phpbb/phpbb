@@ -911,7 +911,7 @@ class acp_board
 			SELF_ACCOUNT_DELETE_HARD		=> 'ACP_DELETE_ACCOUNT_HARD',
 		);
 
-		return h_radio('config[account_delete_method]', $radio_ary, $value);
+		return h_radio("config[$key]", $radio_ary, $value);
 	}
 
 	/**
