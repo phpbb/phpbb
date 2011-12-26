@@ -56,7 +56,6 @@ class ucp_profile
 				add_form_key('ucp_reg_details');
 
 				$self_delete_lang = 'DELETE_ACCOUNT_';
-				$self_delete_allowed = ($config['account_delete_method'] && $auth->acl_get('u_delete_self'));
 				switch($config['account_delete_method'])
 				{
 					case SELF_ACCOUNT_DELETE_SOFT:
@@ -80,7 +79,7 @@ class ucp_profile
 				$delete_account = request_var('delete_account', false);
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
-					'S_DELETE_ACCOUNT_ALLOWED'		=> $self_delete_allowed,
+					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_self')),
 				));
 
 				if ($submit)

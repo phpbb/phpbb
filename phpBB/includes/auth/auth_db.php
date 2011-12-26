@@ -257,7 +257,7 @@ function login_db($username, $password, $ip = '', $browser = '', $forwarded_for 
 		{
 			// If the user has simply been soft deleted and wishes to reactivate their account
 			// Let them
-			if ($row['user_type'] == USER_INACTIVE && $row['inactive_type'] != INACTIVE_SOFT_DELETE)
+			if ($row['user_type'] == USER_INACTIVE && $row['inactive_type'] == INACTIVE_SOFT_DELETE)
 			{
 				if (!function_exists('user_active_flip'))
 				{
