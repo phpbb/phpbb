@@ -393,7 +393,6 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm_group', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_attach', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_bbcode', 1);
-INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_download', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_edit', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_flash', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_img', 1);

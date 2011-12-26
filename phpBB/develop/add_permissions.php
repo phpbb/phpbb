@@ -152,7 +152,6 @@ $u_permissions = array(
 	'u_pm_attach'	=> array(0, 1),
 	'u_pm_bbcode'	=> array(0, 1),
 	'u_pm_smilies'	=> array(0, 1),
-	'u_pm_download'	=> array(0, 1),
 	'u_pm_edit'		=> array(0, 1),
 	'u_pm_img'		=> array(0, 1),
 	'u_pm_flash'	=> array(0, 1),

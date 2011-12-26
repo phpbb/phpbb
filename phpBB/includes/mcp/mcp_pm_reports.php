@@ -123,7 +123,7 @@ class mcp_pm_reports
 				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
 
-				if ($pm_info['message_attachment'] && $auth->acl_get('u_pm_download'))
+				if ($pm_info['message_attachment'])
 				{
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
