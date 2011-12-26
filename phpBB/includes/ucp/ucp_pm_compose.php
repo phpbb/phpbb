@@ -211,7 +211,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		break;
 	}
 
-	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
+	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_sendpm')))
 	{
 		trigger_error('NO_AUTH_FORWARD_MESSAGE');
 	}
