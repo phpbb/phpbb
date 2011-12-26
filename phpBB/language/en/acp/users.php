@@ -89,6 +89,7 @@ $lang = array_merge($lang, array(
 
 	'SELECT_FORM'			=> 'Select form',
 	'SELECT_USER'			=> 'Select user',
+	'SOFT_DELETE'			=> 'Soft delete',
 
 	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
@@ -118,6 +119,7 @@ $lang = array_merge($lang, array(
 	'USER_AVATAR_TYPE_NOT_ALLOWED'	=> 'The current avatar cannot be displayed because its type has been disallowed.',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 	'USER_DELETED'					=> 'User deleted successfully.',
+	'USER_SOFT_DELETED'				=> 'User soft deleted successfully. Note that the user may reactivate his or her account by logging back in.',
 	'USER_GROUP_ADD'				=> 'Add user to group',
 	'USER_GROUP_NORMAL'				=> 'User defined groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
