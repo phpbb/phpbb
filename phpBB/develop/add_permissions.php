@@ -145,7 +145,6 @@ $u_permissions = array(
 	'u_chgpasswd'	=> array(0, 1),
 	'u_chgcensors'	=> array(0, 1),
 	'u_search'		=> array(0, 1),
-	'u_savedrafts'	=> array(0, 1),
 	'u_download'	=> array(0, 1),
 	'u_attach'		=> array(0, 1),
 	'u_sig'			=> array(0, 1),
