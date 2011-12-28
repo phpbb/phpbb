@@ -570,7 +570,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], htmlspecialchars_decode($config['jab_password']), $config['jab_use_ssl']);
 
 			if (!$this->jabber->connect())
 			{
@@ -771,7 +771,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], htmlspecialchars_decode($config['jab_password']), $config['jab_use_ssl']);
 
 					if (!$this->jabber->connect())
 					{
@@ -1024,7 +1024,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	}
 
 	// Let me in. This function handles the complete authentication process
-	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], $config['smtp_password'], $config['smtp_auth_method']))
+	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], htmlspecialchars_decode($config['smtp_password']), $config['smtp_auth_method']))
 	{
 		$smtp->close_session($err_msg);
 		return false;
