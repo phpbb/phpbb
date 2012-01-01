@@ -261,28 +261,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
-		// Moderators should see the latest info about unapproved topics
-		// However, because it's not stored on the forum's table, we have to do a looped query.
-		// But only for moderators that have m_ permission in the current forum
-		if ($auth->acl_get('m_', $forum_id))
-		{
-			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, u.username, u.user_colour
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE p.forum_id = ' . $forum_id . '
-					AND u.user_id = p.poster_id
-				ORDER BY p.post_time DESC LIMIT 1';
-			$res = $db->sql_query($sql);
-			$last_post_data = $db->sql_fetchrow($res);
-			$db->sql_freeresult($res);
-
-			$forum_rows[$parent_id]['forum_last_post_id'] = $last_post_data['post_id'];
-			$forum_rows[$parent_id]['forum_last_post_subject'] = $last_post_data['post_subject'];
-			$forum_rows[$parent_id]['forum_last_post_time'] = $last_post_data['poster_id'];
-			$forum_rows[$parent_id]['forum_last_poster_id'] = $last_post_data['user_id'];
-			$forum_rows[$parent_id]['forum_last_poster_name'] = $last_post_data['username'];
-			$forum_rows[$parent_id]['forum_last_poster_colour'] = $last_post_data['user_colour'];
-			$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
-		}
 	}
 	$db->sql_freeresult($result);
 
