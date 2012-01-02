@@ -1607,7 +1607,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	// Send Notifications
 	if ($mode != 'edit')
 	{
-		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message']);
+		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
 	}
 
 	return $data['msg_id'];
@@ -1616,7 +1616,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 /**
 * PM Notification
 */
-function pm_notification($mode, $author, $recipients, $subject, $message)
+function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1688,8 +1688,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 
-			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
-		);
+			'U_INBOX'			=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox",
+			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id",
+		));
 
 		$messenger->send($addr['method']);
 	}

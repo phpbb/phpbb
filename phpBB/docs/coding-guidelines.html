@@ -87,12 +87,6 @@
 		<li><a href="#writingstyle">Writing Style</a></li>
 	</ol>
 	</li>
-	<li><a href="#vcs">VCS Guidelines</a>
-	<ol style="list-style-type: lower-roman;">
-		<li><a href="#repostruct">Repository structure</a></li>
-		<li><a href="#commitmessage">Commit Messages and Repository Rules</a></li>
-	</ol>
-	</li>
 	<li><a href="#disclaimer">Copyright and disclaimer</a></li>
 </ol>
 
@@ -468,12 +462,12 @@ do_stuff($str);
 $post_url = $phpbb_root_path . 'posting.' . $phpEx . '?mode=' . $mode . '&amp;amp;start=' . $start;
 	</pre></div>
 
-	<p class="good">// Double quotes are sometimes needed to not overcroud the line with concentinations</p>
+	<p class="good">// Double quotes are sometimes needed to not overcrowd the line with concatenations.</p>
 	<div class="codebox"><pre>
 $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	</pre></div>
 
-	<p>In SQL Statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL Formatting), else it should be tryed to only use one method - mostly single quotes.</p>
+	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
 
 	<h4>Associative array keys:</h4>
 	<p>In PHP, it's legal to use a literal string as a key to an associative array without quoting that string. We don't want to do this -- the string should always be quoted to avoid confusion. Note that this is only when we're using a literal, not when we're using a variable, examples:</p>
@@ -502,7 +496,7 @@ $foo = $assoc_array[$var];
 	<p>Each complex function should be preceded by a comment that tells a programmer everything they need to know to use that function. The meaning of every parameter, the expected input, and the output are required as a minimal comment. The function's behaviour in error conditions (and what those error conditions are) should also be present - but mostly included within the comment about the output.<br /><br />Especially important to document are any assumptions the code makes, or preconditions for its proper operation. Any one of the developers should be able to look at any part of the application and figure out what's going on in a reasonable amount of time.<br /><br />Avoid using <code>/* */</code> comment blocks for one-line comments, <code>//</code> should be used for one/two-liners.</p>
 
 	<h4>Magic numbers:</h4>
-	<p>Don't use them. Use named constants for any literal value other than obvious special cases. Basically, it's ok to check if an array has 0 elements by using the literal 0. It's not ok to assign some special meaning to a number and then use it everywhere as a literal. This hurts readability AND maintainability. The constants <code>true</code> and <code>false</code> should be used in place of the literals 1 and 0 -- even though they have the same values (but not type!), it's more obvious what the actual logic is when you use the named constants. Typecast variables where it is needed, do not rely on the correct variable type (PHP is currently very loose on typecasting which can lead to security problems if a developer does not have a very close eye to it).</p>
+	<p>Don't use them. Use named constants for any literal value other than obvious special cases. Basically, it's ok to check if an array has 0 elements by using the literal 0. It's not ok to assign some special meaning to a number and then use it everywhere as a literal. This hurts readability AND maintainability. The constants <code>true</code> and <code>false</code> should be used in place of the literals 1 and 0 -- even though they have the same values (but not type!), it's more obvious what the actual logic is when you use the named constants. Typecast variables where it is needed, do not rely on the correct variable type (PHP is currently very loose on typecasting which can lead to security problems if a developer does not keep a very close eye on it).</p>
 
 	<h4>Shortcut operators:</h4>
 	<p>The only shortcut operators that cause readability problems are the shortcut increment <code>$i++</code> and decrement <code>$j--</code> operators. These operators should not be used as part of an expression. They can, however, be used on their own line. Using them in expressions is just not worth the headaches when debugging, examples:</p>
@@ -671,7 +665,7 @@ $sql = 'SELECT *
 	</pre></div>
 
 	<h4>SQL Quotes: </h4>
-	<p>Double quotes where applicable (The variables in these examples are typecasted to integers before) ... examples: </p>
+	<p>Use double quotes where applicable. (The variables in these examples are typecasted to integers beforehand.) Examples: </p>
 
 	<p class="bad">// These are wrong.</p>
 	<div class="codebox"><pre>
@@ -832,7 +826,7 @@ SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1
 
 	<h4>sql_build_query():</h4>
 
-	<p>The <code>$db-&gt;sql_build_query()</code> function is responsible for building sql statements for select and select distinct queries if you need to JOIN on more than one table or retrieving data from more than one table while doing a JOIN. This needs to be used to make sure the resulting statement is working on all supported db's. Instead of explaining every possible combination, i will give a short example:</p>
+	<p>The <code>$db-&gt;sql_build_query()</code> function is responsible for building sql statements for SELECT and SELECT DISTINCT queries if you need to JOIN on more than one table or retrieve data from more than one table while doing a JOIN. This needs to be used to make sure the resulting statement is working on all supported db's. Instead of explaining every possible combination, I will give a short example:</p>
 
 	<div class="codebox"><pre>
 $sql_array = array(
@@ -917,7 +911,7 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	</pre></div>
 
 	<h4>Use of in_array(): </h4>
-	<p>Try to avoid using in_array() on huge arrays, and try to not place them into loops if the array to check consist of more than 20 entries. in_array() can be very time consuming and uses a lot of cpu processing time. For little checks it is not noticable, but if checked against a huge array within a loop those checks alone can be a bunch of seconds. If you need this functionality, try using isset() on the arrays keys instead, actually shifting the values into keys and vice versa. A call to <code>isset($array[$var])</code> is a lot faster than <code>in_array($var, array_keys($array))</code> for example.</p>
+	<p>Try to avoid using in_array() on huge arrays, and try to not place them into loops if the array to check consist of more than 20 entries. in_array() can be very time consuming and uses a lot of cpu processing time. For little checks it is not noticeable, but if checked against a huge array within a loop those checks alone can take several seconds. If you need this functionality, try using isset() on the arrays keys instead, actually shifting the values into keys and vice versa. A call to <code>isset($array[$var])</code> is a lot faster than <code>in_array($var, array_keys($array))</code> for example.</p>
 
 
 	<a name="general"></a><h3>2.v. General Guidelines</h3>
@@ -930,7 +924,7 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to).</p>
 
 	<h4>Variables: </h4>
-	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params. </p>
+	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params.</p>
 	<p>The request_var function determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the request_var function explicitly. Examples:</p>
 
 	<p class="bad">// Old method, do not use it</p>
@@ -997,7 +991,7 @@ $user-&gt;setup();
 	<p>The <code>$user-&gt;setup()</code> call can be used to pass on additional language definition and a custom style (used in viewforum).</p>
 
 	<h4>Errors and messages: </h4>
-	<p>All messages/errors should be outputed by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
+	<p>All messages/errors should be outputted by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
 
 	<div class="codebox"><pre>
 trigger_error('NO_FORUM');
@@ -1015,7 +1009,7 @@ trigger_error('NO_MODE', E_USER_ERROR);
 
 	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended (though some links will fail and the code need to be slightly adjusted).</p>
 
-	<p>The <code>append_sid()</code> function from 2.0.x is available too, though does not handle url alterations automatically. Please have a look at the code documentation if you want to get more details on how to use append_sid(). A sample call to append_sid() can look like this:</p>
+	<p>The <code>append_sid()</code> function from 2.0.x is available too, though it does not handle url alterations automatically. Please have a look at the code documentation if you want to get more details on how to use append_sid(). A sample call to append_sid() can look like this:</p>
 
 	<div class="codebox"><pre>
 append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])
@@ -1023,7 +1017,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 	<h4>General function usage: </h4>
 
-	<p>Some of these functions are only chosen over others because of personal preference and having no other benefit than to be consistent over the code.</p>
+	<p>Some of these functions are only chosen over others because of personal preference and have no benefit other than maintaining consistency throughout the code.</p>
 
 	<ul>
 		<li>
@@ -1073,7 +1067,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
         required_imageset = prosilver
 	</pre></div>
 	<a name="genstyling"></a><h3>3.2. General Styling Rules</h3>
-<p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the intendation and coding guidelines also apply to templates where possible.</p>
+<p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the indentation and coding guidelines also apply to templates where possible.</p>
 
 <p>The outer table class <code>forumline</code> has gone and is replaced with <code>tablebg</code>.</p>
 <p>When writing <code>&lt;table&gt;</code> the order <code>&lt;table class="" cellspacing="" cellpadding="" border="" align=""&gt;</code> creates consistency and allows everyone to easily see which table produces which "look". The same applies to most other tags for which additional parameters can be set, consistency is the major aim here.</p>
@@ -1093,7 +1087,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 <p>Row colours/classes are now defined by the template, use an <code>IF S_ROW_COUNT</code> switch, see viewtopic or viewforum for an example.</p>
 
-<p>Remember block level ordering is important ... while not all pages validate as XHTML 1.0 Strict compliant it is something we're trying to work too.</p>
+<p>Remember block level ordering is important ... while not all pages validate as XHTML 1.0 Strict compliant it is something we're trying to work on.</p>
 
 <p>Use a standard cellpadding of 2 and cellspacing of 0 on outer tables. Inner tables can vary from 0 to 3 or even 4 depending on the need.</p>
 
@@ -1142,12 +1136,12 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 	<a name="templates"></a><h3>4.i. General Templating</h3>
 
 <h4>File naming</h4>
-<p>Firstly templates now take the suffix &quot;.html&quot; rather than &quot;.tpl&quot;. This was done simply to make the lifes of some people easier wrt syntax highlighting, etc.</p>
+<p>Firstly templates now take the suffix &quot;.html&quot; rather than &quot;.tpl&quot;. This was done simply to make the lives of some people easier wrt syntax highlighting, etc.</p>
 
 <h4>Variables</h4>
 <p>All template variables should be named appropriately (using underscores for spaces), language entries should be prefixed with L_, system data with S_, urls with U_, javascript urls with UA_, language to be put in javascript statements with LA_, all other variables should be presented 'as is'.</p>
 
-<p>L_* template variables are automatically tried to be mapped to the corresponding language entry if the code does not set (and therefore overwrite) this variable specifically. For example <code>{L_USERNAME}</code> maps to <code>$user-&gt;lang['USERNAME']</code>. The LA_* template variables are handled within the same way, but properly escaped to be put in javascript code. This should reduce the need to assign loads of new lang vars in Modifications.
+<p>L_* template variables are automatically mapped to the corresponding language entry if the code does not set (and therefore overwrite) this variable specifically and if the language entry exists. For example <code>{L_USERNAME}</code> maps to <code>$user-&gt;lang['USERNAME']</code>. The LA_* template variables are handled within the same way, but properly escaped so they can be put in javascript code. This should reduce the need to assign loads of new language variables in MODifications.
 </p>
 
 <h4>Blocks/Loops</h4>
@@ -1430,9 +1424,9 @@ div
 <span class="comment">&lt;!-- END l_block1 --&gt;</span>
 </pre></div>
 
-<p>Here we open the loop l_block1 and doing some things if the value S_SELECTED within the current loop iteration is true, else we write the blocks link and title. Here, you see <code>{l_block1.L_TITLE}</code> referenced - you remember that L_* variables get automatically assigned the corresponding language entry? This is true, but not within loops. The L_TITLE variable within the loop l_block1 is assigned within the code itself.</p>
+<p>Here we open the loop l_block1 and do some things if the value S_SELECTED within the current loop iteration is true, else we write the blocks link and title. Here, you see <code>{l_block1.L_TITLE}</code> referenced - you remember that L_* variables get automatically assigned the corresponding language entry? This is true, but not within loops. The L_TITLE variable within the loop l_block1 is assigned within the code itself.</p>
 
-<p>Let's have a closer look to the markup:</p>
+<p>Let's have a closer look at the markup:</p>
 
 <div class="codebox"><pre>
 <span class="comment">&lt;!-- BEGIN l_block1 --&gt;</span>
@@ -1526,7 +1520,7 @@ div
 &lt;/ul&gt; <span class="comment">&lt;!-- written on third iteration --&gt;</span>
 </pre></div>
 
-<p>Just always remember that processing is taking place from up to down.</p>
+<p>Just always remember that processing is taking place from top to bottom.</p>
 
 	<h4>Forms</h4>
 		<p>If a form is used for a non-trivial operation (i.e. more than a jumpbox), then it should include the <code>{S_FORM_TOKEN}</code> template variable.</p>
@@ -1542,11 +1536,9 @@ div
 		</pre></div><br />
 
 	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
-		<p>When basing a new template on an existing one, it is not necessary to provide all template files. By declaring the template  to be &quot;<strong>inheriting</strong>&quot; in the template configuration file.</p>
+		<p>When basing a new style on an existing one, it is not necessary to provide all the template files. By declaring the base style name in the <strong>inherit_from</strong> field in the template configuration file, the style can be set to inherit template files from the base style. The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
 
-		<p>The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
-
-		<p>The effect of doing so is that the template engine will use the files in the new template where they exist, but fall back to files in the base template otherwise. Declaring a style to be inheriting also causes it to use some of the configuration settings of the base style, notably database storage.</p>
+		<p>The effect of doing so is that the template engine will use the template files in the new style where they exist, but fall back to files in the base style otherwise. Declaring a style to inherit from another also causes it to use some of the configuration settings of the base style, notably database storage.</p>
 
 		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
 
@@ -1673,7 +1665,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<h4>Encoding:</h4>
 
-	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), this removes the need to convert between encodings and improves the accessibility of multilingual forums.</p>
+	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), we remove the need to convert between encodings and improves the accessibility of multilingual forums.</p>
 
 	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <acronym title="Byte-Order-Mark">BOM</acronym> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
 
@@ -2323,51 +2315,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<hr />
 
-<a name="vcs"></a><h2>7. VCS Guidelines</h2>
-
-	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
-
-		<div class="content">
-
-	<p>The version control system for phpBB3 is git. The repository is available at <a href="http://github.com/phpbb/phpbb3" title="repository">http://github.com/phpbb/phpbb3</a>.</p>
-
-	<a name="repostruct"></a><h3>7.i. Repository Structure</h3>
-
-	<ul>
-		<li><strong>develop</strong><br />The latest unstable development version with new features etc.</li>
-		<li><strong>develop-*</strong><br />Development branches of stable phpBB releases. Branched off of <code>develop</code> at the time of feature freeze.
-			<ul>
-				<li><strong>phpBB3.0</strong><code>develop-olympus</code><br />Development branch of the stable 3.0 line. Bug fixes are applied here.</li>
-				<li><strong>phpBB3.1</strong><code>develop-ascraeus</code><br />Development branch of the stable 3.1 line. Bug fixes are applied here.</li>
-			</ul>
-		</li>
-		<li><strong>master</strong><br />A branch containing all stable phpBB3 release points</li>
-		<li><strong>tags</strong><br />Released versions. Stable ones get merged into the master branch.
-			<ul>
-				<li><code>release-3.Y-BX</code><br />Beta release X of the 3.Y line.</li>
-				<li><code>release-3.Y-RCX</code><br />Release candidate X of the 3.Y line.</li>
-				<li><code>release-3.Y.Z-RCX</code><br />Release candidate X of the stable 3.Y.Z release.</li>
-				<li><code>release-3.0.X</code><br />Stable <strong>3.0.X</strong> release.</li>
-				<li><code>release-2.0.X</code><br />Old stable 2.0.X release.</li>
-			</ul>
-		</li>
-	</ul>
-
-	<a name="commitmessage"></a><h3>7.ii. Commit Messages and Repository Rules</h3>
-
-	<p>Information on repository rules, such as commit messages can be found at <a href="http://wiki.phpbb.com/display/DEV/Git" title="phpBB Git Information">http://wiki.phpbb.com/display/DEV/Git</a>.</p>
-
-		</div>
-
-		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
-
-		<span class="corners-bottom"><span></span></span></div>
-	</div>
-
-	<hr />
-
-<a name="disclaimer"></a><h2>9. Copyright and disclaimer</h2>
+<a name="disclaimer"></a><h2>8. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>

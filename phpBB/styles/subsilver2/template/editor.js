@@ -151,8 +151,10 @@ function insert_text(text, spaces, popup)
 	{
 		text = ' ' + text + ' ';
 	}
-	
-	if (!isNaN(textarea.selectionStart))
+
+	// Since IE9, IE also has textarea.selectionStart, but it still needs to be treated the old way.
+	// Therefore we simply add a !is_ie here until IE fixes the text-selection completely.
+	if (!isNaN(textarea.selectionStart) && !is_ie)
 	{
 		var sel_start = textarea.selectionStart;
 		var sel_end = textarea.selectionEnd;
@@ -218,11 +220,12 @@ function addquote(post_id, username, l_wrote)
 	}
 
 	// Get text selection - not only the post content :(
-	if (window.getSelection)
+	// IE9 must use the document.selection method but has the *.getSelection so we just force no IE
+	if (window.getSelection && !is_ie)
 	{
 		theSelection = window.getSelection().toString();
 	}
-	else if (document.getSelection)
+	else if (document.getSelection && !is_ie)
 	{
 		theSelection = document.getSelection();
 	}

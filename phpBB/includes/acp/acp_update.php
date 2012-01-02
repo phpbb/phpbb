@@ -37,7 +37,7 @@ class acp_update
 		$errstr = '';
 		$errno = 0;
 
-		$info = obtain_latest_version_info(request_var('versioncheck_force', false), true);
+		$info = obtain_latest_version_info(request_var('versioncheck_force', false));
 
 		if ($info === false)
 		{
@@ -69,12 +69,9 @@ class acp_update
 
 		$current_version = (!empty($version_update_from)) ? $version_update_from : $config['version'];
 
-		$up_to_date_automatic = (version_compare(str_replace('rc', 'RC', strtolower($current_version)), str_replace('rc', 'RC', strtolower($latest_version)), '<')) ? false : true;
-		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($config['version'])), str_replace('rc', 'RC', strtolower($latest_version)), '<')) ? false : true;
-
 		$template->assign_vars(array(
-			'S_UP_TO_DATE'		=> $up_to_date,
-			'S_UP_TO_DATE_AUTO'	=> $up_to_date_automatic,
+			'S_UP_TO_DATE'		=> phpbb_version_compare($latest_version, $config['version'], '<='),
+			'S_UP_TO_DATE_AUTO'	=> phpbb_version_compare($latest_version, $current_version, '<='),
 			'S_VERSION_CHECK'	=> true,
 			'U_ACTION'			=> $this->u_action,
 			'U_VERSIONCHECK_FORCE' => append_sid($this->u_action . '&amp;versioncheck_force=1'),

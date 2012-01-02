@@ -148,6 +148,7 @@ class mcp_reports
 
 				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
+				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{

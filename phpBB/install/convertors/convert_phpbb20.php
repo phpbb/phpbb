@@ -32,7 +32,7 @@ unset($dbpasswd);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.0.9',
+	'phpbb_version'	=> '3.0.10',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -504,7 +504,7 @@ if (!$get_info)
 				array('topic_type',				'topics.topic_type',				'phpbb_convert_topic_type'),
 				array('topic_first_post_id',	'topics.topic_first_post_id',		''),
 				array('topic_last_view_time',	'posts.post_time',					'intval'),
-				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'utf8_htmlspecialchars')),
+				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'htmlspecialchars_decode', 'function4' => 'utf8_htmlspecialchars')),
 				array('poll_start',				'vote_desc.vote_start',				'null_to_zero'),
 				array('poll_length',			'vote_desc.vote_length',			'null_to_zero'),
 				array('poll_max_options',		1,									''),
@@ -537,7 +537,7 @@ if (!$get_info)
 				array('topic_type',				'topics.topic_type',				'phpbb_convert_topic_type'),
 				array('topic_first_post_id',	'topics.topic_first_post_id',		''),
 
-				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'utf8_htmlspecialchars')),
+				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'htmlspecialchars_decode', 'function4' => 'utf8_htmlspecialchars')),
 				array('poll_start',				'vote_desc.vote_start',				'null_to_zero'),
 				array('poll_length',			'vote_desc.vote_length',			'null_to_zero'),
 				array('poll_max_options',		1,									''),
@@ -582,7 +582,7 @@ if (!$get_info)
 				array('poll_option_id',			'vote_results.vote_option_id',		''),
 				array('topic_id',				'vote_desc.topic_id',				''),
 				array('',						'topics.topic_poster AS poster_id',	'phpbb_user_id'),
-				array('poll_option_text',		'vote_results.vote_option_text',	array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
+				array('poll_option_text',		'vote_results.vote_option_text',	array('function1' => 'phpbb_set_encoding', 'function2' => 'htmlspecialchars_decode', 'function3' => 'utf8_htmlspecialchars')),
 				array('poll_option_total',		'vote_results.vote_result',			''),
 
 				'where'			=> 'vote_results.vote_id = vote_desc.vote_id',

@@ -173,6 +173,12 @@ if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
 header("Content-Type: application/atom+xml; charset=UTF-8");
 header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
 
+if (!empty($user->data['is_bot']))
+{
+	// Let reverse proxies know we detected a bot.
+	header('X-PHPBB-IS-BOT: yes');
+}
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 echo '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
 echo '<link rel="self" type="application/atom+xml" href="' . $global_vars['SELF_LINK'] . '" />' . "\n\n";
@@ -604,30 +610,9 @@ class phpbb_feed_base
 
 	function get_passworded_forums()
 	{
-		global $db, $user;
+		global $user;
 
-		// Exclude passworded forums
-		$sql = 'SELECT f.forum_id, fa.user_id
-			FROM ' . FORUMS_TABLE . ' f
-			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa
-				ON (fa.forum_id = f.forum_id
-					AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-			WHERE f.forum_password <> ''";
-		$result = $db->sql_query($sql);
-
-		$forum_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_id = (int) $row['forum_id'];
-
-			if ($row['user_id'] != $user->data['user_id'])
-			{
-				$forum_ids[$forum_id] = $forum_id;
-			}
-		}
-		$db->sql_freeresult($result);
-
-		return $forum_ids;
+		return $user->get_passworded_forums();
 	}
 
 	function get_item()

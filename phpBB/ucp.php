@@ -254,6 +254,12 @@ if (!$user->data['is_registered'])
 		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	}
 
+	if ($id == 'pm' && $mode == 'view' && isset($_GET['p']))
+	{
+		$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx?i=pm&p=" . request_var('p', 0));
+		login_box($redirect_url, $user->lang['LOGIN_EXPLAIN_UCP']);
+	}
+
 	login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
 }
 

@@ -234,6 +234,14 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertEquals($row2, $row_actual);
 	}
 
+	public function test_list_columns()
+	{
+		$this->assertEquals(
+			array_keys($this->table_data['COLUMNS']),
+			array_values($this->tools->sql_list_columns('prefix_table_name'))
+		);
+	}
+
 	public function test_column_exists()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_id'));
@@ -258,6 +266,13 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_id'));
 	}
 
+	public function test_list_tables()
+	{
+		$tables = $this->tools->sql_list_tables();
+		$this->assertTrue(isset($tables['prefix_table_name']));
+		$this->assertFalse(isset($tables['prefix_does_not_exist']));
+	}
+
 	public function test_table_exists()
 	{
 		$this->assertTrue($this->tools->sql_table_exists('prefix_table_name'));
@@ -271,6 +286,77 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 				'foo' => array('UINT', 42)))
 		);
 
+		$this->assertTrue($this->tools->sql_table_exists('prefix_test_table'));
+
 		$this->tools->sql_table_drop('prefix_test_table');
+
+		$this->assertFalse($this->tools->sql_table_exists('prefix_test_table'));
+	}
+
+	public function test_peform_schema_changes_drop_tables()
+	{
+		$db_tools = $this->getMock('phpbb_db_tools', array(
+			'sql_table_exists',
+			'sql_table_drop',
+		), array(&$this->db));
+
+		// pretend all tables exist
+		$db_tools->expects($this->any())->method('sql_table_exists')
+			->will($this->returnValue(true));
+
+		// drop tables
+		$db_tools->expects($this->exactly(2))->method('sql_table_drop');
+		$db_tools->expects($this->at(1))->method('sql_table_drop')
+			->with($this->equalTo('dropped_table_1'));
+		$db_tools->expects($this->at(3))->method('sql_table_drop')
+			->with($this->equalTo('dropped_table_2'));
+
+		$db_tools->perform_schema_changes(array(
+			'drop_tables' => array(
+				'dropped_table_1',
+				'dropped_table_2',
+			),
+		));
+	}
+
+	public function test_peform_schema_changes_drop_columns()
+	{
+		$db_tools = $this->getMock('phpbb_db_tools', array(
+			'sql_column_exists',
+			'sql_column_remove',
+		), array(&$this->db));
+
+		// pretend all columns exist
+		$db_tools->expects($this->any())->method('sql_column_exists')
+			->will($this->returnValue(true));
+		$db_tools->expects($this->any())->method('sql_column_exists')
+			->will($this->returnValue(true));
+
+		// drop columns
+		$db_tools->expects($this->exactly(2))->method('sql_column_remove');
+		$db_tools->expects($this->at(1))->method('sql_column_remove')
+			->with($this->equalTo('existing_table'), $this->equalTo('dropped_column_1'));
+		$db_tools->expects($this->at(3))->method('sql_column_remove')
+			->with($this->equalTo('existing_table'), $this->equalTo('dropped_column_2'));
+
+		$db_tools->perform_schema_changes(array(
+			'drop_columns' => array(
+				'existing_table' => array(
+					'dropped_column_1',
+					'dropped_column_2',
+				),
+			),
+		));
+	}
+
+	public function test_index_exists()
+	{
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_simple'));
+	}
+
+	public function test_create_index_against_index_exists()
+	{
+		$this->tools->sql_create_index('prefix_table_name', 'fookey', array('c_timestamp', 'c_decimal'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'fookey'));
 	}
 }

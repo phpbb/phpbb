@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.0.9" />
-	<property name="prevversion" value="3.0.8" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.9-RC1, 3.0.9-RC2, 3.0.9-RC3, 3.0.9-RC4" />
+	<property name="newversion" value="3.0.10" />
+	<property name="prevversion" value="3.0.9" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.10-RC1, 3.0.10-RC2, 3.0.10-RC3" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -49,19 +49,16 @@
 			--coverage-clover build/logs/clover.xml
 			--coverage-html build/coverage"
 			passthru="true" />
+	</target>
 
-
-		<!-- Does not allow changing the working directory to tests/
-			 so this approach does not work for us unfortunately
-		<phpunit codecoverage="true" haltonfailure="true">
-			<formatter todir="build/logs" type="xml"/>
-			<batchtest>
-				<fileset dir="tests">
-					<include name="all_tests.php"/>
-				</fileset>
-			</batchtest>
-		</phpunit>
-		-->
+	<target name="test-slow" depends="clean,prepare">
+		<exec dir="."
+			command="phpunit --log-junit build/logs/phpunit.xml
+			--configuration phpunit.xml.all
+			--group slow
+			--coverage-clover build/logs/clover-slow.xml
+			--coverage-html build/coverage-slow"
+			passthru="true" />
 	</target>
 
 	<target name="docs">
@@ -122,6 +119,29 @@
 	<target name="create-package" depends="prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
+
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/language new_version/phpBB3/language >
+				save/save_${prevversion}_to_${newversion}/language/phpbb-${prevversion}_to_${newversion}_language.patch" />
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
+				save/save_${prevversion}_to_${newversion}/prosilver/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
+		<exec dir="build" escape="false"
+			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
+				save/save_${prevversion}_to_${newversion}/subsilver2/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
+
+		<exec dir="build" escape="false"
+			command="git shortlog --summary --numbered release-${prevversion}...HEAD >
+				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_shortlog.txt" />
+		<exec dir="build" escape="false"
+			command="git diff --stat release-${prevversion}...HEAD >
+				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
+	</target>
+
+	<target name="changelog" depends="prepare">
+		<exec dir="build" escape="false"
+			command="php -f build_changelog.php '${newversion}' >
+				save/changelog_${newversion}.html"  />
 	</target>
 
 	<!--

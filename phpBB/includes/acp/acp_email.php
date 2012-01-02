@@ -136,8 +136,9 @@ class acp_email
 
 				$i = $j = 0;
 
-				// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
-				$max_chunk_size = 50;
+				// Send with BCC
+				// Maximum number of bcc recipients
+				$max_chunk_size = (int) $config['email_max_chunk_size'];
 				$email_list = array();
 				$old_lang = $row['user_lang'];
 				$old_notify_type = $row['user_notify_type'];
@@ -194,10 +195,7 @@ class acp_email
 
 					$messenger->template('admin_send_email', $used_lang);
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);

@@ -89,11 +89,11 @@
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
-					<td><!-- IF ACTIVE_FORUM --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					<td><!-- IF ACTIVE_FORUM != '' --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
-					<td><!-- IF ACTIVE_TOPIC --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+					<td><!-- IF ACTIVE_TOPIC != '' --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
 			</table>
@@ -148,10 +148,10 @@
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><!-- IF LOCATION --><b class="genmed">{LOCATION}</b><!-- ENDIF --></td>
 			</tr>
-			<!-- IF AGE -->
+			<!-- IF AGE !== '' -->
 			<tr>
 				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE}: </td>
-				<td><b class="genmed"><!-- IF AGE -->{AGE}<!-- ELSE --> - <!-- ENDIF --></b></td>
+				<td><b class="genmed">{AGE}</b></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>

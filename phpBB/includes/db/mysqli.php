@@ -33,14 +33,33 @@ class dbal_mysqli extends dbal
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false , $new_link = false)
 	{
-		$this->persistency = $persistency;
+		// Mysqli extension supports persistent connection since PHP 5.3.0
+		$this->persistency = (version_compare(PHP_VERSION, '5.3.0', '>=')) ? $persistency : false;
 		$this->user = $sqluser;
-		$this->server = $sqlserver;
+
+		// If persistent connection, set dbhost to localhost when empty and prepend it with 'p:' prefix
+		$this->server = ($this->persistency) ? 'p:' . (($sqlserver) ? $sqlserver : 'localhost') : $sqlserver;
+
 		$this->dbname = $database;
 		$port = (!$port) ? NULL : $port;
 
-		// Persistant connections not supported by the mysqli extension?
-		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port);
+		// If port is set and it is not numeric, most likely mysqli socket is set.
+		// Try to map it to the $socket parameter.
+		$socket = NULL;
+		if ($port)
+		{
+			if (is_numeric($port))
+			{
+				$port = (int) $port;
+			}
+			else
+			{
+				$socket = $port;
+				$port = NULL;
+			}
+		}
+
+		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
@@ -230,7 +249,13 @@ class dbal_mysqli extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id !== false) ? @mysqli_fetch_assoc($query_id) : false;
+		if ($query_id !== false)
+		{
+			$result = @mysqli_fetch_assoc($query_id);
+			return $result !== null ? $result : false;
+		}
+
+		return false;
 	}
 
 	/**

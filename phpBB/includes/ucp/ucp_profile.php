@@ -78,14 +78,14 @@ class ucp_profile
 
 					$error = validate_data($data, $check_ary);
 
-					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
+					if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'] && $data['email_confirm'] != $data['email'])
 					{
-						$error[] = 'NEW_PASSWORD_ERROR';
+						$error[] = ($data['email_confirm']) ? 'NEW_EMAIL_ERROR' : 'NEW_EMAIL_CONFIRM_EMPTY';
 					}
 
-					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], $user->data['user_password']))
+					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
-						$error[] = 'CUR_PASSWORD_ERROR';
+						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
 					// Only check the new password against the previous password if there have been no errors
@@ -94,9 +94,9 @@ class ucp_profile
 						$error[] = 'SAME_PASSWORD_ERROR';
 					}
 
-					if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'] && $data['email_confirm'] != $data['email'])
+					if (!phpbb_check_hash($data['cur_password'], $user->data['user_password']))
 					{
-						$error[] = 'NEW_EMAIL_ERROR';
+						$error[] = ($data['cur_password']) ? 'CUR_PASSWORD_ERROR' : 'CUR_PASSWORD_EMPTY';
 					}
 
 					if (!check_form_key('ucp_reg_details'))
@@ -150,10 +150,7 @@ class ucp_profile
 
 							$messenger->to($data['email'], $data['username']);
 
-							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+							$messenger->anti_abuse_headers($config, $user);
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
