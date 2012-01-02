@@ -5,8 +5,6 @@
  *   begin                : Tuesday, February 25, 2003 
  *   copyright            : (C) 2003 The phpBB Group        
  *   email                : support@phpbb.com                           
- *                                                          
- *   $Id$
  * 
  ***************************************************************************/ 
 
