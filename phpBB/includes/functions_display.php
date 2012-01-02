@@ -223,7 +223,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$branch_root_id = $forum_id;
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
-			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
+			// if user is moderator, show latest unapproved post instead of latest approved post
+			$last_post_time = ($row['forum_last_post_time_real'] > $row['forum_last_post_time'] && $auth->acl_get('m_approve')) ? $row['forum_last_post_time_real'] : $row['forum_last_post_time'];
+			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $last_post_time;
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
@@ -250,7 +252,21 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_posts'] += $row['forum_posts'];
 			}
 
-			if ($row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
+			// moderators should see the real latest post information
+			// to account for unapproved posts
+			if ($auth->acl_get('m_approve', $forum_id)
+				&& $row['forum_last_post_time_real'] > $forum_rows[$parent_id]['forum_last_post_time']
+				&& $row['forum_last_post_time_real'] > $row['forum_last_post_time'])
+			{
+				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id_real'];
+				$forum_rows[$parent_id]['forum_last_post_subject'] = $row['forum_last_post_subject_real'];
+				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time_real'];
+				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id_real'];
+				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name_real'];
+				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour_real'];
+				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
+			}
+			else if ($row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
 			{
 				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
 				$forum_rows[$parent_id]['forum_last_post_subject'] = $row['forum_last_post_subject'];
