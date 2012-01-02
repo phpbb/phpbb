@@ -267,6 +267,7 @@ $lang = array_merge($lang, array(
 	'IMG_USER_ICON9'		=> 'User defined image 9',
 	'IMG_USER_ICON10'		=> 'User defined image 10',
 
+	'INACTIVE_STYLES'			=> 'Inactive styles',
 	'INCLUDE_DIMENSIONS'		=> 'Include dimensions',
 	'INCLUDE_IMAGESET'			=> 'Include imageset',
 	'INCLUDE_TEMPLATE'			=> 'Include template',
