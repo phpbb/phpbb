@@ -3,9 +3,8 @@
 /**
 *
 * @package build
-* @version $Id$
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -388,7 +387,7 @@ function build_header($mode, $filenames, $header)
 			$html .= "##		{$filename['phpbb_filename']}\n";
 		}
 	}
-	$html .= "## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2 \n";
+	$html .= "## License: http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2 \n";
 	$html .= "############################################################## \n";
 	$html .= "\n";
 
