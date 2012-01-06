@@ -804,6 +804,13 @@ class p_master
 	*/
 	function load($class, $name, $mode = false)
 	{
+		// new modules use the full class names, old ones are always called <class>_<name>, e.g. acp_board
+		// in the latter case this function may be called as load(acp, board)
+		if (!class_exists($name) && substr($name, 0, strlen($class) + 1) !== $class . '_')
+		{
+			$name = $class . '_' . $name;
+		}
+
 		$this->p_class = $class;
 		$this->p_name = $name;
 
