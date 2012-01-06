@@ -1130,10 +1130,10 @@ function mcp_fork_topic($topic_ids)
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{
-			add_log('mod', $to_forum_id, $new_topic_id, 'LOG_FORK', $topic_row['forum_name']);
+			add_log('mod', $to_forum_id, $new_topic_id, 'LOG_COPY', $topic_row['forum_name']);
 		}
 
-		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_FORKED_SUCCESS' : 'TOPICS_FORKED_SUCCESS';
+		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_COPIED_SUCCESS' : 'TOPICS_COPIED_SUCCESS';
 	}
 	else
 	{
@@ -1143,7 +1143,7 @@ function mcp_fork_topic($topic_ids)
 			'ADDITIONAL_MSG'		=> $additional_msg)
 		);
 
-		confirm_box(false, 'FORK_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
+		confirm_box(false, 'COPY_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");
