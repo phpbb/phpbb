@@ -451,17 +451,22 @@ class p_master
 			trigger_error('Module not accessible', E_USER_ERROR);
 		}
 
+		$class_name = $this->p_name;
+
 		// new modules use the full class names, old ones are always called <type>_<name>, e.g. acp_board
-		if (!class_exists($this->p_name))
+		if (!class_exists($class_name))
 		{
-			if (!file_exists("$module_path/{$this->p_name}.$phpEx"))
+			if (file_exists("$module_path/{$this->p_class}_{$this->p_name}.$phpEx"))
 			{
-				trigger_error("Cannot find module $module_path/{$this->p_name}.$phpEx", E_USER_ERROR);
+				$class_name = $this->p_class . '_' . $this->p_name;
+				include("$module_path/{$class_name}.$phpEx");
+			}
+			else
+			{
+				trigger_error("Cannot find module $module_path/{$this->p_name}.$phpEx (or $module_path/{$this->p_class}_{$this->p_name}.$phpEx)", E_USER_ERROR);
 			}
 
-			include("$module_path/{$this->p_name}.$phpEx");
-
-			if (!class_exists($this->p_name))
+			if (!class_exists($class_name))
 			{
 				trigger_error("Module file $module_path/{$this->p_name}.$phpEx does not contain correct class [{$this->p_name}]", E_USER_ERROR);
 			}
@@ -473,8 +478,6 @@ class p_master
 		}
 
 		// Create a new instance of the desired module ...
-		$class_name = $this->p_name;
-
 		$this->module = new $class_name($this);
 
 		// We pre-define the action parameter we are using all over the place
