@@ -402,6 +402,12 @@
 		<td class="row3" colspan="{$COLSPAN}"><strong>{L_INSTALLED}</strong></td>
 	</tr>
 	<!-- BEGIN installed -->
+	<!-- IF installed.S_INACTIVE and not $INACTIVE_STYLES -->
+		<!-- DEFINE $INACTIVE_STYLES = 1 -->
+		<tr>
+			<td class="row3" colspan="{$COLSPAN}"><strong>{L_INACTIVE_STYLES}</strong></td>
+		</tr>
+	<!-- ENDIF -->
 	<tr>
 		<td><strong>{installed.NAME}</strong><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
 		<!-- IF S_STYLE -->
