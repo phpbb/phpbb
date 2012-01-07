@@ -98,6 +98,7 @@ $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
@@ -123,6 +124,9 @@ $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_ro
 $phpbb_template_locator = new phpbb_template_locator();
 $phpbb_template_path_provider = new phpbb_template_extension_path_provider($phpbb_extension_manager, new phpbb_template_path_provider());
 $template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
+
+$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
+$phpbb_subscriber_loader->load();
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
