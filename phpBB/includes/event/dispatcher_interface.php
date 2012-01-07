@@ -35,7 +35,7 @@ interface phpbb_event_dispatcher_interface
 	 *
 	 * @api
 	 */
-	function dispatch($event_name, Event $event = null);
+	function dispatch($event_name, phpbb_event $event = null);
 
 	/**
 	 * Adds an event listener that listens on the specified events.
