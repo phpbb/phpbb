@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) Fabien Potencier <fabien@symfony.com>
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -14,6 +14,11 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
+
+/**
+ * This file has been taken from Symfony2 and adjusted for
+ * phpBB's coding standards.
+ */
 
 /**
  * An EventSubscriber knows himself what events he is interested in.
