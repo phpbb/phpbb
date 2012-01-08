@@ -3321,80 +3321,6 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 	$db->sql_query($sql);
 }
 
-/**
-* Checks if server enviroment configuration
-* still meets the requirements for running phpBB
-*
-* Notice:
-*	If a check has additional check(s), they are to be proceeded
-*	before the main check. An order is important. Every next additional check
-*	iteration is to be performed only if the previous one was passed.
-*	If at least one of additional checks iteration is not passed, entire parent
-*	check row will be skipped. In other words, if the entire set of additional
-*	checks is not passed, parent check row won't be performed.
-*	Thus, the final check should be the parent check row.
-*
-* @param array	$checks_array	Array containing all the data to check.
-*								See example in includes/acp/acp_main.php
-* Available keys:
-*		'check_value':
-*			represents the value to check, either a simple one or a function result.
-*			Example 1:	phpbb_ini_get('safe_mode', 'bool')
-*			Example 2:	'check_value' => $auth->acl_get('a_server')
-*		'expected_value':
-*			expected result of the check. If 'check_value' is equal to it,
-*			the check will be considered as passed, no error row returned.
-*			For ini_get checks, it should be set to false to check against
-*			values of `not set/off/0`, to true to check against values of `on/1`.
-*		'check_extension_loaded':
-*			If set to valid PHP extension name, main check
-*			for given row will be skipped if extension is not loaded.
-*			Example: 'check_extension_loaded' => 'mbstring'
-*		'error_type':
-*			valid values: 'error', 'notice'. Depending on this type, result
-*			will be thrown on #BC2A4D or #62A5CC background respectively.
-*			Additionally, error type results will go above notice type ones.
-*		'lang':
-*			the string representing existing language key, which value is
-*			supposed to be a short error/notice title.
-*			Additionally, if a language key with _EXPLAIN postfix exists,
-*			it will be used as reapective error/notice explanation.
-*			It is allowed that only _EXPLAIN postfixed language key exists.
-*
-* @return array	Empty array if all checks are passed, array of errors if not,
-				or array of boolean values if subchecks have been performed
-*/
-function phpbb_check_requirements($checks_array)
-{
-	global $phpbb_root_path, $phpEx, $user;
-
-	$error = array();
-
-	foreach ($checks_array as $check_row)
-	{
-		if (isset($check_row['check_extension_loaded']) && !extension_loaded($check_row['check_extension_loaded']))
-		{
-			continue;
-		}
-
-		$check_value = $check_row['check_value'];
-
-		$result = (bool) ($check_value == $check_row['expected_value']);
-
-		// Skip the rest of additional checks if at least one additional check is not passed
-		if (!$result)
-		{
-			$error[] = array(
-				'L_ERROR'			=>	(isset($user->lang[$check_row['lang']])) ? $user->lang[$check_row['lang']] : '',
-				'L_ERROR_EXPLAIN'	=>	(isset($user->lang[$check_row['lang'] . '_EXPLAIN'])) ? $user->lang[$check_row['lang'] . '_EXPLAIN'] : '',
-				'TYPE' 				=>	$check_row['error_type'],
-			);
-		}
-	}
-
-	return $error;
-}
-
 /*
 * Search ImageMagick
 *
@@ -3437,5 +3363,3 @@ function phpbb_search_imagemagick()
 
 	return $imagemagick;
 }
-
-?>

@@ -614,5 +614,3 @@ function phpbb_test_dir_is_writable($dir)
 
 	return $dir_is_writable;
 }
-
-?>

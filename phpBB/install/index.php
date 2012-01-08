@@ -180,8 +180,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$cache = new cache();
-$template = new template();
 $phpbb_php_ini = new phpbb_ini_reader();
 
 // Add own hook handler, if present. :o
