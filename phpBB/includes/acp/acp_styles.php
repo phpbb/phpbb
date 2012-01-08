@@ -264,6 +264,7 @@ version = {VERSION}
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
+				$sql_sort = 'style_active DESC, ' . $sql_sort;
 
 				$sql = 'SELECT user_style, COUNT(user_style) AS style_count
 					FROM ' . USERS_TABLE . '
@@ -348,6 +349,8 @@ version = {VERSION}
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
+
+				'S_INACTIVE'			=> ($mode == 'style' && !$row['style_active']) ? true : false,
 				)
 			);
 		}
