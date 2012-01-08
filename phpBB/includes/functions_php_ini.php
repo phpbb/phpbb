@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB
 */
-class phpbb_ini_reader
+class phpbb_php_ini
 {
 	/**
 	* Simple wrapper for ini_get()

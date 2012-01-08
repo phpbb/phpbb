@@ -580,7 +580,7 @@ class acp_main
 		}
 
 		// Check whether server environment still satisfy requirements
-		$environment_checker = new phpbb_acp_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
+		$environment_checker = new phpbb_environment_acp_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		$check_values = array(
 			'error'		=> $environment_checker->get_errors(),

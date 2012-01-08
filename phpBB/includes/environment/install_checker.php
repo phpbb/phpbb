@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_install_environment_checker extends phpbb_environment_checker
+class phpbb_environment_install_checker extends phpbb_environment_checker
 {
 	var $php_optional_modules = array('zlib', 'ftp', 'gd', 'xml');
 	var $categories = array(
@@ -35,9 +35,9 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 	function set_errors()
 	{
 		// Initialize checks if not set externally
-		if (empty($this->checks))
+		if (empty($this->common_checks_result))
 		{
-			$this->check();
+			$this->common_checks();
 		}
 
 		// Reset checks for every category
@@ -48,10 +48,10 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 			case 'PHP_SETTINGS':
 				$this->errors = array(
 					'PHP_VERSION_REQD'				=> version_compare(PHP_VERSION, '4.3.3', '>='),
-					'PHP_REGISTER_GLOBALS'			=> $this->checks['REGISTER_GLOBALS'],
-					'PHP_URL_FOPEN_SUPPORT'			=> $this->checks['URL_FOPEN_SUPPORT'],
-					'PHP_GETIMAGESIZE_SUPPORT'		=> $this->checks['GETIMAGESIZE_SUPPORT'],
-					'PCRE_UTF_SUPPORT'				=> $this->checks['PCRE_UTF_SUPPORT'],
+					'PHP_REGISTER_GLOBALS'			=> $this->common_checks_result['REGISTER_GLOBALS'],
+					'PHP_URL_FOPEN_SUPPORT'			=> $this->common_checks_result['URL_FOPEN_SUPPORT'],
+					'PHP_GETIMAGESIZE_SUPPORT'		=> $this->common_checks_result['GETIMAGESIZE_SUPPORT'],
+					'PCRE_UTF_SUPPORT'				=> $this->common_checks_result['PCRE_UTF_SUPPORT'],
 				);
 			break;
 
@@ -60,10 +60,10 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 				if (extension_loaded('mbstring'))
 				{
 					$this->errors = array(
-						'MBSTRING_FUNC_OVERLOAD'		=> $this->checks['MBSTRING_FUNC_OVERLOAD'],
-						'MBSTRING_ENCODING_TRANSLATION'	=> $this->checks['MBSTRING_ENCODING_TRANSLATION'],
-						'MBSTRING_HTTP_INPUT'			=> $this->checks['MBSTRING_HTTP_INPUT'],
-						'MBSTRING_HTTP_OUTPUT'			=> $this->checks['MBSTRING_HTTP_OUTPUT'],
+						'MBSTRING_FUNC_OVERLOAD'		=> $this->common_checks_result['MBSTRING_FUNC_OVERLOAD'],
+						'MBSTRING_ENCODING_TRANSLATION'	=> $this->common_checks_result['MBSTRING_ENCODING_TRANSLATION'],
+						'MBSTRING_HTTP_INPUT'			=> $this->common_checks_result['MBSTRING_HTTP_INPUT'],
+						'MBSTRING_HTTP_OUTPUT'			=> $this->common_checks_result['MBSTRING_HTTP_OUTPUT'],
 					);
 				}
 			break;
@@ -112,5 +112,11 @@ class phpbb_install_environment_checker extends phpbb_environment_checker
 			default:
 			break;
 		}
+	}
+
+	function set_notices()
+	{
+		// No notices for installation procedure,
+		// but we implement the function as it is abstract declared
 	}
 }

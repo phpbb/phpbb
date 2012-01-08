@@ -15,17 +15,20 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_environment_checker
+abstract class phpbb_environment_checker
 {
 	var $phpbb_root_path;
 	var $phpEx;
 	var $config;
 	var $auth;
-	var $checks = array();
+	var $common_checks_result = array();
 	var $notices = array();
 	var $errors = array();
 
-	function phpbb_environment_checker($phpbb_root_path, $phpEx, $config, $auth)
+	abstract function set_errors();
+	abstract function set_notices();
+
+	function __construct($phpbb_root_path, $phpEx, $config, $auth)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -33,13 +36,14 @@ class phpbb_environment_checker
 		$this->auth = $auth;
 
 		$this->asserter =  new phpbb_assertion_manager();
-		$this->php_ini =  new phpbb_ini_reader();
+		$this->php_ini =  new phpbb_php_ini();
 	}
 
-	function check()
+	// Common checks, can be used for set_errors() or set_notices()
+	function common_checks()
 	{
 		$mbstring = extension_loaded('mbstring');
-		$this->checks = array(
+		$this->common_checks_result = array(
 			'REGISTER_GLOBALS'				=> !$this->php_ini->get_bool('register_globals'),
 			'MBSTRING_FUNC_OVERLOAD'		=> !$mbstring || !($this->php_ini->get_int('mbstring.func_overload') & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 			'MBSTRING_ENCODING_TRANSLATION'	=> !$mbstring || !$this->php_ini->get_bool('mbstring.encoding_translation'),
@@ -49,16 +53,6 @@ class phpbb_environment_checker
 			'URL_FOPEN_SUPPORT'				=> $this->php_ini->get_bool('allow_url_fopen'),
 			'PCRE_UTF_SUPPORT'				=> preg_match('/\p{L}/u', 'a'),
 		);
-	}
-
-	function set_errors()
-	{
-
-	}
-
-	function set_notices()
-	{
-
 	}
 
 	function get_errors()

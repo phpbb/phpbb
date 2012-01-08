@@ -131,7 +131,7 @@ class install_install extends module
 		// Initialize some variables and objects
 		$passed = $check_results = array();
 
-		$install_checker = new phpbb_install_environment_checker($phpbb_root_path, $phpEx, $config, $auth);
+		$install_checker = new phpbb_environment_install_checker($phpbb_root_path, $phpEx, $config, $auth);
 
 		// Assert checks and dump results to template
 		foreach ($install_checker->categories as $install_checker->category)

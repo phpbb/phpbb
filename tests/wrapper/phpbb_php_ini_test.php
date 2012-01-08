@@ -7,15 +7,15 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/ini_reader.php';
+require_once dirname(__FILE__) . '/../mock/phpbb_php_ini.php';
 
-class phpbb_wrapper_ini_reader_test extends phpbb_test_case
+class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 {
 	protected $reader;
 
 	public function setUp()
 	{
-		$this->reader = new phpbb_mock_ini_reader;
+		$this->reader = new phpbb_mock_phpbb_php_ini;
 	}
 
 	public function test_get_string()
