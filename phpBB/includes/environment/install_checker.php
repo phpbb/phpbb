@@ -15,6 +15,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+/**
+* Implementation of abstract class phpbb_environment_checker.
+*
+* Provides environment checks for installation procedure.
+*
+* @package phpBB
+*/
 class phpbb_environment_install_checker extends phpbb_environment_checker
 {
 	var $php_optional_modules = array('zlib', 'ftp', 'gd', 'xml');
@@ -32,6 +39,11 @@ class phpbb_environment_install_checker extends phpbb_environment_checker
 	var $any_db_support = false;
 	var $imagemagic;
 
+	/**
+	* Function to assign a set of checks/assertions for errors
+	* If assertion results in false, it will be treated as error
+	* Puts results into $this->errors array
+	*/
 	function set_errors()
 	{
 		// Initialize checks if not set externally
@@ -114,9 +126,14 @@ class phpbb_environment_install_checker extends phpbb_environment_checker
 		}
 	}
 
+	/**
+	* Function to assign a set of checks/assertions for notices
+	* If assertion results in false, it will be treated as notice
+	* Puts results into $this->notices array
+	*/
 	function set_notices()
 	{
-		// No notices for installation procedure,
+		// No notices are needed for installation procedure,
 		// but we implement the function as it is abstract declared
 	}
 }

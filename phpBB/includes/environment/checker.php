@@ -15,6 +15,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+/**
+* Abstract template class for environment checks.
+*
+* Provides a set of common chexks and routimes to collect errors/notices.
+*
+* @package phpBB
+*/
 abstract class phpbb_environment_checker
 {
 	var $phpbb_root_path;
@@ -25,9 +32,21 @@ abstract class phpbb_environment_checker
 	var $notices = array();
 	var $errors = array();
 
+	/**
+	* Functions to assign a set of checks/assertions for errors and notices
+	* Should be implemented in any child classes
+	*/
 	abstract function set_errors();
 	abstract function set_notices();
 
+	/**
+	* Class constructor
+	* Initializes some essential data
+	* @param string	$phpbb_root_path	Relative path to phpBB folder. 
+	* @param string	$phpEx				phpBB script files extension. 
+	* @param array 	$config				phpBB configuration values array.
+	* @param object	$auth				phpBB authentication class object.
+	*/
 	function __construct($phpbb_root_path, $phpEx, $config, $auth)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -35,11 +54,15 @@ abstract class phpbb_environment_checker
 		$this->config = $config;
 		$this->auth = $auth;
 
+		// Initialize assertion manager and phpBB PHP ini wrapper classes
 		$this->asserter =  new phpbb_assertion_manager();
 		$this->php_ini =  new phpbb_php_ini();
 	}
 
-	// Common checks, can be used for set_errors() or set_notices()
+	/**
+	* Function to perform common checks, can be used either 
+	* for set_errors() or for set_notices()
+	*/
 	function common_checks()
 	{
 		$mbstring = extension_loaded('mbstring');
@@ -55,6 +78,11 @@ abstract class phpbb_environment_checker
 		);
 	}
 
+	/**
+	* Function to evaluate assertions for errors
+	* Uses data previously assigned to $this->errors array
+	* with the function set_errors()
+	*/
 	function get_errors()
 	{
 		// Initialize errors checks if not set externally
@@ -74,6 +102,11 @@ abstract class phpbb_environment_checker
 		return $this->asserter->get_failed_assertions();
 	}
 
+	/**
+	* Function to evaluate assertions for notices
+	* Uses data previously assigned to $this->notices array
+	* with the function set_notices()
+	*/
 	function get_notices()
 	{
 		// Initialize notices checks if not set externally
