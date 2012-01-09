@@ -1687,6 +1687,19 @@ class user extends session
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
+		// Now that we know the style being used, we need to include the style language files
+		// We always include the board default language file for fallback
+		$default_style_lang_path = "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$config['default_lang']}.$phpEx";
+		$user_style_lang_path = "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$this->data['user_lang']}.$phpEx";
+		if (file_exists($default_style_lang_path))
+		{
+			include($default_style_lang_path);
+		}
+		if ($this->data['user_lang'] != $config['default_lang'] && file_exists($user_style_lang_path))
+		{
+			include($user_style_lang_path);
+		}
+
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
 
