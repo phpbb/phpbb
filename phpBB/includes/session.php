@@ -1688,17 +1688,54 @@ class user extends session
 		}
 
 		// Now that we know the style being used, we need to include the style language files
-		// We always include the board default language file for fallback
-		$default_style_lang_path = "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$config['default_lang']}.$phpEx";
-		$user_style_lang_path = "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$this->data['user_lang']}.$phpEx";
-		if (file_exists($default_style_lang_path))
+		// First, let's see if we are inheriting a template
+		// If so, we need to get the language variables from that template
+		if ($this->theme['template_inherits_id'])
 		{
-			include($default_style_lang_path);
+			$inherited_style_lang_path = array(
+				'en'		=> "{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/en.$phpEx",
+				'default'	=> "{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/{$config['default_lang']}.$phpEx",
+				'user'		=> "{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/{$this->data['user_lang']}.$phpEx",
+			);
+			// If the user's specified language is present, include it
+			if (file_exists($inherited_style_lang_path['user']))
+			{
+				include($inherited_style_lang_path['user']);
+			}
+			// Otherwise, if the board default is present, include it
+			else if (file_exists($inherited_style_lang_path['default']))
+			{
+				include($inherited_style_lang_path['default']);
+			}
+			// If none of the above, fall back on english
+			else if (file_exists($inherited_style_lang_path['en']))
+			{
+				include($inherited_style_lang_path['en']);
+			}
+			// since style-specific language is not mandatory, we don't fail if none is present
 		}
-		if ($this->data['user_lang'] != $config['default_lang'] && file_exists($user_style_lang_path))
+
+		// Now we get the language for the current style
+		// If any of the inherited style's language variables are duplicate
+		// they will be overwritten by the inheriting style's language variables
+		$style_lang_path = array(
+			'en'		=> "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/en.$phpEx",
+			'default'	=> "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$config['default_lang']}.$phpEx",
+			'user'		=> "{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$this->data['user_lang']}.$phpEx",
+		);
+		if (file_exists($style_lang_path['user']))
 		{
-			include($user_style_lang_path);
+			include($style_lang_path['user']);
 		}
+		else if (file_exists($style_lang_path['default']))
+		{
+			include($style_lang_path['default']);
+		}
+		else if (file_exists($style_lang_path['en']))
+		{
+			include($style_lang_path['en']);
+		}
+		// since style-specific language is not mandatory, we don't fail if none is present
 
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
