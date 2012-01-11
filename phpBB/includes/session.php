@@ -2391,6 +2391,10 @@ class user extends session
 			if (file_exists($path))
 			{
 				include($path);
+				// $lang is now a local variable in this method
+				// because it was created in the included file
+				// Let's fix that
+				$this->lang = array_merge($this->lang, $lang);
 				return $path;
 			}
 		}
