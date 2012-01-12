@@ -1220,7 +1220,8 @@ CREATE TABLE phpbb_users (
 	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	user_reminded INT2 DEFAULT '0' NOT NULL,
 	user_reminded_time INT4 DEFAULT '0' NOT NULL CHECK (user_reminded_time >= 0),
-	user_pending_delete INT2 DEFAULT '0' NOT NULL CHECK (user_pending_delete >= 0),
+	user_delete_pending INT2 DEFAULT '0' NOT NULL CHECK (user_delete_pending >= 0),
+	user_delete_type INT2 DEFAULT '0' NOT NULL CHECK (user_delete_type >= 0),
 	PRIMARY KEY (user_id)
 );
 

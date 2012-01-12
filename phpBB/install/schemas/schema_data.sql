@@ -375,6 +375,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_attach', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgavatar', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgcensors', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_delete_acct', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgemail', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chggrp', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgname', 1);

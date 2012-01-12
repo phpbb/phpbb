@@ -202,7 +202,7 @@ class acp_users
 								}
 								else
 								{
-									user_active_flip('deactivate', array($user_row['user_id']), INACTIVE_SOFT_DELETE)
+									user_active_flip('deactivate', array($user_row['user_id']), INACTIVE_SOFT_DELETE);
 									$add_lang .= '_SOFT';
 								}
 

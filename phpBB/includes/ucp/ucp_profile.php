@@ -79,7 +79,7 @@ class ucp_profile
 				$delete_account = request_var('delete_account', false);
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
-					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_self')),
+					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_acct')),
 				));
 
 				if ($submit)
@@ -116,7 +116,7 @@ class ucp_profile
 						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
-					if ($delete_account && !$auth->acl_get('u_delete_self'))
+					if ($delete_account && (!$config['account_delete_method'] || !$auth->acl_get('u_delete_self')))
 					{
 						$error[] = 'DELETE_ACCOUNT_FAIL';
 					}
@@ -696,27 +696,30 @@ class ucp_profile
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
 		}
-		if ($config['account_delete_approval'] && $config['account_delete_method'] != SELF_ACCOUNT_DELETE_NONE)
+
+		if ($config['account_delete_method'] == SELF_ACCOUNT_DELETE_NONE)
+		{
+			trigger_error('DELETE_ACCOUNT_FAIL');
+		}
+
+		if ($config['account_delete_approval'])
 		{
 			// User is already asking to be deleted,
 			// Skip this and fail gracefully
 			if (!$user->data['user_pending_delete'])
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_pending_delete = 1 WHERE user_id = ' . $user->data['user_id'];
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_delete_pending = 1, user_delete_type = ' . $config['account_delete_method'] . ' WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 			}
 
-			trigger_error('ACCOUNT_DELETE_APPROVAL');
+			trigger_error('DELETE_ACCOUNT_APPROVAL');
 		}
+
 		switch ($config['account_delete_method'])
 		{
-			// We partner these three together because this is the most undoable one
-			// Even if somehow someone bypassed the global setting being off or not having permission
-			// the most they could do is deactivate their account. None of their info would be gone
-			// and to undo, they can just log back in.
-			case SELF_ACCOUNT_DELETE_NONE:
 			case SELF_ACCOUNT_DELETE_SOFT:
 			default:
+				// deactivate the user's account
 				user_active_flip('deactivate', array($user->data['user_id']), INACTIVE_SOFT_DELETE);
 				// Log out the user
 				$user->reset_login_keys($user->data['user_id']);

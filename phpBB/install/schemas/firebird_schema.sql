@@ -1338,7 +1338,8 @@ CREATE TABLE phpbb_users (
 	user_new INTEGER DEFAULT 1 NOT NULL,
 	user_reminded INTEGER DEFAULT 0 NOT NULL,
 	user_reminded_time INTEGER DEFAULT 0 NOT NULL,
-	user_pending_delete INTEGER DEFAULT 0 NOT NULL
+	user_delete_pending INTEGER DEFAULT 0 NOT NULL,
+	user_delete_type INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
