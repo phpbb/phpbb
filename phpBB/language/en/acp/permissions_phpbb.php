@@ -103,7 +103,7 @@ $lang = array_merge($lang, array(
 	'acl_u_chgemail'	=> array('lang' => 'Can change e-mail address', 'cat' => 'profile'),
 	'acl_u_chgavatar'	=> array('lang' => 'Can change avatar', 'cat' => 'profile'),
 	'acl_u_chggrp'		=> array('lang' => 'Can change default usergroup', 'cat' => 'profile'),
-	'acl_u_delete_self'	=> array('lang'  => 'Can delete own account', 'cat' => 'profile'),
+	'acl_u_delete_acct'	=> array('lang'  => 'Can delete own account', 'cat' => 'profile'),
 
 	'acl_u_attach'		=> array('lang' => 'Can attach files', 'cat' => 'post'),
 	'acl_u_download'	=> array('lang' => 'Can download files', 'cat' => 'post'),
