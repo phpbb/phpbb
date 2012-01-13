@@ -438,6 +438,8 @@ class p_master
 	* Loads currently active module
 	*
 	* This method loads a given module, passing it the relevant id and mode.
+	*
+	* @param string $mode mode, as passed through to the module
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
@@ -801,11 +803,16 @@ class p_master
 
 	/**
 	* Load module as the current active one without the need for registering it
+	*
+	* @param string $class module class (acp/mcp/ucp)
+	* @param string $name module name (e.g. zebra for the ucp_zebra module)
+	* @param string $mode mode, as passed through to the module
+	*
 	*/
 	function load($class, $name, $mode = false)
 	{
 		// new modules use the full class names, old ones are always called <class>_<name>, e.g. acp_board
-		// in the latter case this function may be called as load(acp, board)
+		// in the latter case this function may be called as load('acp', 'board')
 		if (!class_exists($name) && substr($name, 0, strlen($class) + 1) !== $class . '_')
 		{
 			$name = $class . '_' . $name;
