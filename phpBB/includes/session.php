@@ -1687,6 +1687,27 @@ class user extends session
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
+		// Now that we know the style being used, we need to include the style language files
+		// First, let's see if we are inheriting a template
+		// If so, we need to get the language variables from that template
+		if ($this->theme['template_inherits_id'])
+		{
+			$this->include_first_existing(array(
+				"{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/{$this->data['user_lang']}.$phpEx",
+				"{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/{$config['default_lang']}.$phpEx",
+				"{$phpbb_root_path}styles/{$this->theme['template_inherit_path']}/lang/en.$phpEx",
+			));
+		}
+
+		// Now we get the language for the current style
+		// If any of the inherited style's language variables are duplicate
+		// they will be overwritten by the inheriting style's language variables
+		$this->include_first_existing(array(
+			"{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$this->data['user_lang']}.$phpEx",
+			"{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/{$config['default_lang']}.$phpEx",
+			"{$phpbb_root_path}styles/{$this->theme['template_path']}/lang/en.$phpEx",
+		));
+
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
 
@@ -2349,5 +2370,30 @@ class user extends session
 		$db->sql_freeresult($result);
 
 		return $forum_ids;
+	}
+
+	/**
+	* Includes the first existing file in an array of paths; used for style language inclusion
+	*
+	* @param array $paths Array of paths to check
+	* @return string|null If one of the paths exists, that path is returned. Otherwise, nothing is returned
+	* @access public
+	*/
+	function include_first_existing($paths = array())
+	{
+		if (!is_array($paths))
+		{
+			$paths = array($paths);
+		}
+		
+		$lang = &$this->lang;
+		foreach ($paths as $path)
+		{
+			if (file_exists($path))
+			{
+				include($path);
+				return $path;
+			}
+		}
 	}
 }
