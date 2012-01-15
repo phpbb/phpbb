@@ -4513,7 +4513,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	}
 	else
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login');
+		$redirect = ($user->page['page_dir'] || $user->page['page_name'] == "ucp.$phpEx")|| $user->page['page_name'] == "mcp.$phpEx") ? '' : '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_'))));
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login' . $redirect);
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
