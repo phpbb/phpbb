@@ -1090,6 +1090,8 @@ if ($submit || $preview || $refresh)
 			}
 			else
 			{
+				// Skip Post Confirmation Page. Comment the next line to show the redirect page.
+				redirect($redirect_url);
 				meta_refresh(3, $redirect_url);
 
 				$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
