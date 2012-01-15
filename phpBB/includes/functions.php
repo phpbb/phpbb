@@ -2816,7 +2816,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			{
 				return;
 			}
-
+			
+			// Skip ACP Login Confirmation Message. Comment the following 4 lines to show confirmation page.
+			if ($admin)
+				{
+				redirect($redirect);
+				}
+				
 			$redirect = meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
