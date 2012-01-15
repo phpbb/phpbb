@@ -168,6 +168,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$topic_join = ', ' . TOPICS_TABLE . ' t';
 		$topic_condition = 'AND t.topic_id = p.topic_id AND t.topic_approved = 1';
+		$topic_condition_real = 'AND t.topic_id = p.topic_id';
 	}
 	else
 	{
@@ -177,24 +178,35 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	if (sizeof($ids) == 1)
 	{
-		$sql = 'SELECT MAX(p.post_id) as last_post_id
+		$sql = '(SELECT MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_approved = 1";
+				AND p.post_approved = 1)
+			UNION
+			(SELECT MAX(p.post_id) as last_post_id_real
+			FROM " . POSTS_TABLE . " p $topic_join
+			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+				$topic_condition_real)";
 	}
 	else
 	{
-		$sql = 'SELECT p.' . $type . '_id, MAX(p.post_id) as last_post_id
+		$sql = '(SELECT p.' . $type . '_id, MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
 				AND p.post_approved = 1
-			GROUP BY p.{$type}_id";
+			GROUP BY p.{$type}_id)
+			UNION
+			(SELECT p." . $type . '_id, MAX(p.post_id) as last_post_id_real
+			FROM ' . POSTS_TABLE . " p $topic_join
+			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+				$topic_condition_real
+			GROUP BY p.{$type}_id)";
 	}
 	$result = $db->sql_query($sql);
 
-	$last_post_ids = array();
+	$last_post_ids = $last_post_real_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if (sizeof($ids) == 1)
@@ -206,13 +218,14 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		{
 			$not_empty_forums[] = $row['forum_id'];
 
-			if (empty($row['last_post_id']))
+			if (empty($row['last_post_id']) && empty($row['last_post_id_real']))
 			{
 				$empty_forums[] = $row['forum_id'];
 			}
 		}
 
 		$last_post_ids[] = $row['last_post_id'];
+		$last_post_real_ids[] = $row['last_post_id_real'];
 	}
 	$db->sql_freeresult($result);
 
@@ -228,6 +241,12 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			$update_sql[$forum_id][] = 'forum_last_poster_id = 0';
 			$update_sql[$forum_id][] = "forum_last_poster_name = ''";
 			$update_sql[$forum_id][] = "forum_last_poster_colour = ''";
+			$update_sql[$forum_id][] = 'forum_last_post_id_real = 0';
+			$update_sql[$forum_id][] = "forum_last_post_subject_real = ''";
+			$update_sql[$forum_id][] = 'forum_last_post_time_real = 0';
+			$update_sql[$forum_id][] = 'forum_last_poster_id_real = 0';
+			$update_sql[$forum_id][] = "forum_last_poster_name_real = ''";
+			$update_sql[$forum_id][] = "forum_last_poster_colour_real = ''";
 		}
 	}
 
@@ -250,7 +269,27 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		}
 		$db->sql_freeresult($result);
 	}
-	unset($empty_forums, $ids, $last_post_ids);
+
+	if (sizeof($last_post_real_ids))
+	{
+		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username,
+			u.user_id, u.username, u.user_colour
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+			WHERE p.poster_id = u.user_id
+				AND ' . $db->sql_in-set('p.post_id', $last_post_real_ids);
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id_real = ' . (int) $row['post_id'];
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject_real = '" . $db->sql_escape($row['post_subject']) . "'";
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time_real = ' . (int) $row['post_time'];
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id_real = ' . (int) $row['poster_id'];
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour_real = '" . $db->sql_escape($row['user_colour']) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name_real = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+		}
+	}
+	unset($empty_forums, $ids, $last_post_ids, $last_post_real_ids);
 
 	if ($return_update_sql || !sizeof($update_sql))
 	{
