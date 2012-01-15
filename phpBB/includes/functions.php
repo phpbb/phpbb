@@ -4507,7 +4507,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
+		$redirect = (defined('ADMIN_START') || $user->page['page_name'] == "ucp.$phpEx" || $user->page['page_name'] == "mcp.$phpEx") ? '' : '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_'))));
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout' . $redirect, true, $user->session_id);
 		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 	}
 	else
