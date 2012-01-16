@@ -1339,6 +1339,8 @@ CREATE TABLE phpbb_users (
 	user_reminded INTEGER DEFAULT 0 NOT NULL,
 	user_reminded_time INTEGER DEFAULT 0 NOT NULL,
 	user_delete_pending INTEGER DEFAULT 0 NOT NULL,
+	user_delete_pending_reason BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	user_delete_pending_time INTEGER DEFAULT 0 NOT NULL,
 	user_delete_type INTEGER DEFAULT 0 NOT NULL
 );;
 

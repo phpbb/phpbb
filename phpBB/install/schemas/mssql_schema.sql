@@ -1625,6 +1625,8 @@ CREATE TABLE [phpbb_users] (
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,
 	[user_reminded_time] [int] DEFAULT (0) NOT NULL ,
 	[user_delete_pending] [int] DEFAULT (0) NOT NULL ,
+	[user_delete_pending_reason] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[user_delete_pending_time] [int] DEFAULT (0) NOT NULL ,
 	[user_delete_type] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO

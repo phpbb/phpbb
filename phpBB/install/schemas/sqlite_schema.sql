@@ -935,6 +935,8 @@ CREATE TABLE phpbb_users (
 	user_reminded tinyint(4) NOT NULL DEFAULT '0',
 	user_reminded_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_delete_pending INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_delete_pending_reason text(65535) NOT NULL DEFAULT '',
+	user_delete_pending_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_delete_type INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 

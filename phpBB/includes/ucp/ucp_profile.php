@@ -144,7 +144,13 @@ class ucp_profile
 						// since the global setting was checked earlier
 						if ($delete_account)
 						{
-							$this->phpbb_delete_account();
+							if(!function_exists('phpbb_delete_account'))
+							{
+								include("{$phpbb_root_path}includes/functions_user.$phpEx");
+							}
+							// The third argument is sanitized within the function
+							$reason = isset($_POST['delete_reason']) ? $_POST['delete_reason'] : '';
+							trigger_error(phpbb_delete_account(false, $config['account_delete_method'], $reason));
 						}
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
@@ -677,69 +683,5 @@ class ucp_profile
 		// Set desired template
 		$this->tpl_name = 'ucp_profile_' . $mode;
 		$this->page_title = 'UCP_PROFILE_' . strtoupper($mode);
-	}
-
-	/**
-	* Delete a user, based on global config and user's permissions.
-	* Note that none of that is checked in this function, so check
-	* that before calling it. This function just does what it says
-	* it's going to do.
-	*
-	* @return null
-	*/
-	function phpbb_delete_account()
-	{
-		global $db, $user, $config;
-
-		if (!function_exists('user_active_flip') || !function_exists('user_delete'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
-		}
-
-		if ($config['account_delete_method'] == SELF_ACCOUNT_DELETE_NONE)
-		{
-			trigger_error('DELETE_ACCOUNT_FAIL');
-		}
-
-		if ($config['account_delete_approval'])
-		{
-			// User is already asking to be deleted,
-			// Skip this and fail gracefully
-			if (!$user->data['user_pending_delete'])
-			{
-				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_delete_pending = 1, user_delete_type = ' . $config['account_delete_method'] . ' WHERE user_id = ' . $user->data['user_id'];
-				$db->sql_query($sql);
-			}
-
-			trigger_error('DELETE_ACCOUNT_APPROVAL');
-		}
-
-		switch ($config['account_delete_method'])
-		{
-			case SELF_ACCOUNT_DELETE_SOFT:
-			default:
-				// deactivate the user's account
-				user_active_flip('deactivate', array($user->data['user_id']), INACTIVE_SOFT_DELETE);
-				// Log out the user
-				$user->reset_login_keys($user->data['user_id']);
-				$user->session_kill();
-				trigger_error('DELETE_ACCOUNT_SOFT_DONE');
-			break;
-
-			case SELF_ACCOUNT_DELETE_PROFILE:
-				// Remove user's account and profile data and private messages
-				// Keep posts and topics
-				// Should work just like the normal user delete function in the ACP
-				user_delete('retain', $user->data['user_id'], $user->data['username']);
-				trigger_error('DELETE_ACCOUNT_PROFILE_DONE');
-			break;
-
-			case SELF_ACCOUNT_DELETE_HARD:
-				// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
-				user_delete('remove', $user->data['user_id']);
-				trigger_error('DELETE_ACCOUNT_HARD_DONE');
-			break;
-		}
 	}
 }

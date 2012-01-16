@@ -81,6 +81,75 @@ class acp_users
 				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
 			));
 
+			if(!$config['account_delete_approval'])
+			{
+				$template->assign_var('S_USER_DELETE_QUEUE', false);
+				// do nothing further
+				return;
+			}
+			else
+			{
+				$template->assign_var('S_USER_DELETE_QUEUE', true);
+			}
+
+			if (isset($_POST['approve']) || isset($_POST['deny']) && isset($_POST['delete_type']))
+			{
+				if (isset($_POST['approve']) && !isset($_POST['deny']))
+				{
+					if (!function_exists('phpbb_delete_account'))
+					{
+						include("{$phpbb_root_path}includes/functions_user.$phpEx");
+					}
+					phpbb_delete_account(true, $_POST['delete_type'], '');
+					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
+				}
+				else if (isset($_POST['deny']))
+				{
+					$sql_ary(
+						'user_delete_pending'			=> 0,
+						'user_delete_pending_time'		=> 0,
+						'user_delete_pending_type'		=> 0,
+						'user_delete_pending_reason'	=> '',
+					);
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = IN(' . implode(',', $_POST['user_id']) . ')';
+					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
+
+					/// @todo PM the user.
+				}
+				trigger_error($message);
+			}
+
+			$sql = 'SELECT user_id, username, user_colour, user_delete_pending_time, user_delete_pending_reason
+			, user_delete_pending_type FROM ' . USERS_TABLE . ' WHERE user_delete_pending = 1 ORDER BY user_delete_pending_time ASC';
+			$result = $db->sql_query($sql);
+			while($row = $db->sql_fetchrow($resut))
+			{
+				$types = array(
+					SELF_ACCOUNT_DELETE_SOFT	=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
+					SELF_ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
+					SELF_ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
+				);
+				
+				$delete_type_dropdown = array('<select name="delete_type">');
+				
+				foreach($types as $type_key => $type_value)
+				{
+					$selected = ($type_key == $row['user_delete_type']) ? true : false;
+					$delete_type_dropdown[] = '<option value="' . $type_key . '"' . $selected . '>' . $type_value . '</option>';
+				}
+				$delete_type_dropdown[] = '</select>'
+
+				$template->assign_block_vars('queue', array(
+					'USERNAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+					'USER_ID'		=> $row['user_id'],
+					'DELETE_TYPE'	=> implode('', $delete_type_dropdown),
+					'DELETE_REASON'	=> $row['user_delete_pending_reason'],
+					'DELETE_TIME'	=> $user->format_date($row['user_delete_pending_time']),
+				));
+			}
+			$db->sql_freeresult($result);
+
 			return;
 		}
 
@@ -2341,7 +2410,6 @@ class acp_users
 				);
 
 			break;
-
 		}
 
 		// Assign general variables

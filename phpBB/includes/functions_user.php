@@ -3692,3 +3692,76 @@ function remove_newly_registered($user_id, $user_data = false)
 
 	return $user_data['group_id'];
 }
+
+/**
+* Delete a user, based on global config and user's permissions.
+* Note that none of that is checked in this function, so check
+* that before calling it. This function just does what it says
+* it's going to do.
+*
+* @param bool $force Skip adding to approval queue; just delete the account
+* @param int $type How to delete the account
+* @param string $reason User's rationale for needing their account deleted
+* @return string Language key for message indication result
+*/
+function phpbb_delete_account($force = false, $type = SELF_ACCOUNT_DELETE_NONE, $reason = '')
+{
+	global $db, $user, $config, $request;
+
+	if (!function_exists('user_active_flip') || !function_exists('user_delete'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
+	}
+
+	$type = ($type != SELF_ACCOUNT_DELETE_NONE) ? $type : $config['account_delete_method'];
+
+	if (!$type && !$force)
+	{
+		return 'DELETE_ACCOUNT_FAIL';
+	}
+
+	if ($config['account_delete_approval'] && !$force)
+	{
+		// User is already asking to be deleted,
+		// Skip this and fail gracefully
+		if (!$user->data['user_pending_delete'])
+		{
+			// no bbcode parsing in $reason; let's keep this simple
+			$reason = $db->sql_escape(utf8_normalize_nfc($reason));
+			$sql = 'UPDATE ' . USERS_TABLE . " SET user_delete_pending = 1, user_delete_type = $type, user_delete_pending_time = " . microtime();
+			$sql .= (!empty($reason)) ? ", user_delete_pending_reason = '$reason'" : '';
+			$sql .= ' WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+		}
+
+		return 'DELETE_ACCOUNT_APPROVAL';
+	}
+
+	switch ($config['account_delete_method'])
+	{
+		case SELF_ACCOUNT_DELETE_SOFT:
+		default:
+			// deactivate the user's account
+			user_active_flip('deactivate', array($user->data['user_id']), INACTIVE_SOFT_DELETE);
+			// Log out the user
+			$user->reset_login_keys($user->data['user_id']);
+			$user->session_kill();
+			return 'DELETE_ACCOUNT_SOFT_DONE';
+		break;
+
+		case SELF_ACCOUNT_DELETE_PROFILE:
+			// Remove user's account and profile data and private messages
+			// Keep posts and topics
+			// Should work just like the normal user delete function in the ACP
+			user_delete('retain', $user->data['user_id'], $user->data['username']);
+			return 'DELETE_ACCOUNT_PROFILE_DONE';
+		break;
+
+		case SELF_ACCOUNT_DELETE_HARD:
+			// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
+			user_delete('remove', $user->data['user_id']);
+			return 'DELETE_ACCOUNT_HARD_DONE';
+		break;
+	}
+}
