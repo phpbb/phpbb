@@ -120,10 +120,12 @@
 		<!-- IF LANGUAGE_OPTIONS -->
 			<div id="lang-select">
 				<form action="{U_INDEX}" method="get" id="lang">
+				<fieldset>
 					<select name="lang" onchange="window.location.href = add_to_query('lang', this.value);">
 						{LANGUAGE_OPTIONS}
 					</select>
-					<noscript><input type="submit" action="{U_ACTION}"></noscript>
+					<noscript><input class="button2" type="submit" value="{L_SELECT}" action="{U_ACTION}"></noscript>
+				</fieldset>
 				</form>
 			</div>
 		<!-- ENDIF -->

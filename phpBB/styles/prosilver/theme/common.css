@@ -141,7 +141,7 @@ a#logo:hover {
 	margin-top: 30px;
 	margin-right: 5px;
 	display: block;
-	float: left;
+	float: right;
 	text-align: right;
 	white-space: nowrap; /* For Opera */
 }
