@@ -10,7 +10,7 @@ $phpbb_root_path = '../';
 $style = 'subsilver2';
 
 $imageset_path = $phpbb_root_path . 'styles/' . $style . '/imageset';
-$theme_path = $phpbb_root_path . 'styles/' . $style . '/theme2';
+$theme_path = $phpbb_root_path . 'styles/' . $style . '/theme';
 
 // Start output buffering
 ob_start();
