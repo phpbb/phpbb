@@ -165,24 +165,8 @@ class ucp_register
 			$captcha->init(CONFIRM_REG);
 		}
 
-		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
-		$timezone = date('Z') / 3600;
-		$is_dst = date('I');
-
-		if ($config['board_timezone'] == $timezone || $config['board_timezone'] == ($timezone - 1))
-		{
-			$timezone = ($is_dst) ? $timezone - 1 : $timezone;
-
-			if (!isset($user->lang['tz_zones'][(string) $timezone]))
-			{
-				$timezone = $config['board_timezone'];
-			}
-		}
-		else
-		{
-			$is_dst = $config['board_dst'];
-			$timezone = $config['board_timezone'];
-		}
+		$is_dst = $config['board_dst'];
+		$timezone = $config['board_timezone'];
 
 		$data = array(
 			'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
