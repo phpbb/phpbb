@@ -3695,18 +3695,35 @@ function remove_newly_registered($user_id, $user_data = false)
 
 /**
 * Delete a user, based on global config and user's permissions.
-* Note that none of that is checked in this function, so check
-* that before calling it. This function just does what it says
-* it's going to do.
+* If self-deleting requires approval, will add to queue.
+* NOTE: Verify permissions prior to running this function.
 *
-* @param bool $force Skip adding to approval queue; just delete the account
-* @param int $type How to delete the account
+* @param array $user_id User to delete
+* @param bool $force Skip configuration and potentially adding to approval queue; just delete the account
+* @param int $type How to delete the account (none, soft, profile, hard)
 * @param string $reason User's rationale for needing their account deleted
-* @return string Language key for message indication result
+* @return string|bool Language key for message indication result, false if no id are given or found
 */
-function phpbb_delete_account($force = false, $type = SELF_ACCOUNT_DELETE_NONE, $reason = '')
+function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT_DELETE_NONE, $reason = '')
 {
 	global $db, $user, $config, $request;
+
+	if (!$user_id)
+	{
+		return false;
+	}
+
+	// Let's make sure the user specified actually exsits
+	// After all, we do use the username later on for 'retain' type (aka SELF_ACCOUNT_DELETE_PROFILE)
+	$sql = 'SELECT username FROM ' . USERS_TABLE . ' WHERE user_id = ' . (int) $user_id;
+	$result = $db->sql_query($sql);
+	$username = $db->sql_fetchfield('username');
+	$db->sql_freeresult($result);
+
+	if (empty($username))
+	{
+		return false;
+	}
 
 	if (!function_exists('user_active_flip') || !function_exists('user_delete'))
 	{
@@ -3727,11 +3744,12 @@ function phpbb_delete_account($force = false, $type = SELF_ACCOUNT_DELETE_NONE, 
 		// Skip this and fail gracefully
 		if (!$user->data['user_pending_delete'])
 		{
-			// no bbcode parsing in $reason; let's keep this simple
+			// no bbcode parsing in $reason -- let's keep this simple
 			$reason = $db->sql_escape(utf8_normalize_nfc($reason));
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_delete_pending = 1, user_delete_type = $type, user_delete_pending_time = " . microtime();
+			// Only update the reason column if one is given
 			$sql .= (!empty($reason)) ? ", user_delete_pending_reason = '$reason'" : '';
-			$sql .= ' WHERE user_id = ' . $user->data['user_id'];
+			$sql .= ' WHERE user_id = ' . (int) $user_id;
 			$db->sql_query($sql);
 		}
 
@@ -3743,9 +3761,9 @@ function phpbb_delete_account($force = false, $type = SELF_ACCOUNT_DELETE_NONE, 
 		case SELF_ACCOUNT_DELETE_SOFT:
 		default:
 			// deactivate the user's account
-			user_active_flip('deactivate', array($user->data['user_id']), INACTIVE_SOFT_DELETE);
+			user_active_flip('deactivate', array($user_id), INACTIVE_SOFT_DELETE);
 			// Log out the user
-			$user->reset_login_keys($user->data['user_id']);
+			$user->reset_login_keys($user_id);
 			$user->session_kill();
 			return 'DELETE_ACCOUNT_SOFT_DONE';
 		break;
@@ -3754,13 +3772,13 @@ function phpbb_delete_account($force = false, $type = SELF_ACCOUNT_DELETE_NONE, 
 			// Remove user's account and profile data and private messages
 			// Keep posts and topics
 			// Should work just like the normal user delete function in the ACP
-			user_delete('retain', $user->data['user_id'], $user->data['username']);
+			user_delete('retain', $user_id, $username);
 			return 'DELETE_ACCOUNT_PROFILE_DONE';
 		break;
 
 		case SELF_ACCOUNT_DELETE_HARD:
 			// Purge user from forum; all topics, posts, PMs, and profile data will be removed. Cannot undo.
-			user_delete('remove', $user->data['user_id']);
+			user_delete('remove', $user_id);
 			return 'DELETE_ACCOUNT_HARD_DONE';
 		break;
 	}

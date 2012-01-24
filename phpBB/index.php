@@ -25,29 +25,6 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
-// If user is requesting an extension page, use that.
-if ($request->is_set('ext'))
-{
-	$ext = $db->sql_escape($request->variable('ext', ''));
-	$active = false;
-	if (in_array($ext, array_keys($phpbb_extension_manager->all_available())))
-	{
-		$sql = "SELECT ext_active WHERE ext_name = '$ext'";
-		$result = $db->sql_query($sql);
-		$active = $db->sql_fetchfield('ext_active');
-		$db->sql_freeresult($result);
-	}
-	if ($active)
-	{
-		$path = $phpbb_extension_manager->get_extension_path($ext, true)
-		if (file_exists("{$path}index.$phpEx"))
-		{
-			include("{$path}index.$phpEx");
-			exit;
-		}
-	}
-}
-
 display_forums('', $config['load_moderators']);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';

@@ -5,6 +5,8 @@
 # POSTGRES BEGIN #
 
 # -- Config
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('account_delete_approval', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('account_delete_method', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');

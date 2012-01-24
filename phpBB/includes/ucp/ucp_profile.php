@@ -76,7 +76,7 @@ class ucp_profile
 						$self_delete_lang .= 'FAIL';
 					break;
 				}
-				$delete_account = request_var('delete_account', false);
+				$delete_account = $request->variable('delete_account', false, false, phpbb_request_interface::GET);
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
 					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_acct')),
@@ -150,7 +150,7 @@ class ucp_profile
 							}
 							// The third argument is sanitized within the function
 							$reason = isset($_POST['delete_reason']) ? $_POST['delete_reason'] : '';
-							trigger_error(phpbb_delete_account(false, $config['account_delete_method'], $reason));
+							trigger_error(phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $reason));
 						}
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
