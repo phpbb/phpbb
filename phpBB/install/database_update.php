@@ -1088,6 +1088,9 @@ function database_update_info()
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
+				REPORTS_TABLE		=> array(
+					'reported_post'			=> array('TEXT', ''),
+				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(
