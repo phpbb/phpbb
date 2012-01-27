@@ -1223,7 +1223,7 @@ CREATE TABLE phpbb_users (
 	user_delete_pending INT2 DEFAULT '0' NOT NULL CHECK (user_delete_pending >= 0),
 	user_delete_pending_reason varchar(4000) DEFAULT '' NOT NULL,
 	user_delete_pending_time INT2 DEFAULT '0' NOT NULL CHECK (user_delete_pending_time >= 0),
-	user_delete_type INT2 DEFAULT '0' NOT NULL CHECK (user_delete_type >= 0),
+	user_delete_pending_type INT2 DEFAULT '0' NOT NULL CHECK (user_delete_pending_type >= 0),
 	PRIMARY KEY (user_id)
 );
 

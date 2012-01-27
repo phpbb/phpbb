@@ -937,7 +937,7 @@ CREATE TABLE phpbb_users (
 	user_delete_pending INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_delete_pending_reason text(65535) NOT NULL DEFAULT '',
 	user_delete_pending_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	user_delete_type INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	user_delete_pending_type INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);

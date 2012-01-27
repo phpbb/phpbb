@@ -76,7 +76,7 @@ class ucp_profile
 						$self_delete_lang .= 'FAIL';
 					break;
 				}
-				$delete_account = $request->variable('delete_account', false, false, phpbb_request_interface::GET);
+				$delete_account = $request->variable('delete_account', false, false, phpbb_request_interface::POST);
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
 					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_acct')),

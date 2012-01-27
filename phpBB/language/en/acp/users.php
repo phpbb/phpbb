@@ -37,8 +37,8 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACCOUNT_DELETE_NO_APPROVAL'		=> 'Users do not need approval to delete their accounts. To require approval, change the <strong>Deletion approval</strong> setting in Board Features.',
-	'ACCOUNT_DELETE_REQUEST_APPROVED'	=> 'The account deletion request(s) have been approved. An email has been sent to the user(s) affected.'
-	'ACCOUNT_DELETE_REQUEST_DENIED'		=> 'The account deletion request(s) have been denied. A PM has been sent to the user(s) to notify them.'
+	'ACCOUNT_DELETE_REQUEST_APPROVED'	=> 'The account deletion request(s) have been approved. An email has been sent to the user(s) affected.',
+	'ACCOUNT_DELETE_REQUEST_DENIED'		=> 'The account deletion request(s) have been denied. A PM has been sent to the user(s) to notify them.',
 
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
 	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status, promote another user to be a founder first.',

@@ -965,7 +965,7 @@ CREATE TABLE phpbb_users (
 	user_delete_pending int(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_delete_pending_reason text NOT NULL,
 	user_delete_pending_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	user_delete_type int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	user_delete_pending_type int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

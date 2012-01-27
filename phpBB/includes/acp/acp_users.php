@@ -102,6 +102,13 @@ class acp_users
 					}
 					phpbb_delete_account(true, $_POST['delete_type'], '');
 					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
+
+					// @todo email the user
+					$messenger = new messenger;
+					$messenger->to($user->data['user_email']);
+					$messenger->from($config['board_contact']);
+					$messenger->replyto($config['board_contact']);
+					$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
 				}
 				else if (isset($_POST['deny']))
 				{
@@ -111,11 +118,39 @@ class acp_users
 						'user_delete_pending_type'		=> 0,
 						'user_delete_pending_reason'	=> '',
 					);
+
 					$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 						WHERE user_id = IN(' . implode(',', $_POST['user_id']) . ')';
 					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
 
-					/// @todo PM the user.
+					$subject = $user->lang("{$message}_PM_SUBJECT");
+					$text    = $user->lang("{$message}_PM_TEXT");
+
+					$poll = $uid = $bitfield = $options = '';
+					generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
+
+					$data = array(
+					    'address_list'      => array('u' => array($_POST => 'to')),
+					    'from_user_id'      => $user->data['user_id'],
+					    'from_username'     => $user->data['username'],
+					    'icon_id'           => 0,
+					    'from_user_ip'      => $user->data['user_ip'],
+
+					    'enable_bbcode'     => true,
+					    'enable_smilies'    => true,
+					    'enable_urls'       => true,
+					    'enable_sig'        => true,
+
+					    'message'           => $text,
+					    'bbcode_bitfield'   => $bitfield,
+					    'bbcode_uid'        => $uid,
+					);
+
+					if (!function_exists('submit_pm'))
+					{
+						include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
+					}
+					submit_pm('post', $subject, &$data, false);
 				}
 				trigger_error($message);
 			}
