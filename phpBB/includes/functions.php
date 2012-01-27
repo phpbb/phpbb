@@ -4934,3 +4934,42 @@ function phpbb_pcre_utf8_support()
 	}
 	return $utf8_pcre_properties;
 }
+
+/**
+* Returns the first existing path in an array of paths
+* Each argument should be a path.
+*
+* @return string|bool If one of the paths exists, that path is returned. Otherwise, or if no paths are given, false.
+*/
+function phpbb_get_first_existing_path()
+{
+	// make sure we have some value
+	if(!($paths = func_get_args()))
+	{
+		return false;
+	}
+
+	foreach ($paths as $path)
+	{
+		// file_exists() caches results for later
+		// so using it repeatedly here shouldn't be an issue
+		if (file_exists($path))
+		{
+			return $path;
+		}
+	}
+	return false;
+}
+
+/**
+* Merge style language array into the global language array (i.e. $user->lang)
+*
+* @param string $path Path to the language file (make sure it exists beforehand!)
+* @param array &$lang Global language array to which to append the other array
+*/
+function phpbb_add_style_lang($path = '', &$lang = array())
+{
+	// similar return line to the one in user->set_lang()
+	// Do not suppress error if in DEBUG_EXTRA mode
+	return (defined('DEBUG_EXTRA')) ? (include $path) : (@include $path);
+}
