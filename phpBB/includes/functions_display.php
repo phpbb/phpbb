@@ -1209,31 +1209,37 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	else
 	{
 		// User is anonymous... do they have a valid unsubscribe key?
-		if ($request->is_set('unwatch', phpbb_request_interface::GET) && $request->is_set('uk', phpbb_request_interface::GET))
+		if ($request->is_set('unwatch', phpbb_request_interface::GET) &&
+			$request->is_set('uk', phpbb_request_interface::GET))
 		{
-			$key = $request->variable('uk', '');
+			$key = $db->sql_escape($request->variable('uk', ''));
 			$type = $request->variable('unwatch', '');
 			switch ($type)
 			{
 				case 'forum':
 				case 'topic':
-					if(!$request->is_set_post('submit'))
+					if (!$request->is_set_post('submit'))
 					{
-						$sql_what = ($type == 'forum') ? 'i.forum_id, i.forum_name' : 'i.topic_id, i.topic_title, i.forum_id';
-						$sql = "SELECT $sql_what
-								FROM " . constant(strtoupper($type) . 'S_WATCH_TABLE') . ' w, ' . constant(strtoupper($type) . 'S_TABLE') . ' i
-								WHERE w.unsubscribe_key = \'' . $db->sql_escape($key) . "'
-									AND i.{$type}_id = w.{$type}_id";
+						$sql_ary = array(
+							'SELECT'	=> ($type == 'forum') ? 'i.forum_id, i.forum_name' : 'i.topic_id, i.topic_title, i.forum_id',
+							'FROM'		=> array(
+								constant(strtoupper($type) . 'S_WATCH_TABLE')	=> 'w',
+								constant(strtoupper($type) . 'S_TABLE')			=> 'i',
+							),
+							'WHERE'		=> 'w.unsubscribe_key = \'' . $key . "'
+								AND i.{$type}_id = w.{$type}_id",
+						);
+
+						$sql = 'SELECT ' . $db->sql_build_query('SELECT', $sql_ary);
 						$result = $db->sql_query($sql);
-						if($row = $db->sql_fetchrow($result))
+						if ($row = $db->sql_fetchrow($result))
 						{
 							$u_item_params = '?f=' . $row['forum_id'] . ($type == 'topic' ? '&amp;t=' . $row['topic_id'] : '');
-							$u_action_params = $u_item_params . "&amp;unwatch=$type&amp;uk=$key";
 							$template->assign_vars(array(
 								'ITEM_TITLE'		=> $row[($type == 'forum') ? 'forum_name' : 'topic_title'],
 								'U_ITEM'			=> append_sid("{$phpbb_root_path}view$type.$phpEx$u_item_params"),
 								'UNSUBSCRIBE_ITEM'	=> $user->lang('UNSUBSCRIBE_ITEM', strtolower($user->lang(strtoupper($type)))),
-								'U_ACTION'			=> append_sid("{$phpbb_root_path}view$type.$phpEx$u_action_params"),
+								'U_ACTION'			=> append_sid("{$phpbb_root_path}view$type.$phpEx", "{$u_item_params}unwatch=$type&amp;uk=$key"),
 							));
 
 							// get the page ready for display
@@ -1251,29 +1257,33 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					}
 					else
 					{
-						$db_safe_key = $db->sql_escape($key);
+						// $action_type should be one of the following:
+						// forum|topic - unsubscribe the user from a specific forum or topic
+						// all - unsubcribe the user from all forums AND all topics
+						// board - cease all board emails (topic/forum subscriptions, mass emails, & PM notification)
 						$action_type = $request->variable('type', '', phpbb_request_interface::POST);
 						$action_type = empty($action_type) ? $type : $action_type;
-						$where_sql = " WHERE unsubscribe_key = '{$db_safe_key}'";
-						if (in_array($action_type, array('board', 'all', 'topic')))
+						$where_sql = " WHERE unsubscribe_key = '{$key}'";
+						if (in_array($action_type, array('topic', 'all', 'board')))
 						{
 							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . (($action_type != 'all' && $action_type != 'board') ? $where_sql : '');
 							$db->sql_query($sql);
 						}
-						if (in_array($action_type, array('board', 'all', 'forum')))
+
+						if (in_array($action_type, array('forum', 'all', 'board')))
 						{
 							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . (($action_type != 'all' && $action_type != 'board') ? $where_sql : '');
 							$db->sql_query($sql);
 						}
+
 						if ($action_type == 'board')
 						{
 							// turn off email settings in user preferences
-							$sql_ary = array(
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
 								'user_allow_viewemail'	=> 0,
 								'user_allow_massemail'	=> 0,
 								'user_notify_pm'		=> 0,
-							);
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $user->data['user_id'];
+							)) . ' WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 						}
 			
