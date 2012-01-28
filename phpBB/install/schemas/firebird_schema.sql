@@ -425,7 +425,8 @@ ALTER TABLE phpbb_forums_track ADD PRIMARY KEY (user_id, forum_id);;
 CREATE TABLE phpbb_forums_watch (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	notify_status INTEGER DEFAULT 0 NOT NULL
+	notify_status INTEGER DEFAULT 0 NOT NULL,
+	unsubscribe_key VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch(forum_id);;
@@ -1241,7 +1242,8 @@ ALTER TABLE phpbb_topics_posted ADD PRIMARY KEY (user_id, topic_id);;
 CREATE TABLE phpbb_topics_watch (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	notify_status INTEGER DEFAULT 0 NOT NULL
+	notify_status INTEGER DEFAULT 0 NOT NULL,
+	unsubscribe_key VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;

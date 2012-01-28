@@ -1148,6 +1148,7 @@ function get_schema_struct()
 			'forum_id'				=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
 			'notify_status'			=> array('BOOL', 0),
+			'unsubscribe_key'		=> array('VCHAR:255',''),
 		),
 		'KEYS'			=> array(
 			'forum_id'				=> array('INDEX', 'forum_id'),
@@ -1771,6 +1772,7 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
 			'notify_status'		=> array('BOOL', 0),
+			'unsubscribe_key'	=> array('VCHAR:255',''),
 		),
 		'KEYS'			=> array(
 			'topic_id'			=> array('INDEX', 'topic_id'),

@@ -298,6 +298,7 @@ CREATE TABLE phpbb_forums_watch (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	unsubscribe_key varchar(255) DEFAULT '' NOT NULL,
 	KEY forum_id (forum_id),
 	KEY user_id (user_id),
 	KEY notify_stat (notify_status)
@@ -866,6 +867,7 @@ CREATE TABLE phpbb_topics_watch (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	unsubscribe_key varchar(255) DEFAULT '' NOT NULL,
 	KEY topic_id (topic_id),
 	KEY user_id (user_id),
 	KEY notify_stat (notify_status)

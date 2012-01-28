@@ -1198,7 +1198,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	$notify_rows = array();
 
 	// -- get forum_userids	|| topic_userids
-	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
+	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber, w.unsubscribe_key
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
 		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
 			AND w.user_id NOT IN ($sql_ignore_users)
@@ -1218,7 +1218,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			'notify_type'	=> ($topic_notification) ? 'topic' : 'forum',
 			'template'		=> ($topic_notification) ? 'topic_notify' : 'newtopic_notify',
 			'method'		=> $row['user_notify_type'],
-			'allowed'		=> false
+			'allowed'		=> false,
+			'unsub_key'		=> $row['unsubscribe_key'],
 		);
 	}
 	$db->sql_freeresult($result);
@@ -1231,7 +1232,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			$sql_ignore_users .= ', ' . implode(', ', array_keys($notify_rows));
 		}
 
-		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
+		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber, fw.unsubscribe_key
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
 				AND fw.user_id NOT IN ($sql_ignore_users)
@@ -1251,7 +1252,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				'notify_type'	=> 'forum',
 				'template'		=> 'forum_notify',
 				'method'		=> $row['user_notify_type'],
-				'allowed'		=> false
+				'allowed'		=> false,
+				'unsub_key'		=> $row['unsubscribe_key'],
 			);
 		}
 		$db->sql_freeresult($result);
@@ -1308,6 +1310,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			$msg_list_ary[$row['template']][$pos]['name']	= $row['username'];
 			$msg_list_ary[$row['template']][$pos]['lang']	= $row['user_lang'];
 			$msg_list_ary[$row['template']][$pos]['user_id']= $row['user_id'];
+			$msg_list_ary[$row['template']][$pos]['unsub_key'] = $row['unsub_key'];
 		}
 		unset($msg_users);
 
@@ -1328,8 +1331,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
 					'U_NEWEST_POST'			=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&p=$post_id&e=$post_id",
-					'U_STOP_WATCHING_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?uid={$addr['user_id']}&f=$forum_id&t=$topic_id&unwatch=topic",
-					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?uid={$addr['user_id']}&f=$forum_id&unwatch=forum",
+					'U_STOP_WATCHING_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?uid={$addr['user_id']}&f=$forum_id&t=$topic_id&unwatch=topic&uk={$addr['unsub_key']}",
+					'U_STOP_WATCHING_FORUM'	=> generate_board_url() . "/viewforum.$phpEx?uid={$addr['user_id']}&f=$forum_id&unwatch=forum&uk={$addr['unsub_key']}",
 				));
 
 				$messenger->send($addr['method']);
@@ -2374,8 +2377,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if (!$data['notify_set'] && $data['notify'])
 		{
-			$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
-				VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
+			$sql_ary = array(
+				'user_id'			=> $user->data['user_id'],
+				'topic_id'			=> $data['topic_id'],
+				'unsubscribe_key'	=> gen_rand_string(mt_rand(6, 10)),
+			);
+			$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' ' . $db->sql_build_array($sql_ary);
 			$db->sql_query($sql);
 		}
 		else if (($config['email_enable'] || $config['jab_enable']) && $data['notify_set'] && !$data['notify'])
