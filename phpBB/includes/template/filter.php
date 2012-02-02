@@ -76,6 +76,20 @@ class phpbb_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
+	* Template compiler.
+	*
+	* @var phpbb_template_compile
+	*/
+	private $template_compile;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -134,6 +148,8 @@ class phpbb_template_filter extends php_user_filter
 		$this->chunk = '';
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
+		$this->extension_manager = $this->params['extension_manager'];
+		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
 
@@ -298,6 +314,12 @@ class phpbb_template_filter extends php_user_filter
 				}
 				return '<!-- ENDPHP -->';
 			break;
+
+			case 'RUNHOOKS':
+				// return value here will be compiled code (html with embedded php).
+				// we don't want to wrap it in php tags here.
+				return '<?php ' . $this->compile_tag_run_hooks($matches[2]) . '?>';
+				break;
 
 			default:
 				return $matches[0];
@@ -779,6 +801,47 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include_php($tag_args)
 	{
 		return "\$_template->_php_include('$tag_args');";
+	}
+
+	/**
+	* Compile RUNHOOKS tag.
+	*
+	* $tag_args should be a single string identifying hook location.
+	*/
+	private function compile_tag_run_hooks($tag_args)
+	{
+		if (!preg_match('/^\w+$/', $tag_args))
+		{
+			// do something
+			var_dump($tag_args);
+		}
+		$location = $tag_args;
+
+		if ($this->phpbb_extension_manager)
+		{
+			$finder = $this->phpbb_extension_manager->get_finder();
+
+			$files = $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				->extension_directory("/styles/universal/template")
+				->get_files();
+
+			$all_compiled = '';
+			foreach ($files as $file)
+			{
+				$compiled = $this->template_compile->compile_file($file);
+				$all_compiled .= $compiled;
+			}
+			return '?>' . $all_compiled . '<?php';
+		}
+
+		// 1. find all mods defining hooks for location
+		// 2. obtain mods' template fragments
+		// 3. compile template fragments
+		// 4. return compiled code
+		// note: need to make sure we get fragments in the right order
+		return 'echo "test";';
 	}
 
 	/**
