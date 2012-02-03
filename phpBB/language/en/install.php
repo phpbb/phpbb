@@ -52,6 +52,7 @@ $lang = array_merge($lang, array(
 	'BLANK_PREFIX_FOUND'			=> 'A scan of your tables has shown a valid installation using no table prefix.',
 	'BOARD_NOT_INSTALLED'			=> 'No installation found',
 	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'The phpBB Unified Convertor Framework requires a default installation of phpBB3 to function, please <a href="%s">proceed by first installing phpBB3</a>.',
+	'BACKUP_NOTICE'					=> 'Please backup your board before updating in case any problems arise during the update process.',
 
 	'CATEGORY'					=> 'Category',
 	'CACHE_STORE'				=> 'Cache type',
