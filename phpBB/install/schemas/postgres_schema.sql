@@ -853,6 +853,7 @@ CREATE TABLE phpbb_reports (
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
+	reported_post TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 

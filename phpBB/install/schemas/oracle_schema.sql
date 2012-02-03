@@ -1214,6 +1214,7 @@ CREATE TABLE phpbb_reports (
 	report_closed number(1) DEFAULT '0' NOT NULL,
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
+	reported_post clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /

@@ -1528,6 +1528,7 @@ function get_schema_struct()
 			'report_closed'			=> array('BOOL', 0),
 			'report_time'			=> array('TIMESTAMP', 0),
 			'report_text'			=> array('MTEXT_UNI', ''),
+			'reported_post'      	=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
 		'KEYS'			=> array(

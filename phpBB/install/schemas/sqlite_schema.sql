@@ -627,7 +627,8 @@ CREATE TABLE phpbb_reports (
 	user_notify INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_closed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	report_text mediumtext(16777215) NOT NULL DEFAULT ''
+	report_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post mediumtext(16777215) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
