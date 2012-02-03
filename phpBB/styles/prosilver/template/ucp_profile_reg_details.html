@@ -20,12 +20,6 @@
 		<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
 		<dd><!-- IF S_CHANGE_EMAIL --><input type="text" name="email" id="email" maxlength="100" value="{EMAIL}" class="inputbox" title="{L_EMAIL_ADDRESS}" /><!-- ELSE --><strong>{EMAIL}</strong><!-- ENDIF --></dd>
 	</dl>
-	<!-- IF S_CHANGE_EMAIL -->
-		<dl>
-			<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label><br /><span>{L_CONFIRM_EMAIL_EXPLAIN}</span></dt>
-			<dd><input type="text" name="email_confirm" id="email_confirm" maxlength="100" value="{CONFIRM_EMAIL}" class="inputbox" title="{L_CONFIRM_EMAIL}" /></dd>
-		</dl>
-	<!-- ENDIF -->
 	<!-- IF S_CHANGE_PASSWORD -->
 		<dl>
 			<dt><label for="new_password">{L_NEW_PASSWORD}:</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
