@@ -835,9 +835,9 @@ class phpbb_template_filter extends php_user_filter
 		}
 		$location = $tag_args;
 
-		if ($this->phpbb_extension_manager)
+		if ($this->extension_manager)
 		{
-			$finder = $this->phpbb_extension_manager->get_finder();
+			$finder = $this->extension_manager->get_finder();
 
 			$files = $finder
 				->extension_prefix($location)
