@@ -36,6 +36,16 @@ class phpbb_event_data extends Event implements ArrayAccess
         return $this->data;
     }
 
+    /*
+    * Returns data filtered to only include specified keys.
+    *
+    * This effectively discards any keys added to data by hooks.
+    */
+    public function get_data_filtered($keys)
+    {
+        return array_intersect_key($this->data, array_flip($keys));
+    }
+
     public function offsetExists($offset)
     {
         return isset($this->data[$offset]);
