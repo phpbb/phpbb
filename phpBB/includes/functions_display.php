@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -119,7 +119,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'ORDER_BY'	=> 'f.left_id',
 	);
 
-	run_hooks('display_forums_sql_inject', &$sql_ary);
+	$vars = array('sql_ary');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.display_forums_sql_inject', $event);
+	extract($event->get_data_filtered($vars));
 
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
@@ -129,7 +132,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		run_hooks('display_forums_row_inject', &$row);
+		$vars = array('row');
+		$event = new phpbb_event_data(compact($vars));
+		$phpbb_dispatcher->dispatch('core.display_forums_row_inject', $event);
+		extract($event->get_data_filtered($vars));
 
 		$forum_id = $row['forum_id'];
 
@@ -227,9 +233,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
-			
-			$data = array(&$forum_rows, &$parent_id, &$row);
-			run_hooks('display_forums_row_values_inject', &$data);
+
+			$vars = array('forum_rows', 'parent_id', 'row');
+			$event = new phpbb_event_data(compact($vars));
+			$phpbb_dispatcher->dispatch('core.display_forums_row_values_inject', $event);
+			extract($event->get_data_filtered($vars));
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
@@ -489,8 +497,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);
-		
-		run_hooks('display_forums_assign_block_vars', &$row);
+
+		$vars = array('row');
+		$event = new phpbb_event_data(compact($vars));
+		$phpbb_dispatcher->dispatch('core.display_forums_assign_block_vars', $event);
+		extract($event->get_data_filtered($vars));
 
 		// Assign subforums loop for style authors
 		foreach ($subforums_list as $subforum)
