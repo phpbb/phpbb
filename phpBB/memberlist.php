@@ -1701,7 +1701,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	}
 
 	// Dump it out to the template
-	return array(
+	$data = array(
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1749,6 +1749,13 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+
+	$vars = array('data');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.memberlist_profile_data', $event);
+	extract($event->get_data_filtered($vars));
+
+	return $data;
 }
 
 function _sort_last_active($first, $second)
