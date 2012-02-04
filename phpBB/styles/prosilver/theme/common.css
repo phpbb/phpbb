@@ -16,8 +16,6 @@ html {
 body {
 	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	color: #828282;
-	background-color: #FFFFFF;
 	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
 	margin: 0;
@@ -28,7 +26,6 @@ h1 {
 	/* Forum name */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin-right: 200px;
-	color: #FFFFFF;
 	margin-top: 15px;
 	font-weight: bold;
 	font-size: 2em;
@@ -38,7 +35,6 @@ h2 {
 	/* Forum header titles */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-weight: normal;
-	color: #3f3f3f;
 	font-size: 2em;
 	margin: 0.8em 0 0.2em 0;
 }
@@ -52,11 +48,10 @@ h3 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	text-transform: uppercase;
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
 	padding-bottom: 2px;
 	font-size: 1.05em;
-	color: #989898;
 	margin-top: 20px;
 }
 
@@ -78,8 +73,8 @@ img {
 
 hr {
 	/* Also see tweaks.css */
-	border: 0 none #FFFFFF;
-	border-top: 1px solid #CCCCCC;
+	border: 0 solid transparent;
+	border-top-width: 1px;
 	height: 1px;
 	margin: 5px 0;
 	display: block;
@@ -87,7 +82,7 @@ hr {
 }
 
 hr.dashed {
-	border-top: 1px dashed #CCCCCC;
+	border-top-style: dashed;
 	margin: 10px 0;
 }
 
@@ -136,7 +131,6 @@ a#logo:hover {
 /* Search box
 --------------------------------------------- */
 #search-box {
-	color: #FFFFFF;
 	position: relative;
 	margin-top: 30px;
 	margin-right: 5px;
@@ -148,11 +142,10 @@ a#logo:hover {
 
 #search-box #keywords {
 	width: 95px;
-	background-color: #FFF;
 }
 
 #search-box input {
-	border: 1px solid #b0b0b0;
+	border: 1px solid transparent;
 }
 
 /* .button1 style defined later, just a few tweaks for the search button version */
@@ -183,26 +176,24 @@ a#logo:hover {
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	background: #ebebeb none repeat-x 0 0;
-	color: #FFFFFF;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 0 5px;
 }
 
 .navbar {
-	background-color: #ebebeb;
 	padding: 0 10px;
 }
 
 .forabg {
-	background: #b1b1b1 none repeat-x 0 0;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 0 5px;
 	clear: both;
 }
 
 .forumbg {
-	background: #ebebeb none repeat-x 0 0;
+	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 0 5px;
 	clear: both;
@@ -211,8 +202,6 @@ a#logo:hover {
 .panel {
 	margin-bottom: 4px;
 	padding: 0 10px;
-	background-color: #f3f3f3;
-	color: #3f3f3f;
 }
 
 .post {
@@ -222,29 +211,8 @@ a#logo:hover {
 	background-position: 100% 0;
 }
 
-.post:target .content {
-	color: #000000;
-}
-
-.post:target h3 a {
-	color: #000000;
-}
-
-.bg1	{ background-color: #f7f7f7;}
-.bg2	{ background-color: #f2f2f2; }
-.bg3	{ background-color: #ebebeb; }
-
 .rowbg {
 	margin: 5px 5px 2px 5px;
-}
-
-.ucprowbg {
-	background-color: #e2e2e2;
-}
-
-.fieldsbg {
-	/*border: 1px #DBDEE2 solid;*/
-	background-color: #eaeaea;
 }
 
 span.corners-top, span.corners-bottom, span.corners-top span, span.corners-bottom span {
@@ -321,7 +289,7 @@ ul.linklist li.rightside, p.rightside {
 ul.navlinks {
 	padding-bottom: 1px;
 	margin-bottom: 1px;
-	border-bottom: 1px solid #FFFFFF;
+	border-bottom: 1px solid transparent;
 	font-weight: bold;
 }
 
@@ -352,7 +320,6 @@ table.table1 {
 table.table1 thead th {
 	font-weight: normal;
 	text-transform: uppercase;
-	color: #FFFFFF;
 	line-height: 1.3em;
 	font-size: 1em;
 	padding: 0 0 4px 3px;
@@ -363,30 +330,22 @@ table.table1 thead th span {
 }
 
 table.table1 tbody tr {
-	border: 1px solid #cfcfcf;
-}
-
-table.table1 tbody tr:hover, table.table1 tbody tr.hover {
-	background-color: #f6f6f6;
-	color: #000;
+	border: 1px solid transparent;
 }
 
 table.table1 td {
-	color: #6a6a6a;
 	font-size: 1.1em;
 }
 
 table.table1 tbody td {
 	padding: 5px;
-	border-top: 1px solid #FAFAFA;
+	border-top: 1px solid transparent;
 }
 
 table.table1 tbody th {
 	padding: 5px;
-	border-bottom: 1px solid #000000;
+	border-bottom: 1px solid transparent;
 	text-align: left;
-	color: #333333;
-	background-color: #FFFFFF;
 }
 
 /* Specific column styles */
@@ -413,7 +372,6 @@ table.info tbody th {
 	padding: 3px;
 	text-align: right;
 	vertical-align: top;
-	color: #000000;
 	font-weight: normal;
 }
 
@@ -460,7 +418,6 @@ dl.details dt {
 	clear: left;
 	width: 30%;
 	text-align: right;
-	color: #000000;
 	display: block;
 }
 
@@ -468,7 +425,6 @@ dl.details dd {
 	margin-left: 0;
 	padding-left: 5px;
 	margin-bottom: 5px;
-	color: #828282;
 	float: left;
 	width: 65%;
 }
@@ -499,28 +455,21 @@ li.pagination {
 	padding: 0 2px;
 	margin: 0 2px;
 	font-weight: normal;
-	color: #FFFFFF;
-	background-color: #bfbfbf;
-	border: 1px solid #bfbfbf;
+	border: 1px solid transparent;
 	font-size: 0.9em;
 }
 
 .pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
 	font-weight: normal;
 	text-decoration: none;
-	color: #747474;
 	margin: 0 2px;
 	padding: 0 2px;
-	background-color: #eeeeee;
-	border: 1px solid #bababa;
+	border: 1px solid transparent;
 	font-size: 0.9em;
 	line-height: 1.5em;
 }
 
 .pagination span a:hover {
-	border-color: #d2d2d2;
-	background-color: #d2d2d2;
-	color: #FFF;
 	text-decoration: none;
 }
 
@@ -539,14 +488,6 @@ li.pagination {
 	background: none 0 50% no-repeat;
 }
 
-.row .pagination span a, li.pagination span a {
-	background-color: #FFFFFF;
-}
-
-.row .pagination span a:hover, li.pagination span a:hover {
-	background-color: #d2d2d2;
-}
-
 /* Miscellaneous styles
 ---------------------------------------- */
 #forum-permissions {
@@ -561,7 +502,6 @@ li.pagination {
 .copyright {
 	padding: 5px;
 	text-align: center;
-	color: #555555;
 }
 
 .small {
@@ -577,22 +517,11 @@ li.pagination {
 }
 
 .error {
-	color: #bcbcbc;
 	font-weight: bold;
 	font-size: 1em;
 }
 
-.reported {
-	background-color: #f7f7f7;
-}
-
-li.reported:hover {
-	background-color: #ececec;
-}
-
 div.rules {
-	background-color: #ececec;
-	color: #bcbcbc;
 	padding: 0 10px;
 	margin: 10px 0;
 	font-size: 1.1em;
@@ -603,7 +532,6 @@ div.rules ul, div.rules ol {
 }
 
 p.rules {
-	background-color: #ececec;
 	background-image: none;
 	padding: 5px;
 }
