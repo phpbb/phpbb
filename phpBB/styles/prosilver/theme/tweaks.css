@@ -99,3 +99,8 @@ dl.icon {
 *:first-child+html #site-description p {
 	margin-bottom: 1.0em;
 }
+
+* html #timezone {
+	width: 50%;
+}
+
