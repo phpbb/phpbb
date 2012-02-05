@@ -511,6 +511,14 @@ class acp_profile
 						// If we switch the type on step 2, we have to adjust field value.
 						// 1 is a common value for the checkbox and radio buttons.
 
+						// Adjust unchecked checkbox value.
+						// If we return or save settings from 2nd/3rd page
+						// and the checkbox is unchecked, set the value to 0.
+						if (isset($_REQUEST['step']) && !isset($_REQUEST[$key]))
+						{
+							$var = 0;
+						}
+
 						// If we switch to the checkbox type but former radio buttons value was 2,
 						// which is not the case for the checkbox, set it to 0 (unchecked).
 						if ($cp->vars['field_length'] == 2 && $var == 2)
