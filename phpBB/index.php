@@ -17,6 +17,33 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+
+// if index.php?ext=%X% look for extension %X% and ./ext/%X%/index.php
+if ($ext = $request->variable('ext', ''))
+{
+	// get all enabled extensions
+	$enabled = $phpbb_extension_manager->all_enabled();
+	// check to see that both of the following are true:
+	// 1) Specified extension is enabled
+	// 2) Specified extension has an index.php in its extension root directory
+	if(!empty($enabled[$ext]) && file_exists("$enabled[$ext]index.$phpEx"))
+	{
+		// if so, we include that and stop the rest of this script's execution
+		include("$enabled[$ext]index.$phpEx");
+		exit;
+	}
+	// We get to this when the extension is not enabled or its index.php does not exist
+	// We need to put this here so we can show the error page properly with trigger_error()
+	$user->session_begin();
+	$auth->acl($user->data);
+	$user->setup();
+	// Here we send the 404 status because the file we looked for doesn't exist
+	// The status line message is purposely not localized
+	send_status_line(404, 'Not Found');
+	// And now we error out to let the user know what's happening
+	trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));
+}
+
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
