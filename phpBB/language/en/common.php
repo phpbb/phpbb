@@ -186,6 +186,7 @@ $lang = array_merge($lang, array(
 	'EXPAND_VIEW'						=> 'Expand view',
 	'EXTENSION'							=> 'Extension',
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed.',
+	'EXTENSION_DOES_NOT_EXIST'			=> 'The extension <strong>%s</strong> does not exist.',
 
 	'FAQ'					=> 'FAQ',
 	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
