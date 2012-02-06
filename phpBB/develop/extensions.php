@@ -1,32 +1,10 @@
 <?php
-// -------------------------------------------------------------
-//
-// FILENAME  : extensions.php
-// STARTED   : Fri Feb 3, 2012
-// COPYRIGHT : (C) 2012 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
-
-// Console extension manager.
-//
-// Usage:
-//
-// extensions.php list
-//
-// Lists all extensions in the database and the filesystem.
-// Next to each extension name are two flags:
-// P|M - present|missing - whether the extension exists in the filesystem
-// A|I - active|inactive - whether the extension is activated in the database
-//
-// extensions.php enable <name>
-//
-// Enables the specified extension.
-//
-// extensions.php disable <name>
-//
-// Disables the specified extension.
+/**
+*
+* @copyright (c) 2012 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
 define('IN_PHPBB', 1);
 define('ANONYMOUS', 1);
@@ -37,7 +15,21 @@ include($phpbb_root_path . 'common.'.$phpEx);
 
 function usage()
 {
-	echo "Please see comments in extensions.php for usage\n";
+	echo "Usage: extensions.php COMMAND [OPTION]...\n";
+	echo "Console extension manager.\n";
+	echo "\n";
+	echo "list:\n";
+	echo "    Lists all extensions in the database and the filesystem.\n";
+	echo "    Next to each extension name are two flags:\n";
+	echo "\n";
+	echo "     * P|M - present|missing: whether the extension exists in the filesystem\n";
+	echo "     * A|I - active|inactive: whether the extension is activated in the database\n";
+	echo "\n";
+	echo "enable NAME:\n";
+	echo "    Enables the specified extension.\n";
+	echo "\n";
+	echo "disable NAME:\n";
+	echo "    Disables the specified extension.\n";
 	exit(2);
 }
 
