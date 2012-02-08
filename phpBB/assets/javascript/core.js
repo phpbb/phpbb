@@ -61,8 +61,10 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.stopPropagation();
 	});
 	dark.one('click', function(e) {
+		var fade;
+
 		div.find('.alert_close').unbind('click');
-		var fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
+		fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
@@ -261,6 +263,8 @@ phpbb.ajaxify = function(options, refresh, callback) {
 		 */
 		function return_handler(res)
 		{
+			var alert;
+
 			// Is a confirmation required?
 			if (typeof res.S_CONFIRM_ACTION === 'undefined')
 			{
@@ -268,7 +272,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 				// callbacks.
 				if (typeof res.MESSAGE_TITLE !== 'undefined')
 				{
-					var alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+					alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				}
 				else
 				{
