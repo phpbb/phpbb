@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -371,7 +370,7 @@ class acp_groups
 						{
 							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 							{
-								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+								$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 							}
 						}
 
@@ -381,7 +380,7 @@ class acp_groups
 							{
 								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 								{
-									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+									$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 								}
 							}
 						}
@@ -627,7 +626,7 @@ class acp_groups
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));
 
 				return;
@@ -835,7 +834,7 @@ class acp_groups
 
 			case 'set_config_teampage':
 				set_config('teampage_forums', request_var('teampage_forums', 0));
-				set_config('teampage_multiple', request_var('teampage_multiple', 0));
+				set_config('teampage_memberships', request_var('teampage_memberships', 0));
 			break;
 
 			case 'add':
@@ -916,11 +915,11 @@ class acp_groups
 			'U_ACTION_LEGEND' => $this->u_action . '&amp;field=legend',
 			'U_ACTION_TEAMPAGE' => $this->u_action . '&amp;field=teampage',
 
-			'S_GROUP_SELECT_LEGEND' => $s_group_select_legend,
-			'S_GROUP_SELECT_TEAMPAGE' => $s_group_select_teampage,
-			'DISPLAY_FORUMS' => ($config['teampage_forums']) ? true : false,
-			'DISPLAY_MULTIPLE' => ($config['teampage_multiple']) ? true : false,
-			'LEGEND_SORT_GROUPNAME' => ($config['legend_sort_groupname']) ? true : false,
+			'S_GROUP_SELECT_LEGEND'		=> $s_group_select_legend,
+			'S_GROUP_SELECT_TEAMPAGE'	=> $s_group_select_teampage,
+			'DISPLAY_FORUMS'			=> ($config['teampage_forums']) ? true : false,
+			'DISPLAY_MEMBERSHIPS'		=> $config['teampage_memberships'],
+			'LEGEND_SORT_GROUPNAME'		=> ($config['legend_sort_groupname']) ? true : false,
 		));
 	}
 }

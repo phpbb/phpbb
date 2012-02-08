@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -277,7 +277,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('template locator: File %s does not exist', realpath($this->template_path . '/../') . '/templates/' . $filename);
+		$expecting = sprintf('template locator: File for handle test does not exist. Could not find: %s', realpath($this->template_path . '/../') . '/templates/' . $filename);
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');

@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -50,7 +49,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
 			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'firebird',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -60,7 +58,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -70,7 +67,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -80,7 +76,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -90,7 +85,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -100,7 +94,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -110,7 +103,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
 			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -120,7 +112,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -130,7 +121,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'sqlite',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -473,11 +463,17 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* remove_remarks will strip the sql comment lines out of an uploaded sql file
+* Removes comments from schema files
 */
-function remove_remarks(&$sql)
+function remove_comments($sql)
 {
+	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+	$sql = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $sql);
+
+	// Remove # style comments
 	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+
+	return $sql;
 }
 
 /**

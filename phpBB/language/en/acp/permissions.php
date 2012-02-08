@@ -4,9 +4,8 @@
 * acp_permissions [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -171,7 +170,7 @@ $lang = array_merge($lang, array(
 	'ROLE_FORUM_POLLS'			=> 'Standard Access + Polls',
 	'ROLE_FORUM_READONLY'		=> 'Read Only Access',
 	'ROLE_FORUM_STANDARD'		=> 'Standard Access',
-	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_FORUM_NEW_MEMBER'		=> 'Newly Registered User Access',
 	'ROLE_MOD_FULL'				=> 'Full Moderator',
 	'ROLE_MOD_QUEUE'			=> 'Queue Moderator',
 	'ROLE_MOD_SIMPLE'			=> 'Simple Moderator',
@@ -181,7 +180,7 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_NOAVATAR'		=> 'No Avatar',
 	'ROLE_USER_NOPM'			=> 'No Private Messages',
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
-	'ROLE_USER_NEW_MEMBER'		=> 'Newly registered User',
+	'ROLE_USER_NEW_MEMBER'		=> 'Newly Registered User Features',
 
 
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
@@ -273,7 +272,7 @@ $lang = array_merge($lang, array(
 	'TRACE_WHO'								=> 'Who',
 	'TRACE_TOTAL'							=> 'Total',
 
-	'USERS_NOT_ASSIGNED'			=> 'No user assigned to this role',
+	'USERS_NOT_ASSIGNED'			=> 'No users are assigned to this role',
 	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following pre-defined groups',
 	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following user defined groups',
 

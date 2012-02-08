@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -120,7 +119,7 @@ class acp_users
 		// Build modes dropdown list
 		$sql = 'SELECT module_mode, module_auth
 			FROM ' . MODULES_TABLE . "
-			WHERE module_basename = 'users'
+			WHERE module_basename = 'acp_users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
 			ORDER BY left_id, module_mode";
@@ -348,10 +347,7 @@ class acp_users
 
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
-								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
 									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
@@ -406,10 +402,7 @@ class acp_users
 
 									$messenger->to($user_row['user_email'], $user_row['username']);
 
-									$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-									$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-									$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-									$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+									$messenger->anti_abuse_headers($config, $user);
 
 									$messenger->assign_vars(array(
 										'USERNAME'	=> htmlspecialchars_decode($user_row['username']))
@@ -763,7 +756,6 @@ class acp_users
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
-						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 						'new_password'		=> request_var('new_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 					);
@@ -795,7 +787,6 @@ class acp_users
 								array('string', false, 6, 60),
 								array('email', $user_row['user_email'])
 							),
-							'email_confirm'		=> array('string', true, 6, 60)
 						);
 					}
 
@@ -806,11 +797,6 @@ class acp_users
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if ($data['email'] != $user_row['user_email'] && $data['email_confirm'] != $data['email'])
-					{
-						$error[] = 'NEW_EMAIL_ERROR';
-					}
-
 					if (!check_form_key($form_name))
 					{
 						$error[] = 'FORM_INVALID';
@@ -818,7 +804,7 @@ class acp_users
 
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['new_password'] && !phpbb_check_hash($user_row['user_password'], $data['new_password'])) ? true : false;
+					$update_password = ($data['new_password'] && !phpbb_check_hash($data['new_password'], $user_row['user_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -1016,8 +1002,8 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
@@ -1754,8 +1740,8 @@ class acp_users
 					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
 					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
-				);
+					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
+				));
 
 			break;
 
@@ -1887,7 +1873,7 @@ class acp_users
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
@@ -2345,46 +2331,61 @@ class acp_users
 	}
 
 	/**
-	* Optionset replacement for this module based on $user->optionset
+	* Set option bit field for user options in a user row array.
+	*
+	* Optionset replacement for this module based on $user->optionset.
+	*
+	* @param array $user_row Row from the users table.
+	* @param int $key Option key, as defined in $user->keyoptions property.
+	* @param bool $value True to set the option, false to clear the option.
+	* @param int $data Current bit field value, or false to use $user_row['user_options']
+	* @return int|bool If $data is false, the bit field is modified and
+	*                  written back to $user_row['user_options'], and
+	*                  return value is true if the bit field changed and
+	*                  false otherwise. If $data is not false, the new
+	*                  bitfield value is returned.
 	*/
 	function optionset(&$user_row, $key, $value, $data = false)
 	{
 		global $user;
 
-		$var = ($data) ? $data : $user_row['user_options'];
+		$var = ($data !== false) ? $data : $user_row['user_options'];
 
-		if ($value && !($var & 1 << $user->keyoptions[$key]))
+		$new_var = phpbb_optionset($user->keyoptions[$key], $value, $var);
+
+		if ($data === false)
 		{
-			$var += 1 << $user->keyoptions[$key];
-		}
-		else if (!$value && ($var & 1 << $user->keyoptions[$key]))
-		{
-			$var -= 1 << $user->keyoptions[$key];
+			if ($new_var != $var)
+			{
+				$user_row['user_options'] = $new_var;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return ($data) ? $var : false;
-		}
-
-		if (!$data)
-		{
-			$user_row['user_options'] = $var;
-			return true;
-		}
-		else
-		{
-			return $var;
+			return $new_var;
 		}
 	}
 
 	/**
-	* Optionget replacement for this module based on $user->optionget
+	* Get option bit field from user options in a user row array.
+	*
+	* Optionget replacement for this module based on $user->optionget.
+	*
+	* @param array $user_row Row from the users table.
+	* @param int $key option key, as defined in $user->keyoptions property.
+	* @param int $data bit field value to use, or false to use $user_row['user_options']
+	* @return bool true if the option is set in the bit field, false otherwise
 	*/
 	function optionget(&$user_row, $key, $data = false)
 	{
 		global $user;
 
-		$var = ($data) ? $data : $user_row['user_options'];
-		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
+		$var = ($data !== false) ? $data : $user_row['user_options'];
+		return phpbb_optionget($user->keyoptions[$key], $var);
 	}
 }

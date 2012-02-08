@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -22,7 +21,7 @@ if (!defined('IN_PHPBB'))
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $phpbb_root_path, $request, $phpEx, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 

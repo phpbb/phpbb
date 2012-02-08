@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -546,6 +545,11 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
+			else if (!preg_match(get_preg_expression('table_prefix'), $data['table_prefix']))
+			{
+				$error[] = $lang['INST_ERR_DB_INVALID_PREFIX'];
+				$connect_test = false;
+			}
 			else
 			{
 				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport']);
@@ -685,7 +689,7 @@ class install_install extends module
 			$error = array();
 
 			// Check the entered email address and password
-			if ($data['admin_name'] == '' || $data['admin_pass1'] == '' || $data['admin_pass2'] == '' || $data['board_email1'] == '' || $data['board_email2'] == '')
+			if ($data['admin_name'] == '' || $data['admin_pass1'] == '' || $data['admin_pass2'] == '' || $data['board_email'] == '')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -717,12 +721,7 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}
 
-			if ($data['board_email1'] != $data['board_email2'] && $data['board_email1'] != '')
-			{
-				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
-			}
-
-			if ($data['board_email1'] != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $data['board_email1']))
+			if ($data['board_email'] != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $data['board_email']))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
@@ -1147,14 +1146,13 @@ class install_install extends module
 		$dbms_schema = 'schemas/' . $available_dbms[$data['dbms']]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $available_dbms[$data['dbms']]['COMMENTS'];
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
 
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
 
-		$remove_remarks($sql_query);
+		$sql_query = remove_comments($sql_query);
 
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
@@ -1192,8 +1190,7 @@ class install_install extends module
 		// Change language strings...
 		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
-		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
-		remove_remarks($sql_query);
+		$sql_query = remove_comments($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
@@ -1248,11 +1245,11 @@ class install_install extends module
 				WHERE config_name = 'server_port'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email1']) . "'
+				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
 				WHERE config_name = 'board_email'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email1']) . "'
+				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
 				WHERE config_name = 'board_contact'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
@@ -1312,7 +1309,7 @@ class install_install extends module
 				WHERE config_name = 'avatar_salt'",
 
 			'UPDATE ' . $data['table_prefix'] . "users
-				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email1']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . $db->sql_escape(phpbb_email_hash($data['board_email1'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
+				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . $db->sql_escape(phpbb_email_hash($data['board_email'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $data['table_prefix'] . "moderator_cache
@@ -1440,7 +1437,7 @@ class install_install extends module
 		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new fulltext_native($error);
+		$search = new phpbb_search_fulltext_native($error);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1458,7 +1455,13 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+
+		// modules require an extension manager
+		if (empty($phpbb_extension_manager))
+		{
+			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -1573,7 +1576,7 @@ class install_install extends module
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'main'
+					WHERE module_basename = 'acp_main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1585,7 +1588,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'permissions'
+					WHERE module_basename = 'acp_permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1597,7 +1600,7 @@ class install_install extends module
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'users'
+					WHERE module_basename = 'acp_users'
 						AND module_class = 'acp'
 						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
@@ -1612,7 +1615,7 @@ class install_install extends module
 				// Move attachment module 4 down...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'attachments'
+					WHERE module_basename = 'ucp_attachments'
 						AND module_class = 'ucp'
 						AND module_mode = 'attachments'";
 				$result = $db->sql_query($sql);
@@ -1822,12 +1825,9 @@ class install_install extends module
 
 			$messenger->template('installed', $data['language']);
 
-			$messenger->to($data['board_email1'], $data['admin_name']);
+			$messenger->to($data['board_email'], $data['admin_name']);
 
-			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+			$messenger->anti_abuse_headers($config, $user);
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($data['admin_name']),
@@ -1884,8 +1884,7 @@ class install_install extends module
 			'admin_name'	=> utf8_normalize_nfc(request_var('admin_name', '', true)),
 			'admin_pass1'	=> request_var('admin_pass1', '', true),
 			'admin_pass2'	=> request_var('admin_pass2', '', true),
-			'board_email1'	=> strtolower(request_var('board_email1', '')),
-			'board_email2'	=> strtolower(request_var('board_email2', '')),
+			'board_email'	=> strtolower(request_var('board_email', '')),
 			'img_imagick'	=> request_var('img_imagick', ''),
 			'ftp_path'		=> request_var('ftp_path', ''),
 			'ftp_user'		=> request_var('ftp_user', ''),
@@ -1916,7 +1915,7 @@ class install_install extends module
 		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
 		'dbuser'				=> array('lang' => 'DB_USERNAME',	'type' => 'text:25:100', 'explain' => false),
 		'dbpasswd'				=> array('lang' => 'DB_PASSWORD',	'type' => 'password:25:100', 'explain' => false),
-		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
+		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => true),
 	);
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',
@@ -1924,8 +1923,7 @@ class install_install extends module
 		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
-		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
-		'board_email2'			=> array('lang' => 'CONTACT_EMAIL_CONFIRM',		'type' => 'text:25:100', 'explain' => false),
+		'board_email'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
 	);
 	var $advanced_config_options = array(
 		'legend1'				=> 'ACP_EMAIL_SETTINGS',

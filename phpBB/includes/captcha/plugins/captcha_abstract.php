@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -22,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package VC
 */
-class phpbb_default_captcha
+class phpbb_captcha_plugins_captcha_abstract
 {
 	var $confirm_id;
 	var $confirm_code;
@@ -363,4 +362,11 @@ class phpbb_default_captcha
 		return false;
 	}
 
+}
+
+/**
+* Old class name for legacy use. The new class name is auto loadable.
+*/
+class phpbb_default_captcha extends phpbb_captcha_plugins_captcha_abstract
+{
 }

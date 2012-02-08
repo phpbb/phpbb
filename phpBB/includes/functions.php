@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1654,7 +1653,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $request;
+	global $db, $tracking_topics, $user, $config, $auth, $request;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1677,6 +1676,10 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 	}
 
+	// Handle update of unapproved topics info.
+	// Only update for moderators having m_approve permission for the forum.
+	$sql_update_unapproved = ($auth->acl_get('m_approve', $forum_id)) ? '': 'AND t.topic_approved = 1';
+
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -1692,7 +1695,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0
+					AND t.topic_moved_id = 0 ' .
+					$sql_update_unapproved . '
 					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1712,11 +1716,12 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else
 		{
-			$sql = 'SELECT topic_id
-				FROM ' . TOPICS_TABLE . '
-				WHERE forum_id = ' . $forum_id . '
-					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0';
+			$sql = 'SELECT t.topic_id
+				FROM ' . TOPICS_TABLE . ' t
+				WHERE t.forum_id = ' . $forum_id . '
+					AND t.topic_last_post_time > ' . $mark_time_forum . '
+					AND t.topic_moved_id = 0 ' .
+					$sql_update_unapproved;
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
@@ -3111,6 +3116,11 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
+	
+	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
+	{
+		unset($parsed_items['inherit_from']);
+	}
 
 	return $parsed_items;
 }
@@ -3280,6 +3290,10 @@ function get_preg_expression($mode)
 		case 'relative_url_inline':
 			$inline = ($mode == 'relative_url') ? ')' : '';
 			return "(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+		break;
+
+		case 'table_prefix':
+			return '#^[a-zA-Z][a-zA-Z0-9_]*$#';
 		break;
 	}
 
@@ -3812,11 +3826,23 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
+			$log_text = $msg_text;
+			$backtrace = get_backtrace();
+			if ($backtrace)
+			{
+				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
+			}
+
+			if (defined('IN_INSTALL') || defined('DEBUG_EXTRA') || isset($auth) && $auth->acl_get('a_'))
+			{
+				$msg_text = $log_text;
+			}
+
 			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
-				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $msg_text);
+				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $log_text);
 				$db->sql_return_on_error(false);
 			}
 
@@ -4149,58 +4175,25 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	}
 	else if ($config['load_online_guests'])
 	{
-		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_' . $item_caps . '_GUEST'] : $user->lang['BROWSING_' . $item_caps . '_GUESTS'];
-		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
+		$online_userlist = $user->lang('BROWSING_' . $item_caps . '_GUESTS', $online_users['guests_online'], $online_userlist);
 	}
 	else
 	{
 		$online_userlist = sprintf($user->lang['BROWSING_' . $item_caps], $online_userlist);
 	}
 	// Build online listing
-	$vars_online = array(
-		'ONLINE'	=> array('total_online', 'l_t_user_s', 0),
-		'REG'		=> array('visible_online', 'l_r_user_s', !$config['load_online_guests']),
-		'HIDDEN'	=> array('hidden_online', 'l_h_user_s', $config['load_online_guests']),
-		'GUEST'		=> array('guests_online', 'l_g_user_s', 0)
-	);
-
-	foreach ($vars_online as $l_prefix => $var_ary)
-	{
-		if ($var_ary[2])
-		{
-			$l_suffix = '_AND';
-		}
-		else
-		{
-			$l_suffix = '';
-		}
-		switch ($online_users[$var_ary[0]])
-		{
-			case 0:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL' . $l_suffix];
-			break;
-
-			case 1:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL' . $l_suffix];
-			break;
-
-			default:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL' . $l_suffix];
-			break;
-		}
-	}
-	unset($vars_online);
-
-	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
-	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
-	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
+	$visible_online = $user->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
+	$hidden_online = $user->lang('HIDDEN_USERS_TOTAL', (int) $online_users['hidden_online']);
 
 	if ($config['load_online_guests'])
 	{
-		$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+		$guests_online = $user->lang('GUEST_USERS_TOTAL', (int) $online_users['guests_online']);
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL_GUESTS', (int) $online_users['total_online'], $visible_online, $hidden_online, $guests_online);
 	}
-
-
+	else
+	{
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
+	}
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -4241,6 +4234,178 @@ function phpbb_optionset($bit, $set, $data)
 	}
 
 	return $data;
+}
+
+/**
+* Determine which plural form we should use.
+* For some languages this is not as simple as for English.
+*
+* @param $rule		int			ID of the plural rule we want to use, see http://wiki.phpbb.com/Plural_Rules#Plural_Rules
+* @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
+* @return	int		The plural-case we need to use for the number plural-rule combination
+*/
+function phpbb_get_plural_form($rule, $number)
+{
+	$number = (int) $number;
+
+	if ($rule > 15 || $rule < 0)
+	{
+		trigger_error('INVALID_PLURAL_RULE');
+	}
+
+	/**
+	* The following plural rules are based on a list published by the Mozilla Developer Network
+	* https://developer.mozilla.org/en/Localization_and_Plurals
+	*/
+	switch ($rule)
+	{
+		case 0:
+			/**
+			* Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
+			* 1 - everything: 0, 1, 2, ...
+			*/
+			return 1;
+
+		case 1:
+			/**
+			* Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
+			* 1 - 1
+			* 2 - everything else: 0, 2, 3, ...
+			*/
+			return ($number == 1) ? 1 : 2;
+
+		case 2:
+			/**
+			* Families: Romanic (French, Brazilian Portuguese)
+			* 1 - 0, 1
+			* 2 - everything else: 2, 3, ...
+			*/
+			return (($number == 0) || ($number == 1)) ? 1 : 2;
+
+		case 3:
+			/**
+			* Families: Baltic (Latvian)
+			* 1 - 0
+			* 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
+			* 3 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
+			*/
+			return ($number == 0) ? 1 : ((($number % 10 == 1) && ($number % 100 != 11)) ? 2 : 3);
+
+		case 4:
+			/**
+			* Families: Celtic (Scottish Gaelic)
+			* 1 - is 1 or 11: 1, 11
+			* 2 - is 2 or 12: 2, 12
+			* 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
+			* 4 - everything else: 0, 20, 21, ...
+			*/
+			return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
+
+		case 5:
+			/**
+			* Families: Romanic (Romanian)
+			* 1 - 1
+			* 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
+			* 3 - everything else: 20, 21, ...
+			*/
+			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
+
+		case 6:
+			/**
+			* Families: Baltic (Lithuanian)
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+			* 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
+			* 3 - everything else: 2, 3, ... 8, 9, 22, 23, ... 29, 32, 33, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
+
+		case 7:
+			/**
+			* Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
+			* 3 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
+
+		case 8:
+			/**
+			* Families: Slavic (Slovak, Czech)
+			* 1 - 1
+			* 2 - 2, 3, 4
+			* 3 - everything else: 0, 5, 6, 7, ...
+			*/
+			return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
+
+		case 9:
+			/**
+			* Families: Slavic (Polish)
+			* 1 - 1
+			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
+			* 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
+			*/
+			return ($number == 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
+
+		case 10:
+			/**
+			* Families: Slavic (Slovenian, Sorbian)
+			* 1 - ends in 01: 1, 101, 201, ...
+			* 2 - ends in 02: 2, 102, 202, ...
+			* 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
+			* 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
+			*/
+			return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
+
+		case 11:
+			/**
+			* Families: Celtic (Irish Gaeilge)
+			* 1 - 1
+			* 2 - 2
+			* 3 - is 3-6: 3, 4, 5, 6
+			* 4 - is 7-10: 7, 8, 9, 10
+			* 5 - everything else: 0, 11, 12, ...
+			*/
+			return ($number == 1) ? 1 : (($number == 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
+
+		case 12:
+			/**
+			* Families: Semitic (Arabic)
+			* 1 - 1
+			* 2 - 2
+			* 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
+			* 4 - ends in 11-99: 11, ... 99, 111, 112, ...
+			* 5 - everything else: 100, 101, 102, 200, 201, 202, ...
+			* 6 - 0
+			*/
+			return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
+
+		case 13:
+			/**
+			* Families: Semitic (Maltese)
+			* 1 - 1
+			* 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
+			* 3 - ends in 11-19: 11, 12, ... 18, 19, 111, 112, ...
+			* 4 - everything else: 20, 21, ...
+			*/
+			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 1) && ($number % 100 < 11))) ? 2 : ((($number % 100 > 10) && ($number % 100 < 20)) ? 3 : 4));
+
+		case 14:
+			/**
+			* Families: Slavic (Macedonian)
+			* 1 - ends in 1: 1, 11, 21, ...
+			* 2 - ends in 2: 2, 12, 22, ...
+			* 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
+			*/
+			return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
+
+		case 15:
+			/**
+			* Families: Icelandic
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
+			* 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : 2;
+	}
 }
 
 /**
@@ -4351,7 +4516,7 @@ function phpbb_http_login($param)
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
-	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
+	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -4422,10 +4587,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			set_config('record_online_date', time(), true);
 		}
 
-		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
+		$l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
 
-		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
-		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
+		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';
@@ -4436,8 +4600,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['NEW_PM'] : $user->lang['NEW_PMS'];
-			$l_privmsgs_text = sprintf($l_message_new, $user->data['user_new_privmsg']);
+			$l_privmsgs_text = $user->lang('NEW_PMS', (int) $user->data['user_new_privmsg']);
 
 			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
@@ -4455,7 +4618,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 		else
 		{
-			$l_privmsgs_text = $user->lang['NO_NEW_PM'];
+			$l_privmsgs_text = $user->lang('NEW_PMS', 0);
 			$s_privmsg_new = false;
 		}
 
@@ -4463,8 +4626,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
 		{
-			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['UNREAD_PM'] : $user->lang['UNREAD_PMS'];
-			$l_privmsgs_text_unread = sprintf($l_message_unread, $user->data['user_unread_privmsg']);
+			$l_privmsgs_text_unread = $user->lang('UNREAD_PMS', (int) $user->data['user_unread_privmsg']);
 		}
 	}
 
@@ -4502,6 +4664,15 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	if ($_SID)
 	{
 		$s_search_hidden_fields['sid'] = $_SID;
+	}
+
+	if (!empty($_EXTRA_URL))
+	{
+		foreach ($_EXTRA_URL as $url_param)
+		{
+			$url_param = explode('=', $url_param, 2);
+			$s_hidden_fields[$url_param[0]] = $url_param[1];
+		}
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4596,9 +4767,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . $user->theme['template_inherit_path'] . '/template' : "{$web_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . rawurlencode($user->theme['template_inherit_path']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4606,16 +4777,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
-		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/stylesheet.css',
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
 		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
-		'T_THEME_NAME'			=> $user->theme['theme_path'],
+		'T_THEME_NAME'			=> rawurlencode($user->theme['theme_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
 		'T_TEMPLATE_NAME'		=> $user->theme['template_path'],
-		'T_SUPER_TEMPLATE_NAME'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],

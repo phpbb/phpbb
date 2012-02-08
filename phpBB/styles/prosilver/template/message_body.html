@@ -1,4 +1,8 @@
-<!-- INCLUDE overall_header.html -->
+<!-- IF S_SIMPLE_MESSAGE -->
+	<!-- INCLUDE simple_header.html -->
+<!-- ELSE -->
+	<!-- INCLUDE overall_header.html -->
+<!-- ENDIF -->
 
 <div class="panel" id="message">
 	<div class="inner"><span class="corners-top"><span></span></span>
@@ -8,4 +12,8 @@
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
-<!-- INCLUDE overall_footer.html -->
+<!-- IF S_SIMPLE_MESSAGE -->
+	<!-- INCLUDE simple_footer.html -->
+<!-- ELSE -->
+	<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * This file creates new schema files for every database.
 * The filenames will be prefixed with an underscore to not overwrite the current schema files.
@@ -1035,6 +1034,17 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'draft_id',
 		'KEYS'			=> array(
 			'save_time'			=> array('INDEX', 'save_time'),
+		),
+	);
+
+	$schema_data['phpbb_ext'] = array(
+		'COLUMNS'		=> array(
+			'ext_name'				=> array('VCHAR', ''),
+			'ext_active'			=> array('BOOL', 0),
+			'ext_state'				=> array('TEXT', ''),
+		),
+		'KEYS'			=> array(
+			'ext_name'				=> array('UNIQUE', 'ext_name'),
 		),
 	);
 

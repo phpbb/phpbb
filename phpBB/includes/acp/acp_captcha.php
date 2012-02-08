@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 */
 
 /**
@@ -96,7 +95,7 @@ class acp_captcha
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link(), E_USER_WARNING);
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			else
 			{
@@ -104,13 +103,13 @@ class acp_captcha
 				foreach ($captchas['available'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang($title) . '</option>';
 				}
 
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang($title) . '</option>';
 				}
 
 				$demo_captcha = phpbb_captcha_factory::get_instance($selected);

@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -221,6 +220,7 @@ class acp_database
 					case 'submit':
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
+						$download = request_var('download', '');
 
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
@@ -247,10 +247,8 @@ class acp_database
 								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
-						else
+						else if ($download || confirm_box(true))
 						{
-							$download = request_var('download', '');
-
 							if ($download)
 							{
 								$name = $matches[0];
@@ -410,6 +408,10 @@ class acp_database
 							add_log('admin', 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
+						}
+						else if (!$download)
+						{
+							confirm_box(false, $user->lang['RESTORE_SELECTED_BACKUP'], build_hidden_fields(array('file' => $file)));
 						}
 
 					default:

@@ -74,7 +74,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table cellspacing="1">
+	<table cellspacing="1" id="smilies">
 	<thead>
 	<tr>
 		<th colspan="{COLSPAN}">{L_CONFIG}</th>
@@ -94,7 +94,7 @@
 		<td>{L_ORDER}</td>
 	<!-- ENDIF -->
 	<!-- IF S_ADD -->
-		<td>{L_ADD}</td>
+		<td>{L_ADD} <a href="#" onclick="marklist('smilies', 'add_img', true); return false;">({L_MARK_ALL})</a></td>
 	<!-- ENDIF -->
 	</tr>
 	</thead>

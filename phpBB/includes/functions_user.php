@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -2039,7 +2038,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2048,7 +2047,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2388,7 +2387,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+				$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 			}
 		}
 
@@ -2398,7 +2397,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 			{
 				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+					$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 				}
 			}
 		}
@@ -2442,6 +2441,41 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	}
 
 	return (sizeof($error)) ? false : true;
+}
+
+/**
+* Returns a language string with the avatar size of the new avatar and the allowed maximum and minimum
+*
+* @param $width		int		The width of the new uploaded/selected avatar
+* @param $height	int		The height of the new uploaded/selected avatar
+* @return string
+*/
+function phpbb_avatar_error_wrong_size($width, $height)
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_WRONG_SIZE',
+		$user->lang('PIXELS', (int) $config['avatar_min_width']),
+		$user->lang('PIXELS', (int) $config['avatar_min_height']),
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		$user->lang('PIXELS', (int) $width),
+		$user->lang('PIXELS', (int) $height));
+}
+
+/**
+* Returns an explanation string with maximum avatar settings
+*
+* @return string
+*/
+function phpbb_avatar_explanation_string()
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_EXPLAIN',
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		round($config['avatar_filesize'] / 1024));
 }
 
 //

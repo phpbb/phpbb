@@ -3,11 +3,11 @@
 *
 * @package testing
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-class phpbb_cron_task_testmod_dummy_task extends phpbb_cron_task_base
+class phpbb_cron_task_core_dummy_task extends phpbb_cron_task_base
 {
 	public static $was_run = 0;
 
