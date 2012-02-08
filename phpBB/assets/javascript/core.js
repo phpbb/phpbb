@@ -84,8 +84,10 @@ phpbb.alert = function(title, msg, fadedark) {
 		}
 	});
 
-	div.find('.alert_close').one('click', function() {
+	div.find('.alert_close').one('click', function(e) {
 		dark.trigger('click');
+
+		e.preventDefault();
 	});
 
 	if (loading_alert.is(':visible'))
@@ -170,12 +172,14 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		}
 	});
 
-	div.find('.alert_close').one('click', function() {
+	div.find('.alert_close').one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && fadedark) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
 		callback(false);
+
+		e.preventDefault();
 	});
 
 	if (loading_alert.is(':visible'))
@@ -397,9 +401,12 @@ phpbb.add_ajax_callback = function(id, callback)
  * the alt-text data attribute, and replaces the text in the attribute with the
  * current text so that the process can be repeated.
  */
-phpbb.add_ajax_callback('alt_text', function(el) {
-	el = $(el);
-	var alt_text = el.attr('data-alt-text');
+phpbb.add_ajax_callback('alt_text', function(data) {
+	var el = $(this),
+		alt_text;
+
+	alt_text = el.attr('data-alt-text');
+	el.text();
 	el.attr('data-alt-text', el.text());
 	el.text(el[0].title = alt_text);
 });
