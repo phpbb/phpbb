@@ -674,3 +674,7 @@ p.rules a {
 	line-height: 1px;
 	background: transparent;
 }
+
+.hidden {
+	display: none;
+}
