@@ -571,11 +571,11 @@ switch ($mode)
 			$module->list_modules('ucp');
 			$module->list_modules('mcp');
 
-			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
-			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
-			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
-			$friends_enabled = ($module->loaded('zebra', 'friends')) ? true : false;
-			$foes_enabled = ($module->loaded('zebra', 'foes')) ? true : false;
+			$user_notes_enabled = ($module->loaded('mcp_notes', 'user_notes')) ? true : false;
+			$warn_user_enabled = ($module->loaded('mcp_warn', 'warn_user')) ? true : false;
+			$zebra_enabled = ($module->loaded('ucp_zebra')) ? true : false;
+			$friends_enabled = ($module->loaded('ucp_zebra', 'friends')) ? true : false;
+			$foes_enabled = ($module->loaded('ucp_zebra', 'foes')) ? true : false;
 
 			unset($module);
 		}
