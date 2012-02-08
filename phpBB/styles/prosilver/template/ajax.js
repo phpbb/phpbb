@@ -70,18 +70,22 @@ $('[data-ajax]').each(function() {
 phpbb.ajaxify({
 	selector: '#quickmodform',
 	exception: function(act, data) {
-		var action = $('#quick-mod-select').val()
+		var action = $('#quick-mod-select').val();
+
 		if (action === 'make_normal')
 		{
 			return !($(this).find('select option[value="make_global"]').length);
 		}
-		else if (action.slice(-4) === 'lock')
+		else if (action === 'lock' || action === 'unlock')
 		{
-			// Return false for both lock and unlock
 			return false;
 		}
-		// make_sticky, make_announce and make_global all use AJAX.
-		return !(action === 'delete_topic' || action.slice(0, 5) === 'make_');
+
+		if (action === 'delete_topic' || action === 'make_sticky' || action === 'make_announce' || action === 'make_global') {
+			return false;
+		}
+
+		return true;
 	}
 }, true);
 
