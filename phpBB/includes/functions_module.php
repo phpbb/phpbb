@@ -923,6 +923,6 @@ class p_master
 	*/
 	protected function is_full_class($basename)
 	{
-		return (substr($basename, 0, 6) === 'phpbb_' || substr($basename, 0, strlen($this->p_class) + 1) === $this->p_class . '_');
+		return (preg_match('/^(phpbb|ucp|mcp|acp)_/', $basename));
 	}
 }
