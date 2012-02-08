@@ -2,6 +2,13 @@
 
 "use strict";
 
+var img_templates = {
+	up: $('.template-up-img'),
+	up_disabled: $('.template-up-img-disabled'),
+	down: $('.template-down-img'),
+	down_disabled: $('.template-down-img-disabled')
+};
+
 /**
  * The following callbacks are  for reording forums in acp_forums. forum_down
  * is triggered when a forum is moved down, and forum_up is triggered when
@@ -14,18 +21,26 @@ phpbb.add_ajax_callback('forum_down', function() {
 
 	if (tr.is(':first-child'))
 	{
-		el.parents('span').siblings('.up').html('<a href="' + tr.attr('data-up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
-		tr.next().find('.up').html('<img src="./images/icon_up_disabled.gif" alt="Move up" title="Move up" />');
+		var up_img = img_templates.up.clone().attr('href', tr.attr('data-up'));
+		el.parents('span').siblings('.up').html(up_img);
+
+		tr.next().find('.up').html(img_templates.up_disabled);
+
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.up').children('a'),
 			callback: 'forum_up'
 		});
 	}
+
 	tr.insertAfter(tr.next());
+
 	if (tr.is(':last-child'))
 	{
-		el.html('<img src="./images/icon_down_disabled.gif" alt="Move down" title="Move down" />');
-		tr.prev().find('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
+		el.replaceWith(img_templates.down_disabled);
+
+		var down_img = img_templates.down.clone().attr('href', tr.attr('data-down'));
+		tr.prev().find('.down').html(down_img);
+
 		phpbb.ajaxify({
 			selector: tr.prev().find('.down').children('a'),
 			callback: 'forum_down'
@@ -39,18 +54,26 @@ phpbb.add_ajax_callback('forum_up', function() {
 
 	if (tr.is(':last-child'))
 	{
-		el.parents('span').siblings('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
-		tr.prev().find('.down').html('<img src="./images/icon_down_disabled.gif" alt="Move down" title="Move down" />');
+		var down_img = img_templates.down.clone().attr('href', tr.attr('data-down'));
+		el.parents('span').siblings('.down').html(down_img);
+
+		tr.prev().find('.down').html(img_templates.down_disabled);
+
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.down').children('a'),
 			callback: 'forum_down'
 		});
 	}
+
 	tr.insertBefore(tr.prev());
+
 	if (tr.is(':first-child'))
 	{
-		el.html('<img src="./images/icon_up_disabled.gif" alt="Move up" title="Move up" />');
-		tr.next().find('.up').html('<a href="' + tr.attr('data-up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
+		el.replaceWith(img_templates.up_disabled);
+
+		var up_img = img_templates.up.clone().attr('href', tr.attr('data-up'));
+		tr.next().find('.up').html(up_img);
+
 		phpbb.ajaxify({
 			selector: tr.next().find('.up').children('a'),
 			callback: 'forum_up'

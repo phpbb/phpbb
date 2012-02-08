@@ -101,6 +101,10 @@ hr {
 	font-size: 0.85em;
 }
 
+.hidden {
+	display: none;
+}
+
 /* General links  */
 a:link, a:visited {
 	color: #105289;
