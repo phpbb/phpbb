@@ -241,9 +241,12 @@ phpbb.parse_querystring = function(string) {
  * 	three parameters: the element that the event was evoked from, the JSON
  * 	that was returned and (if it is a form) the form action.
  */
-phpbb.ajaxify = function(options, refresh, callback) {
-	var elements = $(options.selector);
-	var is_form = elements.is('form');
+phpbb.ajaxify = function(options) {
+	var elements = $(options.selector),
+		refresh = options.refresh,
+		callback = options.callback,
+		is_form = elements.is('form');
+
 	if (is_form)
 	{
 		elements = elements.find('input:submit');

@@ -56,7 +56,11 @@ $('[data-ajax]').each(function() {
 	if (ajax !== 'false')
 	{
 		fn = (ajax !== 'true') ? ajax : null;
-		phpbb.ajaxify({selector: this}, $this.attr('data-refresh') !== undefined, fn);
+		phpbb.ajaxify({
+			selector: this,
+			refresh: $this.attr('data-refresh') !== undefined,
+			callback: fn
+		});
 	}
 });
 
@@ -86,8 +90,9 @@ phpbb.ajaxify({
 		}
 
 		return true;
-	}
-}, true);
+	},
+	refresh: true
+});
 
 
 
