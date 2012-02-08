@@ -3,10 +3,12 @@
 
 // This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function() {
-	var el = $(this);
+	var el = $(this),
+		post_id;
+
 	if (el.attr('data-refresh') === undefined)
 	{
-		var post_id = el[0].href.split('&p=')[1];
+		post_id = el[0].href.split('&p=')[1];
 		el.parents('#p' + post_id).fadeOut(function() {
 			$(this).remove();
 		});
@@ -34,20 +36,25 @@ phpbb.add_ajax_callback('row_delete', function() {
 
 // This handles friend / foe additions removals.
 phpbb.add_ajax_callback('zebra', function(res) {
+	var zebra;
+
 	if (res.success) {
-		var zebra = $('.zebra');
+		zebra = $('.zebra');
 		zebra.html(res.MESSAGE_TEXT);
 		$(zebra.get(1)).remove();
 	}
-});;
+});
 
 
 
 $('[data-ajax]').each(function() {
-	var $this = $(this), ajax = $this.attr('data-ajax');
+	var $this = $(this),
+		ajax = $this.attr('data-ajax'),
+		fn;
+
 	if (ajax !== 'false')
 	{
-		var fn = (ajax !== 'true') ? ajax : null;
+		fn = (ajax !== 'true') ? ajax : null;
 		phpbb.ajaxify({selector: this}, $this.attr('data-refresh') !== undefined, fn);
 	}
 });

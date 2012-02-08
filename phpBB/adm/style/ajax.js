@@ -8,8 +8,9 @@
  * activates any up / down icons that require it (the ones at the top or bottom).
  */
 phpbb.add_ajax_callback('forum_down', function() {
-	el = $(this);
-	var tr = el.parents('tr');
+	var el = $(this),
+		tr = el.parents('tr');
+
 	if (tr.is(':first-child'))
 	{
 		el.parents('span').siblings('.up').html('<a href="' + tr.attr('data-up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
@@ -23,9 +24,12 @@ phpbb.add_ajax_callback('forum_down', function() {
 		tr.prev().find('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
 		phpbb.ajaxify({selector: tr.prev().find('.down').children('a')}, false, 'forum_down');
 	}
-}).add_ajax_callback('forum_up', function() {
-	el = $(this);
-	var tr = el.parents('tr');
+});
+
+phpbb.add_ajax_callback('forum_up', function() {
+	var el = $(this),
+		tr = el.parents('tr');
+
 	if (tr.is(':last-child'))
 	{
 		el.parents('span').siblings('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
@@ -47,9 +51,9 @@ phpbb.add_ajax_callback('forum_down', function() {
  * in the href with "deactivate", and vice versa.
  */
 phpbb.add_ajax_callback('activate_deactivate', function(res) {
-	el = $(this);
+	var el = $(this),
+		new_href = el.attr('href');
 	el.text(res.text);
-	var new_href = el.attr('href');
 	if (new_href.indexOf('deactivate') !== -1)
 	{
 		new_href = new_href.replace('deactivate', 'activate')
@@ -72,10 +76,13 @@ phpbb.add_ajax_callback('row_delete', function() {
 
 
 $('[data-ajax]').each(function() {
-	var $this = $(this), ajax = $this.attr('data-ajax');
+	var $this = $(this),
+		ajax = $this.attr('data-ajax'),
+		fn;
+
 	if (ajax !== 'false')
 	{
-		var fn = (ajax !== 'true') ? ajax : null;
+		fn = (ajax !== 'true') ? ajax : null;
 		phpbb.ajaxify({selector: this}, $this.attr('data-refresh') !== undefined, fn);
 	}
 });
