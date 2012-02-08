@@ -3,6 +3,8 @@ phpbb.alert_time = 100;
 
 (function($) {  // Avoid conflicts with other libraries
 
+"use strict";
+
 // define a couple constants for keydown functions.
 var keymap = {
 	ENTER: 13,

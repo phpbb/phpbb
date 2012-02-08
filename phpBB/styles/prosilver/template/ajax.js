@@ -1,5 +1,6 @@
 (function($) {  // Avoid conflicts with other libraries
 
+"use strict";
 
 // This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function() {

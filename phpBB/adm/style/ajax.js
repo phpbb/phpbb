@@ -1,5 +1,6 @@
 (function($) {  // Avoid conflicts with other libraries
 
+"use strict";
 
 /**
  * The following callbacks are  for reording forums in acp_forums. forum_down
