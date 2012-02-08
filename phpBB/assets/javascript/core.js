@@ -59,7 +59,6 @@ phpbb.alert = function(title, msg, fadedark) {
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
-		return true;
 	});
 	dark.one('click', function(e) {
 		div.find('.alert_close').unbind('click');
@@ -67,15 +66,18 @@ phpbb.alert = function(title, msg, fadedark) {
 		fade.fadeOut(phpbb.alert_time, function() {
 			div.hide();
 		});
-		return false;
+
+		e.preventDefault();
+		e.stopPropagation();
 	});
 
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
 			dark.trigger('click');
-			return false;
+
+			e.preventDefault();
+			e.stopPropagation();
 		}
-		return true;
 	});
 
 	div.find('.alert_close').one('click', function() {
@@ -123,10 +125,9 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
-		return true;
 	});
 
-	var click_handler = function() {
+	var click_handler = function(e) {
 		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
 		fade.fadeOut(phpbb.alert_time, function() {
@@ -134,7 +135,11 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		});
 		div.find('input[type="button"]').unbind('click', click_handler);
 		callback(res);
-		return false;
+
+		if (e) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
 	};
 	div.find('input[type="button"]').one('click', click_handler);
 
@@ -144,18 +149,21 @@ phpbb.confirm = function(msg, callback, fadedark) {
 			div.hide();
 		});
 		callback(false);
-		return false;
+
+		e.preventDefault();
+		e.stopPropagation();
 	});
 
 	$(document).bind('keydown', function(e) {
 		if (e.keyCode === keymap.ENTER) {
 			$('input[type="button"].button1').trigger('click');
-			return false;
+			e.preventDefault();
+			e.stopPropagation();
 		} else if (e.keyCode === keymap.ESC) {
 			$('input[type="button"].button2').trigger('click');
-			return false;
+			e.preventDefault();
+			e.stopPropagation();
 		}
-		return true;
 	});
 
 	div.find('.alert_close').one('click', function() {
@@ -238,7 +246,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 
 		if ($this.attr('data-ajax') == false)
 		{
-			return true;
+			return;
 		}
 
 		/**
