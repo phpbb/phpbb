@@ -4,9 +4,10 @@ phpbb.alert_time = 100;
 (function($) {  // Avoid conflicts with other libraries
 
 // define a couple constants for keydown functions.
-var ENTER = 13;
-var ESC = 27;
-
+var keymap = {
+	ENTER: 13,
+	ESC: 27
+};
 
 var dark = $('#darkenwrapper');
 var loading_alert = $('#loadingalert');
@@ -70,7 +71,7 @@ phpbb.alert = function(title, msg, fadedark) {
 	});
 
 	$(document).bind('keydown', function(e) {
-		if (e.keyCode === ENTER || e.keyCode === ESC) {
+		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
 			dark.trigger('click');
 			return false;
 		}
@@ -147,10 +148,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	$(document).bind('keydown', function(e) {
-		if (e.keyCode === ENTER) {
+		if (e.keyCode === keymap.ENTER) {
 			$('input[type="button"].button1').trigger('click');
 			return false;
-		} else if (e.keyCode === ESC) {
+		} else if (e.keyCode === keymap.ESC) {
 			$('input[type="button"].button2').trigger('click');
 			return false;
 		}
