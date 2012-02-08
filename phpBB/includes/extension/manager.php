@@ -428,6 +428,28 @@ class phpbb_extension_manager
 		}
 		return $disabled;
 	}
+	
+	/**
+	* Check to see if a given extension is available on the filesystem
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is available
+	*/
+	public function available($name)
+	{
+		return file_exists($this->phpbb_root_path . "ext/$name/");
+	}
+
+	/**
+	* Check to see if a given extension is enabled
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is enabled
+	*/
+	public function enabled($name)
+	{
+		return isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'];
+	}
 
 	/**
 	* Instantiates a phpbb_extension_finder.
