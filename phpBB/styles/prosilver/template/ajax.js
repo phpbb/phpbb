@@ -4,7 +4,7 @@
 // This callback finds the post from the delete link, and removes it.
 phpbb.add_ajax_callback('post_delete', function() {
 	var el = $(this);
-	if (el.data('refresh') === undefined)
+	if (el.attr('data-refresh') === undefined)
 	{
 		var post_id = el[0].href.split('&p=')[1];
 		el.parents('#p' + post_id).fadeOut(function() {
@@ -44,11 +44,11 @@ phpbb.add_ajax_callback('zebra', function(res) {
 
 
 $('[data-ajax]').each(function() {
-	var $this = $(this), ajax = $this.data('ajax');
+	var $this = $(this), ajax = $this.attr('data-ajax');
 	if (ajax !== 'false')
 	{
 		var fn = (ajax !== 'true') ? ajax : null;
-		phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
+		phpbb.ajaxify({selector: this}, $this.attr('data-refresh') !== undefined, fn);
 	}
 });
 

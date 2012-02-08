@@ -12,7 +12,7 @@ phpbb.add_ajax_callback('forum_down', function() {
 	var tr = el.parents('tr');
 	if (tr.is(':first-child'))
 	{
-		el.parents('span').siblings('.up').html('<a href="' + tr.data('up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
+		el.parents('span').siblings('.up').html('<a href="' + tr.attr('data-up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
 		tr.next().find('.up').html('<img src="./images/icon_up_disabled.gif" alt="Move up" title="Move up" />');
 		phpbb.ajaxify({selector: el.parents('span').siblings('.up').children('a')}, false, 'forum_up');
 	}
@@ -20,7 +20,7 @@ phpbb.add_ajax_callback('forum_down', function() {
 	if (tr.is(':last-child'))
 	{
 		el.html('<img src="./images/icon_down_disabled.gif" alt="Move down" title="Move down" />');
-		tr.prev().find('.down').html('<a href="' + tr.data('down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
+		tr.prev().find('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
 		phpbb.ajaxify({selector: tr.prev().find('.down').children('a')}, false, 'forum_down');
 	}
 }).add_ajax_callback('forum_up', function() {
@@ -28,7 +28,7 @@ phpbb.add_ajax_callback('forum_down', function() {
 	var tr = el.parents('tr');
 	if (tr.is(':last-child'))
 	{
-		el.parents('span').siblings('.down').html('<a href="' + tr.data('down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
+		el.parents('span').siblings('.down').html('<a href="' + tr.attr('data-down') + '"><img src="./images/icon_down.gif" alt="Move down" title="Move down" /></a>');
 		tr.prev().find('.down').html('<img src="./images/icon_down_disabled.gif" alt="Move down" title="Move down" />');
 		phpbb.ajaxify({selector: el.parents('span').siblings('.down').children('a')}, false, 'forum_down');
 	}
@@ -36,7 +36,7 @@ phpbb.add_ajax_callback('forum_down', function() {
 	if (tr.is(':first-child'))
 	{
 		el.html('<img src="./images/icon_up_disabled.gif" alt="Move up" title="Move up" />');
-		tr.next().find('.up').html('<a href="' + tr.data('up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
+		tr.next().find('.up').html('<a href="' + tr.attr('data-up') + '"><img src="./images/icon_up.gif" alt="Move up" title="Move up" /></a>');
 		phpbb.ajaxify({selector: tr.next().find('.up').children('a')}, false, 'forum_up');
 	}
 });
@@ -72,11 +72,11 @@ phpbb.add_ajax_callback('row_delete', function() {
 
 
 $('[data-ajax]').each(function() {
-	var $this = $(this), ajax = $this.data('ajax');
+	var $this = $(this), ajax = $this.attr('data-ajax');
 	if (ajax !== 'false')
 	{
 		var fn = (ajax !== 'true') ? ajax : null;
-		phpbb.ajaxify({selector: this}, $this.data('refresh') !== undefined, fn);
+		phpbb.ajaxify({selector: this}, $this.attr('data-refresh') !== undefined, fn);
 	}
 });
 

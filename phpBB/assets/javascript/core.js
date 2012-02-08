@@ -31,7 +31,7 @@ phpbb.loading_alert = function() {
 			setTimeout(function() {
 				if (loading_alert.is(':visible'))
 				{
-					phpbb.alert($('#phpbb_alert').data('l-err'), $('#phpbb_alert').data('l-timeout-processing-req'));
+					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 				}
 			}, 5000);
 		});
@@ -125,7 +125,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.stopPropagation();
 		return true;
 	});
-	
+
 	var click_handler = function() {
 		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
@@ -236,7 +236,7 @@ phpbb.ajaxify = function(options, refresh, callback) {
 	elements.click(function() {
 		var action, data, path, that = this, $this = $(this);
 
-		if ($this.data('ajax') == false)
+		if ($this.attr('data-ajax') == false)
 		{
 			return true;
 		}
@@ -385,8 +385,8 @@ phpbb.add_ajax_callback = function(id, callback)
  */
 phpbb.add_ajax_callback('alt_text', function(el) {
 	el = $(el);
-	var alt_text = el.data('alt-text');
-	el.data('alt-text', el.text());
+	var alt_text = el.attr('data-alt-text');
+	el.attr('data-alt-text', el.text());
 	el.text(el[0].title = alt_text);
 });
 
