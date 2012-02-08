@@ -234,7 +234,7 @@ phpbb.parse_querystring = function(string) {
  * For more info, view the following page on the phpBB wiki:
  * http://wiki.phpbb.com/JavaScript_Function.phpbb.ajaxify
  *
- * @param object options Options, if a string will be the selector.
+ * @param object options Options.
  * @param bool/function refresh If we are sent back a refresh, should it be
  * 	acted upon? This can either be true / false / a function.
  * @param function callback Callback to call on completion of event. Has
@@ -242,7 +242,7 @@ phpbb.parse_querystring = function(string) {
  * 	that was returned and (if it is a form) the form action.
  */
 phpbb.ajaxify = function(options, refresh, callback) {
-	var elements = $((typeof options === 'string') ? options : options.selector);
+	var elements = $(options.selector);
 	var is_form = elements.is('form');
 	if (is_form)
 	{
