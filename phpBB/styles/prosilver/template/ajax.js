@@ -41,8 +41,8 @@ phpbb.add_ajax_callback('zebra', function(res) {
 
 	if (res.success) {
 		zebra = $('.zebra');
-		zebra.html(res.MESSAGE_TEXT);
-		$(zebra.get(1)).remove();
+		zebra.first().html(res.MESSAGE_TEXT);
+		zebra.not(':first').html('&nbsp;').prev().html('&nbsp;');
 	}
 });
 
