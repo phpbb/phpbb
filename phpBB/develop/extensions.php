@@ -9,7 +9,7 @@
 define('IN_PHPBB', 1);
 define('ANONYMOUS', 1);
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path = './../';
+$phpbb_root_path = __DIR__.'/../';
 
 include($phpbb_root_path . 'common.'.$phpEx);
 
