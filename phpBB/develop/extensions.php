@@ -22,8 +22,9 @@ function usage()
 	echo "    Lists all extensions in the database and the filesystem.\n";
 	echo "    Next to each extension name are two flags:\n";
 	echo "\n";
-	echo "     * P|M - present|missing: whether the extension exists in the filesystem\n";
-	echo "     * A|I - active|inactive: whether the extension is activated in the database\n";
+	echo "     * present|missing: whether the extension exists in the filesystem\n";
+	echo "     * active|inactive: whether the extension is activated in the database\n";
+	echo "     * state: the current persisted installation state\n";
 	echo "\n";
 	echo "enable NAME:\n";
 	echo "    Enables the specified extension.\n";
@@ -35,15 +36,18 @@ function usage()
 
 function list_extensions()
 {
-	global $db, $phpbb_root_path;
+	global $db, $cache, $phpbb_root_path;
 
-	$sql = "SELECT ext_name, ext_active from " . EXT_TABLE;
+	$cache->destroy('_ext');
+
+	$sql = "SELECT ext_name, ext_active, ext_state from " . EXT_TABLE;
 
 	$result = $db->sql_query($sql);
 	$extensions = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$extensions[$row['ext_name']]['active'] = (bool) $row['ext_active'];
+		$extensions[$row['ext_name']]['state'] = (bool) $row['ext_state'];
 		if (file_exists($phpbb_root_path . 'ext/' . $row['ext_name']))
 		{
 			$extensions[$row['ext_name']]['present'] = true;
@@ -64,7 +68,7 @@ function list_extensions()
 		{
 			if (!array_key_exists($file, $extensions))
 			{
-				$extensions[$file] = array('active' => false, 'present' => true);
+				$extensions[$file] = array('active' => false, 'present' => true, 'state' => false);
 			}
 		}
 	}
@@ -72,22 +76,27 @@ function list_extensions()
 	ksort($extensions);
 	foreach ($extensions as $name => $ext)
 	{
-		$present = $ext['active'] ? 'P' : 'M';
-		$active = $ext['active'] ? 'A' : 'I';
-		printf("%-20s %s %s\n", $name, $present, $active);
+		$present = $ext['present'] ? 'present' : 'missing';
+		$active = $ext['active'] ? 'active' : 'inactive';
+		$state = json_encode(unserialize($ext['state']));
+		printf("%-20s %-7s %-7s %-20s\n", $name, $present, $active, $state);
 	}
 }
 
 function enable_extension($name)
 {
-	global $phpbb_extension_manager;
+	global $phpbb_extension_manager, $cache;
+
+	$cache->destroy('_ext');
 
 	$phpbb_extension_manager->enable($name);
 }
 
 function disable_extension($name)
 {
-	global $phpbb_extension_manager;
+	global $phpbb_extension_manager, $cache;
+
+	$cache->destroy('_ext');
 
 	$phpbb_extension_manager->disable($name);
 }
