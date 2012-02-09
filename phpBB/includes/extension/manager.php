@@ -132,12 +132,6 @@ class phpbb_extension_manager
 	*/
 	public function enable_step($name)
 	{
-		$ext_path = $this->get_extension_path($name);
-		if (!file_exists($ext_path))
-		{
-			throw new InvalidArgumentException('The provided extension does not exist.');
-		}
-
 		// ignore extensions that are already enabled
 		if (isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'])
 		{
@@ -158,7 +152,7 @@ class phpbb_extension_manager
 		);
 
 		$this->extensions[$name] = $extension_data;
-		$this->extensions[$name]['ext_path'] = $ext_path;
+		$this->extensions[$name]['ext_path'] = $this->get_extension_path($extension_data['ext_name']);
 		ksort($this->extensions);
 
 		$sql = 'UPDATE ' . $this->extension_table . '
@@ -203,12 +197,6 @@ class phpbb_extension_manager
 	*/
 	public function disable_step($name)
 	{
-		$ext_path = $this->get_extension_path($name);
-		if (!file_exists($ext_path))
-		{
-			throw new InvalidArgumentException('The provided extension does not exist.');
-		}
-
 		// ignore extensions that are already disabled
 		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
 		{
@@ -280,12 +268,6 @@ class phpbb_extension_manager
 	*/
 	public function purge_step($name)
 	{
-		$ext_path = $this->get_extension_path($name);
-		if (!file_exists($ext_path))
-		{
-			throw new InvalidArgumentException('The provided extension does not exist.');
-		}
-
 		// ignore extensions that do not exist
 		if (!isset($this->extensions[$name]))
 		{
