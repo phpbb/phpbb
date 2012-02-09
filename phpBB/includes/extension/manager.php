@@ -167,7 +167,10 @@ class phpbb_extension_manager
 			$this->db->sql_query($sql);
 		}
 
-		$this->cache->destroy($this->cache_name);
+		if ($this->cache)
+		{
+			$this->cache->destroy($this->cache_name);
+		}
 
 		return !$active;
 	}
@@ -221,7 +224,10 @@ class phpbb_extension_manager
 				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
-			$this->cache->destroy($this->cache_name);
+			if ($this->cache)
+			{
+				$this->cache->destroy($this->cache_name);
+			}
 
 			return true;
 		}
@@ -238,7 +244,10 @@ class phpbb_extension_manager
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
 
-		$this->cache->destroy($this->cache_name);
+		if ($this->cache)
+		{
+			$this->cache->destroy($this->cache_name);
+		}
 
 		return false;
 	}
@@ -298,7 +307,10 @@ class phpbb_extension_manager
 				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
-			$this->cache->destroy($this->cache_name);
+			if ($this->cache)
+			{
+				$this->cache->destroy($this->cache_name);
+			}
 
 			return true;
 		}
@@ -309,7 +321,10 @@ class phpbb_extension_manager
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
 
-		$this->cache->destroy($this->cache_name);
+		if ($this->cache)
+		{
+			$this->cache->destroy($this->cache_name);
+		}
 
 		return false;
 	}
