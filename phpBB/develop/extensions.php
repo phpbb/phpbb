@@ -31,6 +31,9 @@ function usage()
 	echo "\n";
 	echo "disable NAME:\n";
 	echo "    Disables the specified extension.\n";
+	echo "\n";
+	echo "purge NAME:\n";
+	echo "    Purges the specified extension.\n";
 	exit(2);
 }
 
@@ -101,6 +104,15 @@ function disable_extension($name)
 	$phpbb_extension_manager->disable($name);
 }
 
+function purge_extension($name)
+{
+	global $phpbb_extension_manager, $cache;
+
+	$cache->destroy('_ext');
+
+	$phpbb_extension_manager->purge($name);
+}
+
 function validate_argument_count($count)
 {
 	global $argv;
@@ -129,6 +141,11 @@ switch ($action)
 	case 'disable':
 		validate_argument_count(2);
 		disable_extension($argv[2]);
+		break;
+
+	case 'purge':
+		validate_argument_count(2);
+		purge_extension($argv[2]);
 		break;
 
 	default:
