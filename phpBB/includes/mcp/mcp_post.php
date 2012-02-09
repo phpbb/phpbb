@@ -464,12 +464,10 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (class_exists($search_type))
 	{
-		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
 		$search = new $search_type($error);
