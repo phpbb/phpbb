@@ -61,7 +61,7 @@ class phpbb_extension_manager
 	*
 	* @return null
 	*/
-	protected function load_extensions()
+	public function load_extensions()
 	{
 		$sql = 'SELECT *
 			FROM ' . $this->extension_table;
@@ -173,6 +173,8 @@ class phpbb_extension_manager
 			$this->db->sql_query($sql);
 		}
 
+		$this->cache->destroy($this->cache_name);
+
 		return !$active;
 	}
 
@@ -231,6 +233,8 @@ class phpbb_extension_manager
 				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
+			$this->cache->destroy($this->cache_name);
+
 			return true;
 		}
 
@@ -245,6 +249,8 @@ class phpbb_extension_manager
 			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
+
+		$this->cache->destroy($this->cache_name);
 
 		return false;
 	}
@@ -310,6 +316,8 @@ class phpbb_extension_manager
 				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 			$this->db->sql_query($sql);
 
+			$this->cache->destroy($this->cache_name);
+
 			return true;
 		}
 
@@ -318,6 +326,8 @@ class phpbb_extension_manager
 		$sql = 'DELETE FROM ' . $this->extension_table . "
 			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
 		$this->db->sql_query($sql);
+
+		$this->cache->destroy($this->cache_name);
 
 		return false;
 	}

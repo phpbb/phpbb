@@ -20,11 +20,6 @@ function usage()
 	echo "\n";
 	echo "list:\n";
 	echo "    Lists all extensions in the database and the filesystem.\n";
-	echo "    Next to each extension name are two flags:\n";
-	echo "\n";
-	echo "     * present|missing: whether the extension exists in the filesystem\n";
-	echo "     * active|inactive: whether the extension is activated in the database\n";
-	echo "     * state: the current persisted installation state\n";
 	echo "\n";
 	echo "enable NAME:\n";
 	echo "    Enables the specified extension.\n";
@@ -39,76 +34,51 @@ function usage()
 
 function list_extensions()
 {
-	global $db, $cache, $phpbb_root_path;
+	global $phpbb_extension_manager;
 
-	$cache->destroy('_ext');
+	$phpbb_extension_manager->load_extensions();
 
-	$sql = "SELECT ext_name, ext_active, ext_state from " . EXT_TABLE;
+	echo "Enabled:\n";
+	$enabled = array_keys($phpbb_extension_manager->all_enabled());
+	print_extensions($enabled);
+	echo "\n";
 
-	$result = $db->sql_query($sql);
-	$extensions = array();
-	while ($row = $db->sql_fetchrow($result))
+	echo "Disabled:\n";
+	$disabled = array_keys($phpbb_extension_manager->all_disabled());
+	print_extensions($disabled);
+	echo "\n";
+
+	echo "Not installed:\n";
+	$all = array_keys($phpbb_extension_manager->all_available());
+	$purged = array_diff($all, $enabled, $disabled);
+	print_extensions($purged);
+}
+
+function print_extensions($exts)
+{
+	foreach ($exts as $ext)
 	{
-		$extensions[$row['ext_name']]['active'] = (bool) $row['ext_active'];
-		$extensions[$row['ext_name']]['state'] = (bool) $row['ext_state'];
-		if (file_exists($phpbb_root_path . 'ext/' . $row['ext_name']))
-		{
-			$extensions[$row['ext_name']]['present'] = true;
-		}
-		else
-		{
-			$extensions[$row['ext_name']]['present'] = false;
-		}
-	}
-
-	$iterator = new DirectoryIterator($phpbb_root_path . 'ext');
-	foreach ($iterator as $file)
-	{
-		// ignore hidden files
-		// php refuses to subscript iterator objects
-		$file = "$file";
-		if ($file[0] != '.')
-		{
-			if (!array_key_exists($file, $extensions))
-			{
-				$extensions[$file] = array('active' => false, 'present' => true, 'state' => false);
-			}
-		}
-	}
-
-	ksort($extensions);
-	foreach ($extensions as $name => $ext)
-	{
-		$present = $ext['present'] ? 'present' : 'missing';
-		$active = $ext['active'] ? 'active' : 'inactive';
-		$state = json_encode(unserialize($ext['state']));
-		printf("%-20s %-7s %-7s %-20s\n", $name, $present, $active, $state);
+		echo "- $ext\n";
 	}
 }
 
 function enable_extension($name)
 {
-	global $phpbb_extension_manager, $cache;
-
-	$cache->destroy('_ext');
+	global $phpbb_extension_manager;
 
 	$phpbb_extension_manager->enable($name);
 }
 
 function disable_extension($name)
 {
-	global $phpbb_extension_manager, $cache;
-
-	$cache->destroy('_ext');
+	global $phpbb_extension_manager;
 
 	$phpbb_extension_manager->disable($name);
 }
 
 function purge_extension($name)
 {
-	global $phpbb_extension_manager, $cache;
-
-	$cache->destroy('_ext');
+	global $phpbb_extension_manager;
 
 	$phpbb_extension_manager->purge($name);
 }
