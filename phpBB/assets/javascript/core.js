@@ -409,9 +409,8 @@ phpbb.add_ajax_callback('alt_text', function(data) {
 		alt_text;
 
 	alt_text = el.attr('data-alt-text');
-	el.text();
-	el.attr('data-alt-text', el.text());
-	el.text(el[0].title = alt_text);
+	el.attr('title', alt_text);
+	el.text(alt_text);
 });
 
 
