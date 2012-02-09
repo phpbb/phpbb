@@ -571,7 +571,7 @@ class custom_profile
 					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 				}
 
-				if ($value == $ident_ary['data']['field_novalue'])
+				if ($value == $ident_ary['data']['field_novalue'] && $ident_ary['data']['field_required'])
 				{
 					return NULL;
 				}
