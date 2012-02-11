@@ -48,7 +48,7 @@ function list_extensions()
 	print_extensions($disabled);
 	echo "\n";
 
-	echo "Not installed:\n";
+	echo "Available:\n";
 	$all = array_keys($phpbb_extension_manager->all_available());
 	$purged = array_diff($all, $enabled, $disabled);
 	print_extensions($purged);
