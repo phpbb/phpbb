@@ -1107,7 +1107,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 * 	NOTE: This parameter can cause undesired behavior (returning strings longer than $max_store_length) and is deprecated.
 * @param string $append String to be appended
 */
-function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
+function truncate_string($string, $max_length = 120, $max_store_length = 255, $allow_reply = false, $append = '')
 {
 	$chars = array();
 
