@@ -68,12 +68,12 @@ $('[data-ajax]').each(function() {
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
- * callback / data attribute is that it requires exceptions - some of the options
+ * callback / data attribute is that it requires filtering - some of the options
  * can be ajaxified, while others cannot.
  */
 phpbb.ajaxify({
 	selector: '#quickmodform',
-	exception: function(act, data) {
+	filter: function(act, data) {
 		var action = $('#quick-mod-select').val();
 
 		if (action === 'make_normal')
