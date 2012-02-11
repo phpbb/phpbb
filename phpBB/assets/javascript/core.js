@@ -336,7 +336,7 @@ phpbb.ajaxify = function(options) {
 
 		// If the element is a form, POST must be used and some extra data must
 		// be taken from the form.
-		var run_exception = (typeof options.exception === 'function');
+		var run_filter = (typeof options.filter === 'function');
 		if (is_form)
 		{
 			action = /action\[([a-z]+)\]/.exec(this.name);
@@ -353,9 +353,9 @@ phpbb.ajaxify = function(options) {
 				data += '&' + this.name + '=' + this.value;
 			}
 
-			// If exception function returns true, cancel the AJAX functionality,
+			// If filter function returns true, cancel the AJAX functionality,
 			// and return true (meaning that the HTTP request will be sent normally).
-			if (run_exception && options.exception.call($this.parents('form')[0], action, data))
+			if (run_filter && options.filter.call($this.parents('form')[0], action, data))
 			{
 				return true;
 			}
@@ -364,9 +364,9 @@ phpbb.ajaxify = function(options) {
 		}
 		else
 		{
-			// If exception function returns true, cancel the AJAX functionality,
+			// If filter function returns true, cancel the AJAX functionality,
 			// and return true (meaning that the HTTP request will be sent normally).
-			if (run_exception && options.exception.call(this))
+			if (run_filter && options.filter.call(this))
 			{
 				return true;
 			}
