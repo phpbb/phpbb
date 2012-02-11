@@ -289,7 +289,8 @@ CREATE TABLE phpbb_forums_track (
 CREATE TABLE phpbb_forums_watch (
 	forum_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	notify_status INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	notify_status INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	unsubscribe_key varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch (forum_id);
@@ -837,7 +838,8 @@ CREATE TABLE phpbb_topics_posted (
 CREATE TABLE phpbb_topics_watch (
 	topic_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	notify_status INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	notify_status INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	unsubscribe_key varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);

@@ -524,7 +524,8 @@ GO
 CREATE TABLE [phpbb_forums_watch] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[unsubscribe_key] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1509,7 +1510,8 @@ GO
 CREATE TABLE [phpbb_topics_watch] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[unsubscribe_key] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

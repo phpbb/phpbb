@@ -1168,8 +1168,13 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 					$is_watching = true;
 
-					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
-						VALUES ($user_id, $match_id, " . NOTIFY_YES . ')';
+					$sql_ary = array(
+						'user_id'			=> $user_id,
+						$where_sql			=> $match_id,
+						'notify_status'		=> NOTIFY_YES,
+						'unsubscribe_key'	=> gen_rand_string(mt_rand(6, 10)),
+					);
+					$sql = 'INSERT INTO ' . $table_sql . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
@@ -1202,15 +1207,124 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode) ||
-			(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_interface::GET) == $mode))
+		// User is anonymous... do they have a valid unsubscribe key?
+		if ($request->is_set('unwatch', phpbb_request_interface::GET) &&
+			$request->is_set('uk', phpbb_request_interface::GET))
 		{
-			login_box();
+			$key = $db->sql_escape($request->variable('uk', ''));
+			$type = $request->variable('unwatch', '');
+			switch ($type)
+			{
+				case 'forum':
+				case 'topic':
+					if (!$request->is_set_post('submit'))
+					{
+						$sql_ary = array(
+							'SELECT'	=> ($type == 'forum') ? 'i.forum_id, i.forum_name' : 'i.topic_id, i.topic_title, i.forum_id',
+							'FROM'		=> array(
+								constant(strtoupper($type) . 'S_WATCH_TABLE')	=> 'w',
+								constant(strtoupper($type) . 'S_TABLE')			=> 'i',
+							),
+							'WHERE'		=> 'w.unsubscribe_key = \'' . $key . "'
+								AND i.{$type}_id = w.{$type}_id",
+						);
+
+						$sql = 'SELECT ' . $db->sql_build_query('SELECT', $sql_ary);
+						$result = $db->sql_query($sql);
+						if ($row = $db->sql_fetchrow($result))
+						{
+							$u_item_params = '?f=' . $row['forum_id'] . ($type == 'topic' ? '&amp;t=' . $row['topic_id'] : '');
+							$template->assign_vars(array(
+								'ITEM_TITLE'		=> $row[($type == 'forum') ? 'forum_name' : 'topic_title'],
+								'U_ITEM'			=> append_sid("{$phpbb_root_path}view$type.$phpEx$u_item_params"),
+								'UNSUBSCRIBE_ITEM'	=> $user->lang('UNSUBSCRIBE_ITEM', strtolower($user->lang(strtoupper($type)))),
+								'U_ACTION'			=> append_sid("{$phpbb_root_path}view$type.$phpEx", "{$u_item_params}unwatch=$type&amp;uk=$key"),
+							));
+
+							// get the page ready for display
+							page_header($user->lang('UNSUBSCRIBE_TITLE'));
+							$template->set_filenames(array(
+								'body'	=> 'unsubscribe_body.html',
+							));
+							page_footer();
+						}
+						else
+						{
+							trigger_error('UNSUBSCRIBE_KEY_INVALID');
+						}
+						$db->sql_freeresult($result);
+					}
+					else
+					{
+						// $action_type should be one of the following:
+						// forum|topic - unsubscribe the user from a specific forum or topic
+						// all - unsubcribe the user from all forums AND all topics
+						// board - cease all board emails (topic/forum subscriptions, mass emails, & PM notification)
+						$action_type = $request->variable('type', '', phpbb_request_interface::POST);
+						$action_type = empty($action_type) ? $type : $action_type;
+						$where_sql = " WHERE unsubscribe_key = '{$key}'";
+						if (in_array($action_type, array('topic', 'all', 'board')))
+						{
+							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . (($action_type != 'all' && $action_type != 'board') ? $where_sql : '');
+							$db->sql_query($sql);
+						}
+
+						if (in_array($action_type, array('forum', 'all', 'board')))
+						{
+							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . (($action_type != 'all' && $action_type != 'board') ? $where_sql : '');
+							$db->sql_query($sql);
+						}
+
+						if ($action_type == 'board')
+						{
+							// turn off email settings in user preferences
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+								'user_allow_viewemail'	=> 0,
+								'user_allow_massemail'	=> 0,
+								'user_notify_pm'		=> 0,
+							)) . ' WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+						}
+			
+						// Finally, we show the appropriate message based on what was unsubscribed
+						switch ($action_type)
+						{
+							case 'board':
+								trigger_error('UNSUBSCRIBED_BOARD');
+							break;
+		
+							case 'all':
+								trigger_error('UNWATCHED_FORUMS_TOPICS');
+							break;
+			
+							case 'topic':
+							case 'forum':
+								trigger_error('UNWATCHED_' . strtoupper($action_type) . 'S');
+							break;
+			
+							default:
+							break;
+						}
+					}
+				break;
+
+				default:
+				break;
+			}
+			$can_watch = $is_watching = 0;
 		}
 		else
 		{
-			$can_watch = 0;
-			$is_watching = 0;
+			if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode) ||
+				(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_interface::GET) == $mode))
+			{
+				login_box();
+			}
+			else
+			{
+				$can_watch = 0;
+				$is_watching = 0;
+			}
 		}
 	}
 

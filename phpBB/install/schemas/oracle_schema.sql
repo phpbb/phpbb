@@ -584,7 +584,8 @@ CREATE TABLE phpbb_forums_track (
 CREATE TABLE phpbb_forums_watch (
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	notify_status number(1) DEFAULT '0' NOT NULL
+	notify_status number(1) DEFAULT '0' NOT NULL,
+	unsubscribe_key varchar2(255) DEFAULT '' NOT NULL
 )
 /
 
@@ -1641,7 +1642,8 @@ CREATE TABLE phpbb_topics_posted (
 CREATE TABLE phpbb_topics_watch (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	notify_status number(1) DEFAULT '0' NOT NULL
+	notify_status number(1) DEFAULT '0' NOT NULL,
+	unsubscribe_key varchar2(255) DEFAULT '' NOT NULL
 )
 /
 
