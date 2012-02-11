@@ -354,7 +354,8 @@ class phpbb_extension_manager
 		$available = array();
 
 		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/'));
+			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/'),
+			RecursiveIteratorIterator::SELF_FIRST);
 		foreach ($iterator as $file_info)
 		{
 			if ($file_info->isFile() && $file_info->getFilename() == 'ext' . $this->phpEx)
