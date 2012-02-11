@@ -345,7 +345,7 @@ phpbb.ajaxify = function(options) {
 
 			if (action)
 			{
-				action = action[1]
+				action = action[1];
 				data += '&action=' + action;
 			}
 			else
