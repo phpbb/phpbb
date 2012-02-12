@@ -258,27 +258,39 @@ class phpbb_template
 	}
 
 	/**
-	* Display the handle and assign the output to a template variable
-	* or return the compiled result.
+	* Returns the output of a rendered template.
 	*
 	* @param string $handle Handle to operate on
-	* @param string $template_var Template variable to assign compiled handle to
-	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return bool|string false on failure, otherwise if $return_content is true return string of the compiled handle, otherwise return true
+	* @return bool|string false on failure, otherwise string of the compiled handle
 	*/
-	public function assign_display($handle, $template_var = '', $return_content = true)
+	public function get_rendered_template($handle)
 	{
 		ob_start();
 		$result = $this->display($handle);
 		$contents = ob_get_clean();
+
 		if ($result === false)
 		{
 			return false;
 		}
 
-		if ($return_content)
+		return $contents;
+	}
+
+	/**
+	* Display the handle and assign the output to a template variable.
+	*
+	* @param string $handle Handle to operate on
+	* @param string $template_var Template variable to assign compiled handle to
+	* @return bool|string false on failure, otherwise return true
+	*/
+	public function assign_display($handle, $template_var = '')
+	{
+		$contents = $this->get_rendered_template($handle);
+
+		if ($contents === false)
 		{
-			return $contents;
+			return false;
 		}
 
 		$this->assign_var($template_var, $contents);

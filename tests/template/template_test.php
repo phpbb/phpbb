@@ -340,9 +340,9 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
+		$this->assertEquals($expected, self::trim_template_result($this->template->get_rendered_template('test')), "Testing get_rendered_template($file)");
 
-		$this->template->assign_display('test', 'VARIABLE', false);
+		$this->template->assign_display('test', 'VARIABLE');
 
 		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
 	}
