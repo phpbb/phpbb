@@ -1094,3 +1094,41 @@ a.imageset {
 	padding-left: 97px;
 	padding-top: 27px;
 }
+
+/* RTL imageset entries */
+.rtl .imageset.site_logo {
+	padding-right: 170px;
+	padding-left: 0;
+}
+.rtl .imageset.upload_bar {
+	padding-right: 280px;
+	padding-left: 0;
+}
+.rtl .imageset.poll_left, .rtl .imageset.poll_right {
+	padding-right: 4px;
+	padding-left: 0;
+}
+.rtl .imageset.poll_center {
+	padding-right: 1px;
+	padding-left: 0;
+}
+.rtl .imageset.forum_link, .rtl .imageset.forum_read, .rtl .imageset.forum_read_locked, .rtl .imageset.forum_read_subforum, .rtl .imageset.forum_unread, .rtl .imageset.forum_unread_locked, .rtl .imageset.forum_unread_subforum {
+	padding-right: 46px;
+	padding-left: 0;
+}
+.rtl .imageset.topic_moved, .rtl .imageset.topic_read, .rtl .imageset.topic_read_mine, .rtl .imageset.topic_read_hot, .rtl .imageset.topic_read_hot_mine, .rtl .imageset.topic_read_locked, .rtl .imageset.topic_read_locked_mine, .rtl .imageset.topic_unread, .rtl .imageset.topic_unread_mine, .rtl .imageset.topic_unread_hot, .rtl .imageset.topic_unread_hot_mine, .rtl .imageset.topic_unread_locked, .rtl .imageset.topic_unread_locked_mine, .rtl .imageset.sticky_read, .rtl .imageset.sticky_read_mine, .rtl .imageset.sticky_read_locked, .rtl .imageset.sticky_read_locked_mine, .rtl .imageset.sticky_unread, .rtl .imageset.sticky_unread_mine, .rtl .imageset.sticky_unread_locked, .rtl .imageset.sticky_unread_locked_mine, .rtl .imageset.announce_read, .rtl .imageset.announce_read_mine, .rtl .imageset.announce_read_locked, .rtl .imageset.announce_read_locked_mine, .rtl .imageset.announce_unread, .rtl .imageset.announce_unread_mine, .rtl .imageset.announce_unread_locked, .rtl .imageset.announce_unread_locked_mine, .rtl .imageset.global_read, .rtl .imageset.global_read_mine, .rtl .imageset.global_read_locked, .rtl .imageset.global_read_locked_mine, .rtl .imageset.global_unread, .rtl .imageset.global_unread_mine, .rtl .imageset.global_unread_locked, .rtl .imageset.global_unread_locked_mine, .rtl .imageset.pm_read, .rtl .imageset.pm_unread, .rtl .imageset.icon_topic_reported, .rtl .imageset.icon_topic_unapproved {
+	padding-right: 19px;
+	padding-left: 0;
+}
+.rtl .imageset.icon_post_target, .rtl .imageset.icon_post_target_unread {
+	padding-right: 12px;
+	padding-left: 0;
+}
+.rtl .imageset.icon_topic_attach {
+	padding-right: 14px;
+	padding-left: 0;
+}
+.rtl .imageset.icon_topic_latest, .rtl .imageset.icon_topic_newest {
+	padding-right: 18px;
+	padding-left: 0;
+}
