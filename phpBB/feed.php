@@ -277,10 +277,13 @@ exit_handler();
 	var $unlimited_reading_forums = array();
 		$this->unlimited_reading_forums = $this->get_unlimited_reading_forums( $in_fid_ary );
 			// Who has no right to see all forums cannot see how many topics are there
-			if(in_array((int)$row['forum_id'], $this->unlimited_reading_forums, true)){
+			if(in_array((int)$row['forum_id'], $this->unlimited_reading_forums, true))
+			{
 				$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
 					. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_OTHER', (int) $row['forum_posts']);
-			}else{
+			}
+			else
+			{
 				$item_row['statistics'] = $user->lang('PRIVATE_FORUM');
 			}
 		global $db, $config, $user;
