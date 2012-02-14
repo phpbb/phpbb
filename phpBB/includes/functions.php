@@ -2557,6 +2557,8 @@ function add_form_key($form_name)
 	$template->assign_vars(array(
 		'S_FORM_TOKEN'	=> $s_fields,
 	));
+	
+	return array($token, $now);
 }
 
 /**
@@ -2619,93 +2621,16 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $user, $template, $db;
-	global $phpEx, $phpbb_root_path, $request;
+	global $request, $user, $db, $template, $phpbb_root_path;
 
-	if (isset($_POST['cancel']))
+	$confirm_box = new phpbb_confirm_box(true, $title, $request, $user, $db, $template, $phpbb_root_path);
+	if ($check)
 	{
-		return false;
-	}
-
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
-
-	if ($check && $confirm)
-	{
-		$user_id = request_var('confirm_uid', 0);
-		$session_id = request_var('sess', '');
-		$confirm_key = request_var('confirm_key', '');
-
-		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || !$confirm_key || !$user->data['user_last_confirm_key'] || $confirm_key != $user->data['user_last_confirm_key'])
-		{
-			return false;
-		}
-
-		// Reset user_last_confirm_key
-		$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = ''
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
-
-		return true;
-	}
-	else if ($check)
-	{
-		return false;
-	}
-
-	$s_hidden_fields = build_hidden_fields(array(
-		'confirm_uid'	=> $user->data['user_id'],
-		'sess'			=> $user->session_id,
-		'sid'			=> $user->session_id,
-	));
-
-	// generate activation key
-	$confirm_key = gen_rand_string(10);
-
-	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
-	{
-		adm_page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		return $confirm_box->check();
 	}
 	else
 	{
-		page_header(((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]), false);
-	}
-
-	$template->set_filenames(array(
-		'body' => $html_body)
-	);
-
-	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
-	if (request_var('confirm_key', ''))
-	{
-		// This should not occur, therefore we cancel the operation to safe the user
-		return false;
-	}
-
-	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
-	$u_action = reapply_sid($use_page);
-	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
-
-	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
-		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
-
-		'YES_VALUE'			=> $user->lang['YES'],
-		'S_CONFIRM_ACTION'	=> $u_action,
-		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
-	);
-
-	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
-		WHERE user_id = " . $user->data['user_id'];
-	$db->sql_query($sql);
-
-	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
-	{
-		adm_page_footer();
-	}
-	else
-	{
-		page_footer();
+		$confirm_box->confirm_box($hidden, $html_body, $u_action);
 	}
 }
 
