@@ -237,3 +237,61 @@ echo '</feed>';
 
 garbage_collection();
 exit_handler();
+
+	function get_unlimited_reading_forums($readable_forum_id = false)
+	{
+		global $auth;
+		static $forum_ids;
+		if(!$readable_forum_id)
+		{
+			$readable_forum_id = $this->get_readable_forums();
+		}
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_keys($auth->acl_getf('f_read_other', true));
+		}
+
+		// if the user cannot read, he cannot read without limits
+		return array_intersect($forum_ids, $readable_forum_id);
+	}
+		global $auth, $db, $user;
+		// Get the forums
+		$unlimited_access_forums = $this->get_unlimited_reading_forums($forum_ids);
+
+				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
+					OR topic_poster = ' . $user->data['user_id'] . '
+					)
+	// The user is able to read all forums
+	var $unlimited_read = false;
+		// Make sure we can read all topics this forum
+		$unlimited_read = $auth->acl_get('f_read_other', $this->forum_id);
+
+		global $auth, $db, $user;
+				' . ((!$this->unlimited_read) ? 'AND topic_poster = ' . $user->data['user_id'] : ''). '
+		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_poster, t.topic_replies, t.topic_type
+		// If I can read, make sure that I can read all topics or I started this topic
+		if (!$auth->acl_get('f_read', $this->forum_id) ||
+			(	!$auth->acl_get('f_read_other', $this->forum_id) &&
+				$user->data['user_id'] != $this->topic_data['topic_poster']
+			))
+	var $unlimited_reading_forums = array();
+		$this->unlimited_reading_forums = $this->get_unlimited_reading_forums( $in_fid_ary );
+			// Who has no right to see all forums cannot see how many topics are there
+			if(in_array((int)$row['forum_id'], $this->unlimited_reading_forums, true)){
+				$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
+					. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_OTHER', (int) $row['forum_posts']);
+			}else{
+				$item_row['statistics'] = $user->lang('PRIVATE_FORUM');
+			}
+		global $db, $config, $user;
+		$unlimited_access_forums = $this->get_unlimited_reading_forums($in_fid_ary);
+
+				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
+					OR topic_poster = ' . $user->data['user_id'] . '
+					)
+		global $db, $config, $user;
+		// Get the forums where you can read topics started by others
+		$unlimited_access_forums = $this->get_unlimited_reading_forums($in_fid_ary);
+			AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
+					OR topic_poster = ' . $user->data['user_id'] . '
+				)
