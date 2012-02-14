@@ -245,17 +245,13 @@ phpbb.ajaxify = function(options) {
 	var elements = $(options.selector),
 		refresh = options.refresh,
 		callback = options.callback,
-		is_form = elements.is('form');
+		is_form = elements.is('form'),
+		event_name = is_form ? 'submit' : 'click';
 
-	if (is_form)
-	{
-		elements = elements.find('input:submit');
-	}
-
-	elements.click(function() {
+	elements.bind(event_name, function() {
 		var action, data, path, that = this, $this = $(this);
 
-		if ($this.attr('data-ajax') == false)
+		if (!$this.attr('data-ajax'))
 		{
 			return;
 		}
@@ -290,7 +286,7 @@ phpbb.ajaxify = function(options) {
 
 				if (typeof phpbb.ajax_callbacks[callback] === 'function')
 				{
-					phpbb.ajax_callbacks[callback].call(that, res, (is_form) ? act : null);
+					phpbb.ajax_callbacks[callback].call(that, res);
 				}
 
 				// If the server says to refresh the page, check whether the page should
