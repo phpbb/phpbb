@@ -184,7 +184,6 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_STANDARD'			=> 'Standard Features',
 	'ROLE_USER_NEW_MEMBER'			=> 'Newly Registered User Features',
 
-
 	'ROLE_DESCRIPTION_ADMIN_FORUM'				=> 'Can access the forum management and forum permission settings.',
 	'ROLE_DESCRIPTION_ADMIN_FULL'				=> 'Has access to all administrative functions of this board.<br />Not recommended.',
 	'ROLE_DESCRIPTION_ADMIN_STANDARD'			=> 'Has access to most administrative features but is not allowed to use server or system related tools.',
