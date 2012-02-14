@@ -20,5 +20,5 @@ include($phpbb_root_path . 'includes/template_compile.'.$phpEx);
 
 $file = $argv[1];
 
-$compile = new phpbb_template_compile();
+$compile = new phpbb_template_compile(false);
 echo $compile->compile_file($file);
