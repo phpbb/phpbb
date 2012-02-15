@@ -73,25 +73,25 @@ $('[data-ajax]').each(function() {
  */
 phpbb.ajaxify({
 	selector: '#quickmodform',
-	filter: function(data) {
+	refresh: true,
+	filter: function (data) {
 		var action = $('#quick-mod-select').val();
 
 		if (action === 'make_normal')
 		{
-			return !($(this).find('select option[value="make_global"]').length);
+			return $(this).find('select option[value="make_global"]').length > 0;
 		}
 		else if (action === 'lock' || action === 'unlock')
 		{
-			return false;
+			return true;
 		}
 
 		if (action === 'delete_topic' || action === 'make_sticky' || action === 'make_announce' || action === 'make_global') {
-			return false;
+			return true;
 		}
 
-		return true;
-	},
-	refresh: true
+		return false;
+	}
 });
 
 
