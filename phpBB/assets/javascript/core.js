@@ -328,7 +328,8 @@ phpbb.ajaxify = function(options) {
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
 							data: data + '&confirm=' + res.YES_VALUE,
-							success: return_handler
+							success: return_handler,
+							error: error_handler
 						});
 					}
 				}, false);
@@ -341,9 +342,11 @@ phpbb.ajaxify = function(options) {
 
 			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
 
-			dark.fadeOut(phpbb.alert_time, function() {
-				alert.hide();
-			});
+			setTimeout(function () {
+				dark.fadeOut(phpbb.alert_time, function() {
+					alert.hide();
+				});
+			}, 5000);
 		}
 
 		// If the element is a form, POST must be used and some extra data must
@@ -376,7 +379,8 @@ phpbb.ajaxify = function(options) {
 			url: action,
 			type: method,
 			data: data,
-			success: return_handler
+			success: return_handler,
+			error: error_handler
 		});
 
 		return false;
