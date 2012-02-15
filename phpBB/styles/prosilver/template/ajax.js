@@ -73,7 +73,7 @@ $('[data-ajax]').each(function() {
  */
 phpbb.ajaxify({
 	selector: '#quickmodform',
-	filter: function(act, data) {
+	filter: function(data) {
 		var action = $('#quick-mod-select').val();
 
 		if (action === 'make_normal')
