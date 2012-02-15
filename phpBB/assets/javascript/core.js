@@ -368,7 +368,7 @@ phpbb.ajaxify = function(options) {
 
 		// If filter function returns false, cancel the AJAX functionality,
 		// and return true (meaning that the HTTP request will be sent normally).
-		if (run_filter && options.filter.call(this, data))
+		if (run_filter && !options.filter.call(this, data))
 		{
 			return true;
 		}
