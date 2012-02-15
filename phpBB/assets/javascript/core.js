@@ -324,10 +324,26 @@ phpbb.ajaxify = function(options) {
 					{
 						phpbb.loading_alert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
-						$.post(res.S_CONFIRM_ACTION, data + '&confirm=' + res.YES_VALUE, return_handler);
+						$.ajax({
+							url: res.S_CONFIRM_ACTION,
+							type: 'POST',
+							data: data + '&confirm=' + res.YES_VALUE,
+							success: return_handler
+						});
 					}
 				}, false);
 			}
+		}
+
+		function error_handler()
+		{
+			var alert;
+
+			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
+
+			dark.fadeOut(phpbb.alert_time, function() {
+				alert.hide();
+			});
 		}
 
 		// If the element is a form, POST must be used and some extra data must
