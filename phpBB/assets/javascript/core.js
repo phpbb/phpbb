@@ -249,7 +249,7 @@ phpbb.ajaxify = function(options) {
 		event_name = is_form ? 'submit' : 'click';
 
 	elements.bind(event_name, function() {
-		var action, data, path, that = this, $this = $(this);
+		var action, method, data, that = this, $this = $(this);
 
 		if (!$this.attr('data-ajax'))
 		{
@@ -333,45 +333,39 @@ phpbb.ajaxify = function(options) {
 		// If the element is a form, POST must be used and some extra data must
 		// be taken from the form.
 		var run_filter = (typeof options.filter === 'function');
+
 		if (is_form)
 		{
-			action = /action\[([a-z]+)\]/.exec(this.name);
-			data = decodeURI($this.closest('form').serialize());
-			path = $this.closest('form').attr('action').replace('&amp;', '&');
-
-			if (action)
-			{
-				action = action[1];
-				data += '&action=' + action;
-			}
-			else
-			{
-				data += '&' + this.name + '=' + this.value;
-			}
-
-			// If filter function returns true, cancel the AJAX functionality,
-			// and return true (meaning that the HTTP request will be sent normally).
-			if (run_filter && options.filter.call($this.parents('form')[0], action, data))
-			{
-				return true;
-			}
-			phpbb.loading_alert();
-			$.post(path, data, return_handler);
+			action = $this.attr('action').replace('&amp;', '&');
+			data = $this.serializeArray();
+			method = $this.attr('method');
 		}
 		else
 		{
-			// If filter function returns true, cancel the AJAX functionality,
-			// and return true (meaning that the HTTP request will be sent normally).
-			if (run_filter && options.filter.call(this))
-			{
-				return true;
-			}
-			phpbb.loading_alert();
-			$.get(this.href, return_handler);
+			action = this.href;
+			data = null;
+			method = 'GET';
 		}
+
+		// If filter function returns true, cancel the AJAX functionality,
+		// and return true (meaning that the HTTP request will be sent normally).
+		if (run_filter && options.filter.call(this, data))
+		{
+			return true;
+		}
+
+		phpbb.loading_alert();
+
+		$.ajax({
+			url: action,
+			type: method,
+			data: data,
+			success: return_handler
+		});
 
 		return false;
 	});
+
 	return this;
 }
 
