@@ -338,7 +338,7 @@ phpbb.ajaxify = function(options) {
 		{
 			action = $this.attr('action').replace('&amp;', '&');
 			data = $this.serializeArray();
-			method = $this.attr('method');
+			method = $this.attr('method') || 'GET';
 		}
 		else
 		{
@@ -347,7 +347,7 @@ phpbb.ajaxify = function(options) {
 			method = 'GET';
 		}
 
-		// If filter function returns true, cancel the AJAX functionality,
+		// If filter function returns false, cancel the AJAX functionality,
 		// and return true (meaning that the HTTP request will be sent normally).
 		if (run_filter && options.filter.call(this, data))
 		{
