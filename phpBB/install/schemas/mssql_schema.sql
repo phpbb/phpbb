@@ -1109,7 +1109,7 @@ CREATE TABLE [phpbb_reports] (
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post] [text] DEFAULT ('') NOT NULL 
+	[reported_post_text] [text] DEFAULT ('') NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

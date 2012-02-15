@@ -1089,7 +1089,7 @@ function database_update_info()
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
 				REPORTS_TABLE		=> array(
-					'reported_text'			=> array('TEXT', ''),
+					'reported_post_text'	=> array('TEXT', ''),
 				),
 			),
 			'change_columns'	=> array(
