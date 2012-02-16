@@ -8,37 +8,24 @@ table.table1 {
 	width: 100%;
 }
 
-/* Form styles */
-html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/radio buttons nicely */
-
-/* Misc layout styles */
-.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
-	height: 1%;
-	overflow: hidden;
+/* Align checkboxes/radio buttons nicely */
+dd label input { 
+	vertical-align: text-bottom; 
+	*vertical-align: middle; 
 }
 
-/* navbar fix */
-ul.linklist {
-	height: 4%;
-	overflow: hidden;
-}
-
-/* Simple fix so forum and topic lists always have a min-height set, even in IE6
-	From http://www.dustindiaz.com/min-height-fast-hack */
+/* Simple fix so forum and topic lists always have a height set */
 dl.icon {
-	min-height: 35px;
-	height: auto !important;
-	height: 35px;
+	*height: 35px;
 }
 
 /* Correctly clear floating for details on profile view */
-*:first-child+html dl.details dd {
-	margin-left: 30%;
-	float: none;
+dl.details dd {
+	*margin-left: 30%;
+	*float: none;
 }
 
-/* Headerbar height fix for IE7 and below */
-*:first-child+html #site-description p {
-	margin-bottom: 1.0em;
+/* Headerbar height fix for IE7 */
+#site-description p {
+	*margin-bottom: 1.0em;
 }
-
