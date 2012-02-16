@@ -62,15 +62,17 @@
 				<!-- IF forumrow.CLICKS -->
 					<dd class="redirect"><span>{L_REDIRECTS}{L_COLON} {forumrow.CLICKS}</span></dd>
 				<!-- ELSEIF not forumrow.S_IS_LINK -->
-					<dd class="topics">{forumrow.TOPICS} <dfn>{L_TOPICS}</dfn></dd>
-					<dd class="posts">{forumrow.POSTS} <dfn>{L_POSTS}</dfn></dd>
+					<dd class="topics"><!-- IF forumrow.FORUM_PRIVATE -->?<!-- ELSE -->{forumrow.TOPICS}<!-- ENDIF --> <dfn>{L_TOPICS}</dfn></dd>
+					<dd class="posts"><!-- IF forumrow.FORUM_PRIVATE -->?<!-- ELSE -->{forumrow.POSTS}<!-- ENDIF --> <dfn>{L_POSTS}</dfn></dd>
 					<dd class="lastpost"><span>
 						<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
 							<a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a>
 						<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
 							<a href="{forumrow.U_UNAPPROVED_POSTS}">{UNAPPROVED_POST_IMG}</a>
 						<!-- ENDIF -->
-						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
+						<!-- IF forumrow.FORUM_PRIVATE -->{L_PRIVATE_FORUM_FORUM}<br />&nbsp;
+						<!-- ELSEIF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
+						<!-- ENDIF --> 
 						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
 							<!-- EVENT forumlist_body_last_post_title_prepend -->
 							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />

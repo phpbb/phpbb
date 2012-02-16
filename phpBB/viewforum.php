@@ -266,15 +266,30 @@ $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
 // Limit topics to certain time frame, obtain correct topic count
-if ($sort_days)
+// global announcements must not be counted, normal announcements have to
+// be counted, as forum_topics(_real) includes them
+// If the user has limited access to the topics he can see the number also has to be recounted
+if ($sort_days || !$auth->acl_get('f_read_other', $forum_id))
 {
-	$min_post_time = time() - ($sort_days * 86400);
+	$sql_limit_time = '';
+	$min_post_time = 0;
+
+	if($sort_days)
+	{
+		$min_post_time = time() - ($sort_days * 86400);
+		$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
+
+		// Make sure we have information about day selection ready
+		$template->assign_var('S_SORT_DAYS', true);
+	}
 
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
-			AND (topic_last_post_time >= $min_post_time
-				OR topic_type = " . POST_ANNOUNCE . '
+			AND (
+				( topic_last_post_time >= $min_post_time
+					" . (($auth->acl_get('f_read_other', $forum_id)) ? '' : 'AND topic_poster = '. $user->data['user_id'] ) . ')
+				OR topic_type = ' . POST_ANNOUNCE . '
 				OR topic_type = ' . POST_GLOBAL . ')
 			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
 	$result = $db->sql_query($sql);
@@ -285,10 +300,6 @@ if ($sort_days)
 	{
 		$start = 0;
 	}
-	$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
-
-	// Make sure we have information about day selection ready
-	$template->assign_var('S_SORT_DAYS', true);
 }
 else
 {
@@ -517,11 +528,15 @@ else
 	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 }
 
+
 // Grab just the sorted topic ids
+// Do not include the topic ids from the topics that the user is unable to see
 $sql = 'SELECT t.topic_id
 	FROM ' . TOPICS_TABLE . " t
 	WHERE $sql_where
 		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
+		AND (" . $db->sql_in_set('t.forum_id', array_keys($auth->acl_getf('f_read_other', true))) ."
+			OR " . $user->data['user_id'] . " = t.topic_poster )
 		$sql_approved
 		$sql_limit_time
 	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
