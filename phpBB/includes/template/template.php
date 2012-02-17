@@ -128,7 +128,7 @@ class phpbb_template
 	{
 		$templates = array($template_name => $template_path);
 
-		if ($fallback_template_path !== false)
+		if ($fallback_template_name !== false)
 		{
 			$templates[$fallback_template_name] = $fallback_template_path;
 		}
@@ -306,7 +306,7 @@ class phpbb_template
 	*
 	* @param string $handle Handle of the template to load
 	* @return phpbb_template_renderer Template renderer object, or null on failure
-	* @uses template_compile is used to compile template source
+	* @uses phpbb_template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
