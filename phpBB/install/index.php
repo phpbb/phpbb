@@ -80,7 +80,6 @@ include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_php_ini.' . $phpEx);
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
 $phpbb_class_loader_ext->register();
