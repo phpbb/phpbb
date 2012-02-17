@@ -28,11 +28,11 @@ class phpbb_php_ini
 	* Simple wrapper for ini_get()
 	* See http://php.net/manual/en/function.ini-get.php
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool|string		False if configuration option does not exist,
-	*							the configuration option value (string) otherwise. 
+	*							the configuration option value (string) otherwise.
 	*/
-	function get($varname)
+	public function get($varname)
 	{
 		return @ini_get($varname);
 	}
@@ -41,11 +41,11 @@ class phpbb_php_ini
 	* Gets configuration option value as a string and performs various
 	* normalisation on the returned value.
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool|string		False if configuration option does not exist,
 	*							the configuration option value (string) otherwise.
 	*/
-	function get_string($varname)
+	public function get_string($varname)
 	{
 		$value = $this->get($varname);
 
@@ -61,12 +61,12 @@ class phpbb_php_ini
 	* Gets configuration option value as a boolean.
 	* Interprets the string value 'off' as false.
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool				False if configuration option does not exist.
 	*							False if configuration option is disabled.
 	*							True otherwise.
 	*/
-	function get_bool($varname)
+	public function get_bool($varname)
 	{
 		$value = strtolower($this->get_string($varname));
 
@@ -81,11 +81,11 @@ class phpbb_php_ini
 	/**
 	* Gets configuration option value as an integer.
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool|int			False if configuration option does not exist,
 	*							the configuration option value (integer) otherwise.
 	*/
-	function get_int($varname)
+	public function get_int($varname)
 	{
 		$value = strtolower($this->get_string($varname));
 
@@ -100,11 +100,11 @@ class phpbb_php_ini
 	/**
 	* Gets configuration option value as a float.
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool|float		False if configuration option does not exist,
 	*							the configuration option value (float) otherwise.
 	*/
-	function get_float($varname)
+	public function get_float($varname)
 	{
 		$value = strtolower($this->get_string($varname));
 
@@ -120,11 +120,11 @@ class phpbb_php_ini
 	* Gets configuration option value in bytes.
 	* Converts strings like '128M' to bytes (integer or float).
 	*
-	* @param string $varname	The configuration option name. 
+	* @param string $varname	The configuration option name.
 	* @return bool|int|float	False if configuration option does not exist,
 	*							the configuration option value otherwise.
 	*/
-	function get_bytes($varname)
+	public function get_bytes($varname)
 	{
 		$value = strtolower($this->get_string($varname));
 
