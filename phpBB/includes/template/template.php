@@ -128,7 +128,7 @@ class phpbb_template
 	{
 		$templates = array($template_name => $template_path);
 
-		if ($fallback_template_path !== false)
+		if ($fallback_template_name !== false)
 		{
 			$templates[$fallback_template_name] = $fallback_template_path;
 		}
