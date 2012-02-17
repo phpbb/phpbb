@@ -4,13 +4,10 @@
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
-<!-- IF MODERATORS or U_MCP -->
-	<p>
-		<!-- IF MODERATORS -->
-			<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}
-		<!-- ENDIF -->
-
-	</p>
+<!-- IF MODERATORS -->
+<p>
+	<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->:</strong> {MODERATORS}
+</p>
 <!-- ENDIF -->
 
 <!-- IF S_FORUM_RULES -->

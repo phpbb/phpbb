@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -319,7 +319,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	function test_nested_transactions()
+	public function test_nested_transactions()
 	{
 		$db = $this->new_dbal();
 
@@ -340,5 +340,21 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_transaction('commit');
 
 		$this->assertEquals('1', $row['user_id']);
+	}
+
+	/**
+	 * fix for PHPBB3-10307
+	 */
+	public function test_sql_fetchrow_returns_false_when_empty()
+	{
+		$db = $this->new_dbal();
+
+		$sql = 'SELECT * FROM (SELECT 1) AS TBL WHERE 1 = 0';
+		$result = $db->sql_query($sql);
+
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$this->assertSame(false, $row);
 	}
 }

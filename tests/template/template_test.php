@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -211,21 +211,21 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				"{ VARIABLE }\n{ VARIABLE }",
+				"{ VARIABLE }\n{ 1_VARIABLE }\n{ VARIABLE }\n{ 1_VARIABLE }",
 			),
 			array(
 				'lang.html',
-				array('L_VARIABLE' => "Value'"),
+				array('L_VARIABLE' => "Value'", 'L_1_VARIABLE' => "1 O'Clock"),
 				array(),
 				array(),
-				"Value'\nValue\'",
+				"Value'\n1 O'Clock\nValue\'\n1 O\'Clock",
 			),
 			array(
 				'lang.html',
-				array('LA_VARIABLE' => "Value'"),
+				array('LA_VARIABLE' => "Value'", 'LA_1_VARIABLE' => "1 O'Clock"),
 				array(),
 				array(),
-				"{ VARIABLE }\nValue'",
+				"{ VARIABLE }\n{ 1_VARIABLE }\nValue'\n1 O'Clock",
 			),
 			array(
 				'loop_nested_multilevel_ref.html',
@@ -248,7 +248,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
 				// I don't completely understand this output, hopefully it's correct
-				"top-level content\nouter\n\ninner z\nfirst row\n\ninner zz",
+				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
 			),
 			array(
 				'loop_size.html',
@@ -277,7 +277,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('template locator: File %s does not exist', realpath($this->template_path . '/../') . '/templates/' . $filename);
+		$expecting = sprintf('template locator: File for handle test does not exist. Could not find: %s', realpath($this->template_path . '/../') . '/templates/' . $filename);
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');

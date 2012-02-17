@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -19,7 +18,8 @@ if (!defined('IN_PHPBB'))
 	Ability to simply add own rules by doing three things:
 		1) Add an appropriate constant
 		2) Add a new check array to the global_privmsgs_rules variable and the condition array (if one is required)
-		3) Add a new language variable to ucp.php
+		3) Implement the rule logic in the check_rule() function
+		4) Add a new language variable to ucp.php
 
 		The user is then able to select the new rule. It will be checked against and handled as specified.
 		To add new actions (yes, checks can be added here too) to the rule management, the core code has to be modified.
@@ -57,42 +57,42 @@ define('CHECK_TO', 5);
 */
 $global_privmsgs_rules = array(
 	CHECK_SUBJECT	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'message_subject', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'message_subject', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'message_subject', 'function' => '{CHECK0} != {STRING}'),
-		RULE_BEGINS_WITH	=> array('check0' => 'message_subject', 'function' => 'preg_match("/^" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_ENDS_WITH		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})'),
+		RULE_IS_LIKE		=> array('check0' => 'message_subject'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'message_subject'),
+		RULE_IS				=> array('check0' => 'message_subject'),
+		RULE_IS_NOT			=> array('check0' => 'message_subject'),
+		RULE_BEGINS_WITH	=> array('check0' => 'message_subject'),
+		RULE_ENDS_WITH		=> array('check0' => 'message_subject'),
 	),
 
 	CHECK_SENDER	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'username', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'username', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'username', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'username', 'function' => '{CHECK0} != {STRING}'),
-		RULE_BEGINS_WITH	=> array('check0' => 'username', 'function' => 'preg_match("/^" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_ENDS_WITH		=> array('check0' => 'username', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})'),
-		RULE_IS_FRIEND		=> array('check0' => 'friend', 'function' => '{CHECK0} == 1'),
-		RULE_IS_FOE			=> array('check0' => 'foe', 'function' => '{CHECK0} == 1'),
-		RULE_IS_USER		=> array('check0' => 'author_id', 'function' => '{CHECK0} == {USER_ID}'),
-		RULE_IS_GROUP		=> array('check0' => 'author_in_group', 'function' => 'in_array({GROUP_ID}, {CHECK0})'),
+		RULE_IS_LIKE		=> array('check0' => 'username'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'username'),
+		RULE_IS				=> array('check0' => 'username'),
+		RULE_IS_NOT			=> array('check0' => 'username'),
+		RULE_BEGINS_WITH	=> array('check0' => 'username'),
+		RULE_ENDS_WITH		=> array('check0' => 'username'),
+		RULE_IS_FRIEND		=> array('check0' => 'friend'),
+		RULE_IS_FOE			=> array('check0' => 'foe'),
+		RULE_IS_USER		=> array('check0' => 'author_id'),
+		RULE_IS_GROUP		=> array('check0' => 'author_in_group'),
 	),
 
 	CHECK_MESSAGE	=> array(
-		RULE_IS_LIKE		=> array('check0' => 'message_text', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
-		RULE_IS				=> array('check0' => 'message_text', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'message_text', 'function' => '{CHECK0} != {STRING}'),
+		RULE_IS_LIKE		=> array('check0' => 'message_text'),
+		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text'),
+		RULE_IS				=> array('check0' => 'message_text'),
+		RULE_IS_NOT			=> array('check0' => 'message_text'),
 	),
 
 	CHECK_STATUS	=> array(
-		RULE_ANSWERED		=> array('check0' => 'pm_replied', 'function' => '{CHECK0} == 1'),
-		RULE_FORWARDED		=> array('check0' => 'pm_forwarded', 'function' => '{CHECK0} == 1'),
+		RULE_ANSWERED		=> array('check0' => 'pm_replied'),
+		RULE_FORWARDED		=> array('check0' => 'pm_forwarded'),
 	),
 
 	CHECK_TO		=> array(
-		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),
-		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc', 'function' => 'in_array("u_" . $user_id, {CHECK0}) || in_array("u_" . $user_id, {CHECK1})'),
+		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group'),
+		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc'),
 	)
 );
 
@@ -260,16 +260,60 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 
 	$check_ary = $rules[$rule_row['rule_check']][$rule_row['rule_connection']];
 
-	// Replace Check Literals
-	$evaluate = $check_ary['function'];
-	$evaluate = preg_replace('/{(CHECK[0-9])}/', '$message_row[$check_ary[strtolower("\1")]]', $evaluate);
-
-	// Replace Rule Literals
-	$evaluate = preg_replace('/{(STRING|USER_ID|GROUP_ID)}/', '$rule_row["rule_" . strtolower("\1")]', $evaluate);
-
-	// Evil Statement
 	$result = false;
-	eval('$result = (' . $evaluate . ') ? true : false;');
+
+	$check0 = $message_row[$check_ary['check0']];
+
+	switch ($rule_row['rule_connection'])
+	{
+		case RULE_IS_LIKE:
+			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+		
+		case RULE_IS_NOT_LIKE:
+			$result = !preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+		
+		case RULE_IS:
+			$result = ($check0 == $rule_row['rule_string']);
+		break;
+		
+		case RULE_IS_NOT:
+			$result = ($check0 != $rule_row['rule_string']);
+		break;
+		
+		case RULE_BEGINS_WITH:
+			$result = preg_match("/^" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
+		break;
+		
+		case RULE_ENDS_WITH:
+			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '$/i', $check0);
+		break;
+		
+		case RULE_IS_FRIEND:
+		case RULE_IS_FOE:
+		case RULE_ANSWERED:
+		case RULE_FORWARDED:
+			$result = ($check0 == 1);
+		break;
+		
+		case RULE_IS_USER:
+			$result = ($check0 == $rule_row['rule_user_id']);
+		break;
+		
+		case RULE_IS_GROUP:
+			$result = in_array($rule_row['rule_group_id'], $check0);
+		break;
+		
+		case RULE_TO_GROUP:
+			$result = (in_array('g_' . $message_row[$check_ary['check2']], $check0) || in_array('g_' . $message_row[$check_ary['check2']], $message_row[$check_ary['check1']]));
+		break;
+		
+		case RULE_TO_ME:
+			$result = (in_array('u_' . $user_id, $check0) || in_array('u_' . $user_id, $message_row[$check_ary['check1']]));
+		break;
+	}
+
 
 	if (!$result)
 	{
@@ -1285,7 +1329,7 @@ function get_folder_status($folder_id, $folder)
 		'percent'		=> ($user->data['message_limit']) ? (($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100) : 0,
 	);
 
-	$return['message']	= sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
+	$return['message']	= $user->lang('FOLDER_STATUS_MSG', (int) $return['max'], $return['cur'], $return['percent']);
 
 	return $return;
 }
@@ -1607,7 +1651,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	// Send Notifications
 	if ($mode != 'edit')
 	{
-		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message']);
+		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message'], $data['msg_id']);
 	}
 
 	return $data['msg_id'];
@@ -1616,7 +1660,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 /**
 * PM Notification
 */
-function pm_notification($mode, $author, $recipients, $subject, $message)
+function pm_notification($mode, $author, $recipients, $subject, $message, $msg_id)
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1688,8 +1732,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 
-			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
-		);
+			'U_INBOX'			=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox",
+			'U_VIEW_MESSAGE'	=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=view&p=$msg_id",
+		));
 
 		$messenger->send($addr['method']);
 	}

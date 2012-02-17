@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2005 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -63,9 +63,16 @@ class phpbb_template
 	private $user;
 
 	/**
-	* @var locator template locator
+	* Template locator
+	* @var phpbb_template_locator
 	*/
 	private $locator;
+
+	/**
+	* Template path provider
+	* @var phpbb_template_path_provider
+	*/
+	private $provider;
 
 	/**
 	* Constructor.
@@ -73,14 +80,16 @@ class phpbb_template
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
 	* @param phpbb_template_locator $locator template locator
+	* @param phpbb_template_path_provider $provider template path provider
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider_interface $provider)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
+		$this->provider = $provider;
 	}
 
 	/**
@@ -88,25 +97,21 @@ class phpbb_template
 	*/
 	public function set_template()
 	{
-		$style_name = $this->user->theme['template_path'];
+		$template_name = $this->user->theme['template_path'];
+		$fallback_name = ($this->user->theme['template_inherits_id']) ? $this->user->theme['template_inherit_path'] : false;
 
-		$relative_template_root = $this->relative_template_root_for_style($style_name);
-		$template_root = $this->phpbb_root_path . $relative_template_root;
-		if (!file_exists($template_root))
-		{
-			trigger_error('template locator: Template path could not be found: ' . $relative_template_root, E_USER_ERROR);
-		}
+		return $this->set_custom_template(false, $template_name, false, $fallback_name);
+	}
 
-		if ($this->user->theme['template_inherits_id'])
-		{
-			$fallback_template_path = $this->phpbb_root_path . $this->relative_template_root_for_style($this->user->theme['template_inherit_path']);
-		}
-		else
-		{
-			$fallback_template_path = null;
-		}
-
-		return $this->set_custom_template($template_root, $style_name, $fallback_template_path);
+	/**
+	* Defines a prefix to use for template paths in extensions
+	*
+	* @param string $ext_dir_prefix The prefix including trailing slash
+	* @return null
+	*/
+	public function set_ext_dir_prefix($ext_dir_prefix)
+	{
+		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
 	}
 
 	/**
@@ -117,28 +122,26 @@ class phpbb_template
 	* @param string $template_path Path to template directory
 	* @param string $template_name Name of template
 	* @param string $fallback_template_path Path to fallback template
+	* @param string $fallback_template_name Name of fallback template
 	*/
-	public function set_custom_template($template_path, $style_name, $fallback_template_path = false)
+	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
 	{
-		$this->locator->set_custom_template($template_path, $fallback_template_path);
+		$templates = array($template_name => $template_path);
 
-		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $style_name) . '_';
+		if ($fallback_template_path !== false)
+		{
+			$templates[$fallback_template_name] = $fallback_template_path;
+		}
+
+		$this->provider->set_templates($templates, $this->phpbb_root_path);
+		$this->locator->set_paths($this->provider);
+		$this->locator->set_main_template($this->provider->get_main_template_path());
+
+		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_name) . '_';
 
 		$this->context = new phpbb_template_context();
 
 		return true;
-	}
-
-	/**
-	* Converts a style name to relative (to board root) path to
-	* the style's template files.
-	*
-	* @param $style_name string Style name
-	* @return string Path to style template files
-	*/
-	private function relative_template_root_for_style($style_name)
-	{
-		return 'styles/' . $style_name . '/template';
 	}
 
 	/**
@@ -307,36 +310,31 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
-		$virtual_source_file = $this->locator->get_virtual_source_file_for_handle($handle);
-		$source_file = null;
-
-		$compiled_path = $this->cachepath . str_replace('/', '.', $virtual_source_file) . '.' . $this->phpEx;
+		$output_file = $this->_compiled_file_for_handle($handle);
 
 		$recompile = defined('DEBUG_EXTRA') ||
-			!file_exists($compiled_path) ||
-			@filesize($compiled_path) === 0 ||
-			($this->config['load_tplcompile'] && @filemtime($compiled_path) < @filemtime($source_file));
+			!file_exists($output_file) ||
+			@filesize($output_file) === 0;
 
-		if (!$recompile && $this->config['load_tplcompile'])
+		if ($recompile || $this->config['load_tplcompile'])
 		{
+			// Set only if a recompile or an mtime check are required.
 			$source_file = $this->locator->get_source_file_for_handle($handle);
-			$recompile = (@filemtime($compiled_path) < @filemtime($source_file)) ? true : false;
+
+			if (!$recompile && @filemtime($output_file) < @filemtime($source_file))
+			{
+				$recompile = true;
+			}
 		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_renderer_include($compiled_path, $this);
-		}
-
-		if ($source_file === null)
-		{
-			$source_file = $this->locator->get_source_file_for_handle($handle);
+			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
 		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
 
-		$output_file = $this->_compiled_file_for_handle($handle);
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
 			$renderer = new phpbb_template_renderer_include($output_file, $this);

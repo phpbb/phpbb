@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1539,7 +1538,6 @@ class user extends session
 
 	// Able to add new options (up to id 31)
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10, 'sig_bbcode' => 15, 'sig_smilies' => 16, 'sig_links' => 17);
-	var $keyvalues = array();
 
 	/**
 	* Constructor to set the lang path
@@ -1821,6 +1819,9 @@ class user extends session
 	* This function/functionality is inspired by SHS` and Ashe.
 	*
 	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
+	*
+	* If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
+	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
 	*/
 	function lang()
 	{
@@ -1859,6 +1860,11 @@ class user extends session
 			$args[0] = $lang;
 			return call_user_func_array('sprintf', $args);
 		}
+		else if (sizeof($lang) == 0)
+		{
+			// If the language entry is an empty array, we just return the language key
+			return $args[0];
+		}
 
 		// It is an array... now handle different nullar/singular/plural forms
 		$key_found = false;
@@ -1866,20 +1872,40 @@ class user extends session
 		// We now get the first number passed and will select the key based upon this number
 		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
 		{
-			if (is_int($args[$i]))
+			if (is_int($args[$i]) || is_float($args[$i]))
 			{
-				$numbers = array_keys($lang);
-
-				foreach ($numbers as $num)
+				if ($args[$i] == 0 && isset($lang[0]))
 				{
-					if ($num > $args[$i])
-					{
-						break;
-					}
-
-					$key_found = $num;
+					// We allow each translation using plural forms to specify a version for the case of 0 things,
+					// so that "0 users" may be displayed as "No users".
+					$key_found = 0;
+					break;
 				}
-				break;
+				else
+				{
+					$use_plural_form = $this->get_plural_form($args[$i]);
+					if (isset($lang[$use_plural_form]))
+					{
+						// The key we should use exists, so we use it.
+						$key_found = $use_plural_form;
+					}
+					else
+					{
+						// If the key we need to use does not exist, we fall back to the previous one.
+						$numbers = array_keys($lang);
+
+						foreach ($numbers as $num)
+						{
+							if ($num > $use_plural_form)
+							{
+								break;
+							}
+
+							$key_found = $num;
+						}
+					}
+					break;
+				}
 			}
 		}
 
@@ -1896,11 +1922,31 @@ class user extends session
 	}
 
 	/**
+	* Determine which plural form we should use.
+	* For some languages this is not as simple as for English.
+	*
+	* @param $number		int|float	The number we want to get the plural case for. Float numbers are floored.
+	* @param $force_rule	mixed	False to use the plural rule of the language package
+	*								or an integer to force a certain plural rule
+	* @return	int		The plural-case we need to use for the number plural-rule combination
+	*/
+	function get_plural_form($number, $force_rule = false)
+	{
+		$number = (int) $number;
+
+		// Default to English system
+		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
+
+		return phpbb_get_plural_form($plural_rule, $number);
+	}
+
+	/**
 	* Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
 	*
 	* @param mixed $lang_set specifies the language entries to include
 	* @param bool $use_db internal variable for recursion, do not use
 	* @param bool $use_help internal variable for recursion, do not use
+	* @param string $ext_name The extension to load language from, or empty for core files
 	*
 	* Examples:
 	* <code>
@@ -1911,7 +1957,7 @@ class user extends session
 	* $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
 	* </code>
 	*/
-	function add_lang($lang_set, $use_db = false, $use_help = false)
+	function add_lang($lang_set, $use_db = false, $use_help = false, $ext_name = '')
 	{
 		global $phpEx;
 
@@ -1925,36 +1971,54 @@ class user extends session
 
 				if ($key == 'db')
 				{
-					$this->add_lang($lang_file, true, $use_help);
+					$this->add_lang($lang_file, true, $use_help, $ext_name);
 				}
 				else if ($key == 'help')
 				{
-					$this->add_lang($lang_file, $use_db, true);
+					$this->add_lang($lang_file, $use_db, true, $ext_name);
 				}
 				else if (!is_array($lang_file))
 				{
-					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help);
+					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 				else
 				{
-					$this->add_lang($lang_file, $use_db, $use_help);
+					$this->add_lang($lang_file, $use_db, $use_help, $ext_name);
 				}
 			}
 			unset($lang_set);
 		}
 		else if ($lang_set)
 		{
-			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help);
+			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
 		}
+	}
+
+	/**
+	* Add Language Items from an extension - use_db and use_help are assigned where needed (only use them to force inclusion)
+	*
+	* @param string $ext_name The extension to load language from, or empty for core files
+	* @param mixed $lang_set specifies the language entries to include
+	* @param bool $use_db internal variable for recursion, do not use
+	* @param bool $use_help internal variable for recursion, do not use
+	*/
+	function add_lang_ext($ext_name, $lang_set, $use_db = false, $use_help = false)
+	{
+		if ($ext_name === '/')
+		{
+			$ext_name = '';
+		}
+
+		$this->add_lang($lang_set, $use_db, $use_help, $ext_name);
 	}
 
 	/**
 	* Set language entry (called by add_lang)
 	* @access private
 	*/
-	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
+	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false, $ext_name = '')
 	{
-		global $phpEx;
+		global $phpbb_root_path, $phpEx;
 
 		// Make sure the language name is set (if the user setup did not happen it is not set)
 		if (!$this->lang_name)
@@ -1970,11 +2034,32 @@ class user extends session
 		{
 			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				$language_filename = $this->lang_path . $this->lang_name . '/' . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+				$filename = dirname($lang_file) . '/help_' . basename($lang_file);
 			}
 			else
 			{
-				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+				$filename = (($use_help) ? 'help_' : '') . $lang_file;
+			}
+
+			if ($ext_name)
+			{
+				global $phpbb_extension_manager;
+				$ext_path = $phpbb_extension_manager->get_extension_path($ext_name, true);
+
+				$lang_path = $ext_path . 'language/';
+			}
+			else
+			{
+				$lang_path = $this->lang_path;
+			}
+
+			if (strpos($phpbb_root_path . $filename, $lang_path . $this->lang_name . '/') === 0)
+			{
+				$language_filename = $phpbb_root_path . $filename;
+			}
+			else
+			{
+				$language_filename = $lang_path . $this->lang_name . '/' . $filename . '.' . $phpEx;
 			}
 
 			if (!file_exists($language_filename))
@@ -1984,24 +2069,24 @@ class user extends session
 				if ($this->lang_name == 'en')
 				{
 					// The user's selected language is missing the file, the board default's language is missing the file, and the file doesn't exist in /en.
-					$language_filename = str_replace($this->lang_path . 'en', $this->lang_path . $this->data['user_lang'], $language_filename);
+					$language_filename = str_replace($lang_path . 'en', $lang_path . $this->data['user_lang'], $language_filename);
 					trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
 				}
 				else if ($this->lang_name == basename($config['default_lang']))
 				{
 					// Fall back to the English Language
 					$this->lang_name = 'en';
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 				else if ($this->lang_name == $this->data['user_lang'])
 				{
 					// Fall back to the board default language
 					$this->lang_name = basename($config['default_lang']);
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
 				}
 
 				// Reset the lang name
-				$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+				$this->lang_name = (file_exists($lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 				return;
 			}
 
@@ -2059,9 +2144,9 @@ class user extends session
 		// Zone offset
 		$zone_offset = $this->timezone + $this->dst;
 
-		// Show date <= 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
+		// Show date < 1 hour ago as 'xx min ago' but not greater than 60 seconds in the future
 		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
-		if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
+		if ($delta < 3600 && $delta > -60 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
 		{
 			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 		}
@@ -2155,47 +2240,51 @@ class user extends session
 	}
 
 	/**
-	* Get option bit field from user options
+	* Get option bit field from user options.
+	*
+	* @param int $key option key, as defined in $keyoptions property.
+	* @param int $data bit field value to use, or false to use $this->data['user_options']
+	* @return bool true if the option is set in the bit field, false otherwise
 	*/
 	function optionget($key, $data = false)
 	{
-		if (!isset($this->keyvalues[$key]))
-		{
-			$var = ($data) ? $data : $this->data['user_options'];
-			$this->keyvalues[$key] = ($var & 1 << $this->keyoptions[$key]) ? true : false;
-		}
-
-		return $this->keyvalues[$key];
+		$var = ($data !== false) ? $data : $this->data['user_options'];
+		return phpbb_optionget($this->keyoptions[$key], $var);
 	}
 
 	/**
-	* Set option bit field for user options
+	* Set option bit field for user options.
+	*
+	* @param int $key Option key, as defined in $keyoptions property.
+	* @param bool $value True to set the option, false to clear the option.
+	* @param int $data Current bit field value, or false to use $this->data['user_options']
+	* @return int|bool If $data is false, the bit field is modified and
+	*                  written back to $this->data['user_options'], and
+	*                  return value is true if the bit field changed and
+	*                  false otherwise. If $data is not false, the new
+	*                  bitfield value is returned.
 	*/
 	function optionset($key, $value, $data = false)
 	{
-		$var = ($data) ? $data : $this->data['user_options'];
+		$var = ($data !== false) ? $data : $this->data['user_options'];
 
-		if ($value && !($var & 1 << $this->keyoptions[$key]))
+		$new_var = phpbb_optionset($this->keyoptions[$key], $value, $var);
+
+		if ($data === false)
 		{
-			$var += 1 << $this->keyoptions[$key];
-		}
-		else if (!$value && ($var & 1 << $this->keyoptions[$key]))
-		{
-			$var -= 1 << $this->keyoptions[$key];
+			if ($new_var != $var)
+			{
+				$this->data['user_options'] = $new_var;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return ($data) ? $var : false;
-		}
-
-		if (!$data)
-		{
-			$this->data['user_options'] = $var;
-			return true;
-		}
-		else
-		{
-			return $var;
+			return $new_var;
 		}
 	}
 

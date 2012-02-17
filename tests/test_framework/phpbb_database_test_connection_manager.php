@@ -3,9 +3,11 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
 
 class phpbb_database_test_connection_manager
 {
@@ -68,6 +70,11 @@ class phpbb_database_test_connection_manager
 
 			default:
 				$dsn .= 'host=' . $this->config['dbhost'];
+
+				if ($this->config['dbport'])
+				{
+					$dsn .= ';port=' . $this->config['dbport'];
+				}
 
 				if ($use_db)
 				{
@@ -234,49 +241,16 @@ class phpbb_database_test_connection_manager
 		}
 
 		$filename = $directory . $schema . '_schema.sql';
-		$sql = $this->split_sql(file_get_contents($filename));
+
+		$queries = file_get_contents($filename);
+		$sql = remove_comments($queries);
+		
+		$sql = split_sql_file($sql, $this->dbms['DELIM']);
 
 		foreach ($sql as $query)
 		{
 			$this->pdo->exec($query);
 		}
-	}
-
-	/**
-	* Split contents of an SQL file into an array of SQL statements
-	*
-	* Note: This method is not the same as split_sql_file from functions_install.
-	*
-	* @param	string	$sql	Raw contents of an SQL file
-	*
-	* @return Array of runnable SQL statements
-	*/
-	protected function split_sql($sql)
-	{
-		$sql = str_replace("\r" , '', $sql);
-		$data = preg_split('/' . preg_quote($this->dbms['DELIM'], '/') . '$/m', $sql);
-
-		$data = array_map('trim', $data);
-
-		// The empty case
-		$end_data = end($data);
-
-		if (empty($end_data))
-		{
-			unset($data[key($data)]);
-		}
-
-		if ($this->config['dbms'] == 'sqlite')
-		{
-			// remove comment lines starting with # - they are not proper sqlite
-			// syntax and break sqlite2
-			foreach ($data as $i => $query)
-			{
-				$data[$i] = preg_replace('/^#.*$/m', "\n", $query);
-			}
-		}
-
-		return $data;
 	}
 
 	/**

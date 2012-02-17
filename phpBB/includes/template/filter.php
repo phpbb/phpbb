@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2011 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -40,6 +40,7 @@ class phpbb_template_filter extends php_user_filter
 	const REGEX_NS = '[a-z_][a-z_0-9]+';
 
 	const REGEX_VAR = '[A-Z_][A-Z_0-9]+';
+	const REGEX_VAR_SUFFIX = '[A-Z_0-9]+';
 
 	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
 
@@ -374,7 +375,7 @@ class phpbb_template_filter extends php_user_filter
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks, -1, $replacements);
+			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR_SUFFIX . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); /**/?>", $text_blocks, -1, $replacements);
 			return (bool) $replacements;
 		}
 
@@ -382,7 +383,7 @@ class phpbb_template_filter extends php_user_filter
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks, -1, $replacements);
+			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR_SUFFIX . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); /**/?>", $text_blocks, -1, $replacements);
 			return (bool) $replacements;
 		}
 
@@ -872,6 +873,15 @@ class phpbb_template_filter extends php_user_filter
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
 
+		if (($pos = strrpos($namespace, '.')) !== false)
+		{
+			$local_namespace = substr($namespace, $pos + 1);
+		}
+		else
+		{
+			$local_namespace = $namespace;
+		}
+
 		$expr = true;
 
 		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
@@ -880,23 +890,23 @@ class phpbb_template_filter extends php_user_filter
 		{
 			case 'S_ROW_NUM':
 			case 'S_ROW_COUNT':
-				$varref = "\$_${namespace}_i";
+				$varref = "\$_${local_namespace}_i";
 			break;
 
 			case 'S_NUM_ROWS':
-				$varref = "\$_${namespace}_count";
+				$varref = "\$_${local_namespace}_count";
 			break;
 
 			case 'S_FIRST_ROW':
-				$varref = "(\$_${namespace}_i == 0)";
+				$varref = "(\$_${local_namespace}_i == 0)";
 			break;
 
 			case 'S_LAST_ROW':
-				$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+				$varref = "(\$_${local_namespace}_i == \$_${local_namespace}_count - 1)";
 			break;
 
 			case 'S_BLOCK_NAME':
-				$varref = "'$namespace'";
+				$varref = "'$local_namespace'";
 			break;
 
 			default:

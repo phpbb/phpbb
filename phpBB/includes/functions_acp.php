@@ -2,11 +2,18 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Header for acp pages
@@ -106,15 +113,13 @@ function adm_page_footer($copyright_html = true)
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
-			if (function_exists('memory_get_usage'))
+			if (function_exists('memory_get_peak_usage'))
 			{
-				if ($memory_usage = memory_get_usage())
+				if ($memory_usage = memory_get_peak_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
 					$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;
+					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
 				}
 			}
 
@@ -126,6 +131,8 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
+		'T_JQUERY_LINK'		=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'	=> ($config['load_jquery_cdn']) ? true : false,
 		'VERSION'			=> $config['version'])
 	);
 

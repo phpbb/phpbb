@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -97,8 +97,8 @@ function deregister_globals()
 	unset($input);
 }
 
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+// Register globals and magic quotes have been dropped in PHP 5.4
+if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 {
 	/**
 	* @ignore

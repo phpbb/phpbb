@@ -3,7 +3,7 @@
 *
 * @package install
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -104,14 +104,21 @@ if (!defined('LOGIN_ATTEMPT_TABLE'))
 {
 	define('LOGIN_ATTEMPT_TABLE', $table_prefix . 'login_attempts');
 }
+if (!defined('EXT_TABLE'))
+{
+	define('EXT_TABLE', $table_prefix . 'ext');
+}
 
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
-$class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
 $cache = $cache_factory->get_service();
-$class_loader->set_cache($cache->get_driver());
+$phpbb_class_loader_ext->set_cache($cache->get_driver());
+$phpbb_class_loader->set_cache($cache->get_driver());
 
 $request = new phpbb_request();
 $user = new user();
@@ -671,7 +678,13 @@ function _write_result($no_updates, $errored, $error_ary)
 
 function _add_modules($modules_to_install)
 {
-	global $phpbb_root_path, $phpEx, $db;
+	global $phpbb_root_path, $phpEx, $db, $phpbb_extension_manager;
+
+	// modules require an extension manager
+	if (empty($phpbb_extension_manager))
+	{
+		$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+	}
 
 	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -1009,7 +1022,7 @@ function database_update_info()
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
 						// in 3.0.9-RCX installations and has to be dropped in
-						// 3.0.10 after the db_tools class is capable of properly
+						// 3.0.11 after the db_tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
@@ -1043,11 +1056,31 @@ function database_update_info()
 		'3.0.9-RC3'     => array(),
 		// No changes from 3.0.9-RC4 to 3.0.9
 		'3.0.9-RC4'     => array(),
+		// No changes from 3.0.9 to 3.0.10-RC1
+		'3.0.9'			=> array(),
+		// No changes from 3.0.10-RC1 to 3.0.10-RC2
+		'3.0.10-RC1'	=> array(),
+		// No changes from 3.0.10-RC2 to 3.0.10-RC3
+		'3.0.10-RC2'	=> array(),
+		// No changes from 3.0.10-RC3 to 3.0.10
+		'3.0.10-RC3'	=> array(),
 
-		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.10-RC1 */
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
+			'add_tables'		=> array(
+				EXT_TABLE				=> array(
+					'COLUMNS'			=> array(
+						'ext_name'		=> array('VCHAR', ''),
+						'ext_active'	=> array('BOOL', 0),
+						'ext_state'		=> array('TEXT', ''),
+					),
+					'KEYS'				=> array(
+						'ext_name'		=> array('UNIQUE', 'ext_name'),
+					),
+				),
+			),
 			'add_columns'		=> array(
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
@@ -2088,56 +2121,147 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.9-RC4':
 		break;
 
+		// Changes from 3.0.9 to 3.0.10-RC1
+		case '3.0.9':
+			if (!isset($config['email_max_chunk_size']))
+			{
+				set_config('email_max_chunk_size', '50');
+			}
+
+			$no_updates = false;
+		break;
+
+		// No changes from 3.0.10-RC1 to 3.0.10-RC2
+		case '3.0.10-RC1':
+		break;
+
+		// No changes from 3.0.10-RC2 to 3.0.10-RC3
+		case '3.0.10-RC2':
+		break;
+
+		// No changes from 3.0.10-RC3 to 3.0.10
+		case '3.0.10-RC3':
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
-			set_config('use_system_cron', 0);
 
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_teampage = 1
-				WHERE group_type = ' . GROUP_SPECIAL . "
-					AND group_name = 'ADMINISTRATORS'";
-			_sql($sql, $errored, $error_ary);
-
-			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET group_teampage = 2
-				WHERE group_type = ' . GROUP_SPECIAL . "
-					AND group_name = 'GLOBAL_MODERATORS'";
-			_sql($sql, $errored, $error_ary);
-
-			set_config('legend_sort_groupname', '0');
-			set_config('teampage_multiple', '1');
-			set_config('teampage_forums', '1');
-
-			$sql = 'SELECT group_id
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_legend = 1
-				ORDER BY group_name ASC';
+			// rename all module basenames to full classname
+			$sql = 'SELECT module_id, module_basename, module_class
+				FROM ' . MODULES_TABLE;
 			$result = $db->sql_query($sql);
 
-			$next_legend = 1;
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$module_id = (int) $row['module_id'];
+				unset($row['module_id']);
+
+				if (!empty($row['module_basename']) && !empty($row['module_class']))
+				{
+					// all the class names start with class name or with phpbb_ for auto loading
+					if (strpos($row['module_basename'], $row['module_class'] . '_') !== 0 &&
+						strpos($row['module_basename'], 'phpbb_') !== 0)
+					{
+						$row['module_basename'] = $row['module_class'] . '_' . $row['module_basename'];
+
+						$sql_update = $db->sql_build_array('UPDATE', $row);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . '
+							SET ' . $sql_update . '
+							WHERE module_id = ' . $module_id;
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			$db->sql_freeresult($result);
+
+			if (substr($config['search_type'], 0, 6) !== 'phpbb_')
+			{
+				// try to guess the new auto loaded search class name
+				// works for native and mysql fulltext
+				set_config('search_type', 'phpbb_search_' . $config['search_type']);
+			}
+
+			if (!isset($config['load_jquery_cdn']))
+			{
+				set_config('load_jquery_cdn', 0);
+				set_config('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js');
+			}
+
+			if (!isset($config['use_system_cron']))
+			{
+				set_config('use_system_cron', 0);
+			}
+
+			$sql = 'SELECT group_teampage
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 0';
+			$result = $db->sql_query_limit($sql, 1);
+			$added_groups_teampage = (bool) $db->sql_fetchfield('group_teampage');
+			$db->sql_freeresult($result);
+
+			if (!$added_groups_teampage)
+			{
 				$sql = 'UPDATE ' . GROUPS_TABLE . '
-					SET group_legend = ' . $next_legend . '
-					WHERE group_id = ' . (int) $row['group_id'];
+					SET group_teampage = 1
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'ADMINISTRATORS'";
 				_sql($sql, $errored, $error_ary);
 
-				$next_legend++;
+				$sql = 'UPDATE ' . GROUPS_TABLE . '
+					SET group_teampage = 2
+					WHERE group_type = ' . GROUP_SPECIAL . "
+						AND group_name = 'GLOBAL_MODERATORS'";
+				_sql($sql, $errored, $error_ary);
 			}
+
+			if (!isset($config['legend_sort_groupname']))
+			{
+				set_config('legend_sort_groupname', '0');
+				set_config('teampage_forums', '1');
+			}
+
+			$sql = 'SELECT group_legend
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_teampage > 1';
+			$result = $db->sql_query_limit($sql, 1);
+			$updated_group_legend = (bool) $db->sql_fetchfield('group_teampage');
 			$db->sql_freeresult($result);
-			unset($next_legend);
+
+			if (!$updated_group_legend)
+			{
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_legend = 1
+					ORDER BY group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$next_legend = 1;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . GROUPS_TABLE . '
+						SET group_legend = ' . $next_legend . '
+						WHERE group_id = ' . (int) $row['group_id'];
+					_sql($sql, $errored, $error_ary);
+
+					$next_legend++;
+				}
+				$db->sql_freeresult($result);
+				unset($next_legend);
+			}
 
 			// Install modules
 			$modules_to_install = array(
 				'position'	=> array(
-					'base'		=> 'groups',
+					'base'		=> 'acp_groups',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_GROUPS_POSITION',
 					'auth'		=> 'acl_a_group',
 					'cat'		=> 'ACP_GROUPS',
 				),
 				'manage'	=> array(
-					'base'		=> 'attachments',
+					'base'		=> 'acp_attachments',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_MANAGE_ATTACHMENTS',
 					'auth'		=> 'acl_a_attach',
@@ -2146,7 +2270,7 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
-			
+
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
 			    WHERE module_basename = 'styles' AND module_mode = 'imageset'";
 			_sql($sql, $errored, $error_ary);
@@ -2229,9 +2353,18 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			// Allow custom profile fields in pm templates
-			set_config('load_cpf_pm', '0');
+			if (!isset($config['load_cpf_pm']))
+			{
+				set_config('load_cpf_pm', '0');
+			}
+
+			if (!isset($config['teampage_memberships']))
+			{
+				set_config('teampage_memberships', '1');
+			}
 
 			$no_updates = false;
+
 		break;
 	}
 }

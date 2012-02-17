@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -869,6 +868,9 @@ class acp_language
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
 
+				// We want to notify the admin that custom profile fields need to be updated for the new language.
+				$notify_cpf_update = false;
+
 				// From the mysql documentation:
 				// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
 				// Due to this we stay on the safe side if we do the insertion "the manual way"
@@ -882,6 +884,7 @@ class acp_language
 				{
 					$row['lang_id'] = $lang_id;
 					$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					$notify_cpf_update = true;
 				}
 				$db->sql_freeresult($result);
 
@@ -894,12 +897,15 @@ class acp_language
 				{
 					$row['lang_id'] = $lang_id;
 					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					$notify_cpf_update = true;
 				}
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
+				$message = sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']);
+				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang['LANGUAGE_PACK_CPF_UPDATE'] : '';
+				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
 
@@ -1129,10 +1135,9 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @version $' . 'Id: ' . '$
 * @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 

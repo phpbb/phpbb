@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -48,7 +48,7 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 		);
 
 		$cp = new custom_profile;
-		$result = $cp->validate_profile_field(FIELD_DROPDOWN, &$field_value, $field_data);
+		$result = $cp->validate_profile_field(FIELD_DROPDOWN, $field_value, $field_data);
 
 		$this->assertEquals($expected, $result, $description);
 	}

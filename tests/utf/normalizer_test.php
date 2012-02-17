@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -102,7 +102,7 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 					foreach ($tests as $test)
 					{
 						$utf_result = $utf_expected;
-						call_user_func(array('utf_normalizer', $form), &$utf_result);
+						call_user_func_array(array('utf_normalizer', $form), array(&$utf_result));
 
 						$hex_result = $this->utf_to_hexseq($utf_result);
 						$this->assertEquals($utf_expected, $utf_result, "$expected == $form($test) ($hex_expected != $hex_result)");
@@ -154,7 +154,7 @@ class phpbb_utf_normalizer_test extends phpbb_test_case
 			foreach (array('nfc', 'nfkc', 'nfd', 'nfkd') as $form)
 			{
 				$utf_result = $utf_expected;
-				call_user_func(array('utf_normalizer', $form), &$utf_result);
+				call_user_func_array(array('utf_normalizer', $form), array(&$utf_result));
 				$hex_result = $this->utf_to_hexseq($utf_result);
 
 				$this->assertEquals($utf_expected, $utf_result, "$hex_expected == $form($hex_tested) ($hex_expected != $hex_result)");

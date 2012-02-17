@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -256,6 +255,12 @@ if (!$user->data['is_registered'])
 		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	}
 
+	if ($id == 'pm' && $mode == 'view' && isset($_GET['p']))
+	{
+		$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx?i=pm&p=" . request_var('p', 0));
+		login_box($redirect_url, $user->lang['LOGIN_EXPLAIN_UCP']);
+	}
+
 	login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
 }
 
@@ -268,19 +273,19 @@ if ($module->is_active('zebra', 'friends'))
 	// Output listing of friends online
 	$update_time = $config['load_online_time'] * 60;
 
-	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+	$sql_ary = array(
 		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
-			ZEBRA_TABLE		=> 'z'
+			ZEBRA_TABLE		=> 'z',
 		),
 
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(SESSIONS_TABLE => 's'),
-				'ON'	=> 's.session_user_id = z.zebra_id'
-			)
+				'ON'	=> 's.session_user_id = z.zebra_id',
+			),
 		),
 
 		'WHERE'		=> 'z.user_id = ' . $user->data['user_id'] . '
@@ -290,8 +295,9 @@ if ($module->is_active('zebra', 'friends'))
 		'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
 
 		'ORDER_BY'	=> 'u.username_clean ASC',
-	));
+	);
 
+	$sql = $db->sql_build_query('SELECT_DISTINCT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

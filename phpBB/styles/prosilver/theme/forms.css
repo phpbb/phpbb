@@ -1,4 +1,4 @@
-/* proSilver Form Styles
+/* Form Styles
 ---------------------------------------- */
 
 /* General form styles
@@ -26,6 +26,7 @@ select {
 	border: 1px solid #666666;
 	padding: 1px;
 	background-color: #FAFAFA;
+	font-size: 1em;
 }
 
 option {

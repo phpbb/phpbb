@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -132,7 +131,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
-		'TOTAL_TOPICS'			=> ($forum_topics == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $forum_topics),
+		'TOTAL_TOPICS'			=> $user->lang('VIEW_FORUM_TOPICS', (int) $forum_topics),
 	));
 
 	// Grab icons

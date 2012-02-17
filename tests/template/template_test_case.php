@@ -3,17 +3,19 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../mock/extension_manager.php';
 
 class phpbb_template_template_test_case extends phpbb_test_case
 {
 	protected $template;
 	protected $template_path;
 	protected $template_locator;
+	protected $template_provider;
 
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
@@ -57,7 +59,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->template_locator = new phpbb_template_locator();
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator);
+		$this->template_provider = new phpbb_template_path_provider();
+		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator, $this->template_provider);
 		$this->template->set_custom_template($this->template_path, 'tests');
 	}
 

@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -322,7 +321,7 @@ if ($mode == 'bump')
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
 
-		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');
+		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . $user->lang('VIEW_MESSAGE', '<a href="' . $meta_url . '">', '</a>');
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 		trigger_error($message);
@@ -841,7 +840,7 @@ if ($submit || $preview || $refresh)
 		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
 		{
 			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
-			$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $min_max_amount);
+			$error[] = $user->lang('FIELD_' . $result, $min_max_amount, $user->lang['USERNAME']);
 		}
 	}
 
@@ -893,7 +892,7 @@ if ($submit || $preview || $refresh)
 
 		$message_parser->parse_poll($poll);
 
-		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : array();
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 
 		/* We reset votes, therefore also allow removing options
@@ -901,6 +900,24 @@ if ($submit || $preview || $refresh)
 		{
 			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
 		}*/
+	}
+	else if ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && $auth->acl_get('f_poll', $forum_id))
+	{
+		// The user removed all poll options, this is equal to deleting the poll.
+		$poll = array(
+			'poll_title'		=> '',
+			'poll_length'		=> 0,
+			'poll_max_options'	=> 0,
+			'poll_option_text'	=> '',
+			'poll_start'		=> 0,
+			'poll_last_vote'	=> 0,
+			'poll_vote_change'	=> 0,
+			'poll_options'		=> array(),
+		);
+
+		$post_data['poll_options'] = array();
+		$post_data['poll_title'] = '';
+		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_max_options'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
 	}
 	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
 	{
@@ -915,7 +932,7 @@ if ($submit || $preview || $refresh)
 
 		$message_parser->parse_poll($poll);
 
-		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
+		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : array();
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 	}
 	else
@@ -1137,8 +1154,8 @@ if (!sizeof($error) && $preview)
 			'POLL_QUESTION'		=> $parse_poll->message,
 
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
-			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
-		);
+			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
+		));
 
 		$parse_poll->message = implode("\n", $post_data['poll_options']);
 		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
@@ -1340,7 +1357,7 @@ add_form_key('posting');
 $template->assign_vars(array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
-	'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
@@ -1413,7 +1430,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 
-		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf($user->lang['POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN'], $config['max_poll_options']),
+		'L_POLL_OPTIONS_EXPLAIN'	=> $user->lang('POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN', (int) $config['max_poll_options']),
 
 		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
 		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',

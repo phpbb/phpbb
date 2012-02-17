@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 * Minimum Requirement: PHP 5.2.0
 */
@@ -59,15 +58,6 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
-	{
-		$base_memory_usage = memory_get_usage();
-	}
-}
-
 // Load Extensions
 // dl() is deprecated and disabled by default as of PHP 5.3.
 if (!empty($load_extensions) && function_exists('dl'))
@@ -96,13 +86,16 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$class_loader = new phpbb_class_loader($phpbb_root_path, '.' . $phpEx);
-$class_loader->register();
+$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader->register();
 
 // set up caching
 $cache_factory = new phpbb_cache_factory($acm_type);
 $cache = $cache_factory->get_service();
-$class_loader->set_cache($cache->get_driver());
+$phpbb_class_loader_ext->set_cache($cache->get_driver());
+$phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
 $request	= new phpbb_request();
@@ -124,8 +117,12 @@ $config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
-$template_locator = new phpbb_template_locator();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator);
+// load extensions
+$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+
+$phpbb_template_locator = new phpbb_template_locator();
+$phpbb_template_path_provider = new phpbb_template_extension_path_provider($phpbb_extension_manager, new phpbb_template_path_provider());
+$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
@@ -138,5 +135,5 @@ foreach ($cache->obtain_hooks() as $hook)
 
 if (!$config['use_system_cron'])
 {
-	$cron = new phpbb_cron_manager($phpbb_root_path . 'includes/cron/task', $phpEx, $cache->get_driver());
+	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
 }

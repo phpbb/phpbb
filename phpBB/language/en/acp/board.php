@@ -4,9 +4,8 @@
 * acp_board [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -174,7 +173,7 @@ $lang = array_merge($lang, array(
 	'MAX_POST_URLS'					=> 'Maximum links per post',
 	'MAX_POST_URLS_EXPLAIN'			=> 'Maximum number of URLs in a post. Set to 0 for unlimited links.',
 	'MIN_CHAR_LIMIT'				=> 'Minimum characters per post/message',
-	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message.',
+	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message. The minimum for this setting is 1.',
 	'POSTING'						=> 'Posting',
 	'POSTS_PER_PAGE'				=> 'Posts per page',
 	'QUOTE_DEPTH_LIMIT'				=> 'Maximum nesting depth for quotes',
@@ -356,6 +355,8 @@ $lang = array_merge($lang, array(
 	'LOAD_CPF_PM'					=> 'Display custom profile fields in private messages',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
 	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
+	'LOAD_JQUERY_CDN'				=> 'Serve jQuery using Google’s CDN',
+	'LOAD_JQUERY_CDN_EXPLAIN'		=> 'If this setting is enabled, jQuery will be served from Google’s AJAX API CDN instead of the copy included with phpBB on your server. If the CDN fails, phpBB will attempt to fall back to the copy included with phpBB.',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 	'RECOMPILE_STYLES'				=> 'Recompile stale style components',

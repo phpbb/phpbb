@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1005,7 +1004,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$mode = 'post_review';
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql_ary = array(
 		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
 
 		'FROM'		=> array(
@@ -1016,14 +1015,15 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
-				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
-			)
+				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
-			AND u.user_id = p.poster_id'
-	));
+			AND u.user_id = p.poster_id',
+	);
 
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
 	$bbcode_bitfield = '';
@@ -1855,9 +1855,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_topic':
 		case 'edit_first_post':
-			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+			if (isset($poll['poll_options']))
 			{
-				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_start = ($poll['poll_start'] || empty($poll['poll_options'])) ? $poll['poll_start'] : $current_time;
 				$poll_length = $poll['poll_length'] * 86400;
 				if ($poll_length < 0)
 				{
@@ -2005,11 +2005,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update Poll Tables
-	if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+	if (isset($poll['poll_options']))
 	{
 		$cur_poll_options = array();
 
-		if ($poll['poll_start'] && $mode == 'edit')
+		if ($mode == 'edit')
 		{
 			$sql = 'SELECT *
 				FROM ' . POLL_OPTIONS_TABLE . '
@@ -2350,16 +2350,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($update_search_index && $data['enable_indexing'])
 	{
 		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = basename($config['search_type']);
-
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
-		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
-		}
+		$search_type = $config['search_type'];
 
 		if (!class_exists($search_type))
 		{
-			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
 		$error = false;
