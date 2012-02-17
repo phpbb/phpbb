@@ -29,7 +29,7 @@ class phpbb_environment_acp_checker extends phpbb_environment_checker
 	* If assertion results in false, it will be treated as error
 	* Puts results into $this->errors array
 	*/
-	function set_errors()
+	public function set_errors()
 	{
 		// Initialize common_checks_result if not set externally
 		if (empty($this->common_checks_result))
@@ -45,7 +45,7 @@ class phpbb_environment_acp_checker extends phpbb_environment_checker
 			'ERROR_MBSTRING_HTTP_OUTPUT'			=> $this->common_checks_result['MBSTRING_HTTP_OUTPUT'],
 			'ERROR_GETIMAGESIZE_SUPPORT'			=> $this->common_checks_result['GETIMAGESIZE_SUPPORT'],
 			'ERROR_REMOVE_INSTALL'					=> !file_exists($this->phpbb_root_path . 'install') || is_file($this->phpbb_root_path . 'install'),
-		
+
 		);
 	}
 
@@ -54,7 +54,7 @@ class phpbb_environment_acp_checker extends phpbb_environment_checker
 	* If assertion results in false, it will be treated as notice
 	* Puts results into $this->notices array
 	*/
-	function set_notices()
+	public function set_notices()
 	{
 		// Initialize common_checks_result if not set externally
 		if (empty($this->common_checks_result))

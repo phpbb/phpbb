@@ -24,16 +24,16 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_assertion_manager
 {
-	var $failed_assertions = array();
+	private $failed_assertions = array();
 
 	/**
 	* Assertion checker and collector
 	* If assertion us false, collect corresponding error message into array.
 	*
-	* @param bool $assertion	Assertion (true|false). 
+	* @param bool $assertion	Assertion (true|false).
 	* @param string				Error message assigned to false assertion.
 	*/
-	function assert($assertion, $error_message)
+	public function assert($assertion, $error_message)
 	{
 		if (!$assertion)
 		{
@@ -47,7 +47,7 @@ class phpbb_assertion_manager
 	* @return array		Array of error messages collected by function assert()
 	*					Empty if no failed assertions collected
 	*/
-	function get_failed_assertions()
+	public function get_failed_assertions()
 	{
 		return $this->failed_assertions;
 	}
