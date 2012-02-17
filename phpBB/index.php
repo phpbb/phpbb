@@ -42,7 +42,7 @@ if ($ext = $request->variable('ext', ''))
 		send_status_line(404, 'Not Found');
 		trigger_error($user->lang('EXTENSION_DISABLED', $ext));
 	}
-	else if (!file_exists("{$phpbb_root_path}ext/$ext/controller.$phpEx") || !class_exists($class))
+	else if (!class_exists($class))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error($user->lang('EXTENSION_CONTROLLER_MISSING', $ext));
