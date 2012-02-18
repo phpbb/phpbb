@@ -295,7 +295,7 @@ class search_backend
 			$sql_where = '';
 			foreach ($authors as $author)
 			{
-				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors LIKE \'% ' . (int) $author . ' %\'';
+				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $db->sql_like_expression($db->any_char . ' ' . (int) $author . ' ' . $db->any_char);
 			}
 
 			$sql = 'SELECT search_key
