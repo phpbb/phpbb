@@ -51,4 +51,12 @@ class phpbb_assertion_manager
 	{
 		return $this->failed_assertions;
 	}
+
+	/**
+	* Clear failed assertions
+	*/
+	public function clear()
+	{
+		$this->failed_assertions = array();
+	}
 }

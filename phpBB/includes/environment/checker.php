@@ -92,7 +92,7 @@ abstract class phpbb_environment_checker
 		}
 
 		// Clear previous results
-		$this->asserter->failed_assertions = array();
+		$this->asserter->clear();
 
 		foreach ($this->errors as $message => $assertion)
 		{
@@ -116,7 +116,7 @@ abstract class phpbb_environment_checker
 		}
 
 		// Clear previous results
-		$this->asserter->failed_assertions = array();
+		$this->asserter->clear();
 
 		foreach ($this->notices as $message => $assertion)
 		{
