@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_php_ini.php';
-
 class phpbb_mock_phpbb_php_ini extends phpbb_php_ini
 {
 	function get($varname)

@@ -20,7 +20,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 
 	public function test_get_string()
 	{
-		$this->assertEquals('phpbb', $this->reader->get_string(' phpBB '));
+		$this->assertEquals('phpbb', $this->reader->get_string(' phpbb '));
 	}
 
 	public function test_get_bool()

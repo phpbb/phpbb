@@ -24,30 +24,30 @@ if (!defined('IN_PHPBB'))
 */
 abstract class phpbb_environment_checker
 {
-	var $phpbb_root_path;
-	var $phpEx;
-	var $config;
-	var $auth;
-	var $common_checks_result = array();
-	var $notices = array();
-	var $errors = array();
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $config;
+	protected $auth;
+	protected $common_checks_result = array();
+	protected $notices = array();
+	protected $errors = array();
 
 	/**
 	* Functions to assign a set of checks/assertions for errors and notices
 	* Should be implemented in any child classes
 	*/
-	abstract function set_errors();
-	abstract function set_notices();
+	abstract public function set_errors();
+	abstract public function set_notices();
 
 	/**
 	* Class constructor
 	* Initializes some essential data
-	* @param string	$phpbb_root_path	Relative path to phpBB folder. 
-	* @param string	$phpEx				phpBB script files extension. 
+	* @param string	$phpbb_root_path	Relative path to phpBB folder.
+	* @param string	$phpEx				phpBB script files extension.
 	* @param array 	$config				phpBB configuration values array.
 	* @param object	$auth				phpBB authentication class object.
 	*/
-	function __construct($phpbb_root_path, $phpEx, $config, $auth)
+	public function __construct($phpbb_root_path, $phpEx, $config, $auth, phpbb_assertion_manager $asserter = null, phpbb_php_ini $php_ini = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -55,15 +55,15 @@ abstract class phpbb_environment_checker
 		$this->auth = $auth;
 
 		// Initialize assertion manager and phpBB PHP ini wrapper classes
-		$this->asserter =  new phpbb_assertion_manager();
-		$this->php_ini =  new phpbb_php_ini();
+		$this->asserter = ($asserter) ? $asserter : new phpbb_assertion_manager();
+		$this->php_ini = ($php_ini) ? $php_ini : new phpbb_php_ini();
 	}
 
 	/**
-	* Function to perform common checks, can be used either 
+	* Function to perform common checks, can be used either
 	* for set_errors() or for set_notices()
 	*/
-	function common_checks()
+	public function common_checks()
 	{
 		$mbstring = extension_loaded('mbstring');
 		$this->common_checks_result = array(
@@ -83,7 +83,7 @@ abstract class phpbb_environment_checker
 	* Uses data previously assigned to $this->errors array
 	* with the function set_errors()
 	*/
-	function get_errors()
+	public function get_errors()
 	{
 		// Initialize errors checks if not set externally
 		if (empty($this->errors))
@@ -92,7 +92,7 @@ abstract class phpbb_environment_checker
 		}
 
 		// Clear previous results
-		$this->asserter->failed_assertions = array();
+		$this->asserter->clear();
 
 		foreach ($this->errors as $message => $assertion)
 		{
@@ -107,7 +107,7 @@ abstract class phpbb_environment_checker
 	* Uses data previously assigned to $this->notices array
 	* with the function set_notices()
 	*/
-	function get_notices()
+	public function get_notices()
 	{
 		// Initialize notices checks if not set externally
 		if (empty($this->notices))
@@ -116,7 +116,7 @@ abstract class phpbb_environment_checker
 		}
 
 		// Clear previous results
-		$this->asserter->failed_assertions = array();
+		$this->asserter->clear();
 
 		foreach ($this->notices as $message => $assertion)
 		{

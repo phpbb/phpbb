@@ -24,8 +24,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_environment_install_checker extends phpbb_environment_checker
 {
-	var $php_optional_modules = array('zlib', 'ftp', 'gd', 'xml');
-	var $categories = array(
+	protected $php_optional_modules = array('zlib', 'ftp', 'gd', 'xml');
+	protected $categories = array(
 			'PHP_SETTINGS',
 			'MBSTRING_CHECK',
 			'PHP_SUPPORTED_DB',
@@ -33,18 +33,18 @@ class phpbb_environment_install_checker extends phpbb_environment_checker
 			'FILES_REQUIRED',
 			'FILES_OPTIONAL',
 		);
-	var $dir_is_writable = array();
-	var $dir_exists = array();
-	var $category = '';
-	var $any_db_support = false;
-	var $imagemagic;
+	protected $dir_is_writable = array();
+	protected $dir_exists = array();
+	protected $category = '';
+	protected $any_db_support = false;
+	protected $imagemagic;
 
 	/**
 	* Function to assign a set of checks/assertions for errors
 	* If assertion results in false, it will be treated as error
 	* Puts results into $this->errors array
 	*/
-	function set_errors()
+	public function set_errors()
 	{
 		// Initialize checks if not set externally
 		if (empty($this->common_checks_result))
@@ -131,7 +131,7 @@ class phpbb_environment_install_checker extends phpbb_environment_checker
 	* If assertion results in false, it will be treated as notice
 	* Puts results into $this->notices array
 	*/
-	function set_notices()
+	public function set_notices()
 	{
 		// No notices are needed for installation procedure,
 		// but we implement the function as it is abstract declared
