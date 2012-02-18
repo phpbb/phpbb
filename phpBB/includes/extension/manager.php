@@ -437,7 +437,7 @@ class phpbb_extension_manager
 	*/
 	public function available($name)
 	{
-		return file_exists($this->phpbb_root_path . "ext/$name/");
+		return file_exists($this->get_extension_path($name, true));
 	}
 
 	/**
