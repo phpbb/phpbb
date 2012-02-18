@@ -28,7 +28,7 @@ $user->setup('viewforum');
 if ($ext = $request->variable('ext', ''))
 {
 	// The class to load
-	$class = 'phpbb_ext_' . str_replace('/', '_', $name) . '_controller';
+	$class = 'phpbb_ext_' . str_replace('/', '_', $ext) . '_controller';
 
 	// Make sure the specified extension is enabled
 	// and that it has a controller class
