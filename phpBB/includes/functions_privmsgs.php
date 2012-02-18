@@ -1084,6 +1084,122 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 }
 
 /**
+* Delete all PM(s) for a given user and delete the ones without references
+*/
+function delete_user_pms($user_id)
+{
+	global $db, $user, $phpbb_root_path, $phpEx;
+
+	$user_id = (int) $user_id;
+
+	if (!$user_id)
+	{
+		return false;
+	}
+
+	// Get PM Information for later deleting
+	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE user_id = ' . $user_id . '
+			OR (author_id = ' . $user_id . '
+				AND folder_id = ' . PRIVMSGS_NO_BOX . ')';
+	$result = $db->sql_query($sql);
+
+	$undelivered_msg = $undelivered_user = $delete_rows = array();
+	$num_unread = $num_new = $num_deleted = 0;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
+		{
+			// Undelivered messages
+			$undelivered_msg[] = $row['msg_id'];
+			$undelivered_user[$row['user_id']][] = true;
+		}
+
+		$delete_rows[$row['msg_id']] = 1;
+	}
+	$db->sql_freeresult($result);
+
+	if (!sizeof($delete_rows))
+	{
+		return false;
+	}
+
+	$db->sql_transaction('begin');
+
+	if (sizeof($undelivered_msg))
+	{
+		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
+		$db->sql_query($sql);
+	}
+
+	foreach ($undelivered_user as $_user_id => $ary)
+	{
+		if ($_user_id == $user_id)
+		{
+			continue;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
+				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
+			WHERE user_id = ' . $_user_id;
+		$db->sql_query($sql);
+	}
+
+	// Delete private message data
+	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
+		WHERE user_id = $user_id
+			AND " . $db->sql_in_set('msg_id', array_keys($delete_rows));
+	$db->sql_query($sql);
+
+	// Now we have to check which messages we can delete completely
+	$sql = 'SELECT msg_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		unset($delete_rows[$row['msg_id']]);
+	}
+	$db->sql_freeresult($result);
+
+	$delete_ids = array_keys($delete_rows);
+
+	if (sizeof($delete_ids))
+	{
+		// Check if there are any attachments we need to remove
+		if (!function_exists('delete_attachments'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
+		delete_attachments('message', $delete_ids, false);
+
+		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
+		$db->sql_query($sql);
+	}
+
+	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
+	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+		SET author_id = ' . ANONYMOUS . '
+		WHERE author_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET author_id = ' . ANONYMOUS . '
+		WHERE author_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
+
+	return true;
+}
+
+/**
 * Rebuild message header
 */
 function rebuild_header($check_ary)
