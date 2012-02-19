@@ -263,7 +263,8 @@ exit_handler();
 					)
 	// The user is able to read all forums
 	var $unlimited_read = false;
-		// Make sure we can read all topics this forum
+		// Make sure we can read all topics this forum else
+		// You'll need to be the topic starter to see it all
 		$unlimited_read = $auth->acl_get('f_read_other', $this->forum_id);
 
 		global $auth, $db, $user;
@@ -286,6 +287,9 @@ exit_handler();
 			{
 				$item_row['statistics'] = $user->lang('PRIVATE_FORUM');
 			}
+				AND (' . $db->sql_in_set('forum_id', $this->get_unlimited_reading_forums(), false, true) . '
+					OR topic_poster = ' . $user->data['user_id'] . '
+					)
 		global $db, $config, $user;
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($in_fid_ary);
 
