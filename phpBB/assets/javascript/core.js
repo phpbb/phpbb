@@ -251,7 +251,7 @@ phpbb.ajaxify = function(options) {
 	elements.bind(event_name, function() {
 		var action, method, data, that = this, $this = $(this);
 
-		if (!$this.attr('data-ajax'))
+		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false')
 		{
 			return;
 		}
@@ -358,6 +358,15 @@ phpbb.ajaxify = function(options) {
 			action = $this.attr('action').replace('&amp;', '&');
 			data = $this.serializeArray();
 			method = $this.attr('method') || 'GET';
+
+			if ($this.find('input[type="submit"][data-clicked]'))
+			{
+				var submit = $this.find('input[type="submit"][data-clicked]');
+				data.push({
+					name: submit.attr('name'),
+					value: submit.val()
+				});
+			}
 		}
 		else
 		{
@@ -385,6 +394,15 @@ phpbb.ajaxify = function(options) {
 
 		return false;
 	});
+
+	if (is_form) {
+		elements.find('input:submit').click(function () {
+			var $this = $(this);
+
+			$this.siblings('[data-clicked]').removeAttr('data-clicked');
+			$this.attr('data-clicked', 'true');
+		});
+	}
 
 	return this;
 }
