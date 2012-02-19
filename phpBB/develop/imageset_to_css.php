@@ -10,21 +10,21 @@ $phpbb_root_path = '../';
 $style = 'subsilver2';
 
 $imageset_path = $phpbb_root_path . 'styles/' . $style . '/imageset';
-$theme_path = $phpbb_root_path . 'styles/' . $style . '/theme2';
+$theme_path = $phpbb_root_path . 'styles/' . $style . '/theme';
 
 // Start output buffering
 ob_start();
 
 // Get global and English images
 $images_global = get_imageset($imageset_path);
-if($images_global === false)
+if ($images_global === false)
 {
 	echo 'imageset.cfg was not found.';
 	echo ob_get_clean();
 	return;
 }
 $images_en = get_imageset($imageset_path, 'en');
-if($images_en === false)
+if ($images_en === false)
 {
 	echo 'English imageset.cfg was not found.';
 	echo ob_get_clean();
@@ -32,7 +32,7 @@ if($images_en === false)
 }
 
 // Remove duplicate images
-foreach($images_en as $key => $row)
+foreach ($images_en as $key => $row)
 {
 	unset($images_global[$key]);
 }
@@ -52,13 +52,16 @@ $replace = array(
 // $replace = array_merge($replace, get_replacements($images_global));
 $replace = array_merge($replace, get_replacements($images_global), get_replacements($images_en));
 
+// BIDI code
+$bidi_code = css($images_global, './images/', true);
+
 // Get all CSS files, parse them
 $files = list_files($theme_path, 'css');
-if($files === false || !count($files))
+if ($files === false || !count($files))
 {
 	echo 'No CSS files found in theme directory.<br />';
 }
-else for($i=0; $i<count($files); $i++)
+else for ($i=0; $i<count($files); $i++)
 {
 	$file = $theme_path . '/' . $files[$i];
 	$data = file_get_contents($file);
@@ -67,12 +70,20 @@ else for($i=0; $i<count($files); $i++)
 	$errors = false;
 	for($j=0; $j<count($not_compatible); $j++)
 	{
-		if(strpos($data, $not_compatible[$j]) !== false)
+		if (strpos($data, $not_compatible[$j]) !== false)
 		{
 			echo 'Error: ', $file, ' contains ', $not_compatible[$j], '. That variable cannot be converted.<br />';
+			continue;
 		}
 	}
-	if(md5($data) == $hash)
+	if (basename($file) == 'bidi.css' && strpos($data, '/* Former imageset */') === false && strlen($bidi_code))
+	{
+		// Add bidi data
+		$data .= "\n/* Former imageset */\n" . $bidi_code;
+		$bidi_code = '';
+		echo 'Note: RTL imageset entries were added at the end of file below:<br />';
+	}
+	if (md5($data) == $hash)
 	{
 		echo 'Nothing to replace in ', $file, '<br />';
 	}
@@ -84,9 +95,9 @@ else for($i=0; $i<count($files); $i++)
 
 // Check if there are invalid images in imageset
 $list = array_merge($images_global, $images_en);
-foreach($list as $key => $row)
+foreach ($list as $key => $row)
 {
-	if($row['skip'])
+	if ($row['skip'])
 	{
 		echo 'Unable to generate code to add to CSS files because some images are missing or invalid. See errors above.';
 		echo ob_get_clean();
@@ -112,14 +123,22 @@ span.imageset {
 
 /* English images for fallback */
 ' . css($images_en, './en/');
+if (strlen($bidi_code))
+{
+	$code .= "\n/* RTL imageset entries */\n" . $bidi_code;
+}
 echo 'Code to add to CSS file:', dump_code($code, 'imageset.css');
 
+
 $list = list_languages($imageset_path);
-for($i=0; $i<count($list); $i++)
+for ($i=0; $i<count($list); $i++)
 {
 	$lang = $list[$i];
 	$images = get_imageset($imageset_path . '/' . $lang);
-	if(!count($images)) continue;
+	if (!count($images))
+	{
+		continue;
+	}
 	$code = '/* ' . strtoupper($lang) . ' Language Pack */
 ' . css($images, './');
 	echo 'New CSS file: ', $theme_path, '/', $lang, '/stylesheet.css', dump_code($code, 'stylesheet_' . $lang . '.css');
@@ -135,26 +154,35 @@ return;
 function get_imageset($path, $lang = '')
 {
 	$cfg = $path . ($lang ? '/' . $lang : '') . '/imageset.cfg';
-	if(!@file_exists($cfg)) return false;
+	if (!@file_exists($cfg))
+	{	
+		return false;
+	}
 	$data = file($cfg);
 	$result = array();
-	for($i=0; $i<count($data); $i++)
+	for ($i=0; $i<count($data); $i++)
 	{
 		$str = trim($data[$i]);
-		if(substr($str, 0, 4) != 'img_') continue;
+		if (substr($str, 0, 4) != 'img_') 
+		{
+			continue;
+		}
 		$list = explode('=', $data[$i]);
-		if(count($list) != 2) continue;
+		if (count($list) != 2) 
+		{
+			continue;
+		}
 		$key = trim($list[0]);
 		$row = explode('*', trim($list[1]));
 		$file = trim($row[0]);
 		$height = isset($row[1]) && intval($row[1]) ? intval($row[1]) : false;
 		$width = isset($row[2]) && intval($row[2]) ? intval($row[2]) : false;
 		$skip = false;
-		if(strlen($file) && (!$width || !$height))
+		if (strlen($file) && (!$width || !$height))
 		{
 			// Try to detect width/height
 			$filename = $path . ($lang ? '/' . $lang : '') . '/' . $file;
-			if(!@file_exists($filename))
+			if (!@file_exists($filename))
 			{
 				echo 'Error: file ', $filename, ' does not exist and its dimensions are not available in imageset.cfg<br />';
 				$skip = true;
@@ -162,7 +190,7 @@ function get_imageset($path, $lang = '')
 			else
 			{
 				$size = @getimagesize($filename);
-				if($size === false)
+				if ($size === false)
 				{
 					echo 'Error: file ', $filename, ' is not a valid image<br />';
 					$skip = true;
@@ -188,7 +216,7 @@ function get_imageset($path, $lang = '')
 function get_replacements($list)
 {
 	$result = array();
-	foreach($list as $key => $row)
+	foreach ($list as $key => $row)
 	{
 		$key = '{' . strtoupper($key);
 		$result[$key . '_SRC}'] = strlen($row['file']) ? ($row['lang'] ? './' . $row['lang'] : './images') . '/' . $row['file'] : '';
@@ -201,9 +229,12 @@ function get_replacements($list)
 function list_files($dir, $ext)
 {
 	$res = @opendir($dir);
-	if($res === false) return false;
+	if ($res === false)
+	{
+		return false;
+	}
 	$files = array();
-	while(($file = readdir($res)) !== false)
+	while (($file = readdir($res)) !== false)
 	{
 		$list = explode('.', $file);
 		if(count($list) > 1 && strtolower($list[count($list) - 1]) == $ext)
@@ -218,13 +249,19 @@ function list_files($dir, $ext)
 function list_languages($dir)
 {
 	$res = @opendir($dir);
-	if($res === false) return array();
-	$files = array();
-	while(($file = readdir($res)) !== false)
+	if ($res === false)
 	{
-		if(substr($file, 0, 1) == '.') continue;
+		return array();
+	}
+	$files = array();
+	while (($file = readdir($res)) !== false)
+	{
+		if (substr($file, 0, 1) == '.')
+		{
+			continue;
+		}
 		$filename = $dir . '/' . $file;
-		if(is_dir($filename) && file_exists($filename . '/imageset.cfg'))
+		if (is_dir($filename) && file_exists($filename . '/imageset.cfg'))
 		{
 			$files[] = $file;
 		}
@@ -236,7 +273,7 @@ function list_languages($dir)
 function dump_code($code, $filename = 'file.txt')
 {
 	$hash = md5($code);
-	if(isset($_GET['download']) && $_GET['download'] === $hash)
+	if (isset($_GET['download']) && $_GET['download'] === $hash)
 	{
 		// Download file
 		ob_end_clean();
@@ -256,18 +293,81 @@ function dump_code($code, $filename = 'file.txt')
 	echo '<textarea id="code-', $hash, '" onfocus="this.select();" style="width: 98%; height: 200px;">', htmlspecialchars($code), '</textarea><br />';
 }
 
-function css($list, $path = './')
+function css($list, $path = './', $bidi = false)
 {
 	$code = '';
-	foreach($list as $key => $row)
+	// Change value to true if you want images to be grouped up by size
+	$group = $bidi;
+	if ($group)
 	{
-		if(!strlen($row['file'])) continue;
-		$code .= '.imageset.' . substr($key, 4) . ' {
+		// group up images by size
+		$groups = array();
+		foreach ($list as $key => $row)
+		{
+			if (!strlen($row['file']))
+			{
+				continue;
+			}
+			$groups[$row['width'] . '*' . $row['height']][] = $key;
+		}
+		foreach ($groups as $size => $keys)
+		{
+			$extra = '';
+			for ($i=0; $i<count($keys); $i++)
+			{
+				$code .= ($i == 0 ? '' : ', ') . ($bidi ? '.rtl ' : '') . '.imageset.' . substr($keys[$i], 4);
+				if (!$bidi)
+				{
+					$extra .= '.imageset.' . substr($keys[$i], 4) . ' { background-image: url("' . $path . $list[$keys[$i]]['file'] . "\"); }\n";
+				}
+			}
+			$row = $list[$keys[0]];
+			$code .= ' {';
+			if ($bidi)
+			{
+				$code .= '
+	padding-right: ' . $row['width'] . 'px;
+	padding-left: 0;
+}
+';
+			}
+			else
+			{
+				$code .= '
+	padding-left: ' . $row['width'] . 'px;
+	padding-top: ' . $row['height'] . 'px;
+}
+' . $extra;
+			}
+		}
+	}
+	else
+	{
+		foreach ($list as $key => $row)
+		{
+			if (!strlen($row['file']))
+			{
+				continue;
+			}
+			$code .= ($bidi ? '.rtl ' : '') . '.imageset.' . substr($key, 4) . ' {';
+			if ($bidi)
+			{
+				$code .= '
+	padding-right: ' . $row['width'] . 'px;
+	padding-left: 0;
+}
+';
+			}
+			else
+			{
+				$code .= '
 	background-image: url("' . $path . $row['file'] . '");
 	padding-left: ' . $row['width'] . 'px;
 	padding-top: ' . $row['height'] . 'px;
 }
 ';
+			}
+		}
 	}
 	return $code;
 }
