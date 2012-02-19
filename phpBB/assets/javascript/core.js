@@ -248,10 +248,10 @@ phpbb.ajaxify = function(options) {
 		is_form = elements.is('form'),
 		event_name = is_form ? 'submit' : 'click';
 
-	elements.bind(event_name, function() {
-		var action, method, data, that = this, $this = $(this);
+	elements.bind(event_name, function(event) {
+		var action, method, data, submit, that = this, $this = $(this);
 
-		if (!$this.attr('data-ajax'))
+		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false')
 		{
 			return;
 		}
@@ -358,6 +358,15 @@ phpbb.ajaxify = function(options) {
 			action = $this.attr('action').replace('&amp;', '&');
 			data = $this.serializeArray();
 			method = $this.attr('method') || 'GET';
+
+			if ($this.find('input[type="submit"][data-clicked]'))
+			{
+				submit = $this.find('input[type="submit"][data-clicked]');
+				data.push({
+					name: submit.attr('name'),
+					value: submit.val()
+				});
+			}
 		}
 		else
 		{
@@ -370,7 +379,7 @@ phpbb.ajaxify = function(options) {
 		// and return true (meaning that the HTTP request will be sent normally).
 		if (run_filter && !options.filter.call(this, data))
 		{
-			return true;
+			return;
 		}
 
 		phpbb.loading_alert();
@@ -383,8 +392,17 @@ phpbb.ajaxify = function(options) {
 			error: error_handler
 		});
 
-		return false;
+		event.preventDefault();
 	});
+
+	if (is_form) {
+		elements.find('input:submit').click(function () {
+			var $this = $(this);
+
+			$this.siblings('[data-clicked]').removeAttr('data-clicked');
+			$this.attr('data-clicked', 'true');
+		});
+	}
 
 	return this;
 }
