@@ -121,7 +121,7 @@ class acp_users
 
 					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-						WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_id', array(0))));
+						WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_delete_ids', array(0))));
 					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
 
 					$subject = $user->lang("{$message}_PM_SUBJECT");
