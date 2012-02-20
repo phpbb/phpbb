@@ -144,10 +144,6 @@ class ucp_profile
 						// since the global setting was checked earlier
 						if ($delete_account)
 						{
-							if(!function_exists('phpbb_delete_account'))
-							{
-								include("{$phpbb_root_path}includes/functions_user.$phpEx");
-							}
 							// The third argument is sanitized within the function
 							$reason = $request->variable('delete_reason', '');
 							trigger_error(phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $reason));
