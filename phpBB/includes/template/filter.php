@@ -298,6 +298,14 @@ class phpbb_template_filter extends php_user_filter
 				}
 				return '<!-- ENDPHP -->';
 			break;
+			
+			case 'BEGINSCRIPT':
+				return '<?php ob_start(); ?>';
+			break;
+			
+			case 'ENDSCRIPT':
+				return '<?php $_rootref[\'SCRIPTS\'] = (isset($_rootref[\'SCRIPTS\']) ? $_rootref[\'SCRIPTS\'] : \'\') . ob_get_clean(); ?>';
+			break;
 
 			default:
 				return $matches[0];
