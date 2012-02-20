@@ -232,6 +232,12 @@ if (!$user_id && $username == '')
 	$module->set_display('warn', 'warn_user', false);
 }
 
+// Do not display ban panel if not authed to do so
+if (!$auth->acl_get('m_ban'))
+{
+	$module->set_display('ban', '', false);
+}
+
 // Load and execute the relevant module
 $module->load_active();
 
