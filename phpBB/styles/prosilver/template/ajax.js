@@ -26,7 +26,7 @@ phpbb.add_ajax_callback('post_approve', function(res) {
 
 // This callback handles the removal of the quick reply form.
 phpbb.add_ajax_callback('qr-submit', function() {
-	$(this).parents('form').fadeOut(function() {
+	$(this).fadeOut(function() {
 		$(this).remove();
 	});
 });
