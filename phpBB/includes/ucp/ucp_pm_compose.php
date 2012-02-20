@@ -1233,7 +1233,8 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-					AND user_allow_pm = 0';
+					AND (user_allow_pm = 0
+						OR user_type = ' . USER_IGNORE . ')';
 			$result = $db->sql_query($sql);
 
 			$removed = false;
