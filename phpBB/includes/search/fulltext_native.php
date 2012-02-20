@@ -1334,7 +1334,7 @@ class fulltext_native extends search_backend
 			$db->sql_query($sql);
 		}
 
-		$this->destroy_cache(array_unique($word_texts), $author_ids);
+		$this->destroy_cache(array_unique($word_texts), array_unique($author_ids));
 	}
 
 	/**
