@@ -149,7 +149,7 @@ class ucp_profile
 								include("{$phpbb_root_path}includes/functions_user.$phpEx");
 							}
 							// The third argument is sanitized within the function
-							$reason = isset($_POST['delete_reason']) ? $_POST['delete_reason'] : '';
+							$reason = $request->variable('delete_reason', '');
 							trigger_error(phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $reason));
 						}
 						$sql_ary = array(

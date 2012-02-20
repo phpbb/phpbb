@@ -3715,7 +3715,9 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT
 
 	// Let's make sure the user specified actually exsits
 	// After all, we do use the username later on for 'retain' type (aka SELF_ACCOUNT_DELETE_PROFILE)
-	$sql = 'SELECT username FROM ' . USERS_TABLE . ' WHERE user_id = ' . (int) $user_id;
+	$sql = 'SELECT username
+		FROM ' . USERS_TABLE . '
+		WHERE user_id = ' . (int) $user_id;
 	$result = $db->sql_query($sql);
 	$username = $db->sql_fetchfield('username');
 	$db->sql_freeresult($result);
@@ -3746,7 +3748,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT
 		{
 			// no bbcode parsing in $reason -- let's keep this simple
 			$reason = $db->sql_escape(utf8_normalize_nfc($reason));
-			$sql = 'UPDATE ' . USERS_TABLE . " SET user_delete_pending = 1, user_delete_type = $type, user_delete_pending_time = " . microtime();
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_delete_pending = 1, user_delete_type = $type, user_delete_pending_time = " . time();
 			// Only update the reason column if one is given
 			$sql .= (!empty($reason)) ? ", user_delete_pending_reason = '$reason'" : '';
 			$sql .= ' WHERE user_id = ' . (int) $user_id;

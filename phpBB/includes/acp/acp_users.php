@@ -119,8 +119,9 @@ class acp_users
 						'user_delete_pending_reason'	=> '',
 					);
 
-					$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-						WHERE user_id = IN(' . implode(',', $_POST['user_id']) . ')';
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_id', array(0))));
 					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
 
 					$subject = $user->lang("{$message}_PM_SUBJECT");
@@ -156,7 +157,10 @@ class acp_users
 			}
 
 			$sql = 'SELECT user_id, username, user_colour, user_delete_pending_time, user_delete_pending_reason
-			, user_delete_pending_type FROM ' . USERS_TABLE . ' WHERE user_delete_pending = 1 ORDER BY user_delete_pending_time ASC';
+			, user_delete_pending_type 
+				FROM ' . USERS_TABLE . '
+				WHERE user_delete_pending = 1
+				ORDER BY user_delete_pending_time ASC';
 			$result = $db->sql_query($sql);
 			while($row = $db->sql_fetchrow($resut))
 			{
