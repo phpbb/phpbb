@@ -14,8 +14,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 {
 	public function setUp()
 	{
-		global $db, $cache;
-		$phpbb_extension_manager = new phpbb_extension_manager($db, 'phpbb_ext', '.php', $cache, '_cache');
+		global $phpbb_extension_manager;
 
 		$phpbb_extension_manager->enable('foobar');
 		$phpbb_extension_manager->enable('foo_bar');
@@ -25,8 +24,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 	public function tearDown()
 	{
-		global $db, $cache;
-		$phpbb_extension_manager = new phpbb_extension_manager($db, 'phpbb_ext', '.php', $cache, '_cache');
+		global $phpbb_extension_manager;
 
 		$phpbb_extension_manager->purge('foobar');
 		$phpbb_extension_manager->purge('foo_bar');
