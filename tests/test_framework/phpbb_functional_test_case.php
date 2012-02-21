@@ -66,6 +66,26 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
+	protected function get_db()
+	{
+		global $phpbb_root_path, $phpEx;
+		if (!class_exists('dbal_' . self::$config['dbms']))
+		{
+			include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
+		}
+		$sql_db = 'dbal_' . self::$config['dbms'];
+		$db = new $sql_db();
+		$db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+		return $db;
+	}
+
+	protected function get_ext_manager()
+	{
+		global $phpbb_root_path, $phpEx;
+
+		return new phpbb_extension_manager($this->get_db(), self::$config['table_prefix'] . 'ext', $phpbb_root_path, ".$phpEx", new phpbb_cache_driver_null);
+	}
+
 	protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
