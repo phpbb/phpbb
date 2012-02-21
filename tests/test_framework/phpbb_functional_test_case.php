@@ -14,6 +14,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $client;
 	protected $root_url;
 
+	protected $db = null;
+
 	static protected $config = array();
 	static protected $already_installed = false;
 
@@ -69,14 +71,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
-		if (!class_exists('dbal_' . self::$config['dbms']))
+		// so we don't reopen an open connection
+		if (!($this->db instanceof dbal))
 		{
-			include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
+			if (!class_exists('dbal_' . self::$config['dbms']))
+			{
+				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
+			}
+			$sql_db = 'dbal_' . self::$config['dbms'];
+			$this->db = new $sql_db();
+			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
-		$sql_db = 'dbal_' . self::$config['dbms'];
-		$db = new $sql_db();
-		$db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
-		return $db;
+		return $this->db;
 	}
 
 	protected function get_ext_manager()
