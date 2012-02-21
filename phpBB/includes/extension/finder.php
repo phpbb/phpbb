@@ -375,6 +375,10 @@ class phpbb_extension_finder
 			{
 				$directory_pattern = preg_quote(DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
 			}
+			if ($is_dir)
+			{
+				$directory_pattern .= '$';
+			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
 			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
