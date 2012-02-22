@@ -1089,11 +1089,21 @@ input.disabled {
 	padding: 0 25px 20px 25px;
 }
 
-.phpbb_alert img.alert_close {
+.phpbb_alert .alert_close {
+	display: block;
 	float: right;
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+	text-decoration: none !important;
+	background: transparent url("../images/alert_close.png") 0 0 no-repeat;
 	margin-top: -7px;
-	margin-right: -30px;
+	margin-right: -31px;
 }
+.phpbb_alert .alert_close:hover {
+	background-position: 0 -16px;
+}
+
 
 .phpbb_alert p {
 	margin: 8px 0;
