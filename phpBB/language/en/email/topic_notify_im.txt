@@ -1,0 +1,8 @@
+Subject: Topic reply notification - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+The topic "{TOPIC_TITLE}" at "{SITENAME}" has received a reply since your last visit:
+{U_NEWEST_POST}
+
+{EMAIL_SIG}

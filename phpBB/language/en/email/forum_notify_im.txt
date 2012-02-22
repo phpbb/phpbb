@@ -1,0 +1,8 @@
+Subject: Forum post notification - "{FORUM_NAME}"
+
+Hello {USERNAME},
+
+The forum "{FORUM_NAME}" at "{SITENAME}" has received a new reply to the topic "{TOPIC_TITLE}" since your last visit:
+{U_NEWEST_POST}
+
+{EMAIL_SIG}
