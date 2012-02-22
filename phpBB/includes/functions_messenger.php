@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject;
+	var $vars, $msg, $msg_im, $extra_headers, $replyto, $from, $subject, $subject_im;
 	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
@@ -40,7 +40,7 @@ class messenger
 		global $config;
 
 		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
-		$this->subject = '';
+		$this->subject = $this->subject_im = '';
 
 		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
 		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
@@ -53,7 +53,7 @@ class messenger
 	function reset()
 	{
 		$this->addresses = $this->extra_headers = array();
-		$this->vars = $this->msg = $this->replyto = $this->from = '';
+		$this->vars = $this->msg = $this->msg_im = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -228,10 +228,20 @@ class messenger
 				}
 			}
 
+			$im_template_exists = true;
+			if (!file_exists($template_path . '/' . $template_file . '_im.txt'))
+			{
+				if ($fallback_template_path == false || !file_exists($fallback_template_path . '/' . $template_file . '_im.txt'))
+				{
+					$im_template_exists = false;
+				}
+			}
+
 			$tpl->set_custom_template($template_path, $template_lang . '_email', $fallback_template_path);
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
+				'body_im'	=> ($im_template_exists) ? $template_file . '_im.txt' : $template_file . '.txt',
 			));
 		}
 
@@ -297,8 +307,12 @@ class messenger
 		// Parse message through template
 		$this->msg = trim($this->tpl_obj->assign_display('body'));
 
+		// Parse message for instant messangers through template
+		$this->msg_im = trim($this->tpl_obj->assign_display('body_im'));
+
 		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
 		$this->msg = str_replace("\r\n", "\n", $this->msg);
+		$this->msg_im = str_replace("\r\n", "\n", $this->msg_im);
 
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
@@ -317,6 +331,24 @@ class messenger
 		if ($drop_header)
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
+		}
+
+		$drop_header_im = '';
+		$match_im = array();
+		if (preg_match('#^(Subject:(.*?))$#m', $this->msg_im, $match_im))
+		{
+			// Instant messangers don't have subjects.
+			$this->subject_im = (trim($match_im[2]) != '') ? trim($match_im[2]) : (($this->subject_im != '') ? $this->subject_im : $user->lang['NO_EMAIL_SUBJECT']);
+			$drop_header_im .= '[\r\n]*?' . preg_quote($match_im[1], '#');
+		}
+		else
+		{
+			$this->subject_im = (($this->subject_im != '') ? $this->subject_im : (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']));
+		}
+
+		if ($drop_header_im)
+		{
+			$this->msg_im = trim(preg_replace('#' . $drop_header_im . '#s', '', $this->msg_im));
 		}
 
 		if ($break)
@@ -584,7 +616,7 @@ class messenger
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, $this->msg, $this->subject);
+				$this->jabber->send_message($address, $this->msg_im, $this->subject_im);
 			}
 
 			$this->jabber->disconnect();
@@ -593,9 +625,9 @@ class messenger
 		{
 			$this->queue->put('jabber', array(
 				'addresses'		=> $addresses,
-				'subject'		=> $this->subject,
-				'msg'			=> $this->msg)
-			);
+				'subject'		=> $this->subject_im,
+				'msg'			=> $this->msg_im,
+			));
 		}
 		unset($addresses);
 		return true;
