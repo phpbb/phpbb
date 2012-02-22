@@ -10,7 +10,7 @@ phpbb.add_ajax_callback('post_delete', function() {
 	if (el.attr('data-refresh') === undefined)
 	{
 		post_id = el[0].href.split('&p=')[1];
-		el.parents('#p' + post_id).fadeOut(function() {
+		el.parents('#p' + post_id).css('pointer-events', 'none').fadeOut(function() {
 			$(this).remove();
 		});
 	}
@@ -19,14 +19,14 @@ phpbb.add_ajax_callback('post_delete', function() {
 // This callback removes the approve / disapprove div or link.
 phpbb.add_ajax_callback('post_approve', function(res) {
 	var remove = (res.approved) ? $(this) : $(this).parents('.post');
-	$(remove).fadeOut(function() {
+	$(remove).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
 	});
 });
 
 // This callback handles the removal of the quick reply form.
 phpbb.add_ajax_callback('qr-submit', function() {
-	$(this).fadeOut(function() {
+	$(this).css('pointer-events', 'none').fadeOut(function() {
 		$(this).remove();
 	});
 });
