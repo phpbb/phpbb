@@ -1,0 +1,8 @@
+Subject: New topic notification - "{FORUM_NAME}"
+
+Hello {USERNAME},
+
+The forum "{FORUM_NAME}" at "{SITENAME}" has received a new topic since your last visit, "{TOPIC_TITLE}":
+{U_FORUM}
+
+{EMAIL_SIG}
