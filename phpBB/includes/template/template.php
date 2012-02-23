@@ -198,6 +198,77 @@ class phpbb_template
 
 		return true;
 	}
+	
+	/**
+	* Checks if template exists
+	*
+	* @param string or array $templates Template names
+	* @param bool $return_template If true, $template will be returned on success, if false, full path to file will be returned on success
+	* @returns false if template does not exist, path to first file that it finds if file exists
+	*/
+	function template_exists($templates, $return_template = false)
+	{
+		if (!is_array($templates))
+		{
+			$templates = array($templates);
+		}
+		foreach ($this->locator->get_roots() as $root)
+		{
+			foreach ($templates as $file)
+			{
+				$path = $root . '/' . $this->template_path . $file;
+				if (@file_exists($path))
+				{
+					return ($return_template) ? $file : $path;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	* Locates template within style directory
+	*
+	* @param string $name Template name
+	* @return string Full path to template file. If file does not exist, function will return path to where file is supposed to be in primary style
+	*/
+	function locate_template($name)
+	{
+		return $this->locate_resource($this->template_path . $name);
+	}
+
+	/**
+	* Locates resource within style directory
+	*
+	* @param string $name File name
+	* @return string Full path to file. If file does not exist, function will return path to where file is supposed to be in primary style
+	*/
+	function locate_resource($name)
+	{
+		// Get main root directory id only if its necessary
+		$main_root_id = $this->locator->get_main_root_id();
+
+		// Default result
+		$default = false;
+
+		// Check all directories
+		foreach ($this->locator->get_roots() as $root_index => $root)
+		{
+			// Full path to file
+			$path = $root . '/' . $name;
+			if (@file_exists($path))
+			{
+				return $path;
+			}
+			if ($root_index == $main_root_id)
+			{
+				$default = $path;
+			}
+		}
+
+		// File was not found
+		return $default;
+	}
 
 	/**
 	* Clears all variables and blocks assigned to this template.

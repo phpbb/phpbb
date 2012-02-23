@@ -139,6 +139,22 @@ class phpbb_template_locator
 	}
 
 	/**
+	* Get root directories list
+	*/
+	public function get_roots()
+	{
+		return $this->roots;
+	}
+
+	/**
+	* Get main root id
+	*/
+	public function get_main_root_id()
+	{
+		return $this->main_root_id;
+	}
+
+	/**
 	* Determines the filename for a template handle.
 	*
 	* The filename comes from array used in a set_filenames call,
