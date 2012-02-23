@@ -23,21 +23,30 @@ if (!defined('IN_PHPBB'))
 * filesystem paths (i.e., the "primary" template or the "parent" template)
 * depending on what files exist.
 *
+* All paths stored in locator are paths to style directory. Templates are
+* stored in subdirectory that $template_path points to.
+*
 * @package phpBB3
 */
 class phpbb_template_locator
 {
 	/**
-	* Paths to directories that templates are stored in.
+	* Paths to directories that styles are stored in.
 	* @var array
 	*/
 	private $roots = array();
 
 	/**
-	* Index of the main template in the roots array
+	* Index of the main style in the roots array
 	* @var int
 	*/
 	private $main_root_id = 0;
+
+	/**
+	* Location of templates directory within style directories
+	* @var string
+	*/
+	private $template_path = 'template/';
 
 	/**
 	* Map from root index to handles to source template file paths.
@@ -57,14 +66,14 @@ class phpbb_template_locator
 	private $filenames = array();
 
 	/**
-	* Set main template location (must have been added through set_paths first).
+	* Set main style location (must have been added through set_paths first).
 	*
 	* @param string $template_path Path to template directory
 	* @return null
 	*/
-	public function set_main_template($template)
+	public function set_main_style($style)
 	{
-		$this->main_root_id = array_search($template, $this->roots, true);
+		$this->main_root_id = array_search($style, $this->roots, true);
 	}
 
 	/**
@@ -96,6 +105,16 @@ class phpbb_template_locator
 	}
 
 	/**
+	* Set template directory
+	*
+	* @param string $path Path to templates
+	*/
+	public function set_template_path($template_path)
+	{
+		$this->template_path = $template_path;
+	}
+
+	/**
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*
@@ -114,7 +133,7 @@ class phpbb_template_locator
 
 			foreach ($this->roots as $root_index => $root)
 			{
-				$this->files[$root_index][$handle] = $root . '/' . $filename;
+				$this->files[$root_index][$handle] = $root . '/' . $this->template_path . $filename;
 			}
 		}
 	}
