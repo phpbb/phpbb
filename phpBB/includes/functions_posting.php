@@ -1286,6 +1286,12 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{
 			$msg_users[] = $row;
 			$update_notification[$row['notify_type']][] = $row['user_id'];
+			if ($row['notify_type'] === 'topic')
+			{
+				// Using SQL characteristics. If it didn't exist it isn't added.
+				// It's very rare to find someone that is registered in topic and noone is registered in the forum
+				$update_notification['forum'][] = $row['user_id'];
+			}
 		}
 	}
 	unset($notify_rows);
