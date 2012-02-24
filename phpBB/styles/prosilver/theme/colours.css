@@ -884,12 +884,6 @@ dl.mini dt {
 	color: #000000 !important;
 }
 
-/* PM panel adjustments */
-.pm-panel-header,
-#cp-main .pm-message-nav {
-	border-bottom-color: #A4B3BF;
-}
-
 /* PM marking colours */
 .pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
 	border-left-color: #BC2A4D;
