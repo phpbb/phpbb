@@ -1335,7 +1335,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 			$db->sql_query($sql);
 		}
 
-		$this->destroy_cache(array_unique($word_texts), $author_ids);
+		$this->destroy_cache(array_unique($word_texts), array_unique($author_ids));
 	}
 
 	/**
