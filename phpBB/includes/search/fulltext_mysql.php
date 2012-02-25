@@ -707,7 +707,7 @@ class fulltext_mysql extends search_backend
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache(array(), array_unique($author_ids));
 	}
 
 	/**
