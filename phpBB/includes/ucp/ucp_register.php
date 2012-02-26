@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -100,7 +99,6 @@ class ucp_register
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
-					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
@@ -165,31 +163,14 @@ class ucp_register
 			$captcha->init(CONFIRM_REG);
 		}
 
-		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
-		$timezone = date('Z') / 3600;
-		$is_dst = date('I');
-
-		if ($config['board_timezone'] == $timezone || $config['board_timezone'] == ($timezone - 1))
-		{
-			$timezone = ($is_dst) ? $timezone - 1 : $timezone;
-
-			if (!isset($user->lang['tz_zones'][(string) $timezone]))
-			{
-				$timezone = $config['board_timezone'];
-			}
-		}
-		else
-		{
-			$is_dst = $config['board_dst'];
-			$timezone = $config['board_timezone'];
-		}
+		$is_dst = $config['board_dst'];
+		$timezone = $config['board_timezone'];
 
 		$data = array(
 			'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 			'new_password'		=> request_var('new_password', '', true),
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
-			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 			'lang'				=> basename(request_var('lang', $user->lang_name)),
 			'tz'				=> request_var('tz', (float) $timezone),
 		);
@@ -208,7 +189,6 @@ class ucp_register
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('email')),
-				'email_confirm'		=> array('string', false, 6, 60),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('language_iso_name'),
 			));
@@ -252,11 +232,6 @@ class ucp_register
 				if ($data['new_password'] != $data['password_confirm'])
 				{
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
-				}
-
-				if ($data['email'] != $data['email_confirm'])
-				{
-					$error[] = $user->lang['NEW_EMAIL_ERROR'];
 				}
 			}
 
@@ -472,7 +447,6 @@ class ucp_register
 			'PASSWORD'			=> $data['new_password'],
 			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
 			'EMAIL'				=> $data['email'],
-			'EMAIL_CONFIRM'		=> $data['email_confirm'],
 
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),

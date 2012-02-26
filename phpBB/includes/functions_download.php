@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -126,7 +126,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	if (!@file_exists($filename))
 	{
 		send_status_line(404, 'Not Found');
-		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
+		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
 	// Correct the mime type - we force application/octetstream for all files, except images

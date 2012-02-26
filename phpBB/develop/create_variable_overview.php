@@ -1,8 +1,6 @@
 <?php
 // -------------------------------------------------------------
 //
-// $Id$
-//
 // FILENAME  : create_variable_overview.php
 // STARTED   : Fri Aug 15 2003
 // COPYRIGHT : © 2003 phpBB Group

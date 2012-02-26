@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -736,21 +735,19 @@ class install_convert extends module
 			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
-		$search_type = basename(trim($config['search_type']));
+		$search_type = $config['search_type'];
 
 		// For conversions we are a bit less strict and set to a search backend we know exist...
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
-			$search_type = 'fulltext_native';
+			$search_type = 'phpbb_search_fulltext_native';
 			set_config('search_type', $search_type);
 		}
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
-
-		require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
 
 		$error = false;
 		$convert->fulltext_search = new $search_type($error);

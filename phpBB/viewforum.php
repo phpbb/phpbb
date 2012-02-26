@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -283,7 +282,7 @@ if (!empty($_EXTRA_URL))
 	foreach ($_EXTRA_URL as $url_param)
 	{
 		$url_param = explode('=', $url_param, 2);
-		$s_hidden_fields[$url_param[0]] = $url_param[1];
+		$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 	}
 }
 

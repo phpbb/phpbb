@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -81,7 +80,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 	$leap_year_birthdays = '';
 	if ($now['mday'] == 28 && $now['mon'] == 2 && !$user->format_date(time(), 'L'))
 	{
-		$leap_year_birthdays = " OR user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
+		$leap_year_birthdays = " OR u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
 	}
 
 	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_birthday

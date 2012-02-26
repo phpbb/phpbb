@@ -3,7 +3,7 @@
 *
 * @package extension
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -374,6 +374,10 @@ class phpbb_extension_finder
 			else
 			{
 				$directory_pattern = preg_quote(DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
+			}
+			if ($is_dir)
+			{
+				$directory_pattern .= '$';
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 

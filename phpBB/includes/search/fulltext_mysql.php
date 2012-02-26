@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -709,7 +708,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache(array(), array_unique($author_ids));
 	}
 
 	/**

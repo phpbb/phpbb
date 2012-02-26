@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 */
 
 /**
@@ -96,7 +95,7 @@ class acp_captcha
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link(), E_USER_WARNING);
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			else
 			{

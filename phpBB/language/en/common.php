@@ -4,9 +4,8 @@
 * common [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -614,7 +613,6 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_LONG_USERNAME'				=> 'The username you entered is too long.',
 	'TOO_LONG_EMAIL'				=> 'The e-mail address you entered is too long.',
-	'TOO_LONG_EMAIL_CONFIRM'		=> 'The e-mail address confirmation you entered is too long.',
 	'TOO_LONG_WEBSITE'				=> 'The website address you entered is too long.',
 	'TOO_LONG_YIM'					=> 'The Yahoo! Messenger name you entered is too long.',
 
@@ -636,7 +634,6 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_USERNAME'			=> 'The username you entered is too short.',
 	'TOO_SHORT_EMAIL'				=> 'The e-mail address you entered is too short.',
-	'TOO_SHORT_EMAIL_CONFIRM'		=> 'The e-mail address confirmation you entered is too short.',
 	'TOO_SHORT_WEBSITE'				=> 'The website address you entered is too short.',
 	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
 	

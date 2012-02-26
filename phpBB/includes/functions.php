@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -3092,6 +3091,11 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
+	
+	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
+	{
+		unset($parsed_items['inherit_from']);
+	}
 
 	return $parsed_items;
 }
@@ -3797,11 +3801,23 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
+			$log_text = $msg_text;
+			$backtrace = get_backtrace();
+			if ($backtrace)
+			{
+				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
+			}
+
+			if (defined('IN_INSTALL') || defined('DEBUG_EXTRA') || isset($auth) && $auth->acl_get('a_'))
+			{
+				$msg_text = $log_text;
+			}
+
 			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
-				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $msg_text);
+				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $log_text);
 				$db->sql_return_on_error(false);
 			}
 
@@ -4616,7 +4632,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		foreach ($_EXTRA_URL as $url_param)
 		{
 			$url_param = explode('=', $url_param, 2);
-			$s_hidden_fields[$url_param[0]] = $url_param[1];
+			$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 		}
 	}
 
@@ -4712,9 +4728,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . $user->theme['template_inherit_path'] . '/template' : "{$web_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . rawurlencode($user->theme['template_inherit_path']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4722,16 +4738,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css',
-		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/' . $user->lang_name . '/stylesheet.css',
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/stylesheet.css',
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
 		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
-		'T_THEME_NAME'			=> $user->theme['theme_path'],
+		'T_THEME_NAME'			=> rawurlencode($user->theme['theme_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
 		'T_TEMPLATE_NAME'		=> $user->theme['template_path'],
-		'T_SUPER_TEMPLATE_NAME'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],

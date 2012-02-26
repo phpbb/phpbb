@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -908,16 +907,11 @@ function mcp_fork_topic($topic_ids)
 			if (!isset($search_type) && $topic_row['enable_indexing'])
 			{
 				// Select the search method and do some additional checks to ensure it can actually be utilised
-				$search_type = basename($config['search_type']);
-
-				if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
-				{
-					trigger_error('NO_SUCH_SEARCH_MODULE');
-				}
+				$search_type = $config['search_type'];
 
 				if (!class_exists($search_type))
 				{
-					include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+					trigger_error('NO_SUCH_SEARCH_MODULE');
 				}
 
 				$error = false;
