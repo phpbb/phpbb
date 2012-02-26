@@ -149,10 +149,6 @@ fieldset.fields2 dl:hover dt label {
 	width: 95%;
 }
 
-* html #timezone {
-	width: 50%;
-}
-
 /* Quick-login on index page */
 fieldset.quick-login {
 	margin-top: 5px;
