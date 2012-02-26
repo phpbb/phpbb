@@ -494,7 +494,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, ($total_matches_limit + 1)));
 			}
 
-			if ($total_match_count = sizeof($id_ary))
+			$total_match_count = sizeof($id_ary);
+			if ($total_match_count)
 			{
 				// Limit the number to $total_matches_limit for pre-made searches
 				if ($total_match_count > $total_matches_limit)
