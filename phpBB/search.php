@@ -478,7 +478,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if ($sql)
 		{
 			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
-			$result = $db->sql_query_limit($sql, ($total_matches_limit + 1));
+			$result = $db->sql_query_limit($sql, $total_matches_limit + 1);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -489,7 +489,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		else if ($search_id == 'unreadposts')
 		{
 			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
-			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, ($total_matches_limit + 1)));
+			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, $total_matches_limit + 1));
 		}
 		else
 		{
