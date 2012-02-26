@@ -475,56 +475,53 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if ($search_id)
 	{
-		if ($sql || $search_id == 'unreadposts')
+		if ($sql)
 		{
-			if ($sql)
-			{
-				// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
-				$result = $db->sql_query_limit($sql, ($total_matches_limit + 1));
+			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
+			$result = $db->sql_query_limit($sql, ($total_matches_limit + 1));
 
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$id_ary[] = (int) $row[$field];
-				}
-				$db->sql_freeresult($result);
-			}
-			else if ($search_id == 'unreadposts')
+			while ($row = $db->sql_fetchrow($result))
 			{
-				// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
-				$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, ($total_matches_limit + 1)));
+				$id_ary[] = (int) $row[$field];
 			}
-
-			$total_match_count = sizeof($id_ary);
-			if ($total_match_count)
-			{
-				// Limit the number to $total_matches_limit for pre-made searches
-				if ($total_match_count > $total_matches_limit)
-				{
-					$found_more_search_matches = true;
-					$total_match_count = $total_matches_limit;
-				}
-
-				// Make sure $start is set to the last page if it exceeds the amount
-				if ($start < 0)
-				{
-					$start = 0;
-				}
-				else if ($start >= $total_match_count)
-				{
-					$start = floor(($total_match_count - 1) / $per_page) * $per_page;
-				}
-
-				$id_ary = array_slice($id_ary, $start, $per_page);
-			}
-			else
-			{
-				// Set $start to 0 if no matches were found
-				$start = 0;
-			}
+			$db->sql_freeresult($result);
+		}
+		else if ($search_id == 'unreadposts')
+		{
+			// Only return up to $total_matches_limit+1 ids (the last one will be removed later)
+			$id_ary = array_keys(get_unread_topics($user->data['user_id'], $sql_where, $sql_sort, ($total_matches_limit + 1)));
 		}
 		else
 		{
 			$search_id = '';
+		}
+
+		$total_match_count = sizeof($id_ary);
+		if ($total_match_count)
+		{
+			// Limit the number to $total_matches_limit for pre-made searches
+			if ($total_match_count > $total_matches_limit)
+			{
+				$found_more_search_matches = true;
+				$total_match_count = $total_matches_limit;
+			}
+
+			// Make sure $start is set to the last page if it exceeds the amount
+			if ($start < 0)
+			{
+				$start = 0;
+			}
+			else if ($start >= $total_match_count)
+			{
+				$start = floor(($total_match_count - 1) / $per_page) * $per_page;
+			}
+
+			$id_ary = array_slice($id_ary, $start, $per_page);
+		}
+		else
+		{
+			// Set $start to 0 if no matches were found
+			$start = 0;
 		}
 	}
 
