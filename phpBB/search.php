@@ -505,10 +505,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
-				if ($start < 0 || $start >= $total_match_count)
+				if ($start < 0)
 				{
-					$start = ($start < 0) ? 0 : floor(($total_match_count - 1) / $per_page) * $per_page;
+					$start = 0;
 				}
+				else if ($start >= $total_match_count)
+				{
+					$start = floor(($total_match_count - 1) / $per_page) * $per_page;
+				}
+
 				$id_ary = array_slice($id_ary, $start, $per_page);
 			}
 			else
