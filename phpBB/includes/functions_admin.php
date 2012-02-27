@@ -899,6 +899,53 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 }
 
 /**
+* Remove users votes from polls
+*
+* @param int		$user_id	The ID of the user we want to delete the votes of
+* @param boolean	$delete_all	Shall we delete all votes, or just the ones, where the poll did not end yet.
+*/
+function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
+{
+	global $db;
+
+	if (!$delete_all)
+	{
+		$sql = 'SELECT v.*
+			FROM ' . POLL_VOTES_TABLE . ' v
+			LEFT JOIN ' . TOPICS_TABLE . ' t
+				ON (t.topic_id = v.topic_id)
+			WHERE v.vote_user_id = ' . $user_id . '
+				AND (t.poll_length = 0
+					OR t.poll_start + t.poll_length > ' . time() . ')';
+		$result = $db->sql_query($sql);
+	}
+	else
+	{
+		$sql = 'SELECT *
+			FROM ' . POLL_VOTES_TABLE . '
+			WHERE vote_user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+	}
+
+	$reduce_options_total = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$reduce_options_total[] = (int) $row['poll_option_id'];
+	}
+	$db->sql_freeresult($result);
+
+	$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
+		SET poll_option_total = poll_option_total - 1
+		WHERE ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
+	$db->sql_query($sql);
+
+	$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
+		WHERE user_id = ' . $user_id . '
+			AND ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
+	$db->sql_query($sql);
+}
+
+/**
 * Delete Attachments
 *
 * @param string $mode can be: post|message|topic|attach|user

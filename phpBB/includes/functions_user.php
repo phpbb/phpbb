@@ -486,30 +486,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			delete_posts('poster_id', $user_id);
 
 			// Delete votes from this user on open polls
-			$sql = 'SELECT v.*
-				FROM ' . POLL_VOTES_TABLE . ' v
-				LEFT JOIN ' . TOPICS_TABLE . ' t
-					ON (t.topic_id = v.topic_id)
-				WHERE v.vote_user_id = ' . $user_id . '
-					AND (t.poll_length = 0
-						OR t.poll_start + t.poll_length > ' . time() . ')';
-			$result = $db->sql_query($sql);
-			$reduce_options_total = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$reduce_options_total[] = (int) $row['poll_option_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-				SET poll_option_total = poll_option_total - 1
-				WHERE ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
-			$db->sql_query($sql);
-
-			$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
-				WHERE user_id = ' . $user_id . '
-					AND ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
-			$db->sql_query($sql);
+			phpbb_delete_user_poll_votes($user_id);
 		break;
 	}
 
