@@ -708,7 +708,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache(array(), array_unique($author_ids));
 	}
 
 	/**
