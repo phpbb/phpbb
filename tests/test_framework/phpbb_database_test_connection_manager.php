@@ -86,9 +86,9 @@ class phpbb_database_test_connection_manager
 
 		//These require different connection strings on the phpBB side than they do in PDO
 		//so you must provide a DSN string for ODBC separately
-		if($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird')
+		if ($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird')
 		{
-			if(!empty($this->config['custom_dsn']))
+			if (!empty($this->config['custom_dsn']))
 			{
 				$dsn = 'odbc:' . $this->config['custom_dsn'];
 			}
@@ -96,7 +96,7 @@ class phpbb_database_test_connection_manager
 
 		try
 		{
-			switch($this->config['dbms'])
+			switch ($this->config['dbms'])
 			{
 				case 'mssql':
 				case 'mssql_odbc':
@@ -104,7 +104,7 @@ class phpbb_database_test_connection_manager
 				break;
 
 				case 'firebird':
-					if(!empty($this->config['custom_dsn']))
+					if (!empty($this->config['custom_dsn']))
 					{
 						$this->pdo = new phpbb_database_connection_ODBC_PDO_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 						break;
@@ -408,7 +408,7 @@ class phpbb_database_test_connection_manager
 			break;
 		}
 
-		foreach($queries as $query)
+		foreach ($queries as $query)
 		{
 			$this->pdo->exec($query);
 		}
