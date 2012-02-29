@@ -1,0 +1,60 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+
+	<table cellspacing="1">
+		<col class="row1" /><col class="row2" /><col class="row2" />
+	<thead>
+		<tr>
+			<th>{L_EXTENSION_NAME}</th>
+			<th>{L_EXTENSION_OPTIONS}</th>
+			<th>{L_EXTENSION_ACTIONS}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- IF .enabled -->
+		<tr>
+			<td class="row3" colspan="3">
+				<strong>{L_ENABLED} {L_EXTENSIONS}</strong>
+			</td>
+		</tr>
+		<!-- BEGIN enabled -->
+		<tr>
+			<td><strong>{enabled.EXT_NAME}</strong></a></td>
+			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
+			<td style="text-align: center;"><a href="{enabled.U_DISABLE}">{L_DISABLE}</a>&nbsp;|&nbsp;<a href="{enabled.U_PURGE}">{L_PURGE}</a></td>
+		</tr>
+		<!-- END enabled -->
+		<!-- ENDIF -->
+		<!-- IF .disabled -->
+		<tr>
+			<td class="row3" colspan="3"><strong>{L_DISABLED} {L_EXTENSIONS}</strong></td>
+		</tr>
+		<!-- BEGIN disabled -->
+		<tr>
+			<td><strong>{disabled.EXT_NAME}</strong></a></td>
+			<td style="text-align: center;"><a href="{disabled.U_DETAILS}">{L_DETAILS}</a></td>
+			<td style="text-align: center;"><a href="{disabled.U_ENABLE}">{L_ENABLE}</a>&nbsp;|&nbsp;<a href="{disabled.U_PURGE}">{L_PURGE}</a>&nbsp;|&nbsp;<a href="{disabled.U_DELETE}">{L_DELETE}</a></td>
+		</tr>
+		<!-- END disabled -->
+		<!-- ENDIF -->
+		<!-- IF .avaliable -->
+		<tr>
+			<td class="row3" colspan="3"><strong>{L_AVALIABLE} {L_EXTENSIONS}</strong></td>
+		</tr>
+		<!-- BEGIN avaliable -->
+		<tr>
+			<td><strong>{avaliable.EXT_NAME}</strong></a></td>
+			<td style="text-align: center;"><a href="{avaliable.U_DETAILS}">{L_DETAILS}</a></td>
+			<td style="text-align: center;"><a href="{avaliable.U_ENABLE}">{L_ENABLE}</a>&nbsp;|&nbsp;<a href="{avaliable.U_DELETE}">{L_DELETE}</a></td>
+		</tr>
+		<!-- END avaliable -->
+		<!-- ENDIF -->
+	</tbody>
+	</table>
+	
+<!-- INCLUDE overall_footer.html -->
