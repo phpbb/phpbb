@@ -99,7 +99,11 @@ class acp_users
 					{
 						include("{$phpbb_root_path}includes/functions_user.$phpEx");
 					}
-					phpbb_delete_account(true, $_POST['delete_type'], '');
+					// This won't work yet, since the first variable needs to be the user ID
+					// since this will be a form potentially allowing multiple users to be selected
+					// for deletion at once (similar to MCP handling of topics)
+					// we'll need to put this code into a method and make it recursive for each user ID
+					phpbb_delete_account(true, $_POST['delete_type']);
 					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
 
 					// @todo email the user

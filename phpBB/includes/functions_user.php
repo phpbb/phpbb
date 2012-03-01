@@ -3701,11 +3701,11 @@ function remove_newly_registered($user_id, $user_data = false)
 * @param bool $force Skip configuration and potentially adding to approval queue; just delete the account
 * @param int $type How to delete the account (none, soft, profile, hard)
 * @param string $reason User's rationale for needing their account deleted
-* @return string|bool Language key for message indication result, false if no id are given or found
+* @return string|bool Language key for message indication result, false if no id is given or found
 */
 function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT_DELETE_NONE, $reason = '')
 {
-	global $db, $user, $config, $request;
+	global $db, $user, $config;
 
 	if (!$user_id)
 	{
@@ -3726,7 +3726,7 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT
 		return false;
 	}
 
-	if (!function_exists('user_active_flip') || !function_exists('user_delete'))
+	if (!function_exists('user_active_flip'))
 	{
 		global $phpbb_root_path, $phpEx;
 		include($phpbb_root_path . 'includes/functions_user.'. $phpEx);
@@ -3734,6 +3734,8 @@ function phpbb_delete_account($user_id = 0, $force = false, $type = SELF_ACCOUNT
 
 	$type = ($type != SELF_ACCOUNT_DELETE_NONE) ? $type : $config['account_delete_method'];
 
+	// If we aren't forcing deletion, we need a type. Otherwise, we fail.
+	// If we are forcing and don't have a type specified, it will default to Soft Delete
 	if (!$type && !$force)
 	{
 		return 'DELETE_ACCOUNT_FAIL';
