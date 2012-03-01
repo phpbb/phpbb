@@ -1337,7 +1337,11 @@ CREATE TABLE phpbb_users (
 	user_form_salt VARCHAR(32) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	user_new INTEGER DEFAULT 1 NOT NULL,
 	user_reminded INTEGER DEFAULT 0 NOT NULL,
-	user_reminded_time INTEGER DEFAULT 0 NOT NULL
+	user_reminded_time INTEGER DEFAULT 0 NOT NULL,
+	user_delete_pending INTEGER DEFAULT 0 NOT NULL,
+	user_delete_pending_reason BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	user_delete_pending_time INTEGER DEFAULT 0 NOT NULL,
+	user_delete_pending_type INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;

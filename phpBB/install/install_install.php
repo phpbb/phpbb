@@ -1772,6 +1772,7 @@ class install_install extends module
 				'user_timezone'			=> 0,
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
+				'user_delete_pending_reason'	=> '',
 			);
 
 			$user_id = user_add($user_row);

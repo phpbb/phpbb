@@ -1750,6 +1750,10 @@ CREATE TABLE phpbb_users (
 	user_new number(1) DEFAULT '1' NOT NULL,
 	user_reminded number(4) DEFAULT '0' NOT NULL,
 	user_reminded_time number(11) DEFAULT '0' NOT NULL,
+	user_delete_pending number(1) DEFAULT '0' NOT NULL,
+	user_delete_pending_reason clob DEFAULT '',
+	user_delete_pending_time number(11) DEFAULT '0' NOT NULL,
+	user_delete_pending_type number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
 	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)
 )

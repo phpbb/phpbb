@@ -26,6 +26,42 @@
 
 	</form>
 
+	<h1>{L_DELETE_QUEUE}</h1>
+
+	<p>{L_USER_ADMIN_EXPLAIN}</p>
+
+	<form id="delete_queue" method="post" action="{U_ACTION}">
+
+		<table cellspacing="1">
+		<thead>
+		<tr>
+			<th>{L_USERNAME}</th>
+			<th>{L_DELETE_TYPE}</th>
+			<th>{L_TIME}</th>
+			<th>{L_DELETE_REASON}</th>
+			<th>{L_SELECT}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- BEGIN queue -->
+			<!-- IF queue.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+				<td>{queue.USERNAME}</td>
+				<td style="text-align: center;">{queue.DELETE_TYPE}</td>
+				<td style="text-align: center;">{queue.DATE}</td>
+				<td>{queue.DELETE_REASON}</td>
+				<td><input type="checkbox" name="user_delete_ids[]" value="{queue.USER_ID}" /></td>
+			</tr>
+		<!-- BEGINELSE -->
+			<tr colspan="5">
+				<td>{L_NO_DELETE_REQUESTS}</td>
+			</tr>
+		<!-- END queue -->
+		</tbody>
+		</table>
+
+
+	</form>
+
 <!-- ELSEIF S_SELECT_FORUM -->
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>

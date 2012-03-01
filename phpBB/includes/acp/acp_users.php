@@ -80,6 +80,118 @@ class acp_users
 				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
 			));
 
+			if(!$config['account_delete_approval'])
+			{
+				$template->assign_var('S_USER_DELETE_QUEUE', false);
+				// do nothing further
+				return;
+			}
+			else
+			{
+				$template->assign_var('S_USER_DELETE_QUEUE', true);
+			}
+
+			if (isset($_POST['approve']) || isset($_POST['deny']) && isset($_POST['delete_type']))
+			{
+				if (isset($_POST['approve']) && !isset($_POST['deny']))
+				{
+					if (!function_exists('phpbb_delete_account'))
+					{
+						include("{$phpbb_root_path}includes/functions_user.$phpEx");
+					}
+					// This won't work yet, since the first variable needs to be the user ID
+					// since this will be a form potentially allowing multiple users to be selected
+					// for deletion at once (similar to MCP handling of topics)
+					// we'll need to put this code into a method and make it recursive for each user ID
+					phpbb_delete_account(true, $_POST['delete_type']);
+					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
+
+					// @todo email the user
+					$messenger = new messenger;
+					$messenger->to($user->data['user_email']);
+					$messenger->from($config['board_contact']);
+					$messenger->replyto($config['board_contact']);
+					$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
+				}
+				else if (isset($_POST['deny']))
+				{
+					$sql_ary(
+						'user_delete_pending'			=> 0,
+						'user_delete_pending_time'		=> 0,
+						'user_delete_pending_type'		=> 0,
+						'user_delete_pending_reason'	=> '',
+					);
+
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_delete_ids', array(0))));
+					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
+
+					$subject = $user->lang("{$message}_PM_SUBJECT");
+					$text    = $user->lang("{$message}_PM_TEXT");
+
+					$poll = $uid = $bitfield = $options = '';
+					generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
+
+					$data = array(
+					    'address_list'      => array('u' => array($_POST => 'to')),
+					    'from_user_id'      => $user->data['user_id'],
+					    'from_username'     => $user->data['username'],
+					    'icon_id'           => 0,
+					    'from_user_ip'      => $user->data['user_ip'],
+
+					    'enable_bbcode'     => true,
+					    'enable_smilies'    => true,
+					    'enable_urls'       => true,
+					    'enable_sig'        => true,
+
+					    'message'           => $text,
+					    'bbcode_bitfield'   => $bitfield,
+					    'bbcode_uid'        => $uid,
+					);
+
+					if (!function_exists('submit_pm'))
+					{
+						include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
+					}
+					submit_pm('post', $subject, &$data, false);
+				}
+				trigger_error($message);
+			}
+
+			$sql = 'SELECT user_id, username, user_colour, user_delete_pending_time, user_delete_pending_reason
+			, user_delete_pending_type 
+				FROM ' . USERS_TABLE . '
+				WHERE user_delete_pending = 1
+				ORDER BY user_delete_pending_time ASC';
+			$result = $db->sql_query($sql);
+			while($row = $db->sql_fetchrow($resut))
+			{
+				$types = array(
+					SELF_ACCOUNT_DELETE_SOFT	=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
+					SELF_ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
+					SELF_ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
+				);
+				
+				$delete_type_dropdown = array('<select name="delete_type">');
+				
+				foreach($types as $type_key => $type_value)
+				{
+					$selected = ($type_key == $row['user_delete_type']) ? true : false;
+					$delete_type_dropdown[] = '<option value="' . $type_key . '"' . $selected . '>' . $type_value . '</option>';
+				}
+				$delete_type_dropdown[] = '</select>'
+
+				$template->assign_block_vars('queue', array(
+					'USERNAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+					'USER_ID'		=> $row['user_id'],
+					'DELETE_TYPE'	=> implode('', $delete_type_dropdown),
+					'DELETE_REASON'	=> $row['user_delete_pending_reason'],
+					'DELETE_TIME'	=> $user->format_date($row['user_delete_pending_time']),
+				));
+			}
+			$db->sql_freeresult($result);
+
 			return;
 		}
 
@@ -194,10 +306,19 @@ class acp_users
 						{
 							if (confirm_box(true))
 							{
-								user_delete($delete_type, $user_id, $user_row['username']);
+								$add_lang = '';
+								if($delete_type == 'retain' || 'remove')
+								{
+									user_delete($delete_type, $user_id, $user_row['username']);
+								}
+								else
+								{
+									user_active_flip('deactivate', array($user_row['user_id']), INACTIVE_SOFT_DELETE);
+									$add_lang .= '_SOFT';
+								}
 
-								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
-								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
+								add_log('admin', "LOG_USER_DELETED$add_lang", $user_row['username']);
+								trigger_error($user->lang("USER_DELETED$add_lang") . adm_back_link($this->u_action));
 							}
 							else
 							{
@@ -988,6 +1109,10 @@ class acp_users
 
 						case INACTIVE_REMIND:
 							$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+						break;
+
+						case INACTIVE_SOFT_DELETE:
+							$inactive_reason = $user->lang('INACTIVE_REASON_SOFT_DELETE');
 						break;
 					}
 				}
@@ -2320,7 +2445,6 @@ class acp_users
 				);
 
 			break;
-
 		}
 
 		// Assign general variables

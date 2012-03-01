@@ -1623,7 +1623,11 @@ CREATE TABLE [phpbb_users] (
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_new] [int] DEFAULT (1) NOT NULL ,
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,
-	[user_reminded_time] [int] DEFAULT (0) NOT NULL 
+	[user_reminded_time] [int] DEFAULT (0) NOT NULL ,
+	[user_delete_pending] [int] DEFAULT (0) NOT NULL ,
+	[user_delete_pending_reason] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[user_delete_pending_time] [int] DEFAULT (0) NOT NULL ,
+	[user_delete_pending_type] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

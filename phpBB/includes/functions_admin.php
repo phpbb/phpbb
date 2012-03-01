@@ -2906,6 +2906,10 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 			case INACTIVE_REMIND:
 				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
 			break;
+
+			case INACTIVE_SOFT_DELETE:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_SOFT_DELETE'];
+			break;
 		}
 
 		$users[] = $row;
