@@ -334,6 +334,12 @@ if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
 $vars = array('module', 'id', 'mode');
 extract($phpbb_dispatcher->trigger_event('core.ucp_display_module_before', compact($vars)));
 
+// Do not display profile information panel if not authed to do so
+if (!$auth->acl_get('u_chgprofileinfo'))
+{
+	$module->set_display('profile', 'profile_info', false);
+}
+
 // Select the active module
 $module->set_active($id, $mode);
 
