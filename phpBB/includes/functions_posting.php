@@ -1286,6 +1286,17 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{
 			$msg_users[] = $row;
 			$update_notification[$row['notify_type']][] = $row['user_id'];
+			/* 	If the user subscribes to the thread and the forum and he is now being warned for the new post
+				in the topic, then don't warn for the post in this topic as a forum's new post when a user writes
+				a post in that thread. #bug8652
+				This fix uses SQL characteristics to simplify the code and checks. If a row didn't exist, an edit will not create it.
+				Anyway, this will not be a performance hit, it's really rare not to have people registered in the topic and not a
+				single user (for the whole forum) registered in the forum.
+			*/
+			if ($row['notify_type'] === 'topic')
+			{
+				$update_notification['forum'][] = $row['user_id'];
+			}
 		}
 	}
 	unset($notify_rows);
