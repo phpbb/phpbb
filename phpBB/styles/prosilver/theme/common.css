@@ -418,7 +418,19 @@ table.info tbody th {
 }
 
 .forumbg table.table1 {
-	margin: 0 -2px -1px -1px;
+	margin: 0;
+}
+
+.forumbg-table > .inner {
+	margin: 0 -1px;
+}
+
+.forumbg-table > .inner > span.corners-top {
+	margin: 0 -4px -1px -4px;
+}
+
+.forumbg-table > .inner > span.corners-bottom {
+	margin: -1px -4px 0 -4px;
 }
 
 /* Misc layout styles
