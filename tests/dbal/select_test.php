@@ -373,7 +373,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 
 		if (is_string($actual) && isset($actual[0]) && $actual[0] === '~')
 		{
-			$actual = substr($actual, -1);
+			$actual = substr($actual, 1);
 		}
 
 		$this->assertGreaterThan(
