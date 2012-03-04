@@ -896,11 +896,7 @@ class fulltext_mysql extends search_backend
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(post_id) as total_posts
-			FROM ' . POSTS_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
-		$db->sql_freeresult($result);
+		$this->stats['total_posts'] = $db->get_estimated_row_count(POSTS_TABLE);
 	}
 
 	/**
