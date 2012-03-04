@@ -104,5 +104,3 @@ $lang = array_merge($lang, array(
 	'AUTHOR_HOMEPAGE'		=> 'Author Homepage',
 	'AUTHOR_ROLE'			=> 'Author Role',
 ));
-
-?>
