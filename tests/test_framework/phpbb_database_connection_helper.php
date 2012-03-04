@@ -16,10 +16,10 @@
 */
 class phpbb_database_connection_ODBC_PDO_wrapper extends PDO
 {
-	//Name of the driver being used (i.e. mssql, firebird)
+	// Name of the driver being used (i.e. mssql, firebird)
 	public $driver = '';
 
-	//Version number of driver since PDO::getAttribute(PDO::ATTR_CLIENT_VERSION) is pretty useless for this
+	// Version number of driver since PDO::getAttribute(PDO::ATTR_CLIENT_VERSION) is pretty useless for this
 	public $version = 0;
 
 	function __construct($dbms, $version, $dsn, $user, $pass)

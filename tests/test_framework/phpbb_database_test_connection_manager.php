@@ -8,7 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
-require_once 'phpbb_database_connection_helper.php';
+require_once dirname(__FILE__) . '/phpbb_database_connection_helper.php';
 
 class phpbb_database_test_connection_manager
 {
@@ -86,12 +86,9 @@ class phpbb_database_test_connection_manager
 
 		//These require different connection strings on the phpBB side than they do in PDO
 		//so you must provide a DSN string for ODBC separately
-		if ($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird')
+		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird'))
 		{
-			if (!empty($this->config['custom_dsn']))
-			{
-				$dsn = 'odbc:' . $this->config['custom_dsn'];
-			}
+			$dsn = 'odbc:' . $this->config['custom_dsn'];
 		}
 
 		try
