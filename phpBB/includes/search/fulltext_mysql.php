@@ -896,7 +896,7 @@ class fulltext_mysql extends search_backend
 		}
 		$db->sql_freeresult($result);
 
-		$this->stats['total_posts'] = $db->get_estimated_row_count(POSTS_TABLE);
+		$this->stats['total_posts'] = empty($this->stats) ? 0 : $db->get_estimated_row_count(POSTS_TABLE);
 	}
 
 	/**
