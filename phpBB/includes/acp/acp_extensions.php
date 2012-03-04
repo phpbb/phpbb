@@ -21,25 +21,25 @@ if (!defined('IN_PHPBB'))
 class acp_extensions
 {
 	var $u_action;
-	
+
 	function main()
 	{
 		// Start the page
 		global $user, $template, $request;
-		
+
 		$user->add_lang(array('install', 'acp/customisations'));
-		
+
 		$this->page_title = 'ACP_EXTENSIONS';
-		
+
 		$action = $request->variable('action', '');
 		$ext_name = $request->variable('ext_name', '');
-		
+
 		// Set action to list if not set
 		if (empty($action))
 		{
-			$action = "list";
+			$action = 'list';
 		}
-		
+
 		// What are we doing?
 		switch ($action)
 		{
@@ -58,13 +58,13 @@ class acp_extensions
 				   )
 				);
 			break;
-			
+
 			case 'enable':
 				$name = $request->variable('ext_name', '');
 				$this->enable_extension($name);
 				$this->tpl_name = 'acp_ext_enable';
 			break;
-				
+
 			case 'disable_pre':
 				$this->tpl_name = 'acp_ext_disable';
 				$template->assign_vars(array(
@@ -73,13 +73,13 @@ class acp_extensions
 				   )
 				);				
 			break;	
-	
+
 			case 'disable':
 				$name = $request->variable('ext_name', '');
 				$this->disable_extension($name);
 				$this->tpl_name = 'acp_ext_disable';
 			break;
-		
+
 			case 'purge_pre':
 				$this->tpl_name = 'acp_ext_purge';
 				$template->assign_vars(array(
@@ -88,13 +88,13 @@ class acp_extensions
 				   )
 				);
 			break;		
-		
+
 			case 'purge':
 				$name = $request->variable('ext_name', '');
 				$this->purge_extension($name);
 				$this->tpl_name = 'acp_ext_purge';
 			break;
-		
+
 			case 'delete_pre':
 				$this->tpl_name = 'acp_ext_delete';
 				$template->assign_vars(array(
@@ -103,12 +103,12 @@ class acp_extensions
 				   )
 				);
 			break;
-		
+
 			case 'delete':
 				$name = $request->variable('ext_name', '');
 				$this->tpl_name = 'acp_ext_delete';
 			break;
-			
+
 			case 'details':
 				$name = $request->variable('ext_name', '');
 				$filepath = $phpbb_root_path . 'ext/' . $name . '/extension.json';
@@ -121,7 +121,7 @@ class acp_extensions
 	function enable_extension($name)
 	{
 		global $phpbb_extension_manager, $template, $cache;
-		
+
 		$phpbb_extension_manager->enable($name);
 		$template->assign_vars(array(
 			'U_RETURN'	=> $this->u_action . '&amp;action=list',
@@ -148,7 +148,7 @@ class acp_extensions
 		));
 		$cache->purge();
 	}
-		
+
 	function list_enabled_exts()
 	{
 		global $db, $template;
@@ -172,7 +172,7 @@ class acp_extensions
 
 		return;
 	}
-	
+
 	function list_disabled_exts()
 	{
 		global $db, $template;
@@ -197,14 +197,14 @@ class acp_extensions
 
 		return;
 	}
-	
+
 	function list_avaliable_exts()
 	{
 		$phpbb_extension_manager->load_extensions();
 		$allavailable = array_keys($phpbb_extension_manager->all_available());
 		$allconfigured = array_keys($phpbb_extension_manager->all_configured());
 		$uninstalled = array_diff($allavailable, $allconfigured);
-		
+
 		foreach ($uninstalled as $ext)
 		{
 			$template->assign_block_vars('disabled', array(
@@ -215,42 +215,31 @@ class acp_extensions
 				'U_ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . $ext['ext_name'],
 			));
 		}
-		
+
 		return;
 	}
-	
+
 	function get_meta_info($filepath)
 	{
 		global $template;
-		
+
 		$metadatafile = file_get_contents($filepath);
 		$metadata = json_decode($metadatafile,true);
-		
-		$name = $metadata["name"];
-		$type = $metadata["type"];
-		$description = $metadata["description"];
-		$homepage = $metadata["homepage"];
-		$version = $metadata["version"];
-		$time = $metadata["time"];
-		$licence = $metadata["licence"];
-		$require_php = $metadata["require"]["php"];
-		$require_phpbb = $metadata["require"]["phpbb"];
-		$display_name = $metadata["extra"]["display-name"];
-		
+
 		$template->assign_vars(array(
-			'NAME'			=> $name,
-			'TYPE'			=> $type,
-			'DESCRIPTION'	=> $description,
-			'HOMEPAGE'		=> $homepage,
-			'VERSION'		=> $version,
-			'TIME'			=> $time,
-			'LICENSE'		=> $licence,
-			'REQUIRE_PHP'	=> $require_php,
-			'REQUIRE_PHPBB'	=> $require_phpbb,
-			'DISPLAY_NAME'	=> $display_name,
+			'NAME'			=> $metadata['name'],
+			'TYPE'			=> $metadata['type'],
+			'DESCRIPTION'	=> $metadata['description'],
+			'HOMEPAGE'		=> $metadata['homepage'],
+			'VERSION'		=> $metadata['version'],
+			'TIME'			=> $metadata['time'],
+			'LICENSE'		=> $metadata['licence'],
+			'REQUIRE_PHP'	=> $metadata['require']['php'],
+			'REQUIRE_PHPBB'	=> $metadata['require']['phpbb'],
+			'DISPLAY_NAME'	=> $metadata['extra']['display-name'],
 			)
 		);
-		
+
 		foreach ($metadata["authors"] as $author)
 		{
 			$template->assign_block_vars('authors', array(
@@ -258,7 +247,7 @@ class acp_extensions
 				'AUTHOR_USERNAME'	=> $author["username"],
 				'AUTHOR_EMAIL'		=> $author["email"],
 				'AUTHOR_HOMEPAGE'	=> $author["homepage"],
-				'AUTHOR_TYPE'		=> $author["type"],
+				'AUTHOR_ROLE'		=> $author["role"],
 			));
 		}
 	}
