@@ -3,7 +3,7 @@
 *
 * @package phpbb_request
 * @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -34,7 +34,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	*/
 	public function __construct()
 	{
-		if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+		if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 		{
 			$this->strip = false;
 		}

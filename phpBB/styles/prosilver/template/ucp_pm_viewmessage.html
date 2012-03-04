@@ -1,18 +1,21 @@
-	<!-- INCLUDE ucp_header.html -->
+<!-- INCLUDE ucp_header.html -->
 
 <!-- INCLUDE ucp_pm_message_header.html -->
 
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+
 
 <!-- IF S_DISPLAY_HISTORY and (U_VIEW_PREVIOUS_HISTORY or U_VIEW_NEXT_HISTORY) -->
-	<fieldset class="display-options clearfix bg1 pm-message-nav">
+	<fieldset class="display-options clearfix">
 		<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_VIEW_PREVIOUS_HISTORY}</a><!-- ENDIF -->
 		<!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}" class="right-box {S_CONTENT_FLOW_END}">{L_VIEW_NEXT_HISTORY}</a><!-- ENDIF -->
 	</fieldset>
 <!-- ENDIF -->
 
 
-<div id="post-{MESSAGE_ID}" class="panel clearfix post pm-panel-message pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
-<div>
+<div id="post-{MESSAGE_ID}" class="post pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
+<div class="inner"><span class="corners-top"><span></span></span>
 
 	<div class="postbody">
 

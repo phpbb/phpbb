@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1287,6 +1286,20 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{
 			$msg_users[] = $row;
 			$update_notification[$row['notify_type']][] = $row['user_id'];
+
+			/*
+			* We also update the forums watch table for this user when we are
+			* sending out a topic notification to prevent sending out another
+			* notification in case this user is also subscribed to the forum
+			* this topic was posted in.
+			* Since an UPDATE query is used, this has no effect on users only
+			* subscribed to the topic (i.e. no row is created) and should not
+			* be a performance issue.
+			*/
+			if ($row['notify_type'] === 'topic')
+			{
+				$update_notification['forum'][] = $row['user_id'];
+			}
 		}
 	}
 	unset($notify_rows);

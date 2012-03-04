@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -295,7 +294,7 @@ class phpbb_search_base
 			$sql_where = '';
 			foreach ($authors as $author)
 			{
-				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors LIKE \'% ' . (int) $author . ' %\'';
+				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $db->sql_like_expression($db->any_char . ' ' . (int) $author . ' ' . $db->any_char);
 			}
 
 			$sql = 'SELECT search_key

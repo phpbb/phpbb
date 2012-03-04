@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -572,11 +571,11 @@ switch ($mode)
 			$module->list_modules('ucp');
 			$module->list_modules('mcp');
 
-			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
-			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
-			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
-			$friends_enabled = ($module->loaded('zebra', 'friends')) ? true : false;
-			$foes_enabled = ($module->loaded('zebra', 'foes')) ? true : false;
+			$user_notes_enabled = ($module->loaded('mcp_notes', 'user_notes')) ? true : false;
+			$warn_user_enabled = ($module->loaded('mcp_warn', 'warn_user')) ? true : false;
+			$zebra_enabled = ($module->loaded('ucp_zebra')) ? true : false;
+			$friends_enabled = ($module->loaded('ucp_zebra', 'friends')) ? true : false;
+			$foes_enabled = ($module->loaded('ucp_zebra', 'foes')) ? true : false;
 
 			unset($module);
 		}
@@ -612,8 +611,8 @@ switch ($mode)
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
-			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
@@ -1586,7 +1585,7 @@ switch ($mode)
 		$template->assign_vars(array(
 			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
 			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
-			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
+			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),

@@ -1007,11 +1007,11 @@ fieldset.submit-buttons legend {
 /* Input field styles
 ---------------------------------------- */
 
-input.radio, input.permissions-checkbox {
+input.radio, input.checkbox, input.permissions-checkbox {
 	width: auto !important;
 	background-color: transparent;
 	border: none;
-	cursor: default;
+	cursor: pointer;
 }
 
 input.full,

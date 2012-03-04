@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -427,7 +426,13 @@ class filespec
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
+			$this->error[] = $user->lang($this->upload->error_prefix . 'WRONG_SIZE',
+				$user->lang('PIXELS', (int) $this->upload->min_width),
+				$user->lang('PIXELS', (int) $this->upload->min_height),
+				$user->lang('PIXELS', (int) $this->upload->max_width),
+				$user->lang('PIXELS', (int) $this->upload->max_height),
+				$user->lang('PIXELS', (int) $this->width),
+				$user->lang('PIXELS', (int) $this->height));
 
 			return false;
 		}

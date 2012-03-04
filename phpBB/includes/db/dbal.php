@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -684,12 +683,7 @@ class dbal
 			// The DEBUG_EXTRA constant is for development only!
 			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
 			{
-				// Print out a nice backtrace...
-				$backtrace = get_backtrace();
-
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
-				$message .= '<br />';
 			}
 			else
 			{

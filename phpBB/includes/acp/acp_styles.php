@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -62,7 +61,7 @@ class acp_styles
 #
 # @package phpBB3
 # @copyright (c) 2005 phpBB Group
-# @license http://opensource.org/licenses/gpl-license.php GNU Public License
+# @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 #
 #
 # At the left is the name, please do not change this
@@ -84,11 +83,11 @@ version = {VERSION}
 		$this->template_cfg .= '
 # Some configuration options
 
-#
-# You can use this function to inherit templates from another template.
-# The template of the given name has to be installed.
-# Templates cannot inherit from inheriting templates.
-#';
+# Template inheritance
+# See http://blog.phpbb.com/2008/07/31/templating-just-got-easier/
+# Set value to empty or this template name to ignore template inheritance.
+inherit_from = {INHERIT_FROM}
+';
 
 		// Execute overall actions
 		switch ($action)
@@ -258,12 +257,14 @@ version = {VERSION}
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql_from = '';
+		$sql_sort = 'LOWER(' . $mode . '_name)';
 		$style_count = array();
 
 		switch ($mode)
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
+				$sql_sort = 'style_active DESC, ' . $sql_sort;
 
 				$sql = 'SELECT user_style, COUNT(user_style) AS style_count
 					FROM ' . USERS_TABLE . '
@@ -285,6 +286,9 @@ version = {VERSION}
 			case 'theme':
 				$sql_from = STYLES_THEME_TABLE;
 			break;
+
+			default:
+				trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$l_prefix = strtoupper($mode);
@@ -308,7 +312,8 @@ version = {VERSION}
 		);
 
 		$sql = "SELECT *
-			FROM $sql_from";
+			FROM $sql_from
+			ORDER BY $sql_sort ASC";
 		$result = $db->sql_query($sql);
 
 		$installed = array();
@@ -344,6 +349,8 @@ version = {VERSION}
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
+
+				'S_INACTIVE'			=> ($mode == 'style' && !$row['style_active']) ? true : false,
 				)
 			);
 		}
@@ -962,6 +969,13 @@ version = {VERSION}
 			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		$s_only_component = $this->display_component_options($mode, $style_row[$mode . '_id'], $style_row);
+
+		if ($s_only_component)
+		{
+			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		if ($update)
 		{
 			if ($mode == 'style')
@@ -1005,8 +1019,6 @@ version = {VERSION}
 			$message = ($mode != 'style') ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
 			trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 		}
-
-		$this->display_component_options($mode, $style_row[$mode . '_id'], $style_row);
 
 		$this->page_title = 'DELETE_' . $l_prefix;
 
@@ -1082,11 +1094,14 @@ version = {VERSION}
 
 	/**
 	* Display the options which can be used to replace a style/template/theme
+	*
+	* @return boolean Returns true if the component is the only component and can not be deleted.
 	*/
 	function display_component_options($component, $component_id, $style_row = false, $style_id = false)
 	{
 		global $db, $template, $user;
 
+		$is_only_component = true;
 		$component_in_use = array();
 		if ($component != 'style')
 		{
@@ -1114,6 +1129,9 @@ version = {VERSION}
 		$s_options = '';
 		if (($component != 'style') && empty($component_in_use))
 		{
+			// If it is not in use, there must be another component
+			$is_only_component = false;
+
 			$sql = "SELECT {$component}_id, {$component}_name
 				FROM $sql_from
 				WHERE {$component}_id = {$component_id}";
@@ -1137,6 +1155,7 @@ version = {VERSION}
 			{
 				if ($row[$component . '_id'] != $component_id)
 				{
+					$is_only_component = false;
 					$s_options .= '<option value="' . $row[$component . '_id'] . '">' . sprintf($user->lang['REPLACE_WITH_OPTION'], $row[$component . '_name']) . '</option>';
 				}
 				else if ($component != 'style')
@@ -1164,6 +1183,8 @@ version = {VERSION}
 				}
 			}
 		}
+
+		return $is_only_component;
 	}
 
 	/**
@@ -1325,9 +1346,7 @@ version = {VERSION}
 			// Export template core code
 			if ($mode == 'template' || $inc_template)
 			{
-				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version']), $this->template_cfg);
-
-				$use_template_name = '';
+				$use_template_name = $style_row['template_name'];
 
 				// Add the inherit from variable, depending on it's use...
 				if ($style_row['template_inherits_id'])
@@ -1341,7 +1360,8 @@ version = {VERSION}
 					$db->sql_freeresult($result);
 				}
 
-				$template_cfg .= ($use_template_name) ? "\ninherit_from = $use_template_name" : "\n#inherit_from = ";
+				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}', '{INHERIT_FROM}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version'], $use_template_name), $this->template_cfg);
+
 				$template_cfg .= "\n\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
 
 				$data[] = array(
@@ -2400,7 +2420,7 @@ version = {VERSION}
 				$select_bf = '';
 			}
 
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, $select_bf
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";

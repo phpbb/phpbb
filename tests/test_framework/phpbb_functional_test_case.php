@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -43,6 +43,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->client->request($method, $this->root_url . $path);
 	}
 
+	// bootstrap, called after board is set up
+	// once per test case class
+	// test cases can override this
+	protected function bootstrap()
+	{
+	}
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -51,10 +58,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'phpbb_functional_test_case' => array('config', 'already_installed'),
 		);
 
-		if (!self::$already_installed)
+		if (!static::$already_installed)
 		{
 			$this->install_board();
-			self::$already_installed = true;
+			$this->bootstrap();
+			static::$already_installed = true;
 		}
 	}
 
@@ -94,8 +102,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'admin_name'	=> 'admin',
 			'admin_pass1'	=> 'admin',
 			'admin_pass2'	=> 'admin',
-			'board_email1'	=> 'nobody@example.com',
-			'board_email2'	=> 'nobody@example.com',
+			'board_email'	=> 'nobody@example.com',
 		));
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);

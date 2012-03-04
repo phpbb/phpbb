@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -26,15 +25,6 @@ $auth->acl($user->data);
 $user->setup('viewforum');
 
 display_forums('', $config['load_moderators']);
-
-// Set some stats, get posts count from forums data if we... hum... retrieve all forums data
-$total_posts	= $config['num_posts'];
-$total_topics	= $config['num_topics'];
-$total_users	= $config['num_users'];
-
-$l_total_user_s = ($total_users == 0) ? 'TOTAL_USERS_ZERO' : 'TOTAL_USERS_OTHER';
-$l_total_post_s = ($total_posts == 0) ? 'TOTAL_POSTS_ZERO' : 'TOTAL_POSTS_OTHER';
-$l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OTHER';
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 // Grab group details for legend display
@@ -90,7 +80,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 	$leap_year_birthdays = '';
 	if ($now['mday'] == 28 && $now['mon'] == 2 && !$user->format_date(time(), 'L'))
 	{
-		$leap_year_birthdays = " OR user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
+		$leap_year_birthdays = " OR u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
 	}
 
 	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_birthday
@@ -124,10 +114,10 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 
 // Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
-	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
-	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
+	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
+	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
+	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
+	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),

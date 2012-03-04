@@ -3,7 +3,7 @@
 *
 * @package testing
 * @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -71,6 +71,6 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 		$this->template_locator = new phpbb_template_locator();
 		$this->template_provider = new phpbb_template_path_provider();
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator, $this->template_provider);
-		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path);
+		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path, 'parent');
 	}
 }

@@ -3,7 +3,7 @@
 *
 * @package install
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1060,7 +1060,10 @@ function database_update_info()
 		'3.0.9'			=> array(),
 		// No changes from 3.0.10-RC1 to 3.0.10-RC2
 		'3.0.10-RC1'	=> array(),
-
+		// No changes from 3.0.10-RC2 to 3.0.10-RC3
+		'3.0.10-RC2'	=> array(),
+		// No changes from 3.0.10-RC3 to 3.0.10
+		'3.0.10-RC3'	=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
 
@@ -2132,6 +2135,14 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.10-RC1':
 		break;
 
+		// No changes from 3.0.10-RC2 to 3.0.10-RC3
+		case '3.0.10-RC2':
+		break;
+
+		// No changes from 3.0.10-RC3 to 3.0.10
+		case '3.0.10-RC3':
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2353,6 +2364,7 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$no_updates = false;
+
 		break;
 	}
 }

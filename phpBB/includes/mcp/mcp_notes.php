@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -228,7 +227,7 @@ class mcp_notes
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start),
-			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
+			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,
 			'JOINED'			=> $user->format_date($userrow['user_regdate']),

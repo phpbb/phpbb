@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -848,14 +847,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!class_exists($search_type))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
-
-	include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
 
 	$error = false;
 	$search = new $search_type($error);
@@ -2295,41 +2292,6 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
-* remove_comments will strip the sql comment lines out of an uploaded sql file
-* specifically for mssql and postgres type files in the install....
-*/
-function remove_comments(&$output)
-{
-	$lines = explode("\n", $output);
-	$output = '';
-
-	// try to keep mem. use down
-	$linecount = sizeof($lines);
-
-	$in_comment = false;
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if (trim($lines[$i]) == '/*')
-		{
-			$in_comment = true;
-		}
-
-		if (!$in_comment)
-		{
-			$output .= $lines[$i] . "\n";
-		}
-
-		if (trim($lines[$i]) == '*/')
-		{
-			$in_comment = false;
-		}
-	}
-
-	unset($lines);
-	return $output;
-}
-
-/**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
 */
@@ -2366,7 +2328,7 @@ function cache_moderators()
 		$ug_id_ary = array_keys($hold_ary);
 
 		// Remove users who have group memberships with DENY moderator permissions
-		$sql_ary = array(
+		$sql_ary_deny = array(
 			'SELECT'	=> 'a.forum_id, ug.user_id, g.group_id',
 
 			'FROM'		=> array(
@@ -2393,7 +2355,7 @@ function cache_moderators()
 				AND ug.user_pending = 0
 				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
 		);
-		$sql = $db->sql_build_query('SELECT', $sql_ary);
+		$sql = $db->sql_build_query('SELECT', $sql_ary_deny);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

@@ -4,9 +4,8 @@
 * acp_styles [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -234,6 +233,7 @@ $lang = array_merge($lang, array(
 	'IMG_USER_ICON9'		=> 'User defined image 9',
 	'IMG_USER_ICON10'		=> 'User defined image 10',
 
+	'INACTIVE_STYLES'			=> 'Inactive styles',
 	'INCLUDE_DIMENSIONS'		=> 'Include dimensions',
 	'INCLUDE_TEMPLATE'			=> 'Include template',
 	'INCLUDE_THEME'				=> 'Include theme',

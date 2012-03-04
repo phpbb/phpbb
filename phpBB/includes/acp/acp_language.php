@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1136,10 +1135,9 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @version $' . 'Id: ' . '$
 * @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
