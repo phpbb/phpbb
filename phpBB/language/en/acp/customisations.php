@@ -57,19 +57,19 @@ $lang = array_merge($lang, array(
 	'DELETED'				=> 'Deleted',
 
 	'ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
-	'DISABLE_EXPLAIN'		=> 'Disabling an extension keeps the files and data intact but is not working on your board.',
-	'PURGE_EXPLAIN'			=> 'Purging an extension keeps the files but not the data on your board.',
-	'DELETE_EXPLAIN'		=> 'Deleting an extension removes all traces of the extension except from your logs.',
+	'DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files and settings but removes any functionality added by the extension.',
+	'PURGE_EXPLAIN'			=> 'Purging an extension clears an extensions data while retaining its files.',
+	'DELETE_EXPLAIN'		=> 'Deleting an extension removes all of its files and settings. Log entries will remain, although any language variables added by the extension will not be available.',
 
-	'ENABLE_SUCESS'			=> 'Your extension was enabled sucessfully',
-	'DISABLE_SUCESS'		=> 'Your extension was disabled sucessfully',
-	'PURGE_SUCESS'			=> 'Your extension was purged sucessfully',
-	'DELETE_SUCESS'			=> 'Your extension was deleted sucessfully',
+	'ENABLE_SUCESS'			=> 'The extension was enabled sucessfully',
+	'DISABLE_SUCESS'		=> 'The extension was disabled sucessfully',
+	'PURGE_SUCESS'			=> 'The extension was purged sucessfully',
+	'DELETE_SUCESS'			=> 'The extension was deleted sucessfully',
 
-	'ENABLE_FAIL'			=> 'Your extension could not be enabled',
-	'DISABLE_FAIL'			=> 'Your extension could not be disabled',
-	'PURGE_FAIL'			=> 'Your extension could not be purged',
-	'DELETE_FAIL'			=> 'Your extension could not be deleted',
+	'ENABLE_FAIL'			=> 'The extension could not be enabled',
+	'DISABLE_FAIL'			=> 'The extension could not be disabled',
+	'PURGE_FAIL'			=> 'The extension could not be purged',
+	'DELETE_FAIL'			=> 'The extension could not be deleted',
 
 	'EXTENSION_NAME'			=> 'Extension Name',
 	'EXTENSION_ACTIONS'			=> 'Actions',
@@ -77,8 +77,8 @@ $lang = array_merge($lang, array(
 
 	'ENABLE_CONFIRM'			=> 'Are you sure you wish to enable this extension?',
 	'DISABLE_CONFIRM'			=> 'Are your sure you wish to disable this extension?',
-	'PURGE_CONFIRM'				=> 'Are you sure you wish to purge (and not disable) this extension? This action will wipe the extension data on this board and is not reversible.',
-	'DELETE_CONFIRM'			=> 'Are you sure you wish to delete (and not purge or disable) this extension? This action will remove the extension and all of its data from this board and is not reversible.',
+	'PURGE_CONFIRM'				=> 'Are you sure you wish to purge this extensions data? This cannot be undone.',
+	'DELETE_CONFIRM'			=> 'Are you sure you wish to data this extensions files and clear its data? This cannot be undone.',
 
 	'WARNING'			=> 'Warning',
 	'RETURN'			=> 'Return',
