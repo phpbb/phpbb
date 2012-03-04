@@ -1,0 +1,97 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+
+	<fieldset>
+		<legend>{L_EXT_DETAILS}</legend>
+		<dl>
+			<dt><label for="display_name">{L_DISPLAY_NAME}:</label></dt>
+			<dd><strong id="display_name">{DISPLAY_NAME}</strong></dd>
+		</dl>
+		<dl>
+			<dt><label for="name">{L_CLEAN_NAME}:</label></dt>
+			<dd><strong id="name">{NAME}</strong></dd>
+		</dl>
+		<dl>
+			<dt><label for="type">{L_TYPE}:</label></dt>
+			<dd><p id="type">{TYPE}</p></dd>
+		</dl>
+		<dl>
+			<dt><label for="description">{L_DESCRIPTION}:</label></dt>
+			<dd><p id="description">{DESCRIPTION}</p></dd>
+		</dl>
+		<dl>
+			<dt><label for="version">{L_VERSION}:</label></dt>
+			<dd><p id="version">{VERSION}</p></dd>
+		</dl>
+		<dl>
+			<dt><label for="homepage">{L_HOPEPAGE}:</label></dt>
+			<dd><p id="homepage">{HOMEPAGE}</p></dd>
+		</dl>
+<!-- 		<dl>
+			<dt><label for="path">{L_PATH}:</label></dt>
+			<dd><p id="path">{PATH}</p></dd>
+		</dl> -->
+		<dl>
+			<dt><label for="time">{L_TIME}:</label></dt>
+			<dd><p id="time">{TIME}</p></dd>
+		</dl>
+		<dl>
+			<dt><label for="licence">{L_LICENCE}:</label></dt>
+			<dd><p id="licence">{LICENCE}</p></dd>
+		</dl>
+	</fieldset>
+	
+	<fieldset>
+		<legend>{L_REQUIREMENTS}</legend>
+		<!-- IF REQUIRE_PHPBB -->
+		<dl>
+			<dt><label for="require_phpbb">{L_PHPBB_VERSION}:</label></dt>
+			<dd><p id="require_phpbb">{REQUIRE_PHPBB}</p></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF REQUIRE_PHP -->
+		<dl>
+			<dt><label for="require_php">{L_PHP_VERSION}:</label></dt>
+			<dd><p id="require_php">{REQUIRE_PHP}</p></dd>
+		</dl>
+		<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_AUTHOR_INFORMATION}</legend>
+		<!-- BEGIN authors -->
+		<dl>
+			<dt><label for="author_name">{L_AUTHOR_NAME}:</label></dt>
+			<dd><strong id="author_name">{authors.AUTHOR_NAME}</strong></dd>
+		</dl>
+		<dl>
+			<dt><label for="author_email">{L_AUTHOR_USERNAME}:</label></dt>
+			<dd><strong id="author_email">{authors.AUTHOR_USERNAME}</strong></dd>
+		</dl>
+		<!-- IF authors.AUTHOR_EMAIL -->
+		<dl>
+			<dt><label for="author_email">{L_AUTHOR_EMAIL}:</label></dt>
+			<dd><strong id="author_email"><a href="mailto:{authors.AUTHOR_EMAIL}">{authors.AUTHOR_EMAIL}</a></strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF authors.AUTHOR_HOMEPAGE -->
+		<dl>
+			<dt><label for="author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
+			<dd><strong id="author_url"><a href="{authors.AUTHOR_HOMEPAGE}">{authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF authors.AUTHOR_ROLE -->
+		<dl>
+			<dt><label for="author_role">{L_AUTHOR_ROLE}:</label></dt>
+			<dd><strong id="author_role">{authors.AUTHOR_ROLE}</strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- END authors -->
+	</fieldset>
+	
+<!-- INCLUDE overall_footer.html -->
