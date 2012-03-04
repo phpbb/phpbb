@@ -254,10 +254,16 @@
 
 <!-- INCLUDE jumpbox.html -->
 
-<!-- IF S_TOPIC_MOD -->
+<!-- IF S_TOPIC_MOD_LOCK or S_TOPIC_MOD_DELETE or S_TOPIC_MOD_MOVE or S_TOPIC_MOD_SPLIT or S_TOPIC_MOD_MERGE or S_TOPIC_MOD_MERGE_TOPIC or S_TOPIC_MOD_FORK or S_TOPIC_MOD_MAKE_NORMAL or S_TOPIC_MOD_MAKE_STICKY or S_TOPIC_MOD_MAKE_ANNOUNCE or S_TOPIC_MOD_MAKE_GLOBAL or S_TOPIC_MOD_TOPIC_LOGS -->
 	<form method="post" action="{S_MOD_ACTION}">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}:</label> {S_TOPIC_MOD} <input type="submit" value="{L_GO}" class="button2" />
+		<label for="quick-mod-select">{L_QUICK_MOD}:</label>
+		<select name="action" id="quick-mod-select">
+			<!-- BEGIN quickmod -->
+			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
+			<!-- END quickmod -->
+		</select>
+		<input type="submit" value="{L_GO}" class="button2" />
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
