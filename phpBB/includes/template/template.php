@@ -159,6 +159,8 @@ class phpbb_template
 	/**
 	* Set custom style location (able to use directory outside of phpBB).
 	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
 	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
 	* @param array or string $paths Array of style paths, relative to current root directory
 	* @param string $template_path Path to templates, relative to style directory. False if path should not be changed.
@@ -206,7 +208,7 @@ class phpbb_template
 	* @param bool $return_template If true, $template will be returned on success, if false, full path to file will be returned on success
 	* @returns false if template does not exist, path to first file that it finds if file exists
 	*/
-	function template_exists($templates, $return_template = false)
+	function template_exists($templates, $return_template_path = false)
 	{
 		if (!is_array($templates))
 		{
@@ -219,7 +221,7 @@ class phpbb_template
 				$path = $root . '/' . $this->template_path . $file;
 				if (@file_exists($path))
 				{
-					return ($return_template) ? $file : $path;
+					return ($return_template_path) ? $file : $path;
 				}
 			}
 		}
@@ -240,10 +242,10 @@ class phpbb_template
 	/**
 	* Locates resource within style directory
 	*
-	* @param string $name File name
+	* @param string $path Path to resource relative to style directory
 	* @return string Full path to file. If file does not exist, function will return path to where file is supposed to be in primary style
 	*/
-	function locate_resource($name)
+	function locate_resource($path)
 	{
 		// Get main root directory id only if its necessary
 		$main_root_id = $this->locator->get_main_root_id();
@@ -255,14 +257,14 @@ class phpbb_template
 		foreach ($this->locator->get_roots() as $root_index => $root)
 		{
 			// Full path to file
-			$path = $root . '/' . $name;
-			if (@file_exists($path))
+			$full_path = $root . '/' . $path;
+			if (@file_exists($full_path))
 			{
-				return $path;
+				return $full_path;
 			}
 			if ($root_index == $main_root_id)
 			{
-				$default = $path;
+				$default = $full_path;
 			}
 		}
 
