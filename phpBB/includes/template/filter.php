@@ -842,7 +842,7 @@ class phpbb_template_filter extends php_user_filter
 			$files = $finder
 				->extension_prefix($location)
 				->extension_suffix('.html')
-				->extension_directory("/styles/universal/template")
+				->extension_directory("/styles/all/template")
 				->get_files();
 
 			$all_compiled = '';
