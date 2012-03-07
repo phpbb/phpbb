@@ -347,6 +347,42 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
 	}
 
+	public function test_append_var_without_assign_var()
+	{
+		$this->template->set_filenames(array(
+			'append_var'	=> 'variable.html'
+		));
+
+		$items = array('This ', 'is ', 'a ', 'test');
+		$expecting = implode('', $items);
+		
+		foreach ($items as $word)
+		{
+			$this->template->append_var('VARIABLE', $word);
+		}
+
+		$this->assertEquals($expecting, $this->display('append_var'));
+	}
+
+	public function test_append_var_with_assign_var()
+	{
+		$this->template->set_filenames(array(
+			'append_var'	=> 'variable.html'
+		));
+
+		$start = 'This ';
+		$items = array('is ', 'a ', 'test');
+		$expecting = $start . implode('', $items);
+		
+		$this->template->assign_var('VARIABLE', $start);
+		foreach ($items as $word)
+		{
+			$this->template->append_var('VARIABLE', $word);
+		}
+
+		$this->assertEquals($expecting, $this->display('append_var'));
+	}
+
 	public function test_php()
 	{
 		$this->setup_engine(array('tpl_allow_php' => true));
