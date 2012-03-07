@@ -62,7 +62,7 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
 	}
 
-	protected function setup_engine()
+	protected function setup_engine(array $new_config = array())
 	{
 		global $phpbb_root_path, $phpEx, $config, $user;
 
