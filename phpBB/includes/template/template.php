@@ -378,7 +378,9 @@ class phpbb_template
 	}
 
 	/**
-	* Assign a single variable to a single key
+	* Assign a single scalar value to a single key.
+	*
+	* Value can be a string, an integer or a boolean.
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
@@ -386,6 +388,19 @@ class phpbb_template
 	public function assign_var($varname, $varval)
 	{
 		$this->context->assign_var($varname, $varval);
+	}
+
+	/**
+	* Append text to the string value stored in a key.
+	*
+	* Text is appended using the string concatenation operator (.).
+	*
+	* @param string $varname Variable name
+	* @param string $varval Value to append to variable
+	*/
+	public function append_var($varname, $varval)
+	{
+		$this->context->append_var($varname, $varval);
 	}
 
 	// Docstring is copied from phpbb_template_context method with the same name.
