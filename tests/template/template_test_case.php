@@ -46,15 +46,20 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		return str_replace("\n\n", "\n", implode("\n", array_map('trim', explode("\n", trim($result)))));
 	}
 
-	protected function setup_engine(array $new_config = array())
+	protected function config_defaults()
 	{
-		global $phpbb_root_path, $phpEx, $user;
-
 		$defaults = array(
 			'load_tplcompile'	=> true,
 			'tpl_allow_php'		=> false,
 		);
+		return $defaults;
+	}
 
+	protected function setup_engine(array $new_config = array())
+	{
+		global $phpbb_root_path, $phpEx, $user;
+
+		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . '/templates';
