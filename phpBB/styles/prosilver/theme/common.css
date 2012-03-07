@@ -299,6 +299,8 @@ span.corners-bottom span {
 ul.linklist {
 	display: block;
 	margin: 0;
+	height: 4%;
+	overflow: hidden;
 }
 
 ul.linklist li {
@@ -483,6 +485,11 @@ dl.details dd {
 	color: #828282;
 	float: left;
 	width: 65%;
+}
+
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
+	height: 1%;
+	overflow: hidden;
 }
 
 /* Pagination
