@@ -344,7 +344,7 @@ class dbal_mysql extends dbal
 			}
 		}
 
-		return $this->get_row_count($table_name);
+		return parent::get_row_count($table_name);
 	}
 
 	/**
