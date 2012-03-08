@@ -1076,3 +1076,17 @@ input.search {
 input.disabled {
 	color: #666666;
 }
+
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	background-color: #FFFFFF;
+	border-color: #999999;
+}
+.phpbb_alert .alert_close {
+	background-image: url("./images/alert_close.png");
+}
+#darken {
+	background-color: #000000;
+}
+
