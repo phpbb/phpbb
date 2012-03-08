@@ -116,8 +116,9 @@ class mcp_reports
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
 						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+						'REPORTED_POST_ID'	=> $post_id,
+					));
 				}
 
 				$topic_tracking_info = $extensions = $attachments = array();
@@ -226,7 +227,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> $report['reported_post_text'],
+					'POST_PREVIEW'			=> bbcode_nl2br($report['reported_post_text']),
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
