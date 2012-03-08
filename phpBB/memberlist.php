@@ -62,11 +62,6 @@ $default_key = 'c';
 $sort_key = request_var('sk', $default_key);
 $sort_dir = request_var('sd', 'a');
 
-
-// Grab rank information for later
-$ranks = $cache->obtain_ranks();
-
-
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
