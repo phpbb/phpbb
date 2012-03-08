@@ -104,6 +104,11 @@ class ucp_activate
 			{
 				add_log('admin', 'LOG_USER_ACTIVE', $user_row['username']);
 			}
+			
+			// Login the user once activated.
+			$old_session_id = $user->session_id;
+			
+			$result = $user->session_create($user_row['user_id'], 0, 1, 1);
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
