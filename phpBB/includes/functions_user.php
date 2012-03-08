@@ -3587,4 +3587,33 @@ function remove_newly_registered($user_id, $user_data = false)
 	return $user_data['group_id'];
 }
 
+/**
+* Get a list of banned users' ids, ignoring stale buns which were not wiped yet.
+*
+* @return array	Array of banned users' ids if any, empty array otherwise
+*/
+function phpbb_get_banned_users_ids()
+{
+	global $db;
+
+	// Get banned User ID's
+	// Ignore stale bans which were not wiped yet
+	$banned_ids_list = array();
+	$sql = 'SELECT ban_userid
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_userid <> 0
+			AND ban_exclude <> 1
+			AND (ban_end > ' . time() . '
+				OR ban_end = 0)';
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_id = (int) $row['ban_userid'];
+		$banned_ids_list[$user_id] = $user_id;
+	}
+	$db->sql_freeresult($result);
+
+	return $banned_ids_list;
+}
+
 ?>

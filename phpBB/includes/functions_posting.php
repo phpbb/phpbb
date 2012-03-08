@@ -1180,28 +1180,23 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	$topic_title = ($topic_notification) ? $topic_title : $subject;
 	$topic_title = censor_text($topic_title);
 
-	// Get banned User ID's
-	$sql = 'SELECT ban_userid
-		FROM ' . BANLIST_TABLE . '
-		WHERE ban_userid <> 0
-			AND ban_exclude <> 1';
-	$result = $db->sql_query($sql);
-
-	$sql_ignore_users = ANONYMOUS . ', ' . $user->data['user_id'];
-	while ($row = $db->sql_fetchrow($result))
+	// Exclude guests, current user and banned users from notifications
+	if (!function_exists('phpbb_get_banned_users_ids'))
 	{
-		$sql_ignore_users .= ', ' . (int) $row['ban_userid'];
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
+	$sql_ignore_users = phpbb_get_banned_users_ids();
+	$sql_ignore_users[ANONYMOUS] = ANONYMOUS;
+	$sql_ignore_users[$user->data['user_id']] = $user->data['user_id'];
 
 	$notify_rows = array();
 
 	// -- get forum_userids	|| topic_userids
 	$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 		FROM ' . (($topic_notification) ? TOPICS_WATCH_TABLE : FORUMS_WATCH_TABLE) . ' w, ' . USERS_TABLE . ' u
-		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
-			AND w.user_id NOT IN ($sql_ignore_users)
-			AND w.notify_status = " . NOTIFY_YES . '
+		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . '
+			AND ' . $db->sql_in_set('w.user_id', $sql_ignore_users, true) . '
+			AND w.notify_status = ' . NOTIFY_YES . '
 			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 			AND u.user_id = w.user_id';
 	$result = $db->sql_query($sql);
@@ -1225,16 +1220,23 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// forum notification is sent to those not already receiving topic notifications
 	if ($topic_notification)
 	{
+		// Add users who has been already notified to ignore list
 		if (sizeof($notify_rows))
 		{
-			$sql_ignore_users .= ', ' . implode(', ', array_keys($notify_rows));
+			foreach ($notify_rows as $user_id => $row)
+			{
+				if (!isset($sql_ignore_users[$user_id]))
+				{
+					$sql_ignore_users[$user_id] = $user_id;
+				}
+			}
 		}
 
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
-				AND fw.user_id NOT IN ($sql_ignore_users)
-				AND fw.notify_status = " . NOTIFY_YES . '
+				AND " . $db->sql_in_set('fw.user_id', $sql_ignore_users, true) . '
+				AND fw.notify_status = ' . NOTIFY_YES . '
 				AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
