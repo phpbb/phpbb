@@ -1462,17 +1462,8 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	{
 		global $db;
 
-		$sql = 'SELECT COUNT(*) as total_words
-			FROM ' . SEARCH_WORDLIST_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT COUNT(*) as total_matches
-			FROM ' . SEARCH_WORDMATCH_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
-		$db->sql_freeresult($result);
+		$this->stats['total_words']		= $db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
+		$this->stats['total_matches']	= $db->get_estimated_row_count(SEARCH_WORDMATCH_TABLE);
 	}
 
 	/**
