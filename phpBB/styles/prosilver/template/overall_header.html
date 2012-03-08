@@ -54,6 +54,22 @@
 	}
 
 	/**
+	* Add item to current URL query string
+	*/
+	function add_to_query(name,value)
+	{
+		if(location.href.indexOf(name + "=") != -1)
+		{
+			url = location.href.replace(new RegExp(name + "=[a-z_]+", "i"), name + "=" + value);
+		}
+		else
+		{
+			url = location.href + ((location.search.indexOf("?") != -1) ? "&" : "?") + name + "=" + value;	
+		}
+		return url;
+	}
+
+	/**
 	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
 	*/
 	window.onload = function()
@@ -100,6 +116,19 @@
 				<p>{SITE_DESCRIPTION}</p>
 				<p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
 			</div>
+
+		<!-- IF LANGUAGE_OPTIONS -->
+			<div id="lang-select">
+				<form action="{U_INDEX}" method="get" id="lang">
+				<fieldset>
+					<select name="lang" onchange="window.location.href = add_to_query('lang', this.value);">
+						{LANGUAGE_OPTIONS}
+					</select>
+					<noscript><input class="button2" type="submit" value="{L_SELECT}" action="{U_ACTION}"></noscript>
+				</fieldset>
+				</form>
+			</div>
+		<!-- ENDIF -->
 
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
 			<div id="search-box">

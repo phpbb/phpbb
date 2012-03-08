@@ -2003,12 +2003,26 @@ function on_page($num_items, $per_page, $start)
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $db, $user, $phpEx;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
 		// Do not append the ? if the param-list is empty anyway.
 		$params = false;
+	}
+
+	// Is the language in the current url? If so, we add it to new links
+	if($url_lang = request_var('lang', '', true))
+	{
+		// First, we make sure the requested language is in the database
+		$result = $db->sql_query('SELECT lang_dir FROM ' . LANG_TABLE . ' WHERE lang_iso = \'' . $url_lang . '\'');
+		$dir = $db->sql_fetchfield('lang_dir');
+		// Now we make sure that the files exist on the filesystem
+		if(!empty($dir) && file_exists($user->lang_path . $dir . "/common.$phpEx") && !in_array('lang=' . $url_lang, $_EXTRA_URL))
+		{
+			// if so, we append lang=xx to the URL (where xx is the language code)
+			$_EXTRA_URL[] = 'lang=' . $url_lang;
+		}
 	}
 
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
@@ -4477,7 +4491,7 @@ function phpbb_http_login($param)
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
-	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
+	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path, $request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -4757,6 +4771,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_UPLOAD'				=> $config['upload_path'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
+
+		'LANGUAGE_OPTIONS'		=> ($user->data['user_id'] == ANONYMOUS) ? language_select($request->variable('lang', '')) : '',
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));

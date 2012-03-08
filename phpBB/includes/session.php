@@ -1572,6 +1572,7 @@ class user extends session
 	{
 		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
+		$_EXTRA_URL = array();
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
@@ -1582,7 +1583,16 @@ class user extends session
 		}
 		else
 		{
-			$this->lang_name = basename($config['default_lang']);
+			// if the language is specified in the URL, check to see if it exists. Default to the board's default language
+			$this->lang_name = request_var('lang', basename($config['default_lang']), true);
+			if($this->lang_name != basename($config['default_lang']))
+			{
+				$result = $db->sql_query('SELECT lang_dir FROM ' . LANG_TABLE . ' WHERE lang_iso = \'' . $db->sql_escape($this->lang_name) . '\'');
+				$dir = $db->sql_fetchfield('lang_dir');
+				$db->sql_freeresult($result);
+				$this->lang_name = (!empty($dir) && file_exists($this->lang_path . $dir . "/common.$phpEx")) ? $this->lang_name : basename($config['default_lang']);
+				$_EXTRA_URL[] = 'lang=' . $this->lang_name;
+			}
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1645,7 +1655,7 @@ class user extends session
 
 			$style = $style_request;
 			$SID .= '&amp;style=' . $style;
-			$_EXTRA_URL = array('style=' . $style);
+			$_EXTRA_URL[] = 'style=' . $style;
 		}
 		else
 		{
