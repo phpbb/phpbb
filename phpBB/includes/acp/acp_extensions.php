@@ -60,8 +60,7 @@ class acp_extensions
 			break;
 
 			case 'enable':
-				$name = $request->variable('ext_name', '');
-				$this->enable_extension($name);
+				$this->enable_extension($ext_name);
 				$this->tpl_name = 'acp_ext_enable';
 			break;
 
@@ -75,8 +74,7 @@ class acp_extensions
 			break;	
 
 			case 'disable':
-				$name = $request->variable('ext_name', '');
-				$this->disable_extension($name);
+				$this->disable_extension($ext_name);
 				$this->tpl_name = 'acp_ext_disable';
 			break;
 
@@ -90,8 +88,7 @@ class acp_extensions
 			break;		
 
 			case 'purge':
-				$name = $request->variable('ext_name', '');
-				$this->purge_extension($name);
+				$this->purge_extension($ext_name);
 				$this->tpl_name = 'acp_ext_purge';
 			break;
 
@@ -105,20 +102,18 @@ class acp_extensions
 			break;
 
 			case 'delete':
-				$name = $request->variable('ext_name', '');
 				$this->tpl_name = 'acp_ext_delete';
 			break;
 
 			case 'details':
-				$name = $request->variable('ext_name', '');
-				$filepath = $phpbb_root_path . 'ext/' . $name . '/extension.json';
+				$filepath = $phpbb_root_path . 'ext/' . $ext_name . '/extension.json';
 				$this->tpl_name = 'acp_ext_details';
 				$this->get_meta_info($filepath);
 			break;
 		}
 	}
 		
-	function enable_extension($name)
+	function enable_extension($ext_name)
 	{
 		global $phpbb_extension_manager, $template, $cache;
 
@@ -129,7 +124,7 @@ class acp_extensions
 		$cache->purge();
 	}
 
-	function disable_extension($name)
+	function disable_extension($ext_name)
 	{
 		global $phpbb_extension_manager, $template, $cache;
 		$phpbb_extension_manager->disable($name);
@@ -139,7 +134,7 @@ class acp_extensions
 		$cache->purge();
 	}
 
-	function purge_extension($name)
+	function purge_extension($ext_name)
 	{
 		global $phpbb_extension_manager, $template, $cache;
 		$phpbb_extension_manager->purge($name);
@@ -198,12 +193,12 @@ class acp_extensions
 		return;
 	}
 
-	function list_avaliable_exts()
+	function list_available_exts()
 	{
 		$phpbb_extension_manager->load_extensions();
-		$allavailable = array_keys($phpbb_extension_manager->all_available());
-		$allconfigured = array_keys($phpbb_extension_manager->all_configured());
-		$uninstalled = array_diff($allavailable, $allconfigured);
+		$all_available = array_keys($phpbb_extension_manager->all_available());
+		$all_configured = array_keys($phpbb_extension_manager->all_configured());
+		$uninstalled = array_diff($all_available, $all_configured);
 
 		foreach ($uninstalled as $ext)
 		{
