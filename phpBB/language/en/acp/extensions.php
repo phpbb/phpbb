@@ -42,19 +42,17 @@ $lang = array_merge($lang, array(
 
 	'DETAILS'				=> 'Details',
 
-	'AVALIABLE'				=> 'Avaliable',
+	'AVAILABLE'				=> 'Available',
 	'ENABLED'				=> 'Enabled',
-	'DISBALED'				=> 'Disabled',
+	'DISABLED'				=> 'Disabled',
+	'PURGED'				=> 'Purged',
+	'DELETED'				=> 'Deleted',
+	'UPLOADED'				=> 'Uploaded',
 
 	'ENABLE'				=> 'Enable',
 	'DISABLE'				=> 'Disable',
 	'PURGE'					=> 'Purge',
 	'DELETE'				=> 'Delete',
-
-	'ENABLED'				=> 'Enabled',
-	'DISABLED'				=> 'Disabled',
-	'PURGED'				=> 'Purged',
-	'DELETED'				=> 'Deleted',
 
 	'ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
 	'DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files and settings but removes any functionality added by the extension.',
