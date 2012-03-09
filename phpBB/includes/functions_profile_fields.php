@@ -630,10 +630,10 @@ class custom_profile
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
-		// checkbox - only testing for isset
+		// checkbox - set the value to "true" if it has been set to 1
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']]) && request_var($profile_row['field_ident'], $default_value) == 1) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 		else if ($profile_row['field_type'] == FIELD_INT)
 		{
