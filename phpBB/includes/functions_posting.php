@@ -1225,10 +1225,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		{
 			foreach ($notify_rows as $user_id => $row)
 			{
-				if (!isset($sql_ignore_users[$user_id]))
-				{
-					$sql_ignore_users[$user_id] = $user_id;
-				}
+				$sql_ignore_users[$user_id] = $user_id;
 			}
 		}
 
