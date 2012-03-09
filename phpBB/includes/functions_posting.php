@@ -1214,21 +1214,15 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			'method'		=> $row['user_notify_type'],
 			'allowed'		=> false
 		);
+
+		// Add users who have been already notified to ignore list
+		$sql_ignore_users[$row['user_id']] = $row['user_id'];
 	}
 	$db->sql_freeresult($result);
 
 	// forum notification is sent to those not already receiving topic notifications
 	if ($topic_notification)
 	{
-		// Add users who have been already notified to ignore list
-		if (sizeof($notify_rows))
-		{
-			foreach ($notify_rows as $user_id => $row)
-			{
-				$sql_ignore_users[$user_id] = $user_id;
-			}
-		}
-
 		$sql = 'SELECT u.user_id, u.username, u.user_email, u.user_lang, u.user_notify_type, u.user_jabber
 			FROM ' . FORUMS_WATCH_TABLE . ' fw, ' . USERS_TABLE . " u
 			WHERE fw.forum_id = $forum_id
@@ -1271,7 +1265,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			}
 		}
 	}
-
 
 	// Now, we have to do a little step before really sending, we need to distinguish our users a little bit. ;)
 	$msg_users = $delete_ids = $update_notification = array();
