@@ -398,7 +398,7 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.2', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
