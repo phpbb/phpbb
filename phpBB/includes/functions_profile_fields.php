@@ -571,6 +571,11 @@ class custom_profile
 					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 				}
 
+				// If a dropdown field is required, users
+				// cannot choose the "no value" option.
+				// They must choose one of the other options.
+				// Therefore, here we treat a value equal to
+				// the "no value" as a lack of value, i.e. NULL.
 				if ($value == $ident_ary['data']['field_novalue'] && $ident_ary['data']['field_required'])
 				{
 					return NULL;
