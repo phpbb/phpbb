@@ -3588,7 +3588,7 @@ function remove_newly_registered($user_id, $user_data = false)
 }
 
 /**
-* Get a list of banned users' ids, ignoring stale buns which were not wiped yet.
+* Get a list of banned users' ids, ignoring stale bans which were not wiped yet.
 *
 * @return array	Array of banned users' ids if any, empty array otherwise
 */

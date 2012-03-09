@@ -1220,7 +1220,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// forum notification is sent to those not already receiving topic notifications
 	if ($topic_notification)
 	{
-		// Add users who has been already notified to ignore list
+		// Add users who have been already notified to ignore list
 		if (sizeof($notify_rows))
 		{
 			foreach ($notify_rows as $user_id => $row)
