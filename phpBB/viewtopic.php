@@ -517,97 +517,29 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 // Quick mod tools
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
-if ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED))
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> (($topic_data['topic_status'] == ITEM_UNLOCKED) ? 'lock' : 'unlock'),
-		'TITLE'		=> $user->lang[(($topic_data['topic_status'] == ITEM_UNLOCKED) ? 'LOCK' : 'UNLOCK') . '_TOPIC']
-	));
-}
+$quickmod_array = array(
+	'lock'					=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED))),
+	'unlock'				=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED))),
+	'delete_topic'		=> array('DELETE_TOPIC', $auth->acl_get('m_delete', $forum_id)),
+	'move'					=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
+	'split'					=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
+	'merge'					=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
+	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id)),
+	'fork'					=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
+	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
+	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
+	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
+	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
+	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
+);
 
-if ($auth->acl_get('m_delete', $forum_id))
+foreach($quickmod_array as $option => $qm_ary)
 {
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'delete_topic',
-		'TITLE'		=> $user->lang['DELETE_TOPIC']
-	));
-}
-
-if ($auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED)
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'move',
-		'TITLE'		=> $user->lang['MOVE_TOPIC']
-	));
-}
-
-if ($auth->acl_get('m_split', $forum_id))
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'split',
-		'TITLE'		=> $user->lang['SPLIT_TOPIC']
-	));
-}
-
-if ($auth->acl_get('m_merge', $forum_id))
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'merge',
-		'TITLE'		=> $user->lang['MERGE_POSTS']
-	));
-
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'merge_topic',
-		'TITLE'		=> $user->lang['MERGE_TOPIC']
-	));
-}
-
-if ($auth->acl_get('m_move', $forum_id))
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'fork',
-		'TITLE'		=> $user->lang['FORK_TOPIC']
-	));
-}
-
-if ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'make_normal',
-		'TITLE'		=> $user->lang['MAKE_NORMAL']
-	));
-}
-
-if ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'make_sticky',
-		'TITLE'		=> $user->lang['MAKE_STICKY']
-	));
-}
-
-if ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'make_announce',
-		'TITLE'		=> $user->lang['MAKE_ANNOUNCE']
-	));
-}
-
-if ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'make_global',
-		'TITLE'		=> $user->lang['MAKE_GLOBAL']
-	));
-}
-
-if ($auth->acl_get('m_', $forum_id))
-{
-	$template->assign_block_vars('quickmod', array(
-		'VALUE'	=> 'topic_logs',
-		'TITLE'		=> $user->lang['VIEW_TOPIC_LOGS']
-	));
+	$lang_string = $user->lang[$qm_ary[0]];
+	if ((isset($qm_ary[1])) ? $qm_ary[1] : true)
+	{
+		phpbb_add_quickmod_option($option, $lang_string);
+	}
 }
 
 // If we've got a hightlight set pass it on to pagination.
