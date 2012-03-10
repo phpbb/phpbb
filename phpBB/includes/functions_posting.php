@@ -1203,8 +1203,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$notify_rows[$row['user_id']] = array(
-			'user_id'		=> $row['user_id'],
+		$notify_user_id = (int) $row['user_id'];
+		$notify_rows[$notify_user_id] = array(
+			'user_id'		=> $notify_user_id,
 			'username'		=> $row['username'],
 			'user_email'	=> $row['user_email'],
 			'user_jabber'	=> $row['user_jabber'],
@@ -1216,7 +1217,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		);
 
 		// Add users who have been already notified to ignore list
-		$sql_ignore_users[$row['user_id']] = $row['user_id'];
+		$sql_ignore_users[$notify_user_id] = $notify_user_id;
 	}
 	$db->sql_freeresult($result);
 
@@ -1234,8 +1235,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$notify_rows[$row['user_id']] = array(
-				'user_id'		=> $row['user_id'],
+			$notify_user_id = (int) $row['user_id'];
+			$notify_rows[$notify_user_id] = array(
+				'user_id'		=> $notify_user_id,
 				'username'		=> $row['username'],
 				'user_email'	=> $row['user_email'],
 				'user_jabber'	=> $row['user_jabber'],
