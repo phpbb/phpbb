@@ -3091,6 +3091,11 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
+	
+	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
+	{
+		unset($parsed_items['inherit_from']);
+	}
 
 	return $parsed_items;
 }
@@ -3796,11 +3801,23 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
+			$log_text = $msg_text;
+			$backtrace = get_backtrace();
+			if ($backtrace)
+			{
+				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
+			}
+
+			if (defined('IN_INSTALL') || defined('DEBUG_EXTRA') || isset($auth) && $auth->acl_get('a_'))
+			{
+				$msg_text = $log_text;
+			}
+
 			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
-				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $msg_text);
+				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $log_text);
 				$db->sql_return_on_error(false);
 			}
 
@@ -4616,7 +4633,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		foreach ($_EXTRA_URL as $url_param)
 		{
 			$url_param = explode('=', $url_param, 2);
-			$s_hidden_fields[$url_param[0]] = $url_param[1];
+			$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 		}
 	}
 

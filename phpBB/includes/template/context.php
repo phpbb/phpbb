@@ -53,7 +53,9 @@ class phpbb_template_context
 	}
 
 	/**
-	* Assign a single variable to a single key
+	* Assign a single scalar value to a single key.
+	*
+	* Value can be a string, an integer or a boolean.
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
@@ -61,6 +63,21 @@ class phpbb_template_context
 	public function assign_var($varname, $varval)
 	{
 		$this->rootref[$varname] = $varval;
+
+		return true;
+	}
+
+	/**
+	* Append text to the string value stored in a key.
+	*
+	* Text is appended using the string concatenation operator (.).
+	*
+	* @param string $varname Variable name
+	* @param string $varval Value to append to variable
+	*/
+	public function append_var($varname, $varval)
+	{
+		$this->rootref[$varname] = (isset($this->rootref[$varname]) ? $this->rootref[$varname] : '') . $varval;
 
 		return true;
 	}

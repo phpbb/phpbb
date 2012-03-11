@@ -80,7 +80,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 	$leap_year_birthdays = '';
 	if ($now['mday'] == 28 && $now['mon'] == 2 && !$user->format_date(time(), 'L'))
 	{
-		$leap_year_birthdays = " OR user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
+		$leap_year_birthdays = " OR u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
 	}
 
 	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_birthday
@@ -114,7 +114,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 
 // Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS', (int) $config['num_posts']),
+	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
 	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
 	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),

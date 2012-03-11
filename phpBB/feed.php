@@ -1106,7 +1106,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 			global $user;
 
 			$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_OTHER', (int) $row['forum_posts']);
+				. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_COUNT', (int) $row['forum_posts']);
 		}
 	}
 }
