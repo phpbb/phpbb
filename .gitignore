@@ -1,8 +1,10 @@
 *~
 /phpunit.xml
+/phpBB/cache/*.html
 /phpBB/cache/*.php
 /phpBB/cache/queue.php.lock
 /phpBB/config.php
+/phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
 /phpBB/images/avatars/upload/*
