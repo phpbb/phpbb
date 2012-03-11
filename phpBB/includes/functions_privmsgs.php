@@ -1635,7 +1635,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
 	$banned_users = phpbb_get_banned_users_ids(array_keys($recipients));
-	$recipients = array_diff(array_map('intval', array_keys($recipients)), $banned_users);
+	$recipients = array_diff(array_keys($recipients), $banned_users);
 
 	if (!sizeof($recipients))
 	{
