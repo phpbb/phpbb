@@ -1264,7 +1264,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
  * @param string $option The value of the option.
  * @param string $lang_string The language string to use.
  */
-function phpbb_add_quickmod_option($option, $lang_string, $condition = true)
+function phpbb_add_quickmod_option($option, $lang_string)
 {
 	global $template;
 	$template->assign_block_vars('quickmod', array(
