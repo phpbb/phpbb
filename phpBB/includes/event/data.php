@@ -15,7 +15,9 @@ if (!defined('IN_PHPBB'))
     exit;
 }
 
-class phpbb_event_data extends phpbb_event implements ArrayAccess
+use Symfony\Component\EventDispatcher\Event;
+
+class phpbb_event_data extends Event implements ArrayAccess
 {
     private $data;
 

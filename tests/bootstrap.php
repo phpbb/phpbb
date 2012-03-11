@@ -29,6 +29,8 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
+require_once $phpbb_root_path . 'vendor/.composer/autoload.php';
+
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'includes/class_loader.' . $phpEx;
 

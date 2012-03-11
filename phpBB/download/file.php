@@ -38,6 +38,8 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 
+	require($phpbb_root_path . 'vendor/.composer/autoload.php');
+
 	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);

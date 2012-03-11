@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'config.' . $phpEx))
@@ -70,6 +72,8 @@ if (!empty($load_extensions) && function_exists('dl'))
 	}
 }
 
+require($phpbb_root_path . 'vendor/.composer/autoload.php');
+
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
@@ -98,7 +102,7 @@ $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
-$phpbb_dispatcher = new phpbb_event_dispatcher();
+$phpbb_dispatcher = new EventDispatcher();
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();

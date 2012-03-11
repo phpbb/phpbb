@@ -15,12 +15,14 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 class phpbb_event_extension_subscriber_loader
 {
 	private $dispatcher;
 	private $extension_manager;
 
-	public function __construct(phpbb_event_dispatcher $dispatcher, phpbb_extension_manager $extension_manager)
+	public function __construct(EventDispatcher $dispatcher, phpbb_extension_manager $extension_manager)
 	{
 		$this->dispatcher = $dispatcher;
 		$this->extension_manager = $extension_manager;
@@ -37,7 +39,7 @@ class phpbb_event_extension_subscriber_loader
 
 		foreach ($subscriber_classes as $class) {
 			$subscriber = new $class();
-			$this->dispatcher->add_subscriber($subscriber);
+			$this->dispatcher->addSubscriber($subscriber);
 		}
 	}
 }
