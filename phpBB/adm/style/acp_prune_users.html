@@ -9,7 +9,7 @@
 <form id="acp_prune" method="post" action="{U_ACTION}">
 	
 <fieldset>
-	<legend>{L_ACP_PRUNE_USERS}</legend>
+	<legend>{L_CRITERIA}</legend>
 <dl>
 	<dt><label for="username">{L_USERNAME}:</label></dt>
 	<dd><input type="text" id="username" name="username" /></dd>
@@ -19,8 +19,15 @@
 	<dd><input type="text" id="email" name="email" /></dd>
 </dl>
 <dl>
+	<dt><label for="email">{L_WEBSITE}:</label></dt>
+	<dd><input type="text" id="website" name="website" /></dd>
+</dl>
+<dl>
 	<dt><label for="joined">{L_JOINED}:</label><br /><span>{L_JOINED_EXPLAIN}</span></dt>
-	<dd><select name="joined_select">{S_JOINED_OPTIONS}</select> <input type="text" id="joined" name="joined" /></dd>
+	<dd>
+		<strong>{L_AFTER}</strong> <input type="text" id="joined_after" name="joined_after" />
+		<br /> <br /> <strong>{L_BEFORE}</strong> <input type="text" id="joined_before" name="joined_before" />
+	</dd>
 </dl>
 <dl>
 	<dt><label for="active">{L_LAST_ACTIVE}:</label><br /><span>{L_LAST_ACTIVE_EXPLAIN}</span></dt>
@@ -31,10 +38,26 @@
 	<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input type="text" id="count" name="count" /></dd>
 </dl>
 <dl>
+	<dt><label for="posts_on_queue">{L_POSTS_ON_QUEUE}:</label></dt>
+	<dd><select name="queue_select">{S_COUNT_OPTIONS}</select> <input type="text" id="posts_on_queue" name="posts_on_queue" /></select>
+</dl>
+<dl>
+	<dt><label for="group_id">{L_GROUP}:</label><br /><span>{L_PRUNE_USERS_GROUP_EXPLAIN}</dt>
+	<dd><select name="group_id">{S_GROUP_LIST}</select></dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<legend>{L_USERNAMES}</legend>
+<dl>
 	<dt><label for="users">{L_ACP_PRUNE_USERS}:</label><br /><span>{L_SELECT_USERS_EXPLAIN}</span></dt>
 	<dd><textarea id="users" name="users" cols="40" rows="5"></textarea></dd>
 	<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 </dl>
+</fieldset>
+
+<fieldset>
+	<legend>{L_OPTIONS}</legend>
 <dl>
 	<dt><label for="deleteposts">{L_DELETE_USER_POSTS}:</label><br /><span>{L_DELETE_USER_POSTS_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" name="deleteposts" value="1" /> {L_YES}</label>
