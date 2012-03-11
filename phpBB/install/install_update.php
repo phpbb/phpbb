@@ -131,7 +131,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$template->set_custom_template('../adm/style', 'admin');
+		$template->set_custom_style('admin', '../adm/style', '');
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],

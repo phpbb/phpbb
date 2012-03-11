@@ -205,7 +205,7 @@ $phpbb_template_locator = new phpbb_template_locator();
 $phpbb_template_path_provider = new phpbb_template_path_provider();
 $template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
 $template->set_ext_dir_prefix('adm/');
-$template->set_custom_template('../adm/style', 'admin');
+$template->set_custom_style('admin', '../adm/style', '');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 

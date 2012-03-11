@@ -47,24 +47,11 @@ class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_
 	*                         The first element is the main template.
 	*                         If the path is false, it will be generated from
 	*                         the supplied name.
-	* @param string $style_root_path The root directory for styles identified
-	*                         by name only.
 	* @return null
 	*/
-	public function set_templates(array $templates, $style_root_path)
+	public function set_templates(array $templates)
 	{
-		$this->paths = array();
-
-		foreach ($templates as $name => $path)
-		{
-			if (!$path)
-			{
-				$path = $style_root_path . $this->template_root_for_style($name);
-			}
-
-			$this->paths[] = $path;
-		}
-
+		$this->paths = $templates;
 		$this->main_template_path = $this->paths[0];
 	}
 
@@ -76,18 +63,6 @@ class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_
 	public function get_main_template_path()
 	{
 		return $this->main_template_path;
-	}
-
-	/**
-	* Converts a style name to relative (to board root or extension) path to
-	* the style's template files.
-	*
-	* @param $style_name string Style name
-	* @return string Path to style template files
-	*/
-	private function template_root_for_style($style_name)
-	{
-		return 'styles/' . $style_name . '/template';
 	}
 
 	/**

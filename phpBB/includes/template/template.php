@@ -53,6 +53,11 @@ class phpbb_template
 	private $phpEx;
 
 	/**
+	* @ var string Location of templates directory within style directory
+	*/
+	private $template_path = 'template/';
+
+	/**
 	* @var phpbb_config phpBB config instance
 	*/
 	private $config;
@@ -98,9 +103,13 @@ class phpbb_template
 	public function set_template()
 	{
 		$template_name = $this->user->theme['template_path'];
-		$fallback_name = ($this->user->theme['template_inherits_id']) ? $this->user->theme['template_inherit_path'] : false;
+		$templates = array($this->get_style_path($template_name));
+		if ($this->user->theme['template_inherits_id'])
+		{
+			$templates[] = $this->get_style_path($this->user->theme['template_inherit_path']);
+		}
 
-		return $this->set_custom_template(false, $template_name, false, $fallback_name);
+		return $this->set_custom_style($template_name, $templates);
 	}
 
 	/**
@@ -115,31 +124,67 @@ class phpbb_template
 	}
 
 	/**
-	* Set custom template location (able to use directory outside of phpBB).
+	* Set custom style location (able to use directory outside of phpBB).
 	*
-	* Note: Templates are still compiled to phpBB's cache directory.
+	* @deprecated please use set_custom_style()
 	*
-	* @param string $template_path Path to template directory
-	* @param string $template_name Name of template
-	* @param string $fallback_template_path Path to fallback template
-	* @param string $fallback_template_name Name of fallback template
+	* @param string $template_path Path to primary style
+	* @param string $template_name Name of primary style
+	* @param string $fallback_template_path Path to fallback style
+	* @param string $fallback_template_name Name of fallback style
 	*/
 	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
 	{
-		$templates = array($template_name => $template_path);
+		$templates = array(($template_path === false) ? $this->get_style_path($template_name) : $template_path);
 
 		if ($fallback_template_name !== false)
 		{
-			$templates[$fallback_template_name] = $fallback_template_path;
+			$templates[] = ($fallback_template_path === false) ? $this->get_style_path($fallback_template_name) : $fallback_template_path;
 		}
 
-		$this->provider->set_templates($templates, $this->phpbb_root_path);
-		$this->locator->set_paths($this->provider);
-		$this->locator->set_main_template($this->provider->get_main_template_path());
+		return $this->set_custom_style($template_name, $templates);
+	}
 
-		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_name) . '_';
+	/**
+	* Get location of style directory for specific template_path
+	*
+	* @param string $path Template path, such as "prosilver"
+	* @return string Path to style directory, relative to current path
+	*/
+	public function get_style_path($path)
+	{
+		return $this->phpbb_root_path . 'styles/' . $path;
+	}
+
+	/**
+	* Set custom style location (able to use directory outside of phpBB).
+	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
+	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
+	* @param array or string $paths Array of style paths, relative to current root directory
+	* @param string $template_path Path to templates, relative to style directory. False if path should not be changed.
+	*/
+	public function set_custom_style($name, $paths, $template_path = false)
+	{
+		if (is_string($paths))
+		{
+			$paths = array($paths);
+		}
+
+		$this->provider->set_templates($paths);
+		$this->locator->set_paths($this->provider);
+		$this->locator->set_main_style($this->provider->get_main_template_path());
+
+		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
 		$this->context = new phpbb_template_context();
+
+		if ($template_path !== false)
+		{
+			$this->template_path = $template_path;
+			$this->locator->set_template_path($template_path);
+		}
 
 		return true;
 	}
@@ -154,6 +199,77 @@ class phpbb_template
 		$this->locator->set_filenames($filename_array);
 
 		return true;
+	}
+	
+	/**
+	* Checks if template exists
+	*
+	* @param string or array $templates Template names
+	* @param bool $return_template If true, $template will be returned on success, if false, full path to file will be returned on success
+	* @returns false if template does not exist, path to first file that it finds if file exists
+	*/
+	function template_exists($templates, $return_template_path = false)
+	{
+		if (!is_array($templates))
+		{
+			$templates = array($templates);
+		}
+		foreach ($this->locator->get_roots() as $root)
+		{
+			foreach ($templates as $file)
+			{
+				$path = $root . '/' . $this->template_path . $file;
+				if (@file_exists($path))
+				{
+					return ($return_template_path) ? $file : $path;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	* Locates template within style directory
+	*
+	* @param string $name Template name
+	* @return string Full path to template file. If file does not exist, function will return path to where file is supposed to be in primary style
+	*/
+	function locate_template($name)
+	{
+		return $this->locate_resource($this->template_path . $name);
+	}
+
+	/**
+	* Locates resource within style directory
+	*
+	* @param string $path Path to resource relative to style directory
+	* @return string Full path to file. If file does not exist, function will return path to where file is supposed to be in primary style
+	*/
+	function locate_resource($path)
+	{
+		// Get main root directory id only if its necessary
+		$main_root_id = $this->locator->get_main_root_id();
+
+		// Default result
+		$default = false;
+
+		// Check all directories
+		foreach ($this->locator->get_roots() as $root_index => $root)
+		{
+			// Full path to file
+			$full_path = $root . '/' . $path;
+			if (@file_exists($full_path))
+			{
+				return $full_path;
+			}
+			if ($root_index == $main_root_id)
+			{
+				$default = $full_path;
+			}
+		}
+
+		// File was not found
+		return $default;
 	}
 
 	/**

@@ -21,8 +21,8 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup();
 
-// Set custom template for admin area
-$template->set_custom_template($phpbb_root_path . 'adm/style', 'admin');
+// Set custom style for admin area
+$template->set_custom_style('admin', $phpbb_root_path . 'adm/style', '');
 
 $template->set_filenames(array(
 	'body' => 'colour_swatch.html')
