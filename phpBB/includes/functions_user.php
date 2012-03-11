@@ -3590,15 +3590,15 @@ function remove_newly_registered($user_id, $user_data = false)
 /**
 * Get a list of banned users' ids, ignoring stale bans which were not cleaned yet.
 *
-* @param array $users_ids_array Array of users' ids to check for banning,
-*								leave empty to get complete list of banned ids
+* @param array $users_ids Array of users' ids to check for banning,
+*						leave empty to get complete list of banned ids
 * @return array	Array of banned users' ids if any, empty array otherwise
 */
-function phpbb_get_banned_users_ids($users_ids_array = array())
+function phpbb_get_banned_users_ids($users_ids = array())
 {
 	global $db;
 
-	$sql_users_ids = (!empty($users_ids_array)) ? $db->sql_in_set('ban_userid', $users_ids_array) : 'ban_userid <> 0';
+	$sql_users_ids = (!empty($users_ids)) ? $db->sql_in_set('ban_userid', $users_ids) : 'ban_userid <> 0';
 
 	// Get banned User ID's
 	// Ignore stale bans which were not wiped yet
