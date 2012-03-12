@@ -529,11 +529,11 @@ function user_delete($mode, $user_id, $post_username = false)
 	$db->sql_query($sql);
 
 	// Clean the private messages tables from the user
-	if (!function_exists('delete_user_pms'))
+	if (!function_exists('phpbb_delete_user_pms'))
 	{
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	delete_user_pms($user_id);
+	phpbb_delete_user_pms($user_id);
 
 	$db->sql_transaction('commit');
 

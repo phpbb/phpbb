@@ -1086,7 +1086,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 /**
 * Delete all PM(s) for a given user and delete the ones without references
 */
-function delete_user_pms($user_id)
+function phpbb_delete_user_pms($user_id)
 {
 	global $db, $user, $phpbb_root_path, $phpEx;
 
@@ -1116,7 +1116,7 @@ function delete_user_pms($user_id)
 			$undelivered_user[$row['user_id']][] = true;
 		}
 
-		$delete_rows[$row['msg_id']] = 1;
+		$delete_rows[$row['msg_id']] = true;
 	}
 	$db->sql_freeresult($result);
 
