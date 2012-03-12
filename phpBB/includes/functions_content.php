@@ -1261,12 +1261,13 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 /**
  * Add an option to the quick-mod tools.
  *
- * @param string $option The value of the option.
+ * @param string $option The language key for the value of the option.
  * @param string $lang_string The language string to use.
  */
 function phpbb_add_quickmod_option($option, $lang_string)
 {
-	global $template;
+	global $template, $user;
+	$lang_string = $user->lang($lang_string);
 	$template->assign_block_vars('quickmod', array(
 		'VALUE'  => $option,
 		'TITLE'    => $lang_string,

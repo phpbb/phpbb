@@ -535,10 +535,9 @@ $quickmod_array = array(
 
 foreach($quickmod_array as $option => $qm_ary)
 {
-	$lang_string = $user->lang($qm_ary[0]);
 	if (!empty($qm_ary[1]))
 	{
-		phpbb_add_quickmod_option($option, $lang_string);
+		phpbb_add_quickmod_option($option, $qm_ary[0]);
 	}
 }
 
