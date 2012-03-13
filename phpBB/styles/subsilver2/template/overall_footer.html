@@ -3,7 +3,8 @@
 
 <div id="wrapfooter">
 	<!-- IF U_ACP --><span class="gensmall">[ <a href="{U_ACP}">{L_ACP}</a> ]</span><br /><br /><!-- ENDIF -->
-	<span class="copyright">{CREDIT_LINE}
+	<span class="copyright"><!-- RUNHOOKS overall_footer_copyright -->
+		{CREDIT_LINE}
 	<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
 	<!-- IF DEBUG_OUTPUT --><br /><bdo dir="ltr">[ {DEBUG_OUTPUT} ]</bdo><!-- ENDIF --></span>
 </div>
