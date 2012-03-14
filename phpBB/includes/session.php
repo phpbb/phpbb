@@ -1653,11 +1653,9 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_name, c.theme_id
-			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
-			WHERE s.style_id = $style
-				AND t.template_id = s.template_id
-				AND c.theme_id = s.theme_id";
+		$sql = 'SELECT *
+			FROM ' . STYLES_TABLE . " s
+			WHERE s.style_id = $style";
 		$result = $db->sql_query($sql, 3600);
 		$this->theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1672,11 +1670,9 @@ class user extends session
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
-			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, c.theme_path, c.theme_name, c.theme_id
-				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
-				WHERE s.style_id = $style
-					AND t.template_id = s.template_id
-					AND c.theme_id = s.theme_id";
+			$sql = 'SELECT *
+				FROM ' . STYLES_TABLE . " s
+				WHERE s.style_id = $style";
 			$result = $db->sql_query($sql, 3600);
 			$this->theme = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

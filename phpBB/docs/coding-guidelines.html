@@ -71,7 +71,7 @@
 	<li><a href="#templating">Templating</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#templates">General Templating</a></li>
-		<li><a href="#inheritance">Template Inheritance</a></li>
+		<li><a href="#stylestree">Styles Tree</a></li>
 	</ol></li>
 	<li><a href="#charsets">Character Sets and Encodings</a></li>
 	<li><a href="#translation">Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a>
@@ -1623,24 +1623,25 @@ div
 &lt;/form&gt;
 		</pre></div><br />
 
-	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
-		<p>When basing a new style on an existing one, it is not necessary to provide all the template files. By declaring the base style name in the <strong>inherit_from</strong> field in the template configuration file, the style can be set to inherit template files from the base style. The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
+	<a name="stylestree"></a><h3>4.ii. Styles Tree</h3>
+		<p>When basing a new style on an existing one, it is not necessary to provide all the template files. By declaring the base style name in the <strong>parent</strong> field in the style configuration file, the style can be set to reuse template files from the parent style.</p>
 
-		<p>The effect of doing so is that the template engine will use the template files in the new style where they exist, but fall back to files in the base style otherwise. Declaring a style to inherit from another also causes it to use some of the configuration settings of the base style, notably database storage.</p>
+		<p>The effect of doing so is that the template engine will use the template files in the new style where they exist, but fall back to files in the parent style otherwise.</p>
 
-		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
+		<p>We strongly encourage the use of parent styles for styles based on the bundled styles, as it will ease the update procedure.</p>
 
 		<div class="codebox"><pre>
-        # General Information about this template
-        name = inherits
-        copyright = &copy; phpBB Group, 2007
-        version = 3.0.3
+# General Information about this style
+name = Custom Style
+copyright = &amp;copy; phpBB Group, 2007
+version = 3.1.0
 
-        # Defining a different template bitfield
-        template_bitfield = lNg=
+# Defining a different template bitfield
+# template_bitfield = lNg=
 
-        # Are we inheriting?
-        inherit_from = prosilver
+# Parent style
+# Set value to empty or to this style's name if this style does not have a parent style
+parent = prosilver
 		</pre></div>
 
 		</div>
