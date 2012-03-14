@@ -35,7 +35,7 @@ if (!defined('IN_PHPBB'))
 * @see template_compile
 * @package phpBB3
 */
-class phpbb_template_filter extends php_user_filter
+class phpbb_style_template_filter extends php_user_filter
 {
 	const REGEX_NS = '[a-z_][a-z_0-9]+';
 

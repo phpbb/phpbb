@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_path_provider implements IteratorAggregate, phpbb_template_path_provider_interface
+class phpbb_style_path_provider implements IteratorAggregate, phpbb_style_path_provider_interface
 {
 	protected $main_template_name = '';
 	protected $paths = array();

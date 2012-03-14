@@ -16,7 +16,7 @@ class phpbb_template_template_compile_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		$this->template_compile = new phpbb_template_compile(false);
+		$this->template_compile = new phpbb_style_template_compile(false);
 		$this->template_path = dirname(__FILE__) . '/templates';
 	}
 

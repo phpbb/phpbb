@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_extension_path_provider extends phpbb_extension_provider implements phpbb_template_path_provider_interface
+class phpbb_style_extension_path_provider extends phpbb_extension_provider implements phpbb_style_path_provider_interface
 {
 	/**
 	* Optional prefix for template paths searched within extensions.
@@ -36,7 +36,7 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 
 	/**
 	* A provider of paths to be searched for templates
-	* @var phpbb_template_path_provider
+	* @var phpbb_style_path_provider
 	*/
 	protected $base_path_provider;
 
@@ -44,10 +44,10 @@ class phpbb_template_extension_path_provider extends phpbb_extension_provider im
 	* Constructor stores extension manager
 	*
 	* @param phpbb_extension_manager $extension_manager phpBB extension manager
-	* @param phpbb_template_path_provider $base_path_provider A simple path provider
+	* @param phpbb_style_path_provider $base_path_provider A simple path provider
 	*            to provide paths to be located in extensions
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_template_path_provider $base_path_provider)
+	public function __construct(phpbb_extension_manager $extension_manager, phpbb_style_path_provider $base_path_provider)
 	{
 		parent::__construct($extension_manager);
 		$this->base_path_provider = $base_path_provider;

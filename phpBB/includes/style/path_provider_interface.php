@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-interface phpbb_template_path_provider_interface extends Traversable
+interface phpbb_style_path_provider_interface extends Traversable
 {
 	/**
 	* Defines a prefix to use for template paths in extensions

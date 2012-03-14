@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_locator
+class phpbb_style_locator
 {
 	/**
 	* Paths to directories that templates are stored in.
