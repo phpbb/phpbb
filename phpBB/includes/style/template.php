@@ -97,8 +97,8 @@ class phpbb_style_template
 	*/
 	public function set_template()
 	{
-		$template_name = $this->user->theme['template_path'];
-		$fallback_name = ($this->user->theme['template_inherits_id']) ? $this->user->theme['template_inherit_path'] : false;
+		$template_name = $this->user->theme['style_path'];
+		$fallback_name = ($this->user->theme['style_parent_id']) ? array_reverse(explode('/', $this->user->theme['style_parent_tree'])) : false;
 
 		return $this->set_custom_template(false, $template_name, false, $fallback_name);
 	}
@@ -121,16 +121,25 @@ class phpbb_style_template
 	*
 	* @param string $template_path Path to template directory
 	* @param string $template_name Name of template
-	* @param string $fallback_template_path Path to fallback template
-	* @param string $fallback_template_name Name of fallback template
+	* @param string or array $fallback_template_path Path to fallback template
+	* @param string or array $fallback_template_name Name of fallback template
 	*/
 	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
 	{
 		$templates = array($template_name => $template_path);
 
-		if ($fallback_template_name !== false)
+		if (is_string($fallback_template_name))
 		{
 			$templates[$fallback_template_name] = $fallback_template_path;
+		}
+		if (is_array($fallback_template_name))
+		{
+			$i = 0;
+			foreach ($fallback_template_name as $fallback_template_name_item)
+			{
+				$templates[$fallback_template_name_item] = is_array($fallback_template_path) ? $fallback_template_path[$i] : $fallback_template_path;
+				$i ++;
+			}
 		}
 
 		$this->provider->set_templates($templates, $this->phpbb_root_path);
