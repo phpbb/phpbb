@@ -437,13 +437,7 @@ INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order)
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('ROLE_FORUM_NEW_MEMBER', 'ROLE_DESCRIPTION_FORUM_NEW_MEMBER', 'f_', 10);
 
 # -- phpbb_styles
-INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1);
-
-# -- phpbb_styles_template
-INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 'lNg=');
-
-# -- phpbb_styles_theme
-INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver');
+INSERT INTO phpbb_styles (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '');
 
 # -- Forums
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed, forum_parents) VALUES ('{L_FORUMS_FIRST_CATEGORY}', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 'AA0000', 972086460, '', '', '', '', '', '', '', 0, 0, '');
