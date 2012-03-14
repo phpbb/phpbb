@@ -44,7 +44,9 @@
 					<dd class="posts">{forumrow.POSTS} <dfn>{L_POSTS}</dfn></dd>
 					<dd class="lastpost"><span>
 						<!-- IF forumrow.U_UNAPPROVED_TOPICS --><a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a><!-- ENDIF -->
-						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn> {L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
+						<!-- IF forumrow.LAST_POST_TIME --><dfn>
+						<!-- RUNHOOKS forumlist_body_last_post -->
+						{L_LAST_POST}</dfn> {L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
 						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{forumrow.LAST_POST_TIME}<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF --></span>
 					</dd>
 				<!-- ENDIF -->
