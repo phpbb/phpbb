@@ -328,6 +328,11 @@ if (!$auth->acl_get('u_sig'))
 	$module->set_display('profile', 'signature', false);
 }
 
+$vars = array('module');
+$event = new phpbb_event_data(compact($vars));
+$phpbb_dispatcher->dispatch('core.ucp_modules', $event);
+extract($event->get_data_filtered($vars));
+
 // Select the active module
 $module->set_active($id, $mode);
 
