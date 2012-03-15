@@ -201,9 +201,8 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_style_locator = new phpbb_style_locator();
-$phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_locator, $phpbb_style_path_provider);
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+$template = $style->template;
 $template->set_ext_dir_prefix('adm/');
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_ASSETS_PATH', '../assets');

@@ -120,9 +120,9 @@ set_config_count(null, null, null, $config);
 // load extensions
 $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
-$phpbb_style_locator = new phpbb_style_locator();
-$phpbb_style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
-$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_locator, $phpbb_style_path_provider);
+// Initialize style
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager);
+$template = $style->template;
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
