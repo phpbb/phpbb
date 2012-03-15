@@ -2770,7 +2770,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2818,6 +2818,11 @@ function group_delete($group_id, $group_name = false)
 	$teampage = new phpbb_group_positions($db, 'teampage');
 	$teampage->delete_group($group_id);
 	unset($teampage);
+
+	$vars = array('group_id', 'group_name');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.group_delete', $event);
+	extract($event->get_data_filtered($vars));
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
