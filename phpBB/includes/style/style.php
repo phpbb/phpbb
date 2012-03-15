@@ -78,7 +78,7 @@ class phpbb_style
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = new phpbb_style_locator();
+		$this->locator = new phpbb_style_resource_locator();
 		$this->provider = new phpbb_style_path_provider();
 		if ($phpbb_extension_manager !== false)
 		{

@@ -64,7 +64,7 @@ class phpbb_style_template
 
 	/**
 	* Template locator
-	* @var phpbb_style_locator
+	* @var phpbb_style_resource_locator
 	*/
 	private $locator;
 
@@ -79,10 +79,10 @@ class phpbb_style_template
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_locator $locator template locator
+	* @param phpbb_style_resource_locator $locator template locator
 	* @param phpbb_style_path_provider $provider template path provider
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_locator $locator, phpbb_style_path_provider_interface $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
