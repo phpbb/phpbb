@@ -28,11 +28,6 @@ class phpbb_style
 	public $template;
 
 	/**
-	* @var string Path of the cache directory for the template
-	*/
-	public $cachepath = '';
-
-	/**
 	* @var string phpBB root path
 	*/
 	private $phpbb_root_path;
@@ -85,5 +80,75 @@ class phpbb_style
 			$this->provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, $this->provider);
 		}
 		$this->template = new phpbb_style_template($this->phpbb_root_path, $this->phpEx, $this->config, $this->user, $this->locator, $this->provider);
+	}
+
+	/**
+	* Set style location based on (current) user's chosen style.
+	*/
+	public function set_style()
+	{
+		$style_name = $this->user->theme['style_path'];
+		$style_dirs = ($this->user->theme['style_parent_id']) ? array_reverse(explode('/', $this->user->theme['style_parent_tree'])) : array();
+		$paths = array($this->get_style_path($style_name));
+		foreach ($style_dirs as $dir)
+		{
+			$paths[] = $this->get_style_path($dir);
+		}
+
+		return $this->set_custom_style($style_name, $paths);
+	}
+
+	/**
+	* Set custom style location (able to use directory outside of phpBB).
+	*
+	* Note: Templates are still compiled to phpBB's cache directory.
+	*
+	* @param string $name Name of style, used for cache prefix. Examples: "admin", "prosilver"
+	* @param array or string $paths Array of style paths, relative to current root directory
+	* @param string $template_path Path to templates, relative to style directory. False if path should not be changed.
+	*/
+	public function set_custom_style($name, $paths, $template_path = false)
+	{
+		if (is_string($paths))
+		{
+			$paths = array($paths);
+		}
+
+		$this->provider->set_styles($paths);
+		$this->locator->set_paths($this->provider);
+		$this->locator->set_main_style($this->provider->get_main_style_path());
+
+		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
+
+		$this->template->context = new phpbb_style_template_context();
+
+		if ($template_path !== false)
+		{
+			$this->template->template_path = $this->locator->template_path = $template_path;
+		}
+
+		return true;
+	}
+
+	/**
+	* Get location of style directory for specific style_path
+	*
+	* @param string $path Style path, such as "prosilver"
+	* @return string Path to style directory, relative to current path
+	*/
+	public function get_style_path($path)
+	{
+		return $this->phpbb_root_path . 'styles/' . $path;
+	}
+
+	/**
+	* Defines a prefix to use for style paths in extensions
+	*
+	* @param string $ext_dir_prefix The prefix including trailing slash
+	* @return null
+	*/
+	public function set_ext_dir_prefix($ext_dir_prefix)
+	{
+		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
 	}
 }
