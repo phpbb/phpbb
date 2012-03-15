@@ -337,7 +337,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
@@ -590,6 +590,11 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	$db->sql_transaction('commit');
+
+	$vars = array('mode', 'user_id', 'post_username');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.user_delete', $event);
+	extract($event->get_data_filtered($vars));
 
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
