@@ -112,7 +112,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -136,6 +136,11 @@ function user_update_name($old_name, $new_name)
 	{
 		set_config('newest_username', $new_name, true);
 	}
+
+	$vars = array('old_name', 'new_name');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.user_update_name', $event);
+	extract($event->get_data_filtered($vars));
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
