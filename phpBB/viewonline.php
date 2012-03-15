@@ -317,6 +317,11 @@ while ($row = $db->sql_fetchrow($result))
 		default:
 			$location = $user->lang['INDEX'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+
+			$vars = array('on_page', 'row', 'location', 'location_url');
+			$event = new phpbb_event_data(compact($vars));
+			$phpbb_dispatcher->dispatch('core.viewonline_location', $event);
+			extract($event->get_data_filtered($vars));
 		break;
 	}
 
