@@ -72,7 +72,7 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->parent_template_path = dirname(__FILE__) . '/parent_templates';
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+		$this->style->set_custom_style('tests', array($this->template_path, $this->parent_template_path), '');
 		$this->template = $this->style->template;
-		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path, 'parent');
 	}
 }

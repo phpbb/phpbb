@@ -63,8 +63,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+		$this->style->set_custom_style('tests', $this->template_path, '');
 		$this->template = $this->style->template;
-		$this->template->set_custom_template($this->template_path, 'tests');
 	}
 
 	protected function setUp()
