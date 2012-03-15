@@ -121,13 +121,24 @@ if (!$show_guests)
 }
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id
-	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-	WHERE u.user_id = s.session_user_id
+$sql_ary = array(
+	'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id',
+	'FROM'		=> array(
+		USERS_TABLE		=> 'u',
+		SESSIONS_TABLE	=> 's',
+	),
+	'WHERE'		=> 'u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-	ORDER BY ' . $order_by;
-$result = $db->sql_query($sql);
+		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
+	'ORDER_BY'	=> $order_by,
+);
+
+$vars = array('sql_ary', 'show_guests');
+$event = new phpbb_event_data(compact($vars));
+$phpbb_dispatcher->dispatch('core.viewonline_get_userdata', $event);
+extract($event->get_data_filtered($vars));
+
+$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
