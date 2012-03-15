@@ -2956,7 +2956,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config;
+	global $db, $auth, $config, $phpbb_dispatcher;
 
 	if ($config['coppa_enable'])
 	{
@@ -3054,6 +3054,11 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 	}
 	unset($special_group_data);
+
+	$vars = array('group_id', 'user_id_ary', 'username_ary', 'group_name');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.group_user_del', $event);
+	extract($event->get_data_filtered($vars));
 
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
