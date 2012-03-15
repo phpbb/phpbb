@@ -133,8 +133,8 @@ class bbcode
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 
 			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager);
+			$style->set_style();
 			$template = $style->template;
-			$template->set_template();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $style->locator->get_source_file_for_handle('bbcode.html');
 		}

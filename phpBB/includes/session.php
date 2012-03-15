@@ -1570,7 +1570,7 @@ class user extends session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -1704,7 +1704,7 @@ class user extends session
 			}
 		}
 
-		$template->set_template();
+		$style->set_style();
 
 		$this->img_lang = $this->lang_name;
 

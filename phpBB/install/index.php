@@ -202,9 +202,9 @@ $config = new phpbb_config(array(
 ));
 
 $style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+$style->set_ext_dir_prefix('adm/');
+$style->set_custom_style('admin', '../adm/style', '');
 $template = $style->template;
-$template->set_ext_dir_prefix('adm/');
-$template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 

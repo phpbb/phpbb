@@ -201,7 +201,7 @@ class messenger
 		{
 			// fall back to board default language if the user's language is
 			// missing $template_file.  If this does not exist either,
-			// $tpl->set_custom_template will do a trigger_error
+			// $tpl->set_filenames will do a trigger_error
 			$template_lang = basename($config['default_lang']);
 		}
 
@@ -209,8 +209,8 @@ class messenger
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
 			$this->tpl_msg[$template_lang . $template_file] = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager);
-			$tpl = &$this->tpl_msg[$template_lang . $template_file];
-			$tpl = $tpl->template;
+			$stl = &$this->tpl_msg[$template_lang . $template_file];
+			$tpl = $stl->template;
 
 			$fallback_template_path = false;
 
@@ -228,7 +228,7 @@ class messenger
 				}
 			}
 
-			$tpl->set_custom_template($template_path, $template_lang . '_email', $fallback_template_path);
+			$stl->set_custom_style($template_lang . '_email', array($template_path, $fallback_template_path), '');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
