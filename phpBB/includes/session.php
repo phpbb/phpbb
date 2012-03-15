@@ -1568,7 +1568,7 @@ class user extends session
 	/**
 	* Setup basic user-specific items (style, language, ...)
 	*/
-	function setup($lang_set = false, $style = false)
+	function setup($lang_set = false, $style_id = false)
 	{
 		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
@@ -1643,36 +1643,36 @@ class user extends session
 		{
 			global $SID, $_EXTRA_URL;
 
-			$style = $style_request;
-			$SID .= '&amp;style=' . $style;
-			$_EXTRA_URL = array('style=' . $style);
+			$style_id = $style_request;
+			$SID .= '&amp;style=' . $style_id;
+			$_EXTRA_URL = array('style=' . $style_id);
 		}
 		else
 		{
 			// Set up style
-			$style = ($style) ? $style : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
+			$style_id = ($style_id) ? $style_id : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
 		}
 
 		$sql = 'SELECT *
 			FROM ' . STYLES_TABLE . " s
-			WHERE s.style_id = $style";
+			WHERE s.style_id = $style_id";
 		$result = $db->sql_query($sql, 3600);
 		$this->theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// User has wrong style
-		if (!$this->theme && $style == $this->data['user_style'])
+		if (!$this->theme && $style_id == $this->data['user_style'])
 		{
-			$style = $this->data['user_style'] = $config['default_style'];
+			$style_id = $this->data['user_style'] = $config['default_style'];
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_style = $style
+				SET user_style = $style_id
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
 			$sql = 'SELECT *
 				FROM ' . STYLES_TABLE . " s
-				WHERE s.style_id = $style";
+				WHERE s.style_id = $style_id";
 			$result = $db->sql_query($sql, 3600);
 			$this->theme = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
