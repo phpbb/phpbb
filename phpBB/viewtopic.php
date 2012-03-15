@@ -1555,6 +1555,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$postrow = array_merge($postrow, $cp_row['row']);
 	}
 
+	$vars = array('postrow');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.viewtopic_postrow', $event);
+	extract($event->get_data_filtered($vars));
+
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
 
