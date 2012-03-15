@@ -152,6 +152,7 @@ $lang = array_merge($lang, array(
 	'POLL_OPTIONS_EXPLAIN'		=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options.',
 	'POLL_OPTIONS_EDIT_EXPLAIN'	=> 'Place each option on a new line. You may enter up to <strong>%d</strong> options. If you remove or add options all previous votes will be reset.',
 	'POLL_QUESTION'				=> 'Poll question',
+	'POLL_RESET_VOTES'			=> 'Delete all votes',
 	'POLL_TITLE_TOO_LONG'		=> 'The poll title must contain fewer than 100 characters.',
 	'POLL_TITLE_COMP_TOO_LONG'	=> 'The parsed size of your poll title is too large, consider removing BBCodes or smilies.',
 	'POLL_VOTE_CHANGE'			=> 'Allow re-voting',

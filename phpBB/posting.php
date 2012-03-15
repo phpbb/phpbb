@@ -890,7 +890,8 @@ if ($submit || $preview || $refresh)
 			'enable_bbcode'		=> $post_data['enable_bbcode'],
 			'enable_urls'		=> $post_data['enable_urls'],
 			'enable_smilies'	=> $post_data['enable_smilies'],
-			'img_status'		=> $img_status
+			'img_status'		=> $img_status,
+			'poll_reset_votes'	=> isset($_POST['poll_reset_votes']),
 		);
 
 		$message_parser->parse_poll($poll);

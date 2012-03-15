@@ -11,7 +11,10 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_POLL_OPTIONS}:</b><br /><span class="gensmall">{L_POLL_OPTIONS_EXPLAIN}</span></td>
-	<td class="row2"><textarea style="width:450px" name="poll_option_text" rows="5" cols="35">{POLL_OPTIONS}</textarea></td>
+	<td class="row2">
+		<textarea style="width:450px" name="poll_option_text" rows="5" cols="35">{POLL_OPTIONS}</textarea><br />
+		<span class="gensmall"><input type="checkbox" class="radio align-bottom" name="poll_reset_votes" /> {L_POLL_RESET_VOTES}</span>
+	</td>
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_POLL_MAX_OPTIONS}:</b><br /><span class="gensmall">{L_POLL_MAX_OPTIONS_EXPLAIN}</span></td>

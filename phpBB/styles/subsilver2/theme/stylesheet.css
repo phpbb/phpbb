@@ -489,6 +489,10 @@ input.radio {
 	background-color: transparent;
 }
 
+input.align-bottom {
+	vertical-align: bottom;
+}
+
 .post {
 	background-color: white;
 	border-style: solid;
