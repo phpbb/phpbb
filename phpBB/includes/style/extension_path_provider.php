@@ -16,26 +16,26 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Provides a template locator with core template paths and extension template paths
+* Provides a style resource locator with core style paths and extension style paths
 *
-* Finds installed template paths and makes them available to the locator.
+* Finds installed style paths and makes them available to the resource locator.
 *
 * @package phpBB3
 */
 class phpbb_style_extension_path_provider extends phpbb_extension_provider implements phpbb_style_path_provider_interface
 {
 	/**
-	* Optional prefix for template paths searched within extensions.
+	* Optional prefix for style paths searched within extensions.
 	*
 	* Empty by default. Relative to the extension directory. As an example, it
-	* could be adm/ for admin templates.
+	* could be adm/ for admin style.
 	*
 	* @var string
 	*/
 	protected $ext_dir_prefix = '';
 
 	/**
-	* A provider of paths to be searched for templates
+	* A provider of paths to be searched for styles
 	* @var phpbb_style_path_provider
 	*/
 	protected $base_path_provider;
@@ -54,11 +54,11 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	}
 
 	/**
-	* Sets a prefix for template paths searched within extensions.
+	* Sets a prefix for style paths searched within extensions.
 	*
 	* The prefix is inserted between the extension's path e.g. ext/foo/ and
-	* the looked up template path, e.g. styles/bar/template/some.html. So it
-	* should not have a leading slash, but should have a trailing slash.
+	* the looked up style path, e.g. styles/bar/. So it should not have a
+	* leading slash, but should have a trailing slash.
 	*
 	* @param string $ext_dir_prefix The prefix including trailing slash
 	* @return null
@@ -69,13 +69,13 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	}
 
 	/**
-	* Finds template paths using the extension manager
+	* Finds style paths using the extension manager
 	*
-	* Locates a path (e.g. styles/prosilver/template/) in all active extensions.
-	* Then appends the core template paths based in the current working
+	* Locates a path (e.g. styles/prosilver/) in all active extensions.
+	* Then appends the core style paths based in the current working
 	* directory.
 	*
-	* @return array     List of template paths
+	* @return array     List of style paths
 	*/
 	public function find()
 	{
@@ -102,29 +102,24 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	}
 
 	/**
-	* Overwrites the current template names and paths
+	* Overwrites the current style paths
 	*
-	* @param array $templates An associative map from template names to paths.
-	*                         The first element is the main template.
-	*                         If the path is false, it will be generated from
-	*                         the supplied name.
-	* @param string $style_root_path The root directory for styles identified
-	*                         by name only.
+	* @param array $styles An array of style paths. The first element is the main style.
 	* @return null
 	*/
-	public function set_templates(array $templates, $style_root_path)
+	public function set_styles(array $styles)
 	{
-		$this->base_path_provider->set_templates($templates, $style_root_path);
+		$this->base_path_provider->set_styles($styles);
 		$this->items = null;
 	}
 
 	/**
-	* Retrieves the path to the main template passed into set_templates()
+	* Retrieves the path to the main style passed into set_styles()
 	*
-	* @return string Main template path
+	* @return string Main style path
 	*/
-	public function get_main_template_path()
+	public function get_main_style_path()
 	{
-		return $this->base_path_provider->get_main_template_path();
+		return $this->base_path_provider->get_main_style_path();
 	}
 }
