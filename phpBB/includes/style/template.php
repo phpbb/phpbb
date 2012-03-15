@@ -35,7 +35,7 @@ class phpbb_style_template
 	* @var phpbb_style_template_context Template context.
 	* Stores template data used during template rendering.
 	*/
-	private $context;
+	public $context;
 
 	/**
 	* @var string Path of the cache directory for the template
@@ -63,7 +63,7 @@ class phpbb_style_template
 	private $user;
 
 	/**
-	* Template locator
+	* Style resource locator
 	* @var phpbb_style_resource_locator
 	*/
 	private $locator;
@@ -75,12 +75,18 @@ class phpbb_style_template
 	private $provider;
 
 	/**
+	* Location of templates directory within style directories
+	* @var string
+	*/
+	public $template_path = 'template/';
+
+	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_resource_locator $locator template locator
-	* @param phpbb_style_path_provider $provider template path provider
+	* @param phpbb_style_resource_locator $locator style resource locator
+	* @param phpbb_style_path_provider $provider style path provider
 	*/
 	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
 	{
@@ -89,68 +95,8 @@ class phpbb_style_template
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
+		$this->template_path = $this->locator->template_path;
 		$this->provider = $provider;
-	}
-
-	/**
-	* Set template location based on (current) user's chosen style.
-	*/
-	public function set_template()
-	{
-		$template_name = $this->user->theme['style_path'];
-		$fallback_name = ($this->user->theme['style_parent_id']) ? array_reverse(explode('/', $this->user->theme['style_parent_tree'])) : false;
-
-		return $this->set_custom_template(false, $template_name, false, $fallback_name);
-	}
-
-	/**
-	* Defines a prefix to use for template paths in extensions
-	*
-	* @param string $ext_dir_prefix The prefix including trailing slash
-	* @return null
-	*/
-	public function set_ext_dir_prefix($ext_dir_prefix)
-	{
-		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
-	}
-
-	/**
-	* Set custom template location (able to use directory outside of phpBB).
-	*
-	* Note: Templates are still compiled to phpBB's cache directory.
-	*
-	* @param string $template_path Path to template directory
-	* @param string $template_name Name of template
-	* @param string or array $fallback_template_path Path to fallback template
-	* @param string or array $fallback_template_name Name of fallback template
-	*/
-	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
-	{
-		$templates = array($template_name => $template_path);
-
-		if (is_string($fallback_template_name))
-		{
-			$templates[$fallback_template_name] = $fallback_template_path;
-		}
-		if (is_array($fallback_template_name))
-		{
-			$i = 0;
-			foreach ($fallback_template_name as $fallback_template_name_item)
-			{
-				$templates[$fallback_template_name_item] = is_array($fallback_template_path) ? $fallback_template_path[$i] : $fallback_template_path;
-				$i ++;
-			}
-		}
-
-		$this->provider->set_templates($templates, $this->phpbb_root_path);
-		$this->locator->set_paths($this->provider);
-		$this->locator->set_main_template($this->provider->get_main_template_path());
-
-		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_name) . '_';
-
-		$this->context = new phpbb_style_template_context();
-
-		return true;
 	}
 
 	/**
