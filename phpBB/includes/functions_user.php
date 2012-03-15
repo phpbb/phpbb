@@ -3377,7 +3377,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db;
+	global $cache, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3472,6 +3472,11 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
 	}
+
+	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.group_set_user_default', $event);
+	extract($event->get_data_filtered($vars));
 
 	if ($update_listing)
 	{
