@@ -107,6 +107,11 @@ class acp_forums
 						'forum_id'		=>	$forum_id
 					);
 
+					$vars = array('forum_data');
+					$event = new phpbb_event_data(compact($vars));
+					$phpbb_dispatcher->dispatch('core.acp_forums_add_forum_data', $event);
+					extract($event->get_data_filtered($vars));
+
 				// No break here
 
 				case 'add':
@@ -220,11 +225,6 @@ class acp_forums
 						}
 
 						trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-
-						$vars = array('forum_data');
-						$event = new phpbb_event_data(compact($vars));
-						$phpbb_dispatcher->dispatch('core.acp_forums_add_forum_data', $event);
-						extract($event->get_data_filtered($vars));
 					}
 
 				break;
