@@ -1714,8 +1714,15 @@ if (!request_var('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
+
+$vars = array('page_title', 'topic_data', 'forum_id', 'start');
+$event = new phpbb_event_data(compact($vars));
+$phpbb_dispatcher->dispatch('core.viewtopic_page_header', $event);
+extract($event->get_data_filtered($vars));
+
 // Output the page
-page_header($topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : ''), true, $forum_id);
+page_header($page_title, true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
