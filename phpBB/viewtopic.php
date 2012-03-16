@@ -1106,7 +1106,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			$id_cache[] = $poster_id;
 
-			$user_cache[$poster_id] = array(
+			$user_cache_data = array(
 				'joined'		=> $user->format_date($row['user_regdate']),
 				'posts'			=> $row['user_posts'],
 				'warnings'		=> (isset($row['user_warnings'])) ? $row['user_warnings'] : 0,
@@ -1143,6 +1143,13 @@ while ($row = $db->sql_fetchrow($result))
 				'author_username'	=> get_username_string('username', $poster_id, $row['username'], $row['user_colour']),
 				'author_profile'	=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
 			);
+
+			$vars = array('user_cache_data', 'row', 'poster_id');
+			$event = new phpbb_event_data(compact($vars));
+			$phpbb_dispatcher->dispatch('core.viewtopic_user_cache', $event);
+			extract($event->get_data_filtered($vars));
+
+			$user_cache[$poster_id] = $user_cache_data;
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
