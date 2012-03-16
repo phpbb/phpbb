@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $request, $phpEx, $config;
+	global $phpbb_root_path, $request, $phpEx, $config, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -267,6 +267,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
 	);
+
+	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.ucp_pm_viewmesssage', $event);
+	extract($event->get_data_filtered($vars));
 
 	// Display the custom profile fields
 	if (!empty($cp_row['row']))
