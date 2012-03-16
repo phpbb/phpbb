@@ -342,7 +342,10 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->extension_manager);
+		$filter_params = array(
+			'allow_php' => $this->config['tpl_allow_php'],
+		);
+		$compile = new phpbb_template_compile($filter_params, $this->extension_manager);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
