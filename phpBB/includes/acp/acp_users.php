@@ -1039,6 +1039,11 @@ class acp_users
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
 
+				$vars = array('data', 'check_ary', 'sql_ary', 'user_row', 'quick_tool_ary');
+				$event = new phpbb_event_data(compact($vars));
+				$phpbb_dispatcher->dispatch('core.acp_users_overview', $event);
+				extract($event->get_data_filtered($vars));
+
 			break;
 
 			case 'feedback':
