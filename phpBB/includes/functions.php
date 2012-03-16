@@ -4638,7 +4638,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
-	$template_vars = array(
+	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
@@ -4760,14 +4760,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
-	);
-
-	$vars = array('template_vars');
-	$event = new phpbb_event_data(compact($vars));
-	$phpbb_dispatcher->dispatch('core.common_template_vars', $event);
-	extract($event->get_data_filtered($vars));
-
-	$template->assign_vars($template_vars);
+	));
 
 
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
