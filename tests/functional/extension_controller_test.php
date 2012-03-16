@@ -12,6 +12,39 @@
 */
 class phpbb_functional_extension_controller_test extends phpbb_functional_test_case
 {
+	/**
+	* This should only be called once before the tests are run.
+	* This is used to copy the fixtures to the phpBB install
+	*/
+	static public function setUpBeforeClass()
+	{
+		parent::setUpBeforeClass();
+		// When you add new tests that require new fixtures, add them to the array.
+		$fixtures = array(
+			'error/class/controller.php',
+			'error/class/ext.php',
+			'error/classtype/controller.php',
+			'error/classtype/ext.php',
+			'error/disabled/controller.php',
+			'error/disabled/ext.php',
+			'foo/bar/controller.php',
+			'foo/bar/ext.php',
+			'foo/bar/styles/prosilver/template/index_body.html',
+			'foobar/controller.php',
+			'foobar/ext.php',
+			'foobar/styles/prosilver/template/index_body.html',
+		);
+
+		foreach ($fixtures as $fixture)
+		{
+			// we have to use self::$config['phpbb_functional_url'] because $this->root_url is not available in static classes
+			if(!copy("tests/functional/fixtures/ext/$fixture", self::$config['phpbb_functional_url'] . "/ext/$fixture"))
+			{
+				echo 'Could not copy file ' . $fixture;
+			}
+		}
+	}
+
 	public function setUp()
 	{
 		parent::setUp();
