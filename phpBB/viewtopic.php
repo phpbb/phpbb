@@ -1068,7 +1068,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		if ($poster_id == ANONYMOUS)
 		{
-			$user_cache[$poster_id] = array(
+			$user_cache_data = array(
 				'joined'		=> '',
 				'posts'			=> '',
 				'from'			=> '',
@@ -1102,6 +1102,13 @@ while ($row = $db->sql_fetchrow($result))
 				'warnings'			=> 0,
 				'allow_pm'			=> 0,
 			);
+
+			$vars = array('user_cache_data', 'row', 'poster_id');
+			$event = new phpbb_event_data(compact($vars));
+			$phpbb_dispatcher->dispatch('core.viewtopic_user_cache_guest', $event);
+			extract($event->get_data_filtered($vars));
+
+			$user_cache[$poster_id] = $user_cache_data;
 
 			get_user_rank($row['user_rank'], false, $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 		}
