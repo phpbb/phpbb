@@ -19,7 +19,27 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	static public function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
+		$f_path = self::$config['phpbb_functional_path'];
+
+		// these directories need to be created before the files can be copied
+		$directories = array(
+			$f_path . 'ext/error/class/',
+			$f_path . 'ext/error/classtype/',
+			$f_path . 'ext/error/disabled/',
+			$f_path . 'ext/foo/bar/',
+			$f_path . 'ext/foo/bar/styles/prosilver/template/',
+			$f_path . 'ext/foobar/',
+			$f_path . 'ext/foobar/styles/prosilver/template/',
+		);
 		// When you add new tests that require new fixtures, add them to the array.
+		foreach ($directories as $dir)
+		{
+			if (!is_dir($dir))
+			{
+				mkdir($dir, 0777, true);
+			}
+		}
+
 		$fixtures = array(
 			'error/class/controller.php',
 			'error/class/ext.php',
@@ -38,7 +58,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		foreach ($fixtures as $fixture)
 		{
 			// we have to use self::$config['phpbb_functional_url'] because $this->root_url is not available in static classes
-			if(!copy("tests/functional/fixtures/ext/$fixture", self::$config['phpbb_functional_url'] . "/ext/$fixture"))
+			if(!copy("tests/functional/fixtures/ext/$fixture", "{$f_path}ext/$fixture"))
 			{
 				echo 'Could not copy file ' . $fixture;
 			}
