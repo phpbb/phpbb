@@ -876,6 +876,11 @@ class acp_profile
 							}
 						}
 
+					$vars = array('field_row', 'visibility_ary', 'exclude');
+					$event = new phpbb_event_data(compact($vars));
+					$phpbb_dispatcher->dispatch('core.acp_profile_edit', $event);
+					extract($event->get_data_filtered($vars));
+
 					break;
 				}
 
