@@ -25,7 +25,7 @@ class ucp_zebra
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
 		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
@@ -54,6 +54,11 @@ class ucp_zebra
 					// Remove users
 					if (!empty($data['usernames']))
 					{
+						$vars = array('data');
+						$event = new phpbb_event_data(compact($vars));
+						$phpbb_dispatcher->dispatch('core.ucp_zebra_remove', $event);
+						extract($event->get_data_filtered($vars));
+
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
 								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
