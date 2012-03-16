@@ -1645,7 +1645,7 @@ page_footer();
 */
 function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
 {
-	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
+	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
