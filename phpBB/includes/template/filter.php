@@ -88,6 +88,16 @@ class phpbb_template_filter extends php_user_filter
 	private $phpbb_root_path;
 
 	/**
+	* Name of the top-level template being compiled and/or rendered.
+	*
+	* This is used by hooks implementation to invoke template-specific
+	* template hooks.
+	*
+	* @var string
+	*/
+	private $template_name;
+
+	/**
 	* Extension manager.
 	*
 	* @var phpbb_extension_manager
@@ -152,7 +162,7 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, root directory and locator from params,
+	* Get the allow_php option, template_name, root directory and locator from params,
 	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
@@ -162,6 +172,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->allow_php = $this->params['allow_php'];
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
+		$this->template_name = $this->params['template_name'];
 		$this->extension_manager = $this->params['extension_manager'];
 		$this->template_compile = $this->params['template_compile'];
 		return true;

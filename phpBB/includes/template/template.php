@@ -88,6 +88,16 @@ class phpbb_template
 	private $extension_manager;
 
 	/**
+	* Name of the top-level template being compiled and/or rendered.
+	*
+	* This is used by hooks implementation to invoke template-specific
+	* template hooks.
+	*
+	* @var string
+	*/
+	private $template_name;
+
+	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
@@ -295,7 +305,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path, $this->extension_manager);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->template_name, $this->locator, $this->phpbb_root_path, $this->extension_manager);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
