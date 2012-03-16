@@ -851,7 +851,9 @@ class phpbb_template_filter extends php_user_filter
 				$compiled = $this->template_compile->compile_file($file);
 				$all_compiled .= $compiled;
 			}
-			return '?>' . $all_compiled . '<?php';
+			// Need spaces inside php tags as php cannot grok
+			// < ?php? > sans the spaces
+			return ' ?>' . $all_compiled . '<?php ';
 		}
 
 		// 1. find all mods defining hooks for location
