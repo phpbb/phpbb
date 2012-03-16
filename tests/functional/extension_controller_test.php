@@ -65,6 +65,17 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		}
 	}
 
+	public static function tearDownAfterClass()
+	{
+		$f_path = self::$config['phpbb_functional_path'];
+		// first we rename the install_ directory back to install
+		rename($f_path . 'install_/', $f_path . 'install/');
+
+		// @todo delete the fixtures from the $f_path board
+		// Note that it might be best to find a public domain function
+		// and port it into here instead of writing it from scratch
+	}
+
 	public function setUp()
 	{
 		parent::setUp();
