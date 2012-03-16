@@ -823,7 +823,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 */
 function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
 {
-	global $db, $auth;
+	global $db, $auth, $phpbb_dispatcher;
 
 	if (!is_array($ids) || empty($ids))
 	{
@@ -888,6 +888,8 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 	}
 
 	// If forum id is false and ids populated we may have only global announcements selected (returning 0 because of (int) $forum_id)
+
+	$phpbb_dispatcher->dispatch('core.mcp_check_ids');
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
