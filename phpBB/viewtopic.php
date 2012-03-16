@@ -970,6 +970,11 @@ $sql_ary = array(
 		AND u.user_id = p.poster_id',
 );
 
+$vars = array('sql_ary');
+$event = new phpbb_event_data(compact($vars));
+$phpbb_dispatcher->dispatch('core.viewtopic_get_userdata', $event);
+extract($event->get_data_filtered($vars));
+
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
 
