@@ -238,6 +238,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'						=> 'You have to select a post in order to warn the user for a post.',
 	'NO_POST_REPORT'				=> 'This post was not reported.',
 	'NO_POST_SELECTED'				=> 'You must select at least one post to perform this action.',
+	'NO_POSTS_QUEUE'				=> 'There are no posts waiting for approval.',
 	'NO_REASON_DISAPPROVAL'			=> 'Please give an appropriate reason for disapproval.',
 	'NO_REPORT'						=> 'No report found',
 	'NO_REPORTS'					=> 'No reports found',
