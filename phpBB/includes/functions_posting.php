@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $db, $user, $config, $template;
+	global $db, $user, $config, $template, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	$start = request_var('start', 0);
@@ -133,6 +133,11 @@ function generate_smilies($mode, $forum_id)
 			'U_MORE_SMILIES' 		=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id))
 		);
 	}
+
+	$vars = array('mode', 'forum_id', 'display_link');
+	$event = new phpbb_event_data(compact($vars));
+	$phpbb_dispatcher->dispatch('core.generate_smilies_footer', $event);
+	extract($event->get_data_filtered($vars));
 
 	if ($mode == 'window')
 	{
