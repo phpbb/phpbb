@@ -76,6 +76,16 @@ class phpbb_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Name of the top-level template being compiled and/or rendered.
+	*
+	* This is used by hooks implementation to invoke template-specific
+	* template hooks.
+	*
+	* @var string
+	*/
+	private $template_name;
+
+	/**
 	* Extension manager.
 	*
 	* @var phpbb_extension_manager
@@ -140,14 +150,15 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option from params, which is passed
-	* to stream_filter_append.
+	* Retrieves and stores allow_php and template_name options from params,
+	* which is passed to stream_filter_append.
 	*/
 	public function onCreate()
 	{
 		$this->chunk = '';
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
+		$this->template_name = $this->params['template_name'];
 		$this->extension_manager = $this->params['extension_manager'];
 		$this->template_compile = $this->params['template_compile'];
 		return true;

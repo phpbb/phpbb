@@ -82,6 +82,16 @@ class phpbb_template
 	private $extension_manager;
 
 	/**
+	* Name of the top-level template being compiled and/or rendered.
+	*
+	* This is used by hooks implementation to invoke template-specific
+	* template hooks.
+	*
+	* @var string
+	*/
+	private $template_name;
+
+	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
@@ -141,6 +151,8 @@ class phpbb_template
 		{
 			$templates[$fallback_template_name] = $fallback_template_path;
 		}
+
+		$this->template_name = $template_name;
 
 		$this->provider->set_templates($templates, $this->phpbb_root_path);
 		$this->locator->set_paths($this->provider);
@@ -344,6 +356,7 @@ class phpbb_template
 
 		$filter_params = array(
 			'allow_php' => $this->config['tpl_allow_php'],
+			'template_name' => $this->template_name,
 		);
 		$compile = new phpbb_template_compile($filter_params, $this->extension_manager);
 
