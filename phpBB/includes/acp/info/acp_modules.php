@@ -17,9 +17,9 @@ class acp_modules_info
 		global $phpbb_dispatcher;
 
 		$modules = array(
-				'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
-				'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
-				'mcp'		=> array('title' => 'MCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
+			'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
+			'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
+			'mcp'		=> array('title' => 'MCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
 		),
 
 		$vars = array('modules');
@@ -31,7 +31,7 @@ class acp_modules_info
 			'filename'	=> 'acp_modules',
 			'title'		=> 'ACP_MODULE_MANAGEMENT',
 			'version'	=> '1.0.0',
-			'modes'		=> $modules
+			'modes'		=> $modules,
 		);
 
 		return $data

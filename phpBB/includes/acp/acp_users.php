@@ -30,7 +30,7 @@ class acp_users
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
