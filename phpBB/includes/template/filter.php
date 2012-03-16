@@ -856,6 +856,13 @@ class phpbb_template_filter extends php_user_filter
 				->extension_directory("/styles/all/template")
 				->get_files();
 
+			$files = array_merge($files, $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				// XXX is this safe?
+				->extension_directory("/styles/" . $this->template_name . "/template")
+				->get_files());
+
 			$all_compiled = '';
 			foreach ($files as $file)
 			{
