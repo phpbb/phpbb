@@ -191,6 +191,11 @@ class ucp_zebra
 										);
 									}
 
+									$vars = array('mode', 'sql_ary');
+									$event = new phpbb_event_data(compact($vars));
+									$phpbb_dispatcher->dispatch('core.ucp_zebra_add', $event);
+									extract($event->get_data_filtered($vars));
+
 									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 
 									$updated = true;
