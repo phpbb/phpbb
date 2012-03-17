@@ -139,6 +139,10 @@ foreach ($cache->obtain_hooks() as $hook)
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
 
+// make sure add_log uses this log instance
+$phpbb_log = new phpbb_log(LOG_TABLE);
+add_log($phpbb_log); // "dependency injection" for a function
+
 if (!$config['use_system_cron'])
 {
 	$cron = new phpbb_cron_manager(new phpbb_cron_task_provider($phpbb_extension_manager), $cache->get_driver());
