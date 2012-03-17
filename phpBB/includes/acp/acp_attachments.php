@@ -1163,7 +1163,7 @@ class acp_attachments
 					$template->assign_vars(array(
 						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 						'U_ACTION'			=> $this->u_action,)
-					);					
+					);
 				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
@@ -1203,8 +1203,8 @@ class acp_attachments
 
 				// Just get the files
 				$sql = 'SELECT a.*, u.username, u.user_colour, t.topic_title
-					FROM ' . ATTACHMENTS_TABLE . ' a 
-					LEFT JOIN ' . USERS_TABLE . ' u ON (u.user_id = a.poster_id) 
+					FROM ' . ATTACHMENTS_TABLE . ' a
+					LEFT JOIN ' . USERS_TABLE . ' u ON (u.user_id = a.poster_id)
 					LEFT JOIN ' . TOPICS_TABLE . " t ON (a.topic_id = t.topic_id)
 					WHERE a.is_orphan = 0
 						$limit_filetime

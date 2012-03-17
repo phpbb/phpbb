@@ -121,7 +121,7 @@ class custom_profile
 
 			case FIELD_BOOL:
 				$field_value = (bool) $field_value;
-			
+
 				if (!$field_value && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
@@ -133,7 +133,7 @@ class custom_profile
 				{
 					return false;
 				}
-				
+
 				$field_value = (int) $field_value;
 
 				if ($field_value < $field_data['field_minlen'])

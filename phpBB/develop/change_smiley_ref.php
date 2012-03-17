@@ -1,21 +1,21 @@
 <?php
-/***************************************************************************  
- *                           merge_clean_posts.php  
- *                            -------------------                         
- *   begin                : Tuesday, February 25, 2003 
- *   copyright            : (C) 2003 The phpBB Group        
- *   email                : support@phpbb.com                           
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *                           merge_clean_posts.php
+ *                            -------------------
+ *   begin                : Tuesday, February 25, 2003
+ *   copyright            : (C) 2003 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ ***************************************************************************/
 
-/***************************************************************************  
- *                                                     
- *   This program is free software; you can redistribute it and/or modify    
- *   it under the terms of the GNU General Public License as published by   
- *   the Free Software Foundation; either version 2 of the License, or  
- *   (at your option) any later version.                      
- * 
- ***************************************************************************/ 
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
 
 //
 // Security message:

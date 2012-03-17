@@ -101,7 +101,7 @@ class acp_words
 					'word'			=> $word,
 					'replacement'	=> $replacement
 				);
-				
+
 				if ($word_id)
 				{
 					$db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);

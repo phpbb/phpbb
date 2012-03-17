@@ -1,6 +1,6 @@
 /*
 javascript for Bubble Tooltips by Alessandro Fulciniti
-- http://pro.html.it - http://web-graphics.com 
+- http://pro.html.it - http://web-graphics.com
 obtained from: http://web-graphics.com/mtarchive/001717.php
 
 phpBB Development Team:
@@ -18,7 +18,7 @@ var head_text, tooltip_mode;
 function enable_tooltips_link(id, headline, sub_id)
 {
 	var links, i, hold;
-	
+
 	head_text = headline;
 
 	if (!document.getElementById || !document.getElementsByTagName)
@@ -66,7 +66,7 @@ function enable_tooltips_link(id, headline, sub_id)
 function enable_tooltips_select(id, headline, sub_id)
 {
 	var links, i, hold;
-	
+
 	head_text = headline;
 
 	if (!document.getElementById || !document.getElementsByTagName)

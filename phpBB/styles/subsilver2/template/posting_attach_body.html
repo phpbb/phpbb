@@ -29,12 +29,12 @@
 	<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
 </tr>
 
-<tr> 
-	<td class="row1"><b class="genmed">{L_FILENAME}</b></td> 
-	<td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnfile" /></td> 
-</tr> 
-<tr> 
-	<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
+<tr>
+	<td class="row1"><b class="genmed">{L_FILENAME}</b></td>
+	<td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnfile" /></td>
+</tr>
+<tr>
+	<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td>
 	<td class="row2">
 		<table border="0" cellspacing="0" cellpadding="2">
 		<tr>
@@ -49,7 +49,7 @@
 		</tr>
 		</table>
 	</td>
-</tr> 
+</tr>
 
 <!-- IF S_HAS_ATTACHMENTS -->
 	<tr>
@@ -59,10 +59,10 @@
 	<!-- BEGIN attach_row -->
 		<tr>
 			<td class="row1"><b class="genmed">{L_FILENAME}</b></td>
-			<td class="row2"><a class="genmed" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILENAME}</a></td> 
+			<td class="row2"><a class="genmed" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILENAME}</a></td>
 		</tr>
-		<tr> 
-			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
+		<tr>
+			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td>
 			<td class="row2">{attach_row.S_HIDDEN}
 				<table border="0" cellspacing="0" cellpadding="2">
 				<tr>

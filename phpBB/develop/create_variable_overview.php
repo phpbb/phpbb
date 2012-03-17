@@ -5,8 +5,8 @@
 // STARTED   : Fri Aug 15 2003
 // COPYRIGHT : © 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 /*
@@ -496,7 +496,7 @@ foreach ($lang_references as $lang_var => $filenames)
 	{
 		// Merge logical - hardcoded
 		$fname = (preg_match('#^(' . implode('|', $merge) . ')#', $filenames[0], $match)) ? $match[0] . '.php' : str_replace($ext, 'php', $filenames[0]);
-		
+
 		if (!$lang_fp[$fname])
 		{
 			$lang_fp[$fname] = fopen($store_dir . 'lang_' . $fname, 'w');
@@ -506,7 +506,7 @@ foreach ($lang_references as $lang_var => $filenames)
 		fwrite($lang_fp[$fname], (($entry[$fname]) ? ",\n" : '') . "\t'$var' => '" . $lang[$var] . "'");
 		$entry[$fname] = true;
 	}
-	
+
 	foreach ($filenames as $f_name)
 	{
 		$var = trim($f_name);

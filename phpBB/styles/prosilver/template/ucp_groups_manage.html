@@ -6,19 +6,19 @@
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
-	
+
 	<p>{L_GROUPS_EXPLAIN}</p>
 
 	<!-- IF S_EDIT -->
 		<h3>{L_GROUP_DETAILS}</h3>
-	
+
 		<!-- IF S_ERROR -->
 		<div class="errorbox">
 			<h3>{L_WARNING}</h3>
 			<p>{ERROR_MSG}</p>
 		</div>
 		<!-- ENDIF -->
-	
+
 		<fieldset>
 		<dl>
 			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
@@ -34,9 +34,9 @@
 		<dl>
 			<dt><label for="group_type1">{L_GROUP_TYPE}:</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
 			<dd>
-				<label for="group_type1"><input type="radio" class="radio" name="group_type" id="group_type1" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN}</label> 
-				<label for="group_type2"><input type="radio" class="radio" name="group_type" id="group_type2" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST}</label> 
-				<label for="group_type3"><input type="radio" class="radio" name="group_type" id="group_type3" value="{GROUP_TYPE_CLOSED}"{GROUP_CLOSED} /> {L_GROUP_CLOSED}</label> 
+				<label for="group_type1"><input type="radio" class="radio" name="group_type" id="group_type1" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN}</label>
+				<label for="group_type2"><input type="radio" class="radio" name="group_type" id="group_type2" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST}</label>
+				<label for="group_type3"><input type="radio" class="radio" name="group_type" id="group_type3" value="{GROUP_TYPE_CLOSED}"{GROUP_CLOSED} /> {L_GROUP_CLOSED}</label>
 				<label for="group_type4"><input type="radio" class="radio" name="group_type" id="group_type4" value="{GROUP_TYPE_HIDDEN}"{GROUP_HIDDEN} /> {L_GROUP_HIDDEN}</label>
 			</dd>
 		</dl>
@@ -166,7 +166,7 @@
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
-<fieldset class="display-actions">	
+<fieldset class="display-actions">
 	<select name="action"><option value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
 	<input class="button2" type="submit" name="update" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></div>
@@ -183,7 +183,7 @@
 	<dl>
 		<dt><label for="default0">{L_USER_GROUP_DEFAULT}:</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
 		<dd>
-			<label for="default1"><input type="radio" name="default" id="default1" value="1" /> {L_YES}</label> 
+			<label for="default1"><input type="radio" name="default" id="default1" value="1" /> {L_YES}</label>
 			<label for="default0"><input type="radio" name="default" id="default0" value="0" checked="checked" /> {L_NO}</label>
 		</dd>
 	</dl>

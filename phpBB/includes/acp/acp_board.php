@@ -785,7 +785,7 @@ class acp_board
 		{
 			$act_ary['ACC_USER'] = USER_ACTIVATION_SELF;
 			$act_ary['ACC_ADMIN'] = USER_ACTIVATION_ADMIN;
-		}		
+		}
 		$act_options = '';
 
 		foreach ($act_ary as $key => $value)

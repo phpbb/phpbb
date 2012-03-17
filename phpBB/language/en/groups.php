@@ -81,7 +81,7 @@ $lang = array_merge($lang, array(
 	'NOT_LEADER_OF_GROUP'			=> 'The requested operation cannot be taken because you are not a leader of the selected group.',
 	'NOT_MEMBER_OF_GROUP'			=> 'The requested operation cannot be taken because you are not a member of the selected group or your membership has not been approved yet.',
 	'NOT_RESIGN_FROM_DEFAULT_GROUP'	=> 'You are not allowed to resign from your default group.',
-	
+
 	'PRIMARY_GROUP'		=> 'Primary group',
 
 	'REMOVE_SELECTED'		=> 'Remove selected',

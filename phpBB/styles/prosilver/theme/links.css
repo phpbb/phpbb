@@ -126,16 +126,16 @@ a.topictitle:active {
 }
 
 
-/* Profile searchresults */	
+/* Profile searchresults */
 .search .postprofile a {
 	color: #898989;
-	text-decoration: none; 
+	text-decoration: none;
 	font-weight: normal;
 }
 
 .search .postprofile a:hover {
 	color: #d3d3d3;
-	text-decoration: underline; 
+	text-decoration: underline;
 }
 
 /* Back to top of page */

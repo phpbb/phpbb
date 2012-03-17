@@ -65,7 +65,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			trigger_error($message);
 		}
 	}
-	
+
 	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
@@ -226,7 +226,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				// Move Messages
 				case 1:
 					$num_moved = move_pm($user->data['user_id'], $user->data['message_limit'], $msg_ids, $move_to, $remove_folder_id);
-					
+
 					// Something went wrong, only partially moved?
 					if ($num_moved != $folder_row['pm_count'])
 					{
@@ -405,7 +405,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$result = $db->sql_query($sql);
 	$num_messages = (int) $db->sql_fetchfield('num_messages');
 	$db->sql_freeresult($result);
-	
+
 	$folder[PRIVMSGS_INBOX] = array(
 		'folder_name'		=> $user->lang['PM_INBOX'],
 		'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', (int) $user->data['message_limit'], $num_messages),
@@ -678,7 +678,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
 	global $db, $template, $auth, $user;
-	
+
 	$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
 		'S_COND_SELECT'		=> (!$hardcoded && isset($global_rule_conditions[$rule_option])) ? true : false)
@@ -702,7 +702,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	{
 		case 'text':
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
-			
+
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
 				'CURRENT_STRING'	=> $rule_string,
@@ -716,7 +716,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'user':
 			$rule_user_id = request_var('rule_user_id', 0);
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
-			
+
 			if ($rule_string && !$rule_user_id)
 			{
 				$sql = 'SELECT user_id
@@ -778,10 +778,10 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				$sql .= 'WHERE';
 			}
-			
-			$sql .= " (g.group_name NOT IN ('GUESTS', 'BOTS') OR g.group_type <> " . GROUP_SPECIAL . ')	
+
+			$sql .= " (g.group_name NOT IN ('GUESTS', 'BOTS') OR g.group_type <> " . GROUP_SPECIAL . ')
 				ORDER BY g.group_type DESC, g.group_name ASC';
-			
+
 			$result = $db->sql_query($sql);
 
 			$s_group_options = '';
@@ -794,7 +794,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '';
 				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
-				
+
 				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
@@ -832,7 +832,7 @@ function show_defined_rules($user_id, $check_lang, $rule_lang, $action_lang, $fo
 		WHERE user_id = ' . $user_id . '
 		ORDER BY rule_id ASC';
 	$result = $db->sql_query($sql);
-	
+
 	$count = 0;
 	while ($row = $db->sql_fetchrow($result))
 	{

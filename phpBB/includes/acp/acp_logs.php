@@ -117,7 +117,7 @@ class acp_logs
 		if ($mode == 'mod')
 		{
 			$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
-			
+
 			$template->assign_vars(array(
 				'S_SHOW_FORUMS'			=> true,
 				'S_FORUM_BOX'			=> $forum_box)
@@ -148,7 +148,7 @@ class acp_logs
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewlogs', 'viewforum');
 			foreach ($checks as $check)
 			{

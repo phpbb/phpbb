@@ -7,8 +7,8 @@
 // STARTED   : Sun Apr 24, 2011
 // COPYRIGHT : © 2011 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 define('IN_PHPBB', 1);

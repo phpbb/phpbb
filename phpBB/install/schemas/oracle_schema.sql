@@ -863,7 +863,7 @@ CREATE TABLE phpbb_poll_votes (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
-	vote_user_ip varchar2(40) DEFAULT '' 
+	vote_user_ip varchar2(40) DEFAULT ''
 )
 /
 

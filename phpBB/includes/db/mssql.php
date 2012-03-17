@@ -358,7 +358,7 @@ class dbal_mssql extends dbal
 			FROM master.dbo.sysmessages
 			WHERE error = ' . $error['code'];
 		$result_id = @mssql_query($sql);
-		
+
 		if ($result_id)
 		{
 			$row = @mssql_fetch_assoc($result_id);

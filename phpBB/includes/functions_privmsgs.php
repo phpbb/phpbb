@@ -269,46 +269,46 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		case RULE_IS_LIKE:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS_NOT_LIKE:
 			$result = !preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_IS:
 			$result = ($check0 == $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_IS_NOT:
 			$result = ($check0 != $rule_row['rule_string']);
 		break;
-		
+
 		case RULE_BEGINS_WITH:
 			$result = preg_match("/^" . preg_quote($rule_row['rule_string'], '/') . '/i', $check0);
 		break;
-		
+
 		case RULE_ENDS_WITH:
 			$result = preg_match("/" . preg_quote($rule_row['rule_string'], '/') . '$/i', $check0);
 		break;
-		
+
 		case RULE_IS_FRIEND:
 		case RULE_IS_FOE:
 		case RULE_ANSWERED:
 		case RULE_FORWARDED:
 			$result = ($check0 == 1);
 		break;
-		
+
 		case RULE_IS_USER:
 			$result = ($check0 == $rule_row['rule_user_id']);
 		break;
-		
+
 		case RULE_IS_GROUP:
 			$result = in_array($rule_row['rule_group_id'], $check0);
 		break;
-		
+
 		case RULE_TO_GROUP:
 			$result = (in_array('g_' . $message_row[$check_ary['check2']], $check0) || in_array('g_' . $message_row[$check_ary['check2']], $message_row[$check_ary['check1']]));
 		break;
-		
+
 		case RULE_TO_ME:
 			$result = (in_array('u_' . $user_id, $check0) || in_array('u_' . $user_id, $message_row[$check_ary['check1']]));
 		break;

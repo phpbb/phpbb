@@ -7,8 +7,8 @@
 // STARTED   : Tue Nov 04, 2003
 // COPYRIGHT : © 2001, 2003 phpBB Group
 // WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
+// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
+//
 // -------------------------------------------------------------
 
 //
@@ -37,11 +37,11 @@ $db			= new sql_db();
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-// Rename the attachments table... 
+// Rename the attachments table...
 $sql = "RENAME TABLE {$table_prefix}attachments TO {$table_prefix}attach_temp";
 $db->sql_query($sql);
 
-$sql = "CREATE TABLE {$table_prefix}attachments 
+$sql = "CREATE TABLE {$table_prefix}attachments
 	SELECT d.*, a.post_id, a.user_id_from as poster_id, p.topic_id
 		FROM {$table_prefix}attach_desc d, {$table_prefix}attach_temp a, {$table_prefix}posts p
 		WHERE a.attach_id = d.attach_id
@@ -52,8 +52,8 @@ switch ($db->sql_layer)
 {
 	case 'mysql':
 	case 'mysql4':
-		$sql = 'ALTER TABLE ' . $table_prefix . 'attachments 
-			ADD PRIMARY KEY (attach_id), 
+		$sql = 'ALTER TABLE ' . $table_prefix . 'attachments
+			ADD PRIMARY KEY (attach_id),
 			ADD INDEX filetime (filetime),
 			ADD INDEX post_id (post_id),
 			ADD INDEX poster_id (poster_id),
