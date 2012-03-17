@@ -3357,65 +3357,74 @@ function parse_cfg_file($filename, $lines = false)
 */
 function add_log()
 {
-	global $db, $user;
+	// This is all just an ugly hack to add "Dependency Injection" to a function
+	// the only real code is the function call which maps this function to a method.
+	static $static_log = null;
 
-	// In phpBB 3.1.x i want to have logging in a class to be able to control it
-	// For now, we need a quite hakish approach to circumvent logging for some actions
-	// @todo implement cleanly
-	if (!empty($GLOBALS['skip_add_log']))
+	$args = func_get_args();
+	$log = (isset($args[0])) ? $args[0] : false;
+
+	if ($log instanceof phpbb_log_interface)
+	{
+		$static_log = $log;
+		return true;
+	}
+	else if ($log === false)
 	{
 		return false;
 	}
 
-	$args = func_get_args();
+	$tmp_log = $static_log;
 
-	$mode			= array_shift($args);
-	$reportee_id	= ($mode == 'user') ? intval(array_shift($args)) : '';
-	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$action			= array_shift($args);
-	$data			= (!sizeof($args)) ? '' : serialize($args);
+	// no log class set, create a temporary one ourselves to keep backwards compatability
+	if ($tmp_log === null)
+	{
+		$tmp_log = new phpbb_log(LOG_TABLE);
+	}
 
-	$sql_ary = array(
-		'user_id'		=> (empty($user->data)) ? ANONYMOUS : $user->data['user_id'],
-		'log_ip'		=> $user->ip,
-		'log_time'		=> time(),
-		'log_operation'	=> $action,
-		'log_data'		=> $data,
-	);
+	$mode = array_shift($args);
 
+	// This looks kind of dirty, but add_log has some additional data before the log_operation
+	$additional_data = array();
 	switch ($mode)
 	{
 		case 'admin':
-			$sql_ary['log_type'] = LOG_ADMIN;
-		break;
-
-		case 'mod':
-			$sql_ary += array(
-				'log_type'	=> LOG_MOD,
-				'forum_id'	=> $forum_id,
-				'topic_id'	=> $topic_id
-			);
-		break;
-
-		case 'user':
-			$sql_ary += array(
-				'log_type'		=> LOG_USERS,
-				'reportee_id'	=> $reportee_id
-			);
-		break;
-
 		case 'critical':
-			$sql_ary['log_type'] = LOG_CRITICAL;
 		break;
-
+		case 'mod':
+			// forum_id
+			$additional_data[] = array_shift($args);
+			// topic_id
+			$additional_data[] = array_shift($args);
+		break;
+		case 'user':
+			// reportee_id
+			$additional_data[] = array_shift($args);
+		break;
 		default:
-			return false;
+			/**
+			* @todo: enable when events are merged
+			*
+			global $phpbb_dispatcher;
+
+			if ($phpbb_dispatcher != null)
+			{
+				$vars = array('mode', 'args', 'additional_data');
+				$event = new phpbb_event_data(compact($vars));
+				$phpbb_dispatcher->dispatch('core.function_add_log', $event);
+				extract($event->get_data_filtered($vars));
+			}
+			*/
 	}
+	$log_operation = array_shift($args);
+	$additional_data = array_merge($additional_data, $args);
 
-	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+	global $user;
 
-	return $db->sql_nextid();
+	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
+	$user_ip = (empty($user->ip)) ? '' : $user->ip;
+
+	return $tmp_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }
 
 /**
