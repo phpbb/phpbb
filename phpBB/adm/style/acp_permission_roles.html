@@ -84,7 +84,7 @@
 					<!-- ELSE -->
 						<li class="permissions-preset-custom<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ENDIF -->
-						<a href="#" onclick="swap_options('0','0','{auth.S_ROW_COUNT}'); return false;"><span class="tabbg"><span class="colour"></span>{auth.CAT_NAME}</span></a></li>	
+						<a href="#" onclick="swap_options('0','0','{auth.S_ROW_COUNT}'); return false;"><span class="tabbg"><span class="colour"></span>{auth.CAT_NAME}</span></a></li>
 				<!-- END auth -->
 				</ul>
 			</div>
@@ -111,7 +111,7 @@
 					<!-- BEGIN mask -->
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 						<th class="permissions-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
-							
+
 						<td class="permissions-yes"><label for="setting_{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
 						<td class="permissions-no"><label for="setting_{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
 						<td class="permissions-never"><label for="setting_{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
@@ -164,16 +164,16 @@
 				{ICON_MOVE_UP_DISABLED}
 				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 			<!-- ELSEIF not roles.S_FIRST_ROW && not roles.S_LAST_ROW-->
-				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 			<!-- ELSEIF roles.S_LAST_ROW && not roles.S_FIRST_ROW -->
-				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a>
 				{ICON_MOVE_DOWN_DISABLED}
 			<!-- ELSE -->
 				{ICON_MOVE_UP_DISABLED}
 				{ICON_MOVE_DOWN_DISABLED}
-			<!-- ENDIF -->	
-			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a> 
+			<!-- ENDIF -->
+			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a>
 			<a href="{roles.U_REMOVE}" title="{L_REMOVE_ROLE}">{ICON_DELETE}</a>
 		</td>
 	</tr>

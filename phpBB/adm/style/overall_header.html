@@ -74,7 +74,7 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
 	{
 		if (rb[r].name.substr(0, name.length) == name)
@@ -169,7 +169,7 @@ function switch_menu()
 		<p><a href="{U_ADM_INDEX}">{L_ADMIN_INDEX}</a> &bull; <a href="{U_INDEX}">{L_FORUM_INDEX}</a></p>
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 	</div>
-	
+
 	<div id="page-body">
 		<div id="tabs">
 			<ul>
@@ -183,7 +183,7 @@ function switch_menu()
 		<div class="panel">
 			<span class="corners-top"><span></span></span>
 				<div id="content">
-					<!-- IF not S_USER_NOTICE --> 
+					<!-- IF not S_USER_NOTICE -->
 					<div id="toggle">
 						<a id="toggle-handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
 					<!-- ENDIF -->
@@ -193,19 +193,19 @@ function switch_menu()
 						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
-	
+
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
 							<li class="header">{l_block1.l_block2.L_TITLE}</li>
 							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
-	
+
 							<!-- BEGIN l_block3 -->
 								<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
 								<!-- DEFINE $LI_USED = 1 -->
 							<!-- END l_block3 -->
 						<!-- END l_block2 -->
-						
+
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
 						<!-- IF not $LI_USED -->
@@ -213,5 +213,5 @@ function switch_menu()
 						<!-- ENDIF -->
 						</ul>
 					</div>
-	
+
 					<div id="main">

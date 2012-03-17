@@ -54,9 +54,9 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
-	{	
+	{
 		if (rb[r].name.substr(0, name.length) == name)
 		{
 			rb[r].checked = state;
@@ -75,7 +75,7 @@ function viewableArea(e, itself)
 	{
 		e = e.parentNode;
 	}
-	
+
 	if (!e.vaHeight)
 	{
 		// Store viewable area height before changing style to auto
@@ -173,7 +173,7 @@ function printPage()
 * Show/hide groups of blocks
 * c = CSS style name
 * e = checkbox element
-* t = toggle dispay state (used to show 'grip-show' image in the profile block when hiding the profiles) 
+* t = toggle dispay state (used to show 'grip-show' image in the profile block when hiding the profiles)
 */
 function displayBlocks(c, e, t)
 {
@@ -406,7 +406,7 @@ function apply_onkeypress_event()
 		jQuery('form input[type=text], form input[type=password]').live('keypress', function (e)
 		{
 			var default_button = jQuery(this).parents('form').find('input[type=submit].default-submit-action');
-			
+
 			if (!default_button || default_button.length <= 0)
 				return true;
 
@@ -421,7 +421,7 @@ function apply_onkeypress_event()
 
 			return true;
 		});
-	
+
 		return;
 	}
 

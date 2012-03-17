@@ -9,7 +9,7 @@
 	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_UPLOAD_FILE -->
-			<dl> 
+			<dl>
 				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
 				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></dd>
 			</dl>
@@ -31,7 +31,7 @@
 			</dl>
 		<!-- ENDIF -->
 		<!-- IF S_DISPLAY_GALLERY -->
-			<dl> 
+			<dl>
 				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
 				<dd><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></dd>
 			</dl>
@@ -48,7 +48,7 @@
 		<dl>
 			<table cellspacing="1">
 			<!-- BEGIN avatar_row -->
-			<tr> 
+			<tr>
 				<!-- BEGIN avatar_column -->
 					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
 				<!-- END avatar_column -->
@@ -62,11 +62,11 @@
 			</table>
 		</dl>
 		</fieldset>
-		
+
 		<fieldset class="quick" style="margin-top: -15px;">
 			<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
 		</fieldset>
-	
+
 	<!-- ENDIF -->
 	</fieldset>
 
@@ -74,5 +74,5 @@
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		{S_FORM_TOKEN}
 	</fieldset>
-	
+
 	</form>

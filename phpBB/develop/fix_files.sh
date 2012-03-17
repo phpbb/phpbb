@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # Remove all those annoying ^M characters that Winblows editor's like to add
 # from all files in the current directory and all subdirectories.
 #
@@ -20,10 +20,10 @@ rm FILELIST2.$$
 rm FILELIST.$$
 
 for i in $(cat FILELIST); do
-	if [ -f $i ]; then  	 
+	if [ -f $i ]; then
 		cat $i | tr -d '\r' > $i.tmp
 		mv $i.tmp $i
-	fi	
+	fi
 done
 rm FILELIST
 

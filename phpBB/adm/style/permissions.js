@@ -2,7 +2,7 @@
 * Hide and show all checkboxes
 * status = true (show boxes), false (hide boxes)
 */
-function display_checkboxes(status) 
+function display_checkboxes(status)
 {
 	var form = document.getElementById('set-permissions');
 	var cb = document.getElementsByTagName('input');
@@ -18,16 +18,16 @@ function display_checkboxes(status)
 	{
 		display = 'none';
 	}
-	
+
 	for (var i = 0; i < cb.length; i++ )
 	{
 		if (cb[i].className == 'permissions-checkbox')
 		{
 			cb[i].style.display = display;
 		}
-		
-	}	
-	
+
+	}
+
 }
 
 
@@ -38,7 +38,7 @@ function display_checkboxes(status)
 */
 function set_opacity(e, value) {
 	e.style.opacity = value/10;
-	
+
 	//IE opacity currently turned off, because of its astronomical stupidity
 	//e.style.filter = 'alpha(opacity=' + value*10 + ')';
 }
@@ -50,12 +50,12 @@ function set_opacity(e, value) {
 function toggle_opacity(block_id) {
 	var cb = document.getElementById('checkbox' + block_id);
 	var fs = document.getElementById('perm' + block_id);
-	
-	if (cb.checked) 
+
+	if (cb.checked)
 	{
 		set_opacity(fs, 5);
-	} 
-	else 
+	}
+	else
 	{
 		set_opacity(fs, 10);
 	}
@@ -73,9 +73,9 @@ function reset_opacity(status, except_id) {
 
 	if (status)
 	{
-		opacity = 10;	
+		opacity = 10;
 	}
-	
+
 	for (var i = 0; i < fs.length; i++ )
 	{
 		if (fs[i].className != 'quick')
@@ -99,7 +99,7 @@ function reset_opacity(status, except_id) {
 * index = offset for the row of inputs (0 == first row, 1 == second, 2 == third),
 * rb = array of radiobuttons
 */
-function get_radio_status(index, rb) 
+function get_radio_status(index, rb)
 {
 	for (var i = index; i < rb.length; i = i + 3 )
 	{
@@ -121,8 +121,8 @@ function get_radio_status(index, rb)
 
 /**
 * Set tab colours
-* id = panel the tab needs to be set for, 
-* init = initialising on open, 
+* id = panel the tab needs to be set for,
+* init = initialising on open,
 * quick = If no calculation needed, this contains the colour
 */
 function set_colours(id, init, quick)
@@ -130,7 +130,7 @@ function set_colours(id, init, quick)
 	var table = document.getElementById('table' + id);
 	var tab = document.getElementById('tab' + id);
 
-	if (typeof(quick) != 'undefined') 
+	if (typeof(quick) != 'undefined')
 	{
 		tab.className = 'permissions-preset-' + quick + ' activetab';
 		return;
@@ -145,7 +145,7 @@ function set_colours(id, init, quick)
 	{
 		colour = 'yes';
 	}
-	else if (status == 0) 
+	else if (status == 0)
 	{
 		// We move on to No
 		status = get_radio_status(1, rb);
@@ -154,7 +154,7 @@ function set_colours(id, init, quick)
 		{
 			colour = 'no';
 		}
-		else if (status == 0) 
+		else if (status == 0)
 		{
 			// We move on to Never
 			status = get_radio_status(2, rb);
@@ -181,7 +181,7 @@ function set_colours(id, init, quick)
 * block_id = block that is opened
 */
 function init_colours(block_id)
-{	
+{
 	var block = document.getElementById('advanced' + block_id);
 	var panels = block.getElementsByTagName('div');
 	var tab = document.getElementById('tab' + id);
@@ -208,7 +208,7 @@ function swap_options(pmask, fmask, cat, adv, view)
 	id = pmask + fmask + cat;
 	active_option = active_pmask + active_fmask + active_cat;
 
-	var	old_tab = document.getElementById('tab' + active_option);	
+	var	old_tab = document.getElementById('tab' + active_option);
 	var new_tab = document.getElementById('tab' + id);
 	var adv_block = document.getElementById('advanced' + pmask + fmask);
 
@@ -232,8 +232,8 @@ function swap_options(pmask, fmask, cat, adv, view)
 		init_colours(pmask + fmask);
 		display_checkboxes(true);
 		reset_opacity(1);
-	} 
-	else if (adv) 
+	}
+	else if (adv)
 	{
 		//Checkbox might have been clicked, but we need full visibility
 		display_checkboxes(true);
@@ -250,12 +250,12 @@ function swap_options(pmask, fmask, cat, adv, view)
 	}
 
 	dE('options' + active_option, -1);
-	
+
 	//hiding and showing the checkbox
 	if (document.getElementById('checkbox' + active_pmask + active_fmask))
 	{
-		dE('checkbox' + pmask + fmask, -1);	
-		
+		dE('checkbox' + pmask + fmask, -1);
+
 		if ((pmask + fmask) != (active_pmask + active_fmask))
 		{
 			document.getElementById('checkbox' + active_pmask + active_fmask).style.display = 'inline';
