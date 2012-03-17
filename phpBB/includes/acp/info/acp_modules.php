@@ -20,7 +20,7 @@ class acp_modules_info
 			'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
 			'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
 			'mcp'		=> array('title' => 'MCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
-		),
+		);
 
 		$vars = array('modules');
 		$event = new phpbb_event_data(compact($vars));
@@ -34,7 +34,7 @@ class acp_modules_info
 			'modes'		=> $modules,
 		);
 
-		return $data
+		return $data;
 	}
 
 	function install()
