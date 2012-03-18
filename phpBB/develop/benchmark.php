@@ -132,7 +132,7 @@ function filldb($newposts)
 
 	for ($i = 1; $i <= $nr_of_forums; $i++)
 	{
-  		$forum_topic_counts[$i] = get_topic_count($i);
+		$forum_topic_counts[$i] = get_topic_count($i);
 	}
 
 	for($i = 0; $i < $newposts; $i++)
