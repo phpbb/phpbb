@@ -80,6 +80,11 @@ class phpbb_test_case_helpers
 			{
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
+
+			if (!empty($phpbb_functional_path))
+			{
+				$config['phpbb_functional_path'] = $phpbb_functional_path;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
@@ -99,6 +104,11 @@ class phpbb_test_case_helpers
 			$config = array_merge($config, array(
 				'phpbb_functional_url'	=> isset($_SERVER['PHPBB_FUNCTIONAL_URL']) ? $_SERVER['PHPBB_FUNCTIONAL_URL'] : '',
 			));
+		}
+
+		if (!empty($_SERVER['PHPBB_FUNCTIONAL_PATH']))
+		{
+			$config['phpbb_functional_path'] = $_SERVER['PHPBB_FUNCTIONAL_PATH'];
 		}
 
 		return $config;
