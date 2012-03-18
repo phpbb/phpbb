@@ -31,11 +31,15 @@ interface phpbb_log_interface
 
 	/**
 	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
+	*
+	* @return	null
 	*/
 	public function disable();
 
 	/**
 	* This function allows re-enable the log-system.
+	*
+	* @return	null
 	*/
 	public function enable();
 
