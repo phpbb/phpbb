@@ -157,7 +157,7 @@ class phpbb_log implements phpbb_log_interface
 				*
 				if ($phpbb_dispatcher != null)
 				{
-					$vars = array('mode', 'user_id', 'log_ip', 'log_time', 'additional_data', 'sql_ary');
+					$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
 					$event = new phpbb_event_data(compact($vars));
 					$phpbb_dispatcher->dispatch('core.add_log_case', $event);
 					extract($event->get_data_filtered($vars));
@@ -176,7 +176,7 @@ class phpbb_log implements phpbb_log_interface
 		*
 		if ($phpbb_dispatcher != null)
 		{
-			$vars = array('mode', 'user_id', 'log_ip', 'log_time', 'additional_data', 'sql_ary');
+			$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
 			$event = new phpbb_event_data(compact($vars));
 			$phpbb_dispatcher->dispatch('core.add_log', $event);
 			extract($event->get_data_filtered($vars));
