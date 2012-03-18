@@ -146,5 +146,26 @@ if (function_exists('date_default_timezone_set') && function_exists('date_defaul
 	date_default_timezone_set(@date_default_timezone_get());
 }
 
+// Autoloading of dependencies.
+// Three options are supported:
+// 1. Specify PHPBB_AUTOLOAD=/path/to/autoload.php in the environment.
+//    This is useful for running CLI scripts and tests.
+//    /path/to/autoload.php should define and register class loaders
+//    for all of phpBB's dependencies.
+// 2. If dependencies are installed with Composer, Composer will create a
+//    vendor/.composer/autoload.php. If this file exists it will be
+//    automatically used by phpBB.
+// 3. Failing that phpBB assumes that autoloading has been set up in
+//    some other way. This might be useful in cases when phpBB is integrated
+//    into a larger program.
+if (getenv('PHPBB_AUTOLOAD'))
+{
+	require(getenv('PHPBB_AUTOLOAD'));
+}
+else if (file_exists($phpbb_root_path . 'vendor/.composer/autoload.php'))
+{
+	require($phpbb_root_path . 'vendor/.composer/autoload.php');
+}
+
 $starttime = explode(' ', microtime());
 $starttime = $starttime[1] + $starttime[0];
