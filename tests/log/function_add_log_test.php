@@ -21,85 +21,82 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 		return array(
 			array(
 				array(
-					array(
-						'user_id'		=> 2,
-						'log_type'		=> LOG_CRITICAL,
-						'log_operation'	=> 'LOG_NO_ADDITIONAL',
-						'log_data'		=> '',
-						'reportee_id'	=> 0,
-						'forum_id'		=> 0,
-						'topic_id'		=> 0,
-					),
+					'user_id'		=> 2,
+					'log_type'		=> LOG_CRITICAL,
+					'log_operation'	=> 'LOG_NO_ADDITIONAL',
+					'log_data'		=> '',
+					'reportee_id'	=> 0,
+					'forum_id'		=> 0,
+					'topic_id'		=> 0,
 				),
 				2, 'critical', 'LOG_NO_ADDITIONAL',
 			),
 			array(
 				array(
-					array(
-						'user_id'		=> 2,
-						'log_type'		=> LOG_CRITICAL,
-						'log_operation'	=> 'LOG_ONE_ADDITIONAL',
-						'log_data'		=> 'a:1:{i:0;s:9:"argument1";}',
-						'reportee_id'	=> 0,
-						'forum_id'		=> 0,
-						'topic_id'		=> 0,
+					'user_id'		=> 2,
+					'log_type'		=> LOG_CRITICAL,
+					'log_operation'	=> 'LOG_ONE_ADDITIONAL',
+					'log_data'		=> array(
+						'argument1',
 					),
+					'reportee_id'	=> 0,
+					'forum_id'		=> 0,
+					'topic_id'		=> 0,
 				),
 				2, 'critical', 'LOG_ONE_ADDITIONAL', 'argument1',
 			),
 			array(
 				array(
-					array(
-						'user_id'		=> ANONYMOUS,
-						'log_type'		=> LOG_ADMIN,
-						'log_operation'	=> 'LOG_TWO_ADDITIONAL',
-						'log_data'		=> 'a:2:{i:0;s:9:"argument1";i:1;s:9:"argument2";}',
-						'reportee_id'	=> 0,
-						'forum_id'		=> 0,
-						'topic_id'		=> 0,
+					'user_id'		=> ANONYMOUS,
+					'log_type'		=> LOG_ADMIN,
+					'log_operation'	=> 'LOG_TWO_ADDITIONAL',
+					'log_data'		=> array(
+						'argument1',
+						'argument2',
 					),
+					'reportee_id'	=> 0,
+					'forum_id'		=> 0,
+					'topic_id'		=> 0,
 				),
 				false, 'admin', 'LOG_TWO_ADDITIONAL', 'argument1', 'argument2',
 			),
 			array(
 				array(
-					array(
-						'user_id'		=> ANONYMOUS,
-						'log_type'		=> LOG_USERS,
-						'log_operation'	=> 'LOG_USERS_ADDITIONAL',
-						'log_data'		=> 'a:1:{i:0;s:9:"argument2";}',
-						'reportee_id'	=> 2,
-						'forum_id'		=> 0,
-						'topic_id'		=> 0,
+					'user_id'		=> ANONYMOUS,
+					'log_type'		=> LOG_USERS,
+					'log_operation'	=> 'LOG_USERS_ADDITIONAL',
+					'log_data'		=> array(
+						'argument2',
 					),
+					'reportee_id'	=> 2,
+					'forum_id'		=> 0,
+					'topic_id'		=> 0,
 				),
 				false, 'user', 2, 'LOG_USERS_ADDITIONAL', 'argument2',
 			),
 			array(
 				array(
-					array(
-						'user_id'		=> ANONYMOUS,
-						'log_type'		=> LOG_MOD,
-						'log_operation'	=> 'LOG_MOD_TOPIC_AND_FORUM',
-						'log_data'		=> '',
-						'reportee_id'	=> 0,
-						'forum_id'		=> 12,
-						'topic_id'		=> 34,
-					),
+					'user_id'		=> ANONYMOUS,
+					'log_type'		=> LOG_MOD,
+					'log_operation'	=> 'LOG_MOD_TOPIC_AND_FORUM',
+					'log_data'		=> '',
+					'reportee_id'	=> 0,
+					'forum_id'		=> 12,
+					'topic_id'		=> 34,
 				),
 				false, 'mod', 12, 34, 'LOG_MOD_TOPIC_AND_FORUM',
 			),
 			array(
 				array(
-					array(
-						'user_id'		=> ANONYMOUS,
-						'log_type'		=> LOG_MOD,
-						'log_operation'	=> 'LOG_MOD_ADDITIONAL',
-						'log_data'		=> 'a:1:{i:0;s:9:"argument3";}',
-						'reportee_id'	=> 0,
-						'forum_id'		=> 56,
-						'topic_id'		=> 78,
+					'user_id'		=> ANONYMOUS,
+					'log_type'		=> LOG_MOD,
+					'log_operation'	=> 'LOG_MOD_ADDITIONAL',
+					'log_data'		=> array(
+						'argument3',
 					),
+					'reportee_id'	=> 0,
+					'forum_id'		=> 56,
+					'topic_id'		=> 78,
 				),
 				false, 'mod', 56, 78, 'LOG_MOD_ADDITIONAL', 'argument3',
 			),
@@ -117,6 +114,16 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 	public function test_add_log_function_critical($expected, $user_id, $mode, $required1, $additional1 = null, $additional2 = null, $additional3 = null)
 	{
 		global $db, $user;
+
+		if ($expected)
+		{
+			// Serialize the log data if we have some
+			if (is_array($expected['log_data']))
+			{
+				$expected['log_data'] = serialize($expected['log_data']);
+			}
+			$expected = array($expected);
+		}
 
 		$db = $this->new_dbal();
 
