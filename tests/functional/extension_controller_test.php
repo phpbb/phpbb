@@ -12,6 +12,7 @@
 */
 class phpbb_functional_extension_controller_test extends phpbb_functional_test_case
 {
+	protected $phpbb_extension_manager;
 	/**
 	* This should only be called once before the tests are run.
 	* This is used to copy the fixtures to the phpBB install
@@ -76,17 +77,23 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		// and port it into here instead of writing it from scratch
 	}
 
+	public function setUp()
+	{
+		parent::setUp();
+		$this->phpbb_extension_manager = !($this->phpbb_extension_manager instanceof phpbb_extension_manager) ? $this->get_ext_manager() : $this->phpbb_extension_manager;
+		$this->cache->purge('_ext');
+	}
+
 	/**
 	* Check an extension at ./ext/foobar/ which should have the class
 	* phpbb_ext_foobar_controller
 	*/
 	public function test_foobar()
 	{
-		$phpbb_extension_manager = $this->get_ext_manager();
-		$phpbb_extension_manager->enable('foobar');
+		$this->phpbb_extension_manager->enable('foobar');
 		$crawler = $this->request('GET', 'index.php?ext=foobar');
 		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
-		$phpbb_extension_manager->purge('foobar');
+		$this->phpbb_extension_manager->purge('foobar');
 	}
 
 	/**
@@ -95,11 +102,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_foo_bar()
 	{
-		$phpbb_extension_manager = $this->get_ext_manager();
-		$phpbb_extension_manager->enable('foo/bar');
+		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'index.php?ext=foo/bar');
 		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
-		$phpbb_extension_manager->purge('foo/bar');
+		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
 	/**
@@ -108,11 +114,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_error_class_name()
 	{
-		$phpbb_extension_manager = $this->get_ext_manager();
-		$phpbb_extension_manager->enable('error/class');
+		$this->phpbb_extension_manager->enable('error/class');
 		$crawler = $this->request('GET', 'index.php?ext=error/class');
 		$this->assertContains("The extension error/class is missing a controller class and cannot be accessed through the front-end.", $crawler->filter('#message')->text());
-		$phpbb_extension_manager->purge('error/class');
+		$this->phpbb_extension_manager->purge('error/class');
 	}
 
 	/**
@@ -121,11 +126,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_error_class_type()
 	{
-		$phpbb_extension_manager = $this->get_ext_manager();
-		$phpbb_extension_manager->enable('error/classtype');
+		$this->phpbb_extension_manager->enable('error/classtype');
 		$crawler = $this->request('GET', 'index.php?ext=error/classtype');
 		$this->assertContains("The extension controller class phpbb_ext_error_classtype_controller is not an instance of the phpbb_extension_controller_interface.", $crawler->filter('#message')->text());
-		$phpbb_extension_manager->purge('error/classtype');
+		$this->phpbb_extension_manager->purge('error/classtype');
 	}
 
 	/**
