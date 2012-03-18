@@ -85,10 +85,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$phpbb_extension_manager = $this->get_ext_manager();
 		$phpbb_extension_manager->enable('foobar');
 		$crawler = $this->request('GET', 'index.php?ext=foobar');
-		if($this->assertGreaterThan(0, $crawler->filter('#welcome')->count()))
-		{
-			$this->assertContains("This is for testing purposes.", $crawler->filter('#welcome')->text());
-		}
+		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
 		$phpbb_extension_manager->purge('foobar');
 	}
 
@@ -101,11 +98,8 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$phpbb_extension_manager = $this->get_ext_manager();
 		$phpbb_extension_manager->enable('foo/bar');
 		$crawler = $this->request('GET', 'index.php?ext=foo/bar');
-		if($this->assertGreaterThan(0, $crawler->filter('#welcome')->count()))
-		{
-			$this->assertContains("This is for testing purposes.", $crawler->filter('#welcome')->text());
-		}
-		$phpbb_extension_manager->purge('foo_bar');
+		$this->assertContains("This is for testing purposes.", $crawler->filter('#page-body')->text());
+		$phpbb_extension_manager->purge('foo/bar');
 	}
 
 	/**
@@ -118,7 +112,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$phpbb_extension_manager->enable('error/class');
 		$crawler = $this->request('GET', 'index.php?ext=error/class');
 		$this->assertContains("The extension error/class is missing a controller class and cannot be accessed through the front-end.", $crawler->filter('#message')->text());
-		$phpbb_extension_manager->purge('error_class');
+		$phpbb_extension_manager->purge('error/class');
 	}
 
 	/**
@@ -131,7 +125,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$phpbb_extension_manager->enable('error/classtype');
 		$crawler = $this->request('GET', 'index.php?ext=error/classtype');
 		$this->assertContains("The extension controller class phpbb_ext_error_classtype_controller is not an instance of the phpbb_extension_controller_interface.", $crawler->filter('#message')->text());
-		$phpbb_extension_manager->purge('error_classtype');
+		$phpbb_extension_manager->purge('error/classtype');
 	}
 
 	/**

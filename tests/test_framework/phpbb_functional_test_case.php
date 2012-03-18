@@ -89,7 +89,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new phpbb_extension_manager($this->get_db(), self::$config['table_prefix'] . 'ext', $phpbb_root_path, ".$phpEx", new phpbb_cache_driver_null);
+		return new phpbb_extension_manager($this->get_db(), self::$config['table_prefix'] . 'ext', $phpbb_root_path, ".$phpEx", new phpbb_cache_driver_file);
 	}
 
 	protected function install_board()
