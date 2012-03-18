@@ -12,8 +12,6 @@ $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
 require_once $phpbb_root_path . 'includes/startup.php';
 
-require_once $phpbb_root_path . 'vendor/.composer/autoload.php';
-
 $table_prefix = 'phpbb_';
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'includes/class_loader.' . $phpEx;

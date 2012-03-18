@@ -69,8 +69,6 @@ else
 }
 @ini_set('memory_limit', $mem_limit);
 
-require($phpbb_root_path . 'vendor/.composer/autoload.php');
-
 // Include essential scripts
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);

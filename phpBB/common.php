@@ -72,8 +72,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 	}
 }
 
-require($phpbb_root_path . 'vendor/.composer/autoload.php');
-
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
