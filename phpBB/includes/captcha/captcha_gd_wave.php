@@ -86,7 +86,7 @@ class captcha
 
 		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
 
- 		$colors = array();
+		$colors = array();
 
 		$minr = mt_rand(20, 30);
 		$ming = mt_rand(20, 30);

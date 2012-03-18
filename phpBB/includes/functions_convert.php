@@ -1297,7 +1297,7 @@ function restore_config($schema)
 				$src_ary = $schema['array_name'];
 				$config_value = (isset($convert_config[$src_ary][$src])) ? $convert_config[$src_ary][$src] : '';
 			}
-   		}
+		}
 
 		if ($config_value !== '')
 		{
