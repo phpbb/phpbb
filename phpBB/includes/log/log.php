@@ -34,6 +34,8 @@ class phpbb_log implements phpbb_log_interface
 
 	/**
 	* Constructor
+	*
+	* @param	string	$log_table		The table we use to store our logs
 	*/
 	public function __construct($log_table)
 	{
@@ -53,6 +55,8 @@ class phpbb_log implements phpbb_log_interface
 
 	/**
 	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
+	*
+	* @return	null
 	*/
 	public function disable()
 	{
@@ -61,6 +65,8 @@ class phpbb_log implements phpbb_log_interface
 
 	/**
 	* This function allows re-enable the log-system.
+	*
+	* @return	null
 	*/
 	public function enable()
 	{
