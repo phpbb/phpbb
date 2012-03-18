@@ -33,7 +33,7 @@ class phpbb_event_extension_subscriber_loader
 		$finder = $this->extension_manager->get_finder();
 		$subscriber_classes = $finder
 			->extension_directory('/event')
-			->suffix('subscriber')
+			->suffix('listener')
 			->core_path('event/')
 			->get_classes();
 
