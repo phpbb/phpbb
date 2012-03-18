@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_log">
+		<column>log_id</column>
+		<column>log_type</column>
+		<column>user_id</column>
+		<column>forum_id</column>
+		<column>topic_id</column>
+		<column>reportee_id</column>
+		<column>log_ip</column>
+		<column>log_time</column>
+		<column>log_operation</column>
+		<column>log_data</column>
+	</table>
+</dataset>
