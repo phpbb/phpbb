@@ -69,8 +69,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public static function tearDownAfterClass()
 	{
 		$f_path = self::$config['phpbb_functional_path'];
-		// first we rename the install_ directory back to install
-		rename($f_path . 'install_/', $f_path . 'install/');
 
 		// @todo delete the fixtures from the $f_path board
 		// Note that it might be best to find a public domain function
@@ -80,8 +78,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function setUp()
 	{
 		parent::setUp();
-		$this->phpbb_extension_manager = !($this->phpbb_extension_manager instanceof phpbb_extension_manager) ? $this->get_ext_manager() : $this->phpbb_extension_manager;
-		$this->cache->purge('_ext');
+
+		$this->phpbb_extension_manager = $this->get_extension_manager();
+
+		$this->purge_cache();
 	}
 
 	/**

@@ -16,6 +16,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected $cache = null;
 	protected $db = null;
+	protected $extension_manager = null;
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -86,11 +87,41 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->db;
 	}
 
-	protected function get_ext_manager()
+	protected function get_cache_driver()
+	{
+		if (!$this->cache)
+		{
+			$this->cache = new phpbb_cache_driver_file;
+		}
+
+		return $this->cache;
+	}
+
+	protected function purge_cache()
+	{
+		$cache = $this->get_cache_driver();
+
+		$cache->purge();
+		$cache->unload();
+		$cache->load();
+	}
+
+	protected function get_extension_manager()
 	{
 		global $phpbb_root_path, $phpEx;
-		$this->cache = ($this->cache instanceof phpbb_cache_driver_null) ? $this->cache : new phpbb_cache_driver_null;
-		return new phpbb_extension_manager($this->get_db(), self::$config['table_prefix'] . 'ext', $phpbb_root_path, ".$phpEx", $this->cache);
+
+		if (!$this->extension_manager)
+		{
+			$this->extension_manager = new phpbb_extension_manager(
+				$this->get_db(),
+				self::$config['table_prefix'] . 'ext',
+				$phpbb_root_path,
+				".$phpEx",
+				$this->get_cache_driver()
+			);
+		}
+
+		return $this->extension_manager;
 	}
 
 	protected function install_board()
