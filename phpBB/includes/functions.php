@@ -3392,14 +3392,11 @@ function add_log()
 		case 'critical':
 		break;
 		case 'mod':
-			// forum_id
-			$additional_data[] = array_shift($args);
-			// topic_id
-			$additional_data[] = array_shift($args);
+			$additional_data['forum_id'] = array_shift($args);
+			$additional_data['topic_id'] = array_shift($args);
 		break;
 		case 'user':
-			// reportee_id
-			$additional_data[] = array_shift($args);
+			$additional_data['reportee_id'] = array_shift($args);
 		break;
 		default:
 			/**

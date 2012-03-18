@@ -115,18 +115,25 @@ class phpbb_log implements phpbb_log_interface
 			break;
 
 			case 'mod':
+				$forum_id = (int) $additional_data['forum_id'];
+				unset($additional_data['forum_id']);
+				$topic_id = (int) $additional_data['topic_id'];
+				unset($additional_data['topic_id']);
 				$sql_ary += array(
 					'log_type'		=> LOG_MOD,
-					'forum_id'		=> intval(array_shift($additional_data)),
-					'topic_id'		=> intval(array_shift($additional_data)),
+					'forum_id'		=> $forum_id,
+					'topic_id'		=> $topic_id,
 					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
 				);
 			break;
 
 			case 'user':
+				$reportee_id = (int) $additional_data['reportee_id'];
+				unset($additional_data['reportee_id']);
+
 				$sql_ary += array(
 					'log_type'		=> LOG_USERS,
-					'reportee_id'	=> intval(array_shift($additional_data)),
+					'reportee_id'	=> $reportee_id,
 					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
 				);
 			break;
