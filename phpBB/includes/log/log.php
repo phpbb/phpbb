@@ -76,14 +76,7 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Adds a log to the database
 	*
-	* @param	string	$mode				The mode defines which log_type is used and in which log the entry is displayed.
-	* @param	int		$user_id			User ID of the user
-	* @param	string	$log_ip				IP address of the user
-	* @param	string	$log_operation		Name of the operation
-	* @param	int		$log_time			Timestamp when the log was added.
-	* @param	array	$additional_data	More arguments can be added, depending on the log_type
-	*
-	* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
+	* {@inheritDoc}
 	*/
 	public function add($mode, $user_id, $log_ip, $log_operation, $log_time = false, $additional_data = array())
 	{
