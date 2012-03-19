@@ -19,21 +19,15 @@
 		<tr>
 			<td class="row1" width="15%" valign="top"><span class="gen"><!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --></span><!-- IF unapproved.U_MCP_FORUM --><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a> ]</span><!-- ENDIF --></td>
 			<td class="row2" valign="top"><span class="gen"><a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a></span><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a> ]</span></td>
-			<td class="row1" valign="top"><span class="gen">{unapproved.SUBJECT}</span><br /><span class="gensmall">[ <a href="{unapproved.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+			<td class="row1" valign="top">{unapproved.ATTACH_ICON_IMG} <span class="gen">{unapproved.SUBJECT}</span><br /><span class="gensmall">[ <a href="{unapproved.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
 			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{unapproved.AUTHOR_FULL}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{unapproved.POST_TIME}</span></td>
 			<td class="row2" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{unapproved.POST_ID}" /></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="6" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END unapproved -->
-	<!-- IF S_HAS_UNAPPROVED_POSTS -->
 		<tr>
 			<td class="row3" colspan="6"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	<tr>
 		<td class="cat" colspan="6" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
 	</tr>
@@ -66,20 +60,14 @@
 		<tr>
 			<td class="row1" width="15%" valign="top"><span class="gen"><!-- IF report.U_FORUM --><a href="{report.U_FORUM}">{report.FORUM_NAME}</a><!-- ELSE -->{report.FORUM_NAME}<!-- ENDIF --></span><!-- IF report.U_MCP_FORUM --><br /><span class="gensmall">[ <a href="{report.U_MCP_FORUM}">{L_MODERATE}</a> ]</span><!-- ENDIF --></td>
 			<td class="row2" valign="top"><span class="gen"><a href="{report.U_TOPIC}">{report.TOPIC_TITLE}</a></span><br /><span class="gensmall">[ <a href="{report.U_MCP_TOPIC}">{L_MODERATE}</a> ]</span></td>
-			<td class="row1" valign="top"><span class="gen">{report.SUBJECT}</span><br /><span class="gensmall">[ <a href="{report.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+			<td class="row1" valign="top">{report.ATTACH_ICON_IMG} <span class="gen">{report.SUBJECT}</span><br /><span class="gensmall">[ <a href="{report.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
 			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{report.REPORTER_FULL}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{report.REPORT_TIME}</span></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END report -->
-	<!-- IF S_HAS_REPORTS -->
 		<tr>
 			<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	</table>
 
 	<br clear="all" /><br />
@@ -100,23 +88,17 @@
 	</tr>
 	<!-- BEGIN pm_report -->
 		<tr>
-			<td class="row1" valign="top"><span class="gen">{pm_report.PM_SUBJECT}</span><br /><span class="gensmall">[ <a href="{pm_report.U_PM_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
+			<td class="row1" valign="top">{pm_report.ATTACH_ICON_IMG} <span class="gen">{pm_report.PM_SUBJECT}</span><br /><span class="gensmall">[ <a href="{pm_report.U_PM_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
 			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{pm_report.PM_AUTHOR_FULL}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{pm_report.RECIPIENTS}</span></td>
 			<td class="row2" align="center" width="10%" nowrap="nowrap" valign="top"><span class="gensmall">{pm_report.PM_TIME}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{pm_report.REPORTER_FULL}</span></td>
 			<td class="row2" align="center" width="10%" nowrap="nowrap" valign="top"><span class="gensmall">{pm_report.REPORT_TIME}</span></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="6" align="center"><span class="gen">{L_PM_REPORTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END pm_report -->
-	<!-- IF S_HAS_PM_REPORTS -->
 		<tr>
 			<td class="row3" colspan="6"><span class="gensmall">{L_PM_REPORTS_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	</table>
 
 	<br clear="all" /><br />

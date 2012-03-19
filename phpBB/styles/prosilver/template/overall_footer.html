@@ -29,9 +29,12 @@
 </div>
 
 <div>
-	<a id="bottom" name="bottom" accesskey="z"></a>
+	<a id="bottom" accesskey="z"></a>
 	<!-- IF not S_IS_BOT -->{RUN_CRON_TASK}<!-- ENDIF -->
 </div>
+
+<script type="text/javascript" src="{T_JQUERY_LINK}"></script>
+<!-- IF S_JQUERY_FALLBACK --><script type="text/javascript">window.jQuery || document.write(unescape('%3Cscript src="{T_ASSETS_PATH}/javascript/jquery.js" type="text/javascript"%3E%3C/script%3E'));</script><!-- ENDIF -->
 
 </body>
 </html>

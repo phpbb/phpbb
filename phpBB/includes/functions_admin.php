@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -848,14 +847,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!class_exists($search_type))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
-
-	include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
 
 	$error = false;
 	$search = new $search_type($error);
@@ -2208,6 +2205,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	if (!($prune_flags & FORUM_FLAG_PRUNE_ANNOUNCE))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_ANNOUNCE;
+		$sql_and .= ' AND topic_type <> ' . POST_GLOBAL;
 	}
 
 	if (!($prune_flags & FORUM_FLAG_PRUNE_STICKY))
@@ -2330,7 +2328,7 @@ function cache_moderators()
 		$ug_id_ary = array_keys($hold_ary);
 
 		// Remove users who have group memberships with DENY moderator permissions
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary_deny = array(
 			'SELECT'	=> 'a.forum_id, ug.user_id, g.group_id',
 
 			'FROM'		=> array(
@@ -2343,8 +2341,8 @@ function cache_moderators()
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
+					'ON'	=> 'a.auth_role_id = r.role_id',
+				),
 			),
 
 			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
@@ -2356,7 +2354,8 @@ function cache_moderators()
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
-		));
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary_deny);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -2689,29 +2688,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$row['forum_id'])
+			if ($auth->acl_get('f_read', $row['forum_id']))
 			{
-				if ($auth->acl_getf_global('f_read'))
-				{
-					if (!$default_forum_id)
-					{
-						$sql = 'SELECT forum_id
-							FROM ' . FORUMS_TABLE . '
-							WHERE forum_type = ' . FORUM_POST;
-						$f_result = $db->sql_query_limit($sql, 1);
-						$default_forum_id = (int) $db->sql_fetchfield('forum_id', false, $f_result);
-						$db->sql_freeresult($f_result);
-					}
-
-					$is_auth[$row['topic_id']] = $default_forum_id;
-				}
-			}
-			else
-			{
-				if ($auth->acl_get('f_read', $row['forum_id']))
-				{
-					$is_auth[$row['topic_id']] = $row['forum_id'];
-				}
+				$is_auth[$row['topic_id']] = $row['forum_id'];
 			}
 
 			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
@@ -2780,18 +2759,18 @@ function update_foes($group_id = false, $user_id = false)
 	if (is_array($group_id) && sizeof($group_id))
 	{
 		// Grab group settings...
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql_ary = array(
 			'SELECT'	=> 'a.group_id',
 
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
+					'ON'	=> 'a.auth_role_id = r.role_id',
 				),
 			),
 
@@ -2799,8 +2778,9 @@ function update_foes($group_id = false, $user_id = false)
 				AND ' . $db->sql_in_set('a.group_id', $group_id) . "
 				AND ao.auth_option IN ('a_', 'm_')",
 
-			'GROUP_BY'	=> 'a.group_id'
-		));
+			'GROUP_BY'	=> 'a.group_id',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql);
 
 		$groups = array();
@@ -3338,5 +3318,3 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 		' . $sql_more;
 	$db->sql_query($sql);
 }
-
-?>

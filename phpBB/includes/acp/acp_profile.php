@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -30,6 +29,7 @@ class acp_profile
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $request;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -369,6 +369,7 @@ class acp_profile
 						'field_show_profile'=> 0,
 						'field_no_view'		=> 0,
 						'field_show_on_reg'	=> 0,
+						'field_show_on_pm'	=> 0,
 						'field_show_on_vt'	=> 0,
 						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
@@ -380,7 +381,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_vt', 'field_required', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_hide', 'field_show_profile', 'field_no_view'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -406,6 +407,7 @@ class acp_profile
 				$visibility_ary = array(
 					'field_required',
 					'field_show_on_reg',
+					'field_show_on_pm',
 					'field_show_on_vt',
 					'field_show_profile',
 					'field_hide',
@@ -487,7 +489,8 @@ class acp_profile
 							$cp->vars['field_default_value_day'] = $now['mday'];
 							$cp->vars['field_default_value_month'] = $now['mon'];
 							$cp->vars['field_default_value_year'] = $now['year'];
-							$var = $_POST['field_default_value'] = 'now';
+							$var = 'now';
+							$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
 						}
 						else
 						{
@@ -496,7 +499,8 @@ class acp_profile
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$var = $_POST['field_default_value'] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
 							}
 							else
 							{
@@ -715,7 +719,7 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
+								$_new_key_ary[$key] = ($field_type == FIELD_BOOL && $key == 'lang_options') ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
 							}
 						}
 					}
@@ -758,6 +762,7 @@ class acp_profile
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
+							'S_SHOW_ON_PM'		=> ($cp->vars['field_show_on_pm']) ? true : false,
 							'S_SHOW_ON_VT'		=> ($cp->vars['field_show_on_vt']) ? true : false,
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_SHOW_PROFILE'	=> ($cp->vars['field_show_profile']) ? true : false,
@@ -1074,6 +1079,7 @@ class acp_profile
 			'field_validation'		=> $cp->vars['field_validation'],
 			'field_required'		=> $cp->vars['field_required'],
 			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
+			'field_show_on_pm'		=> $cp->vars['field_show_on_pm'],
 			'field_show_on_vt'		=> $cp->vars['field_show_on_vt'],
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_show_profile'	=> $cp->vars['field_show_profile'],
@@ -1649,5 +1655,3 @@ class acp_profile
 		return $sql;
 	}
 }
-
-?>

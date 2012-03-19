@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -389,6 +388,22 @@ class dbal_postgres extends dbal
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_bigint($expression)
+	{
+		return 'CAST(' . $expression . ' as DECIMAL(255, 0))';
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function cast_expr_to_string($expression)
+	{
+		return 'CAST(' . $expression . ' as VARCHAR(255))';
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/
@@ -481,5 +496,3 @@ class dbal_postgres extends dbal
 		}
 	}
 }
-
-?>

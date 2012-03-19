@@ -7,6 +7,7 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../mock/request.php';
 require_once dirname(__FILE__) . '/../mock/session_testable.php';
 
 /**
@@ -24,6 +25,7 @@ class phpbb_session_testable_factory
 
 	protected $config;
 	protected $cache;
+	protected $request;
 
 	/**
 	* Initialises the factory with a set of default config and cache values.
@@ -66,16 +68,23 @@ class phpbb_session_testable_factory
 	public function get_session(dbal $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache;
+		global $SID, $_SID, $db, $config, $cache, $request;
 
-		$config = $this->config = $this->get_config_data();
+		$request = $this->request = new phpbb_mock_request(
+			array(),
+			array(),
+			$this->cookies,
+			$this->server_data
+		);
+		request_var(null, null, null, null, $request);
+
+		$config = $this->config = new phpbb_config($this->get_config_data());
+		set_config(null, null, null, $config);
+
 		$db = $dbal;
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
-
-		$_COOKIE = $this->cookies;
-		$_SERVER = $this->server_data;
 
 		$session = new phpbb_mock_session_testable;
 		return $session;

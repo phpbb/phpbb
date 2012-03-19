@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -27,26 +26,18 @@ $user->setup('viewforum');
 
 display_forums('', $config['load_moderators']);
 
-// Set some stats, get posts count from forums data if we... hum... retrieve all forums data
-$total_posts	= $config['num_posts'];
-$total_topics	= $config['num_topics'];
-$total_users	= $config['num_users'];
-
-$l_total_user_s = ($total_users == 0) ? 'TOTAL_USERS_ZERO' : 'TOTAL_USERS_OTHER';
-$l_total_post_s = ($total_posts == 0) ? 'TOTAL_POSTS_ZERO' : 'TOTAL_POSTS_OTHER';
-$l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OTHER';
-
+$order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 // Grab group details for legend display
 if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 {
-	$sql = 'SELECT group_id, group_name, group_colour, group_type
+	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend = 1
-		ORDER BY group_name ASC';
+		WHERE group_legend > 0
+		ORDER BY ' . $order_legend . ' ASC';
 }
 else
 {
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
 		FROM ' . GROUPS_TABLE . ' g
 		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 			ON (
@@ -54,9 +45,9 @@ else
 				AND ug.user_id = ' . $user->data['user_id'] . '
 				AND ug.user_pending = 0
 			)
-		WHERE g.group_legend = 1
+		WHERE g.group_legend > 0
 			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.group_name ASC';
+		ORDER BY g.' . $order_legend . ' ASC';
 }
 $result = $db->sql_query($sql);
 
@@ -80,7 +71,7 @@ $db->sql_freeresult($result);
 $legend = implode(', ', $legend);
 
 // Generate birthday list if required ...
-$birthday_list = '';
+$birthday_list = array();
 if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
 	$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
@@ -103,11 +94,19 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$birthday_list .= (($birthday_list != '') ? ', ' : '') . get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		$birthday_username	= get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		$birthday_year		= (int) substr($row['user_birthday'], -4);
+		$birthday_age		= ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
 
+		$template->assign_block_vars('birthdays', array(
+			'USERNAME'	=> $birthday_username,
+			'AGE'		=> $birthday_age,
+		));
+
+		// For 3.0 compatibility
 		if ($age = (int) substr($row['user_birthday'], -4))
 		{
-			$birthday_list .= ' (' . max(0, $now['year'] - $age) . ')';
+			$birthday_list[] = $birthday_username . (($birthday_year) ? ' (' . $birthday_age . ')' : '');
 		}
 	}
 	$db->sql_freeresult($result);
@@ -115,13 +114,13 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 
 // Assign index specific vars
 $template->assign_vars(array(
-	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
-	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
-	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
+	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
+	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
+	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
+	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
-	'BIRTHDAY_LIST'	=> $birthday_list,
+	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode(', ', $birthday_list),
 
 	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
 	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),
@@ -143,5 +142,3 @@ $template->set_filenames(array(
 );
 
 page_footer();
-
-?>

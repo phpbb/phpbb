@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,16 +16,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_mysql
 * Fulltext search for MySQL
 * @package search
 */
-class fulltext_mysql extends search_backend
+class phpbb_search_fulltext_mysql extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
@@ -36,19 +30,16 @@ class fulltext_mysql extends search_backend
 	var $pcre_properties = false;
 	var $mbstring_regex = false;
 
-	function fulltext_mysql(&$error)
+	public function __construct(&$error)
 	{
 		global $config;
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
 
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+		// PHP may not be linked with the bundled PCRE lib and instead with an older version
+		if (phpbb_pcre_utf8_support())
 		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$this->pcre_properties = true;
-			}
+			$this->pcre_properties = true;
 		}
 
 		if (function_exists('mb_ereg'))
@@ -58,6 +49,16 @@ class fulltext_mysql extends search_backend
 		}
 
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'MySQL Fulltext';
 	}
 
 	/**
@@ -932,5 +933,3 @@ class fulltext_mysql extends search_backend
 		);
 	}
 }
-
-?>

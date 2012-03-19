@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -343,45 +342,20 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
 
-// Generate reg/hidden/guest online text
-$vars_online = array(
-	'REG'	=> array('logged_visible_online', 'l_r_user_s'),
-	'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
-	'GUEST'	=> array('guest_counter', 'l_g_user_s')
-);
-
-foreach ($vars_online as $l_prefix => $var_ary)
-{
-	switch ($$var_ary[0])
-	{
-		case 0:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_ONLINE'];
-		break;
-
-		case 1:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USER_ONLINE'];
-		break;
-
-		default:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ONLINE'];
-		break;
-	}
-}
-unset($vars_online);
-
 $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
 
+$order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 // Grab group details for legend display
 if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 {
-	$sql = 'SELECT group_id, group_name, group_colour, group_type
+	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend = 1
-		ORDER BY group_name ASC';
+		WHERE group_legend > 0
+		ORDER BY ' . $order_legend . ' ASC';
 }
 else
 {
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
 		FROM ' . GROUPS_TABLE . ' g
 		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 			ON (
@@ -389,9 +363,9 @@ else
 				AND ug.user_id = ' . $user->data['user_id'] . '
 				AND ug.user_pending = 0
 			)
-		WHERE g.group_legend = 1
+		WHERE g.group_legend > 0
 			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.group_name ASC';
+		ORDER BY g.' . $order_legend . ' ASC';
 }
 $result = $db->sql_query($sql);
 
@@ -414,8 +388,8 @@ meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_gue
 
 // Send data to template
 $template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
-	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
+	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),
+	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
 	'PAGINATION'					=> $pagination,
 	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),
@@ -441,5 +415,3 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
-
-?>

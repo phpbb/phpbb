@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -98,7 +97,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
-		),			
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -512,4 +511,44 @@ function adjust_language_keys_callback($matches)
 	}
 }
 
-?>
+function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
+{
+	$load_extensions = implode(',', $load_extensions);
+
+	$config_data = "<?php\n";
+	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+
+	$config_data_array = array(
+		'dbms'			=> $dbms,
+		'dbhost'		=> $data['dbhost'],
+		'dbport'		=> $data['dbport'],
+		'dbname'		=> $data['dbname'],
+		'dbuser'		=> $data['dbuser'],
+		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
+		'table_prefix'	=> $data['table_prefix'],
+		'acm_type'		=> 'file',
+		'load_extensions'	=> $load_extensions,
+	);
+
+	foreach ($config_data_array as $key => $value)
+	{
+		$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
+	}
+
+	$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
+
+	if ($debug)
+	{
+		$config_data .= "@define('DEBUG', true);\n";
+		$config_data .= "@define('DEBUG_EXTRA', true);\n";
+	}
+	else
+	{
+		$config_data .= "// @define('DEBUG', true);\n";
+		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+
+	return $config_data;
+}

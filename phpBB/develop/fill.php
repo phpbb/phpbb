@@ -184,5 +184,3 @@ function rndm_username()
 
 	return $usernames[array_rand($usernames)];
 }
-
-?>
