@@ -19,20 +19,20 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	static public function setUpBeforeClass()
 	{
+		global $phpbb_root_path;
 		parent::setUpBeforeClass();
-		$f_path = self::$config['phpbb_functional_path'];
 
 		// these directories need to be created before the files can be copied
 		$directories = array(
-			$f_path . 'ext/error/class/',
-			$f_path . 'ext/error/classtype/',
-			$f_path . 'ext/error/disabled/',
-			$f_path . 'ext/foo/bar/',
-			$f_path . 'ext/foo/bar/styles/prosilver/template/',
-			$f_path . 'ext/foobar/',
-			$f_path . 'ext/foobar/styles/prosilver/template/',
+			$phpbb_root_path . 'ext/error/class/',
+			$phpbb_root_path . 'ext/error/classtype/',
+			$phpbb_root_path . 'ext/error/disabled/',
+			$phpbb_root_path . 'ext/foo/bar/',
+			$phpbb_root_path . 'ext/foo/bar/styles/prosilver/template/',
+			$phpbb_root_path . 'ext/foobar/',
+			$phpbb_root_path . 'ext/foobar/styles/prosilver/template/',
 		);
-		// When you add new tests that require new fixtures, add them to the array.
+
 		foreach ($directories as $dir)
 		{
 			if (!is_dir($dir))
@@ -58,8 +58,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 		foreach ($fixtures as $fixture)
 		{
-			// we have to use self::$config['phpbb_functional_url'] because $this->root_url is not available in static classes
-			if(!copy("tests/functional/fixtures/ext/$fixture", "{$f_path}ext/$fixture"))
+			if(!copy("tests/functional/fixtures/ext/$fixture", "{$phpbb_root_path}ext/$fixture"))
 			{
 				echo 'Could not copy file ' . $fixture;
 			}
@@ -68,9 +67,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 	public static function tearDownAfterClass()
 	{
-		$f_path = self::$config['phpbb_functional_path'];
+		$phpbb_root_path = self::$config['phpbb_functional_path'];
 
-		// @todo delete the fixtures from the $f_path board
+		// @todo delete the fixtures from the $phpbb_root_path board
 		// Note that it might be best to find a public domain function
 		// and port it into here instead of writing it from scratch
 	}
