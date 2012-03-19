@@ -700,6 +700,11 @@ function approve_post($post_id_list, $id, $mode)
 
 	if (!$success_msg)
 	{
+		redirect($redirect);
+	
+	}
+	else
+	{
 		if(request_var('backtopost', 0)=="1" ) 
 		{
 			meta_refresh(3, $post_url );
@@ -708,10 +713,6 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			meta_refresh(3, $redirect);
 		}
-	}
-	else
-	{
-		meta_refresh(3, $redirect);
 
 		// If approving one post, also give links back to post...
 		$add_message = '';
