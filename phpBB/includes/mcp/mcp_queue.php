@@ -178,10 +178,15 @@ class mcp_queue
 
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
+				$back_to_post= '';
+				if (request_var('backtopost', 0)) 
+				{
+					$back_to_post = "&amp;backtopost=1";
 
+				}
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
-					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
+					'U_APPROVE_ACTION'    	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id{$back_to_post}"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
@@ -725,7 +730,14 @@ function approve_post($post_id_list, $id, $mode)
 	}
 	else
 	{
-		meta_refresh(3, $redirect);
+		if (request_var('backtopost', 0)) 
+		{
+			meta_refresh(3, $post_url);
+		}
+		else 
+		{
+			meta_refresh(3, $redirect);
+		}
 
 		// If approving one post, also give links back to post...
 		$add_message = '';
