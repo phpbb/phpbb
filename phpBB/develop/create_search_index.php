@@ -67,7 +67,9 @@ else
 	$post_counter = 0;
 	while ($post_counter <= $max_post_id)
 	{
-		$row_count = 0;
+		$time = time();
+	    
+	    $row_count = 0;
 
 		printf("Processing posts with %d <= post_id <= %d\n",
 			$post_counter + 1,
