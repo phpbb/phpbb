@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -17,185 +16,126 @@ if (!defined('IN_PHPBB'))
 }
 
 // Common global functions
-
 /**
-* set_var
+* Casts a variable to the given type.
 *
-* Set variable, used by {@link request_var the request_var function}
-*
-* @access private
+* @deprecated
 */
 function set_var(&$result, $var, $type, $multibyte = false)
 {
-	settype($var, $type);
-	$result = $var;
-
-	if ($type == 'string')
-	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
-
-		if (!empty($result))
-		{
-			// Make sure multibyte characters are wellformed
-			if ($multibyte)
-			{
-				if (!preg_match('/^./u', $result))
-				{
-					$result = '';
-				}
-			}
-			else
-			{
-				// no multibyte, allow only ASCII (0-127)
-				$result = preg_replace('/[\x80-\xFF]/', '?', $result);
-			}
-		}
-
-		$result = (STRIP) ? stripslashes($result) : $result;
-	}
+	// no need for dependency injection here, if you have the object, call the method yourself!
+	$type_cast_helper = new phpbb_request_type_cast_helper();
+	$type_cast_helper->set_var($result, $var, $type, $multibyte);
 }
 
 /**
-* request_var
+* Wrapper function of phpbb_request::variable which exists for backwards compatability.
+* See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
+* documentation of this function's use.
 *
-* Used to get passed variable
+* @deprecated
+* @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
+* 										If the value is an array this may be an array of indizes which will give
+* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+* 										then specifying array("var", 1) as the name will return "a".
+* 										If you pass an instance of {@link phpbb_request_interface phpbb_request_interface}
+* 										as this parameter it will overwrite the current request class instance. If you do
+* 										not do so, it will create its own instance (but leave superglobals enabled).
+* @param	mixed			$default	A default value that is returned if the variable was not set.
+* 										This function will always return a value of the same type as the default.
+* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+* @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
+* 										phpbb_request_interface::variable for backwards compatability reasons.
+* @param	phpbb_request_interface|null|false	If an instance of phpbb_request_interface is given the instance is stored in
+*										a static variable and used for all further calls where this parameters is null. Until
+*										the function is called with an instance it automatically creates a new phpbb_request
+*										instance on every call. By passing false this per-call instantiation can be restored
+*										after having passed in a phpbb_request_interface instance.
+*
+* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+* 					the same as that of $default. If the variable is not set $default is returned.
 */
-function request_var($var_name, $default, $multibyte = false, $cookie = false)
+function request_var($var_name, $default, $multibyte = false, $cookie = false, $request = null)
 {
-	if (!$cookie && isset($_COOKIE[$var_name]))
+	// This is all just an ugly hack to add "Dependency Injection" to a function
+	// the only real code is the function call which maps this function to a method.
+	static $static_request = null;
+
+	if ($request instanceof phpbb_request_interface)
 	{
-		if (!isset($_GET[$var_name]) && !isset($_POST[$var_name]))
+		$static_request = $request;
+
+		if (empty($var_name))
 		{
-			return (is_array($default)) ? array() : $default;
+			return;
 		}
-		$_REQUEST[$var_name] = isset($_POST[$var_name]) ? $_POST[$var_name] : $_GET[$var_name];
 	}
+	else if ($request === false)
+	{
+		$static_request = null;
 
-	$super_global = ($cookie) ? '_COOKIE' : '_REQUEST';
-	if (!isset($GLOBALS[$super_global][$var_name]) || is_array($GLOBALS[$super_global][$var_name]) != is_array($default))
-	{
-		return (is_array($default)) ? array() : $default;
-	}
-
-	$var = $GLOBALS[$super_global][$var_name];
-	if (!is_array($default))
-	{
-		$type = gettype($default);
-	}
-	else
-	{
-		list($key_type, $type) = each($default);
-		$type = gettype($type);
-		$key_type = gettype($key_type);
-		if ($type == 'array')
+		if (empty($var_name))
 		{
-			reset($default);
-			$default = current($default);
-			list($sub_key_type, $sub_type) = each($default);
-			$sub_type = gettype($sub_type);
-			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
-			$sub_key_type = gettype($sub_key_type);
+			return;
 		}
 	}
 
-	if (is_array($var))
-	{
-		$_var = $var;
-		$var = array();
+	$tmp_request = $static_request;
 
-		foreach ($_var as $k => $v)
-		{
-			set_var($k, $k, $key_type);
-			if ($type == 'array' && is_array($v))
-			{
-				foreach ($v as $_k => $_v)
-				{
-					if (is_array($_v))
-					{
-						$_v = null;
-					}
-					set_var($_k, $_k, $sub_key_type, $multibyte);
-					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
-				}
-			}
-			else
-			{
-				if ($type == 'array' || is_array($v))
-				{
-					$v = null;
-				}
-				set_var($var[$k], $v, $type, $multibyte);
-			}
-		}
-	}
-	else
+	// no request class set, create a temporary one ourselves to keep backwards compatability
+	if ($tmp_request === null)
 	{
-		set_var($var, $var, $type, $multibyte);
+		// false param: enable super globals, so the created request class does not
+		// make super globals inaccessible everywhere outside this function.
+		$tmp_request = new phpbb_request(new phpbb_request_type_cast_helper(), false);
 	}
 
-	return $var;
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);
 }
 
 /**
 * Set config value. Creates missing config entry.
+*
+* @deprecated
 */
-function set_config($config_name, $config_value, $is_dynamic = false)
+function set_config($config_name, $config_value, $is_dynamic = false, phpbb_config $set_config = null)
 {
-	global $db, $cache, $config;
+	static $config = null;
 
-	$sql = 'UPDATE ' . CONFIG_TABLE . "
-		SET config_value = '" . $db->sql_escape($config_value) . "'
-		WHERE config_name = '" . $db->sql_escape($config_name) . "'";
-	$db->sql_query($sql);
-
-	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
+	if ($set_config !== null)
 	{
-		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'config_name'	=> $config_name,
-			'config_value'	=> $config_value,
-			'is_dynamic'	=> ($is_dynamic) ? 1 : 0));
-		$db->sql_query($sql);
+		$config = $set_config;
+
+		if (empty($config_name))
+		{
+			return;
+		}
 	}
 
-	$config[$config_name] = $config_value;
-
-	if (!$is_dynamic)
-	{
-		$cache->destroy('config');
-	}
+	$config->set($config_name, $config_value, !$is_dynamic);
 }
 
 /**
 * Set dynamic config value with arithmetic operation.
+*
+* @deprecated
 */
-function set_config_count($config_name, $increment, $is_dynamic = false)
+function set_config_count($config_name, $increment, $is_dynamic = false, phpbb_config $set_config = null)
 {
-	global $db, $cache;
+	static $config = null;
 
-	switch ($db->sql_layer)
+	if ($set_config !== null)
 	{
-		case 'firebird':
-			// Precision must be from 1 to 18
-			$sql_update = 'CAST(CAST(config_value as DECIMAL(18, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
-		break;
+		$config = $set_config;
 
-		case 'postgres':
-			// Need to cast to text first for PostgreSQL 7.x
-			$sql_update = 'CAST(CAST(config_value::text as DECIMAL(255, 0)) + ' . (int) $increment . ' as VARCHAR(255))';
-		break;
-
-		// MySQL, SQlite, mssql, mssql_odbc, oracle
-		default:
-			$sql_update = 'config_value + ' . (int) $increment;
-		break;
+		if (empty($config_name))
+		{
+			return;
+		}
 	}
 
-	$db->sql_query('UPDATE ' . CONFIG_TABLE . ' SET config_value = ' . $sql_update . " WHERE config_name = '" . $db->sql_escape($config_name) . "'");
-
-	if (!$is_dynamic)
-	{
-		$cache->destroy('config');
-	}
+	$config->increment($config_name, $increment, !$is_dynamic);
 }
 
 /**
@@ -496,7 +436,7 @@ function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
 	}
 
 	$output = '$H$';
-	$output .= $itoa64[min($iteration_count_log2 + ((PHP_VERSION >= 5) ? 5 : 3), 30)];
+	$output .= $itoa64[min($iteration_count_log2 + 5, 30)];
 	$output .= _hash_encode64($input, 6, $itoa64);
 
 	return $output;
@@ -582,24 +522,12 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	* consequently in lower iteration counts and hashes that are
 	* quicker to crack (by non-PHP code).
 	*/
-	if (PHP_VERSION >= 5)
+	$hash = md5($salt . $password, true);
+	do
 	{
-		$hash = md5($salt . $password, true);
-		do
-		{
-			$hash = md5($hash . $password, true);
-		}
-		while (--$count);
+		$hash = md5($hash . $password, true);
 	}
-	else
-	{
-		$hash = pack('H*', md5($salt . $password));
-		do
-		{
-			$hash = pack('H*', md5($hash . $password));
-		}
-		while (--$count);
-	}
+	while (--$count);
 
 	$output = substr($setting, 0, 12);
 	$output .= _hash_encode64($hash, 16, $itoa64);
@@ -882,102 +810,13 @@ function phpbb_is_writable($file)
 	}
 }
 
-// Compatibility functions
-
-if (!function_exists('array_combine'))
-{
-	/**
-	* A wrapper for the PHP5 function array_combine()
-	* @param array $keys contains keys for the resulting array
-	* @param array $values contains values for the resulting array
-	*
-	* @return Returns an array by using the values from the keys array as keys and the
-	* 	values from the values array as the corresponding values. Returns false if the
-	* 	number of elements for each array isn't equal or if the arrays are empty.
-	*/
-	function array_combine($keys, $values)
-	{
-		$keys = array_values($keys);
-		$values = array_values($values);
-
-		$n = sizeof($keys);
-		$m = sizeof($values);
-		if (!$n || !$m || ($n != $m))
-		{
-			return false;
-		}
-
-		$combined = array();
-		for ($i = 0; $i < $n; $i++)
-		{
-			$combined[$keys[$i]] = $values[$i];
-		}
-		return $combined;
-	}
-}
-
-if (!function_exists('str_split'))
-{
-	/**
-	* A wrapper for the PHP5 function str_split()
-	* @param array $string contains the string to be converted
-	* @param array $split_length contains the length of each chunk
-	*
-	* @return  Converts a string to an array. If the optional split_length parameter is specified,
-	*  	the returned array will be broken down into chunks with each being split_length in length,
-	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
-	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
-	*  	returned as the first (and only) array element.
-	*/
-	function str_split($string, $split_length = 1)
-	{
-		if ($split_length < 1)
-		{
-			return false;
-		}
-		else if ($split_length >= strlen($string))
-		{
-			return array($string);
-		}
-		else
-		{
-			preg_match_all('#.{1,' . $split_length . '}#s', $string, $matches);
-			return $matches[0];
-		}
-	}
-}
-
-if (!function_exists('stripos'))
-{
-	/**
-	* A wrapper for the PHP5 function stripos
-	* Find position of first occurrence of a case-insensitive string
-	*
-	* @param string $haystack is the string to search in
-	* @param string $needle is the string to search for
-	*
-	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack string. Unlike strpos(), stripos() is case-insensitive.
-	* Note that the needle may be a string of one or more characters.
-	* If needle is not found, stripos() will return boolean FALSE.
-	*/
-	function stripos($haystack, $needle)
-	{
-		if (preg_match('#' . preg_quote($needle, '#') . '#i', $haystack, $m))
-		{
-			return strpos($haystack, $m[0]);
-		}
-
-		return false;
-	}
-}
-
 /**
 * Checks if a path ($path) is absolute or relative
 *
 * @param string $path Path to check absoluteness of
 * @return boolean
 */
-function is_absolute($path)
+function phpbb_is_absolute($path)
 {
 	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
 }
@@ -990,6 +829,8 @@ function is_absolute($path)
 */
 function phpbb_own_realpath($path)
 {
+	global $request;
+
 	// Now to perform funky shizzle
 
 	// Switch to use UNIX slashes
@@ -997,7 +838,7 @@ function phpbb_own_realpath($path)
 	$path_prefix = '';
 
 	// Determine what sort of path we have
-	if (is_absolute($path))
+	if (phpbb_is_absolute($path))
 	{
 		$absolute = true;
 
@@ -1033,11 +874,12 @@ function phpbb_own_realpath($path)
 				$path_prefix = '';
 			}
 		}
-		else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+		else if ($request->server('SCRIPT_FILENAME'))
 		{
 			// Warning: If chdir() has been used this will lie!
 			// Warning: This has some problems sometime (CLI can create them easily)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+			$filename = htmlspecialchars_decode($request->server('SCRIPT_FILENAME'));
+			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($filename)) . '/' . $path;
 			$absolute = true;
 			$path_prefix = '';
 		}
@@ -1176,18 +1018,6 @@ else
 	}
 }
 
-if (!function_exists('htmlspecialchars_decode'))
-{
-	/**
-	* A wrapper for htmlspecialchars_decode
-	* @ignore
-	*/
-	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
-	{
-		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
-	}
-}
-
 // functions used for building option fields
 
 /**
@@ -1278,6 +1108,7 @@ function tz_select($default = '', $truncate = false)
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
+	global $request;
 
 	if ($mode == 'all')
 	{
@@ -1292,7 +1123,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
@@ -1301,7 +1132,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
-				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
+				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
 
 				unset($tracking_topics);
 
@@ -1371,7 +1202,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
@@ -1402,7 +1233,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
-			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 
 			unset($tracking);
 		}
@@ -1443,7 +1274,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
@@ -1458,7 +1289,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
-			if (isset($_COOKIE[$config['cookie_name'] . '_track']) && strlen($_COOKIE[$config['cookie_name'] . '_track']) > 10000)
+			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE)) > 10000)
 			{
 				//echo 'Cookie grown too large' . print_r($tracking, true);
 
@@ -1498,7 +1329,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
-			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
 		}
 
 		return;
@@ -1559,35 +1390,6 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 	{
 		$mark_time = array();
 
-		// Get global announcement info
-		if ($global_announce_list && sizeof($global_announce_list))
-		{
-			if (!isset($forum_mark_time[0]))
-			{
-				global $db;
-
-				$sql = 'SELECT mark_time
-					FROM ' . FORUMS_TRACK_TABLE . "
-					WHERE user_id = {$user->data['user_id']}
-						AND forum_id = 0";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($row)
-				{
-					$mark_time[0] = $row['mark_time'];
-				}
-			}
-			else
-			{
-				if ($forum_mark_time[0] !== false)
-				{
-					$mark_time[0] = $forum_mark_time[0];
-				}
-			}
-		}
-
 		if (!empty($forum_mark_time[$forum_id]) && $forum_mark_time[$forum_id] !== false)
 		{
 			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
@@ -1597,14 +1399,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 
 		foreach ($topic_ids as $topic_id)
 		{
-			if ($global_announce_list && isset($global_announce_list[$topic_id]))
-			{
-				$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-			}
-			else
-			{
-				$last_read[$topic_id] = $user_lastmark;
-			}
+			$last_read[$topic_id] = $user_lastmark;
 		}
 	}
 
@@ -1616,7 +1411,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 */
 function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$last_read = array();
 
@@ -1648,8 +1443,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$sql = 'SELECT forum_id, mark_time
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id " .
-					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
+					AND forum_id = $forum_id";
 			$result = $db->sql_query($sql);
 
 			$mark_time = array();
@@ -1663,14 +1457,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 			foreach ($topic_ids as $topic_id)
 			{
-				if ($global_announce_list && isset($global_announce_list[$topic_id]))
-				{
-					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-				}
-				else
-				{
-					$last_read[$topic_id] = $user_lastmark;
-				}
+				$last_read[$topic_id] = $user_lastmark;
 			}
 		}
 	}
@@ -1680,7 +1467,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
-			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1708,13 +1495,6 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		if (sizeof($topic_ids))
 		{
 			$mark_time = array();
-			if ($global_announce_list && sizeof($global_announce_list))
-			{
-				if (isset($tracking_topics['f'][0]))
-				{
-					$mark_time[0] = base_convert($tracking_topics['f'][0], 36, 10) + $config['board_startdate'];
-				}
-			}
 
 			if (isset($tracking_topics['f'][$forum_id]))
 			{
@@ -1725,14 +1505,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 			foreach ($topic_ids as $topic_id)
 			{
-				if ($global_announce_list && isset($global_announce_list[$topic_id]))
-				{
-					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
-				}
-				else
-				{
-					$last_read[$topic_id] = $user_lastmark;
-				}
+				$last_read[$topic_id] = $user_lastmark;
 			}
 		}
 	}
@@ -1880,7 +1653,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $auth;
+	global $db, $tracking_topics, $user, $config, $auth, $request;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1891,7 +1664,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
@@ -2115,7 +1888,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
-	$seperator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
+	$separator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
 	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
@@ -2133,29 +1906,29 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
 		$end_cnt = max(min($total_pages, $on_page + 4), 6);
 
-		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $seperator;
+		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
 			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $end_cnt - 1)
 			{
-				$page_string .= $seperator;
+				$page_string .= $separator;
 			}
 		}
 
-		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $seperator;
+		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
 	}
 	else
 	{
-		$page_string .= $seperator;
+		$page_string .= $separator;
 
 		for ($i = 2; $i < $total_pages; $i++)
 		{
 			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $total_pages)
 			{
-				$page_string .= $seperator;
+				$page_string .= $separator;
 			}
 		}
 	}
@@ -2183,6 +1956,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
 		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
+		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	));
 
 	return $page_string;
@@ -2338,10 +2112,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 */
 function generate_board_url($without_script_path = false)
 {
-	global $config, $user;
+	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+	$server_port = $request->server('SERVER_PORT', 0);
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -2357,7 +2131,7 @@ function generate_board_url($without_script_path = false)
 	else
 	{
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
-		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
 		$script_path = $user->page['root_script_path'];
@@ -2538,10 +2312,10 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		header('Refresh: 0; URL=' . $url);
 
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
+		echo '<!DOCTYPE html>';
+		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<meta charset="utf-8">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -2709,6 +2483,8 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 */
 function send_status_line($code, $message)
 {
+	global $request;
+
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
@@ -2716,9 +2492,9 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if (!empty($_SERVER['SERVER_PROTOCOL']))
+		if ($request->server('SERVER_PROTOCOL'))
 		{
-			$version = $_SERVER['SERVER_PROTOCOL'];
+			$version = $request->server('SERVER_PROTOCOL');
 		}
 		else
 		{
@@ -2844,22 +2620,14 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $request;
 
 	if (isset($_POST['cancel']))
 	{
 		return false;
 	}
 
-	$confirm = false;
-	if (isset($_POST['confirm']))
-	{
-		// language frontier
-		if ($_POST['confirm'] === $user->lang['YES'])
-		{
-			$confirm = true;
-		}
-	}
+	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -2947,8 +2715,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
+	global $request;
 
-	if (!class_exists('phpbb_captcha_factory'))
+	if (!class_exists('phpbb_captcha_factory', false))
 	{
 		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 	}
@@ -2997,8 +2766,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		$username	= request_var('username', '', true);
-		$autologin	= (!empty($_POST['autologin'])) ? true : false;
-		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
+		$autologin	= $request->is_set_post('autologin');
+		$viewonline = (int) !$request->is_set_post('viewonline');
 		$admin 		= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
@@ -3517,18 +3286,10 @@ function get_preg_expression($mode)
 */
 function get_censor_preg_expression($word, $use_unicode = true)
 {
-	static $unicode_support = null;
-
-	// Check whether PHP version supports unicode properties
-	if (is_null($unicode_support))
-	{
-		$unicode_support = ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false) ? true : false;
-	}
-
 	// Unescape the asterisk to simplify further conversions
 	$word = str_replace('\*', '*', preg_quote($word, '#'));
 
-	if ($use_unicode && $unicode_support)
+	if ($use_unicode && phpbb_pcre_utf8_support())
 	{
 		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
 		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
@@ -3577,6 +3338,188 @@ function short_ipv6($ip, $length)
 	}
 
 	return $ip;
+}
+
+/**
+* Normalises an internet protocol address,
+* also checks whether the specified address is valid.
+*
+* IPv4 addresses are returned 'as is'.
+*
+* IPv6 addresses are normalised according to
+*	A Recommendation for IPv6 Address Text Representation
+*	http://tools.ietf.org/html/draft-ietf-6man-text-addr-representation-07
+*
+* @param string $address	IP address
+*
+* @return mixed		false if specified address is not valid,
+*					string otherwise
+*
+* @author bantu
+*/
+function phpbb_ip_normalise($address)
+{
+	$address = trim($address);
+
+	if (empty($address) || !is_string($address))
+	{
+		return false;
+	}
+
+	if (preg_match(get_preg_expression('ipv4'), $address))
+	{
+		return $address;
+	}
+
+	return phpbb_inet_ntop(phpbb_inet_pton($address));
+}
+
+/**
+* Wrapper for inet_ntop()
+*
+* Converts a packed internet address to a human readable representation
+* inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+*
+* @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
+*
+* @return mixed		false on failure,
+*					string otherwise
+*
+* @author APTX
+*/
+function phpbb_inet_ntop($in_addr)
+{
+	$in_addr = bin2hex($in_addr);
+
+	switch (strlen($in_addr))
+	{
+		case 8:
+			return implode('.', array_map('hexdec', str_split($in_addr, 2)));
+
+		case 32:
+			if (substr($in_addr, 0, 24) === '00000000000000000000ffff')
+			{
+				return phpbb_inet_ntop(pack('H*', substr($in_addr, 24)));
+			}
+
+			$parts = str_split($in_addr, 4);
+			$parts = preg_replace('/^0+(?!$)/', '', $parts);
+			$ret = implode(':', $parts);
+
+			$matches = array();
+			preg_match_all('/(?<=:|^)(?::?0){2,}/', $ret, $matches, PREG_OFFSET_CAPTURE);
+			$matches = $matches[0];
+
+			if (empty($matches))
+			{
+				return $ret;
+			}
+
+			$longest_match = '';
+			$longest_match_offset = 0;
+			foreach ($matches as $match)
+			{
+				if (strlen($match[0]) > strlen($longest_match))
+				{
+					$longest_match = $match[0];
+					$longest_match_offset = $match[1];
+				}
+			}
+
+			$ret = substr_replace($ret, '', $longest_match_offset, strlen($longest_match));
+
+			if ($longest_match_offset == strlen($ret))
+			{
+				$ret .= ':';
+			}
+
+			if ($longest_match_offset == 0)
+			{
+				$ret = ':' . $ret;
+			}
+
+			return $ret;
+
+		default:
+			return false;
+	}
+}
+
+/**
+* Wrapper for inet_pton()
+*
+* Converts a human readable IP address to its packed in_addr representation
+* inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+*
+* @param string $address	A human readable IPv4 or IPv6 address.
+*
+* @return mixed		false if address is invalid,
+*					in_addr representation of the given address otherwise (string)
+*
+* @author APTX
+*/
+function phpbb_inet_pton($address)
+{
+	$ret = '';
+	if (preg_match(get_preg_expression('ipv4'), $address))
+	{
+		foreach (explode('.', $address) as $part)
+		{
+			$ret .= ($part <= 0xF ? '0' : '') . dechex($part);
+		}
+
+		return pack('H*', $ret);
+	}
+
+	if (preg_match(get_preg_expression('ipv6'), $address))
+	{
+		$parts = explode(':', $address);
+		$missing_parts = 8 - sizeof($parts) + 1;
+
+		if (substr($address, 0, 2) === '::')
+		{
+			++$missing_parts;
+		}
+
+		if (substr($address, -2) === '::')
+		{
+			++$missing_parts;
+		}
+
+		$embedded_ipv4 = false;
+		$last_part = end($parts);
+
+		if (preg_match(get_preg_expression('ipv4'), $last_part))
+		{
+			$parts[sizeof($parts) - 1] = '';
+			$last_part = phpbb_inet_pton($last_part);
+			$embedded_ipv4 = true;
+			--$missing_parts;
+		}
+
+		foreach ($parts as $i => $part)
+		{
+			if (strlen($part))
+			{
+				$ret .= str_pad($part, 4, '0', STR_PAD_LEFT);
+			}
+			else if ($i && $i < sizeof($parts) - 1)
+			{
+				$ret .= str_repeat('0000', $missing_parts);
+			}
+		}
+
+		$ret = pack('H*', $ret);
+
+		if ($embedded_ipv4)
+		{
+			$ret .= $last_part;
+		}
+
+		return $ret;
+	}
+
+	return false;
 }
 
 /**
@@ -3885,10 +3828,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Try to not call the adm page data...
 
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+			echo '<!DOCTYPE html>';
+			echo '<html dir="ltr">';
 			echo '<head>';
-			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+			echo '<meta charset="utf-8">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
@@ -4193,58 +4136,25 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	}
 	else if ($config['load_online_guests'])
 	{
-		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_' . $item_caps . '_GUEST'] : $user->lang['BROWSING_' . $item_caps . '_GUESTS'];
-		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
+		$online_userlist = $user->lang('BROWSING_' . $item_caps . '_GUESTS', $online_users['guests_online'], $online_userlist);
 	}
 	else
 	{
 		$online_userlist = sprintf($user->lang['BROWSING_' . $item_caps], $online_userlist);
 	}
 	// Build online listing
-	$vars_online = array(
-		'ONLINE'	=> array('total_online', 'l_t_user_s', 0),
-		'REG'		=> array('visible_online', 'l_r_user_s', !$config['load_online_guests']),
-		'HIDDEN'	=> array('hidden_online', 'l_h_user_s', $config['load_online_guests']),
-		'GUEST'		=> array('guests_online', 'l_g_user_s', 0)
-	);
-
-	foreach ($vars_online as $l_prefix => $var_ary)
-	{
-		if ($var_ary[2])
-		{
-			$l_suffix = '_AND';
-		}
-		else
-		{
-			$l_suffix = '';
-		}
-		switch ($online_users[$var_ary[0]])
-		{
-			case 0:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL' . $l_suffix];
-			break;
-
-			case 1:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL' . $l_suffix];
-			break;
-
-			default:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL' . $l_suffix];
-			break;
-		}
-	}
-	unset($vars_online);
-
-	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
-	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
-	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
+	$visible_online = $user->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
+	$hidden_online = $user->lang('HIDDEN_USERS_TOTAL', (int) $online_users['hidden_online']);
 
 	if ($config['load_online_guests'])
 	{
-		$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+		$guests_online = $user->lang('GUEST_USERS_TOTAL', (int) $online_users['guests_online']);
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL_GUESTS', (int) $online_users['total_online'], $visible_online, $hidden_online, $guests_online);
 	}
-
-
+	else
+	{
+		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
+	}
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -4288,6 +4198,178 @@ function phpbb_optionset($bit, $set, $data)
 }
 
 /**
+* Determine which plural form we should use.
+* For some languages this is not as simple as for English.
+*
+* @param $rule		int			ID of the plural rule we want to use, see http://wiki.phpbb.com/Plural_Rules#Plural_Rules
+* @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
+* @return	int		The plural-case we need to use for the number plural-rule combination
+*/
+function phpbb_get_plural_form($rule, $number)
+{
+	$number = (int) $number;
+
+	if ($rule > 15 || $rule < 0)
+	{
+		trigger_error('INVALID_PLURAL_RULE');
+	}
+
+	/**
+	* The following plural rules are based on a list published by the Mozilla Developer Network
+	* https://developer.mozilla.org/en/Localization_and_Plurals
+	*/
+	switch ($rule)
+	{
+		case 0:
+			/**
+			* Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
+			* 1 - everything: 0, 1, 2, ...
+			*/
+			return 1;
+
+		case 1:
+			/**
+			* Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
+			* 1 - 1
+			* 2 - everything else: 0, 2, 3, ...
+			*/
+			return ($number == 1) ? 1 : 2;
+
+		case 2:
+			/**
+			* Families: Romanic (French, Brazilian Portuguese)
+			* 1 - 0, 1
+			* 2 - everything else: 2, 3, ...
+			*/
+			return (($number == 0) || ($number == 1)) ? 1 : 2;
+
+		case 3:
+			/**
+			* Families: Baltic (Latvian)
+			* 1 - 0
+			* 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
+			* 3 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
+			*/
+			return ($number == 0) ? 1 : ((($number % 10 == 1) && ($number % 100 != 11)) ? 2 : 3);
+
+		case 4:
+			/**
+			* Families: Celtic (Scottish Gaelic)
+			* 1 - is 1 or 11: 1, 11
+			* 2 - is 2 or 12: 2, 12
+			* 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
+			* 4 - everything else: 0, 20, 21, ...
+			*/
+			return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
+
+		case 5:
+			/**
+			* Families: Romanic (Romanian)
+			* 1 - 1
+			* 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
+			* 3 - everything else: 20, 21, ...
+			*/
+			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
+
+		case 6:
+			/**
+			* Families: Baltic (Lithuanian)
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+			* 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
+			* 3 - everything else: 2, 3, ... 8, 9, 22, 23, ... 29, 32, 33, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
+
+		case 7:
+			/**
+			* Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
+			* 3 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
+
+		case 8:
+			/**
+			* Families: Slavic (Slovak, Czech)
+			* 1 - 1
+			* 2 - 2, 3, 4
+			* 3 - everything else: 0, 5, 6, 7, ...
+			*/
+			return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
+
+		case 9:
+			/**
+			* Families: Slavic (Polish)
+			* 1 - 1
+			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
+			* 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
+			*/
+			return ($number == 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
+
+		case 10:
+			/**
+			* Families: Slavic (Slovenian, Sorbian)
+			* 1 - ends in 01: 1, 101, 201, ...
+			* 2 - ends in 02: 2, 102, 202, ...
+			* 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
+			* 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
+			*/
+			return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
+
+		case 11:
+			/**
+			* Families: Celtic (Irish Gaeilge)
+			* 1 - 1
+			* 2 - 2
+			* 3 - is 3-6: 3, 4, 5, 6
+			* 4 - is 7-10: 7, 8, 9, 10
+			* 5 - everything else: 0, 11, 12, ...
+			*/
+			return ($number == 1) ? 1 : (($number == 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
+
+		case 12:
+			/**
+			* Families: Semitic (Arabic)
+			* 1 - 1
+			* 2 - 2
+			* 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
+			* 4 - ends in 11-99: 11, ... 99, 111, 112, ...
+			* 5 - everything else: 100, 101, 102, 200, 201, 202, ...
+			* 6 - 0
+			*/
+			return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
+
+		case 13:
+			/**
+			* Families: Semitic (Maltese)
+			* 1 - 1
+			* 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
+			* 3 - ends in 11-19: 11, 12, ... 18, 19, 111, 112, ...
+			* 4 - everything else: 20, 21, ...
+			*/
+			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 1) && ($number % 100 < 11))) ? 2 : ((($number % 100 > 10) && ($number % 100 < 20)) ? 3 : 4));
+
+		case 14:
+			/**
+			* Families: Slavic (Macedonian)
+			* 1 - ends in 1: 1, 11, 21, ...
+			* 2 - ends in 2: 2, 12, 22, ...
+			* 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
+			*/
+			return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
+
+		case 15:
+			/**
+			* Families: Icelandic
+			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
+			* 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
+			*/
+			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : 2;
+	}
+}
+
+/**
 * Login using http authenticate.
 *
 * @param array	$param		Parameter array, see $param_defaults array.
@@ -4296,7 +4378,7 @@ function phpbb_optionset($bit, $set, $data)
 */
 function phpbb_http_login($param)
 {
-	global $auth, $user;
+	global $auth, $user, $request;
 	global $config;
 
 	$param_defaults = array(
@@ -4336,9 +4418,9 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$username = $_SERVER[$k];
+			$username = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}
@@ -4346,9 +4428,9 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if (isset($_SERVER[$k]))
+		if ($request->is_set($k, phpbb_request_interface::SERVER))
 		{
-			$password = $_SERVER[$k];
+			$password = htmlspecialchars_decode($request->server($k));
 			break;
 		}
 	}
@@ -4466,10 +4548,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 			set_config('record_online_date', time(), true);
 		}
 
-		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
+		$l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
 
-		$l_online_time = ($config['load_online_time'] == 1) ? 'VIEW_ONLINE_TIME' : 'VIEW_ONLINE_TIMES';
-		$l_online_time = sprintf($user->lang[$l_online_time], $config['load_online_time']);
+		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';
@@ -4480,8 +4561,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$l_message_new = ($user->data['user_new_privmsg'] == 1) ? $user->lang['NEW_PM'] : $user->lang['NEW_PMS'];
-			$l_privmsgs_text = sprintf($l_message_new, $user->data['user_new_privmsg']);
+			$l_privmsgs_text = $user->lang('NEW_PMS', (int) $user->data['user_new_privmsg']);
 
 			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
@@ -4499,7 +4579,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 		else
 		{
-			$l_privmsgs_text = $user->lang['NO_NEW_PM'];
+			$l_privmsgs_text = $user->lang('NEW_PMS', 0);
 			$s_privmsg_new = false;
 		}
 
@@ -4507,8 +4587,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
 		{
-			$l_message_unread = ($user->data['user_unread_privmsg'] == 1) ? $user->lang['UNREAD_PM'] : $user->lang['UNREAD_PMS'];
-			$l_privmsgs_text_unread = sprintf($l_message_unread, $user->data['user_unread_privmsg']);
+			$l_privmsgs_text_unread = $user->lang('UNREAD_PMS', (int) $user->data['user_unread_privmsg']);
 		}
 	}
 
@@ -4648,11 +4727,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
+		'T_ASSETS_PATH'			=> "{$web_path}assets",
 		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . rawurlencode($user->theme['template_inherit_path']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
-		'T_IMAGESET_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['imageset_path']) . '/imageset',
-		'T_IMAGESET_LANG_PATH'	=> "{$web_path}styles/" . rawurlencode($user->theme['imageset_path']) . '/imageset/' . $user->lang_name,
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4660,14 +4738,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/stylesheet.css' : append_sid("{$phpbb_root_path}style.$phpEx", 'id=' . $user->theme['style_id'] . '&amp;lang=' . $user->lang_name),
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/stylesheet.css',
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
+		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
 		'T_THEME_NAME'			=> rawurlencode($user->theme['theme_path']),
-		'T_TEMPLATE_NAME'		=> rawurlencode($user->theme['template_path']),
+		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
+		'T_TEMPLATE_NAME'		=> $user->theme['template_path'],
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path']),
-		'T_IMAGESET_NAME'		=> rawurlencode($user->theme['imageset_path']),
-		'T_IMAGESET_LANG_NAME'	=> $user->data['user_lang'],
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],
@@ -4703,6 +4783,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
+	global $request;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -4710,7 +4791,7 @@ function page_footer($run_cron = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
+		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
@@ -4719,15 +4800,13 @@ function page_footer($run_cron = true)
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
-			if (function_exists('memory_get_usage'))
+			if (function_exists('memory_get_peak_usage'))
 			{
-				if ($memory_usage = memory_get_usage())
+				if ($memory_usage = memory_get_peak_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
 					$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Memory Usage: ' . $memory_usage;
+					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
 				}
 			}
 
@@ -4744,7 +4823,7 @@ function page_footer($run_cron = true)
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
@@ -4765,40 +4844,13 @@ function page_footer($run_cron = true)
 	// Call cron job?
 	if ($call_cron)
 	{
-		$cron_type = '';
+		global $cron;
+		$task = $cron->find_one_ready_task();
 
-		if ($time_now - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		if ($task)
 		{
-			// Process email queue
-			$cron_type = 'queue';
-		}
-		else if (method_exists($cache, 'tidy') && $time_now - $config['cache_gc'] > $config['cache_last_gc'])
-		{
-			// Tidy the cache
-			$cron_type = 'tidy_cache';
-		}
-		else if ($config['warnings_expire_days'] && ($time_now - $config['warnings_gc'] > $config['warnings_last_gc']))
-		{
-			$cron_type = 'tidy_warnings';
-		}
-		else if ($time_now - $config['database_gc'] > $config['database_last_gc'])
-		{
-			// Tidy the database
-			$cron_type = 'tidy_database';
-		}
-		else if ($time_now - $config['search_gc'] > $config['search_last_gc'])
-		{
-			// Tidy the search
-			$cron_type = 'tidy_search';
-		}
-		else if ($time_now - $config['session_gc'] > $config['session_last_gc'])
-		{
-			$cron_type = 'tidy_sessions';
-		}
-
-		if ($cron_type)
-		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
+			$url = $task->get_url();
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
 		}
 	}
 
@@ -4872,4 +4924,18 @@ function phpbb_user_session_handler()
 	return;
 }
 
-?>
+/**
+* Check if PCRE has UTF-8 support
+* PHP may not be linked with the bundled PCRE lib and instead with an older version
+*
+* @return bool	Returns true if PCRE (the regular expressions library) supports UTF-8 encoding
+*/
+function phpbb_pcre_utf8_support()
+{
+	static $utf8_pcre_properties = null;
+	if (is_null($utf8_pcre_properties))
+	{
+		$utf8_pcre_properties = (@preg_match('/\p{L}/u', 'a') !== false);
+	}
+	return $utf8_pcre_properties;
+}

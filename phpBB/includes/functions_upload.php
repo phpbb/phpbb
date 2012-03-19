@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -427,7 +426,13 @@ class filespec
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
+			$this->error[] = $user->lang($this->upload->error_prefix . 'WRONG_SIZE',
+				$user->lang('PIXELS', (int) $this->upload->min_width),
+				$user->lang('PIXELS', (int) $this->upload->min_height),
+				$user->lang('PIXELS', (int) $this->upload->max_width),
+				$user->lang('PIXELS', (int) $this->upload->max_height),
+				$user->lang('PIXELS', (int) $this->width),
+				$user->lang('PIXELS', (int) $this->height));
 
 			return false;
 		}
@@ -976,7 +981,7 @@ class fileupload
 
 
 	/**
-	* Check for allowed extension
+	* Check for bad content (IE mime-sniffing)
 	*/
 	function valid_content(&$file)
 	{
@@ -989,24 +994,22 @@ class fileupload
 	function image_types()
 	{
 		return array(
-			1 => array('gif'),
-			2 => array('jpg', 'jpeg'),
-			3 => array('png'),
-			4 => array('swf'),
-			5 => array('psd'),
-			6 => array('bmp'),
-			7 => array('tif', 'tiff'),
-			8 => array('tif', 'tiff'),
-			9 => array('jpg', 'jpeg'),
-			10 => array('jpg', 'jpeg'),
-			11 => array('jpg', 'jpeg'),
-			12 => array('jpg', 'jpeg'),
-			13 => array('swc'),
-			14 => array('iff'),
-			15 => array('wbmp'),
-			16 => array('xbm'),
+			IMAGETYPE_GIF		=> array('gif'),
+			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
+			IMAGETYPE_PNG		=> array('png'),
+			IMAGETYPE_SWF		=> array('swf'),
+			IMAGETYPE_PSD		=> array('psd'),
+			IMAGETYPE_BMP		=> array('bmp'),
+			IMAGETYPE_TIFF_II	=> array('tif', 'tiff'),
+			IMAGETYPE_TIFF_MM	=> array('tif', 'tiff'),
+			IMAGETYPE_JPC		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
+			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
+			IMAGETYPE_SWC		=> array('swc'),
+			IMAGETYPE_IFF		=> array('iff'),
+			IMAGETYPE_WBMP		=> array('wbmp'),
+			IMAGETYPE_XBM		=> array('xbm'),
 		);
 	}
 }
-
-?>

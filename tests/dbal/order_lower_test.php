@@ -35,7 +35,6 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 					'style_active'		=> 1,
 					'template_id'		=> 1,
 					'theme_id'			=> 1,
-					'imageset_id'		=> 1
 				),
 				array(
 					'style_id' 			=> 3,
@@ -44,7 +43,6 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 					'style_active'		=> 0,
 					'template_id'		=> 3,
 					'theme_id'			=> 3,
-					'imageset_id'		=> 3
 				),
 				array(
 					'style_id' 			=> 2,
@@ -53,7 +51,6 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 					'style_active'		=> 0,
 					'template_id'		=> 2,
 					'theme_id'			=> 2,
-					'imageset_id'		=> 2
 				)
 			), 
 			$db->sql_fetchrowset($result)

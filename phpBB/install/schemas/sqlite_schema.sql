@@ -187,6 +187,15 @@ CREATE TABLE phpbb_drafts (
 
 CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
 
+# Table: 'phpbb_ext'
+CREATE TABLE phpbb_ext (
+	ext_name varchar(255) NOT NULL DEFAULT '',
+	ext_active INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	ext_state text(65535) NOT NULL DEFAULT ''
+);
+
+CREATE UNIQUE INDEX phpbb_ext_ext_name ON phpbb_ext (ext_name);
+
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
 	extension_id INTEGER PRIMARY KEY NOT NULL ,
@@ -309,7 +318,8 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '1'
+	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	group_teampage INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups (group_legend, group_name);
@@ -353,6 +363,7 @@ CREATE TABLE phpbb_log (
 );
 
 CREATE INDEX phpbb_log_log_type ON phpbb_log (log_type);
+CREATE INDEX phpbb_log_log_time ON phpbb_log (log_time);
 CREATE INDEX phpbb_log_forum_id ON phpbb_log (forum_id);
 CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
@@ -555,6 +566,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar(20) NOT NULL DEFAULT '',
 	field_required INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_on_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_profile INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_hide INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -725,14 +737,12 @@ CREATE TABLE phpbb_styles (
 	style_copyright varchar(255) NOT NULL DEFAULT '',
 	style_active INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	imageset_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	theme_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
@@ -741,60 +751,21 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright varchar(255) NOT NULL DEFAULT '',
 	template_path varchar(100) NOT NULL DEFAULT '',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
-	template_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_inherits_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_inherit_path varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
 
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_filename varchar(100) NOT NULL DEFAULT '',
-	template_included text(65535) NOT NULL DEFAULT '',
-	template_mtime INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_data mediumtext(16777215) NOT NULL DEFAULT ''
-);
-
-CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
-
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER PRIMARY KEY NOT NULL ,
 	theme_name varchar(255) NOT NULL DEFAULT '',
 	theme_copyright varchar(255) NOT NULL DEFAULT '',
-	theme_path varchar(100) NOT NULL DEFAULT '',
-	theme_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_mtime INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_data mediumtext(16777215) NOT NULL DEFAULT ''
+	theme_path varchar(100) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id INTEGER PRIMARY KEY NOT NULL ,
-	imageset_name varchar(255) NOT NULL DEFAULT '',
-	imageset_copyright varchar(255) NOT NULL DEFAULT '',
-	imageset_path varchar(100) NOT NULL DEFAULT ''
-);
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id INTEGER PRIMARY KEY NOT NULL ,
-	image_name varchar(200) NOT NULL DEFAULT '',
-	image_filename varchar(200) NOT NULL DEFAULT '',
-	image_lang varchar(30) NOT NULL DEFAULT '',
-	image_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	image_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	imageset_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
-);
-
-CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id);
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (

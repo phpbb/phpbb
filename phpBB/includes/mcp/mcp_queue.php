@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -269,13 +268,11 @@ class mcp_queue
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$global_id = $forum_list[0];
-
 					$forum_list = implode(', ', $forum_list);
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . "
-						WHERE forum_id IN (0, $forum_list)";
+						FROM ' . FORUMS_TABLE . '
+						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
@@ -291,7 +288,6 @@ class mcp_queue
 
 					$forum_info = $forum_info[$forum_id];
 					$forum_list = $forum_id;
-					$global_id = $forum_id;
 				}
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
@@ -313,10 +309,10 @@ class mcp_queue
 				if ($mode == 'unapproved_posts')
 				{
 					$sql = 'SELECT p.post_id
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . "
-						WHERE p.forum_id IN (0, $forum_list)
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
+						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
 							AND p.post_approved = 0
-							" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
+							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
 							AND t.topic_first_post_id <> p.post_id
@@ -335,7 +331,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -346,10 +342,7 @@ class mcp_queue
 						$post_data = $rowset = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
-							if ($row['forum_id'])
-							{
-								$forum_names[] = $row['forum_id'];
-							}
+							$forum_names[] = $row['forum_id'];
 							$post_data[$row['post_id']] = $row;
 						}
 						$db->sql_freeresult($result);
@@ -367,9 +360,9 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . " t
-						WHERE forum_id IN (0, $forum_list)
+						WHERE " . $db->sql_in_set('forum_id', $forum_list) . "
 							AND topic_approved = 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
@@ -378,10 +371,7 @@ class mcp_queue
 					$rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						if ($row['forum_id'])
-						{
-							$forum_names[] = $row['forum_id'];
-						}
+						$forum_names[] = $row['forum_id'];
 						$rowset[] = $row;
 					}
 					$db->sql_freeresult($result);
@@ -405,12 +395,6 @@ class mcp_queue
 
 				foreach ($rowset as $row)
 				{
-					$global_topic = ($row['forum_id']) ? false : true;
-					if ($global_topic)
-					{
-						$row['forum_id'] = $global_id;
-					}
-
 					if (empty($row['post_username']))
 					{
 						$row['post_username'] = $user->lang['GUEST'];
@@ -418,7 +402,7 @@ class mcp_queue
 
 					$template->assign_block_vars('postrow', array(
 						'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+						'U_VIEWFORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 						'U_VIEWPOST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
 						'U_VIEW_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
 
@@ -428,11 +412,12 @@ class mcp_queue
 						'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
 						'POST_ID'		=> $row['post_id'],
-						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
 						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'POST_TIME'		=> $user->format_date($row['post_time']))
-					);
+						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					));
 				}
 				unset($rowset, $forum_names);
 
@@ -450,7 +435,7 @@ class mcp_queue
 					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
+					'TOTAL'					=> $user->lang((($mode == 'unapproved_posts') ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
 
 				$this->tpl_name = 'mcp_queue';
@@ -505,11 +490,7 @@ function approve_post($post_id_list, $id, $mode)
 			}
 
 			$topic_id_list[$post_data['topic_id']] = 1;
-
-			if ($post_data['forum_id'])
-			{
-				$forum_id_list[$post_data['forum_id']] = 1;
-			}
+			$forum_id_list[$post_data['forum_id']] = 1;
 
 			// User post update (we do not care about topic or post, since user posts are strictly connected to posts)
 			// But we care about forums where post counts get not increased. ;)
@@ -521,10 +502,7 @@ function approve_post($post_id_list, $id, $mode)
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id)
 			{
-				if ($post_data['forum_id'])
-				{
-					$total_topics++;
-				}
+				$total_topics++;
 				$topic_approve_sql[] = $post_data['topic_id'];
 
 				$approve_log[] = array(
@@ -544,16 +522,13 @@ function approve_post($post_id_list, $id, $mode)
 				);
 			}
 
-			if ($post_data['forum_id'])
-			{
-				$total_posts++;
+			$total_posts++;
 
-				// Increment by topic_replies if we approve a topic...
-				// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
-				if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
-				{
-					$total_posts += $post_data['topic_replies'];
-				}
+			// Increment by topic_replies if we approve a topic...
+			// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
+			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
+			{
+				$total_posts += $post_data['topic_replies'];
 			}
 
 			$post_approve_sql[] = $post_id;
@@ -745,6 +720,7 @@ function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
+	global $request;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -779,9 +755,10 @@ function disapprove_post($post_id_list, $id, $mode)
 		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
 			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
-			unset($_REQUEST['confirm_key']);
-			unset($_POST['confirm_key']);
-			unset($_POST['confirm']);
+
+			$request->overwrite('confirm', null, phpbb_request_interface::POST);
+			$request->overwrite('confirm_key', null, phpbb_request_interface::POST);
+			$request->overwrite('confirm_key', null, phpbb_request_interface::REQUEST);
 		}
 		else
 		{
@@ -995,5 +972,3 @@ function disapprove_post($post_id_list, $id, $mode)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
-
-?>

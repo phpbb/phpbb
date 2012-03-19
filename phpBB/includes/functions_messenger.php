@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -191,7 +190,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $user;
+		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
 
 		if (!trim($template_file))
 		{
@@ -209,7 +208,9 @@ class messenger
 		// tpl_msg now holds a template object we can use to parse the template file
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$this->tpl_msg[$template_lang . $template_file] = new template();
+			$template_locator = new phpbb_template_locator();
+			$template_path_provider = new phpbb_template_extension_path_provider($phpbb_extension_manager, new phpbb_template_path_provider());
+			$this->tpl_msg[$template_lang . $template_file] = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $template_locator, $template_path_provider);
 			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
 			$fallback_template_path = false;
@@ -349,7 +350,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config;
+		global $user, $phpEx, $phpbb_root_path, $config, $request;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -357,7 +358,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
 		$message = '';
 		switch ($type)
@@ -1135,6 +1136,7 @@ class smtp_class
 {
 	var $server_response = '';
 	var $socket = 0;
+	protected $socket_tls = false;
 	var $responses = array();
 	var $commands = array();
 	var $numeric_response_code = 0;
@@ -1285,30 +1287,29 @@ class smtp_class
 			}
 		}
 
-		// Try EHLO first
-		$this->server_send("EHLO {$local_host}");
-		if ($err_msg = $this->server_parse('250', __LINE__))
+		$hello_result = $this->hello($local_host);
+		if (!is_null($hello_result))
 		{
-			// a 503 response code means that we're already authenticated
-			if ($this->numeric_response_code == 503)
-			{
-				return false;
-			}
-
-			// If EHLO fails, we try HELO
-			$this->server_send("HELO {$local_host}");
-			if ($err_msg = $this->server_parse('250', __LINE__))
-			{
-				return ($this->numeric_response_code == 503) ? false : $err_msg;
-			}
+			return $hello_result;
 		}
 
-		foreach ($this->responses as $response)
+		// SMTP STARTTLS (RFC 3207)
+		if (!$this->socket_tls)
 		{
-			$response = explode(' ', $response);
-			$response_code = $response[0];
-			unset($response[0]);
-			$this->commands[$response_code] = implode(' ', $response);
+			$this->socket_tls = $this->starttls();
+
+			if ($this->socket_tls)
+			{
+				// Switched to TLS
+				// RFC 3207: "The client MUST discard any knowledge obtained from the server, [...]"
+				// So say hello again
+				$hello_result = $this->hello($local_host);
+
+				if (!is_null($hello_result))
+				{
+					return $hello_result;
+				}
+			}
 		}
 
 		// If we are not authenticated yet, something might be wrong if no username and passwd passed
@@ -1352,6 +1353,79 @@ class smtp_class
 
 		$method = strtolower(str_replace('-', '_', $method));
 		return $this->$method($username, $password);
+	}
+
+	/**
+	* SMTP EHLO/HELO
+	*
+	* @return mixed		Null if the authentication process is supposed to continue
+	*					False if already authenticated
+	*					Error message (string) otherwise
+	*/
+	protected function hello($hostname)
+	{
+		// Try EHLO first
+		$this->server_send("EHLO $hostname");
+		if ($err_msg = $this->server_parse('250', __LINE__))
+		{
+			// a 503 response code means that we're already authenticated
+			if ($this->numeric_response_code == 503)
+			{
+				return false;
+			}
+
+			// If EHLO fails, we try HELO
+			$this->server_send("HELO $hostname");
+			if ($err_msg = $this->server_parse('250', __LINE__))
+			{
+				return ($this->numeric_response_code == 503) ? false : $err_msg;
+			}
+		}
+
+		foreach ($this->responses as $response)
+		{
+			$response = explode(' ', $response);
+			$response_code = $response[0];
+			unset($response[0]);
+			$this->commands[$response_code] = implode(' ', $response);
+		}
+	}
+
+	/**
+	* SMTP STARTTLS (RFC 3207)
+	*
+	* @return bool		Returns true if TLS was started
+	*					Otherwise false
+	*/
+	protected function starttls()
+	{
+		if (!function_exists('stream_socket_enable_crypto'))
+		{
+			return false;
+		}
+
+		if (!isset($this->commands['STARTTLS']))
+		{
+			return false;
+		}
+
+		$this->server_send('STARTTLS');
+
+		if ($err_msg = $this->server_parse('220', __LINE__))
+		{
+			return false;
+		}
+
+		$result = false;
+		$stream_meta = stream_get_meta_data($this->socket);
+
+		if (socket_set_blocking($this->socket, 1));
+		{
+			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -1655,5 +1729,3 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 
 	return $result;
 }
-
-?>

@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -141,7 +140,7 @@ class install_install extends module
 		// Test the minimum PHP version
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '4.3.3') < 0)
+		if (version_compare($php_version, '5.2.0') < 0)
 		{
 			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
@@ -690,7 +689,7 @@ class install_install extends module
 			$error = array();
 
 			// Check the entered email address and password
-			if ($data['admin_name'] == '' || $data['admin_pass1'] == '' || $data['admin_pass2'] == '' || $data['board_email1'] == '' || $data['board_email2'] == '')
+			if ($data['admin_name'] == '' || $data['admin_pass1'] == '' || $data['admin_pass2'] == '' || $data['board_email'] == '')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -722,12 +721,7 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}
 
-			if ($data['board_email1'] != $data['board_email2'] && $data['board_email1'] != '')
-			{
-				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
-			}
-
-			if ($data['board_email1'] != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $data['board_email1']))
+			if ($data['board_email'] != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $data['board_email']))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
@@ -881,34 +875,8 @@ class install_install extends module
 
 		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
-		$load_extensions = implode(',', $load_extensions);
-
 		// Time to convert the data provided into a config file
-		$config_data = "<?php\n";
-		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-
-		$config_data_array = array(
-			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
-			'dbhost'		=> $data['dbhost'],
-			'dbport'		=> $data['dbport'],
-			'dbname'		=> $data['dbname'],
-			'dbuser'		=> $data['dbuser'],
-			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
-			'table_prefix'	=> $data['table_prefix'],
-			'acm_type'		=> 'file',
-			'load_extensions'	=> $load_extensions,
-		);
-
-		foreach ($config_data_array as $key => $value)
-		{
-			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
-		}
-		unset($config_data_array);
-
-		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
-		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER'], $load_extensions);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
@@ -1004,7 +972,7 @@ class install_install extends module
 	*/
 	function obtain_advanced_settings($mode, $sub)
 	{
-		global $lang, $template, $phpEx;
+		global $lang, $template, $phpEx, $request;
 
 		$this->page_title = $lang['STAGE_ADVANCED'];
 
@@ -1022,7 +990,7 @@ class install_install extends module
 		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $data['language'] . '" />';
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1032,16 +1000,16 @@ class install_install extends module
 
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
 		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
-		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
-		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
-		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
+		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : $request->server('SERVER_PORT', 0);
+		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ($request->is_secure() ? 'https://' : 'http://');
+		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : $request->is_secure();
 
 		if ($data['script_path'] === '')
 		{
-			$name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+			$name = htmlspecialchars_decode($request->server('PHP_SELF'));
 			if (!$name)
 			{
-				$name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+				$name = htmlspecialchars_decode($request->server('REQUEST_URI'));
 			}
 
 			// Replace backslashes and doubled slashes (could happen on some proxy setups)
@@ -1106,7 +1074,7 @@ class install_install extends module
 	*/
 	function load_schema($mode, $sub)
 	{
-		global $db, $lang, $template, $phpbb_root_path, $phpEx;
+		global $db, $lang, $template, $phpbb_root_path, $phpEx, $request;
 
 		$this->page_title = $lang['STAGE_CREATE_TABLE'];
 		$s_hidden_fields = '';
@@ -1122,8 +1090,8 @@ class install_install extends module
 		}
 
 		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$referer = (!empty($_SERVER['HTTP_REFERER'])) ? strtolower($_SERVER['HTTP_REFERER']) : getenv('HTTP_REFERER');
+		$server_name = strtolower(htmlspecialchars_decode($request->header('Host', $request->server('SERVER_NAME'))));
+		$referer = strtolower($request->header('Referer'));
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1238,8 +1206,7 @@ class install_install extends module
 
 		$current_time = time();
 
-		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
-		$user_ip = (stripos($user_ip, '::ffff:') === 0) ? substr($user_ip, 7) : $user_ip;
+		$user_ip = $request->server('REMOTE_ADDR') ? phpbb_ip_normalise($request->server('REMOTE_ADDR')) : '';
 
 		if ($data['script_path'] !== '/')
 		{
@@ -1278,11 +1245,11 @@ class install_install extends module
 				WHERE config_name = 'server_port'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email1']) . "'
+				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
 				WHERE config_name = 'board_email'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '" . $db->sql_escape($data['board_email1']) . "'
+				SET config_value = '" . $db->sql_escape($data['board_email']) . "'
 				WHERE config_name = 'board_contact'",
 
 			'UPDATE ' . $data['table_prefix'] . "config
@@ -1342,7 +1309,7 @@ class install_install extends module
 				WHERE config_name = 'avatar_salt'",
 
 			'UPDATE ' . $data['table_prefix'] . "users
-				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email1']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . $db->sql_escape(phpbb_email_hash($data['board_email1'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
+				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . $db->sql_escape(phpbb_email_hash($data['board_email'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $data['table_prefix'] . "moderator_cache
@@ -1464,20 +1431,13 @@ class install_install extends module
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
 
-		// Fill the config array - it is needed by those functions we call
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new fulltext_native($error);
+		$search = new phpbb_search_fulltext_native($error);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1495,7 +1455,13 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+
+		// modules require an extension manager
+		if (empty($phpbb_extension_manager))
+		{
+			$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx");
+		}
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
@@ -1610,7 +1576,7 @@ class install_install extends module
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'main'
+					WHERE module_basename = 'acp_main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1622,7 +1588,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'permissions'
+					WHERE module_basename = 'acp_permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1634,7 +1600,7 @@ class install_install extends module
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'users'
+					WHERE module_basename = 'acp_users'
 						AND module_class = 'acp'
 						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
@@ -1649,7 +1615,7 @@ class install_install extends module
 				// Move attachment module 4 down...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'attachments'
+					WHERE module_basename = 'ucp_attachments'
 						AND module_class = 'ucp'
 						AND module_mode = 'attachments'";
 				$result = $db->sql_query($sql);
@@ -1753,72 +1719,6 @@ class install_install extends module
 					$error = $db->sql_error($db->sql_error_sql);
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 				}
-
-				$valid_localized = array(
-					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
-				);
-
-				$sql_ary = array();
-
-				$sql = 'SELECT *
-					FROM ' . STYLES_IMAGESET_TABLE;
-				$result = $db->sql_query($sql);
-
-				while ($imageset_row = $db->sql_fetchrow($result))
-				{
-					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg"))
-					{
-						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg");
-						foreach ($cfg_data_imageset_data as $image_name => $value)
-						{
-							if (strpos($value, '*') !== false)
-							{
-								if (substr($value, -1, 1) === '*')
-								{
-									list($image_filename, $image_height) = explode('*', $value);
-									$image_width = 0;
-								}
-								else
-								{
-									list($image_filename, $image_height, $image_width) = explode('*', $value);
-								}
-							}
-							else
-							{
-								$image_filename = $value;
-								$image_height = $image_width = 0;
-							}
-
-							if (strpos($image_name, 'img_') === 0 && $image_filename)
-							{
-								$image_name = substr($image_name, 4);
-								if (in_array($image_name, $valid_localized))
-								{
-									$sql_ary[] = array(
-										'image_name'		=> (string) $image_name,
-										'image_filename'	=> (string) $image_filename,
-										'image_height'		=> (int) $image_height,
-										'image_width'		=> (int) $image_width,
-										'imageset_id'		=> (int) $imageset_row['imageset_id'],
-										'image_lang'		=> (string) $lang_pack['lang_iso'],
-									);
-								}
-							}
-						}
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($sql_ary))
-				{
-					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-
-					if ($db->sql_error_triggered)
-					{
-						$error = $db->sql_error($db->sql_error_sql);
-						$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
-					}
-				}
 			}
 		}
 		closedir($dir);
@@ -1834,17 +1734,10 @@ class install_install extends module
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
 
-		// Fill the config array - it is needed by those functions we call
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1911,19 +1804,10 @@ class install_install extends module
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
-		// Obtain any submitted data
-		$data = $this->get_submitted_data();
-
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
@@ -1941,7 +1825,7 @@ class install_install extends module
 
 			$messenger->template('installed', $data['language']);
 
-			$messenger->to($data['board_email1'], $data['admin_name']);
+			$messenger->to($data['board_email'], $data['admin_name']);
 
 			$messenger->anti_abuse_headers($config, $user);
 
@@ -2000,8 +1884,7 @@ class install_install extends module
 			'admin_name'	=> utf8_normalize_nfc(request_var('admin_name', '', true)),
 			'admin_pass1'	=> request_var('admin_pass1', '', true),
 			'admin_pass2'	=> request_var('admin_pass2', '', true),
-			'board_email1'	=> strtolower(request_var('board_email1', '')),
-			'board_email2'	=> strtolower(request_var('board_email2', '')),
+			'board_email'	=> strtolower(request_var('board_email', '')),
 			'img_imagick'	=> request_var('img_imagick', ''),
 			'ftp_path'		=> request_var('ftp_path', ''),
 			'ftp_user'		=> request_var('ftp_user', ''),
@@ -2040,8 +1923,7 @@ class install_install extends module
 		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
-		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
-		'board_email2'			=> array('lang' => 'CONTACT_EMAIL_CONFIRM',		'type' => 'text:25:100', 'explain' => false),
+		'board_email'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
 	);
 	var $advanced_config_options = array(
 		'legend1'				=> 'ACP_EMAIL_SETTINGS',
@@ -2242,5 +2124,3 @@ class install_install extends module
 		),
 	);
 }
-
-?>

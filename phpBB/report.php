@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -72,7 +71,7 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id = (int) ($report_data['forum_id']) ? $report_data['forum_id'] : $forum_id;
+	$forum_id = (int) $report_data['forum_id'];
 	$topic_id = (int) $report_data['topic_id'];
 
 	$sql = 'SELECT *
@@ -243,5 +242,3 @@ $template->set_filenames(array(
 );
 
 page_footer();
-
-?>

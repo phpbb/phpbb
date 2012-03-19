@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -315,32 +314,32 @@ class custom_profile
 					case 'FIELD_INVALID_DATE':
 					case 'FIELD_INVALID_VALUE':
 					case 'FIELD_REQUIRED':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name']);
+						$error = $user->lang($cp_result, $row['lang_name']);
 					break;
 
 					case 'FIELD_TOO_SHORT':
 					case 'FIELD_TOO_SMALL':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
+						$error = $user->lang($cp_result, (int) $row['field_minlen'], $row['lang_name']);
 					break;
 
 					case 'FIELD_TOO_LONG':
 					case 'FIELD_TOO_LARGE':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
+						$error = $user->lang($cp_result, (int) $row['field_maxlen'], $row['lang_name']);
 					break;
 
 					case 'FIELD_INVALID_CHARS':
 						switch ($row['field_validation'])
 						{
 							case '[0-9]+':
-								$error = sprintf($user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_NUMBERS_ONLY', $row['lang_name']);
 							break;
 
 							case '[\w]+':
-								$error = sprintf($user->lang[$cp_result . '_ALPHA_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_ALPHA_ONLY', $row['lang_name']);
 							break;
 
 							case '[\w_\+\. \-\[\]]+':
-								$error = sprintf($user->lang[$cp_result . '_SPACERS_ONLY'], $row['lang_name']);
+								$error = $user->lang($cp_result . '_SPACERS_ONLY', $row['lang_name']);
 							break;
 						}
 					break;
@@ -627,6 +626,7 @@ class custom_profile
 	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
+		global $request;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
@@ -639,7 +639,7 @@ class custom_profile
 		{
 			if (isset($_REQUEST[$profile_row['field_ident']]))
 			{
-				$value = ($_REQUEST[$profile_row['field_ident']] === '') ? NULL : request_var($profile_row['field_ident'], $default_value);
+				$value = ($request->variable($profile_row['field_ident'], '') === '') ? NULL : $request->variable($profile_row['field_ident'], $default_value);
 			}
 			else
 			{
@@ -916,6 +916,7 @@ class custom_profile
 	{
 		global $phpbb_root_path, $phpEx;
 		global $config;
+		global $request;
 
 		$var_name = 'pf_' . $profile_row['field_ident'];
 
@@ -960,7 +961,7 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (isset($_REQUEST[$var_name]) && $_REQUEST[$var_name] === '')
+				if (isset($_REQUEST[$var_name]) && $request->variable($var_name, '') === '')
 				{
 					$var = NULL;
 				}
@@ -1163,5 +1164,3 @@ class custom_profile_admin extends custom_profile
 		return $options;
 	}
 }
-
-?>

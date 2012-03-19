@@ -1,16 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="en" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="copyright" content="phpBB Group" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
-<meta name="description" content="Olympus coding guidelines document" />
+<meta name="description" content="Ascraeus coding guidelines document" />
 <title>phpBB3 &bull; Coding Guidelines</title>
 
 <link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -28,7 +21,7 @@
 			<div id="doc-description">
 				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
 				<h1>Coding Guidelines</h1>
-				<p>Olympus coding guidelines document</p>
+				<p>Ascraeus coding guidelines document</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
@@ -42,7 +35,7 @@
 
 <!-- BEGIN DOCUMENT -->
 
-<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow them as closely as possible.</p>
+<p>These are the phpBB Coding Guidelines for Ascraeus, all attempts should be made to follow them as closely as possible.</p>
 
 <h1>Coding Guidelines</h1>
 
@@ -62,11 +55,12 @@
 	</li>
 	<li><a href="#code">Code Layout/Guidelines</a>
 	<ol style="list-style-type: lower-roman;">
-		<li><a href="#namingvars">Variable/Function Naming</a></li>
+		<li><a href="#namingvars">Variable/Function/Class Naming</a></li>
 		<li><a href="#codelayout">Code Layout</a></li>
 		<li><a href="#sql">SQL/SQL Layout</a></li>
 		<li><a href="#optimizing">Optimizations</a></li>
 		<li><a href="#general">General Guidelines</a></li>
+		<li><a href="#phprestrictions">Restrictions on the Use of PHP</a></li>
 	</ol>
 	</li>
 	<li><a href="#styling">Styling</a>
@@ -120,7 +114,7 @@
 	<h3>Linefeeds:</h3>
 	<p>Ensure that your editor is saving files in the UNIX (LF) line ending format. This means that lines are terminated with a newline, not with Windows Line endings (CR/LF combo) as they are on Win32 or Classic Mac (CR) Line endings. Any decent editor should be able to do this, but it might not always be the default setting. Know your editor. If you want advice for an editor for your Operating System, just ask one of the developers. Some of them do their editing on Win32.</p>
 
-	<a name="fileheader"></a><h3>1.ii. File Header</h3>
+	<a name="fileheader"></a><h3>1.ii. File Layout</h3>
 
 	<h4>Standard header for new files:</h4>
 	<p>This template of the header must be included at the start of all phpBB files: </p>
@@ -136,6 +130,14 @@
 	</pre></div>
 
 	<p>Please see the <a href="#locations">File Locations section</a> for the correct package name.</p>
+
+	<h4>PHP closing tags</h4>
+
+	<p>A file containg only PHP code should not end with the optional PHP closing tag <strong>?&gt;</strong> to avoid issues with whitespace following it.</p>
+
+	<h4>Newline at end of file</h4>
+
+	<p>All files should end in a newline so the last line does not appear as modified in diffs, when a line is appended to the file.</p>
 
 	<h4>Files containing inline code:</h4>
 
@@ -187,7 +189,7 @@ class ...
 
 	<ul>
 		<li><strong>phpBB3</strong><br />Core files and all files not assigned to a separate package</li>
-		<li><strong>acm</strong><br /><code>/includes/acm</code>, <code>/includes/cache.php</code><br />Cache System</li>
+		<li><strong>acm</strong><br /><code>/includes/cache</code><br />Cache System</li>
 		<li><strong>acp</strong><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
 		<li><strong>dbal</strong><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
 			<ul>
@@ -253,6 +255,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <p>Path locations for the following template variables are affected by this too:</p>
 
 <ul>
+	<li>{T_ASSETS_PATH} - assets (non-style specific, static resources)</li>
 	<li>{T_THEME_PATH} - styles/xxx/theme</li>
 	<li>{T_TEMPLATE_PATH} - styles/xxx/template</li>
 	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>
@@ -287,7 +290,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 
 	<p>Please note that these guidelines apply to all php, html, javascript and css files.</p>
 
-	<a name="namingvars"></a><h3>2.i. Variable/Function Naming</h3>
+	<a name="namingvars"></a><h3>2.i. Variable/Function/Class Naming</h3>
 
 	<p>We will not be using any form of hungarian notation in our naming conventions. Many of us believe that hungarian naming is one of the primary code obfuscation techniques currently in use.</p>
 
@@ -318,6 +321,36 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
+
+	<h4>Class Names:</h4>
+
+	<p>Apart from following the rules for function names, all classes should meet the following conditions:</p>
+	<ul>
+		<li>Every class must be defined in a separate file.</li>
+		<li>The classes have to be located in a subdirectory of <code>includes/</code>.</li>
+		<li>Classnames to be prefixed with <code>phpbb_</code> to avoid name clashes, the filename should not contain the prefix.</li>
+		<li>Class names have to reflect the location of the file they are defined in. The longest list of prefixes, separated by underscores, which is a valid path must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may. If the filename would be empty the last directory name is used for the filename as well.</li>
+		<li>Directories should typically be a singular noun (e.g. <code>dir</code> in the example below, not <code>dirs</code>.</li>
+	</ul>
+
+	<p>So given the following example directory structure you would result in the below listed lookups</p>
+	<div class="codebox"><pre>
+includes/
+  class_name.php
+  dir/
+    class_name.php
+    dir.php
+      subdir/
+        class_name.php
+	</pre></div>
+
+	<div class="codebox"><pre>
+phpbb_class_name            - includes/class_name.php
+phpbb_dir_class_name        - includes/dir/class_name.php
+phpbb_dir                   - includes/dir/dir.php
+phpbb_dir_subdir_class_name - includes/dir/subdir/class_name.php
+	</pre></div>
+
 
 	<h4>Summary:</h4>
 	<p>The basic philosophy here is to not hurt code clarity for the sake of laziness. This has to be balanced by a little bit of common sense, though; <code>print_login_status_for_a_given_user()</code> goes too far, for example -- that function would be better named <code>print_user_login_status()</code>, or just <code>print_login_status()</code>.</p>
@@ -467,6 +500,26 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	</pre></div>
 
 	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
+
+	<h4>Commas after every array element:</h4>
+	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line</p>
+
+	<p class="bad">// wrong</p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23
+);
+	</pre></div>
+
+	<p class="good">// right </p>
+	<div class="codebox"><pre>
+$foo = array(
+	'bar' => 42,
+	'boo' => 23,
+);
+	</pre></div>
+
 
 	<h4>Associative array keys:</h4>
 	<p>In PHP, it's legal to use a literal string as a key to an associative array without quoting that string. We don't want to do this -- the string should always be quoted to avoid confusion. Note that this is only when we're using a literal, not when we're using a variable, examples:</p>
@@ -633,6 +686,26 @@ switch ($mode)
 	break;
 }
 	</pre></div>
+
+	<h4>Class Members</h4>
+	<p>Use the explicit visibility qualifiers <code>public</code>, <code>private</code> and <code>protected</code> for all properties instead of <code>var</code>.
+
+	<p>Place the <code>static</code> qualifier before the visibility qualifiers.</p>
+
+	<p class="bad">//Wrong </p>
+	<div class="codebox"><pre>
+var $x;
+private static function f()
+	</pre></div>
+
+	<p class="good">// Right </p>
+	<div class="codebox"><pre>
+public $x;
+static private function f()
+	</pre></div>
+
+	<h4>Constants</h4>
+	<p>Prefer class constants over global constants created with <code>define()</code>.</p>
 
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
@@ -1039,6 +1112,22 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 	<h4>Exiting</h4>
 
 	<p>Your page should either call <code>page_footer()</code> in the end to trigger output through the template engine and terminate the script, or alternatively at least call the <code>exit_handler()</code>. That call is necessary because it provides a method for external applications embedding phpBB to be called at the end of the script.</p>
+
+	<a name="phprestrictions"></a><h3>2.vi. Restrictions on the Use of PHP</h3>
+
+	<h4>Dynamic code execution:</h4>
+
+	<p>Never execute dynamic PHP code (generated or in a constant string) using any of the following PHP functions:</p>
+
+	<ul>
+		<li><strong>eval</strong></li>
+		<li><strong>create_function</strong></li>
+		<li><strong>preg_replace</strong> with the <strong>e</strong> modifier in the pattern</li>
+	</ul>
+
+	<p>If absolutely necessary a file should be created, and a mechanism for creating this file prior to running phpBB should be provided as a setup process.</p>
+
+	<p>The <strong>e</strong> modifier in <strong>preg_replace</strong> can be replaced by <strong>preg_replace_callback</strong> and objects to encapsulate state that is needed in the callback code.</p>
 
 		</div>
 
@@ -1666,7 +1755,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), we remove the need to convert between encodings and improves the accessibility of multilingual forums.</p>
 
-	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <acronym title="Byte-Order-Mark">BOM</acronym> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
+	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <abbr title="Byte-Order-Mark">BOM</abbr> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
 
 	<h4>Language Tag:</h4>
 
@@ -1676,8 +1765,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Most language tags consist of a two- or three-letter language subtag (from <a href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO 639-1/ISO 639-2</a>). Sometimes, this is followed by a two-letter or three-digit region subtag (from <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> or <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a>). Some examples are:</p>
 
-	<table summary="Examples of various possible language tags as described by RFC 4646 and RFC 4647">
-	<caption>Language tag examples</caption>
+	<table>
+	<caption>Examples of various possible language tags as described by RFC 4646 and RFC 4647</caption>
 	<thead>
 	<tr>
 		<th scope="col">Language tag</th>
@@ -1728,8 +1817,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Next is the <a href="http://www.unicode.org/iso15924/iso15924-codes.html">ISO 15924</a> language script code and when one should or shouldn't use it. For example, whilst <code>en-Latn</code> is syntaxically correct for describing English written with Latin script, real world English writing is <strong>more-or-less exclusively in the Latin script</strong>. For such languages like English that are written in a single script, the <a href="http://www.iana.org/assignments/language-subtag-registry"><abbr title="Internet Assigned Numbers Authority">IANA</abbr> Language Subtag Registry</a> has a "Suppress-Script" field meaning the script code <strong>should be ommitted</strong> unless a specific language tag requires a specific script code. Some languages are <strong>written in more than one script</strong> and in such cases, the script code <strong>is encouraged</strong> since an end-user may be able to read their language in one script, but not the other. Some examples are:</p>
 
-	<table summary="Examples of using a language subtag in combination with a script subtag">
-	<caption>Language subtag + script subtag examples</caption>
+	<table>
+	<caption>Examples of using a language subtag in combination with a script subtag</caption>
 	<thead>
 	<tr>
 		<th scope="col">Language tag</th>
@@ -1795,8 +1884,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Examples of English using marco-geographical regions:</p>
 
-	<table summary="Examples for English of ISO 3166-1 alpha-2 vs. UN M.49 code">
-	<caption>Coding for English using macro-geographical regions</caption>
+	<table>
+	<caption>Coding for English using macro-geographical regions (examples for English of ISO 3166-1 alpha-2 vs. UN M.49 code)</caption>
 	<thead>
 	<tr>
 		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
@@ -1821,8 +1910,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Examples of Spanish using marco-geographical regions:</p>
 
-	<table summary="Examples for Spanish of ISO 3166-1 alpha-2 vs. UN M.49 code">
-	<caption>Coding for Spanish macro-geographical regions</caption>
+	<table>
+	<caption>Coding for Spanish macro-geographical regions (examples for Spanish of ISO 3166-1 alpha-2 vs. UN M.49 code)</caption>
 	<thead>
 	<tr>
 		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
@@ -1850,7 +1939,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>Example of where the <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> is ambiguous and why <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a> might be preferred:</p>
 
-	<table summary="Example where the ISO 3166-1 alpha-2 is ambiguous">
+	<table>
 	<caption>Coding for ambiguous ISO 3166-1 alpha-2 regions</caption>
 	<thead>
 	<tr>
@@ -1906,7 +1995,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p><a href="http://tools.ietf.org/html/rfc4646">RFC 4646</a> anticipates features which shall be available in (currently draft) <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> which aims to provide as complete enumeration of languages as possible, including living, extinct, ancient and constructed languages, whether majour, minor or unwritten. A new feature of <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> compared to the previous two revisions is the concept of <a href="http://www.sil.org/iso639-3/macrolanguages.asp">macrolanguages</a> where Arabic and Chinese are two such examples. In such cases, their respective codes of <code>ar</code> and <code>zh</code> is very vague as to which dialect/topolect is used or perhaps some terse classical variant which may be difficult for all but very educated users. For such macrolanguages, it is recommended that the sub-language tag is used as a suffix to the macrolanguage tag, eg:</p>
 
-	<table summary="Examples of macrolanguages used with sub-language subtags">
+	<table>
 	<caption>Macrolanguage subtag + sub-language subtag examples</caption>
 	<thead>
 	<tr>
@@ -1950,7 +2039,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For phpBB, the language tags are <strong>not</strong> used in their raw form and instead converted to all lower-case and have the hyphen <code>-</code> replaced with an underscore <code>_</code> where appropriate, with some examples below:</p>
 
-	<table summary="Normalisation of language tags for usage in phpBB">
+	<table>
 	<caption>Language tag normalisation examples</caption>
 	<thead>
 	<tr>
@@ -2004,7 +2093,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For the English language description, the language name is always first and any additional attributes required to describe the subtags within the language code are then listed in order separated with commas and enclosed within parentheses, eg:</p>
 
-	<table summary="English language description examples of iso.txt for usage in phpBB">
+	<table>
 	<caption>English language description examples for iso.txt</caption>
 	<thead>
 	<tr>
@@ -2056,7 +2145,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropriate are as follows:</p>
 
-	<table summary="Table of the various Unicode bidirectional control characters">
+	<table>
 	<caption>Unicode bidirectional control characters &amp; HTML elements/entities</caption>
 	<thead>
 	<tr>
@@ -2122,7 +2211,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<p>For <code>iso.txt</code>, the directionality of the text can be explicitly set using special Unicode characters via any of the three methods provided by left-to-right/right-to-left markers/embeds/overrides, as without them, the ordering of characters will be incorrect, eg:</p>
 
-	<table summary="Effect of using Unicode bidirectional control characters within iso.txt">
+	<table>
 	<caption>Unicode bidirectional control characters iso.txt</caption>
 	<thead>
 	<tr>
@@ -2258,7 +2347,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &lt; 5.2.0.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2267,7 +2356,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.2.0.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2276,7 +2365,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.2.0.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>

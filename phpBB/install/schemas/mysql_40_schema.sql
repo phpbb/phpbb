@@ -192,6 +192,15 @@ CREATE TABLE phpbb_drafts (
 );
 
 
+# Table: 'phpbb_ext'
+CREATE TABLE phpbb_ext (
+	ext_name varbinary(255) DEFAULT '' NOT NULL,
+	ext_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	ext_state blob NOT NULL,
+	UNIQUE ext_name (ext_name)
+);
+
+
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
 	extension_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -317,7 +326,8 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	group_legend tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	group_teampage mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name(255))
 );
@@ -363,6 +373,7 @@ CREATE TABLE phpbb_log (
 	log_data mediumblob NOT NULL,
 	PRIMARY KEY (log_id),
 	KEY log_type (log_type),
+	KEY log_time (log_time),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
@@ -572,6 +583,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varbinary(60) DEFAULT '' NOT NULL,
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_on_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_profile tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_hide tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -750,12 +762,10 @@ CREATE TABLE phpbb_styles (
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name(255)),
 	KEY template_id (template_id),
-	KEY theme_id (theme_id),
-	KEY imageset_id (imageset_id)
+	KEY theme_id (theme_id)
 );
 
 
@@ -766,23 +776,10 @@ CREATE TABLE phpbb_styles_template (
 	template_copyright blob NOT NULL,
 	template_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	template_inherit_path varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name(255))
-);
-
-
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	template_filename varbinary(100) DEFAULT '' NOT NULL,
-	template_included blob NOT NULL,
-	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	template_data mediumblob NOT NULL,
-	KEY tid (template_id),
-	KEY tfn (template_filename)
 );
 
 
@@ -792,36 +789,8 @@ CREATE TABLE phpbb_styles_theme (
 	theme_name blob NOT NULL,
 	theme_copyright blob NOT NULL,
 	theme_path varbinary(100) DEFAULT '' NOT NULL,
-	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_data mediumblob NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	imageset_name blob NOT NULL,
-	imageset_copyright blob NOT NULL,
-	imageset_path varbinary(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id),
-	UNIQUE imgset_nm (imageset_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	image_name varbinary(200) DEFAULT '' NOT NULL,
-	image_filename varbinary(200) DEFAULT '' NOT NULL,
-	image_lang varbinary(30) DEFAULT '' NOT NULL,
-	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (image_id),
-	KEY i_d (imageset_id)
 );
 
 

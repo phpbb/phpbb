@@ -4,9 +4,8 @@
 * acp_prune [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -87,5 +86,3 @@ $lang = array_merge($lang, array(
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',
 ));
-
-?>

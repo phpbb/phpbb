@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -105,7 +104,7 @@ class ucp_prefs
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$dateformat_options = '';
@@ -227,7 +226,7 @@ class ucp_prefs
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
@@ -353,5 +352,3 @@ class ucp_prefs
 		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);
 	}
 }
-
-?>

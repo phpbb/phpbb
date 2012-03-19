@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="code_sniffer" basedir="." default="install">
+
+  <property name="working.dir" value="${basedir}" />
+  <property name="target.dir" value="/usr/share/php/PHP/CodeSniffer/Standards" />
+
+  <!--
+  Install phpbb sniff
+  -->
+  <target name="install">
+    <delete dir="${target.dir}/phpbb" />
+    <mkdir dir="${target.dir}/phpbb"/>
+
+    <copy todir="${target.dir}/phpbb">
+	<fileset file="${working.dir}/phpbbCodingStandard.php" />
+    </copy>
+    <copy todir="${target.dir}/phpbb/Sniffs">
+	<fileset dir="${working.dir}/Sniffs" />
+    </copy>
+
+  </target>
+
+</project>

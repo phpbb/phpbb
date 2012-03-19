@@ -40,46 +40,14 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function get_database_config()
 	{
-		if (isset($_SERVER['PHPBB_TEST_DBMS']))
-		{
-			return array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
-				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
-				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
-				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
-				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
-				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
-			);
-		}
-		else if (file_exists(dirname(__FILE__) . '/../test_config.php'))
-		{
-			include(dirname(__FILE__) . '/../test_config.php');
+		$config = phpbb_test_case_helpers::get_test_config();
 
-			return array(
-				'dbms'		=> $dbms,
-				'dbhost'	=> $dbhost,
-				'dbport'	=> $dbport,
-				'dbname'	=> $dbname,
-				'dbuser'	=> $dbuser,
-				'dbpasswd'	=> $dbpasswd,
-			);
-		}
-		else if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
-		{
-			// Silently use sqlite
-			return array(
-				'dbms'		=> 'sqlite',
-				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
-				'dbport'	=> '',
-				'dbname'	=> '',
-				'dbuser'	=> '',
-				'dbpasswd'	=> '',
-			);
-		}
-		else
+		if (!isset($config['dbms']))
 		{
 			$this->markTestSkipped('Missing test_config.php: See first error.');
 		}
+
+		return $config;
 	}
 
 	public function getConnection()

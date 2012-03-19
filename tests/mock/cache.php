@@ -2,21 +2,18 @@
 /**
 *
 * @package testing
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2011 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-class phpbb_mock_cache
+class phpbb_mock_cache implements phpbb_cache_driver_interface
 {
+	protected $data;
+
 	public function __construct($data = array())
 	{
 		$this->data = $data;
-
-		if (!isset($this->data['_bots']))
-		{
-			$this->data['_bots'] = array();
-		}
 	}
 
 	public function get($var_name)
@@ -34,14 +31,6 @@ class phpbb_mock_cache
 		$this->data[$var_name] = $var;
 	}
 
-	/**
-	* Obtain active bots
-	*/
-	public function obtain_bots()
-	{
-		return $this->data['_bots'];
-	}
-	
 	/**
 	 * Obtain list of word censors. We don't need to parse them here,
 	 * that is tested elsewhere.
@@ -64,15 +53,30 @@ class phpbb_mock_cache
 		);
 	}
 
-	public function set_bots($bots)
-	{
-		$this->data['_bots'] = $bots;
-	}
-
 	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
 	{
 		$test->assertTrue(isset($this->data[$var_name]));
 		$test->assertEquals($data, $this->data[$var_name]);
+	}
+
+	public function checkAssociativeVar(PHPUnit_Framework_Assert $test, $var_name, $data, $sort = true)
+	{
+		$test->assertTrue(isset($this->data[$var_name]));
+
+		if ($sort)
+		{
+			foreach ($this->data[$var_name] as &$content)
+			{
+				sort($content);
+			}
+		}
+
+		$test->assertEquals($data, $this->data[$var_name]);
+	}
+
+	public function checkVarUnset(PHPUnit_Framework_Assert $test, $var_name)
+	{
+		$test->assertFalse(isset($this->data[$var_name]));
 	}
 
 	public function check(PHPUnit_Framework_Assert $test, $data, $ignore_db_info = true)
@@ -91,5 +95,53 @@ class phpbb_mock_cache
 
 		$test->assertEquals($data, $cache_data);
 	}
-}
 
+	function load()
+	{
+	}
+	function unload()
+	{
+	}
+	function save()
+	{
+	}
+	function tidy()
+	{
+	}
+	function purge()
+	{
+	}
+	function destroy($var_name, $table = '')
+	{
+		unset($this->data[$var_name]);
+	}
+	public function _exists($var_name)
+	{
+	}
+	public function sql_load($query)
+	{
+	}
+	public function sql_save($query, &$query_result, $ttl)
+	{
+	}
+	public function sql_exists($query_id)
+	{
+	}
+	public function sql_fetchrow($query_id)
+	{
+	}
+	public function sql_fetchfield($query_id, $field)
+	{
+	}
+	public function sql_rowseek($rownum, $query_id)
+	{
+	}
+	public function sql_freeresult($query_id)
+	{
+	}
+
+	public function obtain_bots()
+	{
+		return isset($this->data['_bots']) ? $this->data['_bots'] : array();
+	}
+}

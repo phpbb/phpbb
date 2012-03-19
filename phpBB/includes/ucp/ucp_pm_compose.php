@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -24,6 +23,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
+	global $request;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -49,13 +49,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Reply to all triggered (quote/reply)
 	$reply_to_all	= request_var('reply_to_all', 0);
 
-	// Do NOT use request_var or specialchars here
-	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
-
-	if (!is_array($address_list))
-	{
-		$address_list = array();
-	}
+	$address_list	= $request->variable('address_list', array('' => array(0 => '')));
 
 	$submit		= (isset($_POST['post'])) ? true : false;
 	$preview	= (isset($_POST['preview'])) ? true : false;
@@ -1050,7 +1044,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
-	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
+	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
@@ -1058,7 +1052,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
@@ -1126,11 +1120,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
+	global $request;
 
 	// Delete User [TO/BCC]
-	if ($remove_u && !empty($_REQUEST['remove_u']) && is_array($_REQUEST['remove_u']))
+	if ($remove_u && $request->variable('remove_u', array(0 => '')))
 	{
-		$remove_user_id = array_keys($_REQUEST['remove_u']);
+		$remove_user_id = array_keys($request->variable('remove_u', array(0 => '')));
 
 		if (isset($remove_user_id[0]))
 		{
@@ -1139,9 +1134,9 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	}
 
 	// Delete Group [TO/BCC]
-	if ($remove_g && !empty($_REQUEST['remove_g']) && is_array($_REQUEST['remove_g']))
+	if ($remove_g && $request->variable('remove_g', array(0 => '')))
 	{
-		$remove_group_id = array_keys($_REQUEST['remove_g']);
+		$remove_group_id = array_keys($request->variable('remove_g', array(0 => '')));
 
 		if (isset($remove_group_id[0]))
 		{
@@ -1209,7 +1204,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Add Friends if specified
-		$friend_list = (isset($_REQUEST['add_' . $type]) && is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$friend_list = array_keys($request->variable('add_' . $type, array(0)));
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 		foreach ($user_id_ary as $user_id)
@@ -1307,5 +1302,3 @@ function get_recipients($address_list, $num_recipients = 1)
 
 	return $recipient;
 }
-
-?>

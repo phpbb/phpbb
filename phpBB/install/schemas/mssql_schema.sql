@@ -361,6 +361,20 @@ GO
 
 
 /*
+	Table: 'phpbb_ext'
+*/
+CREATE TABLE [phpbb_ext] (
+	[ext_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[ext_active] [int] DEFAULT (0) NOT NULL ,
+	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name]) ON [PRIMARY]
+GO
+
+
+/*
 	Table: 'phpbb_extensions'
 */
 CREATE TABLE [phpbb_extensions] (
@@ -548,7 +562,8 @@ CREATE TABLE [phpbb_groups] (
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
-	[group_legend] [int] DEFAULT (1) NOT NULL 
+	[group_legend] [int] DEFAULT (0) NOT NULL ,
+	[group_teampage] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -636,6 +651,9 @@ ALTER TABLE [phpbb_log] WITH NOCHECK ADD
 GO
 
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [log_time] ON [phpbb_log]([log_time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id]) ON [PRIMARY]
@@ -975,6 +993,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_validation] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_required] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_reg] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_pm] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
 	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
@@ -1304,8 +1323,7 @@ CREATE TABLE [phpbb_styles] (
 	[style_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_active] [int] DEFAULT (1) NOT NULL ,
 	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[theme_id] [int] DEFAULT (0) NOT NULL ,
-	[imageset_id] [int] DEFAULT (0) NOT NULL 
+	[theme_id] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1325,9 +1343,6 @@ GO
 CREATE  INDEX [theme_id] ON [phpbb_styles]([theme_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [imageset_id] ON [phpbb_styles]([imageset_id]) ON [PRIMARY]
-GO
-
 
 /*
 	Table: 'phpbb_styles_template'
@@ -1338,7 +1353,6 @@ CREATE TABLE [phpbb_styles_template] (
 	[template_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[template_path] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
-	[template_storedb] [int] DEFAULT (0) NOT NULL ,
 	[template_inherits_id] [int] DEFAULT (0) NOT NULL ,
 	[template_inherit_path] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
@@ -1356,36 +1370,14 @@ GO
 
 
 /*
-	Table: 'phpbb_styles_template_data'
-*/
-CREATE TABLE [phpbb_styles_template_data] (
-	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
-	[template_mtime] [int] DEFAULT (0) NOT NULL ,
-	[template_data] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-CREATE  INDEX [tid] ON [phpbb_styles_template_data]([template_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [tfn] ON [phpbb_styles_template_data]([template_filename]) ON [PRIMARY]
-GO
-
-
-/*
 	Table: 'phpbb_styles_theme'
 */
 CREATE TABLE [phpbb_styles_theme] (
 	[theme_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[theme_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[theme_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[theme_path] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[theme_storedb] [int] DEFAULT (0) NOT NULL ,
-	[theme_mtime] [int] DEFAULT (0) NOT NULL ,
-	[theme_data] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+	[theme_path] [varchar] (100) DEFAULT ('') NOT NULL 
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
@@ -1396,53 +1388,6 @@ ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [theme_name] ON [phpbb_styles_theme]([theme_name]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_imageset'
-*/
-CREATE TABLE [phpbb_styles_imageset] (
-	[imageset_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[imageset_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[imageset_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[imageset_path] [varchar] (100) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_imageset] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_imageset] PRIMARY KEY  CLUSTERED 
-	(
-		[imageset_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  UNIQUE  INDEX [imgset_nm] ON [phpbb_styles_imageset]([imageset_name]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_imageset_data'
-*/
-CREATE TABLE [phpbb_styles_imageset_data] (
-	[image_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[image_name] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[image_filename] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[image_lang] [varchar] (30) DEFAULT ('') NOT NULL ,
-	[image_height] [int] DEFAULT (0) NOT NULL ,
-	[image_width] [int] DEFAULT (0) NOT NULL ,
-	[imageset_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_imageset_data] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_imageset_data] PRIMARY KEY  CLUSTERED 
-	(
-		[image_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  INDEX [i_d] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
 GO
 
 
