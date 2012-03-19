@@ -35,7 +35,6 @@ $search_errors = array();
 $search = new $class_name($search_errors);
 
 $batch_size = isset($argv[2]) ? $argv[2] : 2000;
-$time = time();
 
 if (method_exists($search, 'create_index'))
 {
@@ -67,6 +66,7 @@ else
 	while ($post_counter <= $max_post_id)
 	{
 		$row_count = 0;
+		$time = time();
 
 		printf("Processing posts with %d <= post_id <= %d\n",
 			$post_counter + 1,
