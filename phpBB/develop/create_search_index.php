@@ -35,7 +35,6 @@ $search_errors = array();
 $search = new $class_name($search_errors);
 
 $batch_size = isset($argv[2]) ? $argv[2] : 2000;
-$time = time();
 
 if (method_exists($search, 'create_index'))
 {
