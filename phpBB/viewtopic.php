@@ -971,9 +971,7 @@ $sql_ary = array(
 );
 
 $vars = array('sql_ary');
-$event = new phpbb_event_data(compact($vars));
-$phpbb_dispatcher->dispatch('core.viewtopic_get_userdata', $event);
-extract($event->get_data_filtered($vars));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_userdata', compact($vars), $vars));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
@@ -1086,9 +1084,7 @@ while ($row = $db->sql_fetchrow($result))
 			);
 
 			$vars = array('user_cache_data', 'row', 'poster_id');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.viewtopic_user_cache_guest', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache_guest', compact($vars), $vars));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
@@ -1145,9 +1141,7 @@ while ($row = $db->sql_fetchrow($result))
 			);
 
 			$vars = array('user_cache_data', 'row', 'poster_id');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.viewtopic_user_cache', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache', compact($vars), $vars));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
@@ -1575,9 +1569,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	$vars = array('postrow');
-	$event = new phpbb_event_data(compact($vars));
-	$phpbb_dispatcher->dispatch('core.viewtopic_postrow', $event);
-	extract($event->get_data_filtered($vars));
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars), $vars));
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
@@ -1736,9 +1728,7 @@ if (!request_var('t', 0) && !empty($topic_id))
 $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
 
 $vars = array('page_title', 'topic_data', 'forum_id', 'start');
-$event = new phpbb_event_data(compact($vars));
-$phpbb_dispatcher->dispatch('core.viewtopic_page_header', $event);
-extract($event->get_data_filtered($vars));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_page_header', compact($vars), $vars));
 
 // Output the page
 page_header($page_title, true, $forum_id);

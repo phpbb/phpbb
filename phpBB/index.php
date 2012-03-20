@@ -137,9 +137,7 @@ $template->assign_vars(array(
 $page_title = $user->lang['INDEX'];
 
 $vars = array('page_title');
-$event = new phpbb_event_data(compact($vars));
-$phpbb_dispatcher->dispatch('core.index', $event);
-extract($event->get_data_filtered($vars));
+extract($phpbb_dispatcher->trigger_event('core.index', compact($vars), $vars));
 
 // Output page
 page_header($page_title);

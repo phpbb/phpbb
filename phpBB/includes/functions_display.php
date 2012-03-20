@@ -120,9 +120,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	);
 
 	$vars = array('sql_ary');
-	$event = new phpbb_event_data(compact($vars));
-	$phpbb_dispatcher->dispatch('core.display_forums_sql_inject', $event);
-	extract($event->get_data_filtered($vars));
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_sql_inject', compact($vars), $vars));
 
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
@@ -133,9 +131,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$vars = array('row');
-		$event = new phpbb_event_data(compact($vars));
-		$phpbb_dispatcher->dispatch('core.display_forums_row_inject', $event);
-		extract($event->get_data_filtered($vars));
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_row_inject', compact($vars), $vars));
 
 		$forum_id = $row['forum_id'];
 
@@ -235,9 +231,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 
 			$vars = array('forum_rows', 'parent_id', 'row');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.display_forums_row_values_inject', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.display_forums_row_values_inject', compact($vars), $vars));
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
@@ -495,9 +489,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		);
 
 		$vars = array('row');
-		$event = new phpbb_event_data(compact($vars));
-		$phpbb_dispatcher->dispatch('core.display_forums_assign_block_vars', $event);
-		extract($event->get_data_filtered($vars));
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_assign_block_vars', compact($vars), $vars));
 
 		// Assign subforums loop for style authors
 		foreach ($subforums_list as $subforum)
@@ -917,9 +909,7 @@ function display_custom_bbcodes()
 		);
 
 		$vars = array('custom_tags', 'row');
-		$event = new phpbb_event_data(compact($vars));
-		$phpbb_dispatcher->dispatch('core.display_custom_bbcodes_row', $event);
-		extract($event->get_data_filtered($vars));
+		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_row', compact($vars), $vars));
 
 		$template->assign_block_vars('custom_tags', $custom_tags);
 

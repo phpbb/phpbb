@@ -55,9 +55,7 @@ class ucp_zebra
 					if (!empty($data['usernames']))
 					{
 						$vars = array('data');
-						$event = new phpbb_event_data(compact($vars));
-						$phpbb_dispatcher->dispatch('core.ucp_zebra_remove', $event);
-						extract($event->get_data_filtered($vars));
+						extract($phpbb_dispatcher->trigger_event('core.ucp_zebra_remove', compact($vars), $vars));
 
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
@@ -192,9 +190,7 @@ class ucp_zebra
 									}
 
 									$vars = array('mode', 'sql_ary');
-									$event = new phpbb_event_data(compact($vars));
-									$phpbb_dispatcher->dispatch('core.ucp_zebra_add', $event);
-									extract($event->get_data_filtered($vars));
+									extract($phpbb_dispatcher->trigger_event('core.ucp_zebra_add', compact($vars), $vars));
 
 									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 

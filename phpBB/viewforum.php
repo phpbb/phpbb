@@ -741,9 +741,7 @@ if (sizeof($topic_list))
 		);
 
 		$vars = array('topicrow');
-		$event = new phpbb_event_data(compact($vars));
-		$phpbb_dispatcher->dispatch('core.viewforum_topicrow', $event);
-		extract($event->get_data_filtered($vars));
+		extract($phpbb_dispatcher->trigger_event('core.viewforum_topicrow', compact($vars), $vars));
 
 		$template->assign_block_vars('topicrow', $topicrow);
 
