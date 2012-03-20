@@ -326,10 +326,10 @@ class phpbb_template_filter extends php_user_filter
 				return '<!-- ENDPHP -->';
 			break;
 
-			case 'RUNHOOKS':
+			case 'EVENT':
 				// return value here will be compiled code (html with embedded php).
 				// we don't want to wrap it in php tags here.
-				return '<?php ' . $this->compile_tag_run_hooks($matches[2]) . '?>';
+				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
 				break;
 
 			default:
@@ -819,7 +819,7 @@ class phpbb_template_filter extends php_user_filter
 	*
 	* $tag_args should be a single string identifying hook location.
 	*/
-	private function compile_tag_run_hooks($tag_args)
+	private function compile_tag_event($tag_args)
 	{
 		if (!preg_match('/^\w+$/', $tag_args))
 		{
