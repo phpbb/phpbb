@@ -80,3 +80,32 @@ then
 	echo -e "$errors" | grep "^Parse error:"
 	exit 1
 fi
+
+
+# Compile a list of changed files
+FILES=`git diff --name-only HEAD^`
+
+# Attempt to fix whitespace issues
+for FILE in `egrep -l '(\s$| {1,3}\t)' $FILES`
+do
+	# Remove trailing whitespace
+	(sed -i 's/[ 	]*$//' $FILE > /dev/null 2>&1 || sed -i '' -E 's/[ 	]*$//' $FILE)
+
+	# Remove spaces before tabs
+	(sed -i 's/ {1,3}	/	/' $FILE > /dev/null 2>&1 || sed -i '' -E 's/ {1,3}	/	/' $FILE)
+
+	# Add to git
+	git add $FILE
+	echo "Automatically fixed whitespace in $FILE"
+done
+
+# Check for new lines at end of file, add if it is not there
+for FILE in $FILES
+do
+	if ! tail -c1 $FILE | read _
+	then    
+		echo > $FILE
+		git add $FILE
+		echo "Added new line to end of $FILE"
+	fi
+done
