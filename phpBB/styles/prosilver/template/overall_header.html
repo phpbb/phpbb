@@ -84,10 +84,10 @@
 	<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet" type="text/css" media="screen, projection" />
 <!-- ENDIF -->
 
-<!-- RUNHOOKS overall_header_head -->
+<!-- EVENT overall_header_head -->
 
 </head>
-<!-- RUNHOOKS overall_head_head_body -->
+<!-- EVENT overall_head_head_body -->
 <body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
 
 <div id="wrap">
@@ -123,7 +123,7 @@
 
 			<ul class="linklist navlinks">
 				<li class="icon-home"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a> 
-					<!-- RUNHOOKS overall_header_index_link -->
+					<!-- EVENT overall_header_index_link -->
 					<!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></li>
 
 				<!-- IF U_EMAIL_TOPIC --><li class="rightside"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}" class="sendemail">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
@@ -148,7 +148,7 @@
 			<!-- ENDIF -->
 
 			<ul class="linklist rightside">
-				<!-- RUNHOOKS overall_header_nav -->
+				<!-- EVENT overall_header_nav -->
 				<li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
