@@ -177,10 +177,10 @@ class mcp_queue
 
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
-				$back_to_post= '';
+				$back_to_post = '';
 				if (request_var('backtopost', 0)) 
 				{
-					$back_to_post = "&amp;backtopost=1";
+					$back_to_post = '&amp;backtopost=1';
 				}
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
