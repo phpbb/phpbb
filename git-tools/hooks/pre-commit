@@ -80,3 +80,30 @@ then
 	echo -e "$errors" | grep "^Parse error:"
 	exit 1
 fi
+
+
+# Compile a list of changed files
+FILES=`git diff --name-only HEAD^`
+
+egrep -q '([[:space:]]$|^ +	)' $FILES
+if [ $? -eq 0 ]
+then
+	printf "\n\e[1mWhitespace issues (trailing whitespace or space before tab) detected:\e[0m\n\n"
+	egrep -n -H '([[:space:]]$|^ +	)' $FILES
+	ERRORS="1"
+fi
+
+for FILE in $FILES
+do
+	if ! tail -c1 $FILE | read _
+	then
+		printf "No newline at end of $FILE\n"
+		ERRORS="1"
+	fi
+done
+
+# Abort commit if any errors
+if [ "$ERRORS" != '' ]
+then
+	exit 1
+fi
