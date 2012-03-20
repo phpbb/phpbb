@@ -108,9 +108,7 @@ class acp_forums
 					);
 
 					$vars = array('forum_data');
-					$event = new phpbb_event_data(compact($vars));
-					$phpbb_dispatcher->dispatch('core.acp_forums_add_forum_data', $event);
-					extract($event->get_data_filtered($vars));
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_add_forum_data', compact($vars), $vars));
 
 				// No break here
 

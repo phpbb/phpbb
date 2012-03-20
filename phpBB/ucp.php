@@ -329,9 +329,7 @@ if (!$auth->acl_get('u_sig'))
 }
 
 $vars = array('module');
-$event = new phpbb_event_data(compact($vars));
-$phpbb_dispatcher->dispatch('core.ucp_modules', $event);
-extract($event->get_data_filtered($vars));
+extract($phpbb_dispatcher->trigger_event('core.ucp_modules', compact($vars), $vars));
 
 // Select the active module
 $module->set_active($id, $mode);
