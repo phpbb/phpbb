@@ -15,14 +15,14 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class phpbb_event_extension_subscriber_loader
 {
 	private $dispatcher;
 	private $extension_manager;
 
-	public function __construct(EventDispatcher $dispatcher, phpbb_extension_manager $extension_manager)
+	public function __construct(EventDispatcherInterface $dispatcher, phpbb_extension_manager $extension_manager)
 	{
 		$this->dispatcher = $dispatcher;
 		$this->extension_manager = $extension_manager;
