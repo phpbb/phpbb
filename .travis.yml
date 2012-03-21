@@ -23,11 +23,12 @@ script:
 notifications:
   email:
     recipients:
-      - m@michaelcullum.com
+      - dev-team@phpbb.com
     on_success: never
-    on_failure: always
+    on_failure: change
 
 branches:
   only:
     develop
+    develop-olympus
     task/travis
