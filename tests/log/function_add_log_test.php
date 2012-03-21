@@ -16,7 +16,7 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/empty_log.xml');
 	}
 
-	public static function test_add_log_function_critical_data()
+	public static function test_add_log_function_data()
 	{
 		return array(
 			array(
@@ -109,9 +109,9 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 	}
 
 	/**
-	* @dataProvider test_add_log_function_critical_data
+	* @dataProvider test_add_log_function_data
 	*/
-	public function test_add_log_function_critical($expected, $user_id, $mode, $required1, $additional1 = null, $additional2 = null, $additional3 = null)
+	public function test_add_log_function($expected, $user_id, $mode, $required1, $additional1 = null, $additional2 = null, $additional3 = null)
 	{
 		global $db, $user;
 
