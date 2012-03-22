@@ -19,7 +19,8 @@ if (!defined('E_DEPRECATED'))
 {
 	define('E_DEPRECATED', 8192);
 }
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+$level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+error_reporting($level);
 
 /*
 * Remove variables created by register_globals from the global scope
