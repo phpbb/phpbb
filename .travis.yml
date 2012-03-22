@@ -24,7 +24,7 @@ notifications:
   email:
     recipients:
       - dev-team@phpbb.com
-    on_success: never
+    on_success: change
     on_failure: change
 
 branches:
