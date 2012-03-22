@@ -26,9 +26,3 @@ notifications:
       - dev-team@phpbb.com
     on_success: change
     on_failure: change
-
-branches:
-  only:
-    develop
-    develop-olympus
-    task/travis

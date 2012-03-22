@@ -8,7 +8,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="true"
-		 strict="true"
+         strict="true"
          bootstrap="../tests/bootstrap.php">
 	<testsuites>
 		<testsuite name="phpBB Test Suite">
