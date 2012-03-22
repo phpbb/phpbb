@@ -18,7 +18,7 @@ before_script:
   - phpenv rehash
 
 script:
-  - phpunit --configuration travis/$DB.travis.xml
+  - phpunit --configuration travis/phpunit-$DB-travis.xml
 
 notifications:
   email:
