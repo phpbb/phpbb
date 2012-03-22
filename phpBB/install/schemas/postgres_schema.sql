@@ -1220,6 +1220,7 @@ CREATE TABLE phpbb_users (
 	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	user_reminded INT2 DEFAULT '0' NOT NULL,
 	user_reminded_time INT4 DEFAULT '0' NOT NULL CHECK (user_reminded_time >= 0),
+	user_selecteditor INT4 DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
