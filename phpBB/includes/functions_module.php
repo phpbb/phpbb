@@ -376,7 +376,7 @@ class p_master
 
 		$module_auth = implode(' ', $tokens);
 
-		// Make sure $id seperation is working fine
+		// Make sure $id separation is working fine
 		$module_auth = str_replace(' , ', ',', $module_auth);
 
 		$is_auth = false;
