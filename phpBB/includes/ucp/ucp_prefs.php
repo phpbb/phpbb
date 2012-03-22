@@ -301,6 +301,7 @@ class ucp_prefs
 					'sig'		=> request_var('sig', $user->optionget('attachsig')),
 					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
 				);
+				$data['selecteditor']    = request_var('selecteditor', (bool) $user->data['user_selecteditor']);
 				add_form_key('ucp_prefs_post');
 
 				if ($submit)
@@ -315,7 +316,7 @@ class ucp_prefs
 							'user_options'	=> $user->data['user_options'],
 							'user_notify'	=> $data['notify'],
 						);
-
+						$sql_ary['user_selecteditor'] = $data['selecteditor'];
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
@@ -338,6 +339,7 @@ class ucp_prefs
 					'S_SIG'		=> $data['sig'],
 					'S_NOTIFY'	=> $data['notify'])
 				);
+				$template->assign_var('S_VISUAL_EDITOR', $data['selecteditor']);
 			break;
 		}
 
