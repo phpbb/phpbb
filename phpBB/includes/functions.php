@@ -4524,6 +4524,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// Last visit date/time
 	$s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['session_last_visit']) : '';
 
+	//Select editor
+	$s_select_editor = ($user->data['user_selecteditor'] == 1) ? 1 : 0;
+    $template->assign_var('S_VISUAL_EDITOR', $s_select_editor);
+    
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = $l_online_time = '';
 
