@@ -456,6 +456,15 @@ class acp_board
 			$submit = false;
 		}
 
+		// Used to update some bot configuration
+		// This array is also used to map the configuration values to user settings
+		$bot_update_options = array(
+			'default_lang'		=> '',
+			'default_style'		=> '',
+			'board_timezone'	=> '',
+			'board_dst'			=> '',
+		);
+
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
@@ -467,6 +476,15 @@ class acp_board
 			if ($config_name == 'auth_method' || $config_name == 'feed_news_id' || $config_name == 'feed_exclude_id')
 			{
 				continue;
+			}
+
+			if (isset($bot_update_options[$config_name]))
+			{
+				// Changed?
+				if ($config[$config_name] != $cfg_array[$config_name])
+				{
+					$bot_update_options[$config_name] = $cfg_array[$config_name];
+				}
 			}
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
@@ -487,6 +505,17 @@ class acp_board
 					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
 				}
 			}
+		}
+
+		// Update bots if the default style or language is changed
+		if ($submit && !empty($bot_update_options))
+		{
+			if (!function_exists('set_bot_default_lang_style'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			phpbb_set_bot_default_options($bot_update_options);
 		}
 
 		// Store news and exclude ids

@@ -3691,3 +3691,43 @@ function remove_newly_registered($user_id, $user_data = false)
 
 	return $user_data['group_id'];
 }
+
+/**
+* Function that updates the bot users if certain board settings are
+* updated, currently the `default_lang`, `default_style`,
+* `board_timezone` and `board_dst` are affected
+* @param  Array $options An array containing the options to be set,
+*                        the keys of the array are the configuration
+*                        names and the values are the new value.
+*                        If the value is an empty string this entry 
+*                        won't be updated.
+* @return void
+*/
+function phpbb_set_bot_default_options(array $options)
+{
+	global $config, $db;
+
+	// Map the config options to user options
+	$sql_set = array();
+	foreach ($options as $optkey => $optval)
+	{
+		if (empty($optval))
+		{
+			continue;
+		}
+
+		// Replace `default_` and `board_` with `user_` so the settings can be used
+		$sql_set[str_replace(array('board_', 'default_'), 'user_', $optkey)] = $optval;
+	}
+
+	// Nothing to change, move on
+	if (empty($sql_set))
+	{
+		return;
+	}
+
+	// Update the USER_IGNORE
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_set) . '
+		WHERE user_type = ' . USER_IGNORE;
+	$db->sql_query($sql);
+}
