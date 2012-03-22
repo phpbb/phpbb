@@ -16,6 +16,12 @@
 		</testsuite>
 	</testsuites>
 
+	<groups>
+		<exclude>
+			<group>slow</group>
+		</exclude>
+	</groups>
+
 	<php>
 		<!-- "Real" test database -->
 		<!-- uncomment, otherwise sqlite memory runs -->

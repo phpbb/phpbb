@@ -16,6 +16,12 @@
 		</testsuite>
 	</testsuites>
 
+	<groups>
+		<exclude>
+			<group>slow</group>
+		</exclude>
+	</groups>
+
 	<php>
 		<const name="dbms" value="mysqli"/>
 		<const name="dbhost" value="0.0.0.0" />
