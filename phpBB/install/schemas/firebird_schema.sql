@@ -1337,7 +1337,8 @@ CREATE TABLE phpbb_users (
 	user_form_salt VARCHAR(32) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	user_new INTEGER DEFAULT 1 NOT NULL,
 	user_reminded INTEGER DEFAULT 0 NOT NULL,
-	user_reminded_time INTEGER DEFAULT 0 NOT NULL
+	user_reminded_time INTEGER DEFAULT 0 NOT NULL,
+	user_selecteditor INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
