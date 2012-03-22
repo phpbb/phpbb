@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="true"
+         backupStaticAttributes="true"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="true"
+		 strict="true"
+         bootstrap="../tests/bootstrap.php">
+	<testsuites>
+		<testsuite name="phpBB Test Suite">
+			<directory suffix="_test.php">../tests/</directory>
+		</testsuite>
+	</testsuites>
+
+	<php>
+		<!-- "Real" test database -->
+		<!-- uncomment, otherwise sqlite memory runs -->
+		<const name="dbms" value="postgres"/>
+		<const name="dbhost" value="localhost" />
+		<const name="dbport" value="5432" />
+		<const name="dbname" value="phpbb_tests" />
+		<const name="dbuser" value="postgres" />
+		<const name="dbpasswd" value="" />
+		<const name="table_prefix" value="phpbb_"/>
+	</php>
+</phpunit>
