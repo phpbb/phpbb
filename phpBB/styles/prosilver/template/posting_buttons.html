@@ -39,7 +39,7 @@
 // ]]>
 </script>
 <script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/editor.js"></script>
-
+<!-- IF not S_VISUAL_EDITOR -->
 <!-- IF S_BBCODE_ALLOWED -->
 <div id="colour_palette" style="display: none;">
 	<dl style="clear: left;">
@@ -105,4 +105,5 @@
 		<input type="button" class="button2" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
 	<!-- END custom_tags -->
 </div>
+<!-- ENDIF -->
 <!-- ENDIF -->
