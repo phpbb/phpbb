@@ -296,12 +296,12 @@ class ucp_prefs
 			case 'post':
 
 				$data = array(
-					'bbcode'	=> request_var('bbcode', $user->optionget('bbcode')),
-					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
-					'sig'		=> request_var('sig', $user->optionget('attachsig')),
-					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
+					'bbcode'		=> request_var('bbcode', $user->optionget('bbcode')),
+					'smilies'		=> request_var('smilies', $user->optionget('smilies')),
+					'sig'			=> request_var('sig', $user->optionget('attachsig')),
+					'notify'		=> request_var('notify', (bool) $user->data['user_notify']),
+					'selecteditor' 	=> request_var('selecteditor', (bool) $user->data['user_selecteditor']),
 				);
-				$data['selecteditor']    = request_var('selecteditor', (bool) $user->data['user_selecteditor']);
 				add_form_key('ucp_prefs_post');
 
 				if ($submit)
@@ -313,10 +313,11 @@ class ucp_prefs
 						$user->optionset('attachsig', $data['sig']);
 
 						$sql_ary = array(
-							'user_options'	=> $user->data['user_options'],
-							'user_notify'	=> $data['notify'],
+							'user_options'		=> $user->data['user_options'],
+							'user_notify'		=> $data['notify'],
+							'user_selecteditor'	=> $data['selecteditor'],
 						);
-						$sql_ary['user_selecteditor'] = $data['selecteditor'];
+						
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
@@ -334,12 +335,12 @@ class ucp_prefs
 				}
 
 				$template->assign_vars(array(
-					'S_BBCODE'	=> $data['bbcode'],
-					'S_SMILIES'	=> $data['smilies'],
-					'S_SIG'		=> $data['sig'],
-					'S_NOTIFY'	=> $data['notify'])
+					'S_BBCODE'			=> $data['bbcode'],
+					'S_SMILIES'			=> $data['smilies'],
+					'S_SIG'				=> $data['sig'],
+					'S_NOTIFY'			=> $data['notify'],
+					'S_VISUAL_EDITOR'	=> $data['selecteditor'])
 				);
-				$template->assign_var('S_VISUAL_EDITOR', $data['selecteditor']);
 			break;
 		}
 
