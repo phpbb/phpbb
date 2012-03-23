@@ -128,7 +128,7 @@ class acp_users
 		$dropdown_modes = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$this->p_master->module_auth($row['module_auth']))
+			if (!$this->p_master->module_auth_self($row['module_auth']))
 			{
 				continue;
 			}
