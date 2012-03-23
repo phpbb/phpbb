@@ -1382,6 +1382,7 @@ $template->assign_vars(array(
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
 	'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup")),
 
+	'S_VISUAL_EDITOR'			=> $user->data['user_selecteditor'],
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
 	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
