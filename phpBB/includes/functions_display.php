@@ -222,7 +222,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$row['forum_topics'] = $phpbb_content_visibility->get_count('forum_topics', $row, $forum_id);
 
 		// Display active topics from this forum?
-		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
+		if ($show_active && $row['forum_type'] == FORUM_POST && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) &&
+			$auth->acl_get('f_read', $forum_id) && $auth->acl_get('f_read_other', $forum_id))
 		{
 			if (!isset($active_forum_ary['forum_topics']))
 			{
@@ -1059,6 +1060,7 @@ function display_user_activity(&$userdata)
 	{
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
+	// Please check if this leaks data on letting users view the existance of threads they should not be able to see
 		// Obtain active forum
 		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
@@ -1082,6 +1084,7 @@ function display_user_activity(&$userdata)
 		}
 
 		// Obtain active topic
+	// Please check if this leaks data on letting users view the existance of threads they should not be able to see
 		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $userdata['user_id'] . '
