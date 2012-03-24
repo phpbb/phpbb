@@ -25,12 +25,12 @@
 	<php>
 		<!-- "Real" test database -->
 		<!-- uncomment, otherwise sqlite memory runs -->
-		<const name="dbms" value="postgres"/>
-		<const name="dbhost" value="localhost" />
-		<const name="dbport" value="5432" />
-		<const name="dbname" value="phpbb_tests" />
-		<const name="dbuser" value="postgres" />
-		<const name="dbpasswd" value="" />
-		<const name="table_prefix" value="phpbb_"/>
+		<server name="PHPBB_TEST_DBMS" value="postgres"/>
+		<server name="PHPBB_TEST_DBHOST" value="localhost" />
+		<server name="PHPBB_TEST_DBPORT" value="5432" />
+		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
+		<server name="PHPBB_TEST_DBUSER" value="postgres" />
+		<server name="PHPBB_TEST_DBPASSWD" value="" />
+		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 	</php>
 </phpunit>
