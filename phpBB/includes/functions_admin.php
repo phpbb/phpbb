@@ -2603,6 +2603,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$log = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
+		$row['forum_id'] = (int) $row['forum_id'];
 		if ($row['topic_id'])
 		{
 			$topic_id_list[] = $row['topic_id'];
@@ -2614,20 +2615,20 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		}
 
 		$log[$i] = array(
-			'id'				=> $row['log_id'],
+			'id'				=> (int) $row['log_id'],
 
-			'reportee_id'			=> $row['reportee_id'],
+			'reportee_id'			=> (int) $row['reportee_id'],
 			'reportee_username'		=> '',
 			'reportee_username_full'=> '',
 
-			'user_id'			=> $row['user_id'],
+			'user_id'			=> (int) $row['user_id'],
 			'username'			=> $row['username'],
 			'username_full'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $profile_url),
 
 			'ip'				=> $row['log_ip'],
-			'time'				=> $row['log_time'],
-			'forum_id'			=> $row['forum_id'],
-			'topic_id'			=> $row['topic_id'],
+			'time'				=> (int) $row['log_time'],
+			'forum_id'			=> (int) $row['forum_id'],
+			'topic_id'			=> (int) $row['topic_id'],
 
 			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : false,
 			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
@@ -2689,6 +2690,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$row['forum_id'] = (int) $row['forum_id'];
 			if ($auth->acl_get('f_read', $row['forum_id']))
 			{
 				$is_auth[$row['topic_id']] = $row['forum_id'];
