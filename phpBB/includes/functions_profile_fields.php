@@ -570,7 +570,12 @@ class custom_profile
 					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 				}
 
-				if ($value == $ident_ary['data']['field_novalue'])
+				// If a dropdown field is required, users
+				// cannot choose the "no value" option.
+				// They must choose one of the other options.
+				// Therefore, here we treat a value equal to
+				// the "no value" as a lack of value, i.e. NULL.
+				if ($value == $ident_ary['data']['field_novalue'] && $ident_ary['data']['field_required'])
 				{
 					return NULL;
 				}
@@ -625,10 +630,10 @@ class custom_profile
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
-		// checkbox - only testing for isset
+		// checkbox - set the value to "true" if it has been set to 1
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']]) && request_var($profile_row['field_ident'], $default_value) == 1) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 		else if ($profile_row['field_type'] == FIELD_INT)
 		{

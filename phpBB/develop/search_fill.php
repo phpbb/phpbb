@@ -34,12 +34,10 @@ $user->setup();
 
 $search_type = $config['search_type'];
 
-if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+if (!class_exists($search_type))
 {
 	trigger_error('NO_SUCH_SEARCH_MODULE');
 }
-
-require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
 
 $error = false;
 $search = new $search_type($error);

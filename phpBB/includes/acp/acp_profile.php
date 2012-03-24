@@ -508,11 +508,34 @@ class acp_profile
 							}
 						}
 					}
-					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
-						// Get the number of options if this key is 'field_maxlen'
-						$var = request_var('field_default_value', 0);
-					}*/
+						// 'field_length' == 1 defines radio buttons. Possible values are 1 or 2 only.
+						// 'field_length' == 2 defines checkbox. Possible values are 0 or 1 only.
+						// If we switch the type on step 2, we have to adjust field value.
+						// 1 is a common value for the checkbox and radio buttons.
+
+						// Adjust unchecked checkbox value.
+						// If we return or save settings from 2nd/3rd page
+						// and the checkbox is unchecked, set the value to 0.
+						if (isset($_REQUEST['step']) && !isset($_REQUEST[$key]))
+						{
+							$var = 0;
+						}
+
+						// If we switch to the checkbox type but former radio buttons value was 2,
+						// which is not the case for the checkbox, set it to 0 (unchecked).
+						if ($cp->vars['field_length'] == 2 && $var == 2)
+						{
+							$var = 0;
+						}
+						// If we switch to the radio buttons but the former checkbox value was 0,
+						// which is not the case for the radio buttons, set it to 0.
+						else if ($cp->vars['field_length'] == 1 && $var == 0)
+						{
+							$var = 2;
+						}
+					}
 					else if ($field_type == FIELD_INT && $key == 'field_default_value')
 					{
 						// Permit an empty string
@@ -679,6 +702,10 @@ class acp_profile
 						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
+						}
+						else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+						{
+							$_new_key_ary[$key] =  request_var($key, $cp->vars[$key]);
 						}
 						else
 						{

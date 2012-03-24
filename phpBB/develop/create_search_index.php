@@ -25,7 +25,6 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/acp/acp_search.' . $phpEx);
-require($phpbb_root_path . 'includes/search/' . $class_name . '.' . $phpEx);
 
 $user->session_begin();
 $auth->acl($user->data);
@@ -36,7 +35,6 @@ $search_errors = array();
 $search = new $class_name($search_errors);
 
 $batch_size = isset($argv[2]) ? $argv[2] : 2000;
-$time = time();
 
 if (method_exists($search, 'create_index'))
 {
@@ -68,6 +66,7 @@ else
 	while ($post_counter <= $max_post_id)
 	{
 		$row_count = 0;
+		$time = time();
 
 		printf("Processing posts with %d <= post_id <= %d\n",
 			$post_counter + 1,

@@ -34,7 +34,7 @@ class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_i
 	*/
 	public function __construct()
 	{
-		if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+		if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 		{
 			$this->strip = false;
 		}

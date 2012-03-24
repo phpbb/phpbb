@@ -24,16 +24,10 @@
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{unapproved.POST_TIME}</span></td>
 			<td class="row2" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{unapproved.POST_ID}" /></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="6" align="center"><span class="gen">{L_UNAPPROVED_POSTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END unapproved -->
-	<!-- IF S_HAS_UNAPPROVED_POSTS -->
 		<tr>
 			<td class="row3" colspan="6"><span class="gensmall">{L_UNAPPROVED_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	<tr>
 		<td class="cat" colspan="6" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
 	</tr>
@@ -70,16 +64,10 @@
 			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{report.REPORTER_FULL}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{report.REPORT_TIME}</span></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END report -->
-	<!-- IF S_HAS_REPORTS -->
 		<tr>
 			<td class="row3" colspan="5"><span class="gensmall">{L_REPORTS_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	</table>
 
 	<br clear="all" /><br />
@@ -107,16 +95,10 @@
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{pm_report.REPORTER_FULL}</span></td>
 			<td class="row2" align="center" width="10%" nowrap="nowrap" valign="top"><span class="gensmall">{pm_report.REPORT_TIME}</span></td>
 		</tr>
-	<!-- BEGINELSE -->
-		<tr>
-			<td class="row1" colspan="6" align="center"><span class="gen">{L_PM_REPORTS_ZERO_TOTAL}</span></td>
-		</tr>
 	<!-- END pm_report -->
-	<!-- IF S_HAS_PM_REPORTS -->
 		<tr>
 			<td class="row3" colspan="6"><span class="gensmall">{L_PM_REPORTS_TOTAL}</span></td>
 		</tr>
-	<!-- ENDIF -->
 	</table>
 
 	<br clear="all" /><br />

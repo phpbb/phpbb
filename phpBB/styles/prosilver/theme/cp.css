@@ -306,31 +306,17 @@ dl.mini dd {
 }
 
 /* PM panel adjustments */
-.pm-panel-header {
-	margin: 0; 
-	padding-bottom: 10px; 
-	border-bottom: 1px dashed transparent;
+.reply-all a.left {
+	background-position: 3px 60%;
+}
+
+.reply-all a.left:hover {
+	background-position: 0px 60%;
 }
 
 .reply-all {
-	display: block; 
-	padding-top: 4px; 
-	clear: both;
-	float: left;
-}
-
-.pm-panel-message {
-	padding-top: 10px;
-}
-
-.pm-return-to {
-	padding-top: 23px;
-}
-
-#cp-main .pm-message-nav {
-	margin: 0; 
-	padding: 2px 10px 5px 10px; 
-	border-bottom: 1px dashed transparent;
+	font-size: 11px;
+	padding-top: 5px;
 }
 
 /* Defined rules list for PM options */

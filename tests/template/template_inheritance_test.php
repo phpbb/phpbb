@@ -62,15 +62,18 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
 	}
 
-	protected function setup_engine()
+	protected function setup_engine(array $new_config = array())
 	{
-		global $phpbb_root_path, $phpEx, $config, $user;
+		global $phpbb_root_path, $phpEx, $user;
+
+		$defaults = $this->config_defaults();
+		$config = new phpbb_config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->parent_template_path = dirname(__FILE__) . '/parent_templates';
 		$this->template_locator = new phpbb_template_locator();
 		$this->template_provider = new phpbb_template_path_provider();
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator, $this->template_provider);
-		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path);
+		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path, 'parent');
 	}
 }

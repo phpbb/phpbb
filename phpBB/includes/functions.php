@@ -3091,6 +3091,11 @@ function parse_cfg_file($filename, $lines = false)
 
 		$parsed_items[$key] = $value;
 	}
+	
+	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
+	{
+		unset($parsed_items['inherit_from']);
+	}
 
 	return $parsed_items;
 }
@@ -4627,7 +4632,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		foreach ($_EXTRA_URL as $url_param)
 		{
 			$url_param = explode('=', $url_param, 2);
-			$s_hidden_fields[$url_param[0]] = $url_param[1];
+			$s_search_hidden_fields[$url_param[0]] = $url_param[1];
 		}
 	}
 
