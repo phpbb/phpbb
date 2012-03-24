@@ -352,6 +352,10 @@ class phpbb_extension_manager
 	public function all_available()
 	{
 		$available = array();
+		if (!is_dir($this->phpbb_root_path . 'ext/'))
+		{
+			return $available;
+		}
 
 		$iterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/'),
