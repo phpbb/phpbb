@@ -100,7 +100,7 @@ $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
-$phpbb_dispatcher = new phpbb_event_dispatcher_wrapper(new EventDispatcher());
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
