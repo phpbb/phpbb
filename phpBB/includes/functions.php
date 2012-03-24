@@ -3407,9 +3407,7 @@ function add_log()
 			if ($phpbb_dispatcher != null)
 			{
 				$vars = array('mode', 'args', 'additional_data');
-				$event = new phpbb_event_data(compact($vars));
-				$phpbb_dispatcher->dispatch('core.function_add_log', $event);
-				extract($event->get_data_filtered($vars));
+				extract($phpbb_dispatcher->trigger_event('core.function_add_log', $vars, $vars));
 			}
 			*/
 	}
