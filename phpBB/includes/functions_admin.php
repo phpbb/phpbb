@@ -2470,7 +2470,21 @@ function cache_moderators()
 
 /**
 * View log
-* If $log_count is set to false, we will skip counting all entries in the database.
+*
+* @param	string	$mode			The mode defines which log_type is used and in which log the entry is displayed.
+* @param	array	&$log			The result array with the logs
+* @param	mixed	&$log_count		If $log_count is set to false, we will skip counting all entries in the database.
+*									Otherwise an integer with the number of total matching entries is returned.
+* @param	int		$limit			Limit the number of entries that are returned
+* @param	int		$offset			Offset when fetching the log entries, f.e. on paginations
+* @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
+* @param	int		$topic_id		Restrict the log entries to the given topic_id
+* @param	int		$user_id		Restrict the log entries to the given user_id
+* @param	int		$log_time		Only get log entries newer than the given timestamp
+* @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
+* @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
+*
+* @return	int				Returns the offset of the last valid page, if the specified offset was invalid (too high)
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 {
