@@ -2584,9 +2584,13 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		return 0;
 	}
 
-	if ($offset >= $log_count)
+	if ($log_count)
 	{
-		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
+		// Return the user to the last page that is valid
+		while ($offset >= $log_count)
+		{
+			$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
+		}
 	}
 
 	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
