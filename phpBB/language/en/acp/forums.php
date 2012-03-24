@@ -57,6 +57,8 @@ $lang = array_merge($lang, array(
 	'DELETE_ALL_POSTS'					=> 'Delete posts',
 	'DELETE_SUBFORUMS'					=> 'Delete subforums and posts',
 	'DISPLAY_ACTIVE_TOPICS'				=> 'Enable active topics',
+	'DISPLAY_LAST_SUBJECT'				=> 'Display last added post title on forum list',
+	'DISPLAY_LAST_SUBJECT_EXPLAIN'		=> 'If set to yes the title of the last added post will be displayed in the forum list with a hyperlink to the post.',
 	'DISPLAY_ACTIVE_TOPICS_EXPLAIN'		=> 'If set to yes active topics in selected subforums will be displayed under this category.',
 
 	'EDIT_FORUM'					=> 'Edit forum',
