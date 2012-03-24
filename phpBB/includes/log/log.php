@@ -25,7 +25,7 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* Keeps the status of the log-system. Is the log enabled or disabled?
 	*/
-	private $enabled;
+	private $disabled_logs;
 
 	/**
 	* Keeps the total log count of the last call to get_logs()
@@ -56,31 +56,70 @@ class phpbb_log implements phpbb_log_interface
 	/**
 	* This function returns the state of the log-system.
 	*
-	* @return	bool	True if log is enabled
+	* @param	string	$type	The log type we want to check. Empty to get global log status.
+	*
+	* @return	bool	True if log for the type is enabled
 	*/
-	public function is_enabled()
+	public function is_enabled($type = '')
 	{
-		return $this->enabled;
+		if ($type == '' || $type == 'all')
+		{
+			return !isset($this->disabled_logs['all']);
+		}
+		return !isset($this->disabled_logs[$type]) && !isset($this->disabled_logs['all']);
 	}
 
 	/**
 	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
 	*
+	* @param	mixed	$type	The log type we want to enable. Empty to disable all logs.
+	*							Can also be an array of types
+	*
 	* @return	null
 	*/
-	public function disable()
+	public function disable($type = '')
 	{
-		$this->enabled = false;
+		if (is_array($type))
+		{
+			foreach ($type as $disable_type)
+			{
+				$this->disable($disable_type);
+			}
+			return;
+		}
+
+		if ($type == '' || $type == 'all')
+		{
+			$this->disabled_logs['all'] = true;
+			return;
+		}
+		$this->disabled_logs[$type] = true;
 	}
 
 	/**
 	* This function allows re-enable the log-system.
 	*
+	* @param	mixed	$type	The log type we want to enable. Empty to enable all logs.
+	*
 	* @return	null
 	*/
-	public function enable()
+	public function enable($type = '')
 	{
-		$this->enabled = true;
+		if (is_array($type))
+		{
+			foreach ($type as $enable_type)
+			{
+				$this->enable($enable_type);
+			}
+			return;
+		}
+
+		if ($type == '' || $type == 'all')
+		{
+			$this->disabled_logs = array();
+			return;
+		}
+		unset($this->disabled_logs[$type]);
 	}
 
 	/**
@@ -90,7 +129,7 @@ class phpbb_log implements phpbb_log_interface
 	*/
 	public function add($mode, $user_id, $log_ip, $log_operation, $log_time = false, $additional_data = array())
 	{
-		if (!$this->is_enabled())
+		if (!$this->is_enabled($mode))
 		{
 			return false;
 		}
@@ -119,7 +158,7 @@ class phpbb_log implements phpbb_log_interface
 			case 'admin':
 				$sql_ary += array(
 					'log_type'		=> LOG_ADMIN,
-					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
+					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
 
@@ -132,7 +171,7 @@ class phpbb_log implements phpbb_log_interface
 					'log_type'		=> LOG_MOD,
 					'forum_id'		=> $forum_id,
 					'topic_id'		=> $topic_id,
-					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
+					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
 
@@ -143,14 +182,14 @@ class phpbb_log implements phpbb_log_interface
 				$sql_ary += array(
 					'log_type'		=> LOG_USERS,
 					'reportee_id'	=> $reportee_id,
-					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
+					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
 
 			case 'critical':
 				$sql_ary += array(
 					'log_type'		=> LOG_CRITICAL,
-					'log_data'		=> (!sizeof($additional_data)) ? '' : serialize($additional_data),
+					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
 
@@ -161,9 +200,7 @@ class phpbb_log implements phpbb_log_interface
 				if ($phpbb_dispatcher != null)
 				{
 					$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-					$event = new phpbb_event_data(compact($vars));
-					$phpbb_dispatcher->dispatch('core.add_log_case', $event);
-					extract($event->get_data_filtered($vars));
+					extract($phpbb_dispatcher->trigger_event('core.add_log_case', $vars, $vars));
 				}
 				*/
 
@@ -180,9 +217,7 @@ class phpbb_log implements phpbb_log_interface
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.add_log', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.add_log', $vars, $vars));
 		}
 		*/
 
@@ -199,6 +234,11 @@ class phpbb_log implements phpbb_log_interface
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 	{
 		global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
+		/**
+		* @todo: enable when events are merged
+		*
+		global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path, $phpbb_dispatcher;
+		*/
 
 		$this->logs_total = 0;
 		$this->logs_offset = $offset;
@@ -256,9 +296,7 @@ class phpbb_log implements phpbb_log_interface
 				if ($phpbb_dispatcher != null)
 				{
 					$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-					$event = new phpbb_event_data(compact($vars));
-					$phpbb_dispatcher->dispatch('core.get_logs_switch_mode', $event);
-					extract($event->get_data_filtered($vars));
+					extract($phpbb_dispatcher->trigger_event('core.get_logs_switch_mode', $vars, $vars));
 				}
 				*/
 
@@ -275,9 +313,7 @@ class phpbb_log implements phpbb_log_interface
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.get_logs_after_get_type', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.get_logs_after_get_type', $vars, $vars));
 		}
 		*/
 
@@ -311,12 +347,12 @@ class phpbb_log implements phpbb_log_interface
 			// Return the user to the last page that is valid
 			while ($this->logs_offset >= $this->logs_total)
 			{
-				$this->logs_offset = ($this->logs_offset - $limit < 0) ? 0 : $this->logs_offset - $limit;
+				$this->logs_offset = max(0, $this->logs_offset - $limit);
 			}
 		}
 
-		$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
-			FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
+		$sql = 'SELECT l.*, u.username, u.username_clean, u.user_colour
+			FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
 			WHERE l.log_type = $log_type
 				AND u.user_id = l.user_id
 				" . (($log_time) ? "AND l.log_time >= $log_time" : '') . "
@@ -366,9 +402,7 @@ class phpbb_log implements phpbb_log_interface
 			if ($phpbb_dispatcher != null)
 			{
 				$vars = array('log_entry_data', 'row');
-				$event = new phpbb_event_data(compact($vars));
-				$phpbb_dispatcher->dispatch('core.get_logs_entry_data', $event);
-				extract($event->get_data_filtered($vars));
+				extract($phpbb_dispatcher->trigger_event('core.get_logs_entry_data', $vars, $vars));
 			}
 			*/
 
@@ -377,7 +411,7 @@ class phpbb_log implements phpbb_log_interface
 			if (!empty($row['log_data']))
 			{
 				$log_data_ary = @unserialize($row['log_data']);
-				$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
+				$log_data_ary = ($log_data_ary !== false) ? $log_data_ary : array();
 
 				if (isset($user->lang[$row['log_operation']]))
 				{
@@ -421,9 +455,7 @@ class phpbb_log implements phpbb_log_interface
 		if ($phpbb_dispatcher != null)
 		{
 			$vars = array('log', 'topic_id_list', 'reportee_id_list');
-			$event = new phpbb_event_data(compact($vars));
-			$phpbb_dispatcher->dispatch('core.get_logs_additional_data', $event);
-			extract($event->get_data_filtered($vars));
+			extract($phpbb_dispatcher->trigger_event('core.get_logs_additional_data', $vars, $vars));
 		}
 		*/
 
@@ -498,7 +530,8 @@ class phpbb_log implements phpbb_log_interface
 			{
 				$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
 			}
-			$sql_keywords .= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
+			$sql_lower = $db->sql_lower_text('l.log_data');
+			$sql_keywords .= " $sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
 		}
 
 		return $sql_keywords;
