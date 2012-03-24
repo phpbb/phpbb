@@ -56,4 +56,68 @@ interface phpbb_log_interface
 	* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
 	*/
 	public function add($mode, $user_id, $log_ip, $log_operation, $log_time, $additional_data);
+
+	/**
+	* Grab the logs from the database
+	*
+	* @param	string	$mode			The mode defines which log_type is used and in which log the entry is displayed.
+	* @param	bool	$count_logs		Shall we count all matching log entries?
+	* @param	int		$limit			Limit the number of entries that are returned
+	* @param	int		$offset			Offset when fetching the log entries, f.e. on paginations
+	* @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
+	* @param	int		$topic_id		Restrict the log entries to the given topic_id
+	* @param	int		$user_id		Restrict the log entries to the given user_id
+	* @param	int		$log_time		Only get log entries newer than the given timestamp
+	* @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
+	* @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
+	*
+	* @return	array			The result array with the logs
+	*/
+	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '');
+
+	/**
+	* Generates a sql condition out of the specified keywords
+	*
+	* @param	string	$keywords	The keywords the user specified to search for
+	*
+	* @return	string		Returns the SQL condition searching for the keywords
+	*/
+	static public function generate_sql_keyword($keywords);
+
+	/**
+	* Determinate whether the user is allowed to read and/or moderate the forum of the topic
+	*
+	* @param	array	$topic_ids	Array with the topic ids
+	*
+	* @return	array		Returns an array with two keys 'm_' and 'read_f' which are also an array of topic_id => forum_id sets when the permissions are given. Sample:
+	*						array(
+	*							'permission' => array(
+	*								topic_id => forum_id
+	*							),
+	*						),
+	*/
+	static public function get_topic_auth($topic_ids);
+
+	/**
+	* Get the data for all reportee form the database
+	*
+	* @param	array	$reportee_ids	Array with the user ids of the reportees
+	*
+	* @return	array		Returns an array with the reportee data
+	*/
+	static public function get_reportee_data($reportee_ids);
+
+	/**
+	* Get total log count
+	*
+	* @return	int			Returns the number of matching logs from the last call to get_logs()
+	*/
+	public function get_log_count();
+
+	/**
+	* Get offset of the last valid page
+	*
+	* @return	int			Returns the offset of the last valid page from the last call to get_logs()
+	*/
+	public function get_valid_offset();
 }
