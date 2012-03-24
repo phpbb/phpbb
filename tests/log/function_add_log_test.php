@@ -19,6 +19,35 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 	public static function test_add_log_function_data()
 	{
 		return array(
+			/**
+			* Case documentation
+			array(
+				// Row that is in the database afterwards
+				array(
+					'user_id'		=> ANONYMOUS,
+					'log_type'		=> LOG_MOD,
+					'log_operation'	=> 'LOG_MOD_ADDITIONAL',
+					// log_data will be serialized
+					'log_data'		=> array(
+						'argument3',
+					),
+					'reportee_id'	=> 0,
+					'forum_id'		=> 56,
+					'topic_id'		=> 78,
+				),
+				// user_id		Can also be false, than ANONYMOUS is used
+				false,
+				// log_mode		Used to determinate the log_type
+				'mod',
+				// Followed by some additional arguments
+				// forum_id, topic_id and reportee_id are specified before log_operation
+				// The rest is specified afterwards.
+				56,
+				78,
+				'LOG_MOD_ADDITIONAL', // log_operation
+				'argument3',
+			),
+			*/
 			array(
 				array(
 					'user_id'		=> 2,

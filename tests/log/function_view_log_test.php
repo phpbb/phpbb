@@ -210,77 +210,77 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		);
 
 		$test_cases = array(
+			/**
+			* Case documentation
+			array(
+				// Array of datasets that should be in $log after running the function
+				'expected'			=> array(5, 7),
+				// Offset that will be returned form the function
+				'expected_returned'	=> 0,
+				// view_log parameters (see includes/functions_admin.php for docblock)
+				// $log is ommited!
+				'mod', 5, 0, 12, 45,
+			),
+			*/
 			array(
 				'expected'			=> array(1, 2),
 				'expected_returned'	=> 0,
-				false,
-				'admin',
+				'admin', false,
 			),
 			array(
 				'expected'			=> array(1),
 				'expected_returned'	=> 0,
-				false,
-				'admin', 1,
+				'admin', false, 1,
 			),
 			array(
 				'expected'			=> array(2),
 				'expected_returned'	=> 1,
-				false,
-				'admin', 1, 1,
+				'admin', false, 1, 1,
 			),
 			array(
 				'expected'			=> array(2),
 				'expected_returned'	=> 1,
-				0,
-				'admin', 1, 1,
+				'admin', 0, 1, 1,
 			),
 			array(
 				'expected'			=> array(2),
 				'expected_returned'	=> 1,
-				0,
-				'admin', 1, 5,
+				'admin', 0, 1, 5,
 			),
 			array(
 				'expected'			=> array(3),
 				'expected_returned'	=> 0,
-				false,
-				'critical',
+				'critical', false,
 			),
 			array(
 				'expected'			=> array(),
 				'expected_returned'	=> null,
-				false,
-				'mode_does_not_exist',
+				'mode_does_not_exist', false,
 			),
 			array(
 				'expected'			=> array(4, 5, 7),
 				'expected_returned'	=> 0,
-				0,
-				'mod', 5, 0, 12,
+				'mod', 0, 5, 0, 12,
 			),
 			array(
 				'expected'			=> array(5, 7),
 				'expected_returned'	=> 0,
-				0,
-				'mod', 5, 0, 12, 45,
+				'mod', 0, 5, 0, 12, 45,
 			),
 			array(
 				'expected'			=> array(6),
 				'expected_returned'	=> 0,
-				0,
-				'mod', 5, 0, 23,
+				'mod', 0, 5, 0, 23,
 			),
 			array(
 				'expected'			=> array(8),
 				'expected_returned'	=> 0,
-				0,
-				'user', 5, 0, 0, 0, 2,
+				'user', 0, 5, 0, 0, 0, 2,
 			),
 			array(
 				'expected'			=> array(8, 9),
 				'expected_returned'	=> 0,
-				0,
-				'users',
+				'users', 0,
 			),
 		);
 
@@ -298,7 +298,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 	/**
 	* @dataProvider test_view_log_function_data
 	*/
-	public function test_view_log_function($expected, $expected_returned, $log_count, $mode, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
+	public function test_view_log_function($expected, $expected_returned, $mode, $log_count, $limit = 5, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_id ASC', $keywords = '')
 	{
 		global $cache, $db, $user, $auth;
 
