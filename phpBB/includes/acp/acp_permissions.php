@@ -1214,7 +1214,7 @@ class acp_permissions
 		}
 
 		$template->assign_vars(array(
-			'S_FORUM_OPTIONS' => make_forum_select(false, false, false, false, false),
+			'S_FORUM_OPTIONS' => make_forum_select(false, false, true, false, false),
 		));
 	}
 

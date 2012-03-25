@@ -405,7 +405,7 @@ class acp_forums
 						$exclude_forums[] = $row['forum_id'];
 					}
 
-					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
+					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, true, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}
@@ -414,7 +414,7 @@ class acp_forums
 					$this->page_title = 'CREATE_FORUM';
 
 					$forum_id = $this->parent_id;
-					$parents_list = make_forum_select($this->parent_id, false, false, false, false);
+					$parents_list = make_forum_select($this->parent_id, false, true, false, false);
 
 					// Fill forum data with default values
 					if (!$update)
@@ -620,7 +620,7 @@ class acp_forums
 					'S_STATUS_OPTIONS'			=> $statuslist,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
-					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, ($action == 'edit') ? $forum_data['forum_id'] : false, false, false, false),
+					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, ($action == 'edit') ? $forum_data['forum_id'] : false, true, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
@@ -751,7 +751,7 @@ class acp_forums
 		}
 
 		// Jumpbox
-		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
+		$forum_box = make_forum_select($this->parent_id, false, true, false, false); //make_forum_select($this->parent_id);
 
 		if ($action == 'sync' || $action == 'sync_forum')
 		{
