@@ -38,13 +38,13 @@
 						{S_FORM_TOKEN}
 						{QR_HIDDEN_FIELDS}
 						<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-						<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
+						<input type="submit" accesskey="p" tabindex="7" name="preview" value="{L_PREVIEW}" class="button2" />&nbsp;
 					</fieldset>
 			<span class="corners-bottom"><span></span></span></div>
 		</div>
 	</form>
 </noscript>
-<form method="post" action="{U_QR_ACTION}">
+<form method="post" action="{U_QR_ACTION}" id="postform">
 	<div class="panel" style="display: none" id="qr_editor_div">
 		<div class="inner"><span class="corners-top"><span></span></span>
 				<h2>{L_QUICKREPLY}</h2>
@@ -61,7 +61,7 @@
 					{S_FORM_TOKEN}
 					{QR_HIDDEN_FIELDS}
 					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-					<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
+					<input type="submit" accesskey="p" tabindex="7" name="preview" value="{L_PREVIEW}" class="button2" onclick="document.getElementById('postform').action += '#preview';" />&nbsp;
 				</fieldset>
 				<a href="" class="right-box up" onclick="hide_qr(false); return false;" title="{L_COLLAPSE_QR}">{L_COLLAPSE_QR}</a>
 		<span class="corners-bottom"><span></span></span></div>
