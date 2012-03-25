@@ -36,7 +36,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module;
+		global $db, $user, $auth, $template, $module, $request;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
@@ -373,6 +373,14 @@ class acp_modules
 		// Default management page
 		if (sizeof($errors))
 		{
+			if ($request->is_ajax())
+			{
+				phpbb_json_response::send(array(
+					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
+					'MESSAGE_TEXT'	=> implode('<br />', $errors),
+				));
+			}
+
 			$template->assign_vars(array(
 				'S_ERROR'	=> true,
 				'ERROR_MSG'	=> implode('<br />', $errors))
