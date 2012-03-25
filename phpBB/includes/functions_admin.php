@@ -3318,3 +3318,46 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 		' . $sql_more;
 	$db->sql_query($sql);
 }
+
+/*
+* Search ImageMagick
+*
+* @return string	Path to imagemagic if exists, empty string otherwise
+*/
+function phpbb_search_imagemagick()
+{
+	$imagemagick = '';
+
+	$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
+
+	$imagemagick_path = getenv('MAGICK_HOME');
+
+	if (empty($imagemagick_path))
+	{
+		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
+		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
+
+		$locations = array_merge($path_locations, $locations);
+
+		foreach ($locations as $location)
+		{
+			// The path might not end properly, fudge it
+			if (substr($location, -1) !== '/')
+			{
+				$location .= '/';
+			}
+
+			if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
+			{
+				$imagemagick = str_replace('\\', '/', $location);
+				continue;
+			}
+		}
+	}
+	else
+	{
+		$imagemagick = str_replace('\\', '/', $imagemagick_path);
+	}
+
+	return $imagemagick;
+}

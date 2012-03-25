@@ -26,55 +26,19 @@
 		</div>
 	<!-- ENDIF -->
 
-
-	<!-- IF S_REMOVE_INSTALL -->
+	<!-- BEGIN error -->
 		<div class="errorbox">
-			<h3>{L_WARNING}</h3>
-			<p>{L_REMOVE_INSTALL}</p>
+			<h3>{L_WARNING}<!-- IF error.L_ERROR -->: {error.L_ERROR}<!-- ENDIF --></h3>
+			<!-- IF error.L_ERROR_EXPLAIN --><p>{error.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
 		</div>
-	<!-- ENDIF -->
+	<!-- END error -->
 
-	<!-- IF S_MBSTRING_LOADED -->
-		<!-- IF S_MBSTRING_FUNC_OVERLOAD_FAIL -->
-			<div class="errorbox">
-				<h3>{L_ERROR_MBSTRING_FUNC_OVERLOAD}</h3>
-				<p>{L_ERROR_MBSTRING_FUNC_OVERLOAD_EXPLAIN}</p>
-			</div>
-		<!-- ENDIF -->
-
-		<!-- IF S_MBSTRING_ENCODING_TRANSLATION_FAIL -->
-			<div class="errorbox">
-				<h3>{L_ERROR_MBSTRING_ENCODING_TRANSLATION}</h3>
-				<p>{L_ERROR_MBSTRING_ENCODING_TRANSLATION_EXPLAIN}</p>
-			</div>
-		<!-- ENDIF -->
-
-		<!-- IF S_MBSTRING_HTTP_INPUT_FAIL -->
-			<div class="errorbox">
-				<h3>{L_ERROR_MBSTRING_HTTP_INPUT}</h3>
-				<p>{L_ERROR_MBSTRING_HTTP_INPUT_EXPLAIN}</p>
-			</div>
-		<!-- ENDIF -->
-
-		<!-- IF S_MBSTRING_HTTP_OUTPUT_FAIL -->
-			<div class="errorbox">
-				<h3>{L_ERROR_MBSTRING_HTTP_OUTPUT}</h3>
-				<p>{L_ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN}</p>
-			</div>
-		<!-- ENDIF -->
-	<!-- ENDIF -->
-
-	<!-- IF S_WRITABLE_CONFIG -->
+	<!-- BEGIN notice -->
 		<div class="errorbox notice">
-			<p>{L_WRITABLE_CONFIG}</p>
+			<!-- IF notice.L_ERROR --><h3>{notice.L_ERROR}</h3><!-- ENDIF -->
+			<!-- IF notice.L_ERROR_EXPLAIN --><p>{notice.L_ERROR_EXPLAIN}</p><!-- ENDIF -->
 		</div>
-	<!-- ENDIF -->
-
-	<!-- IF S_PHP_VERSION_OLD -->
-		<div class="errorbox notice">
-			<p>{L_PHP_VERSION_OLD}</p>
-		</div>
-	<!-- ENDIF -->
+	<!-- END notice -->
 
 	<table cellspacing="1">
 		<caption>{L_FORUM_STATS}</caption>

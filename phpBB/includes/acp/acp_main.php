@@ -397,14 +397,6 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
-		{
-			$template->assign_vars(array(
-				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">', '</a>'),
-			));
-		}
-
 		$latest_version_info = false;
 		if (($latest_version_info = obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
 		{
@@ -587,27 +579,23 @@ class acp_main
 			);
 		}
 
-		// Warn if install is still present
-		if (file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
-		{
-			$template->assign_var('S_REMOVE_INSTALL', true);
-		}
+		// Check whether server environment still satisfy requirements
+		$environment_checker = new phpbb_environment_acp_checker($phpbb_root_path, $phpEx, $config, $auth);
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
-		{
-			// World-Writable? (000x)
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
-		}
+		$check_values = array(
+			'error'		=> $environment_checker->get_errors(),
+			'notice'	=> $environment_checker->get_notices(),
+		);
 
-		if (extension_loaded('mbstring'))
+		foreach ($check_values as $template_block_name => $language_array)
 		{
-			$template->assign_vars(array(
-				'S_MBSTRING_LOADED'						=> true,
-				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> (intval(@ini_get('mbstring.func_overload')) & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
-				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> (@ini_get('mbstring.encoding_translation') != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> (@ini_get('mbstring.http_input') != 'pass'),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> (@ini_get('mbstring.http_output') != 'pass'),
-			));
+			foreach ($language_array as $language_key)
+			{
+				$template->assign_block_vars($template_block_name, array(
+					'L_ERROR'			=>	(isset($user->lang[$language_key])) ? $user->lang[$language_key] : '',
+					'L_ERROR_EXPLAIN'	=>	(isset($user->lang[$language_key . '_EXPLAIN'])) ? $user->lang[$language_key . '_EXPLAIN'] : '',
+				));
+			}
 		}
 
 		// Fill dbms version if not yet filled

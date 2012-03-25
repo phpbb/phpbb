@@ -119,7 +119,7 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $language;
+		global $lang, $template, $phpbb_root_path, $phpEx, $language, $config, $auth, $phpbb_php_ini;
 
 		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
@@ -128,123 +128,99 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false, 'imagesize' => false,);
+		// Initialize some variables and objects
+		$passed = $check_results = array();
 
-		// Test for basic PHP settings
-		$template->assign_block_vars('checks', array(
-			'S_LEGEND'			=> true,
-			'LEGEND'			=> $lang['PHP_SETTINGS'],
-			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
-		));
+		$install_checker = new phpbb_environment_install_checker($phpbb_root_path, $phpEx, $config, $auth);
 
-		// Test the minimum PHP version
-		$php_version = PHP_VERSION;
-
-		if (version_compare($php_version, '5.2.0') < 0)
+		// Assert checks and dump results to template
+		foreach ($install_checker->categories as $install_checker->category)
 		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-		}
-		else
-		{
-			$passed['php'] = true;
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'			=> true,
+				'LEGEND'			=> $lang[$install_checker->category],
+				'LEGEND_EXPLAIN'	=> $lang[$install_checker->category . '_EXPLAIN'],
+			));
 
-			// We also give feedback on whether we're running in safe mode
-			$result = '<strong style="color:green">' . $lang['YES'];
-			if (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) == 'on')
+			$install_checker->set_errors();
+			$check_results[$install_checker->category] = $install_checker->get_errors();
+
+			// If no error messages returned, checks have been passed
+			$passed[$install_checker->category] = (empty($check_results[$install_checker->category])) ? true : false;
+
+			foreach ($install_checker->errors as $setting => $condition)
 			{
-				$result .= ', ' . $lang['PHP_SAFE_MODE'];
+				$additional_message = '';
+				if (in_array($setting, $check_results[$install_checker->category]))
+				{
+					switch ($install_checker->category)
+					{
+						case 'PHP_SUPPORTED_DB':
+						case 'PHP_OPTIONAL_MODULE':
+							$color = ($setting == 'APP_MAGICK') ? 'blue' : 'red';
+							$message = ($setting == 'APP_MAGICK') ? $lang['NO_LOCATION'] : $lang['UNAVAILABLE'];
+						break;
+
+						case 'FILES_REQUIRED':
+						case 'FILES_OPTIONAL':
+							$color = ($install_checker->exists[$setting]) ? 'green' : 'red';
+							$message = ($install_checker->exists[$setting]) ? $lang['FOUND'] : $lang['NOT_FOUND'];
+							$additional_message_color = ($install_checker->writable[$setting]) ? 'green' : 'red';
+							$additional_message = ($install_checker->writable[$setting]) ? $lang['WRITABLE'] : (($install_checker->exists[$setting]) ? $lang['UNWRITABLE'] : '');
+						break;
+
+						default:
+							$color = 'red';
+							$message = $lang['NO'];
+						break;
+					}
+				}
+				else
+				{
+					switch ($install_checker->category)
+					{
+						case 'PHP_SUPPORTED_DB':
+						case 'PHP_OPTIONAL_MODULE':
+							$color = 'green';
+							$message = $lang['AVAILABLE'];
+						break;
+
+						case 'PHP_SETTINGS':
+							$color = 'green';
+							$message = $lang['YES'];
+							$additional_message_color = 'green';
+							$additional_message = ($setting == 'PHP_VERSION_REQD' && $phpbb_php_ini->get_bool('safe_mode')) ? $lang['PHP_SAFE_MODE'] : '';
+						break;
+
+						case 'FILES_REQUIRED':
+						case 'FILES_OPTIONAL':
+							$color = 'green';
+							$message = $lang['FOUND'];
+							$additional_message_color = 'green';
+							$additional_message = $lang['WRITABLE'];
+						break;
+
+						default:
+							$color = 'green';
+							$message = $lang['YES'];
+						break;
+					}
+				}
+
+				$result = '<strong style="color:' . $color . '">' . $message . '</strong>';
+				$additional_result = ($additional_message) ? ', <strong style="color:' . $additional_message_color . '">' . $additional_message . '</strong>' : '';
+
+				$s_explain = isset($lang[$setting . '_EXPLAIN']);
+				$template->assign_block_vars('checks', array(
+					'TITLE'			=> isset($lang[$setting]) ? $lang[$setting] : $setting,
+					'RESULT'		=> $result . $additional_result,
+					'TITLE_EXPLAIN'	=> $s_explain ? $lang[$setting . '_EXPLAIN'] : '',
+
+					'S_EXPLAIN'		=> $s_explain,
+					'S_LEGEND'		=> false,
+				));
 			}
-			$result .= '</strong>';
 		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_VERSION_REQD'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> false,
-			'S_LEGEND'		=> false,
-		));
-
-		// Check for register_globals being enabled
-		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
-		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-		}
-		else
-		{
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
-
-		// Check for url_fopen
-		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
-		{
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-		else
-		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_URL_FOPEN_SUPPORT'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_URL_FOPEN_SUPPORT_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
-
-		// Check for getimagesize
-		if (@function_exists('getimagesize'))
-		{
-			$passed['imagesize'] = true;
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-		else
-		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_GETIMAGESIZE_SUPPORT'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_GETIMAGESIZE_SUPPORT_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
-		// Check for PCRE UTF-8 support
-		if (@preg_match('//u', ''))
-		{
-			$passed['pcre'] = true;
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-		else
-		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PCRE_UTF_SUPPORT'],
-			'TITLE_EXPLAIN'	=> $lang['PCRE_UTF_SUPPORT_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
 /**
 *		Better not enabling and adding to the loaded extensions due to the specific requirements needed
 		if (!@extension_loaded('mbstring'))
@@ -253,266 +229,16 @@ class install_install extends module
 		}
 */
 
-		$passed['mbstring'] = true;
-		if (@extension_loaded('mbstring'))
-		{
-			// Test for available database modules
-			$template->assign_block_vars('checks', array(
-				'S_LEGEND'			=> true,
-				'LEGEND'			=> $lang['MBSTRING_CHECK'],
-				'LEGEND_EXPLAIN'	=> $lang['MBSTRING_CHECK_EXPLAIN'],
-			));
-
-			$checks = array(
-				array('func_overload', '&', MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),
-				array('encoding_translation', '!=', 0),
-				array('http_input', '!=', 'pass'),
-				array('http_output', '!=', 'pass')
-			);
-
-			foreach ($checks as $mb_checks)
-			{
-				$ini_val = @ini_get('mbstring.' . $mb_checks[0]);
-				switch ($mb_checks[1])
-				{
-					case '&':
-						if (intval($ini_val) & $mb_checks[2])
-						{
-							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-							$passed['mbstring'] = false;
-						}
-						else
-						{
-							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-						}
-					break;
-
-					case '!=':
-						if ($ini_val != $mb_checks[2])
-						{
-							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
-							$passed['mbstring'] = false;
-						}
-						else
-						{
-							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-						}
-					break;
-				}
-				$template->assign_block_vars('checks', array(
-					'TITLE'			=> $lang['MBSTRING_' . strtoupper($mb_checks[0])],
-					'TITLE_EXPLAIN'	=> $lang['MBSTRING_' . strtoupper($mb_checks[0]) . '_EXPLAIN'],
-					'RESULT'		=> $result,
-
-					'S_EXPLAIN'		=> true,
-					'S_LEGEND'		=> false,
-				));
-			}
-		}
-
-		// Test for available database modules
-		$template->assign_block_vars('checks', array(
-			'S_LEGEND'			=> true,
-			'LEGEND'			=> $lang['PHP_SUPPORTED_DB'],
-			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
-		));
-
-		$available_dbms = get_available_dbms(false, true);
-		$passed['db'] = $available_dbms['ANY_DB_SUPPORT'];
-		unset($available_dbms['ANY_DB_SUPPORT']);
-
-		foreach ($available_dbms as $db_name => $db_ary)
-		{
-			if (!$db_ary['AVAILABLE'])
-			{
-				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-					'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
-
-					'S_EXPLAIN'	=> false,
-					'S_LEGEND'	=> false,
-				));
-			}
-			else
-			{
-				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-					'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
-
-					'S_EXPLAIN'	=> false,
-					'S_LEGEND'	=> false,
-				));
-			}
-		}
-
-		// Test for other modules
-		$template->assign_block_vars('checks', array(
-			'S_LEGEND'			=> true,
-			'LEGEND'			=> $lang['PHP_OPTIONAL_MODULE'],
-			'LEGEND_EXPLAIN'	=> $lang['PHP_OPTIONAL_MODULE_EXPLAIN'],
-		));
-
-		foreach ($this->php_dlls_other as $dll)
-		{
-			if (!@extension_loaded($dll))
-			{
-				if (!can_load_dll($dll))
-				{
-					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-						'RESULT'	=> '<strong style="color:red">' . $lang['UNAVAILABLE'] . '</strong>',
-
-						'S_EXPLAIN'	=> false,
-						'S_LEGEND'	=> false,
-					));
-					continue;
-				}
-			}
-
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-				'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
-
-				'S_EXPLAIN'	=> false,
-				'S_LEGEND'	=> false,
-			));
-		}
-
-		// Can we find Imagemagick anywhere on the system?
-		$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
-
-		$magic_home = getenv('MAGICK_HOME');
-		$img_imagick = '';
-		if (empty($magic_home))
-		{
-			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
-
-			$locations = array_merge($path_locations, $locations);
-			foreach ($locations as $location)
-			{
-				// The path might not end properly, fudge it
-				if (substr($location, -1, 1) !== '/')
-				{
-					$location .= '/';
-				}
-
-				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
-				{
-					$img_imagick = str_replace('\\', '/', $location);
-					continue;
-				}
-			}
-		}
-		else
-		{
-			$img_imagick = str_replace('\\', '/', $magic_home);
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'		=> $lang['APP_MAGICK'],
-			'RESULT'	=> ($img_imagick) ? '<strong style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</strong>' : '<strong style="color:blue">' . $lang['NO_LOCATION'] . '</strong>',
-
-			'S_EXPLAIN'	=> false,
-			'S_LEGEND'	=> false,
-		));
-
-		// Check permissions on files/directories we need access to
-		$template->assign_block_vars('checks', array(
-			'S_LEGEND'			=> true,
-			'LEGEND'			=> $lang['FILES_REQUIRED'],
-			'LEGEND_EXPLAIN'	=> $lang['FILES_REQUIRED_EXPLAIN'],
-		));
-
-		$directories = array('cache/', 'files/', 'store/');
-
-		umask(0);
-
-		$passed['files'] = true;
-		foreach ($directories as $dir)
-		{
-			$exists = $write = false;
-
-			// Try to create the directory if it does not exist
-			if (!file_exists($phpbb_root_path . $dir))
-			{
-				@mkdir($phpbb_root_path . $dir, 0777);
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
-			}
-
-			// Now really check
-			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
-			{
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
-				$exists = true;
-			}
-
-			// Now check if it is writable by storing a simple file
-			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
-			if ($fp !== false)
-			{
-				$write = true;
-			}
-			@fclose($fp);
-
-			@unlink($phpbb_root_path . $dir . 'test_lock');
-
-			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
-
-			$exists = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
-			$write = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
-
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $dir,
-				'RESULT'	=> $exists . $write,
-
-				'S_EXPLAIN'	=> false,
-				'S_LEGEND'	=> false,
-			));
-		}
-
-		// Check permissions on files/directories it would be useful access to
-		$template->assign_block_vars('checks', array(
-			'S_LEGEND'			=> true,
-			'LEGEND'			=> $lang['FILES_OPTIONAL'],
-			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
-		));
-
-		$directories = array('config.' . $phpEx, 'images/avatars/upload/');
-
-		foreach ($directories as $dir)
-		{
-			$write = $exists = true;
-			if (file_exists($phpbb_root_path . $dir))
-			{
-				if (!phpbb_is_writable($phpbb_root_path . $dir))
-				{
-					$write = false;
-				}
-			}
-			else
-			{
-				$write = $exists = false;
-			}
-
-			$exists_str = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
-			$write_str = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
-
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $dir,
-				'RESULT'	=> $exists_str . $write_str,
-
-				'S_EXPLAIN'	=> false,
-				'S_LEGEND'	=> false,
-			));
-		}
+		// Unset optional and DBMS checks results
+		unset($passed['PHP_OPTIONAL_MODULE']);
+		unset($passed['FILES_OPTIONAL']);
+		unset($passed['PHP_SUPPORTED_DB']);
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
-		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields = ($install_checker->imagemagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($install_checker->imagemagick) . '" />' : '';
 
-		$url = (!in_array(false, $passed)) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = (!in_array(false, $passed)) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
-
+		$url = (!in_array(false, $passed) && $install_checker->any_db_support) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = (!in_array(false, $passed) && $install_checker->any_db_support) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,
