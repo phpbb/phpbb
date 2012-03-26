@@ -614,9 +614,11 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		WHERE ' . $author_id_sql;
 	$db->sql_query($sql);
 
+	$user_ids_map = array_flip($user_ids);
+
 	foreach ($undelivered_user as $_user_id => $ary)
 	{
-		if (in_array($_user_id, $user_ids))
+		if (isset($user_ids_map[$_user_id]))
 		{
 			continue;
 		}
@@ -631,7 +633,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_transaction('commit');
 
 	// Reset newest user info if appropriate
-	if (in_array($config['newest_user_id'], $user_ids))
+	if (isset($user_ids_map[$config['newest_user_id']]))
 	{
 		update_last_username();
 	}
