@@ -353,7 +353,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$user_rows[$row['user_id']] = $row;
+		$user_rows[(int) $row['user_id']] = $row;
 	}
 	$db->sql_freeresult($result);
 
@@ -451,11 +451,10 @@ function user_delete($mode, $user_ids, $retain_username = true)
 					$post_username = $user_row['username'];
 				}
 
-				// If the user is inactive and newly registered we assume no posts from the user, and save the queries
-				if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
-				{
-				}
-				else
+				// If the user is inactive and newly registered
+				// we assume no posts from the user, and save
+				// the queries
+				if ($user_row['user_type'] != USER_INACTIVE || $user_row['user_inactive_reason'] != INACTIVE_REGISTER || $user_row['user_posts'])
 				{
 					// When we delete these users and retain the posts, we must assign all the data to the guest user
 					$sql = 'UPDATE ' . FORUMS_TABLE . '

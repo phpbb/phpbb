@@ -343,6 +343,7 @@ class acp_prune
 		{
 			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</select>';
 		}
+		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
