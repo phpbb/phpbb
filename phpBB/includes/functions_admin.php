@@ -910,7 +910,7 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 
 	if (!$delete_all)
 	{
-		$sql = 'SELECT v.*
+		$sql = 'SELECT v.poll_option_id
 			FROM ' . POLL_VOTES_TABLE . ' v
 			LEFT JOIN ' . TOPICS_TABLE . ' t
 				ON (t.topic_id = v.topic_id)
@@ -921,7 +921,7 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 	}
 	else
 	{
-		$sql = 'SELECT *
+		$sql = 'SELECT poll_option_id
 			FROM ' . POLL_VOTES_TABLE . '
 			WHERE vote_user_id = ' . $user_id;
 		$result = $db->sql_query($sql);
@@ -934,14 +934,16 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 	}
 	$db->sql_freeresult($result);
 
+	$sql_option_in_set = $db->sql_in_set('poll_option_id', $reduce_options_total);
+
 	$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
 		SET poll_option_total = poll_option_total - 1
-		WHERE ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
+		WHERE ' . $sql_option_in_set;
 	$db->sql_query($sql);
 
 	$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
 		WHERE user_id = ' . $user_id . '
-			AND ' . $db->sql_in_set('poll_option_id', $reduce_options_total);
+			AND ' . $sql_option_in_set;
 	$db->sql_query($sql);
 }
 
