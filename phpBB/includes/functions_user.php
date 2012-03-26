@@ -546,7 +546,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
-		WHERE ' . $user_id_sql; //reportee_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('reportee_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Change user_id to anonymous for this users triggered events
