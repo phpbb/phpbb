@@ -1123,7 +1123,7 @@ function phpbb_delete_user_pms($user_id)
 			}
 		}
 
-		$delete_rows[$row['msg_id']] = true;
+		$delete_rows[(int) $row['msg_id']] = (int) $row['msg_id'];
 	}
 	$db->sql_freeresult($result);
 
@@ -1154,13 +1154,13 @@ function phpbb_delete_user_pms($user_id)
 	// Delete private message data
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
 		WHERE user_id = $user_id
-			AND " . $db->sql_in_set('msg_id', array_keys($delete_rows));
+			AND " . $db->sql_in_set('msg_id', $delete_rows);
 	$db->sql_query($sql);
 
 	// Now we have to check which messages we can delete completely
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
+		WHERE ' . $db->sql_in_set('msg_id', $delete_rows);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
