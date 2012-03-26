@@ -1134,13 +1134,9 @@ function phpbb_delete_user_pms($user_id)
 		$db->sql_query($sql);
 	}
 
+	unset($undelivered_user[$user_id]);
 	foreach ($undelivered_user as $_user_id => $ary)
 	{
-		if ($_user_id == $user_id)
-		{
-			continue;
-		}
-
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
 				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
