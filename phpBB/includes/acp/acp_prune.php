@@ -333,7 +333,8 @@ class acp_prune
 		}
 
 		$s_group_list = '';
-		$sql = 'SELECT group_id, group_name FROM ' . GROUPS_TABLE . '
+		$sql = 'SELECT group_id, group_name
+			FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
 			ORDER BY group_name ASC';
 		$result = $db->sql_query($sql);
@@ -403,7 +404,7 @@ class acp_prune
 				// so that our time range is a full day instead of 1 second
 				if ($joined_after == $joined_before)
 				{
-					$joined_after[2] += 1; //$joined_after[2]++;
+					$joined_after[2] += 1;
 				}
 
 				$joined_sql = ' AND user_regdate BETWEEN ' . gmmktime(0, 0, 0, (int) $joined_after[1], (int) $joined_after[2], (int) $joined_after[0]) . ' AND ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
