@@ -1169,9 +1169,7 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	$delete_ids = array_keys($delete_rows);
-
-	if (sizeof($delete_ids))
+	if (!empty($delete_rows))
 	{
 		// Check if there are any attachments we need to remove
 		if (!function_exists('delete_attachments'))
@@ -1179,10 +1177,10 @@ function phpbb_delete_user_pms($user_id)
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
-		delete_attachments('message', $delete_ids, false);
+		delete_attachments('message', $delete_rows, false);
 
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
+			WHERE ' . $db->sql_in_set('msg_id', $delete_rows);
 		$db->sql_query($sql);
 	}
 
