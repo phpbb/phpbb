@@ -1113,7 +1113,15 @@ function phpbb_delete_user_pms($user_id)
 		{
 			// Undelivered messages
 			$undelivered_msg[] = $row['msg_id'];
-			$undelivered_user[$row['user_id']][] = true;
+
+			if (isset($undelivered_user[$row['user_id']]))
+			{
+				++$undelivered_user[$row['user_id']];
+			}
+			else
+			{
+				$undelivered_user[$row['user_id']] = 1;
+			}
 		}
 
 		$delete_rows[$row['msg_id']] = true;
@@ -1135,11 +1143,11 @@ function phpbb_delete_user_pms($user_id)
 	}
 
 	unset($undelivered_user[$user_id]);
-	foreach ($undelivered_user as $_user_id => $ary)
+	foreach ($undelivered_user as $_user_id => $count)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
-				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
+			SET user_new_privmsg = user_new_privmsg - ' . $count . ',
+				user_unread_privmsg = user_unread_privmsg - ' . $count . '
 			WHERE user_id = ' . $_user_id;
 		$db->sql_query($sql);
 	}
