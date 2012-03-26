@@ -1184,7 +1184,8 @@ function phpbb_delete_user_pms($user_id)
 		$db->sql_query($sql);
 	}
 
-	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
+	// Set the remaining author id to anonymous
+	// This way users are still able to read messages from users being removed
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 		SET author_id = ' . ANONYMOUS . '
 		WHERE author_id = ' . $user_id;
