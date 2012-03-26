@@ -1106,7 +1106,6 @@ function phpbb_delete_user_pms($user_id)
 	$result = $db->sql_query($sql);
 
 	$undelivered_msg = $undelivered_user = $delete_rows = array();
-	$num_unread = $num_new = $num_deleted = 0;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
