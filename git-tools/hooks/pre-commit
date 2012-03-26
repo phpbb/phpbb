@@ -80,3 +80,28 @@ then
 	echo -e "$errors" | grep "^Parse error:"
 	exit 1
 fi
+
+
+# Compile a list of changed files
+FILES=`git diff --name-only HEAD^`
+ERRORS=''
+
+for FILE in `egrep -l '(\s$|^ {1,3}\t)' $FILES`
+do
+	ERRORS="$ERRORS\nWhitespace issue detected in $FILE"
+done
+
+for FILE in $FILES
+do
+	if ! tail -c1 $FILE | read _
+	then
+		ERRORS="$ERRORS\nNo newline at end of $FILE"
+	fi
+done
+
+# Abort commit if any errors
+if [ "$ERRORS" != '' ]
+then
+	echo -e "Commit has been aborted:$ERRORS"
+	exit 1
+fi

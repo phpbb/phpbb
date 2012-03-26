@@ -171,7 +171,7 @@ class mcp_ban
 				case 'user':
 					$pre_fill = (string) $db->sql_fetchfield('username');
 				break;
-				
+
 				case 'ip':
 					$pre_fill = (string) $db->sql_fetchfield('user_ip');
 				break;

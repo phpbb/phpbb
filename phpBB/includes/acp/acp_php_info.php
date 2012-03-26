@@ -81,7 +81,7 @@ class acp_php_info
 
 		$template->assign_var('PHPINFO', $output);
 	}
-	
+
 	function remove_spaces($matches)
 	{
 		return '<a name="' . str_replace(' ', '_', $matches[1]) . '">';

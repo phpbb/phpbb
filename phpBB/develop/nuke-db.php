@@ -14,7 +14,7 @@ die("Please read the first lines of this script for instructions on how to enabl
 //
 
 
-// Just a handy script to completely wipe out the contents of a 
+// Just a handy script to completely wipe out the contents of a
 // database.. Use with caution :)
 
 

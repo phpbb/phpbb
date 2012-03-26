@@ -74,7 +74,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchstart = $postcounter + 1;
 	$batchend = $postcounter + $batchsize;
 	$batchcount++;
-	
+
 	$sql = "SELECT *
 		FROM " . POSTS_TABLE . "
 		WHERE post_id
@@ -90,7 +90,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$db->sql_freeresult($result);
 
 	$post_rows = sizeof($rowset);
-	
+
 	if( $post_rows )
 	{
 

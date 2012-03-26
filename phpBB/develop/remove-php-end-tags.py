@@ -25,7 +25,7 @@ if not os.path.exists(path):
 
 if options.aggressive:
     import re
-    
+
     fix_re = re.compile(r'\s*\?>\s*$')
     def fix_content(content):
         content = fix_re.sub(r'\n', content)

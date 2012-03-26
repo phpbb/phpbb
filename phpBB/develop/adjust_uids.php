@@ -72,7 +72,7 @@ while ($row = $db->sql_fetchrow($result))
 	if ($row['enable_bbcode'] && !empty($bbcode_uid) && strpos($row['post_text'], $bbcode_uid) === false)
 	{
 		$row['post_text'] = preg_replace('/\:[0-9a-z]{8}\]/', ":$bbcode_uid]", $row['post_text']);
-		
+
 		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = '" . $db->sql_escape($row['post_text']) . "'
 			WHERE post_id = " . $row['post_id'];
 		$db->sql_query($sql);
@@ -104,7 +104,7 @@ while ($row = $db->sql_fetchrow($result))
 	if ($row['enable_bbcode'] && !empty($bbcode_uid) && strpos($row['message_text'], $bbcode_uid) === false)
 	{
 		$row['message_text'] = preg_replace('/\:[0-9a-z]{8}\]/', ":$bbcode_uid]", $row['message_text']);
-		
+
 		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET message_text = '" . $db->sql_escape($row['message_text']) . "'
 			WHERE msg_id = " . $row['msg_id'];
 		$db->sql_query($sql);

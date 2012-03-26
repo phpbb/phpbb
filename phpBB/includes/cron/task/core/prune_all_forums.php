@@ -42,7 +42,7 @@ class phpbb_cron_task_core_prune_all_forums extends phpbb_cron_task_base
 
 		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 			FROM ' . FORUMS_TABLE . "
-			WHERE enable_prune = 1 
+			WHERE enable_prune = 1
 				AND prune_next < " . time();
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
