@@ -24,14 +24,11 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
-// If given an extension, look for a front controller
+// Handle the display of extension front pages
 if ($ext = $request->variable('ext', ''))
 {
-	// The class to load
 	$class = 'phpbb_ext_' . str_replace('/', '_', $ext) . '_controller';
 
-	// Make sure the specified extension is enabled
-	// and that it has a controller class
 	if (!$phpbb_extension_manager->available($ext))
 	{
 		send_status_line(404, 'Not Found');
@@ -48,17 +45,14 @@ if ($ext = $request->variable('ext', ''))
 		trigger_error($user->lang('EXTENSION_CONTROLLER_MISSING', $ext));
 	}
 
-	// Instantiate the extension controller
 	$controller = new $class;
 
-	// But let's make sure it's actually a proper controller
 	if (!($controller instanceof phpbb_extension_controller_interface))
 	{
 		send_status_line(500, 'Internal Server Error');
 		trigger_error($user->lang('EXTENSION_CLASS_WRONG_TYPE', $class));
 	}
 
-	// Let's get it started...
 	$controller->handle();
 	exit_handler();
 }

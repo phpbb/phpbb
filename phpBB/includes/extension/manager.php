@@ -432,7 +432,7 @@ class phpbb_extension_manager
 	/**
 	* Check to see if a given extension is available on the filesystem
 	*
-	* @param string $name Extension name to check
+	* @param string $name Extension name to check NOTE: Can be user input
 	* @return bool Depending on whether or not the extension is available
 	*/
 	public function available($name)
