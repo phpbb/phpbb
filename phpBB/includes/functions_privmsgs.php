@@ -1105,7 +1105,7 @@ function phpbb_delete_user_pms($user_id)
 				AND folder_id = ' . PRIVMSGS_NO_BOX . ')';
 	$result = $db->sql_query($sql);
 
-	$undelivered_msg = $undelivered_user = $delete_rows = array();
+	$undelivered_msg = $undelivered_user = $delete_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
@@ -1123,11 +1123,11 @@ function phpbb_delete_user_pms($user_id)
 			}
 		}
 
-		$delete_rows[(int) $row['msg_id']] = (int) $row['msg_id'];
+		$delete_ids[(int) $row['msg_id']] = (int) $row['msg_id'];
 	}
 	$db->sql_freeresult($result);
 
-	if (!sizeof($delete_rows))
+	if (empty($delete_ids))
 	{
 		return false;
 	}
@@ -1154,22 +1154,22 @@ function phpbb_delete_user_pms($user_id)
 	// Delete private message data
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
 		WHERE user_id = $user_id
-			AND " . $db->sql_in_set('msg_id', $delete_rows);
+			AND " . $db->sql_in_set('msg_id', $delete_ids);
 	$db->sql_query($sql);
 
 	// Now we have to check which messages we can delete completely
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('msg_id', $delete_rows);
+		WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		unset($delete_rows[$row['msg_id']]);
+		unset($delete_ids[$row['msg_id']]);
 	}
 	$db->sql_freeresult($result);
 
-	if (!empty($delete_rows))
+	if (!empty($delete_ids))
 	{
 		// Check if there are any attachments we need to remove
 		if (!function_exists('delete_attachments'))
@@ -1177,10 +1177,10 @@ function phpbb_delete_user_pms($user_id)
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
-		delete_attachments('message', $delete_rows, false);
+		delete_attachments('message', $delete_ids, false);
 
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $delete_rows);
+			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 		$db->sql_query($sql);
 	}
 
