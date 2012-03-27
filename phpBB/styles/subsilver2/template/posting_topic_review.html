@@ -51,6 +51,13 @@
 							<table width="100%" cellspacing="0" cellpadding="2">
 							<tr>
 								<td>
+									<!-- IF topic_review_row.POST_ID == REPORTED_POST_ID -->
+									<table width="100%" cellspacing="0">
+										<tr>
+											<span class="postreported">{REPORTED_IMG}</span>
+										</tr>
+									</table>
+									<!-- ENDIF -->
 									<div class="postbody">{topic_review_row.MESSAGE}</div>
 
 									<!-- IF topic_review_row.S_HAS_ATTACHMENTS -->
