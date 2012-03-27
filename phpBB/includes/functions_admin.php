@@ -910,41 +910,46 @@ function phpbb_delete_user_poll_votes($user_id, $delete_all = false)
 
 	if (!$delete_all)
 	{
-		$sql = 'SELECT v.poll_option_id
-			FROM ' . POLL_VOTES_TABLE . ' v
-			LEFT JOIN ' . TOPICS_TABLE . ' t
-				ON (t.topic_id = v.topic_id)
+		$sql = 'SELECT v.poll_option_id, v.topic_id
+			FROM ' . POLL_VOTES_TABLE . ' v, ' . TOPICS_TABLE . ' t
 			WHERE v.vote_user_id = ' . $user_id . '
+				AND v.topic_id = t.topic_id
 				AND (t.poll_length = 0
 					OR t.poll_start + t.poll_length > ' . time() . ')';
 		$result = $db->sql_query($sql);
 	}
 	else
 	{
-		$sql = 'SELECT poll_option_id
+		$sql = 'SELECT poll_option_id, topic_id
 			FROM ' . POLL_VOTES_TABLE . '
 			WHERE vote_user_id = ' . $user_id;
 		$result = $db->sql_query($sql);
 	}
 
-	$reduce_options_total = array();
+	$voted_poll_topics = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$reduce_options_total[] = (int) $row['poll_option_id'];
+		$voted_poll_topics[(int) $row['topic_id']][] = (int) $row['poll_option_id'];
 	}
 	$db->sql_freeresult($result);
 
-	$sql_option_in_set = $db->sql_in_set('poll_option_id', $reduce_options_total);
+	// poll_option_id does not have autoincrement, so we need to use topic_id and poll_option_id
+	foreach ($voted_poll_topics as $topic_id => $voted_options)
+	{
+		$sql_voted_options = $db->sql_in_set('poll_option_id', $voted_options);
 
-	$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-		SET poll_option_total = poll_option_total - 1
-		WHERE ' . $sql_option_in_set;
-	$db->sql_query($sql);
+		$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
+			SET poll_option_total = poll_option_total - 1
+			WHERE topic_id = ' . $topic_id . '
+				AND ' . $sql_voted_options;
+		$db->sql_query($sql);
 
-	$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
-		WHERE user_id = ' . $user_id . '
-			AND ' . $sql_option_in_set;
-	$db->sql_query($sql);
+		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
+			WHERE user_id = ' . $user_id . '
+				AND topic_id = ' . $topic_id . '
+				AND ' . $sql_voted_options;
+		$db->sql_query($sql);
+	}
 }
 
 /**
