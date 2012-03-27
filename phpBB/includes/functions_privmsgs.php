@@ -1169,7 +1169,17 @@ function phpbb_delete_user_pms($user_id)
 		$db->sql_query($sql);
 	}
 
-	unset($undelivered_user[$user_id]);
+	// Reset the user´s pm count to 0
+	if (isset($undelivered_user[$user_id]))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_new_privmsg = 0,
+				user_unread_privmsg = 0
+			WHERE user_id = ' . $user_id;
+		$db->sql_query($sql);
+		unset($undelivered_user[$user_id]);
+	}
+
 	foreach ($undelivered_user as $_user_id => $count)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
