@@ -1098,14 +1098,42 @@ function phpbb_delete_user_pms($user_id)
 	}
 
 	// Get PM Information for later deleting
+	// The two queries where split, so we can use our indexes
+	// Part 1: get PMs the user received
 	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id . '
-			OR (author_id = ' . $user_id . '
-				AND folder_id = ' . PRIVMSGS_NO_BOX . ')';
+		WHERE user_id = ' . $user_id;
 	$result = $db->sql_query($sql);
 
 	$undelivered_msg = $undelivered_user = $delete_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
+		{
+			// Undelivered messages
+			$undelivered_msg[] = $row['msg_id'];
+
+			if (isset($undelivered_user[$row['user_id']]))
+			{
+				++$undelivered_user[$row['user_id']];
+			}
+			else
+			{
+				$undelivered_user[$row['user_id']] = 1;
+			}
+		}
+
+		$delete_ids[(int) $row['msg_id']] = (int) $row['msg_id'];
+	}
+	$db->sql_freeresult($result);
+
+	// Part 2: get PMs the user sent
+	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE author_id = ' . $user_id . '
+				AND folder_id = ' . PRIVMSGS_NO_BOX;
+	$result = $db->sql_query($sql);
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
