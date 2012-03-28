@@ -25,23 +25,31 @@ interface phpbb_log_interface
 	/**
 	* This function returns the state of the log-system.
 	*
-	* @return	bool	True if log is enabled
+	* @param	string	$type	The log type we want to check. Empty to get global log status.
+	*
+	* @return	bool	True if log for the type is enabled
 	*/
-	public function is_enabled();
+	public function is_enabled($type = '');
 
 	/**
 	* This function allows disable the log-system. When add_log is called, the log will not be added to the database.
 	*
+	* @param	mixed	$type	The log type we want to disable. Empty to disable all logs.
+	*							Can also be an array of types
+	*
 	* @return	null
 	*/
-	public function disable();
+	public function disable($type = '');
 
 	/**
 	* This function allows re-enable the log-system.
 	*
+	* @param	mixed	$type	The log type we want to enable. Empty to enable all logs.
+	*							Can also be an array of types
+	*
 	* @return	null
 	*/
-	public function enable();
+	public function enable($type = '');
 
 	/**
 	* Adds a log to the database
