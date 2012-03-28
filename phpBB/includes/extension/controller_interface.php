@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 interface phpbb_extension_controller_interface
 {
 	/**
-	* handle the request to display a page from an extension
+	* Handle the request to display a page from an extension
 	*
 	* @return	null
 	*/

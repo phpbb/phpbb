@@ -74,11 +74,4 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 		$this->phpEx = $phpEx;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
-
-	/**
-	* Handle the request to display a page from an extension
-	*
-	* @return	null
-	*/
-	abstract public function handle();
 }
