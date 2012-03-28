@@ -61,7 +61,7 @@ abstract class phpbb_extension_controller implements phpbb_extension_controller_
 	* Constructor method that provides the common phpBB objects as inherited class
 	* properties for automatic availability in extension controllers
 	*/
-	function __construct()
+	public function __construct()
 	{
 		global $request, $db, $user, $template, $config;
 		global $phpEx, $phpbb_root_path;
