@@ -47,7 +47,7 @@ if ($ext = $request->variable('ext', ''))
 
 	$controller = new $class;
 
-	if (!($controller instanceof phpbb_extension_controller_interface))
+	if (!($controller instanceof phpbb_extension_controller))
 	{
 		send_status_line(500, 'Internal Server Error');
 		trigger_error($user->lang('EXTENSION_CLASS_WRONG_TYPE', $class));
