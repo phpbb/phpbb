@@ -17,12 +17,11 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup('viewforum');
+$user->setup();
 
 // Handle the display of extension front pages
 if ($ext = $request->variable('ext', ''))
@@ -56,6 +55,10 @@ if ($ext = $request->variable('ext', ''))
 	$controller->handle();
 	exit_handler();
 }
+
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
+$user->add_lang('viewforum');
 
 display_forums('', $config['load_moderators']);
 
