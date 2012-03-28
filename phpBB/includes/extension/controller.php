@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package extension
 */
-abstract class phpbb_extension_controller
+abstract class phpbb_extension_controller implements phpbb_extension_controller_interface
 {
 	/**
 	* @var phpbb_request Request class object
