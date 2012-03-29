@@ -1094,6 +1094,9 @@ function database_update_info()
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
 				),
+				REPORTS_TABLE		=> array(
+					'reported_post_text'	=> array('MTEXT_UNI', ''),
+				),
 			),
 			'change_columns'	=> array(
 				GROUPS_TABLE		=> array(

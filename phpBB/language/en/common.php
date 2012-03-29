@@ -185,7 +185,11 @@ $lang = array_merge($lang, array(
 	'ERR_WRONG_PATH_TO_PHPBB'			=> 'The phpBB path specified appears to be invalid.',
 	'EXPAND_VIEW'						=> 'Expand view',
 	'EXTENSION'							=> 'Extension',
+	'EXTENSION_CONTROLLER_MISSING'		=> 'The extension <strong>%s</strong> is missing a controller class and cannot be accessed through the front-end.',
+	'EXTENSION_CLASS_WRONG_TYPE'		=> 'The extension controller class <strong>%s</strong> is not an instance of the phpbb_extension_controller_interface.',
+	'EXTENSION_DISABLED'				=> 'The extension <strong>%s</strong> is not enabled.',
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed.',
+	'EXTENSION_DOES_NOT_EXIST'			=> 'The extension <strong>%s</strong> does not exist.',
 
 	'FAQ'					=> 'FAQ',
 	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
