@@ -125,6 +125,14 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
+		'sqlite_3'		=> array(
+			'LABEL'			=> 'SQLite_3',
+			'SCHEMA'		=> 'sqlite_3',
+			'MODULE'		=> 'sqlite3',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'sqlite_3',
+			'AVAILABLE'		=> true,
+		),
 	);
 
 	if ($dbms)
@@ -254,6 +262,12 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		return false;
 	}
 
+	if ($dbms_details['DRIVER'] == 'sqlite_3' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	{
+		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
+		return false;
+	}
+
 	// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
 	switch ($dbms_details['DRIVER'])
 	{
@@ -278,6 +292,12 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		break;
 
 		case 'sqlite':
+			$sql = 'SELECT name
+				FROM sqlite_master
+				WHERE type = "table"';
+		break;
+
+		case 'sqlite_3':
 			$prefix_length = 200;
 		break;
 
@@ -329,6 +349,13 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 			case 'sqlite':
 				if (version_compare(sqlite_libversion(), '2.8.2', '<'))
+				{
+					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
+				}
+			break;
+			
+			case 'sqlite_3':
+				if (version_compare(sqlite3_libversion(), '3.0.0', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
 				}
