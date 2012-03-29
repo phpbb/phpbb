@@ -122,8 +122,10 @@ class custom_profile
 
 			case FIELD_BOOL:
 				$field_value = (bool) $field_value;
-			
-				if (!$field_value && $field_data['field_required'])
+
+				// For the boolean CPF, only throw FIELD_REQUIRED error for radio buttons,
+				// because the checkbox is allowed to be not set regardless
+				if ($field_data['field_required'] && $field_data['field_length'] == 1 && !$field_value)
 				{
 					return 'FIELD_REQUIRED';
 				}
