@@ -250,33 +250,33 @@ class phpbb_db_tools
 		),
 		
 		'sqlite_3'	=> array(
-             'INT:'		=> 'int(%d)',
-             'BINT'		=> 'bigint(20)',
-             'UINT'            => 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
-             'UINT:'            => 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
-             'TINT:'            => 'tinyint(%d)',
-             'USINT'            => 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
-             'BOOL'            => 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
-             'VCHAR'            => 'varchar(255)',
-             'VCHAR:'      => 'varchar(%d)',
-             'CHAR:'            => 'char(%d)',
-             'XSTEXT'      => 'text(65535)',
-                  'STEXT'            => 'text(65535)',
-                  'TEXT'            => 'text(65535)',
-                  'MTEXT'            => 'mediumtext(16777215)',
-                  'XSTEXT_UNI'=> 'text(65535)',
-                  'STEXT_UNI'      => 'text(65535)',
-                  'TEXT_UNI'      => 'text(65535)',
-                  'MTEXT_UNI'      => 'mediumtext(16777215)',
-                  'TIMESTAMP'      => 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
-                  'DECIMAL'      => 'decimal(5,2)',
-                  'DECIMAL:'      => 'decimal(%d,2)',
-                  'PDECIMAL'      => 'decimal(6,3)',
-                  'PDECIMAL:'      => 'decimal(%d,3)',
-                  'VCHAR_UNI'      => 'varchar(255)',
-                  'VCHAR_UNI:'=> 'varchar(%d)',
-                  'VCHAR_CI'      => 'varchar(255)',
-                  'VARBINARY'      => 'blob',
+			'INT:'		=> 'int(%d)',
+			'BINT'		=> 'bigint(20)',
+			'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
+			'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
+			'TINT:'		=> 'tinyint(%d)',
+			'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
+			'BOOL'		=> 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
+			'VCHAR'		=> 'varchar(255)',
+			'VCHAR:'	=> 'varchar(%d)',
+			'CHAR:'		=> 'char(%d)',
+			'XSTEXT'	=> 'text(65535)',
+			'STEXT'		=> 'text(65535)',
+			'TEXT'		=> 'text(65535)',
+ 			'MTEXT'		=> 'mediumtext(16777215)',
+ 			'XSTEXT_UNI'=> 'text(65535)',
+ 			'STEXT_UNI'	=> 'text(65535)',
+			'TEXT_UNI'	=> 'text(65535)',
+			'MTEXT_UNI'	=> 'mediumtext(16777215)',
+			'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
+			'DECIMAL'	=> 'decimal(5,2)',
+ 			'DECIMAL:'	=> 'decimal(%d,2)',
+			'PDECIMAL'	=> 'decimal(6,3)',
+			'PDECIMAL:'	=> 'decimal(%d,3)',
+			'VCHAR_UNI'	=> 'varchar(255)',
+			'VCHAR_UNI:'=> 'varchar(%d)',
+			'VCHAR_CI'	=> 'varchar(255)',
+     		'VARBINARY'	=> 'blob',
          ),
 
 		'postgres'	=> array(
@@ -734,7 +734,7 @@ class phpbb_db_tools
 		$sqlite = false;
 
 		// For SQLite we need to perform the schema changes in a much more different way
-		if (($this->db->sql_layer || $this->db->sql_layer == 'sqlite_3') == 'sqlite' && $this->return_statements)
+		if (($this->db->sql_layer == 'sqlite' || $this->db->sql_layer == 'sqlite_3') && $this->return_statements)
 		{
 			$sqlite_data = array();
 			$sqlite = true;
@@ -1951,7 +1951,7 @@ class phpbb_db_tools
 					return $column_name;
 				}
 				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
-           	break;
+			break;
 		}
 
 		return $this->_sql_run_sql($statements);

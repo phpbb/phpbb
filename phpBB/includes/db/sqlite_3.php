@@ -182,7 +182,7 @@ class dbal_sqlite_3 extends dbal
       {
             global $cache;
 
-            if ($query_id === false)
+            if ($query_id == false)
             {
                   $query_id = $this->query_result;
             }
@@ -192,14 +192,17 @@ class dbal_sqlite_3 extends dbal
                   return $cache->sql_fetchrow($query_id);
             }
 
-            if( $query_id === false)
-                        return false;
+            if($query_id == false)
+            {
+            		return false;
+            }
 
                   $row = @sqlite3_fetch_array($query_id);
 
-                  if ( !sizeof($row) || !is_array($row))
+                  if (!sizeof($row) || !is_array($row))
+                  {
                         return $row;
-
+                  }
                   $rowx = array();
                   foreach ($row as $key => $value)
                   {
@@ -225,7 +228,7 @@ class dbal_sqlite_3 extends dbal
       {
             global $cache;
 
-            if ($query_id === false)
+            if ($query_id == false)
             {
                   $query_id = $this->query_result;
             }
