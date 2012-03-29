@@ -37,7 +37,8 @@ class phpbb_event_extension_subscriber_loader
 			->core_path('event/')
 			->get_classes();
 
-		foreach ($subscriber_classes as $class) {
+		foreach ($subscriber_classes as $class)
+		{
 			$subscriber = new $class();
 			$this->dispatcher->addSubscriber($subscriber);
 		}
