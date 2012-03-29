@@ -97,6 +97,10 @@ class acp_database
 							case 'sqlite':
 								$extractor = new sqlite_extractor($download, $store, $format, $filename, $time);
 							break;
+							
+							case 'sqlite_3':
+								$extractor = new sqlite3_extractor($download, $store, $format, $filename, $time);
+							break;
 
 							case 'postgres':
 								$extractor = new postgres_extractor($download, $store, $format, $filename, $time);
@@ -132,6 +136,7 @@ class acp_database
 								switch ($db->sql_layer)
 								{
 									case 'sqlite':
+									case 'sqlite_3':
 									case 'firebird':
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
@@ -323,6 +328,7 @@ class acp_database
 								case 'mysql4':
 								case 'mysqli':
 								case 'sqlite':
+								case 'sqlite_3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
@@ -1028,6 +1034,144 @@ class sqlite_extractor extends base_extractor
 					$row[$column_name] = 'NULL';
 				}
 				else if ($column_data == '')
+				{
+					$row[$column_name] = "''";
+				}
+				else if (strpos($col_types[$column_name], 'text') !== false || strpos($col_types[$column_name], 'char') !== false || strpos($col_types[$column_name], 'blob') !== false)
+				{
+					$row[$column_name] = sanitize_data_generic(str_replace("'", "''", $column_data));
+				}
+			}
+			$this->flush($sql_insert . implode(', ', $row) . ");\n");
+		}
+	}
+
+	function write_end()
+	{
+		$this->flush("COMMIT;\n");
+		parent::write_end();
+	}
+}
+
+/**
+* @package acp
+*/
+class sqlite3_extractor extends base_extractor
+{
+	function write_start($prefix)
+	{
+		$sql_data = "--\n";
+		$sql_data .= "-- phpBB Backup Script\n";
+		$sql_data .= "-- Dump of tables for $prefix\n";
+		$sql_data .= "-- DATE : " . gmdate("d-m-Y H:i:s", $this->time) . " GMT\n";
+		$sql_data .= "--\n";
+		$sql_data .= "BEGIN TRANSACTION;\n";
+		$this->flush($sql_data);
+	}
+
+	function write_table($table_name)
+	{
+		global $db;
+		$sql_data = '-- Table: ' . $table_name . "\n";
+		$sql_data .= "DROP TABLE $table_name;\n";
+
+		$sql = "SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table'
+				AND name = '" . $db->sql_escape($table_name) . "'
+			ORDER BY type DESC, name;";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Create Table
+		$sql_data .= $row['sql'] . ";\n";
+
+		$result = $db->sql_query("PRAGMA index_list('" . $db->sql_escape($table_name) . "');");
+
+		$ar = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ar[] = $row;
+		}
+		$db->sql_freeresult($result);
+		
+		foreach ($ar as $value)
+		{
+			if (strpos($value['name'], 'autoindex') !== false)
+			{
+				continue;
+			}
+
+			$result = $db->sql_query("PRAGMA index_info('" . $db->sql_escape($value['name']) . "');");
+
+			$fields = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$fields[] = $row['name'];
+			}
+			$db->sql_freeresult($result);
+
+			$sql_data .= 'CREATE ' . ($value['unique'] ? 'UNIQUE ' : '') . 'INDEX ' . $value['name'] . ' on ' . $table_name . ' (' . implode(', ', $fields) . ");\n";
+		}
+
+		$this->flush($sql_data . "\n");
+	}
+
+	function write_data($table_name)
+	{
+		global $db;
+		static $proper;
+
+		if (is_null($proper))
+		{
+			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
+		}
+
+		if ($proper)
+		{
+			$col_types = $db->fetch_column_types($table_name); 
+		}
+		else
+		{
+			$sql = "SELECT sql
+				FROM sqlite_master
+				WHERE type = 'table'
+					AND name = '" . $table_name . "'";
+			$table_data = sqlite_single_query($db->db_connect_id, $sql);
+			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
+			$table_data = trim($table_data);
+
+			preg_match('#\((.*)\)#s', $table_data, $matches);
+
+			$table_cols = explode(',', trim($matches[1]));
+			foreach ($table_cols as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
+
+				// Hit a primary key, those are not what we need :D
+				if (empty($entities[1]) || (strtolower($entities[0]) === 'primary' && strtolower($entities[1]) === 'key'))
+				{
+					continue;
+				}
+				$col_types[$column_name] = $entities[1];
+			}
+		}
+
+		$sql = "SELECT *
+			FROM $table_name";
+		$result = sqlite3_query($db->db_connect_id, $sql);
+		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
+		while ($row = sqlite3_fetch_array($result))
+		{
+			foreach ($row as $column_name => $column_data)
+			{
+				if (is_null($column_data))
+				{
+					$row[$column_name] = 'NULL';
+				}
+				else if ($column_data == '' && stripos($col_types[$column_name], 'int') === false)
 				{
 					$row[$column_name] = "''";
 				}

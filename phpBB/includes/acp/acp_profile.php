@@ -123,6 +123,7 @@ class acp_profile
 					switch ($db->sql_layer)
 					{
 						case 'sqlite':
+						case 'sqlite_3':
 							$sql = "SELECT sql
 								FROM sqlite_master
 								WHERE type = 'table'
@@ -1509,6 +1510,40 @@ class acp_profile
 					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident [$type]";
 				}
 
+			break;
+			
+			case 'sqlite_3':
+
+				switch ($field_type)
+				{
+					case FIELD_STRING:
+						$type = ' VARCHAR(255) ';
+					break;
+
+					case FIELD_DATE:
+						$type = 'VARCHAR(10) ';
+					break;
+
+					case FIELD_TEXT:
+						$type = "TEXT(65535)";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
+					break;
+
+					case FIELD_BOOL:
+						$type = 'TINYINT(2) ';
+					break;
+
+					case FIELD_DROPDOWN:
+						$type = 'MEDIUMINT(8) ';
+					break;
+
+					case FIELD_INT:
+						$type = 'BIGINT(20) ';
+					break;
+				}
+				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident [$type]";
+			
 			break;
 
 			case 'mssql':
