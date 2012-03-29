@@ -3,6 +3,7 @@
 /phpBB/cache/*.html
 /phpBB/cache/*.php
 /phpBB/cache/queue.php.lock
+/phpBB/composer.phar
 /phpBB/config.php
 /phpBB/ext/*
 /phpBB/files/*
