@@ -628,9 +628,14 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		$result = $db->sql_query($sql);
 		if ($db->sql_error_triggered)
 		{
-			$errored = true;
-			$error_ary['sql'][] = $db->sql_error_sql;
-			$error_ary['error_code'][] = $db->sql_error_returned;
+			$ary0 = array();
+			$ary0['error_code'][] = $db->_sql_error();
+			if( !($ary0['error_code'][0]['message'] == 'not an error'))
+			{
+				$errored = true;
+				$error_ary['sql'][] = $db->sql_error_sql;
+				$error_ary['error_code'][] = $db->sql_error_returned;
+			}
 		}
 	}
 

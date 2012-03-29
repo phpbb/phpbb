@@ -674,7 +674,8 @@ class dbal
 
 		$this->sql_error_returned = $this->_sql_error();
 
-		if (!$this->return_on_error)
+		if (!$this->return_on_error &&
+			$this->sql_error_returned['message'] != 'not an error')
 		{
 			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $this->sql_error_returned['message'] . ' [' . $this->sql_error_returned['code'] . ']';
 
