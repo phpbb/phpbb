@@ -52,7 +52,7 @@ $lang = array_merge($lang, array(
 	'BOARD_NOT_INSTALLED'			=> 'No installation found',
 	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'The phpBB Unified Convertor Framework requires a default installation of phpBB3 to function, please <a href="%s">proceed by first installing phpBB3</a>.',
 	'BACKUP_NOTICE'					=> 'Please backup your board before updating in case any problems arise during the update process.',
-
+	
 	'CATEGORY'					=> 'Category',
 	'CACHE_STORE'				=> 'Cache type',
 	'CACHE_STORE_EXPLAIN'		=> 'The physical location where data is cached, filesystem is preferred.',
@@ -152,6 +152,7 @@ $lang = array_merge($lang, array(
 	'DLL_ORACLE'				=> 'Oracle',
 	'DLL_POSTGRES'				=> 'PostgreSQL',
 	'DLL_SQLITE'				=> 'SQLite',
+	'DLL_SQLITE_3'             =>  'SQLite 3.0' ,
 	'DLL_XML'					=> 'XML support [ Jabber ]',
 	'DLL_ZLIB'					=> 'zlib compression support [ gz, .tar.gz, .zip ]',
 	'DL_CONFIG'					=> 'Download config',
@@ -212,6 +213,7 @@ $lang = array_merge($lang, array(
 		<li>MySQL 3.23 or above (MySQLi supported)</li>
 		<li>PostgreSQL 7.3+</li>
 		<li>SQLite 2.8.2+</li>
+		<li>SQLite 3.0+</li> 
 		<li>Firebird 2.1+</li>
 		<li>MS SQL Server 2000 or above (directly or via ODBC)</li>
 		<li>MS SQL Server 2005 or above (native)</li>
@@ -626,3 +628,5 @@ $lang = array_merge($lang, array(
 
 	'TOPICS_TOPIC_TITLE'			=> 'Welcome to phpBB3',
 ));
+
+?>
