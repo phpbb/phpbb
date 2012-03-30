@@ -89,7 +89,9 @@ phpbb.add_ajax_callback('forum_up', function() {
 phpbb.add_ajax_callback('activate_deactivate', function(res) {
 	var el = $(this),
 		new_href = el.attr('href');
+
 	el.text(res.text);
+
 	if (new_href.indexOf('deactivate') !== -1)
 	{
 		new_href = new_href.replace('deactivate', 'activate')
@@ -98,6 +100,7 @@ phpbb.add_ajax_callback('activate_deactivate', function(res) {
 	{
 		new_href = new_href.replace('activate', 'deactivate')
 	}
+
 	el.attr('href', new_href);
 });
 
