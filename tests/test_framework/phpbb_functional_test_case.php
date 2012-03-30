@@ -14,6 +14,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $client;
 	protected $root_url;
 
+	protected $cache = null;
+	protected $db = null;
+	protected $extension_manager = null;
+
 	static protected $config = array();
 	static protected $already_installed = false;
 
@@ -64,6 +68,60 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$this->bootstrap();
 			static::$already_installed = true;
 		}
+	}
+
+	protected function get_db()
+	{
+		global $phpbb_root_path, $phpEx;
+		// so we don't reopen an open connection
+		if (!($this->db instanceof dbal))
+		{
+			if (!class_exists('dbal_' . self::$config['dbms']))
+			{
+				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
+			}
+			$sql_db = 'dbal_' . self::$config['dbms'];
+			$this->db = new $sql_db();
+			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+		}
+		return $this->db;
+	}
+
+	protected function get_cache_driver()
+	{
+		if (!$this->cache)
+		{
+			$this->cache = new phpbb_cache_driver_file;
+		}
+
+		return $this->cache;
+	}
+
+	protected function purge_cache()
+	{
+		$cache = $this->get_cache_driver();
+
+		$cache->purge();
+		$cache->unload();
+		$cache->load();
+	}
+
+	protected function get_extension_manager()
+	{
+		global $phpbb_root_path, $phpEx;
+
+		if (!$this->extension_manager)
+		{
+			$this->extension_manager = new phpbb_extension_manager(
+				$this->get_db(),
+				self::$config['table_prefix'] . 'ext',
+				$phpbb_root_path,
+				".$phpEx",
+				$this->get_cache_driver()
+			);
+		}
+
+		return $this->extension_manager;
 	}
 
 	protected function install_board()

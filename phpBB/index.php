@@ -24,6 +24,39 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
+// Handle the display of extension front pages
+if ($ext = $request->variable('ext', ''))
+{
+	$class = 'phpbb_ext_' . str_replace('/', '_', $ext) . '_controller';
+
+	if (!$phpbb_extension_manager->available($ext))
+	{
+		send_status_line(404, 'Not Found');
+		trigger_error($user->lang('EXTENSION_DOES_NOT_EXIST', $ext));	
+	}
+	else if (!$phpbb_extension_manager->enabled($ext))
+	{
+		send_status_line(404, 'Not Found');
+		trigger_error($user->lang('EXTENSION_DISABLED', $ext));
+	}
+	else if (!class_exists($class))
+	{
+		send_status_line(404, 'Not Found');
+		trigger_error($user->lang('EXTENSION_CONTROLLER_MISSING', $ext));
+	}
+
+	$controller = new $class;
+
+	if (!($controller instanceof phpbb_extension_controller_interface))
+	{
+		send_status_line(500, 'Internal Server Error');
+		trigger_error($user->lang('EXTENSION_CLASS_WRONG_TYPE', $class));
+	}
+
+	$controller->handle();
+	exit_handler();
+}
+
 display_forums('', $config['load_moderators']);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';

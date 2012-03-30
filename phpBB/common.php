@@ -5,7 +5,7 @@
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
-* Minimum Requirement: PHP 5.2.0
+* Minimum Requirement: PHP 5.3.2
 */
 
 /**

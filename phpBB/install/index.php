@@ -17,9 +17,9 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.2.0') < 0)
+if (version_compare(PHP_VERSION, '5.3.2') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.2.0 or higher before trying to install phpBB 3.1');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.2 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
