@@ -1,13 +1,10 @@
 <?php
 
-class phpbb_ext_foo_bar_controller implements phpbb_extension_controller_interface
+class phpbb_ext_foo_bar_controller extends phpbb_extension_controller
 {
 	public function handle()
 	{
-		global $template;
-		$template->set_ext_dir_prefix($phpbb_root_path . 'ext/foo/bar/');
-
-		$template->set_filenames(array(
+		$this->template->set_filenames(array(
 			'body' => 'foobar_body.html'
 		));
 
