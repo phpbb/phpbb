@@ -4763,9 +4763,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	));
 
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
-	$event = new phpbb_event_data(compact($vars));
-	$phpbb_dispatcher->dispatch('core.page_header', $event);
-	extract($event->get_data_filtered($vars));
+	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
