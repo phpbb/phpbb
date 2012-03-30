@@ -10,7 +10,14 @@ phpbb.add_ajax_callback('post_delete', function() {
 	if (el.attr('data-refresh') === undefined)
 	{
 		post_id = el[0].href.split('&p=')[1];
-		el.parents('#p' + post_id).css('pointer-events', 'none').fadeOut(function() {
+		var post = el.parents('#p' + post_id).css('pointer-events', 'none');
+		if (post.hasClass('bg1') || post.hasClass('bg2'))
+		{
+			var posts1 = post.nextAll('.bg1');
+			post.nextAll('.bg2').removeClass('bg2').addClass('bg1');
+			posts1.removeClass('bg1').addClass('bg2');
+		}
+		post.fadeOut(function() {
 			$(this).remove();
 		});
 	}
