@@ -254,10 +254,16 @@
 
 <!-- INCLUDE jumpbox.html -->
 
-<!-- IF S_TOPIC_MOD -->
+<!-- IF .quickmod -->
 	<form method="post" action="{S_MOD_ACTION}">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}:</label> {S_TOPIC_MOD} <input type="submit" value="{L_GO}" class="button2" />
+		<label for="quick-mod-select">{L_QUICK_MOD}:</label>
+		<select name="action" id="quick-mod-select">
+			<!-- BEGIN quickmod -->
+			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
+			<!-- END quickmod -->
+		</select>
+		<input type="submit" value="{L_GO}" class="button2" />
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
