@@ -237,7 +237,7 @@ $lang = array_merge($lang, array(
 	'INHERITING_FROM'			=> 'Inherits from',
 	'INSTALL_STYLE'				=> 'Install style',
 	'INSTALL_STYLES'			=> 'Install styles',
-	'INSTALL_STYLES_EXPLAIN'	=> 'Here you can install new styles.<br />If you cannot find a specific style in list below, check if that style is already installed. If it is not installed, check if it was uploaded correctly.',
+	'INSTALL_STYLES_EXPLAIN'	=> 'Here you can install new styles.<br />If you cannot find a specific style in list below, check to make sure style is already installed. If it is not installed, check if it was uploaded correctly.',
 	'INSTALLED_STYLE'			=> 'Installed styles',
 	'INVALID_STYLE_ID'			=> 'Invalid style ID.',
 
