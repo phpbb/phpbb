@@ -2,9 +2,8 @@
 /**
 *
 * @package dbal
-* @version $Id: sqlite_3.php 8814 2008-09-04 12:01:47Z acydburn $
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) 2011 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -196,28 +195,28 @@ class dbal_sqlite_3 extends dbal
             {
             		return false;
             }
-
-                  $row = @sqlite3_fetch_array($query_id);
-
-                  if (!sizeof($row) || !is_array($row))
-                  {
-                        return $row;
-                  }
-                  $rowx = array();
-                  foreach ($row as $key => $value)
-                  {
-                     $pos = strpos($key, '.');
-                     if( $pos >0 )
-                     {
-                           $keyx = substr($key, $pos+1);
-                           $rowx[$keyx] = $value;
-                     }
-                     else
-                     {
-                           $rowx[$key] = $value;
-                     }
-                  }
-                  return $rowx;
+            
+            $row = @sqlite3_fetch_array($query_id);
+            if (!sizeof($row) || !is_array($row))
+            {
+            	return $row;
+            }
+            
+            $rowx = array();
+            foreach ($row as $key => $value)
+            {
+            	$pos = strpos($key, '.');
+            	if( $pos >0 )
+            	{
+            		$keyx = substr($key, $pos+1);
+            		$rowx[$keyx] = $value;
+            	}
+            	else
+            	{
+            		$rowx[$key] = $value;
+            	}
+            }
+            return $rowx;
       }
 
       /**
