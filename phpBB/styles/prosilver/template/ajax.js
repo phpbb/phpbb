@@ -24,13 +24,6 @@ phpbb.add_ajax_callback('post_approve', function(res) {
 	});
 });
 
-// This callback handles the removal of the quick reply form.
-phpbb.add_ajax_callback('qr-submit', function() {
-	$(this).css('pointer-events', 'none').fadeOut(function() {
-		$(this).remove();
-	});
-});
-
 // This removes the parent row of the link or form that fired the callback.
 phpbb.add_ajax_callback('row_delete', function() {
 	$(this).parents('tr').remove();
