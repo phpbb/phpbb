@@ -185,6 +185,7 @@ inherit_from = {INHERIT_FROM}
 									WHERE forum_style = ' . $style_id;
 								$db->sql_query($sql);
 							}
+
 							if ($request->is_ajax())
 							{
 								$json_response = new phpbb_json_response;
