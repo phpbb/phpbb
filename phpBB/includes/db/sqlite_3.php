@@ -370,5 +370,3 @@ class dbal_sqlite_3 extends dbal
                   return $col_types;
       }
 }
-
-?>
