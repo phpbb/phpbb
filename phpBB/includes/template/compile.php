@@ -26,20 +26,29 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 class phpbb_template_compile
 {
 	/**
-	* Whether <!-- PHP --> tags are allowed
+	* Array of parameters to forward to template filter
 	*
-	* @var bool
+	* @var array
 	*/
-	private $allow_php;
+	private $filter_params;
+
+	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
 
 	/**
 	* Constructor.
 	*
-	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param array $filter_params Array of parameters to forward to template filter
+	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
 	*/
-	public function __construct($allow_php)
+	public function __construct($filter_params, $extension_manager = null)
 	{
-		$this->allow_php = $allow_php;
+		$this->filter_params = $filter_params;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**
@@ -116,7 +125,10 @@ class phpbb_template_compile
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
-		stream_filter_append($source_stream, 'phpbb_template', null, array('allow_php' => $this->allow_php));
+		$params = $this->filter_params;
+		$params['extension_manager'] = $this->extension_manager;
+		$params['template_compile'] = $this;
+		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }

@@ -170,8 +170,13 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 
+$page_title = $user->lang['INDEX'];
+
+$vars = array('page_title');
+extract($phpbb_dispatcher->trigger_event('core.index', compact($vars), $vars));
+
 // Output page
-page_header($user->lang['INDEX']);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'index_body.html')

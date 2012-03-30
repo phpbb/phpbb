@@ -30,7 +30,7 @@ class acp_users
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
@@ -1030,6 +1030,11 @@ class acp_users
 					'USER_POSTS'		=> $user_row['user_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
+
+				$vars = array('data', 'check_ary', 'sql_ary', 'user_row', 'quick_tool_ary');
+				$event = new phpbb_event_data(compact($vars));
+				$phpbb_dispatcher->dispatch('core.acp_users_overview', $event);
+				extract($event->get_data_filtered($vars));
 
 			break;
 

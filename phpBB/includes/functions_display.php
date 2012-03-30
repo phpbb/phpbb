@@ -22,7 +22,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 {
 	global $db, $auth, $user, $template;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -119,6 +119,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'ORDER_BY'	=> 'f.left_id',
 	);
 
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_sql_inject', compact($vars), $vars));
+
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
@@ -127,6 +130,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		$vars = array('row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_row_inject', compact($vars), $vars));
+
 		$forum_id = $row['forum_id'];
 
 		// Mark forums read?
@@ -223,6 +229,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
+
+			$vars = array('forum_rows', 'parent_id', 'row');
+			extract($phpbb_dispatcher->trigger_event('core.display_forums_row_values_inject', compact($vars), $vars));
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
@@ -478,6 +487,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);
+
+		$vars = array('row');
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_assign_block_vars', compact($vars), $vars));
 
 		// Assign subforums loop for style authors
 		foreach ($subforums_list as $subforum)
@@ -868,7 +880,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 */
 function display_custom_bbcodes()
 {
-	global $db, $template, $user;
+	global $db, $template, $user, $phpbb_dispatcher;
 
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
@@ -888,17 +900,24 @@ function display_custom_bbcodes()
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
 		}
 
-		$template->assign_block_vars('custom_tags', array(
+		$custom_tags = array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
 			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
-		));
+		);
+
+		$vars = array('custom_tags', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_row', compact($vars), $vars));
+
+		$template->assign_block_vars('custom_tags', $custom_tags);
 
 		$i++;
 	}
 	$db->sql_freeresult($result);
+
+	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
 }
 
 /**

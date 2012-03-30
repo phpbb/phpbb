@@ -76,6 +76,30 @@ class phpbb_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Name of the top-level template being compiled and/or rendered.
+	*
+	* This is used by hooks implementation to invoke template-specific
+	* template hooks.
+	*
+	* @var string
+	*/
+	private $template_name;
+
+	/**
+	* Extension manager.
+	*
+	* @var phpbb_extension_manager
+	*/
+	private $extension_manager;
+
+	/**
+	* Template compiler.
+	*
+	* @var phpbb_template_compile
+	*/
+	private $template_compile;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -126,14 +150,17 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option from params, which is passed
-	* to stream_filter_append.
+	* Retrieves and stores allow_php and template_name options from params,
+	* which is passed to stream_filter_append.
 	*/
 	public function onCreate()
 	{
 		$this->chunk = '';
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
+		$this->template_name = $this->params['template_name'];
+		$this->extension_manager = $this->params['extension_manager'];
+		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
 
@@ -298,6 +325,12 @@ class phpbb_template_filter extends php_user_filter
 				}
 				return '<!-- ENDPHP -->';
 			break;
+
+			case 'EVENT':
+				// return value here will be compiled code (html with embedded php).
+				// we don't want to wrap it in php tags here.
+				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
+				break;
 
 			default:
 				return $matches[0];
@@ -779,6 +812,56 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include_php($tag_args)
 	{
 		return "\$_template->_php_include('$tag_args');";
+	}
+
+	/**
+	* Compile RUNHOOKS tag.
+	*
+	* $tag_args should be a single string identifying hook location.
+	*/
+	private function compile_tag_event($tag_args)
+	{
+		if (!preg_match('/^\w+$/', $tag_args))
+		{
+			// do something
+			var_dump($tag_args);
+		}
+		$location = $tag_args;
+
+		if ($this->extension_manager)
+		{
+			$finder = $this->extension_manager->get_finder();
+
+			$files = $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				->extension_directory("/styles/all/template")
+				->get_files();
+
+			$files = array_merge($files, $finder
+				->extension_prefix($location)
+				->extension_suffix('.html')
+				// XXX is this safe?
+				->extension_directory("/styles/" . $this->template_name . "/template")
+				->get_files());
+
+			$all_compiled = '';
+			foreach ($files as $file)
+			{
+				$compiled = $this->template_compile->compile_file($file);
+				$all_compiled .= $compiled;
+			}
+			// Need spaces inside php tags as php cannot grok
+			// < ?php? > sans the spaces
+			return ' ?>' . $all_compiled . '<?php ';
+		}
+
+		// 1. find all mods defining hooks for location
+		// 2. obtain mods' template fragments
+		// 3. compile template fragments
+		// 4. return compiled code
+		// note: need to make sure we get fragments in the right order
+		return 'echo "test";';
 	}
 
 	/**

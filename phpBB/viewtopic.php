@@ -970,6 +970,9 @@ $sql_ary = array(
 		AND u.user_id = p.poster_id',
 );
 
+$vars = array('sql_ary');
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_userdata', compact($vars), $vars));
+
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
 
@@ -1045,7 +1048,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		if ($poster_id == ANONYMOUS)
 		{
-			$user_cache[$poster_id] = array(
+			$user_cache_data = array(
 				'joined'		=> '',
 				'posts'			=> '',
 				'from'			=> '',
@@ -1080,6 +1083,11 @@ while ($row = $db->sql_fetchrow($result))
 				'allow_pm'			=> 0,
 			);
 
+			$vars = array('user_cache_data', 'row', 'poster_id');
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache_guest', compact($vars), $vars));
+
+			$user_cache[$poster_id] = $user_cache_data;
+
 			get_user_rank($row['user_rank'], false, $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 		}
 		else
@@ -1094,7 +1102,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			$id_cache[] = $poster_id;
 
-			$user_cache[$poster_id] = array(
+			$user_cache_data = array(
 				'joined'		=> $user->format_date($row['user_regdate']),
 				'posts'			=> $row['user_posts'],
 				'warnings'		=> (isset($row['user_warnings'])) ? $row['user_warnings'] : 0,
@@ -1131,6 +1139,11 @@ while ($row = $db->sql_fetchrow($result))
 				'author_username'	=> get_username_string('username', $poster_id, $row['username'], $row['user_colour']),
 				'author_profile'	=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
 			);
+
+			$vars = array('user_cache_data', 'row', 'poster_id');
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache', compact($vars), $vars));
+
+			$user_cache[$poster_id] = $user_cache_data;
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
@@ -1555,6 +1568,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$postrow = array_merge($postrow, $cp_row['row']);
 	}
 
+	$vars = array('postrow');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars), $vars));
+
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
 
@@ -1709,8 +1725,13 @@ if (!request_var('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
+
+$vars = array('page_title', 'topic_data', 'forum_id', 'start');
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_page_header', compact($vars), $vars));
+
 // Output the page
-page_header($topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : ''), true, $forum_id);
+page_header($page_title, true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
