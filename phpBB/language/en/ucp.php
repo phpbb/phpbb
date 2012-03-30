@@ -87,6 +87,7 @@ $lang = array_merge($lang, array(
 	'ATTACHMENTS_EXPLAIN'			=> 'This is a list of attachments you have made in posts to this board.',
 	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
+	'AUTOLOGIN_SESSION_KEYS_DELETED'=> 'The selected auto-login session keys were successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
 	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width: %1$s, height: %2$s, file size: %3$.2f KiB.',
 	'AVATAR_FEATURES_DISABLED'		=> 'The avatar functionality is currently disabled.',
@@ -376,6 +377,8 @@ $lang = array_merge($lang, array(
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
+	'PROFILE_AUTOLOGIN_KEYS'	=> 'The auto-login session keys can be selected and deleted.',
+	'PROFILE_NO_AUTOLOGIN_KEYS'	=> 'There are no saved auto-login session keys.',
 
 	'RECIPIENT'							=> 'Recipient',
 	'RECIPIENTS'						=> 'Recipients',
@@ -465,6 +468,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
+	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit auto-login session keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',
