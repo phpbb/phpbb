@@ -375,7 +375,8 @@ class acp_modules
 		{
 			if ($request->is_ajax())
 			{
-				phpbb_json_response::send(array(
+				$json_response = new phpbb_json_response();
+				$json_response->send(array(
 					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
 					'MESSAGE_TEXT'	=> implode('<br />', $errors),
 				));
