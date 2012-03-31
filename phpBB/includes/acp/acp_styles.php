@@ -611,7 +611,7 @@ class acp_styles
 		// Show styles
 		if (empty($styles))
 		{
-			trigger_error($user->lang['NO_UNINSTALLED_STYLE'] . adm_back_link($this->u_action), E_USER_NOTICE);
+			trigger_error($user->lang['NO_UNINSTALLED_STYLE'] . adm_back_link($this->u_base_action), E_USER_NOTICE);
 		}
 		
 		usort($styles, 'acp_styles::sort_styles');
