@@ -1089,6 +1089,12 @@ function database_update_info()
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
+				STYLES_TABLE		=> array(
+					'style_path'			=> array('VCHAR:100', ''),
+					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+					'style_parent_id'		=> array('UINT:4', 0),
+					'style_parent_tree'		=> array('TEXT', ''),
+				),
 				REPORTS_TABLE		=> array(
 					'reported_post_text'	=> array('MTEXT_UNI', ''),
 				),
@@ -1101,20 +1107,16 @@ function database_update_info()
 			'drop_columns'      => array(
 			    STYLES_TABLE		    => array(
 			        'imageset_id',
+			        'template_id',
+			        'theme_id',
                 ),
-				STYLES_TEMPLATE_TABLE	=> array(
-					'template_storedb',
-				),
-				STYLES_THEME_TABLE		=> array(
-					'theme_storedb',
-					'theme_mtime',
-					'theme_data',
-				),
             ),
             'drop_tables'       => array(
                 STYLES_IMAGESET_TABLE,
                 STYLES_IMAGESET_DATA_TABLE,
+                STYLES_TEMPLATE_TABLE,
                 STYLES_TEMPLATE_DATA_TABLE,
+                STYLES_THEME_TABLE,
             ),
 		),
 	);
@@ -2271,12 +2273,33 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_attach',
 					'cat'		=> 'ACP_ATTACHMENTS',
 				),
+				'install'	=> array(
+					'base'		=> 'acp_styles'
+					'class'		=> 'acp',
+					'title'		=> 'ACP_STYLES_INSTALL',
+					'auth'		=> 'acl_a_styles',
+					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
+				'edit'	=> array(
+					'base'		=> 'acp_styles'
+					'class'		=> 'acp',
+					'title'		=> 'ACP_STYLES_EDIT',
+					'auth'		=> 'acl_a_styles',
+					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
+				'cache'	=> array(
+					'base'		=> 'acp_styles'
+					'class'		=> 'acp',
+					'title'		=> 'ACP_STYLES_CACHE',
+					'auth'		=> 'acl_a_styles',
+					'cat'		=> 'ACP_STYLE_MANAGEMENT',
+				),
 			);
 
 			_add_modules($modules_to_install);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
-			    WHERE module_basename = 'styles' AND module_mode = 'imageset'";
+			    WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
 			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
@@ -2366,7 +2389,13 @@ function change_database_data(&$no_updates, $version)
 			{
 				set_config('teampage_memberships', '1');
 			}
+			
+			// Clear styles table and add prosilver entry
+			_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
 
+			$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+			_sql($sql, $errored, $error_ary);
+			
 			$no_updates = false;
 
 		break;

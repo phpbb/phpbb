@@ -202,11 +202,12 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_template_locator = new phpbb_template_locator();
-$phpbb_template_path_provider = new phpbb_template_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
-$template->set_ext_dir_prefix('adm/');
-$template->set_custom_template('../adm/style', 'admin');
+$phpbb_style_resource_locator = new phpbb_style_resource_locator();
+$phpbb_style_path_provider = new phpbb_style_path_provider();
+$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider);
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
+$style->set_ext_dir_prefix('adm/');
+$style->set_custom_style('admin', '../adm/style', '');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 

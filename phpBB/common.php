@@ -123,9 +123,11 @@ set_config_count(null, null, null, $config);
 // load extensions
 $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
 
-$phpbb_template_locator = new phpbb_template_locator();
-$phpbb_template_path_provider = new phpbb_template_extension_path_provider($phpbb_extension_manager, new phpbb_template_path_provider());
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
+// Initialize style
+$phpbb_style_resource_locator = new phpbb_style_resource_locator();
+$phpbb_style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
+$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider);
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
 
 $phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
 $phpbb_subscriber_loader->load();
