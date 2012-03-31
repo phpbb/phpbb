@@ -497,7 +497,14 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		if ($free_space <= $file->get('filesize'))
 		{
-			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			if ($auth->acl_get('a_'))
+			{
+				$filedata['error'][] = $user->lang['ATTACH_DISK_FULL'];
+			}
+			else
+			{
+				$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
+			}
 			$filedata['post_attach'] = false;
 
 			$file->remove();
