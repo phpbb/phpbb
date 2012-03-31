@@ -71,7 +71,7 @@ else
 	output_image();
 }
 
-$cron_lock = new phpbb_lock_db('cron_lock', $config, $db);
+$cron_lock = $container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
 	if ($config['use_system_cron'])

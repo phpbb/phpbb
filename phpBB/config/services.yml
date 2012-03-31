@@ -114,3 +114,10 @@ services:
         arguments:
             - @cron.task_provider
             - @cache.driver
+
+    cron.lock_db:
+        class: phpbb_lock_db
+        arguments:
+            - cron_lock
+            - @config
+            - @dbal.conn
