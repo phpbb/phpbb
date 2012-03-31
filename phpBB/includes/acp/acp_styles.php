@@ -181,10 +181,6 @@ class acp_styles
 			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$message = implode('<br />', $messages);
-		if (count($messages) == 1 && $last_installed !== false)
-		{
-			$message .= '<br /><br />' . sprintf($user->lang['STYLE_INSTALLED_EDIT_DETAILS'], $this->u_base_action . '&amp;mode=style&amp;action=details&amp;id=' . $last_installed);
-		}
 		$message .= '<br /><br />' . sprintf($user->lang['STYLE_INSTALLED_RETURN_STYLES'], $this->u_base_action . '&amp;mode=style');
 		$message .= '<br /><br />' . sprintf($user->lang['STYLE_INSTALLED_RETURN_UNINSTALLED'], $this->u_base_action . '&amp;mode=install');
 		trigger_error($message, E_USER_NOTICE);
@@ -556,7 +552,6 @@ class acp_styles
 		$users = $this->get_users();
 		
 		// Add users counter to rows
-		$style['_users'] = array();
 		foreach ($styles as &$style)
 		{
 			$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
@@ -892,7 +887,7 @@ class acp_styles
 			
 			// Additional data
 			'DEFAULT'		=> ($style['style_id'] && $style['style_id'] == $config['default_style']),
-			'USERS'			=> $style['_users'],
+			'USERS'			=> (isset($style['_users'])) ? $style['_users'] : '',
 			'LEVEL'			=> $level,
 			'PADDING'		=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
