@@ -2274,7 +2274,7 @@ function change_database_data(&$no_updates, $version)
 					'cat'		=> 'ACP_ATTACHMENTS',
 				),
 				'install'	=> array(
-					'base'		=> 'acp_styles'
+					'base'		=> 'acp_styles',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_STYLES_INSTALL',
 					'auth'		=> 'acl_a_styles',
