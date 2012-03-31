@@ -54,14 +54,35 @@ do
 	# file extension
 	ext=$(echo $filename | sed 's/^.*\.//')
 
-	# only check files with php extension
-	if [ $ext != "php" ]
+	# do not check deleted files
+	if [ $status = "D" ]
 	then
 		continue
 	fi
 
-	# do not check deleted files
-	if [ $status = "D" ]
+	# check content for wrong trailling whitespace characters
+	result=$(git cat-file -p $sha | grep -E --line-number --regexp="[[:space:]]$")
+
+	if [ $? -eq 0 ]
+	then
+		spaceserror=2
+		# Swap back in the correct filenames
+		spaceserrors=$(echo "$spaceserrors"; echo "->$filename:"; echo "$result")
+	fi
+
+	# check content for wrong trailling whitespace characters
+	result=$(git cat-file -p $sha | grep --line-number $' \t')
+
+	if [ $? -eq 0 ]
+	then
+		spacetabserror=4
+		# Swap back in correct filenames
+		spacetabserrors=$(echo "$spacetabserrors"; echo "->$filename:"; echo "$result")
+	fi
+
+
+	# only check files with php extension for syntax problems
+	if [ $ext != "php" ]
 	then
 		continue
 	fi
@@ -78,26 +99,6 @@ do
 		syntaxerror=1
 		# Swap back in correct filenames
 		syntaxerrors=$(echo "$syntaxerrors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
-	fi
-
-	# check content for wrong trailling whitespace characters
-	result=$(git cat-file -p $sha | grep -E --line-number --regexp="[[:space:]]$")
-
-	if [ $? -eq 0 ]
-	then
-		spaceserror=2
-		# Swap back in correct filenames
-		spaceserrors=$(echo "$spaceserrors"; echo "->$filename:"; echo "$result")
-	fi
-
-	# check content for wrong trailling whitespace characters
-	result=$(git cat-file -p $sha | grep --line-number $' \t')
-
-	if [ $? -eq 0 ]
-	then
-		spacetabserror=4
-		# Swap back in correct filenames
-		spacetabserrors=$(echo "$spacetabserrors"; echo "->$filename:"; echo "$result")
 	fi
 
 done
