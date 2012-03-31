@@ -45,7 +45,7 @@ class acp_styles
 		$this->mode = $mode;
 
 		$action = $request->variable('action', '');
-		$post_actions = array('install', 'activate', 'deactivate', 'delete');
+		$post_actions = array('install', 'activate', 'deactivate', 'uninstall');
 		foreach ($post_actions as $key)
 		{
 			if (isset($_POST[$key]))
@@ -70,8 +70,8 @@ class acp_styles
 			case 'install':
 				$this->action_install();
 				return;
-			case 'delete':
-				$this->action_delete();
+			case 'uninstall':
+				$this->action_uninstall();
 				return;
 			case 'activate':
 				$this->action_activate();
@@ -187,47 +187,47 @@ class acp_styles
 	}
 	
 	/**
-	* Confirm styles deletion
+	* Confirm styles removal
 	*/
-	function action_delete()
+	function action_uninstall()
 	{
 		global $user, $config, $template, $request;
 		
-		// Get list of styles to delete
+		// Get list of styles to uninstall
 		$ids = $this->request_vars('id', 0, true);
 		
 		// Check if confirmation box was submitted
 		if (confirm_box(true))
 		{
-			// Delete
-			$this->action_delete_confirmed($ids, $request->variable('confirm_delete_files', false));
+			// Uninstall
+			$this->action_uninstall_confirmed($ids, $request->variable('confirm_delete_files', false));
 			return;
 		}
 		
 		// Confirm box
 		$s_hidden = build_hidden_fields(array(
-			'action'	=> 'delete',
+			'action'	=> 'uninstall',
 			'ids'		=> $ids
 		));
 		$template->assign_var('S_CONFIRM_DELETE', true);
-		confirm_box(false, $user->lang['CONFIRM_DELETE_STYLES'], $s_hidden, 'acp_styles.html');
+		confirm_box(false, $user->lang['CONFIRM_UNINSTALL_STYLES'], $s_hidden, 'acp_styles.html');
 		
 		// Canceled - show styles list
 		$this->frontend();
 	}
 
 	/**
-	* Delete styles(s)
+	* Uninstall styles(s)
 	*
 	* @param array $ids List of style IDs
 	* @param bool $delete_files If true, script will attempt to remove files for selected styles
 	*/
-	function action_delete_confirmed($ids, $delete_files)
+	function action_uninstall_confirmed($ids, $delete_files)
 	{
 		global $db, $user, $cache, $config;
 
 		$default = $config['default_style'];
-		$deleted = array();
+		$uninstalled = array();
 		$messages = array();
 
 		// Check styles list
@@ -239,9 +239,9 @@ class acp_styles
 			}
 			if ($id == $default)
 			{
-				trigger_error($user->lang['DELETE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang['UNINSTALL_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			$deleted[$id] = false;
+			$uninstalled[$id] = false;
 		}
 
 		// Order by reversed style_id, so parent styles would be removed after child styles
@@ -255,19 +255,19 @@ class acp_styles
 		$rows = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
-		// Delete each style
-		$deleted = array();
+		// Uinstall each style
+		$uninstalled = array();
 		foreach ($rows as $style)
 		{
-			$result = $this->delete_style($style, $delete_files);
+			$result = $this->uninstall_style($style, $delete_files);
 
 			if (is_string($result))
 			{
 				$messages[] = $result;
 				continue;
 			}
-			$messages[] = sprintf($user->lang['STYLE_DELETED'], $style['style_name']);
-			$deleted[] = $style['style_name'];
+			$messages[] = sprintf($user->lang['STYLE_UNINSTALLED'], $style['style_name']);
+			$uninstalled[] = $style['style_name'];
 
 			// Attempt to delete files
 			if ($delete_files)
@@ -278,14 +278,14 @@ class acp_styles
 
 		if (empty($messages))
 		{
-			// Nothing to delete?
+			// Nothing to uninstall?
 			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Log action
-		if (count($deleted))
+		if (count($uninstalled))
 		{
-			add_log('admin', 'LOG_STYLE_DELETE', implode(', ', $deleted));
+			add_log('admin', 'LOG_STYLE_DELETE', implode(', ', $uninstalled));
 		}
 
 		// Clear cache
@@ -591,8 +591,8 @@ class acp_styles
 		if (isset($this->style_counters) && $this->style_counters['total'] > 1)
 		{
 			$template->assign_block_vars('extra_actions', array(
-					'ACTION_NAME'	=> 'delete',
-					'L_ACTION'		=> $user->lang['DELETE'],
+					'ACTION_NAME'	=> 'uninstall',
+					'L_ACTION'		=> $user->lang['STYLE_UNINSTALL'],
 				)
 			);
 		}
@@ -924,10 +924,10 @@ class acp_styles
 				'L_ACTION'	=> $user->lang['EXPORT']
 			); */
 
-			// Delete
+			// Uninstall
 			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=delete&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $user->lang['DELETE']
+				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $user->lang['STYLE_UNINSTALL']
 			);
 			
 			// Preview
@@ -1156,12 +1156,12 @@ class acp_styles
 	}
 	
 	/**
-	* Delete style
+	* Uninstall style
 	*
 	* @param array $style Style data
 	* @returns true on success, error message on error
 	*/
-	function delete_style($style)
+	function uninstall_style($style)
 	{
 		global $db, $user;
 		
@@ -1179,7 +1179,7 @@ class acp_styles
 
 		if ($conflict !== false)
 		{
-			return sprintf($user->lang['STYLE_DELETE_DEPENDENT'], $style['style_name']);
+			return sprintf($user->lang['STYLE_UNINSTALL_DEPENDENT'], $style['style_name']);
 		}
 		
 		// Change default style for users
@@ -1188,7 +1188,7 @@ class acp_styles
 			WHERE user_style = ' . $id;
 		$db->sql_query($sql);
 		
-		// Delete style
+		// Uninstall style
 		$sql = 'DELETE FROM ' . STYLES_TABLE . '
 			WHERE style_id = ' . $id;
 		$db->sql_query($sql);

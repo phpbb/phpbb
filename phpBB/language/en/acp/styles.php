@@ -55,6 +55,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_BE_INSTALLED'			=> 'Cannot be installed',
 	'CONFIRM_TEMPLATE_CLEAR_CACHE'	=> 'Are you sure you wish to clear all cached versions of your template files?',
 	'CONFIRM_DELETE_STYLES'			=> 'Are you sure you wish to delete selected styles?',
+	'CONFIRM_UNINSTALL_STYLES'		=> 'Are you sure you wish to uninstall selected styles?',
 	'COPYRIGHT'						=> 'Copyright',
 	'CREATE_STYLE'					=> 'Create new style',
 	'CREATE_TEMPLATE'				=> 'Create new template set',
@@ -62,7 +63,6 @@ $lang = array_merge($lang, array(
 	'CURRENT_IMAGE'					=> 'Current image',
 
 	'DEACTIVATE_DEFAULT'		=> 'You cannot deactivate the default style.',
-	'DELETE_DEFAULT'			=> 'You cannot delete the default style.',
 	'DELETE_FROM_FS'			=> 'Delete from filesystem',
 	'DELETE_STYLE'				=> 'Delete style',
 	'DELETE_STYLE_EXPLAIN'		=> 'Here you can remove the selected style. Take care in deleting styles, there is no undo capability.',
@@ -291,7 +291,6 @@ $lang = array_merge($lang, array(
 	'STYLE_DEFAULT'				=> 'Make default style',
 	'STYLE_DEFAULT_CHANGE'		=> 'Change default style',
 	'STYLE_DEFAULT_CHANGE_INACTIVE'	=> 'You must activate style before making it default style.',
-	'STYLE_DELETE_DEPENDENT'	=> 'Style "%s" cannot be deleted because it has one or more child styles.',
 	'STYLE_DELETED'				=> 'Style "%s" deleted successfully.',
 	'STYLE_DETAILS_UPDATED'		=> 'Style edited successfully.',
 	'STYLE_ERR_ARCHIVE'			=> 'Please select an archive method.',
@@ -316,6 +315,9 @@ $lang = array_merge($lang, array(
 	'STYLE_PARENT'				=> 'Parent style:',
 	'STYLE_TEMPLATE'			=> 'Template',
 	'STYLE_THEME'				=> 'Theme',
+	'STYLE_UNINSTALL'			=> 'Uninstall',
+	'STYLE_UNINSTALL_DEPENDENT'	=> 'Style "%s" cannot be uninstalled because it has one or more child styles.',
+	'STYLE_UNINSTALLED'			=> 'Style "%s" uninstalled successfully.',
 	'STYLE_USED_BY'				=> 'Used by (including robots)',
 
 	'TEMPLATE_ADDED'			=> 'Template set added.',
@@ -364,6 +366,7 @@ $lang = array_merge($lang, array(
 	'THEME_UPDATED'				=> 'Theme updated successfully.',
 
 	'UNDERLINE'				=> 'Underline',
+	'UNINSTALL_DEFAULT'		=> 'You cannot uninstall the default style.',
 	'UNSET'					=> 'Undefined',
 
 ));
