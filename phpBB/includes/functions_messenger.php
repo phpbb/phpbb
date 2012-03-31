@@ -208,7 +208,9 @@ class messenger
 		// tpl_msg now holds a template object we can use to parse the template file
 		if (!isset($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$this->tpl_msg[$template_lang . $template_file] = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager);
+			$style_resource_locator = new phpbb_style_resource_locator();
+			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
+			$this->tpl_msg[$template_lang . $template_file] = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider);
 			$stl = &$this->tpl_msg[$template_lang . $template_file];
 			$tpl = $stl->template;
 

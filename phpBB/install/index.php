@@ -202,7 +202,9 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+$phpbb_style_resource_locator = new phpbb_style_resource_locator();
+$phpbb_style_path_provider = new phpbb_style_path_provider();
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider);
 $style->set_ext_dir_prefix('adm/');
 $style->set_custom_style('admin', '../adm/style', '');
 $template = $style->template;

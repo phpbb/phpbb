@@ -15,6 +15,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	protected $style;
 	protected $template;
 	protected $template_path;
+	protected $style_resource_locator;
+	protected $style_provider;
 
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
@@ -62,7 +64,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, false);
+		$this->style_resource_locator = new phpbb_style_path_provider();
+		$this->style_provider = new phpbb_style_path_provider();
+		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider);
 		$this->style->set_custom_style('tests', $this->template_path, '');
 		$this->template = $this->style->template;
 	}

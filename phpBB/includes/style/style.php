@@ -50,9 +50,8 @@ class phpbb_style
 	/**
 	* Style resource locator
 	* @var phpbb_style_resource_locator
-	* This item is temporary public, until locate() function is implemented
 	*/
-	public $locator;
+	private $locator;
 
 	/**
 	* Style path provider
@@ -65,20 +64,17 @@ class phpbb_style
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_extension_manager $phpbb_extension_manager extension manager. Set it to false if extension manager should not be used.
+	* @param phpbb_style_resource_locator $locator style resource locator
+	* @param phpbb_style_path_provider $provider style path provider
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager = false)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
-		$this->locator = new phpbb_style_resource_locator();
-		$this->provider = new phpbb_style_path_provider();
-		if ($phpbb_extension_manager !== false)
-		{
-			$this->provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, $this->provider);
-		}
+		$this->locator = $locator;
+		$this->provider = $provider;
 		$this->template = new phpbb_style_template($this->phpbb_root_path, $this->phpEx, $this->config, $this->user, $this->locator, $this->provider);
 	}
 
