@@ -11,9 +11,9 @@
 	<property name="versions" value="${oldversions}, ${newversion}" />
 
 	<!-- These are the main targets which you will probably want to use -->
-	<target name="package" depends="clean,prepare,create-package" />
-	<target name="all" depends="clean,prepare,test,docs,create-package" />
-	<target name="build" depends="clean,prepare,test,docs" />
+	<target name="package" depends="clean,prepare,composer,create-package" />
+	<target name="all" depends="clean,prepare,composer,test,docs,create-package" />
+	<target name="build" depends="clean,prepare,composer,test,docs" />
 
 	<target name="prepare">
 		<mkdir dir="build/logs" />
@@ -43,7 +43,19 @@
 		<delete dir="build/save" />
 	</target>
 
-	<target name="test" depends="clean,prepare">
+	<target name="composer" depends="clean,prepare">
+		<exec dir="./phpBB/"
+			command="curl -s http://getcomposer.org/installer | php"
+			passthru="true" />
+		<exec dir="./phpBB/"
+			command="php composer.phar install"
+			passthru="true" />
+		<exec dir="./phpBB/"
+			command="rm composer.phar"
+			passthru="true" />
+	</target>
+
+	<target name="test" depends="clean,prepare,composer">
 		<exec dir="."
 			command="phpunit --log-junit build/logs/phpunit.xml
 			--coverage-clover build/logs/clover.xml
@@ -51,7 +63,7 @@
 			passthru="true" />
 	</target>
 
-	<target name="test-slow" depends="clean,prepare">
+	<target name="test-slow" depends="clean,prepare,composer">
 		<exec dir="."
 			command="phpunit --log-junit build/logs/phpunit.xml
 			--configuration phpunit.xml.all
@@ -155,6 +167,17 @@
 		<exec dir="phpBB"
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
+
+		<exec dir="${dir}"
+			command="curl -s http://getcomposer.org/installer | php"
+			passthru="true" />
+		<exec dir="${dir}"
+			command="php composer.phar install"
+			passthru="true" />
+		<exec dir="${dir}"
+			command="rm composer.phar"
+			passthru="true" />
+
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />
