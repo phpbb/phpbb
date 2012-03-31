@@ -24,8 +24,12 @@ else
 	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-error=0
-errors=""
+syntaxerror=0
+syntaxerrors=""
+spaceserror=0
+spaceserrors=""
+spacetabserror=0
+spacetabserrors=""
 
 if ! which $PHP_BIN >/dev/null 2>&1
 then
@@ -50,14 +54,35 @@ do
 	# file extension
 	ext=$(echo $filename | sed 's/^.*\.//')
 
-	# only check files with php extension
-	if [ $ext != "php" ]
+	# do not check deleted files
+	if [ $status = "D" ]
 	then
 		continue
 	fi
 
-	# do not check deleted files
-	if [ $status = "D" ]
+	# check content for wrong trailling whitespace characters
+	result=$(git cat-file -p $sha | grep -E --line-number --regexp="[[:space:]]$")
+
+	if [ $? -eq 0 ]
+	then
+		spaceserror=2
+		# Swap back in the correct filenames
+		spaceserrors=$(echo "$spaceserrors"; echo "->$filename:"; echo "$result")
+	fi
+
+	# check content for wrong trailling whitespace characters
+	result=$(git cat-file -p $sha | grep --line-number $' \t')
+
+	if [ $? -eq 0 ]
+	then
+		spacetabserror=4
+		# Swap back in correct filenames
+		spacetabserrors=$(echo "$spacetabserrors"; echo "->$filename:"; echo "$result")
+	fi
+
+
+	# only check files with php extension for syntax problems
+	if [ $ext != "php" ]
 	then
 		continue
 	fi
@@ -65,18 +90,40 @@ do
 	# check the staged file content for syntax errors
 	# using php -l (lint)
 	result=$(git cat-file -p $sha | /usr/bin/env $PHP_BIN -l 2>/dev/null)
-	if [ $? -ne 0 ]
+
+	# $? May contain 0 when syntax errors occur, at least, in windows. A check to the output is required
+	$(echo $result | grep -q "Errors parsing")
+
+	if [ $? -eq 0 ]
 	then
-		error=1
+		syntaxerror=1
 		# Swap back in correct filenames
-		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
+		syntaxerrors=$(echo "$syntaxerrors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
 	fi
+
 done
 unset IFS
 
-if [ $error -eq 1 ]
+# Note: -ne -> Not Equal to
+if [ $syntaxerror -ne 0 ]
 then
 	echo -e "PHP Syntax check failed:";
-	echo -e "$errors" | grep "^Parse error:"
-	exit 1
+	echo -e "$syntaxerrors" | grep "^Parse error:"
+fi
+
+if [ $spaceserror -ne 0 ]
+then
+	echo -e -n "\nWrong line trailling characters:";
+	echo -e "$spaceserrors"
+fi
+
+if [ $spacetabserror -ne 0 ]
+then
+	echo -e -n "\nSpaces before tabs were detected:";
+	echo -e "$spacetabserrors"
+fi
+
+if [ $syntaxerror -ne 0 -o $spaceserror -ne 0 -o $spacetabserror -ne 0 ]
+then
+	exit $(($syntaxerror + $spaceserror + $spacetabserror))
 fi
