@@ -4982,3 +4982,66 @@ function phpbb_pcre_utf8_support()
 	}
 	return $utf8_pcre_properties;
 }
+
+/**
+* Returns the first existing path in an array of paths
+*
+* @param array $paths Array of paths (relative to root)
+* @return string|bool If one of the paths exists, that path is returned. Otherwise, or if no paths are given, false.
+*/
+function phpbb_get_first_existing_path($paths = array())
+{
+	// make sure we have some values
+	if (empty($paths))
+	{
+		return false;
+	}
+
+	foreach ($paths as $path)
+	{
+		// file_exists() caches results for later
+		// so using it repeatedly here shouldn't be an issue
+		if (file_exists($path))
+		{
+			return $path;
+		}
+	}
+	return false;
+}
+
+/**
+* Find first existing language file in a style directory
+*
+* @param string $style
+* @return string|bool If the language file exists somewhere, return the path; otherwise, false
+*/
+function phpbb_get_first_style_lang_path($style)
+{
+	global $user, $config, $phpbb_root_path, $phpEx;
+
+	if (empty($style))
+	{
+		return false;
+	}
+
+	return phpbb_get_first_existing_path(array(
+		"{$phpbb_root_path}styles/$style/lang/{$user->data['user_lang']}.$phpEx",
+		"{$phpbb_root_path}styles/$style/lang/{$config['default_lang']}.$phpEx",
+		"{$phpbb_root_path}styles/$style/lang/en.$phpEx",
+	));
+}
+
+/**
+* Merge style language array into the global language array (i.e. $user->lang)
+*
+* @param string $style The style in which to look for a language file
+* @param array &$lang Global language array to which to append the other array
+* @return bool true/false depending on whether or not include worked
+*/
+function phpbb_add_style_lang($style, &$lang = array())
+{
+	$path = phpbb_get_first_style_lang_path($style);
+	// similar return line to the one in user->set_lang()
+	// Do not suppress error if in DEBUG_EXTRA mode
+	return (defined('DEBUG_EXTRA')) ? (include $path) : (@include $path);
+}

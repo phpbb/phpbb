@@ -1683,6 +1683,19 @@ class user extends session
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
+		// Now that we know the style being used, we need to include the style language files
+		// First, let's see if we are inheriting a template
+		// If so, we need to get the language variables from that template
+		if ($this->theme['template_inherits_id'])
+		{
+			phpbb_add_style_lang($this->theme['template_inherit_path'], $this->lang);
+		}
+
+		// Now we get the language for the current style
+		// If any of the inherited style's language variables are duplicate
+		// they will be overwritten by the inheriting style's language variables
+		phpbb_add_style_lang($this->theme['template_path'], $this->lang);
+
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
 
