@@ -1,13 +1,28 @@
 services:
+    class_loader:
+        class: phpbb_class_loader
+        arguments:
+            - phpbb_
+            - %core.root_path%includes/
+            - .%core.php_ext%
+
+    class_loader.ext:
+        class: phpbb_class_loader
+        arguments:
+            - phpbb_ext_
+            - %core.root_path%ext/
+            - .%core.php_ext%
+
     cache:
         class: phpbb_cache_service
         arguments:
              - @cache.driver
 
     cache.driver:
-        class: phpbb_cache_driver_interface
-        arguments:
-            - %cache.driver.class%
+        class: %cache.driver.class%
+
+    cache.driver.install:
+        class: phpbb_cache_driver_file
 
     dispatcher:
         class: phpbb_event_dispatcher

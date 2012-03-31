@@ -88,12 +88,6 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-// Setup class loader first
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
-$phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
-$phpbb_class_loader->register();
-
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/config'));
 $loader->load('parameters.yml');
@@ -101,6 +95,12 @@ $loader->load('services.yml');
 
 $container->setParameter('core.root_path', $phpbb_root_path);
 $container->setParameter('core.php_ext', $phpEx);
+
+// Setup class loader first
+$phpbb_class_loader_ext = $container->get('class_loader.ext');
+$phpbb_class_loader_ext->register();
+$phpbb_class_loader = $container->get('class_loader');
+$phpbb_class_loader->register();
 
 // set up caching
 $cache = $container->get('cache');
@@ -124,12 +124,11 @@ set_config_count(null, null, null, $config);
 
 // load extensions
 $phpbb_extension_manager = $container->get('ext.manager');
+$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
+$phpbb_subscriber_loader->load();
 
 $template = $container->get('template');
 $style = $container->get('style');
-
-$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
-$phpbb_subscriber_loader->load();
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
