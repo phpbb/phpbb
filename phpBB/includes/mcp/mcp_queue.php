@@ -451,6 +451,7 @@ function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
+	global $request;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -709,7 +710,20 @@ function approve_post($post_id_list, $id, $mode)
 			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
+		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array(
+				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+				'MESSAGE_TEXT'		=> $message,
+				'REFRESH_DATA'		=> null,
+				'approved'				=> true
+			));
+		}
+
+		trigger_error($message);
 	}
 }
 
@@ -968,7 +982,20 @@ function disapprove_post($post_id_list, $id, $mode)
 	}
 	else
 	{
+		$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>');
+
+		if ($request->is_ajax())
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array(
+				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+				'MESSAGE_TEXT'		=> $message,
+				'REFRESH_DATA'		=> null,
+				'approved'				=> false
+			));
+		}
+
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		trigger_error($message);
 	}
 }

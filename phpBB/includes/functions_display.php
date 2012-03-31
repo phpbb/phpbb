@@ -273,6 +273,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			markread('topics', $forum_ids);
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
+
 			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
 		else
