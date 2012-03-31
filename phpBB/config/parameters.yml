@@ -1,4 +1,5 @@
 parameters:
+    core.table_prefix: phpbb_
     cache.driver.class: phpbb_cache_driver_file
     dbal.driver.class: dbal_mysqli
     dbal.dbhost:
@@ -7,5 +8,5 @@ parameters:
     dbal.dbname: phpbb_dev
     dbal.dbport:
     dbal.new_link: false
-    tables.config: phpbb_config
-    tables.ext: phpbb_ext
+    tables.config: %core.table_prefix%config
+    tables.ext: %core.table_prefix%ext
