@@ -635,7 +635,8 @@ class ucp_profile
 
 						$db->sql_query($sql);
 
-						$message = $user->lang['AUTOLOGIN_SESSIONS_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['AUTOLOGIN_SESSION_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 				}
