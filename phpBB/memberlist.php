@@ -581,7 +581,7 @@ switch ($mode)
 		}
 
 		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled');
-		extract($phpbb_dispatcher->trigger_event('core.memberlist_viewprofile', compact($vars), $vars));
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_viewprofile', compact($vars)));
 
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
@@ -1754,7 +1754,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	);
 
 	$vars = array('data');
-	extract($phpbb_dispatcher->trigger_event('core.memberlist_profile_data', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.memberlist_profile_data', compact($vars)));
 
 	return $data;
 }

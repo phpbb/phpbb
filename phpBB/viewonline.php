@@ -134,7 +134,7 @@ $sql_ary = array(
 );
 
 $vars = array('sql_ary', 'show_guests');
-extract($phpbb_dispatcher->trigger_event('core.viewonline_get_userdata', compact($vars), $vars));
+extract($phpbb_dispatcher->trigger_event('core.viewonline_get_userdata', compact($vars)));
 
 $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -328,7 +328,7 @@ while ($row = $db->sql_fetchrow($result))
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 
 			$vars = array('on_page', 'row', 'location', 'location_url');
-			extract($phpbb_dispatcher->trigger_event('core.viewonline_location', compact($vars), $vars));
+			extract($phpbb_dispatcher->trigger_event('core.viewonline_location', compact($vars)));
 		break;
 	}
 

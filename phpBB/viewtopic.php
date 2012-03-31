@@ -971,7 +971,7 @@ $sql_ary = array(
 );
 
 $vars = array('sql_ary');
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_userdata', compact($vars), $vars));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_userdata', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query($sql);
@@ -1084,7 +1084,7 @@ while ($row = $db->sql_fetchrow($result))
 			);
 
 			$vars = array('user_cache_data', 'row', 'poster_id');
-			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache_guest', compact($vars), $vars));
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache_guest', compact($vars)));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
@@ -1141,7 +1141,7 @@ while ($row = $db->sql_fetchrow($result))
 			);
 
 			$vars = array('user_cache_data', 'row', 'poster_id');
-			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache', compact($vars), $vars));
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_user_cache', compact($vars)));
 
 			$user_cache[$poster_id] = $user_cache_data;
 
@@ -1569,7 +1569,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	$vars = array('postrow');
-	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars)));
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
@@ -1728,7 +1728,7 @@ if (!request_var('t', 0) && !empty($topic_id))
 $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
 
 $vars = array('page_title', 'topic_data', 'forum_id', 'start');
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_page_header', compact($vars), $vars));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_page_header', compact($vars)));
 
 // Output the page
 page_header($page_title, true, $forum_id);

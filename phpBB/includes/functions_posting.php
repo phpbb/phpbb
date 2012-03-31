@@ -135,7 +135,7 @@ function generate_smilies($mode, $forum_id)
 	}
 
 	$vars = array('mode', 'forum_id', 'display_link');
-	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_footer', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_footer', compact($vars)));
 
 	if ($mode == 'window')
 	{

@@ -269,7 +269,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	);
 
 	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row');
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_viewmesssage', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_viewmesssage', compact($vars)));
 
 	// Display the custom profile fields
 	if (!empty($cp_row['row']))

@@ -138,7 +138,7 @@ function user_update_name($old_name, $new_name)
 	}
 
 	$vars = array('old_name', 'new_name');
-	extract($phpbb_dispatcher->trigger_event('core.user_update_name', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.user_update_name', compact($vars)));
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
@@ -590,7 +590,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	$db->sql_transaction('commit');
 
 	$vars = array('mode', 'user_id', 'post_username');
-	extract($phpbb_dispatcher->trigger_event('core.user_delete', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.user_delete', compact($vars)));
 
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
@@ -2816,7 +2816,7 @@ function group_delete($group_id, $group_name = false)
 	unset($teampage);
 
 	$vars = array('group_id', 'group_name');
-	extract($phpbb_dispatcher->trigger_event('core.group_delete', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.group_delete', compact($vars)));
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
@@ -3050,7 +3050,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	unset($special_group_data);
 
 	$vars = array('group_id', 'user_id_ary', 'username_ary', 'group_name');
-	extract($phpbb_dispatcher->trigger_event('core.group_user_del', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.group_user_del', compact($vars)));
 
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
@@ -3466,7 +3466,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
-	extract($phpbb_dispatcher->trigger_event('core.group_set_user_default', compact($vars), $vars));
+	extract($phpbb_dispatcher->trigger_event('core.group_set_user_default', compact($vars)));
 
 	if ($update_listing)
 	{
