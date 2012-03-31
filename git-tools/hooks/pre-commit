@@ -24,8 +24,8 @@ else
 	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-error=0
-errors=""
+syntaxerror=0
+syntaxerrors=""
 
 if ! which $PHP_BIN >/dev/null 2>&1
 then
@@ -65,18 +65,23 @@ do
 	# check the staged file content for syntax errors
 	# using php -l (lint)
 	result=$(git cat-file -p $sha | /usr/bin/env $PHP_BIN -l 2>/dev/null)
-	if [ $? -ne 0 ]
+
+	# $? May contain 0 when syntax errors occur, at least, in windows. A check to the output is required
+	$(echo $result | grep -q "Errors parsing")
+
+	if [ $? -eq 0 ]
 	then
-		error=1
+		syntaxerror=1
 		# Swap back in correct filenames
-		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
+		syntaxerrors=$(echo "$syntaxerrors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
 	fi
+
 done
 unset IFS
 
-if [ $error -eq 1 ]
+if [ $syntaxerror -eq 1 ]
 then
 	echo -e "PHP Syntax check failed:";
-	echo -e "$errors" | grep "^Parse error:"
+	echo -e "$syntaxerrors" | grep "^Parse error:"
 	exit 1
 fi
