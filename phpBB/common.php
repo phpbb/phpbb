@@ -74,7 +74,6 @@ if (!empty($load_extensions) && function_exists('dl'))
 
 // Include files
 require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
@@ -102,7 +101,7 @@ $phpbb_class_loader->set_cache($cache->get_driver());
 $phpbb_dispatcher = new phpbb_event_dispatcher();
 $request	= new phpbb_request();
 $user		= new phpbb_user();
-$auth		= new auth();
+$auth		= new phpbb_auth();
 $db			= new $sql_db();
 
 // make sure request_var uses this request instance
