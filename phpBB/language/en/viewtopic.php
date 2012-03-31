@@ -62,7 +62,7 @@ $lang = array_merge($lang, array(
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
-	'FULL_EDITOR'			=> 'Full Editor',
+	'FULL_EDITOR'			=> 'Full Editor &amp; Preview',
 	
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
