@@ -25,7 +25,7 @@ class phpbb_style
 	* @var phpbb_style_template Template class.
 	* Handles everything related to templates.
 	*/
-	public $template;
+	private $template;
 
 	/**
 	* @var string phpBB root path
@@ -66,8 +66,9 @@ class phpbb_style
 	* @param user $user current user
 	* @param phpbb_style_resource_locator $locator style resource locator
 	* @param phpbb_style_path_provider $provider style path provider
+	* @param phpbb_style_template $template template
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_style_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -75,7 +76,7 @@ class phpbb_style
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->provider = $provider;
-		$this->template = new phpbb_style_template($this->phpbb_root_path, $this->phpEx, $this->config, $this->user, $this->locator, $this->provider);
+		$this->template = $template;
 	}
 
 	/**
