@@ -251,30 +251,35 @@ a#logo:hover {
 .headerbar {
 	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
 }
 
 .navbar {
 	padding: 0 10px;
+	background-color: #ebebeb;
+	padding: 5px 10px 5px 10px;
 }
 
 .forabg {
 	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
 	clear: both;
 }
 
 .forumbg {
 	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
-	padding: 0 5px;
+	padding: 5px;
 	clear: both;
 }
 
 .panel {
 	margin-bottom: 4px;
 	padding: 0 10px;
+	padding: 5px 10px;
+	background-color: #f3f3f3;
+	color: #3f3f3f;
 }
 
 .post {
@@ -317,6 +322,11 @@ span.corners-bottom {
 span.corners-bottom span {
 	background-image: none;
 	background-position: 100% 100%;
+}
+
+span.clear {
+	background-image: none;
+	clear: both;
 }
 
 .headbg span.corners-bottom {
