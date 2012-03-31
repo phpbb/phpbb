@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_renderer_eval implements phpbb_template_renderer
+class phpbb_style_template_renderer_eval implements phpbb_style_template_renderer
 {
 	/**
 	* Template code to be eval'ed.
@@ -33,7 +33,7 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 	* Template includes are delegated to template object $template.
 	*
 	* @param string $code php code of the template
-	* @param phpbb_template $template template object
+	* @param phpbb_style_template $template template object
 	*/
 	public function __construct($code, $template)
 	{
@@ -45,7 +45,7 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 	* Displays the template managed by this renderer by eval'ing php code
 	* of the template.
 	*
-	* @param phpbb_template_context $context Template context to use
+	* @param phpbb_style_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/
 	public function render($context, $lang)

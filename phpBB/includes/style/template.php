@@ -29,13 +29,13 @@ if (!defined('IN_PHPBB'))
 * Base Template class.
 * @package phpBB3
 */
-class phpbb_template
+class phpbb_style_template
 {
 	/**
-	* @var phpbb_template_context Template context.
+	* @var phpbb_style_template_context Template context.
 	* Stores template data used during template rendering.
 	*/
-	private $context;
+	public $context;
 
 	/**
 	* @var string Path of the cache directory for the template
@@ -63,85 +63,40 @@ class phpbb_template
 	private $user;
 
 	/**
-	* Template locator
-	* @var phpbb_template_locator
+	* Style resource locator
+	* @var phpbb_style_resource_locator
 	*/
 	private $locator;
 
 	/**
 	* Template path provider
-	* @var phpbb_template_path_provider
+	* @var phpbb_style_path_provider
 	*/
 	private $provider;
+
+	/**
+	* Location of templates directory within style directories
+	* @var string
+	*/
+	public $template_path = 'template/';
 
 	/**
 	* Constructor.
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_template_locator $locator template locator
-	* @param phpbb_template_path_provider $provider template path provider
+	* @param phpbb_style_resource_locator $locator style resource locator
+	* @param phpbb_style_path_provider $provider style path provider
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator, phpbb_template_path_provider_interface $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->user = $user;
 		$this->locator = $locator;
+		$this->template_path = $this->locator->template_path;
 		$this->provider = $provider;
-	}
-
-	/**
-	* Set template location based on (current) user's chosen style.
-	*/
-	public function set_template()
-	{
-		$template_name = $this->user->theme['template_path'];
-		$fallback_name = ($this->user->theme['template_inherits_id']) ? $this->user->theme['template_inherit_path'] : false;
-
-		return $this->set_custom_template(false, $template_name, false, $fallback_name);
-	}
-
-	/**
-	* Defines a prefix to use for template paths in extensions
-	*
-	* @param string $ext_dir_prefix The prefix including trailing slash
-	* @return null
-	*/
-	public function set_ext_dir_prefix($ext_dir_prefix)
-	{
-		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
-	}
-
-	/**
-	* Set custom template location (able to use directory outside of phpBB).
-	*
-	* Note: Templates are still compiled to phpBB's cache directory.
-	*
-	* @param string $template_path Path to template directory
-	* @param string $template_name Name of template
-	* @param string $fallback_template_path Path to fallback template
-	* @param string $fallback_template_name Name of fallback template
-	*/
-	public function set_custom_template($template_path, $template_name, $fallback_template_path = false, $fallback_template_name = false)
-	{
-		$templates = array($template_name => $template_path);
-
-		if ($fallback_template_name !== false)
-		{
-			$templates[$fallback_template_name] = $fallback_template_path;
-		}
-
-		$this->provider->set_templates($templates, $this->phpbb_root_path);
-		$this->locator->set_paths($this->provider);
-		$this->locator->set_main_template($this->provider->get_main_template_path());
-
-		$this->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $template_name) . '_';
-
-		$this->context = new phpbb_template_context();
-
-		return true;
 	}
 
 	/**
@@ -298,15 +253,15 @@ class phpbb_template
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
-	* Returns an object implementing phpbb_template_renderer, or null
+	* Returns an object implementing phpbb_style_template_renderer, or null
 	* if template loading or compilation failed. Call render() on the
 	* renderer to display the template. This will result in template
 	* contents sent to the output stream (unless, of course, output
 	* buffering is in effect).
 	*
 	* @param string $handle Handle of the template to load
-	* @return phpbb_template_renderer Template renderer object, or null on failure
-	* @uses phpbb_template_compile is used to compile template source
+	* @return phpbb_style_template_renderer Template renderer object, or null on failure
+	* @uses phpbb_style_template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
@@ -330,18 +285,18 @@ class phpbb_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_template_renderer_include($output_file, $this);
+			return new phpbb_style_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php']);
+		$compile = new phpbb_style_template_compile($this->config['tpl_allow_php']);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			$renderer = new phpbb_template_renderer_include($output_file, $this);
+			$renderer = new phpbb_style_template_renderer_include($output_file, $this);
 		}
 		else if (($code = $compile->compile_file($source_file)) !== false)
 		{
-			$renderer = new phpbb_template_renderer_eval($code, $this);
+			$renderer = new phpbb_style_template_renderer_eval($code, $this);
 		}
 		else
 		{
@@ -403,7 +358,7 @@ class phpbb_template
 		$this->context->append_var($varname, $varval);
 	}
 
-	// Docstring is copied from phpbb_template_context method with the same name.
+	// Docstring is copied from phpbb_style_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
@@ -414,7 +369,7 @@ class phpbb_template
 		return $this->context->assign_block_vars($blockname, $vararray);
 	}
 
-	// Docstring is copied from phpbb_template_context method with the same name.
+	// Docstring is copied from phpbb_style_template_context method with the same name.
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_context
+class phpbb_style_template_context
 {
 	/**
 	* variable that holds all the data we'll be substituting into
@@ -86,7 +86,7 @@ class phpbb_template_context
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.
-	* Users should alter template variables via functions in phpbb_template.
+	* Users should alter template variables via functions in phpbb_style_template.
 	*
 	* Note: modifying returned array will affect data stored in the context.
 	*

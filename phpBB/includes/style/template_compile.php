@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-stream_filter_register('phpbb_template', 'phpbb_template_filter');
+stream_filter_register('phpbb_template', 'phpbb_style_template_filter');
 
 /**
 * Extension of template class - Functions needed for compiling templates only.
@@ -23,7 +23,7 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 * @package phpBB3
 * @uses template_filter As a PHP stream filter to perform compilation of templates
 */
-class phpbb_template_compile
+class phpbb_style_template_compile
 {
 	/**
 	* Whether <!-- PHP --> tags are allowed

@@ -17,27 +17,40 @@ if (!defined('IN_PHPBB'))
 
 
 /**
-* Template locator. Maintains mapping from template handles to source paths.
+* Style resource locator. 
+* Maintains mapping from template handles to source template file paths.
+* Locates style files: resources (such as .js and .css files) and templates.
 *
-* Template locator is aware of template inheritance, and can return actual
-* filesystem paths (i.e., the "primary" template or the "parent" template)
+* Style resource locator is aware of styles tree, and can return actual
+* filesystem paths (i.e., the "child" style or the "parent" styles)
 * depending on what files exist.
+*
+* Root paths stored in locator are paths to style directories. Templates are
+* stored in subdirectory that $template_path points to.
 *
 * @package phpBB3
 */
-class phpbb_template_locator
+class phpbb_style_resource_locator
 {
 	/**
-	* Paths to directories that templates are stored in.
+	* Paths to style directories.
 	* @var array
 	*/
 	private $roots = array();
 
 	/**
-	* Index of the main template in the roots array
+	* Index of the main style in the roots array.
 	* @var int
 	*/
 	private $main_root_id = 0;
+
+	/**
+	* Location of templates directory within style directories.
+	* Must have trailing slash. Empty if templates are stored in root
+	* style directory, such as admin control panel templates.
+	* @var string
+	*/
+	public $template_path = 'template/';
 
 	/**
 	* Map from root index to handles to source template file paths.
@@ -57,34 +70,34 @@ class phpbb_template_locator
 	private $filenames = array();
 
 	/**
-	* Set main template location (must have been added through set_paths first).
+	* Set main style location (must have been added through set_paths first).
 	*
-	* @param string $template_path Path to template directory
+	* @param string $style_path Path to style directory
 	* @return null
 	*/
-	public function set_main_template($template)
+	public function set_main_style($style_path)
 	{
-		$this->main_root_id = array_search($template, $this->roots, true);
+		$this->main_root_id = array_search($style_path, $this->roots, true);
 	}
 
 	/**
-	* Sets the list of template paths
+	* Sets the list of style paths
 	*
-	* These paths will be searched for template files in the provided order.
+	* These paths will be searched for style files in the provided order.
 	* Paths may be outside of phpBB, but templates loaded from these paths
 	* will still be cached.
 	*
-	* @param array $template_paths An array of paths to template directories
+	* @param array $style_paths An array of paths to style directories
 	* @return null
 	*/
-	public function set_paths($template_paths)
+	public function set_paths($style_paths)
 	{
 		$this->roots = array();
 		$this->files = array();
 		$this->filenames = array();
 		$this->main_root_id = 0;
 
-		foreach ($template_paths as $path)
+		foreach ($style_paths as $path)
 		{
 			// Make sure $path has no ending slash
 			if (substr($path, -1) === '/')
@@ -107,14 +120,14 @@ class phpbb_template_locator
 		{
 			if (empty($filename))
 			{
-				trigger_error("template locator: set_filenames: Empty filename specified for $handle", E_USER_ERROR);
+				trigger_error("style resource locator: set_filenames: Empty filename specified for $handle", E_USER_ERROR);
 			}
 
 			$this->filename[$handle] = $filename;
 
 			foreach ($this->roots as $root_index => $root)
 			{
-				$this->files[$root_index][$handle] = $root . '/' . $filename;
+				$this->files[$root_index][$handle] = $root . '/' . $this->template_path . $filename;
 			}
 		}
 	}
@@ -133,37 +146,37 @@ class phpbb_template_locator
 	{
 		if (!isset($this->filename[$handle]))
 		{
-			trigger_error("template locator: get_filename_for_handle: No file specified for handle $handle", E_USER_ERROR);
+			trigger_error("style resource locator: get_filename_for_handle: No file specified for handle $handle", E_USER_ERROR);
 		}
 		return $this->filename[$handle];
 	}
 
 	/**
 	* Determines the source file path for a template handle without
-	* regard for template inheritance.
+	* regard for styles tree.
 	*
-	* This function returns the path in "primary" template directory
+	* This function returns the path in "primary" style directory
 	* corresponding to the given template handle. That path may or
 	* may not actually exist on the filesystem. Because this function
 	* does not perform stat calls to determine whether the path it
 	* returns actually exists, it is faster than get_source_file_for_handle.
 	*
 	* Use get_source_file_for_handle to obtain the actual path that is
-	* guaranteed to exist (which might come from the parent/fallback
-	* template directory if template inheritance is used).
+	* guaranteed to exist (which might come from the parent style 
+	* directory if primary style has parent styles).
 	*
 	* This function will trigger an error if the handle was never
 	* associated with a template file via set_filenames.
 	*
 	* @param $handle string Template handle
-	* @return string Path to source file path in primary template directory
+	* @return string Path to source file path in primary style directory
 	*/
 	public function get_virtual_source_file_for_handle($handle)
 	{
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$this->main_root_id][$handle]))
 		{
-			trigger_error("template locator: No file specified for handle $handle", E_USER_ERROR);
+			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
 		$source_file = $this->files[$this->main_root_id][$handle];
@@ -172,7 +185,7 @@ class phpbb_template_locator
 
 	/**
 	* Determines the source file path for a template handle, accounting
-	* for template inheritance and verifying that the path exists.
+	* for styles tree and verifying that the path exists.
 	*
 	* This function returns the actual path that may be compiled for
 	* the specified template handle. It will trigger an error if
@@ -181,7 +194,7 @@ class phpbb_template_locator
 	* filesystem.
 	*
 	* Use get_virtual_source_file_for_handle to just resolve a template
-	* handle to a path without any filesystem or inheritance checks.
+	* handle to a path without any filesystem or styles tree checks.
 	*
 	* @param string $handle Template handle (i.e. "friendly" template name)
 	* @return string Source file path
@@ -191,7 +204,7 @@ class phpbb_template_locator
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$this->main_root_id][$handle]))
 		{
-			trigger_error("template locator: No file specified for handle $handle", E_USER_ERROR);
+			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
 		// locate a source file that exists
@@ -206,7 +219,7 @@ class phpbb_template_locator
 		// search failed
 		if (!file_exists($source_file))
 		{
-			trigger_error("template locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
+			trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
 		}
 
 		return $source_file;
