@@ -52,15 +52,11 @@ if (isset($_GET['avatar']))
 	$container->setParameter('core.root_path', $phpbb_root_path);
 	$container->setParameter('core.php_ext', $phpEx);
 
-	$phpbb_class_loader_ext = $container->get('class_loader.ext');
-	$phpbb_class_loader_ext->register();
 	$phpbb_class_loader = $container->get('class_loader');
-	$phpbb_class_loader->register();
+	$phpbb_class_loader_ext = $container->get('class_loader.ext');
 
 	// set up caching
 	$cache = $container->get('cache');
-	$phpbb_class_loader_ext->set_cache($container->get('cache.driver'));
-	$phpbb_class_loader->set_cache($container->get('cache.driver'));
 
 	$phpbb_dispatcher = $container->get('dispatcher');
 	$request	= $container->get('request');
@@ -82,7 +78,6 @@ if (isset($_GET['avatar']))
 	// load extensions
 	$phpbb_extension_manager = $container->get('ext.manager');
 	$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
-	$phpbb_subscriber_loader->load();
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));

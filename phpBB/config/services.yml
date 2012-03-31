@@ -5,6 +5,9 @@ services:
             - phpbb_
             - %core.root_path%includes/
             - .%core.php_ext%
+        calls:
+            - [register, []]
+            - [set_cache, [@cache.driver]]
 
     class_loader.ext:
         class: phpbb_class_loader
@@ -12,6 +15,9 @@ services:
             - phpbb_ext_
             - %core.root_path%ext/
             - .%core.php_ext%
+        calls:
+            - [register, []]
+            - [set_cache, [@cache.driver]]
 
     cache:
         class: phpbb_cache_service
@@ -95,6 +101,8 @@ services:
         arguments:
             - @dispatcher
             - @ext.manager
+        calls:
+            - [load, []]
 
     cron.task_provider:
         class: phpbb_cron_task_provider

@@ -97,15 +97,11 @@ $container->setParameter('core.root_path', $phpbb_root_path);
 $container->setParameter('core.php_ext', $phpEx);
 
 // Setup class loader first
-$phpbb_class_loader_ext = $container->get('class_loader.ext');
-$phpbb_class_loader_ext->register();
 $phpbb_class_loader = $container->get('class_loader');
-$phpbb_class_loader->register();
+$phpbb_class_loader_ext = $container->get('class_loader.ext');
 
 // set up caching
 $cache = $container->get('cache');
-$phpbb_class_loader_ext->set_cache($container->get('cache.driver'));
-$phpbb_class_loader->set_cache($container->get('cache.driver'));
 
 // Instantiate some basic classes
 $phpbb_dispatcher = $container->get('dispatcher');
@@ -125,7 +121,6 @@ set_config_count(null, null, null, $config);
 // load extensions
 $phpbb_extension_manager = $container->get('ext.manager');
 $phpbb_subscriber_loader = $container->get('event.subscriber_loader');
-$phpbb_subscriber_loader->load();
 
 $template = $container->get('template');
 $style = $container->get('style');
