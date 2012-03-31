@@ -28,6 +28,8 @@ syntaxerror=0
 syntaxerrors=""
 spaceserror=0
 spaceserrors=""
+spacetabserror=0
+spacetabserrors=""
 
 if ! which $PHP_BIN >/dev/null 2>&1
 then
@@ -88,22 +90,39 @@ do
 		spaceserrors=$(echo "$spaceserrors"; echo "->$filename:"; echo "$result")
 	fi
 
+	# check content for wrong trailling whitespace characters
+	result=$(git cat-file -p $sha | grep --line-number $' \t')
+
+	if [ $? -eq 0 ]
+	then
+		spacetabserror=4
+		# Swap back in correct filenames
+		spacetabserrors=$(echo "$spacetabserrors"; echo "->$filename:"; echo "$result")
+	fi
+
 done
 unset IFS
 
-if [ $syntaxerror -eq 1 ]
+# Note: -ne -> Not Equal to
+if [ $syntaxerror -ne 0 ]
 then
 	echo -e "PHP Syntax check failed:";
 	echo -e "$syntaxerrors" | grep "^Parse error:"
 fi
 
-if [ $spaceserror -eq 1 ]
+if [ $spaceserror -ne 0 ]
 then
 	echo -e -n "\nWrong line trailling characters:";
 	echo -e "$spaceserrors"
 fi
 
-if [ $syntaxerror -eq 1 -o $spaceserror -eq 2 ]
+if [ $spacetabserror -ne 0 ]
 then
-	exit $(($syntaxerror + $spaceserror))
+	echo -e -n "\nSpaces before tabs were detected:";
+	echo -e "$spacetabserrors"
+fi
+
+if [ $syntaxerror -ne 0 -o $spaceserror -ne 0 -o $spacetabserror -ne 0 ]
+then
+	exit $(($syntaxerror + $spaceserror + $spacetabserror))
 fi
