@@ -79,19 +79,27 @@ include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../config'));
+$loader->load('parameters.yml');
+$loader->load('services.yml');
+
+$container->setParameter('core.root_path', $phpbb_root_path);
+$container->setParameter('core.php_ext', $phpEx);
+$container->setAlias('cache.driver.install', 'cache.driver');
+
+$phpbb_class_loader_ext = $container->get('class_loader.ext');
 $phpbb_class_loader_ext->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
+$phpbb_class_loader = $container->get('class_loader');
 $phpbb_class_loader->register();
 
 // set up caching
-$cache_factory = new phpbb_cache_factory('file');
-$cache = $cache_factory->get_service();
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$cache = $container->get('cache');
+$phpbb_class_loader_ext->set_cache($container->get('cache.driver'));
+$phpbb_class_loader->set_cache($container->get('cache.driver'));
 
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request = new phpbb_request();
+$phpbb_dispatcher = $container->get('dispatcher');
+$request	= $container->get('request');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
