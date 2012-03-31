@@ -24,7 +24,6 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_style_path_provider implements IteratorAggregate, phpbb_style_path_provider_interface
 {
-	protected $main_style_name = '';
 	protected $paths = array();
 
 	/**
@@ -41,25 +40,14 @@ class phpbb_style_path_provider implements IteratorAggregate, phpbb_style_path_p
 	* Overwrites the current style paths
 	*
 	* The first element of the passed styles map, is considered the main
-	* style and can be retrieved through get_main_style_path().
+	* style.
 	*
 	* @param array $styles An array of style paths. The first element is the main style.
 	* @return null
 	*/
 	public function set_styles(array $styles)
 	{
-		$this->paths = $styles;
-		$this->main_style_path = $this->paths[0];
-	}
-
-	/**
-	* Retrieves the path to the main style passed into set_styles()
-	*
-	* @return string Main style path
-	*/
-	public function get_main_style_path()
-	{
-		return $this->main_style_path;
+		$this->paths = array('style' => $styles);
 	}
 
 	/**

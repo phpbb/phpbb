@@ -92,6 +92,9 @@ class phpbb_style
 			$paths[] = $this->get_style_path($dir);
 		}
 
+		// Add 'all' path, used as last fallback path by hooks and extensions
+		$paths[] = $this->get_style_path('all');
+
 		return $this->set_custom_style($style_name, $paths);
 	}
 
@@ -113,7 +116,6 @@ class phpbb_style
 
 		$this->provider->set_styles($paths);
 		$this->locator->set_paths($this->provider);
-		$this->locator->set_main_style($this->provider->get_main_style_path());
 
 		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
