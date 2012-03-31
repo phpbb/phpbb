@@ -39,11 +39,4 @@ interface phpbb_style_path_provider_interface extends Traversable
 	* @return null
 	*/
 	public function set_styles(array $styles);
-
-	/**
-	* Retrieves the path to the main style passed into set_styles()
-	*
-	* @return string Main style path
-	*/
-	public function get_main_style_path();
 }
