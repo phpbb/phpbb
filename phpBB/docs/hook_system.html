@@ -368,7 +368,7 @@ a:active	{ color: #368AD2; }
 
 <p>In phpBB3 there are four functions you are able to hook into with your custom functions:</p>
 
-<p><code>phpbb_user_session_handler();</code> which is called within user::setup after the session and the user object is correctly initialized.<br />
+<p><code>phpbb_user_session_handler();</code> which is called within phpbb_user::setup after the session and the user object is correctly initialized.<br />
 <code>append_sid($url, $params = false, $is_amp = true, $session_id = false);</code> which is called for building urls (appending the session id)<br />
 <code>$template-&gt;display($handle, $template);</code> which is called directly before outputting the (not-yet-compiled) template.<br />
 <code>exit_handler();</code> which is called at the very end of phpBB3's execution.</p>
@@ -388,7 +388,7 @@ PHPBB_USE_BOARD_URL_PATH (use generate_board_url() for image paths instead of $p
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/session.php - user::img()</li>
+	<li>/includes/user.php - phpbb_user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 

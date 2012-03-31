@@ -248,7 +248,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/session.php - user::img()</li>
+	<li>/includes/user.php - phpbb_user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 
