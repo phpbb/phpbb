@@ -1,18 +1,13 @@
 services:
-    cache_factory:
-        class: phpbb_cache_factory
-        arguments:
-            - %cache.acm_type%
-
     cache:
         class: phpbb_cache_service
-        factory_service: cache_factory
-        factory_method: get_service
+        arguments:
+             - @cache.driver
 
     cache.driver:
         class: phpbb_cache_driver_interface
-        factory_service: cache
-        factory_method: get_driver
+        arguments:
+            - %cache.driver.class%
 
     dispatcher:
         class: phpbb_event_dispatcher
@@ -27,7 +22,7 @@ services:
         class: phpbb_auth
 
     dbal.conn:
-        class: %dbal.driver%
+        class: %dbal.driver.class%
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 

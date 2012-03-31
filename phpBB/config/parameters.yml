@@ -1,6 +1,6 @@
 parameters:
-    cache.acm_type: file
-    dbal.driver: dbal_mysqli
+    cache.driver.class: phpbb_cache_driver_file
+    dbal.driver.class: dbal_mysqli
     dbal.dbhost:
     dbal.dbuser: root
     dbal.dbpasswd:
