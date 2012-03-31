@@ -10,7 +10,6 @@
 require_once dirname(__FILE__) . '/base.php';
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 class phpbb_security_redirect_test extends phpbb_security_test_base
 {
