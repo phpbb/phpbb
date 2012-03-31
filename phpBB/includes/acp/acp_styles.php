@@ -228,7 +228,7 @@ class acp_styles
 	*/
 	function action_delete_confirmed($ids, $delete_files)
 	{
-		global $db, $user, $cache;
+		global $db, $user, $cache, $config;
 
 		$default = $config['default_style'];
 		$deleted = array();
@@ -556,6 +556,7 @@ class acp_styles
 		$users = $this->get_users();
 		
 		// Add users counter to rows
+		$style['_users'] = array();
 		foreach ($styles as &$style)
 		{
 			$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
@@ -1288,7 +1289,7 @@ class acp_styles
 	function default_bitfield()
 	{
 		static $value;
-		if(isset($value))
+		if (isset($value))
 		{
 			return $value;
 		}
