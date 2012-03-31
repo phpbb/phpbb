@@ -76,7 +76,6 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
-include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
@@ -178,7 +177,7 @@ $sub = request_var('sub', '');
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$user = new user();
+$user = new phpbb_user();
 $auth = new auth();
 
 // Add own hook handler, if present. :o

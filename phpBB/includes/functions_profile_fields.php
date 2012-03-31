@@ -555,7 +555,7 @@ class custom_profile
 				{
 					global $user;
 					// Date should display as the same date for every user regardless of timezone, so remove offset
-					// to compensate for the offset added by user::format_date()
+					// to compensate for the offset added by phpbb_user::format_date()
 					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) - ($user->timezone + $user->dst), $user->lang['DATE_FORMAT'], true);
 				}
 

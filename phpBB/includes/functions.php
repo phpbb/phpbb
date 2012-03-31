@@ -4949,7 +4949,7 @@ function exit_handler()
 }
 
 /**
-* Handler for init calls in phpBB. This function is called in user::setup();
+* Handler for init calls in phpBB. This function is called in phpbb_user::setup();
 * This function supports hooks.
 */
 function phpbb_user_session_handler()
