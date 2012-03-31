@@ -47,25 +47,50 @@ hr {
 	background-color: #12A3EB;
 	background-image: url("./images/bg_header.gif");
 	color: #FFFFFF;
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
 }
 
 .navbar {
 	background-color: #cadceb;
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+
 }
 
 .forabg {
 	background-color: #0076b1;
 	background-image: url("./images/bg_list.gif");
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+
 }
 
 .forumbg {
 	background-color: #12A3EB;
 	background-image: url("./images/bg_header.gif");
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+
 }
 
 .panel {
 	background-color: #ECF1F3;
 	color: #28313F;
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+}
+
+.post {
+	border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+
 }
 
 .post:target .content {
@@ -89,19 +114,19 @@ hr {
 }
 
 span.corners-top {
-	background-image: url("./images/corners_left.png");
+	
 }
 
 span.corners-top span {
-	background-image: url("./images/corners_right.png");
+	
 }
 
 span.corners-bottom {
-	background-image: url("./images/corners_left.png");
+	
 }
 
 span.corners-bottom span {
-	background-image: url("./images/corners_right.png");
+	
 }
 
 /* Horizontal lists
