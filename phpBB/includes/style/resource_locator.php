@@ -185,9 +185,12 @@ class phpbb_style_resource_locator
 	* handle to a path without any filesystem or styles tree checks.
 	*
 	* @param string $handle Template handle (i.e. "friendly" template name)
+	* @param bool $find_all If true, each root path will be checked and function
+	*				will return array of files instead of string and will not
+	*				trigger a error if template does not exist
 	* @return string Source file path
 	*/
-	public function get_source_file_for_handle($handle)
+	public function get_source_file_for_handle($handle, $find_all = false)
 	{
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files['style'][0][$handle]))
@@ -198,20 +201,40 @@ class phpbb_style_resource_locator
 		// locate a source file that exists
 		$source_file = $this->files['style'][0][$handle];
 		$tried = $source_file;
+		$found = false;
+		$found_all = array();
 		foreach ($this->roots as $root_key => $root_paths)
 		{
 			foreach ($root_paths as $root_index => $root)
 			{
 				$source_file = $this->files[$root_key][$root_index][$handle];
+				$tried .= ', ' . $source_file;
 				if (file_exists($source_file))
 				{
-					return $source_file;
+					$found = true;
+					break;
 				}
-				$tried .= ', ' . $source_file;
+			}
+			if ($found)
+			{
+				if ($find_all)
+				{
+					$found_all[] = $source_file;
+					$found = false;
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 
 		// search failed
-		trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
+		if (!$found && !$find_all)
+		{
+			trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
+		}
+
+		return ($find_all) ? $found_all : $source_file;
 	}
 }
