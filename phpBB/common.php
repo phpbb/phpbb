@@ -15,6 +15,9 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
@@ -91,43 +94,41 @@ $phpbb_class_loader_ext->register();
 $phpbb_class_loader = new phpbb_class_loader('phpbb_', $phpbb_root_path . 'includes/', ".$phpEx");
 $phpbb_class_loader->register();
 
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/config'));
+$loader->load('parameters.yml');
+$loader->load('services.yml');
+
+$container->setParameter('core.root_path', $phpbb_root_path);
+$container->setParameter('core.php_ext', $phpEx);
+
 // set up caching
-$cache_factory = new phpbb_cache_factory($acm_type);
-$cache = $cache_factory->get_service();
+$cache = $container->get('cache');
 $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
-$phpbb_dispatcher = new phpbb_event_dispatcher();
-$request	= new phpbb_request();
-$user		= new phpbb_user();
-$auth		= new phpbb_auth();
-$db			= new $sql_db();
+$phpbb_dispatcher = $container->get('dispatcher');
+$request	= $container->get('request');
+$user		= $container->get('user');
+$auth		= $container->get('auth');
+$db			= $container->get('dbal.conn');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false);
-
-// We do not need this any longer, unset for safety purposes
-unset($dbpasswd);
-
 // Grab global variables, re-cache if necessary
-$config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
+$config = $container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 // load extensions
-$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+$phpbb_extension_manager = $container->get('ext.manager');
 
-// Initialize style
-$phpbb_style_resource_locator = new phpbb_style_resource_locator();
-$phpbb_style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
-$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider);
-$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
+$template = $container->get('template');
+$style = $container->get('style');
 
-$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
+$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
 $phpbb_subscriber_loader->load();
 
 // Add own hook handler

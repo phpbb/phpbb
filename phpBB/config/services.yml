@@ -1,0 +1,87 @@
+services:
+    cache_factory:
+        class: phpbb_cache_factory
+        arguments:
+            - %cache.acm_type%
+
+    cache:
+        class: phpbb_cache_service
+        factory_service: cache_factory
+        factory_method: get_service
+
+    cache.driver:
+        class: phpbb_cache_driver_interface
+        factory_service: cache
+        factory_method: get_driver
+
+    dispatcher:
+        class: phpbb_event_dispatcher
+
+    request:
+        class: phpbb_request
+
+    user:
+        class: phpbb_user
+
+    auth:
+        class: phpbb_auth
+
+    dbal.conn:
+        class: %dbal.driver%
+        calls:
+            - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
+
+    config:
+        class: phpbb_config_db
+        arguments:
+            - @dbal.conn
+            - @cache.driver
+            - %tables.config%
+
+    ext.manager:
+        class: phpbb_extension_manager
+        arguments:
+            - @dbal.conn
+            - %tables.ext%
+            - %core.root_path%
+            - .%core.php_ext%
+            - @cache.driver
+
+    style.resource_locator:
+        class: phpbb_style_resource_locator
+
+    style.path_provider_ext:
+        class: phpbb_style_extension_path_provider
+        arguments:
+            - @ext.manager
+            - @style.path_provider
+
+    style.path_provider:
+        class: phpbb_style_path_provider
+
+    template:
+        class: phpbb_style_template
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+            - @config
+            - @user
+            - @style.resource_locator
+            - @style.path_provider_ext
+
+    style:
+        class: phpbb_style
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+            - @config
+            - @user
+            - @style.resource_locator
+            - @style.path_provider_ext
+            - @template
+
+    event.subscriber_loader:
+        class: phpbb_event_extension_subscriber_loader
+        arguments:
+            - @dispatcher
+            - @ext.manager

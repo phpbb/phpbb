@@ -1,0 +1,11 @@
+parameters:
+    cache.acm_type: file
+    dbal.driver: dbal_mysqli
+    dbal.dbhost:
+    dbal.dbuser: root
+    dbal.dbpasswd:
+    dbal.dbname: phpbb_dev
+    dbal.dbport:
+    dbal.new_link: false
+    tables.config: phpbb_config
+    tables.ext: phpbb_ext

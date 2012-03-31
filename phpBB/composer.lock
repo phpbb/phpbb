@@ -1,9 +1,21 @@
 {
-    "hash": "9bada3748ec2933fe0864dcfafbcd671",
+    "hash": "b1e9c3bcfcee0c5630742abb3e49685f",
     "packages": [
         {
+            "package": "symfony/config",
+            "version": "v2.0.12"
+        },
+        {
+            "package": "symfony/dependency-injection",
+            "version": "v2.0.12"
+        },
+        {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.10"
+            "version": "v2.0.12"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "v2.0.12"
         }
     ],
     "aliases": []
