@@ -80,3 +80,14 @@ services:
         arguments:
             - @dispatcher
             - @ext.manager
+
+    cron.task_provider:
+        class: phpbb_cron_task_provider
+        arguments:
+            - @ext.manager
+
+    cron.manager:
+        class: phpbb_cron_manager
+        arguments:
+            - @cron.task_provider
+            - @cache.driver
