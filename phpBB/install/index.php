@@ -92,6 +92,7 @@ $cache = $cache_factory->get_service();
 $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 $request = new phpbb_request();
 
 // make sure request_var uses this request instance

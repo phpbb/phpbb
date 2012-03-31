@@ -782,6 +782,18 @@ class acp_icons
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
+					
+					if ($request->is_ajax())
+					{
+						$json_response = new phpbb_json_response;
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $notice,
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3
+							)
+						));
+					}
 				}
 				else
 				{

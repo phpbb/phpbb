@@ -347,7 +347,19 @@
 
 <table width="100%" cellspacing="1">
 <tr>
-	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}">
+	<!-- IF .quickmod -->
+		<form method="post" action="{S_MOD_ACTION}">
+			<span class="gensmall">{L_QUICK_MOD}:</span>
+			<select name="action" id="quick-mod-select">
+				<!-- BEGIN quickmod -->
+				<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
+				<!-- END quickmod -->
+			</select>
+			<input class="btnlite" type="submit" value="{L_GO}" />
+		</form>
+	<!-- ENDIF -->
+	</td>
 	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 </tr>
 </table>

@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'config.' . $phpEx))
@@ -98,6 +100,7 @@ $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
 // Instantiate some basic classes
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 $request	= new phpbb_request();
 $user		= new user();
 $auth		= new auth();
@@ -123,6 +126,9 @@ $phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_ro
 // Initialize style
 $style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager);
 $template = $style->template;
+
+$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
+$phpbb_subscriber_loader->load();
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

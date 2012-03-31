@@ -24,7 +24,7 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
@@ -351,6 +351,14 @@ class acp_bots
 				return;
 
 			break;
+		}
+		
+		if ($request->is_ajax() && ($action == 'activate' || $action == 'deactivate'))
+		{
+			$json_response = new phpbb_json_response;
+			$json_response->send(array(
+				'text'	=> $user->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
+			));
 		}
 
 		$s_options = '';
