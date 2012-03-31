@@ -133,7 +133,7 @@ class acp_forums
 						'forum_style'			=> request_var('forum_style', 0),
 						'display_subforum_list'	=> request_var('display_subforum_list', false),
 						'display_on_index'		=> request_var('display_on_index', false),
-						'display_last_subject'	=> request_var('display_last_subject',true),
+						'display_last_subject'	=> request_var('display_last_subject', true),
 						'forum_topics_per_page'	=> request_var('topics_per_page', 0),
 						'enable_indexing'		=> request_var('enable_indexing', true),
 						'enable_icons'			=> request_var('enable_icons', false),
