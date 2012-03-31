@@ -104,8 +104,8 @@ $container->setParameter('core.php_ext', $phpEx);
 
 // set up caching
 $cache = $container->get('cache');
-$phpbb_class_loader_ext->set_cache($cache->get_driver());
-$phpbb_class_loader->set_cache($cache->get_driver());
+$phpbb_class_loader_ext->set_cache($container->get('cache.driver'));
+$phpbb_class_loader->set_cache($container->get('cache.driver'));
 
 // Instantiate some basic classes
 $phpbb_dispatcher = $container->get('dispatcher');
