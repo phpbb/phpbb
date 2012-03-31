@@ -2281,14 +2281,14 @@ function change_database_data(&$no_updates, $version)
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
 				'edit'	=> array(
-					'base'		=> 'acp_styles'
+					'base'		=> 'acp_styles',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_STYLES_EDIT',
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
 				'cache'	=> array(
-					'base'		=> 'acp_styles'
+					'base'		=> 'acp_styles',
 					'class'		=> 'acp',
 					'title'		=> 'ACP_STYLES_CACHE',
 					'auth'		=> 'acl_a_styles',
