@@ -26,6 +26,13 @@ stream_filter_register('phpbb_template', 'phpbb_style_template_filter');
 class phpbb_style_template_compile
 {
 	/**
+	* Array of parameters to forward to template filter
+	*
+	* @var array
+	*/
+	private $filter_params;
+
+	/**
 	* Whether <!-- PHP --> tags are allowed
 	*
 	* @var bool
@@ -33,13 +40,30 @@ class phpbb_style_template_compile
 	private $allow_php;
 
 	/**
+	* Style resource locator
+	*
+	* @var phpbb_style_resource_locator
+	*/
+	private $locator;
+
+	/**
+	* @var string phpBB root path
+	*/
+	private $phpbb_root_path;
+
+	/**
 	* Constructor.
 	*
 	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param phpbb_style_resource_locator $locator Resource locator
+	* @param string $phpbb_root_path Path to phpBB root directory
 	*/
-	public function __construct($allow_php)
+	public function __construct($allow_php, $locator, $phpbb_root_path)
 	{
+		$this->filter_params = array();
 		$this->allow_php = $allow_php;
+		$this->locator = $locator;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -116,7 +140,11 @@ class phpbb_style_template_compile
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
-		stream_filter_append($source_stream, 'phpbb_template', null, array('allow_php' => $this->allow_php));
+		$params = $this->filter_params;
+		$params['allow_php'] = $this->allow_php;
+		$params['locator'] = $this->locator;
+		$params['phpbb_root_path'] = $this->phpbb_root_path;
+		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }

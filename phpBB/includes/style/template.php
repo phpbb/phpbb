@@ -288,7 +288,7 @@ class phpbb_style_template
 			return new phpbb_style_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_style_template_compile($this->config['tpl_allow_php']);
+		$compile = new phpbb_style_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
@@ -491,5 +491,24 @@ class phpbb_style_template
 
 		// use resource locator to find files
 		return $this->locator->get_first_file_location($templates, $return_default, $return_full_path);
+	}
+
+	/**
+	* Include JS file
+	*
+	* @param string $file file name
+	* @param bool $locate True if file needs to be located
+	*/
+	function _js_include($file, $locate = false)
+	{
+		// Locate file
+		if ($locate)
+		{
+			$file = $this->locator->get_first_file_location(array($file), true, true);
+		}
+
+		// Add HTML code
+		$code = '<script src="' . htmlspecialchars($file) . '"></script>';
+		$this->context->append_var('SCRIPTS', $code);
 	}
 }

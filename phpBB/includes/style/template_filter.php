@@ -76,6 +76,18 @@ class phpbb_style_template_filter extends php_user_filter
 	private $allow_php;
 
 	/**
+	* Resource locator.
+	*
+	* @var phpbb_template_locator
+	*/
+	private $locator;
+
+	/**
+	* @var string phpBB root path
+	*/
+	private $phpbb_root_path;
+
+	/**
 	* Stream filter
 	*
 	* Is invoked for evey chunk of the stream, allowing us
@@ -126,14 +138,16 @@ class phpbb_style_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option from params, which is passed
-	* to stream_filter_append.
+	* Get the allow_php option, root directory and locator from params, 
+	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
 	{
 		$this->chunk = '';
 		$this->in_php = false;
 		$this->allow_php = $this->params['allow_php'];
+		$this->locator = $this->params['locator'];
+		$this->phpbb_root_path = $this->params['phpbb_root_path'];
 		return true;
 	}
 
@@ -279,6 +293,10 @@ class phpbb_style_template_filter extends php_user_filter
 
 			case 'INCLUDEPHP':
 				return ($this->allow_php) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
+			break;
+
+			case 'INCLUDEJS':
+				return '<?php ' . $this->compile_tag_include_js($matches[2]) . ' ?>';
 			break;
 
 			case 'PHP':
@@ -854,6 +872,45 @@ class phpbb_style_template_filter extends php_user_filter
 		array_splice($tokens, 0, $expr_end, $expr);
 
 		return $tokens;
+	}
+
+	/**
+	* Compile INCLUDEJS tag
+	*
+	* @param string $tag_args Expression given with INCLUDEJS in source template
+	* @return string compiled template code
+	*/
+	private function compile_tag_include_js($tag_args)
+	{
+		// Process dynamic includes
+		if ($tag_args[0] == '{')
+		{
+			$var = $this->get_varref($tag_args, $is_expr);
+			if (!$is_expr)
+			{
+				return " \$_template->_js_include($var, true);";
+			}
+			return '';
+		}
+
+		// Locate file
+		$filename = $this->locator->get_first_file_location(array($tag_args), false, true);
+		
+		if ($filename === false)
+		{
+			// File does not exist, find it during run time
+			return ' $_template->_js_include(\'' . addslashes($tag_args) . '\', true); ';
+		}
+		
+		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
+		{
+			// Absolute path, include as is
+			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false); ';
+		}
+
+		// Relative path, remove root path from it
+		$filename = substr($filename, strlen($this->phpbb_root_path));
+		return ' global $phpbb_root_path; $_template->_js_include($phpbb_root_path . \'' . addslashes($filename) . '\', false); ';
 	}
 
 	/**
