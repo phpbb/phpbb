@@ -499,7 +499,7 @@ class phpbb_style_template
 	* @param string $file file name
 	* @param bool $locate True if file needs to be located
 	*/
-	function _js_include($file, $locate = false)
+	public function _js_include($file, $locate = false)
 	{
 		// Locate file
 		if ($locate)
