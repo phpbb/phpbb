@@ -17,38 +17,38 @@ class phpbb_template_template_locate_test extends phpbb_template_template_test_c
 			// First element of the array is test name - keep them distinct
 			array(
 				'simple inheritance - only parent template exists',
+				dirname(__FILE__) . '/parent_templates/parent_only.html',
 				'parent_only.html',
 				false,
 				true,
-				dirname(__FILE__) . '/parent_templates/parent_only.html',
 			),
 			array(
 				'simple inheritance - only child template exists',
+				dirname(__FILE__) . '/templates/child_only.html',
 				'child_only.html',
 				false,
 				true,
-				dirname(__FILE__) . '/templates/child_only.html',
 			),
 			array(
 				'simple inheritance - both parent and child templates exist',
+				dirname(__FILE__) . '/templates/parent_and_child.html',
 				'parent_and_child.html',
 				false,
 				true,
-				dirname(__FILE__) . '/templates/parent_and_child.html',
 			),
 			array(
 				'find first template - only child template exists in main style',
+				'child_only.html',
 				array('parent_only.html', 'child_only.html'),
 				false,
 				false,
-				'child_only.html',
 			),
 			array(
 				'find first template - both templates exist in main style',
+				'parent_and_child.html',
 				array('parent_and_child.html', 'child_only.html'),
 				false,
 				false,
-				'parent_and_child.html',
 			),
 		);
 	}
@@ -56,14 +56,14 @@ class phpbb_template_template_locate_test extends phpbb_template_template_test_c
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template($name, $files, $return_default, $return_full_path, $expected)
+	public function test_template($name, $expected, $files, $return_default, $return_full_path)
 	{
 		// Reset the engine state
 		$this->setup_engine();
 
 		// Locate template
 		$result = $this->template->locate($files, $return_default, $return_full_path);
-		$this->assertEquals($result, $expected);
+		$this->assertSame($expected, $result);
 	}
 
 	protected function setup_engine(array $new_config = array())
