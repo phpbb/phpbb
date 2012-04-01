@@ -594,7 +594,7 @@ li.pagination {
 	border: 1px solid transparent;
 	position: fixed;
 	display: none;
-	top: 100px;
+	top: 40%;
 	left: 35%;
 	width: 30%;
 	z-index: 50;
