@@ -877,39 +877,6 @@ ul.cplist {
 	background-color: #FFFFFF;
 }
 
-#cp-main span.corners-top, #cp-menu span.corners-top {
-	background-image: url("./images/corners_left2.gif");
-}
-
-#cp-main span.corners-top span, #cp-menu span.corners-top span {
-	background-image: url("./images/corners_right2.gif");
-}
-
-#cp-main span.corners-bottom, #cp-menu span.corners-bottom {
-	background-image: url("./images/corners_left2.gif");
-}
-
-#cp-main span.corners-bottom span, #cp-menu span.corners-bottom span {
-	background-image: url("./images/corners_right2.gif");
-}
-
-/* Topicreview */
-#cp-main .panel #topicreview span.corners-top, #cp-menu .panel #topicreview span.corners-top {
-	background-image: url("./images/corners_left.gif");
-}
-
-#cp-main .panel #topicreview span.corners-top span, #cp-menu .panel #topicreview span.corners-top span {
-	background-image: url("./images/corners_right.gif");
-}
-
-#cp-main .panel #topicreview span.corners-bottom, #cp-menu .panel #topicreview span.corners-bottom {
-	background-image: url("./images/corners_left.gif");
-}
-
-#cp-main .panel #topicreview span.corners-bottom span, #cp-menu .panel #topicreview span.corners-bottom span {
-	background-image: url("./images/corners_right.gif");
-}
-
 /* Friends list */
 .cp-mini {
 	background-color: #eef5f9;
