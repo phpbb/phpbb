@@ -385,7 +385,7 @@ ul.rightside {
 /* Table styles
 ----------------------------------------*/
 table.table1 {
-	/* See tweaks.css */
+	width: 100%;
 }
 
 #ucp-main table.table1 {
