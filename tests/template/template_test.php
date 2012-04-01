@@ -15,7 +15,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public static function template_data()
+	public function template_data()
 	{
 		return array(
 			/*
@@ -394,7 +394,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
 	}
 
-	public static function alter_block_array_data()
+	public function alter_block_array_data()
 	{
 		return array(
 			array(
