@@ -289,6 +289,12 @@ a#logo:hover {
 	background-position: 100% 0;
 }
 
+.inner:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+
 .rowbg {
 	margin: 5px 5px 2px 5px;
 }
