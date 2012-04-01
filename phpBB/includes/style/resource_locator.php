@@ -237,4 +237,55 @@ class phpbb_style_resource_locator
 
 		return ($find_all) ? $found_all : $source_file;
 	}
+
+	/**
+	* Locates source file path, accounting for styles tree and verifying that
+	* the path exists.
+	*
+	* Unlike previous functions, this function works without template handle
+	* and it can search for more than one file. If more than one file name is
+	* specified, it will return location of file that it finds first.
+	*
+	* @param array $files List of files to locate.
+	* @param bool $return_default Determines what to return if file does not
+	*				exist. If true, function will return location where file is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to file. If false, function will return file name. This
+	*				parameter can be used to check which one of set of files
+	*				is available.
+	* @return string or boolean Source file path if file exists or $return_default is
+	*				true. False if file does not exist and $return_default is false
+	*/
+	public function get_first_file_location($files, $return_default = false, $return_full_path = true)
+	{
+		// set default value
+		$default_result = false;
+
+		// check all available paths
+		foreach ($this->roots as $root_paths)
+		{
+			foreach ($root_paths as $path)
+			{
+				// check all files
+				foreach ($files as $filename)
+				{
+					$source_file = $path . '/' . $filename;
+					if (file_exists($source_file))
+					{
+						return ($return_full_path) ? $source_file : $filename;
+					}
+
+					// assign first file as result if $return_default is true
+					if ($return_default && $default_result === false)
+					{
+						$default_result = $source_file;
+					}
+				}
+			}
+		}
+
+		// search failed
+		return $default_result;
+	}
 }
