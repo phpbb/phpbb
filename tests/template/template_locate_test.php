@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/template_test_case.php';
 
 class phpbb_template_template_locate_test extends phpbb_template_template_test_case
 {
-	public static function template_data()
+	public function template_data()
 	{
 		return array(
 			// First element of the array is test name - keep them distinct
