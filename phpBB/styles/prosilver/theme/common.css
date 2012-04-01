@@ -713,3 +713,7 @@ p.rules a {
 .hidden {
 	display: none;
 }
+
+.smilies {
+	vertical-align: text-bottom;
+}
