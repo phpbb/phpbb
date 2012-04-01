@@ -647,6 +647,7 @@ CREATE TABLE phpbb_reports (
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
+	reported_post_text mediumblob NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -760,37 +761,12 @@ CREATE TABLE phpbb_styles (
 	style_name blob NOT NULL,
 	style_copyright blob NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (style_id),
-	UNIQUE style_name (style_name(255)),
-	KEY template_id (template_id),
-	KEY theme_id (theme_id)
-);
-
-
-# Table: 'phpbb_styles_template'
-CREATE TABLE phpbb_styles_template (
-	template_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	template_name blob NOT NULL,
-	template_copyright blob NOT NULL,
-	template_path varbinary(100) DEFAULT '' NOT NULL,
+	style_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
-	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
-	template_inherit_path varbinary(255) DEFAULT '' NOT NULL,
-	PRIMARY KEY (template_id),
-	UNIQUE tmplte_nm (template_name(255))
-);
-
-
-# Table: 'phpbb_styles_theme'
-CREATE TABLE phpbb_styles_theme (
-	theme_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	theme_name blob NOT NULL,
-	theme_copyright blob NOT NULL,
-	theme_path varbinary(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (theme_id),
-	UNIQUE theme_name (theme_name(255))
+	style_parent_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
+	style_parent_tree blob NOT NULL,
+	PRIMARY KEY (style_id),
+	UNIQUE style_name (style_name(255))
 );
 
 

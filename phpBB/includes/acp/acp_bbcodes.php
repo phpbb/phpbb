@@ -24,7 +24,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
@@ -272,6 +272,18 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+						
+						if ($request->is_ajax())
+						{
+							$json_response = new phpbb_json_response;
+							$json_response->send(array(
+								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+								'MESSAGE_TEXT'	=> $user->lang['BBCODE_DELETED'],
+								'REFRESH_DATA'	=> array(
+									'time'	=> 3
+								)
+							));
+						}
 					}
 					else
 					{

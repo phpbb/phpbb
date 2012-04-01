@@ -1528,6 +1528,7 @@ function get_schema_struct()
 			'report_closed'			=> array('BOOL', 0),
 			'report_time'			=> array('TIMESTAMP', 0),
 			'report_text'			=> array('MTEXT_UNI', ''),
+			'reported_post_text'	=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
 		'KEYS'			=> array(
@@ -1654,43 +1655,14 @@ function get_schema_struct()
 			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
-			'template_id'			=> array('UINT', 0),
-			'theme_id'				=> array('UINT', 0),
+			'style_path'			=> array('VCHAR:100', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+			'style_parent_id'		=> array('UINT:4', 0),
+			'style_parent_tree'		=> array('TEXT', ''),
 		),
 		'PRIMARY_KEY'	=> 'style_id',
 		'KEYS'			=> array(
 			'style_name'		=> array('UNIQUE', 'style_name'),
-			'template_id'		=> array('INDEX', 'template_id'),
-			'theme_id'			=> array('INDEX', 'theme_id'),
-		),
-	);
-
-	$schema_data['phpbb_styles_template'] = array(
-		'COLUMNS'		=> array(
-			'template_id'			=> array('UINT', NULL, 'auto_increment'),
-			'template_name'			=> array('VCHAR_UNI:255', ''),
-			'template_copyright'	=> array('VCHAR_UNI', ''),
-			'template_path'			=> array('VCHAR:100', ''),
-			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
-			'template_inherits_id'		=> array('UINT:4', 0),
-			'template_inherit_path'		=> array('VCHAR', ''),
-		),
-		'PRIMARY_KEY'	=> 'template_id',
-		'KEYS'			=> array(
-			'tmplte_nm'				=> array('UNIQUE', 'template_name'),
-		),
-	);
-
-	$schema_data['phpbb_styles_theme'] = array(
-		'COLUMNS'		=> array(
-			'theme_id'				=> array('UINT', NULL, 'auto_increment'),
-			'theme_name'			=> array('VCHAR_UNI:255', ''),
-			'theme_copyright'		=> array('VCHAR_UNI', ''),
-			'theme_path'			=> array('VCHAR:100', ''),
-		),
-		'PRIMARY_KEY'	=> 'theme_id',
-		'KEYS'			=> array(
-			'theme_name'		=> array('UNIQUE', 'theme_name'),
 		),
 	);
 

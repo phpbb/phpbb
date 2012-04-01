@@ -277,7 +277,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('template locator: File for handle test does not exist. Could not find: %s', realpath($this->template_path . '/../') . '/templates/' . $filename);
+		$expecting = sprintf('style resource locator: File for handle test does not exist. Could not find: %s', realpath($this->template_path . '/../') . '/templates/' . $filename);
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
 		$this->display('test');
@@ -285,7 +285,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 	public function test_empty_file()
 	{
-		$expecting = 'template locator: set_filenames: Empty filename specified for test';
+		$expecting = 'style resource locator: set_filenames: Empty filename specified for test';
 
 		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 		$this->template->set_filenames(array('test' => ''));

@@ -909,7 +909,8 @@ CREATE TABLE phpbb_reports (
 	user_notify INTEGER DEFAULT 0 NOT NULL,
 	report_closed INTEGER DEFAULT 0 NOT NULL,
 	report_time INTEGER DEFAULT 0 NOT NULL,
-	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	report_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	reported_post_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
@@ -1086,15 +1087,15 @@ CREATE TABLE phpbb_styles (
 	style_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	style_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	style_active INTEGER DEFAULT 1 NOT NULL,
-	template_id INTEGER DEFAULT 0 NOT NULL,
-	theme_id INTEGER DEFAULT 0 NOT NULL
+	style_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT 'kNg=' NOT NULL,
+	style_parent_id INTEGER DEFAULT 0 NOT NULL,
+	style_parent_tree BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles(style_name);;
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
 
 CREATE GENERATOR phpbb_styles_gen;;
 SET GENERATOR phpbb_styles_gen TO 0;;
@@ -1104,55 +1105,6 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
-END;;
-
-
-# Table: 'phpbb_styles_template'
-CREATE TABLE phpbb_styles_template (
-	template_id INTEGER NOT NULL,
-	template_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	template_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	template_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT 'kNg=' NOT NULL,
-	template_inherits_id INTEGER DEFAULT 0 NOT NULL,
-	template_inherit_path VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
-);;
-
-ALTER TABLE phpbb_styles_template ADD PRIMARY KEY (template_id);;
-
-CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template(template_name);;
-
-CREATE GENERATOR phpbb_styles_template_gen;;
-SET GENERATOR phpbb_styles_template_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_template FOR phpbb_styles_template
-BEFORE INSERT
-AS
-BEGIN
-	NEW.template_id = GEN_ID(phpbb_styles_template_gen, 1);
-END;;
-
-
-# Table: 'phpbb_styles_theme'
-CREATE TABLE phpbb_styles_theme (
-	theme_id INTEGER NOT NULL,
-	theme_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	theme_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	theme_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL
-);;
-
-ALTER TABLE phpbb_styles_theme ADD PRIMARY KEY (theme_id);;
-
-CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme(theme_name);;
-
-CREATE GENERATOR phpbb_styles_theme_gen;;
-SET GENERATOR phpbb_styles_theme_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_theme FOR phpbb_styles_theme
-BEFORE INSERT
-AS
-BEGIN
-	NEW.theme_id = GEN_ID(phpbb_styles_theme_gen, 1);
 END;;
 
 

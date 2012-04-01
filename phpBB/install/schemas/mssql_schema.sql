@@ -1108,7 +1108,8 @@ CREATE TABLE [phpbb_reports] (
 	[user_notify] [int] DEFAULT (0) NOT NULL ,
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
-	[report_text] [text] DEFAULT ('') NOT NULL 
+	[report_text] [text] DEFAULT ('') NOT NULL ,
+	[reported_post_text] [text] DEFAULT ('') NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1322,8 +1323,10 @@ CREATE TABLE [phpbb_styles] (
 	[style_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_active] [int] DEFAULT (1) NOT NULL ,
-	[template_id] [int] DEFAULT (0) NOT NULL ,
-	[theme_id] [int] DEFAULT (0) NOT NULL 
+	[style_path] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
+	[style_parent_id] [int] DEFAULT (0) NOT NULL ,
+	[style_parent_tree] [varchar] (8000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1335,59 +1338,6 @@ ALTER TABLE [phpbb_styles] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [template_id] ON [phpbb_styles]([template_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [theme_id] ON [phpbb_styles]([theme_id]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_template'
-*/
-CREATE TABLE [phpbb_styles_template] (
-	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[template_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[template_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[template_path] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
-	[template_inherits_id] [int] DEFAULT (0) NOT NULL ,
-	[template_inherit_path] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_template] PRIMARY KEY  CLUSTERED 
-	(
-		[template_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  UNIQUE  INDEX [tmplte_nm] ON [phpbb_styles_template]([template_name]) ON [PRIMARY]
-GO
-
-
-/*
-	Table: 'phpbb_styles_theme'
-*/
-CREATE TABLE [phpbb_styles_theme] (
-	[theme_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[theme_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[theme_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[theme_path] [varchar] (100) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_theme] PRIMARY KEY  CLUSTERED 
-	(
-		[theme_id]
-	)  ON [PRIMARY] 
-GO
-
-CREATE  UNIQUE  INDEX [theme_name] ON [phpbb_styles_theme]([theme_name]) ON [PRIMARY]
 GO
 
 

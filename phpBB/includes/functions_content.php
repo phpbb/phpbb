@@ -1103,8 +1103,8 @@ function extension_allowed($forum_id, $extension, &$extensions)
 * @param string $string The text to truncate to the given length. String is specialchared.
 * @param int $max_length Maximum length of string (multibyte character count as 1 char / Html entity count as 1 char)
 * @param int $max_store_length Maximum character length of string (multibyte character count as 1 char / Html entity count as entity chars).
-* @param bool $allow_reply Allow Re: in front of string 
-* 	NOTE: This parameter can cause undesired behavior (returning strings longer than $max_store_length) and is deprecated. 
+* @param bool $allow_reply Allow Re: in front of string
+* 	NOTE: This parameter can cause undesired behavior (returning strings longer than $max_store_length) and is deprecated.
 * @param string $append String to be appended
 */
 function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
@@ -1256,6 +1256,22 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	}
 
 	return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+}
+
+/**
+ * Add an option to the quick-mod tools.
+ *
+ * @param string $option The language key for the value of the option.
+ * @param string $lang_string The language string to use.
+ */
+function phpbb_add_quickmod_option($option, $lang_string)
+{
+	global $template, $user;
+	$lang_string = $user->lang($lang_string);
+	$template->assign_block_vars('quickmod', array(
+		'VALUE'  => $option,
+		'TITLE'    => $lang_string,
+	));
 }
 
 /**

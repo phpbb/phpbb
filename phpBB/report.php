@@ -71,8 +71,9 @@ if ($post_id)
 		trigger_error('POST_NOT_EXIST');
 	}
 
-	$forum_id = (int) $report_data['forum_id'];
-	$topic_id = (int) $report_data['topic_id'];
+	$forum_id 			= (int) $report_data['forum_id'];
+	$topic_id 			= (int) $report_data['topic_id'];
+	$reported_post_text	= $report_data['post_text'];
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
@@ -130,6 +131,8 @@ else
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
+	
+	$reported_post_text = $report_data['message_text'];
 }
 
 // Submit report?
@@ -155,7 +158,8 @@ if ($submit && $reason_id)
 		'user_notify'	=> (int) $user_notify,
 		'report_closed'	=> 0,
 		'report_time'	=> (int) time(),
-		'report_text'	=> (string) $report_text
+		'report_text'	=> (string) $report_text,
+		'reported_post_text'	=> $reported_post_text,
 	);
 
 	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);

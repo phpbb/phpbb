@@ -101,6 +101,10 @@ hr {
 	font-size: 0.85em;
 }
 
+.hidden {
+	display: none;
+}
+
 /* General links  */
 a:link, a:visited {
 	color: #105289;
@@ -626,10 +630,27 @@ td.name {
 .col1 { background-color: #DCEBFE; }
 .col2 { background-color: #F9F9F9; }
 
+/* 4 row background colours for trees */
+.row1a { background-color: #F9F9F9; }
+.row1b { background-color: #F6F6F6; }
+.row2a { background-color: #E7EEF4; }
+.row2b { background-color: #E3EBF2; }
+
 .spacer {
 	background-color: #DBDFE2;
 	height: 1px;
 	line-height: 1px;
+}
+
+/* Deactivated row */
+.row-inactive { 
+	color: #999; 
+}
+.row-inactive a, .row-inactive strong { 
+	color: #888;
+}
+.row-inactive a:hover {
+	color: #BC2A4D;
 }
 
 /* General form styles
@@ -1068,6 +1089,56 @@ a.button2:hover, input.button2:hover {
 input.disabled {
 	font-weight: normal;
 	color: #666666;
+}
+
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	position: fixed;
+	display: none;
+	top: 100px;
+	left: 35%;
+	width: 30%;
+	z-index: 50;
+	padding: 25px;
+	padding: 0 25px 20px 25px;
+}
+
+.phpbb_alert .alert_close {
+	display: block;
+	float: right;
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+	text-decoration: none !important;
+	background: transparent url("../images/alert_close.png") 0 0 no-repeat;
+	margin-top: -7px;
+	margin-right: -31px;
+}
+.phpbb_alert .alert_close:hover {
+	background-position: 0 -16px;
+}
+
+
+.phpbb_alert p {
+	margin: 8px 0;
+	padding-bottom: 8px;
+}
+
+#darkenwrapper {
+	display: none;
+}
+
+#darken {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	opacity: 0.5;
 }
 
 /* Pagination

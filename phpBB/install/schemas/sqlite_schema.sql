@@ -627,7 +627,8 @@ CREATE TABLE phpbb_reports (
 	user_notify INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_closed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	report_text mediumtext(16777215) NOT NULL DEFAULT ''
+	report_text mediumtext(16777215) NOT NULL DEFAULT '',
+	reported_post_text mediumtext(16777215) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
@@ -736,36 +737,13 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) NOT NULL DEFAULT '',
 	style_copyright varchar(255) NOT NULL DEFAULT '',
 	style_active INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	theme_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	style_path varchar(100) NOT NULL DEFAULT '',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
+	style_parent_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	style_parent_tree text(65535) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-
-# Table: 'phpbb_styles_template'
-CREATE TABLE phpbb_styles_template (
-	template_id INTEGER PRIMARY KEY NOT NULL ,
-	template_name varchar(255) NOT NULL DEFAULT '',
-	template_copyright varchar(255) NOT NULL DEFAULT '',
-	template_path varchar(100) NOT NULL DEFAULT '',
-	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
-	template_inherits_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_inherit_path varchar(255) NOT NULL DEFAULT ''
-);
-
-CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
-
-# Table: 'phpbb_styles_theme'
-CREATE TABLE phpbb_styles_theme (
-	theme_id INTEGER PRIMARY KEY NOT NULL ,
-	theme_name varchar(255) NOT NULL DEFAULT '',
-	theme_copyright varchar(255) NOT NULL DEFAULT '',
-	theme_path varchar(100) NOT NULL DEFAULT ''
-);
-
-CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (

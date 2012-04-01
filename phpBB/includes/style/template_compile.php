@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-stream_filter_register('phpbb_template', 'phpbb_template_filter');
+stream_filter_register('phpbb_template', 'phpbb_style_template_filter');
 
 /**
 * Extension of template class - Functions needed for compiling templates only.
@@ -23,7 +23,7 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 * @package phpBB3
 * @uses template_filter As a PHP stream filter to perform compilation of templates
 */
-class phpbb_template_compile
+class phpbb_style_template_compile
 {
 	/**
 	* Array of parameters to forward to template filter
@@ -33,22 +33,37 @@ class phpbb_template_compile
 	private $filter_params;
 
 	/**
-	* Extension manager.
+	* Whether <!-- PHP --> tags are allowed
 	*
-	* @var phpbb_extension_manager
+	* @var array
 	*/
-	private $extension_manager;
+	private $allow_php;
+
+	/**
+	* Style resource locator
+	*
+	* @var phpbb_style_resource_locator
+	*/
+	private $locator;
+
+	/**
+	* @var string phpBB root path
+	*/
+	private $phpbb_root_path;
 
 	/**
 	* Constructor.
 	*
-	* @param array $filter_params Array of parameters to forward to template filter
-	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
+	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param phpbb_style_resource_locator $locator Resource locator
+	* @param string $phpbb_root_path Path to phpBB root directory
 	*/
-	public function __construct($filter_params, $extension_manager = null)
+	public function __construct($allow_php, $locator, $phpbb_root_path)
 	{
-		$this->filter_params = $filter_params;
-		$this->extension_manager = $extension_manager;
+		$this->filter_params = array();
+		$this->allow_php = $allow_php;
+		$this->locator = $locator;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -126,7 +141,9 @@ class phpbb_template_compile
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
 		$params = $this->filter_params;
-		$params['extension_manager'] = $this->extension_manager;
+		$params['allow_php'] = $this->allow_php;
+		$params['locator'] = $this->locator;
+		$params['phpbb_root_path'] = $this->phpbb_root_path;
 		$params['template_compile'] = $this;
 		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);

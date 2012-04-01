@@ -2448,15 +2448,25 @@ function build_url($strip_vars = false)
 */
 function meta_refresh($time, $url, $disable_cd_check = false)
 {
-	global $template;
+	global $template, $refresh_data, $request;
 
-	$url = redirect($url, true, $disable_cd_check);
-	$url = str_replace('&', '&amp;', $url);
+	if ($request->is_ajax())
+	{
+		$refresh_data = array(
+			'time'	=> $time,
+			'url'		=> str_replace('&amp;', '&', $url)
+		);
+	}
+	else
+	{
+		$url = redirect($url, true, $disable_cd_check);
+		$url = str_replace('&', '&amp;', $url);
 
-	// For XHTML compatibility we change back & to &amp;
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
-	);
+		// For XHTML compatibility we change back & to &amp;
+		$template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+		);
+	}
 
 	return $url;
 }
@@ -2619,7 +2629,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $user, $template, $db;
+	global $user, $template, $db, $request;
 	global $phpEx, $phpbb_root_path, $request;
 
 	if (isset($_POST['cancel']))
@@ -2698,6 +2708,21 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
+
+
+	if ($request->is_ajax())
+	{
+		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
+		$json_response = new phpbb_json_response;
+		$json_response->send(array(
+			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
+			'MESSAGE_TEXT' 	=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+
+			'YES_VALUE'			=> $user->lang['YES'],
+			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
+			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields
+		));
+	}
 
 	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
@@ -3092,9 +3117,9 @@ function parse_cfg_file($filename, $lines = false)
 		$parsed_items[$key] = $value;
 	}
 	
-	if (isset($parsed_items['inherit_from']) && isset($parsed_items['name']) && $parsed_items['inherit_from'] == $parsed_items['name'])
+	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
 	{
-		unset($parsed_items['inherit_from']);
+		unset($parsed_items['parent']);
 	}
 
 	return $parsed_items;
@@ -3723,7 +3748,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $cache, $db, $auth, $template, $config, $user;
+	global $cache, $db, $auth, $template, $config, $user, $request;
 	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
 	// Do not display notices if we suppress them via @
@@ -3921,6 +3946,20 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
 				'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false)
 			);
+
+			if ($request->is_ajax())
+			{
+				global $refresh_data;
+
+				$json_response = new phpbb_json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $msg_title,
+					'MESSAGE_TEXT'		=> $msg_text,
+					'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
+					'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				));
+			}
 
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
@@ -4729,9 +4768,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . rawurlencode($user->theme['template_inherit_path']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['template_path']) . '/template',
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> ($user->theme['style_parent_id']) ? "{$web_path}styles/" . rawurlencode($user->theme['style_parent_tree']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4739,16 +4778,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/stylesheet.css',
-		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['theme_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
-		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/stylesheet.css',
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
+		'T_STYLESHEET_NAME'		=> $user->theme['style_name'],
 		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
 		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
-		'T_THEME_NAME'			=> rawurlencode($user->theme['theme_path']),
+		'T_THEME_NAME'			=> rawurlencode($user->theme['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
-		'T_TEMPLATE_NAME'		=> $user->theme['template_path'],
-		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path']),
+		'T_TEMPLATE_NAME'		=> $user->theme['style_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['style_parent_tree']) && $user->theme['style_parent_tree']) ? $user->theme['style_parent_tree'] : $user->theme['style_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],
@@ -4764,9 +4803,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
-	$event = new phpbb_event_data(compact($vars));
-	$phpbb_dispatcher->dispatch('core.page_header', $event);
-	extract($event->get_data_filtered($vars));
+	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
@@ -4913,7 +4950,7 @@ function exit_handler()
 }
 
 /**
-* Handler for init calls in phpBB. This function is called in user::setup();
+* Handler for init calls in phpBB. This function is called in phpbb_user::setup();
 * This function supports hooks.
 */
 function phpbb_user_session_handler()

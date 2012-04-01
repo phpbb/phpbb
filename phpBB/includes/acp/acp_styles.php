@@ -21,16 +21,1274 @@ if (!defined('IN_PHPBB'))
 class acp_styles
 {
 	var $u_action;
-
-	var $style_cfg;
-	var $template_cfg;
-	var $theme_cfg;
+	var $u_base_action;
+	var $s_hidden_fields;
+	var $mode;
+	var $styles_path;
+	var $styles_path_absolute = 'styles';
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request;
 
+		$this->styles_path = $phpbb_root_path . $this->styles_path_absolute . '/';
+
+		$this->u_base_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$id}");
+		$this->s_hidden_fields = array(
+			'mode'		=> $mode,
+		);
+
+		$user->add_lang('acp/styles');
+
+		$this->tpl_name = 'acp_styles';
+		$this->page_title = 'ACP_CAT_STYLES';
+		$this->mode = $mode;
+
+		$action = $request->variable('action', '');
+		$post_actions = array('install', 'activate', 'deactivate', 'uninstall');
+		foreach ($post_actions as $key)
+		{
+			if (isset($_POST[$key]))
+			{
+				$action = $key;
+			}
+		}
+		if ($action != '')
+		{
+			$this->s_hidden_fields['action'] = $action;
+		}
+
+		$template->assign_vars(array(
+			'U_ACTION'			=> $this->u_base_action,
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields($this->s_hidden_fields)
+			)
+		);
+		
+		// Execute actions
+		switch ($action)
+		{
+			case 'install':
+				$this->action_install();
+				return;
+			case 'uninstall':
+				$this->action_uninstall();
+				return;
+			case 'activate':
+				$this->action_activate();
+				return;
+			case 'deactivate':
+				$this->action_deactivate();
+				return;
+			case 'details':
+				$this->action_details();
+				return;
+			default:
+				$this->frontend();
+		}
+	}
+	
+	/**
+	* Main page
+	*/
+	function frontend()
+	{
+		// Check mode
+		switch ($this->mode)
+		{
+			case 'style':
+				$this->welcome_message('ACP_STYLES', 'ACP_STYLES_EXPLAIN');
+				$this->show_installed();
+				return;
+			case 'install':
+				$this->welcome_message('INSTALL_STYLES', 'INSTALL_STYLES_EXPLAIN');
+				$this->show_available();
+				return;
+			case 'cache':
+				$this->action_cache();
+				return;
+		}
+		global $user;
+		trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
+	}
+	
+	/**
+	* Purge cache
+	*/
+	function action_cache()
+	{
+		global $cache, $auth, $user;
+		
+		$cache->purge();
+
+		// Clear permissions
+		$auth->acl_clear_prefetch();
+		cache_moderators();
+
+		add_log('admin', 'LOG_PURGE_CACHE');
+		
+		trigger_error($user->lang['PURGED_CACHE'] . adm_back_link($this->u_base_action), E_USER_NOTICE);
+	}
+	
+	/**
+	* Install style(s)
+	*/
+	function action_install()
+	{
+		global $user;
+	
+		// Get list of styles to install
+		$dirs = $this->request_vars('dir', '', true);
+		
+		// Get list of styles that can be installed
+		$styles = $this->find_available(false);
+		
+		// Install each style
+		$messages = array();
+		$installed_names = array();
+		$installed_dirs = array();
+		$last_installed = false;
+		foreach ($dirs as $dir)
+		{
+			$found = false;
+			foreach ($styles as &$style)
+			{
+				// Check if:
+				// 1. Directory matches directory we are looking for
+				// 2. Style is not installed yet
+				// 3. Style with same name or directory hasn't been installed already within this function
+				if ($style['style_path'] == $dir && empty($style['_installed']) && !in_array($style['style_path'], $installed_dirs) && !in_array($style['style_name'], $installed_names))
+				{
+					// Install style
+					$style['style_active'] = 1;
+					$style['style_id'] = $this->install_style($style);
+					$style['_installed'] = true;
+					$found = true;
+					$last_installed = $style['style_id'];
+					$installed_names[] = $style['style_name'];
+					$installed_dirs[] = $style['style_path'];
+					$messages[] = sprintf($user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
+				}
+			}
+			if (!$found)
+			{
+				$messages[] = sprintf($user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
+			}
+		}
+		
+		// Show message
+		if (!count($messages))
+		{
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		$message = implode('<br />', $messages);
+		$message .= '<br /><br />' . sprintf($user->lang['STYLE_INSTALLED_RETURN_STYLES'], $this->u_base_action . '&amp;mode=style');
+		$message .= '<br /><br />' . sprintf($user->lang['STYLE_INSTALLED_RETURN_UNINSTALLED'], $this->u_base_action . '&amp;mode=install');
+		trigger_error($message, E_USER_NOTICE);
+	}
+	
+	/**
+	* Confirm styles removal
+	*/
+	function action_uninstall()
+	{
+		global $user, $config, $template, $request;
+		
+		// Get list of styles to uninstall
+		$ids = $this->request_vars('id', 0, true);
+		
+		// Check if confirmation box was submitted
+		if (confirm_box(true))
+		{
+			// Uninstall
+			$this->action_uninstall_confirmed($ids, $request->variable('confirm_delete_files', false));
+			return;
+		}
+		
+		// Confirm box
+		$s_hidden = build_hidden_fields(array(
+			'action'	=> 'uninstall',
+			'ids'		=> $ids
+		));
+		$template->assign_var('S_CONFIRM_DELETE', true);
+		confirm_box(false, $user->lang['CONFIRM_UNINSTALL_STYLES'], $s_hidden, 'acp_styles.html');
+		
+		// Canceled - show styles list
+		$this->frontend();
+	}
+
+	/**
+	* Uninstall styles(s)
+	*
+	* @param array $ids List of style IDs
+	* @param bool $delete_files If true, script will attempt to remove files for selected styles
+	*/
+	function action_uninstall_confirmed($ids, $delete_files)
+	{
+		global $db, $user, $cache, $config;
+
+		$default = $config['default_style'];
+		$uninstalled = array();
+		$messages = array();
+
+		// Check styles list
+		foreach ($ids as $id)
+		{
+			if (!$id)
+			{
+				trigger_error($user->lang['INVALID_STYLE_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+			if ($id == $default)
+			{
+				trigger_error($user->lang['UNINSTALL_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+			$uninstalled[$id] = false;
+		}
+
+		// Order by reversed style_id, so parent styles would be removed after child styles
+		// This way parent and child styles can be removed in same function call
+		$sql = 'SELECT *
+			FROM ' . STYLES_TABLE . '
+			WHERE style_id IN (' . implode(', ', $ids) . ')
+			ORDER BY style_id DESC';
+		$result = $db->sql_query($sql);
+
+		$rows = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		// Uinstall each style
+		$uninstalled = array();
+		foreach ($rows as $style)
+		{
+			$result = $this->uninstall_style($style, $delete_files);
+
+			if (is_string($result))
+			{
+				$messages[] = $result;
+				continue;
+			}
+			$messages[] = sprintf($user->lang['STYLE_UNINSTALLED'], $style['style_name']);
+			$uninstalled[] = $style['style_name'];
+
+			// Attempt to delete files
+			if ($delete_files)
+			{
+				$messages[] = sprintf($user->lang[$this->delete_style_files($style['style_path']) ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED'], $style['style_name']);
+			}
+		}
+
+		if (empty($messages))
+		{
+			// Nothing to uninstall?
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		// Log action
+		if (count($uninstalled))
+		{
+			add_log('admin', 'LOG_STYLE_DELETE', implode(', ', $uninstalled));
+		}
+
+		// Clear cache
+		$cache->purge();
+
+		// Show message
+		trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_NOTICE);
+	}
+
+	/**
+	* Activate styles
+	*/
+	function action_activate()
+	{
+		global $user, $config, $cache, $db;
+	
+		// Get list of styles to activate
+		$ids = $this->request_vars('id', 0, true);
+		
+		// Activate styles
+		$sql = 'UPDATE ' . STYLES_TABLE . '
+			SET style_active = 1
+			WHERE style_id IN (' . implode(', ', $ids) . ')';
+		$db->sql_query($sql);
+
+		// Purge cache
+		$cache->destroy('sql', STYLES_TABLE);
+		
+		// Show styles list
+		$this->frontend();
+	}
+
+	/**
+	* Deactivate styles
+	*/
+	function action_deactivate()
+	{
+		global $user, $config, $cache, $db;
+
+		// Get list of styles to deactivate
+		$ids = $this->request_vars('id', 0, true);
+
+		// Check for default style
+		foreach ($ids as $id)
+		{
+			if ($id == $config['default_style'])
+			{
+				trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+
+		// Reset default style for users who use selected styles
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_style = 0
+			WHERE user_style IN (' . implode(', ', $ids) . ')';
+		$db->sql_query($sql);
+
+		// Deactivate styles
+		$sql = 'UPDATE ' . STYLES_TABLE . '
+			SET style_active = 0
+			WHERE style_id IN (' . implode(', ', $ids) . ')';
+		$db->sql_query($sql);
+
+		// Purge cache
+		$cache->destroy('sql', STYLES_TABLE);
+
+		// Show styles list
+		$this->frontend();
+	}
+	
+	/**
+	* Show style details
+	*/
+	function action_details()
+	{
+		global $user, $config, $db, $request, $template, $cache;
+		
+		$id = $request->variable('id', 0);
+		if (!$id)
+		{
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		
+		// Get all styles
+		$styles = $this->get_styles();
+		usort($styles, 'acp_styles::sort_styles');
+		
+		// Find current style
+		$style = false;
+		foreach ($styles as $row)
+		{
+			if ($row['style_id'] == $id)
+			{
+				$style = $row;
+				break;
+			}
+		}
+
+		if ($style === false)
+		{
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		
+		// Find all available parent styles
+		$list = $this->find_possible_parents($styles, $id);
+		
+		// Change data
+		if ($request->variable('update', false))
+		{
+			$update = array(
+				'style_name'		=> trim($request->variable('style_name', $style['style_name'])),
+				'style_parent_id'	=> $request->variable('style_parent', (int) $style['style_parent_id']),
+				'style_active'		=> $request->variable('style_active', (int) $style['style_active']),
+			);
+			$update_action = $this->u_action . '&amp;action=details&amp;id=' . $id;
+			
+			// Check style name
+			if ($update['style_name'] != $style['style_name'])
+			{
+				if (!strlen($update['style_name']))
+				{
+					trigger_error($user->lang['STYLE_ERR_STYLE_NAME'] . adm_back_link($update_action), E_USER_WARNING);
+				}
+				foreach ($styles as $row)
+				{
+					if ($row['style_name'] == $update['style_name'])
+					{
+						trigger_error($user->lang['STYLE_ERR_NAME_EXIST'] . adm_back_link($update_action), E_USER_WARNING);
+					}
+				}
+			}
+			else
+			{
+				unset($update['style_name']);
+			}
+			
+			// Check parent style id
+			if ($update['style_parent_id'] != $style['style_parent_id'])
+			{
+				if ($update['style_parent_id'] != 0)
+				{
+					$found = false;
+					foreach ($list as $row)
+					{
+						if ($row['style_id'] == $update['style_parent_id'])
+						{
+							$found = true;
+							$update['style_parent_tree'] = ($row['style_parent_tree'] != '' ? $row['style_parent_tree'] . '/' : '') . $row['style_path'];
+							break;
+						}
+					}
+					if (!$found)
+					{
+						trigger_error($user->lang['STYLE_ERR_INVALID_PARENT'] . adm_back_link($update_action), E_USER_WARNING);
+					}
+				}
+				else
+				{
+					$update['style_parent_tree'] = '';
+				}
+			}
+			else
+			{
+				unset($update['style_parent_id']);
+			}
+			
+			// Check style_active
+			if ($update['style_active'] != $style['style_active'])
+			{
+				if (!$update['style_active'] && $config['default_style'] == $style['style_id'])
+				{
+					trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($update_action), E_USER_WARNING);
+				}
+			}
+			else
+			{
+				unset($update['style_active']);
+			}
+			
+			// Update data
+			if (count($update))
+			{
+				$sql = 'UPDATE ' . STYLES_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $update) . "
+					WHERE style_id = $id";
+				$db->sql_query($sql);
+				
+				$style = array_merge($style, $update);
+				
+				if (isset($update['style_parent_id']))
+				{
+					// Update styles tree
+					$styles = $this->get_styles();
+					if ($this->update_styles_tree(&$styles, $style))
+					{
+						// Something was changed in styles tree, purge all cache
+						$cache->purge();
+					}
+				}
+				add_log('admin', 'LOG_STYLE_EDIT_DETAILS', $style['style_name']);
+			}
+			
+			// Update default style
+			$default = $request->variable('style_default', 0);
+			if ($default)
+			{
+				if (!$style['style_active'])
+				{
+					trigger_error($user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
+				}
+				set_config('default_style', $id);
+				$cache->purge();
+			}
+			
+			// Show styles list
+			$this->frontend();
+			return;
+		}
+		
+		// Show parent styles
+		foreach ($list as $row)
+		{
+			$template->assign_block_vars('parent_styles', array(
+				'STYLE_ID'		=> $row['style_id'],
+				'STYLE_NAME'	=> htmlspecialchars($row['style_name']),
+				'LEVEL'			=> $row['level'],
+				'SPACER'		=> str_repeat('&nbsp; ', $row['level']),
+				)
+			);
+		}
+		
+		// Show style details
+		$template->assign_vars(array(
+			'S_STYLE_DETAILS'	=> true,
+			'STYLE_ID'			=> $style['style_id'],
+			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
+			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
+			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
+			'STYLE_PARENT'		=> $style['style_parent_id'],
+			'S_STYLE_ACTIVE'	=> $style['style_active'],
+			'S_STYLE_DEFAULT'	=> ($style['style_id'] == $config['default_style'])
+			)
+		);
+	}
+
+	/**
+	* List installed styles
+	*/
+	function show_installed()
+	{
+		global $user, $template;
+
+		// Get all installed styles
+		$styles = $this->get_styles();
+
+		if (!count($styles))
+		{
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+		
+		usort($styles, 'acp_styles::sort_styles');
+
+		// Get users
+		$users = $this->get_users();
+		
+		// Add users counter to rows
+		foreach ($styles as &$style)
+		{
+			$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
+		}
+		
+		// Set up styles list variables
+		// Addons should increase this number and update template variable
+		$this->styles_list_cols = 4;
+		$template->assign_var('STYLES_LIST_COLS', $this->styles_list_cols);
+
+		// Show styles list
+		$this->show_styles_list(&$styles, 0, 0);
+		
+		// Show styles with invalid inherits_id
+		foreach ($styles as $style)
+		{
+			if (empty($style['_shown']))
+			{
+				$style['_note'] = sprintf($user->lang['REQUIRES_STYLE'], htmlspecialchars($style['style_parent_tree']));
+				$this->list_style($style, 0);
+			}
+		}
+
+		// Add buttons
+		$template->assign_block_vars('extra_actions', array(
+				'ACTION_NAME'	=> 'activate',
+				'L_ACTION'		=> $user->lang['STYLE_ACTIVATE'],
+			)
+		);
+
+		$template->assign_block_vars('extra_actions', array(
+				'ACTION_NAME'	=> 'deactivate',
+				'L_ACTION'		=> $user->lang['STYLE_DEACTIVATE'],
+			)
+		);
+
+		if (isset($this->style_counters) && $this->style_counters['total'] > 1)
+		{
+			$template->assign_block_vars('extra_actions', array(
+					'ACTION_NAME'	=> 'uninstall',
+					'L_ACTION'		=> $user->lang['STYLE_UNINSTALL'],
+				)
+			);
+		}
+	}
+
+	/**
+	* Show list of styles that can be installed
+	*/
+	function show_available()
+	{
+		global $user, $template;
+	
+		// Get list of styles
+		$styles = $this->find_available(true);
+		
+		// Show styles
+		if (empty($styles))
+		{
+			trigger_error($user->lang['NO_UNINSTALLED_STYLE'] . adm_back_link($this->u_base_action), E_USER_NOTICE);
+		}
+		
+		usort($styles, 'acp_styles::sort_styles');
+
+		$this->styles_list_cols = 3;
+		$template->assign_vars(array(
+			'STYLES_LIST_COLS'	=> $this->styles_list_cols,
+			'STYLES_LIST_HIDE_COUNT'	=> true
+			)
+		);
+		
+		// Show styles
+		foreach ($styles as &$style)
+		{
+			// Check if style has a parent style in styles list
+			$has_parent = false;
+			if ($style['_inherit_name'] != '')
+			{
+				foreach ($styles as $parent_style)
+				{
+					if ($parent_style['style_name'] == $style['_inherit_name'] && empty($parent_style['_shown']))
+					{
+						// Show parent style first
+						$has_parent = true;
+					}
+				}
+			}
+			if (!$has_parent)
+			{
+				$this->list_style(&$style, 0);
+				$this->show_available_child_styles(&$styles, $style['style_name'], 1);
+			}
+		}
+		
+		// Show styles that do not have parent style in styles list
+		foreach ($styles as $style)
+		{
+			if (empty($style['_shown']))
+			{
+				$this->list_style(&$style, 0);
+			}
+		}
+		
+		// Add button
+		if (isset($this->style_counters) && $this->style_counters['caninstall'] > 0)
+		{
+			$template->assign_block_vars('extra_actions', array(
+					'ACTION_NAME'	=> 'install',
+					'L_ACTION'		=> $user->lang['INSTALL_STYLES'],
+				)
+			);
+		}
+	}
+	
+	/**
+	* Find styles available for installation
+	*
+	* @param bool $all if true, function will return all installable styles. if false, function will return only styles that can be installed
+	* @returns array list of styles
+	*/
+	function find_available($all)
+	{
+		global $user;
+
+		// Get list of installed styles
+		$installed = $this->get_styles();
+
+		$installed_dirs = array();
+		$installed_names = array();
+		foreach ($installed as $style)
+		{
+			$installed_dirs[] = $style['style_path'];
+			$installed_names[$style['style_name']] = array(
+				'path'		=> $style['style_path'],
+				'id'		=> $style['style_id'],
+				'parent'	=> $style['style_parent_id'],
+				'tree'		=> (strlen($style['style_parent_tree']) ? $style['style_parent_tree'] . '/' : '') . $style['style_path'],
+			);
+		}
+		
+		// Get list of directories
+		$dirs = $this->find_style_dirs();
+		
+		// Find styles that can be installed
+		$styles = array();
+		foreach ($dirs as $dir)
+		{
+			if (in_array($dir, $installed_dirs))
+			{
+				// Style is already installed
+				continue;
+			}
+			$cfg = $this->read_style_cfg($dir);
+			if ($cfg === false)
+			{
+				// Invalid style.cfg
+				continue;
+			}
+
+			// Style should be available for installation
+			$parent = $cfg['parent'];
+			$style = array(
+				'style_id'			=> 0,
+				'style_name'		=> $cfg['name'],
+				'style_copyright'	=> $cfg['copyright'],
+				'style_active'		=> 0,
+				'style_path'		=> $dir,
+				'bbcode_bitfield'	=> $cfg['template_bitfield'],
+				'style_parent_id'	=> 0,
+				'style_parent_tree'	=> '',
+				// Extra values for styles list
+				// All extra variable start with _ so they won't be confused with data that can be added to styles table
+				'_inherit_name'			=> $parent,
+				'_available'			=> true,
+				'_note'					=> '',
+			);
+
+			// Check style inheritance
+			if ($parent != '')
+			{
+				if (isset($installed_names[$parent]))
+				{
+					// Parent style is installed
+					$row = $installed_names[$parent];
+					$style['style_parent_id'] = $row['id'];
+					$style['style_parent_tree'] = $row['tree'];
+				}
+				else
+				{
+					// Parent style is not installed yet
+					$style['_available'] = false;
+					$style['_note'] = sprintf($user->lang['REQUIRES_STYLE'], htmlspecialchars($parent));
+				}
+			}
+			
+			if ($all || $style['_available'])
+			{
+				$styles[] = $style;
+			}
+		}
+
+		return $styles;
+	}
+	
+	/**
+	* Show styles list
+	*
+	* @param array $styles styles list
+	* @param int $parent parent style id
+	* @param int $level style inheritance level
+	*/
+	function show_styles_list($styles, $parent, $level)
+	{
+		foreach ($styles as &$style)
+		{
+			if (empty($style['_shown']) && $style['style_parent_id'] == $parent)
+			{
+				$this->list_style(&$style, $level);
+				$this->show_styles_list(&$styles, $style['style_id'], $level + 1);
+			}
+		}
+	}
+	
+	/**
+	* Show available styles tree
+	*
+	* @param array $styles Styles list, passed as reference
+	* @param string $name Name of parent style
+	* @param string $level Styles tree level
+	*/
+	function show_available_child_styles($styles, $name, $level)
+	{
+		foreach ($styles as &$style)
+		{
+			if (empty($style['_shown']) && $style['_inherit_name'] == $name)
+			{
+				$this->list_style(&$style, $level);
+				$this->show_available_child_styles(&$styles, $style['style_name'], $level + 1);
+			}
+		}
+	}
+	
+	/**
+	* Update styles tree
+	*
+	* @param array $styles Styles list, passed as reference
+	* @param array $style Current style, false if root
+	* @returns true if something was updated, false if not
+	*/
+	function update_styles_tree($styles, $style = false)
+	{
+		$parent_id = ($style === false) ? 0 : $style['style_id'];
+		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
+		$update = false;
+		$updated = false;
+		foreach ($styles as &$row)
+		{
+			if ($row['style_parent_id'] == $parent_id)
+			{
+				if ($row['style_parent_tree'] != $parent_tree)
+				{
+					$row['style_parent_tree'] = $parent_tree;
+					$update = true;
+				}
+				$updated |= $this->update_styles_tree(&$styles, $row);
+			}
+		}
+		if ($update)
+		{
+			global $db;
+			$sql = 'UPDATE ' . STYLES_TABLE . "
+				SET style_parent_tree = '" . $db->sql_escape($parent_tree) . "'
+				WHERE style_parent_id = {$parent_id}";
+			$db->sql_query($sql);
+			$updated = true;
+		}
+		return $updated;
+	}
+	
+	/**
+	* Find all possible parent styles for style
+	*
+	* @param array $styles list of styles
+	* @param int $id id of style
+	* @param int $parent current parent style id
+	* @param int $level current tree level
+	* @returns array of style ids, names and levels
+	*/
+	function find_possible_parents($styles, $id = -1, $parent = 0, $level = 0)
+	{
+		$results = array();
+		foreach ($styles as $style)
+		{
+			if ($style['style_id'] != $id && $style['style_parent_id'] == $parent)
+			{
+				$results[] = array(
+					'style_id'		=> $style['style_id'],
+					'style_name'	=> $style['style_name'],
+					'style_path'	=> $style['style_path'],
+					'style_parent_id'	=> $style['style_parent_id'],
+					'style_parent_tree'	=> $style['style_parent_tree'],
+					'level'			=> $level
+				);
+				$results = array_merge($results, $this->find_possible_parents($styles, $id, $style['style_id'], $level + 1));
+			}
+		}
+		return $results;
+	}
+	
+	/**
+	* Show item in styles list
+	*
+	* @param array $style style row
+	* @param array $level style inheritance level
+	*/
+	function list_style($style, $level)
+	{
+		global $template, $config, $db, $user, $phpbb_root_path, $phpEx;
+		
+		// Mark row as shown
+		if (!empty($style['_shown'])) return;
+		$style['_shown'] = true;
+		
+		// Generate template variables
+		$actions = array();
+		$row = array(
+			// Style data
+			'STYLE_ID'		=> $style['style_id'],
+			'STYLE_NAME'	=> htmlspecialchars($style['style_name']),
+			'STYLE_PATH'	=> htmlspecialchars($style['style_path']),
+			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
+			'STYLE_ACTIVE'	=> $style['style_active'],
+			
+			// Additional data
+			'DEFAULT'		=> ($style['style_id'] && $style['style_id'] == $config['default_style']),
+			'USERS'			=> (isset($style['_users'])) ? $style['_users'] : '',
+			'LEVEL'			=> $level,
+			'PADDING'		=> (4 + 16 * $level),
+			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
+			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
+			
+			// Comment to show below style
+			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',
+			
+			// The following variables should be used by hooks to add custom HTML code
+			'EXTRA'			=> '',
+			'EXTRA_OPTIONS'	=> ''
+		);
+		
+		// Status specific data
+		if ($style['style_id'])
+		{
+			// Style is installed
+		
+			// Details
+			$actions[] = array(
+				'U_ACTION'	=> $this->u_action . '&amp;action=details&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $user->lang['DETAILS']
+			);
+
+			// Activate
+			$actions[] = array(
+				'U_ACTION'	=> $this->u_action . '&amp;action=' . ($style['style_active'] ? 'de' : '') . 'activate&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $user->lang['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE']
+			);
+
+/*			// Export
+			$actions[] = array(
+				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $user->lang['EXPORT']
+			); */
+
+			// Uninstall
+			$actions[] = array(
+				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $user->lang['STYLE_UNINSTALL']
+			);
+			
+			// Preview
+			$actions[] = array(
+				'U_ACTION'	=> append_sid("{$phpbb_root_path}index.$phpEx", 'style=' . $style['style_id']),
+				'L_ACTION'	=> $user->lang['PREVIEW']
+			);
+		}
+		else
+		{
+			// Style is not installed
+			if (empty($style['_available']))
+			{
+				$actions[] = array(
+					'HTML'		=> $user->lang['CANNOT_BE_INSTALLED']
+				);
+			}
+			else
+			{
+				$actions[] = array(
+					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;dir=' . urlencode($style['style_path']),
+					'L_ACTION'	=> $user->lang['INSTALL_STYLE']
+				);
+			}
+		}
+		
+		// todo: add hook
+		
+		// Assign template variables
+		$template->assign_block_vars('styles_list', $row);
+		foreach($actions as $action)
+		{
+			$template->assign_block_vars('styles_list.actions', $action);
+		}
+		
+		// Increase counters
+		$counter = ($style['style_id']) ? ($style['style_active'] ? 'active' : 'inactive') : (empty($style['_available']) ? 'cannotinstall' : 'caninstall');
+		if (!isset($this->style_counters))
+		{
+			$this->style_counters = array(
+				'total'		=> 0,
+				'active'	=> 0,
+				'inactive'	=> 0,
+				'caninstall'	=> 0,
+				'cannotinstall'	=> 0
+				);
+		}
+		$this->style_counters[$counter] ++;
+		$this->style_counters['total'] ++;
+	}
+	
+	/**
+	* Show welcome message
+	*
+	* @param string $title main title
+	* @param string $description page description
+	*/
+	function welcome_message($title, $description)
+	{
+		global $user, $template;
+		$template->assign_vars(array(
+			'L_TITLE'	=> (isset($user->lang[$title])) ? $user->lang[$title] : $title,
+			'L_EXPLAIN'	=> (isset($user->lang[$description])) ? $user->lang[$description] : $description
+			)
+		);
+	}
+	
+	/**
+	* Find all directories that have styles
+	*
+	* @returns array of directory names
+	*/
+	function find_style_dirs()
+	{
+		$styles = array();
+
+		$dp = @opendir($this->styles_path);
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				$dir = $this->styles_path . $file;
+				if ($file[0] == '.' || !is_dir($dir))
+				{
+					continue;
+				}
+
+				if (file_exists("{$dir}/style.cfg"))
+				{
+					$styles[] = $file;
+				}
+			}
+			closedir($dp);
+		}
+
+		return $styles;
+	}
+	
+	/**
+	* Sort styles
+	*/
+	function sort_styles($style1, $style2)
+	{
+		if ($style1['style_active'] != $style2['style_active'])
+		{
+			return ($style1['style_active']) ? -1 : 1;
+		}
+		if (isset($style1['_available']) && $style1['_available'] != $style2['_available'])
+		{
+			return ($style1['_available']) ? -1 : 1;
+		}
+		return strcasecmp(isset($style1['style_name']) ? $style1['style_name'] : $style1['name'], isset($style2['style_name']) ? $style2['style_name'] : $style2['name']);
+	}
+	
+	/**
+	* Read style configuration file
+	*
+	* @param string $dir style directory
+	* @returns array of style data
+	* @returns false on error
+	*/
+	function read_style_cfg($dir)
+	{
+		static $required = array('name', 'version', 'copyright');
+		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
+		
+		// Check if it is a valid file
+		foreach ($required as $key)
+		{
+			if (!isset($cfg[$key]))
+			{
+				return false;
+			}
+		}
+		
+		// Check data
+		if (!isset($cfg['parent']) || !is_string($cfg['parent']) || $cfg['parent'] == $cfg['name'])
+		{
+			$cfg['parent'] = '';
+		}
+		if (!isset($cfg['template_bitfield']))
+		{
+			$cfg['template_bitfield'] = $this->default_bitfield();
+		}
+		
+		return $cfg;
+	}
+	
+	/**
+	* Install style
+	*
+	* @param $style style data
+	* @returns int style id
+	*/
+	function install_style($style)
+	{
+		global $db;
+		
+		// Generate row
+		$sql_ary = array();
+		foreach ($style as $key => $value)
+		{
+			if ($key != 'style_id' && substr($key, 0, 1) != '_')
+			{
+				$sql_ary[$key] = $value;
+			}
+		}
+		
+		// Add to database
+		$db->sql_transaction('begin');
+
+		$sql = 'INSERT INTO ' . STYLES_TABLE . '
+			' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
+		$id = $db->sql_nextid();
+
+		$db->sql_transaction('commit');
+
+		add_log('admin', 'LOG_STYLE_ADD', $sql_ary['style_name']);
+		
+		return $id;
+	}
+
+	/**
+	* Lists all styles
+	*
+	* @returns array of rows with styles data
+	*/
+	function get_styles()
+	{
+		global $db;
+		
+		$sql = 'SELECT * 
+			FROM ' . STYLES_TABLE;
+		$result = $db->sql_query($sql);
+
+		$rows = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	/**
+	* Count users for each style
+	*
+	* @returns array of styles in following format: [style_id] = number of users
+	*/
+	function get_users()
+	{
+		global $db;
+
+		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
+			FROM ' . USERS_TABLE . '
+			GROUP BY user_style';
+		$result = $db->sql_query($sql);
+
+		$style_count = array();		
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$style_count[$row['user_style']] = $row['style_count'];
+		}
+		$db->sql_freeresult($result);
+	
+		return $style_count;
+	}
+	
+	/**
+	* Uninstall style
+	*
+	* @param array $style Style data
+	* @returns true on success, error message on error
+	*/
+	function uninstall_style($style)
+	{
+		global $db, $user;
+		
+		$id = $style['style_id'];
+		$path = $style['style_path'];
+		
+		// Check if style has child styles
+		$sql = 'SELECT style_id 
+			FROM ' . STYLES_TABLE . '
+			WHERE style_parent_id = ' . $id . " OR style_parent_tree = '" . $db->sql_escape($path) . "'";
+		$result = $db->sql_query($sql);
+		
+		$conflict = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($conflict !== false)
+		{
+			return sprintf($user->lang['STYLE_UNINSTALL_DEPENDENT'], $style['style_name']);
+		}
+		
+		// Change default style for users
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_style = 0
+			WHERE user_style = ' . $id;
+		$db->sql_query($sql);
+		
+		// Uninstall style
+		$sql = 'DELETE FROM ' . STYLES_TABLE . '
+			WHERE style_id = ' . $id;
+		$db->sql_query($sql);
+		return true;
+	}
+
+	/**
+	* Delete all files in style directory
+	*
+	* @param string $path Style directory
+	* @param string $dir Directory to remove inside style's directory
+	* @returns true on success, false on error
+	*/
+	function delete_style_files($path, $dir = '')
+	{
+		$dirname = $this->styles_path . $path . $dir;
+		$result = true;
+		
+		$dp = @opendir($dirname);
+
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				if ($file == '.' || $file == '..')
+				{
+					continue;
+				}
+				$filename = $dirname . '/' . $file;
+				if (is_dir($filename))
+				{
+					if (!$this->delete_style_files($path, $dir . '/' . $file))
+					{
+						$result = false;
+					}
+				}
+				else
+				{
+					if (!@unlink($filename))
+					{
+						$result = false;
+					}
+				}
+			}
+			closedir($dp);
+		}
+		if (!@rmdir($dirname))
+		{
+			return false;
+		}
+		
+		return $result;
+	}
+	
+	/**
+	* Get list of items from posted data
+	*
+	* @param string $name Variable name
+	* @param $default Default value for array: string or number
+	* @param bool $error If true, error will be triggered if list is empty
+	* @returns array of items
+	*/
+	function request_vars($name, $default, $error = false)
+	{
+		global $request, $user;
+
+		$item = $request->variable($name, $default);
+		$items = $request->variable($name . 's', array($default));
+
+		if (count($items) == 1 && $items[0] == $default)
+		{
+			$items = array();
+		}
+
+		if ($item != $default && !count($items))
+		{
+			$items[] = $item;
+		}
+		
+		if ($error && !count($items))
+		{
+			trigger_error($user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		return $items;
+	}
+
+	/**
+	* Generates hardcoded bitfield
+	*
+	* @returns bitfield string
+	*/
+	function default_bitfield()
+	{
+		static $value;
+		if (isset($value))
+		{
+			return $value;
+		}
+		
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
 		$bitfield->set(0);
@@ -42,2567 +1300,8 @@ class acp_styles
 		$bitfield->set(9);
 		$bitfield->set(11);
 		$bitfield->set(12);
-		$this->template_bitfield = $bitfield->get_base64();
-		unset($bitfield);
-
-		$user->add_lang('acp/styles');
-
-		$this->tpl_name = 'acp_styles';
-		$this->page_title = 'ACP_CAT_STYLES';
-
-		$action = request_var('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : $action;
-		$style_id = request_var('id', 0);
-
-		// Fill the configuration variables
-		$this->style_cfg = $this->template_cfg = $this->theme_cfg = '
-#
-# phpBB {MODE} configuration file
-#
-# @package phpBB3
-# @copyright (c) 2005 phpBB Group
-# @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-#
-#
-# At the left is the name, please do not change this
-# At the right the value is entered
-# For on/off options the valid values are on, off, 1, 0, true and false
-#
-# Values get trimmed, if you want to add a space in front or at the end of
-# the value, then enclose the value with single or double quotes.
-# Single and double quotes do not need to be escaped.
-#
-#
-
-# General Information about this {MODE}
-name = {NAME}
-copyright = {COPYRIGHT}
-version = {VERSION}
-';
-
-		$this->template_cfg .= '
-# Some configuration options
-
-# Template inheritance
-# See http://blog.phpbb.com/2008/07/31/templating-just-got-easier/
-# Set value to empty or this template name to ignore template inheritance.
-inherit_from = {INHERIT_FROM}
-';
-
-		// Execute overall actions
-		switch ($action)
-		{
-			case 'delete':
-				if ($style_id)
-				{
-					$this->remove($mode, $style_id);
-					return;
-				}
-			break;
-
-			case 'export':
-				if ($style_id)
-				{
-					$this->export($mode, $style_id);
-					return;
-				}
-			break;
-
-			case 'install':
-				$this->install($mode);
-				return;
-			break;
-
-			case 'add':
-				$this->add($mode);
-				return;
-			break;
-
-			case 'details':
-				if ($style_id)
-				{
-					$this->details($mode, $style_id);
-					return;
-				}
-			break;
-
-			case 'edit':
-				if ($style_id)
-				{
-					switch ($mode)
-					{
-						case 'template':
-							return $this->edit_template($style_id);
-						case 'theme':
-							return $this->edit_theme($style_id);
-					}
-				}
-			break;
-
-			case 'cache':
-				if ($style_id)
-				{
-					switch ($mode)
-					{
-						case 'template':
-							return $this->template_cache($style_id);
-					}
-				}
-			break;
-		}
-
-		switch ($mode)
-		{
-			case 'style':
-
-				switch ($action)
-				{
-					case 'activate':
-					case 'deactivate':
-
-						if ($style_id == $config['default_style'])
-						{
-							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (($action == 'deactivate' && confirm_box(true)) || $action == 'activate')
-						{
-							$sql = 'UPDATE ' . STYLES_TABLE . '
-								SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
-								WHERE style_id = ' . $style_id;
-							$db->sql_query($sql);
-
-							// Set style to default for any member using deactivated style
-							if ($action == 'deactivate')
-							{
-								$sql = 'UPDATE ' . USERS_TABLE . '
-									SET user_style = ' . $config['default_style'] . "
-									WHERE user_style = $style_id";
-								$db->sql_query($sql);
-
-								$sql = 'UPDATE ' . FORUMS_TABLE . '
-									SET forum_style = 0
-									WHERE forum_style = ' . $style_id;
-								$db->sql_query($sql);
-							}
-						}
-						else if ($action == 'deactivate')
-						{
-							$s_hidden_fields = array(
-								'i'			=> $id,
-								'mode'		=> $mode,
-								'action'	=> $action,
-								'style_id'	=> $style_id,
-							);
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
-						}
-					break;
-				}
-
-				$this->frontend('style', array('details'), array('export', 'delete'));
-			break;
-
-			case 'template':
-
-				switch ($action)
-				{
-					// Clear cache
-					case 'refresh':
-
-						$sql = 'SELECT *
-							FROM ' . STYLES_TEMPLATE_TABLE . "
-							WHERE template_id = $style_id";
-						$result = $db->sql_query($sql);
-						$template_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						if (!$template_row)
-						{
-							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						if (confirm_box(true))
-						{
-							$this->clear_template_cache($template_row);
-
-							trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
-						}
-						else
-						{
-							confirm_box(false, $user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
-								'i'			=> $id,
-								'mode'		=> $mode,
-								'action'	=> $action,
-								'id'		=> $style_id
-							)));
-						}
-
-					break;
-				}
-
-				$this->frontend('template', array('edit', 'cache', 'details'), array('refresh', 'export', 'delete'));
-			break;
-
-			case 'theme':
-				$this->frontend('theme', array('edit', 'details'), array('export', 'delete'));
-			break;
-		}
+		$value = $bitfield->get_base64();
+		return $value;
 	}
 
-	/**
-	* Build Frontend with supplied options
-	*/
-	function frontend($mode, $options, $actions)
-	{
-		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
-
-		$sql_from = '';
-		$sql_sort = 'LOWER(' . $mode . '_name)';
-		$style_count = array();
-
-		switch ($mode)
-		{
-			case 'style':
-				$sql_from = STYLES_TABLE;
-				$sql_sort = 'style_active DESC, ' . $sql_sort;
-
-				$sql = 'SELECT user_style, COUNT(user_style) AS style_count
-					FROM ' . USERS_TABLE . '
-					GROUP BY user_style';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$style_count[$row['user_style']] = $row['style_count'];
-				}
-				$db->sql_freeresult($result);
-
-			break;
-
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-
-			default:
-				trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$l_prefix = strtoupper($mode);
-
-		$this->page_title = 'ACP_' . $l_prefix . 'S';
-
-		$template->assign_vars(array(
-			'S_FRONTEND'		=> true,
-			'S_STYLE'			=> ($mode == 'style') ? true : false,
-
-			'L_TITLE'			=> $user->lang[$this->page_title],
-			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'			=> $user->lang[$l_prefix . '_NAME'],
-			'L_INSTALLED'		=> $user->lang['INSTALLED_' . $l_prefix],
-			'L_UNINSTALLED'		=> $user->lang['UNINSTALLED_' . $l_prefix],
-			'L_NO_UNINSTALLED'	=> $user->lang['NO_UNINSTALLED_' . $l_prefix],
-			'L_CREATE'			=> $user->lang['CREATE_' . $l_prefix],
-
-			'U_ACTION'			=> $this->u_action,
-			)
-		);
-
-		$sql = "SELECT *
-			FROM $sql_from
-			ORDER BY $sql_sort ASC";
-		$result = $db->sql_query($sql);
-
-		$installed = array();
-
-		$basis_options = '<option class="sep" value="">' . $user->lang['OPTIONAL_BASIS'] . '</option>';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$installed[] = $row[$mode . '_name'];
-			$basis_options .= '<option value="' . $row[$mode . '_id'] . '">' . $row[$mode . '_name'] . '</option>';
-
-			$stylevis = ($mode == 'style' && !$row['style_active']) ? 'activate' : 'deactivate';
-
-			$s_options = array();
-			foreach ($options as $option)
-			{
-				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
-			}
-
-			$s_actions = array();
-			foreach ($actions as $option)
-			{
-				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
-			}
-
-			$template->assign_block_vars('installed', array(
-				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == $config['default_style']) ? true : false,
-				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
-				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
-				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
-				'S_OPTIONS'				=> implode(' | ', $s_options),
-				'S_ACTIONS'				=> implode(' | ', $s_actions),
-				'U_PREVIEW'				=> ($mode == 'style') ? append_sid("{$phpbb_root_path}index.$phpEx", "$mode=" . $row[$mode . '_id']) : '',
-
-				'NAME'					=> $row[$mode . '_name'],
-				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
-
-				'S_INACTIVE'			=> ($mode == 'style' && !$row['style_active']) ? true : false,
-				)
-			);
-		}
-		$db->sql_freeresult($result);
-
-		// Grab uninstalled items
-		$new_ary = $cfg = array();
-
-		$dp = @opendir("{$phpbb_root_path}styles");
-
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if ($file[0] == '.' || !is_dir($phpbb_root_path . 'styles/' . $file))
-				{
-					continue;
-				}
-
-				$subpath = ($mode != 'style') ? "$mode/" : '';
-				if (file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-				{
-					if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-					{
-						$items = parse_cfg_file('', $cfg);
-						$name = (isset($items['name'])) ? trim($items['name']) : false;
-
-						if ($name && !in_array($name, $installed))
-						{
-							$new_ary[] = array(
-								'path'		=> $file,
-								'name'		=> $name,
-								'copyright'	=> $items['copyright'],
-							);
-						}
-					}
-				}
-			}
-			closedir($dp);
-		}
-
-		unset($installed);
-
-		if (sizeof($new_ary))
-		{
-			foreach ($new_ary as $cfg)
-			{
-				$template->assign_block_vars('uninstalled', array(
-					'NAME'			=> $cfg['name'],
-					'COPYRIGHT'		=> $cfg['copyright'],
-					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;path=' . urlencode($cfg['path']))
-				);
-			}
-		}
-		unset($new_ary);
-
-		$template->assign_vars(array(
-			'S_BASIS_OPTIONS'		=> $basis_options)
-		);
-
-	}
-
-	/**
-	* Provides a template editor which allows saving changes to template files on the filesystem or in the database.
-	*
-	* @param int $template_id specifies which template set is being edited
-	*/
-	function edit_template($template_id)
-	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
-
-		if (defined('PHPBB_DISABLE_ACP_EDITOR'))
-		{
-			trigger_error($user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
-		}
-
-		$this->page_title = 'EDIT_TEMPLATE';
-
-		$filelist = $filelist_cats = array();
-
-		$template_data	= utf8_normalize_nfc(request_var('template_data', '', true));
-		$template_data	= htmlspecialchars_decode($template_data);
-		$template_file	= utf8_normalize_nfc(request_var('template_file', '', true));
-		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
-		$save_changes	= (isset($_POST['save'])) ? true : false;
-
-		// make sure template_file path doesn't go upwards
-		$template_file = preg_replace('#\.{2,}#', '.', $template_file);
-
-		// Retrieve some information about the template
-		$sql = 'SELECT template_path, template_name
-			FROM ' . STYLES_TEMPLATE_TABLE . "
-			WHERE template_id = $template_id";
-		$result = $db->sql_query($sql);
-		$template_info = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$template_info)
-		{
-			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		// Get the filesystem location of the current file
-		$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
-		$file = "$template_path/$template_file";
-
-		if ($template_file)
-		{
-			$l_not_writable = sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action);
-
-			if ($safe_mode)
-			{
-				trigger_error($l_not_writable, E_USER_WARNING);
-			}
-
-			if (file_exists($file) && is_file($file) && is_readable($file))
-			{
-				if (!phpbb_is_writable($file))
-				{
-					trigger_error($l_not_writable, E_USER_WARNING);
-				}
-			}
-			else
-			{
-				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-		}
-
-		if ($save_changes && !check_form_key('acp_styles'))
-		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-		else if (!$save_changes)
-		{
-			add_form_key('acp_styles');
-		}
-
-		// save changes to the template if the user submitted any
-		if ($save_changes && $template_file)
-		{
-			// Try to write the file
-			if (!($fp = @fopen($file, 'wb')))
-			{
-				// File exists and is writeable, but still not able to be written to
-				trigger_error($l_not_writable, E_USER_WARNING);
-			}
-			fwrite($fp, $template_data);
-			fclose($fp);
-
-			// destroy the cached version of the template (filename without extension)
-			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
-
-			$cache->destroy('sql', STYLES_TABLE);
-
-			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
-			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
-		}
-
-		// Generate a category array containing template filenames
-
-		$filelist = filelist($template_path, '', 'html');
-		$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
-
-		if ($template_file)
-		{
-			$template_data = file_get_contents($file);
-
-			if (!$template_data)
-			{
-				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-		}
-
-		if (empty($filelist['']))
-		{
-			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		// Now create the categories
-		$filelist_cats[''] = array();
-		foreach ($filelist as $pathfile => $file_ary)
-		{
-			// Use the directory name as category name
-			if (!empty($pathfile))
-			{
-				$filelist_cats[$pathfile] = array();
-				foreach ($file_ary as $file)
-				{
-					$filelist_cats[$pathfile][$pathfile . $file] = $file;
-				}
-			}
-			// or if it's in the main category use the word before the first underscore to group files
-			else
-			{
-				$cats = array();
-				foreach ($file_ary as $file)
-				{
-					$cats[] = substr($file, 0, strpos($file, '_'));
-					$filelist_cats[substr($file, 0, strpos($file, '_'))][$file] = $file;
-				}
-
-				$cats = array_values(array_unique($cats));
-
-				// we don't need any single element categories so put them into the misc '' category
-				for ($i = 0, $n = sizeof($cats); $i < $n; $i++)
-				{
-					if (sizeof($filelist_cats[$cats[$i]]) == 1 && $cats[$i] !== '')
-					{
-						$filelist_cats[''][key($filelist_cats[$cats[$i]])] = current($filelist_cats[$cats[$i]]);
-						unset($filelist_cats[$cats[$i]]);
-					}
-				}
-				unset($cats);
-			}
-		}
-		unset($filelist);
-
-		// Generate list of categorised template files
-		$tpl_options = '';
-		ksort($filelist_cats);
-		foreach ($filelist_cats as $category => $tpl_ary)
-		{
-			ksort($tpl_ary);
-
-			if (!empty($category))
-			{
-				$tpl_options .= '<option class="sep" value="">' . $category . '</option>';
-			}
-
-			foreach ($tpl_ary as $filename => $file)
-			{
-				$selected = ($template_file == $filename) ? ' selected="selected"' : '';
-				$tpl_options .= '<option value="' . $filename . '"' . $selected . '>' . $file . '</option>';
-			}
-		}
-
-		$template->assign_vars(array(
-			'S_EDIT_TEMPLATE'	=> true,
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $template_file)),
-			'S_TEMPLATES'		=> $tpl_options,
-
-			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows",
-			'U_BACK'			=> $this->u_action,
-
-			'L_EDIT'			=> $user->lang['EDIT_TEMPLATE'],
-			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_TEMPLATE_EXPLAIN'],
-			'L_EDITOR'			=> $user->lang['TEMPLATE_EDITOR'],
-			'L_EDITOR_HEIGHT'	=> $user->lang['TEMPLATE_EDITOR_HEIGHT'],
-			'L_FILE'			=> $user->lang['TEMPLATE_FILE'],
-			'L_SELECT'			=> $user->lang['SELECT_TEMPLATE'],
-			'L_SELECTED'		=> $user->lang['SELECTED_TEMPLATE'],
-			'L_SELECTED_FILE'	=> $user->lang['SELECTED_TEMPLATE_FILE'],
-
-			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
-			'TEMPLATE_FILE'		=> $template_file,
-			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($template_data),
-			'TEXT_ROWS'			=> $text_rows)
-		);
-	}
-
-	/**
-	* Allows the admin to view cached versions of template files and clear single template cache files
-	*
-	* @param int $template_id specifies which template's cache is shown
-	*/
-	function template_cache($template_id)
-	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
-
-		$source		= str_replace('/', '.', request_var('source', ''));
-		$file_ary	= array_diff(request_var('delete', array('')), array(''));
-		$submit		= isset($_POST['submit']) ? true : false;
-
-		$sql = 'SELECT *
-			FROM ' . STYLES_TEMPLATE_TABLE . "
-			WHERE template_id = $template_id";
-		$result = $db->sql_query($sql);
-		$template_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$template_row)
-		{
-			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		// User wants to delete one or more files ...
-		if ($submit && $file_ary)
-		{
-			$this->clear_template_cache($template_row, $file_ary);
-			trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
-		}
-
-		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
-
-		// Someone wants to see the cached source ... so we'll highlight it,
-		// add line numbers and indent it appropriately. This could be nasty
-		// on larger source files ...
-		if ($source && file_exists("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"))
-		{
-			adm_page_header($user->lang['TEMPLATE_CACHE']);
-
-			$template->set_filenames(array(
-				'body'	=> 'viewsource.html')
-			);
-
-			$template->assign_vars(array(
-				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
-			);
-
-			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
-
-			$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
-			foreach ($conf as $ini_var)
-			{
-				@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
-			}
-
-			$marker = 'MARKER' . time();
-			$code = highlight_string(str_replace("\n", $marker, $code), true);
-			$code = str_replace($marker, "\n", $code);
-			$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-			$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
-
-			$code = str_replace($str_from, $str_to, $code);
-			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#ism', '$1$2$3', $code);
-			$code = substr($code, strlen('<span class="syntaxhtml">'));
-			$code = substr($code, 0, -1 * strlen('</ span>'));
-			$code = explode("\n", $code);
-
-			foreach ($code as $key => $line)
-			{
-				$template->assign_block_vars('source', array(
-					'LINENUM'	=> $key + 1,
-					'LINE'		=> preg_replace('#([^ ;])&nbsp;([^ &])#', '$1 $2', $line))
-				);
-				unset($code[$key]);
-			}
-
-			adm_page_footer();
-		}
-
-		// Get a list of cached template files and then retrieve additional information about them
-		$file_ary = $this->template_cache_filelist($template_row['template_path']);
-
-		foreach ($file_ary as $file)
-		{
-			$file		= str_replace('/', '.', $file);
-
-			// perform some dirty guessing to get the path right.
-			// We assume that three dots in a row were '../'
-			$tpl_file	= str_replace('.', '/', $file);
-			$tpl_file	= str_replace('///', '../', $tpl_file);
-
-			$filename = "{$cache_prefix}_$file.html.$phpEx";
-
-			if (!file_exists("{$phpbb_root_path}cache/$filename"))
-			{
-				continue;
-			}
-
-			$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html";
-			$inherited = false;
-
-			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'] && !file_exists($file_tpl))
-			{
-				$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
-				$inherited = true;
-			}
-
-			$template->assign_block_vars('file', array(
-				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
-
-				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
-				'FILENAME'		=> $file,
-				'FILENAME_PATH'	=> $file_tpl,
-				'FILESIZE'		=> get_formatted_filesize(filesize("{$phpbb_root_path}cache/$filename")),
-				'MODIFIED'		=> $user->format_date(filemtime($file_tpl)),
-			));
-		}
-
-		$template->assign_vars(array(
-			'S_CACHE'			=> true,
-			'S_TEMPLATE'		=> true,
-
-			'U_ACTION'			=> $this->u_action . "&amp;action=cache&amp;id=$template_id",
-			'U_BACK'			=> $this->u_action)
-		);
-	}
-
-	/**
-	* Provides a css editor and a basic easier to use stylesheet editing tool for less experienced (or lazy) users
-	*
-	* @param int $theme_id specifies which theme is being edited
-	*/
-	function edit_theme($theme_id)
-	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
-
-		$this->page_title = 'EDIT_THEME';
-
-		$filelist = $filelist_cats = array();
-
-		$theme_data		= utf8_normalize_nfc(request_var('template_data', '', true));
-		$theme_data		= htmlspecialchars_decode($theme_data);
-		$theme_file		= utf8_normalize_nfc(request_var('template_file', '', true));
-		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
-		$save_changes	= (isset($_POST['save'])) ? true : false;
-
-		// make sure theme_file path doesn't go upwards
-		$theme_file = str_replace('..', '.', $theme_file);
-
-		// Retrieve some information about the theme
-		$sql = 'SELECT theme_path, theme_name
-			FROM ' . STYLES_THEME_TABLE . "
-			WHERE theme_id = $theme_id";
-		$result = $db->sql_query($sql);
-
-		if (!($theme_info = $db->sql_fetchrow($result)))
-		{
-			trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-		$db->sql_freeresult($result);
-
-		// Get the filesystem location of the current file
-		$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
-		$file = "$theme_path/$theme_file";
-
-		if ($theme_file)
-		{
-			$l_not_writable = sprintf($user->lang['THEME_FILE_NOT_WRITABLE'], htmlspecialchars($theme_file)) . adm_back_link($this->u_action);
-
-			if ($safe_mode)
-			{
-				trigger_error($l_not_writable, E_USER_WARNING);
-			}
-
-			if (file_exists($file) && is_file($file) && is_readable($file))
-			{
-				if (!phpbb_is_writable($file))
-				{
-					trigger_error($l_not_writable, E_USER_WARNING);
-				}
-			}
-			else
-			{
-				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-		}
-
-		// save changes to the theme if the user submitted any
-		if ($save_changes && $theme_file)
-		{
-			$message = $user->lang['THEME_UPDATED'];
-
-			if (!($fp = @fopen($file, 'wb')))
-			{
-				trigger_error($l_not_writable, E_USER_WARNING);
-			}
-			fwrite($fp, $theme_data);
-			fclose($fp);
-
-			$cache->destroy('sql', STYLES_THEME_TABLE);
-			add_log('admin', 'LOG_THEME_EDIT_FILE', $theme_info['theme_name'], $theme_file);
-
-			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;template_file=$theme_file&amp;text_rows=$text_rows"));
-		}
-
-		// Generate a category array containing theme filenames
-		$filelist = filelist($theme_path, '', 'css');
-
-		if ($theme_file)
-		{
-			$theme_data = file_get_contents($file);
-
-			if (!$theme_data)
-			{
-				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-		}
-
-		// Now create the categories
-		$filelist_cats[''] = array();
-		foreach ($filelist as $pathfile => $file_ary)
-		{
-			// Use the directory name as category name
-			if (!empty($pathfile))
-			{
-				$filelist_cats[$pathfile] = array();
-				foreach ($file_ary as $file)
-				{
-					$filelist_cats[$pathfile][$pathfile . $file] = $file;
-				}
-			}
-			// or if it's in the main category use the word before the first underscore to group files
-			else
-			{
-				$cats = array();
-				foreach ($file_ary as $file)
-				{
-					$cats[] = substr($file, 0, strpos($file, '_'));
-					$filelist_cats[substr($file, 0, strpos($file, '_'))][$file] = $file;
-				}
-
-				$cats = array_values(array_unique($cats));
-
-				// we don't need any single element categories so put them into the misc '' category
-				for ($i = 0, $n = sizeof($cats); $i < $n; $i++)
-				{
-					if (sizeof($filelist_cats[$cats[$i]]) == 1 && $cats[$i] !== '')
-					{
-						$filelist_cats[''][key($filelist_cats[$cats[$i]])] = current($filelist_cats[$cats[$i]]);
-						unset($filelist_cats[$cats[$i]]);
-					}
-				}
-				unset($cats);
-			}
-		}
-		unset($filelist);
-
-		// Generate list of categorised theme files
-		$tpl_options = '';
-		ksort($filelist_cats);
-		foreach ($filelist_cats as $category => $tpl_ary)
-		{
-			ksort($tpl_ary);
-
-			if (!empty($category))
-			{
-				$tpl_options .= '<option class="sep" value="">' . $category . '</option>';
-			}
-
-			foreach ($tpl_ary as $filename => $file)
-			{
-				$selected = ($theme_file == $filename) ? ' selected="selected"' : '';
-				$tpl_options .= '<option value="' . $filename . '"' . $selected . '>' . $file . '</option>';
-			}
-		}
-
-		$template->assign_vars(array(
-			'S_EDIT_THEME'		=> true,
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $theme_file)),
-			'S_TEMPLATES'		=> $tpl_options,
-
-			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows",
-			'U_BACK'			=> $this->u_action,
-
-			'L_EDIT'			=> $user->lang['EDIT_THEME'],
-			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_THEME_EXPLAIN'],
-			'L_EDITOR'			=> $user->lang['THEME_EDITOR'],
-			'L_EDITOR_HEIGHT'	=> $user->lang['THEME_EDITOR_HEIGHT'],
-			'L_FILE'			=> $user->lang['THEME_FILE'],
-			'L_SELECT'			=> $user->lang['SELECT_THEME'],
-			'L_SELECTED'		=> $user->lang['SELECTED_THEME'],
-			'L_SELECTED_FILE'	=> $user->lang['SELECTED_THEME_FILE'],
-
-			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
-			'TEMPLATE_FILE'		=> $theme_file,
-			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($theme_data),
-			'TEXT_ROWS'			=> $text_rows,
-		));
-	}
-
-	/**
-	* Remove style/template/theme
-	*/
-	function remove($mode, $style_id)
-	{
-		global $db, $template, $user, $phpbb_root_path, $cache, $config;
-
-		$new_id = request_var('new_id', 0);
-		$update = (isset($_POST['update'])) ? true : false;
-		$sql_where = '';
-
-		switch ($mode)
-		{
-			case 'style':
-				$sql_from = STYLES_TABLE;
-				$sql_select = 'style_id, style_name, template_id, theme_id';
-				$sql_where = 'AND style_active = 1';
-			break;
-
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-				$sql_select = 'template_id, template_name, template_path';
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-				$sql_select = 'theme_id, theme_name, theme_path';
-			break;
-		}
-
-		if ($mode === 'template' && ($conflicts = $this->check_inheritance($mode, $style_id)))
-		{
-			$l_type = strtoupper($mode);
-			$msg = $user->lang[$l_type . '_DELETE_DEPENDENT'];
-			foreach ($conflicts as $id => $values)
-			{
-				$msg .= '<br />' . $values['template_name'];
-			}
-
-			trigger_error($msg . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$l_prefix = strtoupper($mode);
-
-		$sql = "SELECT $sql_select
-			FROM $sql_from
-			WHERE {$mode}_id = $style_id";
-		$result = $db->sql_query($sql);
-		$style_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$style_row)
-		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$s_only_component = $this->display_component_options($mode, $style_row[$mode . '_id'], $style_row);
-
-		if ($s_only_component)
-		{
-			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		if ($update)
-		{
-			if ($mode == 'style')
-			{
-				$sql = "DELETE FROM $sql_from
-					WHERE {$mode}_id = $style_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_style = $new_id
-					WHERE user_style = $style_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_style = $new_id
-					WHERE forum_style = $style_id";
-				$db->sql_query($sql);
-
-				if ($style_id == $config['default_style'])
-				{
-					set_config('default_style', $new_id);
-				}
-
-				// Remove the components
-				$components = array('template', 'theme');
-				foreach ($components as $component)
-				{
-					$new_id = request_var('new_' . $component . '_id', 0);
-					$component_id = $style_row[$component . '_id'];
-					$this->remove_component($component, $component_id, $new_id, $style_id);
-				}
-			}
-			else
-			{
-				$this->remove_component($mode, $style_id, $new_id);
-			}
-
-			$cache->destroy('sql', STYLES_TABLE);
-
-			add_log('admin', 'LOG_' . $l_prefix . '_DELETE', $style_row[$mode . '_name']);
-			$message = ($mode != 'style') ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
-			trigger_error($user->lang[$message] . adm_back_link($this->u_action));
-		}
-
-		$this->page_title = 'DELETE_' . $l_prefix;
-
-		$template->assign_vars(array(
-			'S_DELETE'			=> true,
-
-			'L_TITLE'			=> $user->lang[$this->page_title],
-			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'			=> $user->lang[$l_prefix . '_NAME'],
-			'L_REPLACE'			=> $user->lang['REPLACE_' . $l_prefix],
-			'L_REPLACE_EXPLAIN'	=> $user->lang['REPLACE_' . $l_prefix . '_EXPLAIN'],
-
-			'U_ACTION'		=> $this->u_action . "&amp;action=delete&amp;id=$style_id",
-			'U_BACK'		=> $this->u_action,
-
-			'NAME'			=> $style_row[$mode . '_name'],
-			)
-		);
-
-		if ($mode == 'style')
-		{
-			$template->assign_vars(array(
-				'S_DELETE_STYLE'		=> true,
-			));
-		}
-	}
-
-	/**
-	* Remove template/theme entry from the database
-	*/
-	function remove_component($component, $component_id, $new_id, $style_id = false)
-	{
-		global $db;
-
-		if (($new_id == 0) || ($component === 'template' && ($conflicts = $this->check_inheritance($component, $component_id))))
-		{
-			// We can not delete the template, as the user wants to keep the component or an other template is inheriting from this one.
-			return;
-		}
-
-		$component_in_use = array();
-		if ($component != 'style')
-		{
-			$component_in_use = $this->component_in_use($component, $component_id, $style_id);
-		}
-
-		if (($new_id == -1) && !empty($component_in_use))
-		{
-			// We can not delete the component, as it is still in use
-			return;
-		}
-
-		switch ($component)
-		{
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$sql = "DELETE FROM $sql_from
-			WHERE {$component}_id = $component_id";
-		$db->sql_query($sql);
-
-		$sql = 'UPDATE ' . STYLES_TABLE . "
-			SET {$component}_id = $new_id
-			WHERE {$component}_id = $component_id";
-		$db->sql_query($sql);
-	}
-
-	/**
-	* Display the options which can be used to replace a style/template/theme
-	*
-	* @return boolean Returns true if the component is the only component and can not be deleted.
-	*/
-	function display_component_options($component, $component_id, $style_row = false, $style_id = false)
-	{
-		global $db, $template, $user;
-
-		$is_only_component = true;
-		$component_in_use = array();
-		if ($component != 'style')
-		{
-			$component_in_use = $this->component_in_use($component, $component_id, $style_id);
-		}
-
-		$sql_where = '';
-		switch ($component)
-		{
-			case 'style':
-				$sql_from = STYLES_TABLE;
-				$sql_where = 'WHERE style_active = 1';
-			break;
-
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-				$sql_where = 'WHERE template_inherits_id <> ' . $component_id;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$s_options = '';
-		if (($component != 'style') && empty($component_in_use))
-		{
-			// If it is not in use, there must be another component
-			$is_only_component = false;
-
-			$sql = "SELECT {$component}_id, {$component}_name
-				FROM $sql_from
-				WHERE {$component}_id = {$component_id}";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$s_options .= '<option value="-1" selected="selected">' . $user->lang['DELETE_' . strtoupper($component)] . '</option>';
-			$s_options .= '<option value="0">' . sprintf($user->lang['KEEP_' . strtoupper($component)], $row[$component . '_name']) . '</option>';
-		}
-		else
-		{
-			$sql = "SELECT {$component}_id, {$component}_name
-				FROM $sql_from
-				$sql_where
-				ORDER BY {$component}_name ASC";
-			$result = $db->sql_query($sql);
-
-			$s_keep_option = $s_options = '';
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if ($row[$component . '_id'] != $component_id)
-				{
-					$is_only_component = false;
-					$s_options .= '<option value="' . $row[$component . '_id'] . '">' . sprintf($user->lang['REPLACE_WITH_OPTION'], $row[$component . '_name']) . '</option>';
-				}
-				else if ($component != 'style')
-				{
-					$s_keep_option = '<option value="0" selected="selected">' . sprintf($user->lang['KEEP_' . strtoupper($component)], $row[$component . '_name']) . '</option>';
-				}
-			}
-			$db->sql_freeresult($result);
-			$s_options = $s_keep_option . $s_options;
-		}
-
-		if (!$style_row)
-		{
-			$template->assign_var('S_REPLACE_' . strtoupper($component) . '_OPTIONS', $s_options);
-		}
-		else
-		{
-			$template->assign_var('S_REPLACE_OPTIONS', $s_options);
-			if ($component == 'style')
-			{
-				$components = array('template', 'theme');
-				foreach ($components as $component)
-				{
-					$this->display_component_options($component, $style_row[$component . '_id'], false, $component_id, true);
-				}
-			}
-		}
-
-		return $is_only_component;
-	}
-
-	/**
-	* Check whether the component is still used by another style or component
-	*/
-	function component_in_use($component, $component_id, $style_id = false)
-	{
-		global $db;
-
-		$component_in_use = array();
-
-		if ($style_id)
-		{
-			$sql = 'SELECT style_id, style_name
-				FROM ' . STYLES_TABLE . "
-				WHERE {$component}_id = {$component_id}
-					AND style_id <> {$style_id}
-				ORDER BY style_name ASC";
-		}
-		else
-		{
-			$sql = 'SELECT style_id, style_name
-				FROM ' . STYLES_TABLE . "
-				WHERE {$component}_id = {$component_id}
-				ORDER BY style_name ASC";
-		}
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$component_in_use[] = $row['style_name'];
-		}
-		$db->sql_freeresult($result);
-
-		if ($component === 'template' && ($conflicts = $this->check_inheritance($component, $component_id)))
-		{
-			foreach ($conflicts as $temp_id => $conflict_data)
-			{
-				$component_in_use[] = $conflict_data['template_name'];
-			}
-		}
-
-		return $component_in_use;
-	}
-
-	/**
-	* Export style or style elements
-	*/
-	function export($mode, $style_id)
-	{
-		global $db, $template, $user, $phpbb_root_path, $cache, $phpEx, $config;
-
-		$update = (isset($_POST['update'])) ? true : false;
-
-		$inc_template = request_var('inc_template', 0);
-		$inc_theme = request_var('inc_theme', 0);
-		$store = request_var('store', 0);
-		$format = request_var('format', '');
-
-		$error = array();
-		$methods = array('tar');
-
-		$available_methods = array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib');
-		foreach ($available_methods as $type => $module)
-		{
-			if (!@extension_loaded($module))
-			{
-				continue;
-			}
-
-			$methods[] = $type;
-		}
-
-		if (!in_array($format, $methods))
-		{
-			$format = 'tar';
-		}
-
-		switch ($mode)
-		{
-			case 'style':
-				if ($update && ($inc_template + $inc_theme) < 1)
-				{
-					$error[] = $user->lang['STYLE_ERR_MORE_ELEMENTS'];
-				}
-
-				$name = 'style_name';
-
-				$sql_select = 's.style_id, s.style_name, s.style_copyright';
-				$sql_select .= ($inc_template) ? ', t.*' : ', t.template_name';
-				$sql_select .= ($inc_theme) ? ', c.*' : ', c.theme_name';
-				$sql_from = STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c';
-				$sql_where = "s.style_id = $style_id AND t.template_id = s.template_id AND c.theme_id = s.theme_id";
-
-				$l_prefix = 'STYLE';
-			break;
-
-			case 'template':
-				$name = 'template_name';
-
-				$sql_select = '*';
-				$sql_from = STYLES_TEMPLATE_TABLE;
-				$sql_where = "template_id = $style_id";
-
-				$l_prefix = 'TEMPLATE';
-			break;
-
-			case 'theme':
-				$name = 'theme_name';
-
-				$sql_select = '*';
-				$sql_from = STYLES_THEME_TABLE;
-				$sql_where = "theme_id = $style_id";
-
-				$l_prefix = 'THEME';
-			break;
-		}
-
-		if ($update && !sizeof($error))
-		{
-			$sql = "SELECT $sql_select
-				FROM $sql_from
-				WHERE $sql_where";
-			$result = $db->sql_query($sql);
-			$style_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$style_row)
-			{
-				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-
-			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright');
-
-			foreach ($var_ary as $var)
-			{
-				if (!isset($style_row[$var]))
-				{
-					$style_row[$var] = '';
-				}
-			}
-
-			$files = $data = array();
-
-			if ($mode == 'style')
-			{
-				$style_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['style_name'], $style_row['style_copyright'], $config['version']), $this->style_cfg);
-
-				$style_cfg .= (!$inc_template) ? "\nrequired_template = {$style_row['template_name']}" : '';
-				$style_cfg .= (!$inc_theme) ? "\nrequired_theme = {$style_row['theme_name']}" : '';
-
-				$data[] = array(
-					'src'		=> $style_cfg,
-					'prefix'	=> 'style.cfg'
-				);
-
-				unset($style_cfg);
-			}
-
-			// Export template core code
-			if ($mode == 'template' || $inc_template)
-			{
-				$use_template_name = $style_row['template_name'];
-
-				// Add the inherit from variable, depending on it's use...
-				if ($style_row['template_inherits_id'])
-				{
-					// Get the template name
-					$sql = 'SELECT template_name
-						FROM ' . STYLES_TEMPLATE_TABLE . '
-						WHERE template_id = ' . (int) $style_row['template_inherits_id'];
-					$result = $db->sql_query($sql);
-					$use_template_name = (string) $db->sql_fetchfield('template_name');
-					$db->sql_freeresult($result);
-				}
-
-				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}', '{INHERIT_FROM}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version'], $use_template_name), $this->template_cfg);
-
-				$template_cfg .= "\n\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
-
-				$data[] = array(
-					'src'		=> $template_cfg,
-					'prefix'	=> 'template/template.cfg'
-				);
-
-				// This is potentially nasty memory-wise ...
-				$files[] = array(
-					'src'		=> "styles/{$style_row['template_path']}/template/",
-					'prefix-'	=> "styles/{$style_row['template_path']}/",
-					'prefix+'	=> false,
-					'exclude'	=> 'template.cfg'
-				);
-				unset($template_cfg);
-			}
-
-			// Export theme core code
-			if ($mode == 'theme' || $inc_theme)
-			{
-				$theme_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['theme_name'], $style_row['theme_copyright'], $config['version']), $this->theme_cfg);
-
-				// Read old cfg file
-				$items = $cache->obtain_cfg_items($style_row);
-				$items = $items['theme'];
-
-				$files[] = array(
-					'src'		=> "styles/{$style_row['theme_path']}/theme/",
-					'prefix-'	=> "styles/{$style_row['theme_path']}/",
-					'prefix+'	=> false,
-					'exclude'	=> 'theme.cfg',
-				);
-
-				$data[] = array(
-					'src'		=> $theme_cfg,
-					'prefix'	=> 'theme/theme.cfg',
-				);
-
-				unset($items, $theme_cfg);
-			}
-
-			switch ($format)
-			{
-				case 'tar':
-					$ext = '.tar';
-				break;
-
-				case 'zip':
-					$ext = '.zip';
-				break;
-
-				case 'tar.gz':
-					$ext = '.tar.gz';
-				break;
-
-				case 'tar.bz2':
-					$ext = '.tar.bz2';
-				break;
-
-				default:
-					$error[] = $user->lang[$l_prefix . '_ERR_ARCHIVE'];
-			}
-
-			if (!sizeof($error))
-			{
-				include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
-
-				if ($mode == 'style')
-				{
-					$path = preg_replace('#[^\w-]+#', '_', $style_row['style_name']);
-				}
-				else
-				{
-					$path = $style_row[$mode . '_path'];
-				}
-
-				if ($format == 'zip')
-				{
-					$compress = new compress_zip('w', $phpbb_root_path . "store/$path$ext");
-				}
-				else
-				{
-					$compress = new compress_tar('w', $phpbb_root_path . "store/$path$ext", $ext);
-				}
-
-				if (sizeof($files))
-				{
-					foreach ($files as $file_ary)
-					{
-						$compress->add_file($file_ary['src'], $file_ary['prefix-'], $file_ary['prefix+'], $file_ary['exclude']);
-					}
-				}
-
-				if (sizeof($data))
-				{
-					foreach ($data as $data_ary)
-					{
-						$compress->add_data($data_ary['src'], $data_ary['prefix']);
-					}
-				}
-
-				$compress->close();
-
-				add_log('admin', 'LOG_' . $l_prefix . '_EXPORT', $style_row[$mode . '_name']);
-
-				if (!$store)
-				{
-					$compress->download($path);
-					@unlink("{$phpbb_root_path}store/$path$ext");
-					exit;
-				}
-
-				trigger_error(sprintf($user->lang[$l_prefix . '_EXPORTED'], "store/$path$ext") . adm_back_link($this->u_action));
-			}
-		}
-
-		$sql = "SELECT {$mode}_id, {$mode}_name
-			FROM " . (($mode == 'style') ? STYLES_TABLE : $sql_from) . "
-			WHERE {$mode}_id = $style_id";
-		$result = $db->sql_query($sql);
-		$style_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$style_row)
-		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$this->page_title = $l_prefix . '_EXPORT';
-
-		$format_buttons = '';
-		foreach ($methods as $method)
-		{
-			$format_buttons .= '<label><input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' class="radio" value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' /> ' . $method . '</label>';
-		}
-
-		$template->assign_vars(array(
-			'S_EXPORT'		=> true,
-			'S_ERROR_MSG'	=> (sizeof($error)) ? true : false,
-			'S_STYLE'		=> ($mode == 'style') ? true : false,
-
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'		=> $user->lang[$l_prefix . '_NAME'],
-
-			'U_ACTION'		=> $this->u_action . '&amp;action=export&amp;id=' . $style_id,
-			'U_BACK'		=> $this->u_action,
-
-			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'NAME'				=> $style_row[$mode . '_name'],
-			'FORMAT_BUTTONS'	=> $format_buttons)
-		);
-	}
-
-	/**
-	* Display details
-	*/
-	function details($mode, $style_id)
-	{
-		global $template, $db, $config, $user, $safe_mode, $cache, $phpbb_root_path;
-
-		$update = (isset($_POST['update'])) ? true : false;
-		$l_type = strtoupper($mode);
-
-		$error = array();
-		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE);
-
-		switch ($mode)
-		{
-			case 'style':
-				$sql_from = STYLES_TABLE;
-			break;
-
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$sql = "SELECT *
-			FROM $sql_from
-			WHERE {$mode}_id = $style_id";
-		$result = $db->sql_query($sql);
-		$style_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$style_row)
-		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$style_row['style_default'] = ($mode == 'style' && $config['default_style'] == $style_id) ? 1 : 0;
-
-		if ($update)
-		{
-			$name = utf8_normalize_nfc(request_var('name', '', true));
-			$copyright = utf8_normalize_nfc(request_var('copyright', '', true));
-
-			$template_id = request_var('template_id', 0);
-			$theme_id = request_var('theme_id', 0);
-
-			$style_active = request_var('style_active', 0);
-			$style_default = request_var('style_default', 0);
-
-			// If the admin selected the style to be the default style, but forgot to activate it... we will do it for him
-			if ($style_default)
-			{
-				$style_active = 1;
-			}
-
-			$sql = "SELECT {$mode}_id, {$mode}_name
-				FROM $sql_from
-				WHERE {$mode}_id <> $style_id
-				AND LOWER({$mode}_name) = '" . $db->sql_escape(strtolower($name)) . "'";
-			$result = $db->sql_query($sql);
-			$conflict = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($mode == 'style' && (!$template_id || !$theme_id))
-			{
-				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
-			}
-
-			if ($mode == 'style' && $style_row['style_active'] && !$style_active && $config['default_style'] == $style_id)
-			{
-				$error[] = $user->lang['DEACTIVATE_DEFAULT'];
-			}
-
-			if (!$name || $conflict)
-			{
-				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
-			}
-
-			if (!sizeof($error))
-			{
-				// Check length settings
-				if (utf8_strlen($name) > 30)
-				{
-					$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
-				}
-
-				if (utf8_strlen($copyright) > 60)
-				{
-					$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
-				}
-			}
-		}
-
-		if ($update && sizeof($error))
-		{
-			$style_row = array_merge($style_row, array(
-				'template_id'			=> $template_id,
-				'theme_id'				=> $theme_id,
-				'style_active'			=> $style_active,
-				$mode . '_name'			=> $name,
-				$mode . '_copyright'	=> $copyright)
-			);
-		}
-
-		// User has submitted form and no errors have occurred
-		if ($update && !sizeof($error))
-		{
-			$sql_ary = array(
-				$mode . '_name'			=> $name,
-				$mode . '_copyright'	=> $copyright
-			);
-
-			switch ($mode)
-			{
-				case 'style':
-
-					$sql_ary += array(
-						'template_id'		=> (int) $template_id,
-						'theme_id'			=> (int) $theme_id,
-						'style_active'		=> (int) $style_active,
-					);
-				break;
-
-				case 'theme':
-				break;
-
-				case 'template':
-				break;
-			}
-
-			if (sizeof($sql_ary))
-			{
-				$sql = "UPDATE $sql_from
-					SET " . $db->sql_build_array('UPDATE', $sql_ary) . "
-					WHERE {$mode}_id = $style_id";
-				$db->sql_query($sql);
-
-				// Making this the default style?
-				if ($mode == 'style' && $style_default)
-				{
-					set_config('default_style', $style_id);
-				}
-			}
-
-			$cache->destroy('sql', STYLES_TABLE);
-
-			add_log('admin', 'LOG_' . $l_type . '_EDIT_DETAILS', $name);
-			if (sizeof($error))
-			{
-				trigger_error(implode('<br />', $error) . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-			else
-			{
-				trigger_error($user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
-			}
-		}
-
-		if ($mode == 'style')
-		{
-			foreach ($element_ary as $element => $table)
-			{
-				$sql = "SELECT {$element}_id, {$element}_name
-					FROM $table
-					ORDER BY {$element}_id ASC";
-				$result = $db->sql_query($sql);
-
-				${$element . '_options'} = '';
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$selected = ($row[$element . '_id'] == $style_row[$element . '_id']) ? ' selected="selected"' : '';
-					${$element . '_options'} .= '<option value="' . $row[$element . '_id'] . '"' . $selected . '>' . $row[$element . '_name'] . '</option>';
-				}
-				$db->sql_freeresult($result);
-			}
-		}
-
-		if ($mode == 'template')
-		{
-			$super = array();
-			if (isset($style_row[$mode . '_inherits_id']) && $style_row['template_inherits_id'])
-			{
-				$super = $this->get_super($mode, $style_row['template_id']);
-			}
-		}
-
-		$this->page_title = 'EDIT_DETAILS_' . $l_type;
-
-		$template->assign_vars(array(
-			'S_DETAILS'				=> true,
-			'S_ERROR_MSG'			=> (sizeof($error)) ? true : false,
-			'S_STYLE'				=> ($mode == 'style') ? true : false,
-			'S_TEMPLATE'			=> ($mode == 'template') ? true : false,
-			'S_THEME'				=> ($mode == 'theme') ? true : false,
-			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
-			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
-			'S_SUPERTEMPLATE'		=> (isset($style_row[$mode . '_inherits_id']) && $style_row[$mode . '_inherits_id']) ? $super['template_name'] : 0,
-
-			'S_TEMPLATE_OPTIONS'	=> ($mode == 'style') ? $template_options : '',
-			'S_THEME_OPTIONS'		=> ($mode == 'style') ? $theme_options : '',
-
-			'U_ACTION'		=> $this->u_action . '&amp;action=details&amp;id=' . $style_id,
-			'U_BACK'		=> $this->u_action,
-
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-
-			'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'NAME'			=> $style_row[$mode . '_name'],
-			'COPYRIGHT'		=> $style_row[$mode . '_copyright'],
-			)
-		);
-	}
-
-	/**
-	* Load css file contents
-	*/
-	function load_css_file($path, $filename)
-	{
-		global $phpbb_root_path;
-
-		$file = "{$phpbb_root_path}styles/$path/theme/$filename";
-
-		if (file_exists($file) && ($content = file_get_contents($file)))
-		{
-			$content = trim($content);
-		}
-		else
-		{
-			$content = '';
-		}
-		if (defined('DEBUG'))
-		{
-			$content = "/* BEGIN @include $filename */ \n $content \n /* END @include $filename */ \n";
-		}
-
-		return $content;
-	}
-
-	/**
-	* Returns a string containing the value that should be used for the theme_data column in the theme database table.
-	* Includes contents of files loaded via @import
-	*
-	* @param array $theme_row is an associative array containing the theme's current database entry
-	* @param mixed $stylesheet can either be the new content for the stylesheet or false to load from the standard file
-	* @param string $root_path should only be used in case you want to use a different root path than "{$phpbb_root_path}styles/{$theme_row['theme_path']}"
-	*
-	* @return string Stylesheet data for theme_data column in the theme table
-	*/
-	function db_theme_data($theme_row, $stylesheet = false, $root_path = '')
-	{
-		global $phpbb_root_path;
-
-		if (!$root_path)
-		{
-			$root_path = $phpbb_root_path . 'styles/' . $theme_row['theme_path'];
-		}
-
-		if (!$stylesheet)
-		{
-			$stylesheet = '';
-			if (file_exists($root_path . '/theme/stylesheet.css'))
-			{
-				$stylesheet = file_get_contents($root_path . '/theme/stylesheet.css');
-			}
-		}
-
-		// Match CSS imports
-		$matches = array();
-		preg_match_all('/@import url\((["\'])(.*)\1\);/i', $stylesheet, $matches);
-
-		// remove commented stylesheets (very simple parser, allows only whitespace
-		// around an @import statement)
-		preg_match_all('#/\*\s*@import url\((["\'])(.*)\1\);\s\*/#i', $stylesheet, $commented);
-		$matches[2] = array_diff($matches[2], $commented[2]);
-
-		if (sizeof($matches))
-		{
-			foreach ($matches[0] as $idx => $match)
-			{
-				if (isset($matches[2][$idx]))
-				{
-					$stylesheet = str_replace($match, acp_styles::load_css_file($theme_row['theme_path'], $matches[2][$idx]), $stylesheet);
-				}
-			}
-		}
-
-		// adjust paths
-		return str_replace('./', 'styles/' . $theme_row['theme_path'] . '/theme/', $stylesheet);
-	}
-
-	/**
-	* Returns an array containing all template filenames for one template that are currently cached.
-	*
-	* @param string $template_path contains the name of the template's folder in /styles/
-	*
-	* @return array of filenames that exist in /styles/$template_path/template/ (without extension!)
-	*/
-	function template_cache_filelist($template_path)
-	{
-		global $phpbb_root_path, $phpEx, $user;
-
-		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_path);
-
-		if (!($dp = @opendir("{$phpbb_root_path}cache")))
-		{
-			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$file_ary = array();
-		while ($file = readdir($dp))
-		{
-			if ($file[0] == '.')
-			{
-				continue;
-			}
-
-			if (is_file($phpbb_root_path . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
-			{
-				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file));
-			}
-		}
-		closedir($dp);
-
-		return $file_ary;
-	}
-
-	/**
-	* Destroys cached versions of template files
-	*
-	* @param array $template_row contains the template's row in the STYLES_TEMPLATE_TABLE database table
-	* @param mixed $file_ary is optional and may contain an array of template file names which should be refreshed in the cache.
-	*	The file names should be the original template file names and not the cache file names.
-	*/
-	function clear_template_cache($template_row, $file_ary = false)
-	{
-		global $phpbb_root_path, $phpEx, $user;
-
-		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
-
-		if (!$file_ary || !is_array($file_ary))
-		{
-			$file_ary = $this->template_cache_filelist($template_row['template_path']);
-			$log_file_list = $user->lang['ALL_FILES'];
-		}
-		else
-		{
-			$log_file_list = implode(', ', $file_ary);
-		}
-
-		foreach ($file_ary as $file)
-		{
-			$file = str_replace('/', '.', $file);
-
-			$file = "{$phpbb_root_path}cache/{$cache_prefix}_$file.html.$phpEx";
-			if (file_exists($file) && is_file($file))
-			{
-				@unlink($file);
-			}
-		}
-		unset($file_ary);
-
-		add_log('admin', 'LOG_TEMPLATE_CACHE_CLEARED', $template_row['template_name'], $log_file_list);
-	}
-
-	/**
-	* Install Style/Template/Theme
-	*/
-	function install($mode)
-	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
-
-		$l_type = strtoupper($mode);
-
-		$error = $installcfg = $style_row = array();
-		$root_path = $cfg_file = '';
-		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE);
-
-		$install_path = request_var('path', '');
-		$update = (isset($_POST['update'])) ? true : false;
-
-		// Installing, obtain cfg file contents
-		if ($install_path)
-		{
-			$root_path = $phpbb_root_path . 'styles/' . $install_path . '/';
-			$cfg_file = ($mode == 'style') ? "$root_path$mode.cfg" : "$root_path$mode/$mode.cfg";
-
-			if (!file_exists($cfg_file))
-			{
-				$error[] = $user->lang[$l_type . '_ERR_NOT_' . $l_type];
-			}
-			else
-			{
-				$installcfg = parse_cfg_file($cfg_file);
-			}
-		}
-
-		// Installing
-		if (sizeof($installcfg))
-		{
-			$name		= $installcfg['name'];
-			$copyright	= $installcfg['copyright'];
-			$version	= $installcfg['version'];
-
-			$style_row = array(
-				$mode . '_id'			=> 0,
-				$mode . '_name'			=> '',
-				$mode . '_copyright'	=> ''
-			);
-
-			switch ($mode)
-			{
-				case 'style':
-
-					$style_row = array(
-						'style_id'			=> 0,
-						'style_name'		=> $installcfg['name'],
-						'style_copyright'	=> $installcfg['copyright']
-					);
-
-					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : false;
-					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : false;
-
-					// Check to see if each element is already installed, if it is grab the id
-					foreach ($element_ary as $element => $table)
-					{
-						$style_row = array_merge($style_row, array(
-							$element . '_id'			=> 0,
-							$element . '_name'			=> '',
-							$element . '_copyright'		=> '')
-						);
-
-			 			$this->test_installed($element, $error, (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . $reqd_template . '/' : $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
-
-						if (!$style_row[$element . '_name'])
-						{
-							$style_row[$element . '_name'] = $reqd_template;
-						}
-
-						// Merge other information to installcfg... if present
-						$cfg_file = $phpbb_root_path . 'styles/' . $install_path . '/' . $element . '/' . $element . '.cfg';
-
-						if (file_exists($cfg_file))
-						{
-							$cfg_contents = parse_cfg_file($cfg_file);
-
-							// Merge only specific things. We may need them later.
-							foreach (array('inherit_from') as $key)
-							{
-								if (!empty($cfg_contents[$key]) && !isset($installcfg[$key]))
-								{
-									$installcfg[$key] = $cfg_contents[$key];
-								}
-							}
-						}
-					}
-
-				break;
-
-				case 'template':
-					$this->test_installed('template', $error, $root_path, false, $style_row['template_id'], $style_row['template_name'], $style_row['template_copyright']);
-				break;
-
-				case 'theme':
-					$this->test_installed('theme', $error, $root_path, false, $style_row['theme_id'], $style_row['theme_name'], $style_row['theme_copyright']);
-				break;
-			}
-		}
-		else
-		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
-		$style_row['style_active'] = request_var('style_active', 1);
-		$style_row['style_default'] = request_var('style_default', 0);
-
-		// User has submitted form and no errors have occurred
-		if ($update && !sizeof($error))
-		{
-			if ($mode == 'style')
-			{
-				foreach ($element_ary as $element => $table)
-				{
-					${$element . '_root_path'} = (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . ${'reqd_' . $element} . '/' : false;
-					${$element . '_path'} = (${'reqd_' . $element}) ? ${'reqd_' . $element} : false;
-				}
-				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $install_path, $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row, $template_root_path, $template_path, $theme_root_path, $theme_path);
-			}
-			else
-			{
-				$this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $install_path, $style_row[$mode . '_copyright']);
-			}
-
-			if (!sizeof($error))
-			{
-				$cache->destroy('sql', STYLES_TABLE);
-
-				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
-			}
-		}
-
-		$this->page_title = 'INSTALL_' . $l_type;
-
-		$template->assign_vars(array(
-			'S_DETAILS'			=> true,
-			'S_INSTALL'			=> true,
-			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
-			'S_LOCATION'		=> (isset($installcfg['inherit_from']) && $installcfg['inherit_from']) ? false : true,
-			'S_STYLE'			=> ($mode == 'style') ? true : false,
-			'S_TEMPLATE'		=> ($mode == 'template') ? true : false,
-			'S_SUPERTEMPLATE'	=> (isset($installcfg['inherit_from'])) ? $installcfg['inherit_from'] : '',
-			'S_THEME'			=> ($mode == 'theme') ? true : false,
-
-			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
-			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
-
-			'U_ACTION'			=> $this->u_action . "&amp;action=install&amp;path=" . urlencode($install_path),
-			'U_BACK'			=> $this->u_action,
-
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-
-			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'NAME'				=> $style_row[$mode . '_name'],
-			'COPYRIGHT'			=> $style_row[$mode . '_copyright'],
-			'TEMPLATE_NAME'		=> ($mode == 'style') ? $style_row['template_name'] : '',
-			'THEME_NAME'		=> ($mode == 'style') ? $style_row['theme_name'] : '')
-		);
-	}
-
-	/**
-	* Add new style
-	*/
-	function add($mode)
-	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
-
-		$l_type = strtoupper($mode);
-		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE);
-		$error = array();
-
-		$style_row = array(
-			$mode . '_name'			=> utf8_normalize_nfc(request_var('name', '', true)),
-			$mode . '_copyright'	=> utf8_normalize_nfc(request_var('copyright', '', true)),
-			'template_id'			=> 0,
-			'theme_id'				=> 0,
-			'style_active'			=> request_var('style_active', 1),
-			'style_default'			=> request_var('style_default', 0),
-		);
-
-		$basis = request_var('basis', 0);
-		$update = (isset($_POST['update'])) ? true : false;
-
-		if ($basis)
-		{
-			switch ($mode)
-			{
-				case 'style':
-					$sql_select = 'template_id, theme_id';
-					$sql_from = STYLES_TABLE;
-				break;
-
-				case 'template':
-					$sql_select = 'template_id';
-					$sql_from = STYLES_TEMPLATE_TABLE;
-				break;
-
-				case 'theme':
-					$sql_select = 'theme_id';
-					$sql_from = STYLES_THEME_TABLE;
-				break;
-			}
-
-			$sql = "SELECT $sql_select
-				FROM $sql_from
-				WHERE {$mode}_id = $basis";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				$error[] = $user->lang['NO_' . $l_type];
-			}
-
-			if (!sizeof($error))
-			{
-				$style_row['template_id']	= (isset($row['template_id'])) ? $row['template_id'] : $style_row['template_id'];
-				$style_row['theme_id']		= (isset($row['theme_id'])) ? $row['theme_id'] : $style_row['theme_id'];
-			}
-		}
-
-		if ($update)
-		{
-			$style_row['template_id'] = request_var('template_id', $style_row['template_id']);
-			$style_row['theme_id'] = request_var('theme_id', $style_row['theme_id']);
-
-			if ($mode == 'style' && (!$style_row['template_id'] || !$style_row['theme_id']))
-			{
-				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
-			}
-		}
-
-		// User has submitted form and no errors have occurred
-		if ($update && !sizeof($error))
-		{
-			if ($mode == 'style')
-			{
-				$style_row['style_id'] = 0;
-
-				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], '', $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
-			}
-
-			if (!sizeof($error))
-			{
-				$cache->destroy('sql', STYLES_TABLE);
-
-				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
-			}
-		}
-
-		if ($mode == 'style')
-		{
-			foreach ($element_ary as $element => $table)
-			{
-				$sql = "SELECT {$element}_id, {$element}_name
-					FROM $table
-					ORDER BY {$element}_id ASC";
-				$result = $db->sql_query($sql);
-
-				${$element . '_options'} = '';
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$selected = ($row[$element . '_id'] == $style_row[$element . '_id']) ? ' selected="selected"' : '';
-					${$element . '_options'} .= '<option value="' . $row[$element . '_id'] . '"' . $selected . '>' . $row[$element . '_name'] . '</option>';
-				}
-				$db->sql_freeresult($result);
-			}
-		}
-
-		$this->page_title = 'ADD_' . $l_type;
-
-		$template->assign_vars(array(
-			'S_DETAILS'			=> true,
-			'S_ADD'				=> true,
-			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
-			'S_STYLE'			=> ($mode == 'style') ? true : false,
-			'S_TEMPLATE'		=> ($mode == 'template') ? true : false,
-			'S_THEME'			=> ($mode == 'theme') ? true : false,
-			'S_BASIS'			=> ($basis) ? true : false,
-
-			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
-			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
-			'S_TEMPLATE_OPTIONS'	=> ($mode == 'style') ? $template_options : '',
-			'S_THEME_OPTIONS'		=> ($mode == 'style') ? $theme_options : '',
-
-			'U_ACTION'			=> $this->u_action . '&amp;action=add&amp;basis=' . $basis,
-			'U_BACK'			=> $this->u_action,
-
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-
-			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'NAME'				=> $style_row[$mode . '_name'],
-			'COPYRIGHT'			=> $style_row[$mode . '_copyright'])
-		);
-
-	}
-
-	/**
-
-					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : false;
-					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : false;
-
-					// Check to see if each element is already installed, if it is grab the id
-					foreach ($element_ary as $element => $table)
-					{
-						$style_row = array_merge($style_row, array(
-							$element . '_id'			=> 0,
-							$element . '_name'			=> '',
-							$element . '_copyright'		=> '')
-						);
-
-			 			$this->test_installed($element, $error, $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
-	* Is this element installed? If not, grab its cfg details
-	*/
-	function test_installed($element, &$error, $root_path, $reqd_name, &$id, &$name, &$copyright)
-	{
-		global $db, $user;
-
-		switch ($element)
-		{
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$l_element = strtoupper($element);
-
-		$chk_name = ($reqd_name !== false) ? $reqd_name : $name;
-
-		$sql = "SELECT {$element}_id, {$element}_name
-			FROM $sql_from
-			WHERE {$element}_name = '" . $db->sql_escape($chk_name) . "'";
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$name = $row[$element . '_name'];
-			$id = $row[$element . '_id'];
-		}
-		else
-		{
-			if (!($cfg = @file("$root_path$element/$element.cfg")))
-			{
-				$error[] = sprintf($user->lang['REQUIRES_' . $l_element], $reqd_name);
-				return false;
-			}
-
-			$cfg = parse_cfg_file("$root_path$element/$element.cfg", $cfg);
-
-			$name = $cfg['name'];
-			$copyright = $cfg['copyright'];
-			$id = 0;
-
-			unset($cfg);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	/**
-	* Install/Add style
-	*/
-	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row, $template_root_path = false, $template_path = false, $theme_root_path = false, $theme_path = false)
-	{
-		global $config, $db, $user;
-
-		$element_ary = array('template', 'theme');
-
-		if (!$name)
-		{
-			$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
-		}
-
-		// Check length settings
-		if (utf8_strlen($name) > 30)
-		{
-			$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
-		}
-
-		if (utf8_strlen($copyright) > 60)
-		{
-			$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
-		}
-
-		// Check if the name already exist
-		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . "
-			WHERE style_name = '" . $db->sql_escape($name) . "'";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($row)
-		{
-			$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
-		}
-
-		if (sizeof($error))
-		{
-			return false;
-		}
-
-		foreach ($element_ary as $element)
-		{
-			// Zero id value ... need to install element ... run usual checks
-			// and do the install if necessary
-			if (!$style_row[$element . '_id'])
-			{
-				$this->install_element($element, $error, $action, (${$element . '_root_path'}) ? ${$element . '_root_path'} : $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], (${$element . '_path'}) ? ${$element . '_path'} : $path, $style_row[$element . '_copyright']);
-			}
-		}
-
-		if (!$style_row['template_id'] || !$style_row['theme_id'])
-		{
-			$error[] = $user->lang['STYLE_ERR_NO_IDS'];
-		}
-
-		if (sizeof($error))
-		{
-			return false;
-		}
-
-		$db->sql_transaction('begin');
-
-		$sql_ary = array(
-			'style_name'		=> $name,
-			'style_copyright'	=> $copyright,
-			'style_active'		=> (int) $active,
-			'template_id'		=> (int) $style_row['template_id'],
-			'theme_id'			=> (int) $style_row['theme_id'],
-		);
-
-		$sql = 'INSERT INTO ' . STYLES_TABLE . '
-			' . $db->sql_build_array('INSERT', $sql_ary);
-		$db->sql_query($sql);
-
-		$id = $db->sql_nextid();
-
-		if ($default)
-		{
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_style = $id
-				WHERE user_style = " . $config['default_style'];
-			$db->sql_query($sql);
-
-			set_config('default_style', $id);
-		}
-
-		$db->sql_transaction('commit');
-
-		add_log('admin', 'LOG_STYLE_ADD', $name);
-	}
-
-	/**
-	* Install/add an element, doing various checks as we go
-	*/
-	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright)
-	{
-		global $phpbb_root_path, $db, $user;
-
-		// we parse the cfg here (again)
-		$cfg_data = parse_cfg_file("$root_path$mode/$mode.cfg");
-
-		switch ($mode)
-		{
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$l_type = strtoupper($mode);
-
-		if (!$name)
-		{
-			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
-		}
-
-		// Check length settings
-		if (utf8_strlen($name) > 30)
-		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
-		}
-
-		if (utf8_strlen($copyright) > 60)
-		{
-			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
-		}
-
-		// Check if the name already exist
-		$sql = "SELECT {$mode}_id
-			FROM $sql_from
-			WHERE {$mode}_name = '" . $db->sql_escape($name) . "'";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($row)
-		{
-			// If it exist, we just use the style on installation
-			if ($action == 'install')
-			{
-				$id = $row[$mode . '_id'];
-				return false;
-			}
-
-			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
-		}
-
-		if (isset($cfg_data['inherit_from']) && $cfg_data['inherit_from'])
-		{
-			if ($mode === 'template')
-			{
-				$select_bf = ', bbcode_bitfield';
-			}
-			else
-			{
-				$select_bf = '';
-			}
-
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path $select_bf
-				FROM $sql_from
-				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
-					AND {$mode}_inherits_id = 0";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			if (!$row)
-			{
-				$error[] = sprintf($user->lang[$l_type . '_ERR_REQUIRED_OR_INCOMPLETE'], $cfg_data['inherit_from']);
-			}
-			else
-			{
-				$inherit_id = $row["{$mode}_id"];
-				$inherit_path = $row["{$mode}_path"];
-				$inherit_bf = ($mode === 'template') ? $row["bbcode_bitfield"] : false;
-			}
-		}
-		else
-		{
-			$inherit_id = 0;
-			$inherit_path = '';
-			$inherit_bf = false;
-		}
-
-		if (sizeof($error))
-		{
-			return false;
-		}
-
-		$sql_ary = array(
-			$mode . '_name'			=> $name,
-			$mode . '_copyright'	=> $copyright,
-			$mode . '_path'			=> $path,
-		);
-
-		switch ($mode)
-		{
-			case 'template':
-				// We check if the template author defined a different bitfield
-				if (!empty($cfg_data['template_bitfield']))
-				{
-					$sql_ary['bbcode_bitfield'] = $cfg_data['template_bitfield'];
-				}
-				else if ($inherit_bf)
-				{
-					$sql_ary['bbcode_bitfield'] = $inherit_bf;
-				}
-				else
-				{
-					$sql_ary['bbcode_bitfield'] = $this->template_bitfield;
-				}
-
-				if (isset($cfg_data['inherit_from']) && $cfg_data['inherit_from'])
-				{
-					$sql_ary += array(
-						'template_inherits_id'	=> $inherit_id,
-						'template_inherit_path' => $inherit_path,
-					);
-				}
-			break;
-
-			case 'theme':
-			break;
-		}
-
-		$db->sql_transaction('begin');
-
-		$sql = "INSERT INTO $sql_from
-			" . $db->sql_build_array('INSERT', $sql_ary);
-		$db->sql_query($sql);
-
-		$id = $db->sql_nextid();
-
-		$db->sql_transaction('commit');
-
-		add_log('admin', 'LOG_' . $l_type . '_ADD_FS', $name);
-	}
-
-	/**
-	* Checks downwards dependencies
-	*
-	* @access public
-	* @param string $mode The element type to check - only template is supported
-	* @param int $id The template id
-	* @returns false if no component inherits, array with name, path and id for each subtemplate otherwise
-	*/
-	function check_inheritance($mode, $id)
-	{
-		global $db;
-
-		$l_type = strtoupper($mode);
-
-		switch ($mode)
-		{
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
-			FROM $sql_from
-			WHERE {$mode}_inherits_id = " . (int) $id;
-		$result = $db->sql_query($sql);
-
-		$names = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-
-			$names[$row["{$mode}_id"]] = array(
-				"{$mode}_id" => $row["{$mode}_id"],
-				"{$mode}_name" => $row["{$mode}_name"],
-				"{$mode}_path" => $row["{$mode}_path"],
-			);
-		}
-		$db->sql_freeresult($result);
-
-		if (sizeof($names))
-		{
-			return $names;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	* Checks upwards dependencies
-	*
-	* @access public
-	* @param string $mode The element type to check - only template is supported
-	* @param int $id The template id
-	* @returns false if the component does not inherit, array with name, path and id otherwise
-	*/
-	function get_super($mode, $id)
-	{
-		global $db;
-
-		$l_type = strtoupper($mode);
-
-		switch ($mode)
-		{
-			case 'template':
-				$sql_from = STYLES_TEMPLATE_TABLE;
-			break;
-
-			case 'theme':
-				$sql_from = STYLES_THEME_TABLE;
-			break;
-		}
-
-		$sql = "SELECT {$mode}_inherits_id
-			FROM $sql_from
-			WHERE {$mode}_id = " . (int) $id;
-		$result = $db->sql_query_limit($sql, 1);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
-		}
-		else
-		{
-			return false;
-		}
-
-		$super_id = $row["{$mode}_inherits_id"];
-
-		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
-			FROM $sql_from
-			WHERE {$mode}_id = " . (int) $super_id;
-
-		$result = $db->sql_query_limit($sql, 1);
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
-			return $row;
-		}
-
-		return false;
-	}
 }
