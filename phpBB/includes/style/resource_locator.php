@@ -185,9 +185,12 @@ class phpbb_style_resource_locator
 	* handle to a path without any filesystem or styles tree checks.
 	*
 	* @param string $handle Template handle (i.e. "friendly" template name)
+	* @param bool $find_all If true, each root path will be checked and function
+	*				will return array of files instead of string and will not
+	*				trigger a error if template does not exist
 	* @return string Source file path
 	*/
-	public function get_source_file_for_handle($handle)
+	public function get_source_file_for_handle($handle, $find_all = false)
 	{
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files['style'][0][$handle]))
@@ -198,20 +201,91 @@ class phpbb_style_resource_locator
 		// locate a source file that exists
 		$source_file = $this->files['style'][0][$handle];
 		$tried = $source_file;
+		$found = false;
+		$found_all = array();
 		foreach ($this->roots as $root_key => $root_paths)
 		{
 			foreach ($root_paths as $root_index => $root)
 			{
 				$source_file = $this->files[$root_key][$root_index][$handle];
+				$tried .= ', ' . $source_file;
 				if (file_exists($source_file))
 				{
-					return $source_file;
+					$found = true;
+					break;
 				}
-				$tried .= ', ' . $source_file;
+			}
+			if ($found)
+			{
+				if ($find_all)
+				{
+					$found_all[] = $source_file;
+					$found = false;
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 
 		// search failed
-		trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
+		if (!$found && !$find_all)
+		{
+			trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
+		}
+
+		return ($find_all) ? $found_all : $source_file;
+	}
+
+	/**
+	* Locates source file path, accounting for styles tree and verifying that
+	* the path exists.
+	*
+	* Unlike previous functions, this function works without template handle
+	* and it can search for more than one file. If more than one file name is
+	* specified, it will return location of file that it finds first.
+	*
+	* @param array $files List of files to locate.
+	* @param bool $return_default Determines what to return if file does not
+	*				exist. If true, function will return location where file is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to file. If false, function will return file name. This
+	*				parameter can be used to check which one of set of files
+	*				is available.
+	* @return string or boolean Source file path if file exists or $return_default is
+	*				true. False if file does not exist and $return_default is false
+	*/
+	public function get_first_file_location($files, $return_default = false, $return_full_path = true)
+	{
+		// set default value
+		$default_result = false;
+
+		// check all available paths
+		foreach ($this->roots as $root_paths)
+		{
+			foreach ($root_paths as $path)
+			{
+				// check all files
+				foreach ($files as $filename)
+				{
+					$source_file = $path . '/' . $filename;
+					if (file_exists($source_file))
+					{
+						return ($return_full_path) ? $source_file : $filename;
+					}
+
+					// assign first file as result if $return_default is true
+					if ($return_default && $default_result === false)
+					{
+						$default_result = $source_file;
+					}
+				}
+			}
+		}
+
+		// search failed
+		return $default_result;
 	}
 }

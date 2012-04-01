@@ -150,4 +150,32 @@ class phpbb_style
 	{
 		$this->provider->set_ext_dir_prefix($ext_dir_prefix);
 	}
+
+	/**
+	* Locates source file path, accounting for styles tree and verifying that
+	* the path exists.
+	*
+	* @param string or array $files List of files to locate. If there is only
+	*				one file, $files can be a string to make code easier to read.
+	* @param bool $return_default Determines what to return if file does not
+	*				exist. If true, function will return location where file is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to file. If false, function will return file name. This
+	*				parameter can be used to check which one of set of files
+	*				is available.
+	* @return string or boolean Source file path if file exists or $return_default is
+	*				true. False if file does not exist and $return_default is false
+	*/
+	public function locate($files, $return_default = false, $return_full_path = true)
+	{
+		// convert string to array
+		if (is_string($files))
+		{
+			$files = array($files);
+		}
+
+		// use resource locator to find files
+		return $this->locator->get_first_file_location($files, $return_default, $return_full_path);
+	}
 }

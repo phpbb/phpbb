@@ -456,4 +456,40 @@ class phpbb_style_template
 		}
 		include($file);
 	}
+
+	/**
+	* Locates source template path, accounting for styles tree and verifying that
+	* the path exists.
+	*
+	* @param string or array $files List of templates to locate. If there is only
+	*				one template, $files can be a string to make code easier to read.
+	* @param bool $return_default Determines what to return if template does not
+	*				exist. If true, function will return location where template is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to template. If false, function will return template file name.
+	*				This parameter can be used to check which one of set of template
+	*				files is available.
+	* @return string or boolean Source template path if template exists or $return_default is
+	*				true. False if template does not exist and $return_default is false
+	*/
+	public function locate($files, $return_default = false, $return_full_path = true)
+	{
+		// add tempalte path prefix
+		$templates = array();
+		if (is_string($files))
+		{
+			$templates[] = $this->template_path . $files;
+		}
+		else
+		{
+			foreach ($files as $file)
+			{
+				$templates[] = $this->template_path . $file;
+			}
+		}
+
+		// use resource locator to find files
+		return $this->locator->get_first_file_location($templates, $return_default, $return_full_path);
+	}
 }

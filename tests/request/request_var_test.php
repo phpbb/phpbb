@@ -112,7 +112,7 @@ class phpbb_request_var_test extends phpbb_test_case
 		$this->assertEquals($expected, $result, 'Testing deep access to multidimensional input arrays: ' . $path);
 	}
 
-	public static function deep_access()
+	public function deep_access()
 	{
 		return array(
 			// array(path, default, expected result)
@@ -123,7 +123,7 @@ class phpbb_request_var_test extends phpbb_test_case
 		);
 	}
 
-	public static function request_variables()
+	public function request_variables()
 	{
 		return array(
 			// strings

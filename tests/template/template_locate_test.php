@@ -9,38 +9,46 @@
 
 require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_inheritance_test extends phpbb_template_template_test_case
+class phpbb_template_template_locate_test extends phpbb_template_template_test_case
 {
-	/**
-	 * @todo put test data into templates/xyz.test
-	 */
 	public function template_data()
 	{
 		return array(
 			// First element of the array is test name - keep them distinct
 			array(
 				'simple inheritance - only parent template exists',
+				dirname(__FILE__) . '/parent_templates/parent_only.html',
 				'parent_only.html',
-				array(),
-				array(),
-				array(),
-				"Only in parent.",
+				false,
+				true,
 			),
 			array(
 				'simple inheritance - only child template exists',
+				dirname(__FILE__) . '/templates/child_only.html',
 				'child_only.html',
-				array(),
-				array(),
-				array(),
-				"Only in child.",
+				false,
+				true,
 			),
 			array(
 				'simple inheritance - both parent and child templates exist',
+				dirname(__FILE__) . '/templates/parent_and_child.html',
 				'parent_and_child.html',
-				array(),
-				array(),
-				array(),
-				"Child template.",
+				false,
+				true,
+			),
+			array(
+				'find first template - only child template exists in main style',
+				'child_only.html',
+				array('parent_only.html', 'child_only.html'),
+				false,
+				false,
+			),
+			array(
+				'find first template - both templates exist in main style',
+				'parent_and_child.html',
+				array('parent_and_child.html', 'child_only.html'),
+				false,
+				false,
 			),
 		);
 	}
@@ -48,18 +56,14 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template($name, $file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_template($name, $expected, $files, $return_default, $return_full_path)
 	{
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
-
-		$this->assertFileNotExists($cache_file);
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
-
 		// Reset the engine state
 		$this->setup_engine();
 
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		// Locate template
+		$result = $this->template->locate($files, $return_default, $return_full_path);
+		$this->assertSame($expected, $result);
 	}
 
 	protected function setup_engine(array $new_config = array())
