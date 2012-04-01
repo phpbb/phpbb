@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 
 class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 {
-	public static function make_clickable_data()
+	public function make_clickable_data()
 	{
 		// value => whether it should work
 		$prefix_texts = array(
