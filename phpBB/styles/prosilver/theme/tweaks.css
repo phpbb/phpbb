@@ -29,3 +29,8 @@ dl.details dd {
 #site-description p {
 	*margin-bottom: 1.0em;
 }
+
+/* Clear float fix for IE7 */
+.inner {
+	zoom: 1;
+}
