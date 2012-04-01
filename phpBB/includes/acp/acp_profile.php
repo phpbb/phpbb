@@ -27,7 +27,7 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $request;
 
@@ -875,6 +875,11 @@ class acp_profile
 								);
 							}
 						}
+
+					$vars = array('field_row', 'visibility_ary', 'exclude');
+					$event = new phpbb_event_data(compact($vars));
+					$phpbb_dispatcher->dispatch('core.acp_profile_edit', $event);
+					extract($event->get_data_filtered($vars));
 
 					break;
 				}

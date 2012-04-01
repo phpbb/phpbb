@@ -112,7 +112,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -136,6 +136,9 @@ function user_update_name($old_name, $new_name)
 	{
 		set_config('newest_username', $new_name, true);
 	}
+
+	$vars = array('old_name', 'new_name');
+	extract($phpbb_dispatcher->trigger_event('core.user_update_name', compact($vars), $vars));
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
@@ -332,7 +335,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
@@ -585,6 +588,9 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	$db->sql_transaction('commit');
+
+	$vars = array('mode', 'user_id', 'post_username');
+	extract($phpbb_dispatcher->trigger_event('core.user_delete', compact($vars), $vars));
 
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
@@ -2760,7 +2766,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	if (!$group_name)
 	{
@@ -2808,6 +2814,9 @@ function group_delete($group_id, $group_name = false)
 	$teampage = new phpbb_group_positions($db, 'teampage');
 	$teampage->delete_group($group_id);
 	unset($teampage);
+
+	$vars = array('group_id', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.group_delete', compact($vars), $vars));
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
@@ -2941,7 +2950,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config;
+	global $db, $auth, $config, $phpbb_dispatcher;
 
 	if ($config['coppa_enable'])
 	{
@@ -3039,6 +3048,9 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 	}
 	unset($special_group_data);
+
+	$vars = array('group_id', 'user_id_ary', 'username_ary', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.group_user_del', compact($vars), $vars));
 
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
@@ -3357,7 +3369,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db;
+	global $cache, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3452,6 +3464,9 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
 	}
+
+	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.group_set_user_default', compact($vars), $vars));
 
 	if ($update_listing)
 	{

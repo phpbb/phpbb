@@ -107,6 +107,9 @@ class acp_forums
 						'forum_id'		=>	$forum_id
 					);
 
+					$vars = array('forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_add_forum_data', compact($vars), $vars));
+
 				// No break here
 
 				case 'add':

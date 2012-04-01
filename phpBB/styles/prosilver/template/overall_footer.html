@@ -6,7 +6,8 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<ul class="linklist">
-			<li class="icon-home"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a></li>
+			<li class="icon-home"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a>
+				<!-- EVENT overall_footer_index_link --></li>
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_WATCH_FORUM_LINK --><li <!-- IF S_WATCHING_FORUM -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{S_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="alt_text" data-alt-text="<!-- IF S_WATCHING_FORUM -->{L_START_WATCHING_FORUM}<!-- ELSE -->{L_STOP_WATCHING_FORUM}<!-- ENDIF -->">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
 					<!-- IF U_WATCH_TOPIC --><li <!-- IF S_WATCHING_TOPIC -->class="icon-unsubscribe"<!-- ELSE -->class="icon-subscribe"<!-- ENDIF -->><a href="{U_WATCH_TOPIC}" title="{L_WATCH_TOPIC}" data-ajax="alt_text" data-alt-text="<!-- IF S_WATCHING_TOPIC -->{L_START_WATCHING_TOPIC}<!-- ELSE -->{L_STOP_WATCHING_TOPIC}<!-- ENDIF -->">{L_WATCH_TOPIC}</a></li><!-- ENDIF -->
@@ -19,7 +20,8 @@
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
 
-	<div class="copyright">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+	<div class="copyright"><!-- EVENT overall_footer_copyright -->
+		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 		<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
 		<!-- IF DEBUG_OUTPUT --><br />{DEBUG_OUTPUT}<!-- ENDIF -->
 		<!-- IF U_ACP --><br /><strong><a href="{U_ACP}">{L_ACP}</a></strong><!-- ENDIF -->
@@ -55,5 +57,6 @@
 <!-- INCLUDEJS template/ajax.js -->
 {SCRIPTS}
 
+<!-- EVENT overall_footer_end -->
 </body>
 </html>

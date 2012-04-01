@@ -97,6 +97,7 @@ class phpbb_style_template
 		$this->locator = $locator;
 		$this->template_path = $this->locator->template_path;
 		$this->provider = $provider;
+		$this->extension_manager = $extension_manager;
 	}
 
 	/**

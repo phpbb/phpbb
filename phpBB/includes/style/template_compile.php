@@ -35,7 +35,7 @@ class phpbb_style_template_compile
 	/**
 	* Whether <!-- PHP --> tags are allowed
 	*
-	* @var bool
+	* @var array
 	*/
 	private $allow_php;
 
@@ -144,6 +144,7 @@ class phpbb_style_template_compile
 		$params['allow_php'] = $this->allow_php;
 		$params['locator'] = $this->locator;
 		$params['phpbb_root_path'] = $this->phpbb_root_path;
+		$params['template_compile'] = $this;
 		stream_filter_append($source_stream, 'phpbb_template', null, $params);
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
