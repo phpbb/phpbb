@@ -298,22 +298,6 @@ a#logo:hover {
 	margin: 5px 5px 2px 5px;
 }
 
-.headbg span.corners-bottom {
-	margin-bottom: -1px;
-}
-
-.post span.corners-top, .post span.corners-bottom, .panel span.corners-top, .panel span.corners-bottom, .navbar span.corners-top, .navbar span.corners-bottom {
-	margin: 0 -10px;
-}
-
-.rules span.corners-top {
-	margin: 0 -10px 5px -10px;
-}
-
-.rules span.corners-bottom {
-	margin: 5px -10px 0 -10px;
-}
-
 /* Horizontal lists
 ----------------------------------------*/
 ul.linklist {
@@ -435,14 +419,6 @@ table.info tbody th {
 
 .forumbg-table > .inner {
 	margin: 0 -1px;
-}
-
-.forumbg-table > .inner > span.corners-top {
-	margin: 0 -4px -1px -4px;
-}
-
-.forumbg-table > .inner > span.corners-bottom {
-	margin: -1px -4px 0 -4px;
 }
 
 /* Misc layout styles
