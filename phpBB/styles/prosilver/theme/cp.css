@@ -104,6 +104,22 @@ ul.cplist {
 	width: 100%;
 }
 
+.tabs-container h2 {
+	float: left;
+	margin-bottom: 0px;
+}
+
+.tabs-container #minitabs {
+	float: right;
+	margin-top: 19px;
+}
+
+.tabs-container:after {
+	display: block;
+	clear: both;
+	content: '';
+}
+
 /* CP tabbed menu
 ----------------------------------------*/
 #tabs {
