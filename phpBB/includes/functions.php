@@ -4526,6 +4526,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	define('HEADER_INC', true);
 
+	// A listener can set this variable to `true` when it overrides this function
+	$page_header_override = false;
+
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.page_header_override', compact($vars)));
+	if ($page_header_override)
+	{
+		return;
+	}
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
