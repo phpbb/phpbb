@@ -4770,7 +4770,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
 		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> ($user->theme['style_parent_id']) ? "{$web_path}styles/" . rawurlencode($user->theme['style_parent_tree']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
