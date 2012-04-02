@@ -28,14 +28,14 @@ class acp_styles
 	var $styles_path_absolute = 'styles';
 	var $default_style = 0;
 
-	private $db = false;
-	private $user = false;
-	private $template = false;
-	private $request = false;
-	private $cache = false;
-	private $auth = false;
-	private $phpbb_root_path = false;
-	private $phpEx = false;
+	protected $db;
+	protected $user;
+	protected $template;
+	protected $request;
+	protected $cache;
+	protected $auth;
+	protected $phpbb_root_path;
+	protected $phpEx;
 
 	function main($id, $mode)
 	{
