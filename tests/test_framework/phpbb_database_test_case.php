@@ -32,7 +32,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		$db_config = $this->get_database_config();
 
-		//Firebird requires table and column names to be uppercase
+		// Firebird requires table and column names to be uppercase
 		if ($db_config['dbms'] == 'firebird')
 		{
 			$xml_data = file_get_contents($path);
@@ -129,6 +129,14 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return new phpbb_database_test_connection_manager($config);
 	}
 
+	/**
+	* Converts a match in the middle of a string to uppercase.
+	* This is necessary for tranforming the fixture information for Firebird tests
+	*
+	* @param $matches The array of matches from a regular expression
+	*
+	* @return string The string with the specified match converted to uppercase
+	*/
 	public static function to_upper($matches)
 	{
 		return $matches[1] . strtoupper($matches[2]) . $matches[3];
