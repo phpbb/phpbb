@@ -25,3 +25,13 @@ dl.details dd {
 #site-description p {
 	*margin-bottom: 1.0em;
 }
+
+/* #minitabs fix for IE */
+.tabs-container {
+	zoom: 1;
+}
+
+#minitabs {
+	white-space: nowrap;
+	*min-width: 50%;
+}
