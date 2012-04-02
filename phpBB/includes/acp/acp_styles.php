@@ -567,7 +567,7 @@ class acp_styles
 		$this->template->assign_var('STYLES_LIST_COLS', $this->styles_list_cols);
 
 		// Show styles list
-		$this->show_styles_list(&$styles, 0, 0);
+		$this->show_styles_list($styles, 0, 0);
 		
 		// Show styles with invalid inherits_id
 		foreach ($styles as $style)
@@ -643,8 +643,8 @@ class acp_styles
 			}
 			if (!$has_parent)
 			{
-				$this->list_style(&$style, 0);
-				$this->show_available_child_styles(&$styles, $style['style_name'], 1);
+				$this->list_style($style, 0);
+				$this->show_available_child_styles($styles, $style['style_name'], 1);
 			}
 		}
 		
@@ -763,14 +763,14 @@ class acp_styles
 	* @param int $parent parent style id
 	* @param int $level style inheritance level
 	*/
-	function show_styles_list($styles, $parent, $level)
+	function show_styles_list(&$styles, $parent, $level)
 	{
 		foreach ($styles as &$style)
 		{
 			if (empty($style['_shown']) && $style['style_parent_id'] == $parent)
 			{
-				$this->list_style(&$style, $level);
-				$this->show_styles_list(&$styles, $style['style_id'], $level + 1);
+				$this->list_style($style, $level);
+				$this->show_styles_list($styles, $style['style_id'], $level + 1);
 			}
 		}
 	}
@@ -782,14 +782,14 @@ class acp_styles
 	* @param string $name Name of parent style
 	* @param string $level Styles tree level
 	*/
-	function show_available_child_styles($styles, $name, $level)
+	function show_available_child_styles(&$styles, $name, $level)
 	{
 		foreach ($styles as &$style)
 		{
 			if (empty($style['_shown']) && $style['_inherit_name'] == $name)
 			{
-				$this->list_style(&$style, $level);
-				$this->show_available_child_styles(&$styles, $style['style_name'], $level + 1);
+				$this->list_style($style, $level);
+				$this->show_available_child_styles($styles, $style['style_name'], $level + 1);
 			}
 		}
 	}
@@ -801,7 +801,7 @@ class acp_styles
 	* @param array $style Current style, false if root
 	* @returns true if something was updated, false if not
 	*/
-	function update_styles_tree($styles, $style = false)
+	function update_styles_tree(&$styles, $style = false)
 	{
 		$parent_id = ($style === false) ? 0 : $style['style_id'];
 		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
@@ -816,7 +816,7 @@ class acp_styles
 					$row['style_parent_tree'] = $parent_tree;
 					$update = true;
 				}
-				$updated |= $this->update_styles_tree(&$styles, $row);
+				$updated |= $this->update_styles_tree($styles, $row);
 			}
 		}
 		if ($update)
@@ -866,7 +866,7 @@ class acp_styles
 	* @param array $style style row
 	* @param array $level style inheritance level
 	*/
-	function list_style($style, $level)
+	function list_style(&$style, $level)
 	{
 		// Mark row as shown
 		if (!empty($style['_shown'])) return;
