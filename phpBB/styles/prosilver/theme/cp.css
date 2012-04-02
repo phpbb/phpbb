@@ -179,7 +179,9 @@ ul.cplist {
 #minitabs li {
 	display: block;
 	float: right;
-	padding: 0 10px 4px 10px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	padding: 5px 10px 4px 10px;
 	font-size: 1em;
 	font-weight: bold;
 	margin-left: 2px;
