@@ -188,9 +188,6 @@ class phpbb_user extends phpbb_session
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
 
-		// We are only interested in the theme configuration for now
-		$parsed_items = $parsed_items['theme'];
-
 		$check_for = array(
 			'pagination_sep'    => (string) ', '
 		);
