@@ -35,6 +35,10 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'ACCOUNT_DELETE_NO_APPROVAL'		=> 'Users do not need approval to delete their accounts. To require approval, change the <strong>Deletion approval</strong> setting in Board Features.',
+	'ACCOUNT_DELETE_REQUEST_APPROVED'	=> 'The account deletion request(s) have been approved. An email has been sent to the user(s) affected.',
+	'ACCOUNT_DELETE_REQUEST_DENIED'		=> 'The account deletion request(s) have been denied. A PM has been sent to the user(s) to notify them.',
+
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
 	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status, promote another user to be a founder first.',
 
@@ -88,6 +92,7 @@ $lang = array_merge($lang, array(
 
 	'SELECT_FORM'			=> 'Select form',
 	'SELECT_USER'			=> 'Select user',
+	'SOFT_DELETE'			=> 'Soft delete',
 
 	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
@@ -117,6 +122,7 @@ $lang = array_merge($lang, array(
 	'USER_AVATAR_TYPE_NOT_ALLOWED'	=> 'The current avatar cannot be displayed because its type has been disallowed.',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 	'USER_DELETED'					=> 'User deleted successfully.',
+	'USER_SOFT_DELETED'				=> 'User soft deleted successfully. Note that the user may reactivate his or her account by logging back in.',
 	'USER_GROUP_ADD'				=> 'Add user to group',
 	'USER_GROUP_NORMAL'				=> 'User defined groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',

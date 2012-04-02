@@ -89,6 +89,8 @@ class acp_board
 						'allow_birthdays'		=> array('lang' => 'ALLOW_BIRTHDAYS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'display_last_subject'	=> array('lang' => 'DISPLAY_LAST_SUBJECT',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_quick_reply'		=> array('lang' => 'ALLOW_QUICK_REPLY',		'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_reply', 'explain' => true),
+						'account_delete_method'	=> array('lang' => 'ACP_ACCOUNT_DELETE_METHOD',	'validate' => 'bool',	'type' => 'custom', 'method' => 'account_delete_method', 'explain' => true),
+						'account_delete_approval' => array('lang' => 'ACP_ACCOUNT_DELETE_APPROVAL', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'ACP_LOAD_SETTINGS',
 						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -907,6 +909,24 @@ class acp_board
 		$timezone_select['tz_select'];
 
 		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select['tz_select'] . '</select>';
+	}
+
+	/**
+	* Select type of account deletion allowed
+	*/
+	function account_delete_method($value, $key)
+	{
+		global $user;
+
+		// The constants stand for 0, 1, 2, and 3, respectively
+		$radio_ary = array(
+			SELF_ACCOUNT_DELETE_NONE		=> 'ACP_ACCOUNT_DELETE_NONE',
+			SELF_ACCOUNT_DELETE_SOFT		=> 'ACP_ACCOUNT_DELETE_SOFT',
+			SELF_ACCOUNT_DELETE_PROFILE		=> 'ACP_ACCOUNT_DELETE_PROFILE',
+			SELF_ACCOUNT_DELETE_HARD		=> 'ACP_ACCOUNT_DELETE_HARD',
+		);
+
+		return h_radio("config[$key]", $radio_ary, $value);
 	}
 
 	/**
