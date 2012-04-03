@@ -29,7 +29,7 @@ if (!defined('IN_PHPBB'))
 * Base Template class.
 * @package phpBB3
 */
-class phpbb_style_template
+class phpbb_template
 {
 	/**
 	* @var phpbb_template_context Template context.
