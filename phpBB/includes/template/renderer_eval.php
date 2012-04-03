@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_template_renderer_eval implements phpbb_style_template_renderer
+class phpbb_template_renderer_eval implements phpbb_template_renderer
 {
 	/**
 	* Template code to be eval'ed.
@@ -45,7 +45,7 @@ class phpbb_style_template_renderer_eval implements phpbb_style_template_rendere
 	* Displays the template managed by this renderer by eval'ing php code
 	* of the template.
 	*
-	* @param phpbb_style_template_context $context Template context to use
+	* @param phpbb_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/
 	public function render($context, $lang)

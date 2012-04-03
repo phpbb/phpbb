@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_template_context
+class phpbb_template_context
 {
 	/**
 	* variable that holds all the data we'll be substituting into
