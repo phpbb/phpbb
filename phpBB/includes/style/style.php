@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_style
 {
 	/**
-	* @var phpbb_style_template Template class.
+	* @var phpbb_template Template class.
 	* Handles everything related to templates.
 	*/
 	private $template;
@@ -66,9 +66,9 @@ class phpbb_style
 	* @param user $user current user
 	* @param phpbb_style_resource_locator $locator style resource locator
 	* @param phpbb_style_path_provider $provider style path provider
-	* @param phpbb_style_template $template template
+	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_style_template $template)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;

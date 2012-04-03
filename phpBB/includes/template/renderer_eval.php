@@ -33,7 +33,7 @@ class phpbb_template_renderer_eval implements phpbb_template_renderer
 	* Template includes are delegated to template object $template.
 	*
 	* @param string $code php code of the template
-	* @param phpbb_style_template $template template object
+	* @param phpbb_template $template template object
 	*/
 	public function __construct($code, $template)
 	{
