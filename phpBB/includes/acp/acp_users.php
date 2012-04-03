@@ -116,7 +116,7 @@ class acp_users
 				}
 				else if (isset($_POST['deny']))
 				{
-					$sql_ary(
+					$sql_ary = array(
 						'user_delete_pending'			=> 0,
 						'user_delete_pending_time'		=> 0,
 						'user_delete_pending_type'		=> 0,
