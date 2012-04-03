@@ -1252,10 +1252,10 @@ function phpbb_style_is_active($style_id)
 		WHERE style_id = ". (int) $style_id;
 	$result = $db->sql_query($sql);
 
-	$style_verified = (bool) $db->sql_fetchfield('style_active');;
+	$style_is_active = (bool) $db->sql_fetchfield('style_active');
 	$db->sql_freeresult($result);
 
-	return $style_verified;
+	return $style_is_active;
 }
 
 /**
