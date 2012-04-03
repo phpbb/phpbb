@@ -1239,6 +1239,24 @@ function style_select($default = '', $all = false)
 }
 
 /**
+* Check if style is activated
+*/
+function style_verify($style_id = 0)
+{
+	global $db;
+
+	$sql = 'SELECT style_id, style_active
+		FROM ' . STYLES_TABLE . "
+		WHERE style_id = $style_id";
+	$result = $db->sql_query($sql);
+
+	$style_verified = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	return $style_verified['style_active'];
+}
+
+/**
 * Pick a timezone
 */
 function tz_select($default = '', $truncate = false)
