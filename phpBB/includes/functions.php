@@ -1239,21 +1239,23 @@ function style_select($default = '', $all = false)
 }
 
 /**
-* Check if style is activated
+* @author Hari Sankar R <hsr@theinglorio.us>
+* @param int $style_id The style_id of a style which should be checked if activated or not.
+* @return boolean
 */
-function style_verify($style_id = 0)
+function phpbb_style_is_active($style_id)
 {
 	global $db;
 
-	$sql = 'SELECT style_id, style_active
+	$sql = 'SELECT style_active
 		FROM ' . STYLES_TABLE . "
-		WHERE style_id = $style_id";
+		WHERE style_id = ". (int) $style_id;
 	$result = $db->sql_query($sql);
 
 	$style_verified = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	return $style_verified['style_active'];
+	return (bool) $style_verified['style_active'];
 }
 
 /**
