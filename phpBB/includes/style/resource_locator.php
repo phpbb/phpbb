@@ -30,7 +30,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_style_resource_locator
+class phpbb_style_resource_locator implements phpbb_template_locator
 {
 	/**
 	* Paths to style directories.
