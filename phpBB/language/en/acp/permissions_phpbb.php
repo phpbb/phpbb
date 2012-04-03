@@ -177,6 +177,7 @@ $lang = array_merge($lang, array(
 	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
+	'acl_m_revisions'	=> array('lang' => 'Can view post revisions', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),
