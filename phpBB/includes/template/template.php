@@ -32,33 +32,39 @@ if (!defined('IN_PHPBB'))
 class phpbb_template
 {
 	/**
-	* @var phpbb_template_context Template context.
+	* Template context.
 	* Stores template data used during template rendering.
+	* @var phpbb_template_context
 	*/
 	public $context;
 
 	/**
-	* @var string Path of the cache directory for the template
+	* Path of the cache directory for the template
+	* @var string
 	*/
 	public $cachepath = '';
 
 	/**
-	* @var string phpBB root path
+	* phpBB root path
+	* @var string
 	*/
 	private $phpbb_root_path;
 
 	/**
-	* @var phpEx PHP file extension
+	* PHP file extension
+	* @var string
 	*/
 	private $phpEx;
 
 	/**
-	* @var phpbb_config phpBB config instance
+	* phpBB config instance
+	* @var phpbb_config
 	*/
 	private $config;
 
 	/**
-	* @var user current user
+	* Current user
+	* @var phpbb_user
 	*/
 	private $user;
 
