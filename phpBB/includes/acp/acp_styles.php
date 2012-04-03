@@ -28,6 +28,7 @@ class acp_styles
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
+	protected $reserved_paths = array('all', 'admin');
 
 	protected $db;
 	protected $user;
@@ -755,6 +756,13 @@ class acp_styles
 					$style['_available'] = false;
 					$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($parent));
 				}
+			}
+
+			// Check for reserved paths
+			if (in_array($dir, $this->reserved_paths))
+			{
+				$style['_available'] = false;
+				$style['_note'] = sprintf($user->lang['RESERVED_STYLE_DIR'], htmlspecialchars($dir));
 			}
 
 			if ($all || $style['_available'])
