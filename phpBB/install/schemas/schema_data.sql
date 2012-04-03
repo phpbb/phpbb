@@ -259,6 +259,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_membershi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('track_post_revisions', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
