@@ -1401,6 +1401,28 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_post_revisions'] = array(
+		'COLUMNS'		=> array(
+			'revision_id'			=> array('UINT', NULL, 'auto_increment'),
+			'post_id'				=> array('UINT', 0),
+			'user_id'				=> array('UINT', 0),
+			'revision_time'			=> array('TIMESTAMP', 0),
+			'revision_subject'		=> array('STEXT_UNI', '', 'true_sort'),
+			'revision_text'			=> array('MTEXT_UNI', ''),
+			'revision_checksum'		=> array('VCHAR:32', ''),
+			'revision_attachment'	=> array('BOOL', 0),
+			'bbcode_bitfield'		=> array('VCHAR:255', ''),
+			'bbcode_uid'			=> array('VCHAR:8', ''),
+			'revision_reason'		=> array('STEXT_UNI', ''),
+		),
+		'PRIMARY_KEY'	=> 'revision_id',
+		'KEYS'			=> array(
+			'post_id'				=> array('INDEX', 'post_id'),
+			'user_id'				=> array('INDEX', 'user_id'),
+			'revision_time'			=> array('INDEX', 'revision_time'),
+		),
+	);
+
 	$schema_data['phpbb_privmsgs'] = array(
 		'COLUMNS'		=> array(
 			'msg_id'				=> array('UINT', NULL, 'auto_increment'),
