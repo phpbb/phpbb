@@ -83,27 +83,36 @@ fi
 
 
 # Compile a list of changed files
-FILES=`git diff --name-only HEAD^`
+files=`git diff --name-only HEAD^`
+error=0
 
-egrep -q '([[:space:]]$|^ +	)' $FILES
+egrep -q '[[:space:]]$' $files
 if [ $? -eq 0 ]
 then
-	printf "\n\e[1mWhitespace issues (trailing whitespace or space before tab) detected:\e[0m\n\n"
-	egrep -n -H '([[:space:]]$|^ +	)' $FILES
-	ERRORS="1"
+	printf "\n\e[1mTrailing whitespace detected:\e[0m\n\n"
+	egrep -n -H '[[:space:]]$' $files
+	error=1
 fi
 
-for FILE in $FILES
+egrep -q '^ +	' $files
+if [ $? -eq 0 ]
+then
+	printf "\n\e[1mSpace before tab detected:\e[0m\n\n"
+	egrep -n -H '^ +	' $files
+	error=1
+fi
+
+for file in $files
 do
-	if ! tail -c1 $FILE | read _
+	if ! tail -c1 $file | read _
 	then
-		printf "No newline at end of $FILE\n"
-		ERRORS="1"
+		printf "No newline at end of $file\n"
+		error=1
 	fi
 done
 
 # Abort commit if any errors
-if [ "$ERRORS" != '' ]
+if [ "$error" != '0' ]
 then
 	exit 1
 fi
