@@ -20,13 +20,14 @@ if (!defined('IN_PHPBB'))
 */
 class acp_styles
 {
-	var $u_action;
-	var $u_base_action;
-	var $s_hidden_fields;
-	var $mode;
-	var $styles_path;
-	var $styles_path_absolute = 'styles';
-	var $default_style = 0;
+	public $u_action;
+	
+	protected $u_base_action;
+	protected $s_hidden_fields;
+	protected $mode;
+	protected $styles_path;
+	protected $styles_path_absolute = 'styles';
+	protected $default_style = 0;
 
 	protected $db;
 	protected $user;
@@ -37,7 +38,7 @@ class acp_styles
 	protected $phpbb_root_path;
 	protected $phpEx;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
 		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config;
 
@@ -111,7 +112,7 @@ class acp_styles
 	/**
 	* Main page
 	*/
-	function frontend()
+	protected function frontend()
 	{
 		// Check mode
 		switch ($this->mode)
@@ -134,7 +135,7 @@ class acp_styles
 	/**
 	* Purge cache
 	*/
-	function action_cache()
+	protected function action_cache()
 	{
 		$this->cache->purge();
 
@@ -150,7 +151,7 @@ class acp_styles
 	/**
 	* Install style(s)
 	*/
-	function action_install()
+	protected function action_install()
 	{
 		// Get list of styles to install
 		$dirs = $this->request_vars('dir', '', true);
@@ -205,7 +206,7 @@ class acp_styles
 	/**
 	* Confirm styles removal
 	*/
-	function action_uninstall()
+	protected function action_uninstall()
 	{
 		// Get list of styles to uninstall
 		$ids = $this->request_vars('id', 0, true);
@@ -236,7 +237,7 @@ class acp_styles
 	* @param array $ids List of style IDs
 	* @param bool $delete_files If true, script will attempt to remove files for selected styles
 	*/
-	function action_uninstall_confirmed($ids, $delete_files)
+	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
 		$default = $this->default_style;
 		$uninstalled = array();
@@ -310,7 +311,7 @@ class acp_styles
 	/**
 	* Activate styles
 	*/
-	function action_activate()
+	protected function action_activate()
 	{
 		// Get list of styles to activate
 		$ids = $this->request_vars('id', 0, true);
@@ -331,7 +332,7 @@ class acp_styles
 	/**
 	* Deactivate styles
 	*/
-	function action_deactivate()
+	protected function action_deactivate()
 	{
 		// Get list of styles to deactivate
 		$ids = $this->request_vars('id', 0, true);
@@ -367,7 +368,7 @@ class acp_styles
 	/**
 	* Show style details
 	*/
-	function action_details()
+	protected function action_details()
 	{
 		$id = $this->request->variable('id', 0);
 		if (!$id)
@@ -398,9 +399,18 @@ class acp_styles
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
 
+		// Add form key
+		$form_key = 'acp_styles';
+		add_form_key($form_key);
+
 		// Change data
 		if ($this->request->variable('update', false))
 		{
+			if (!check_form_key($form_key))
+			{
+				trigger_error($this->user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			$update = array(
 				'style_name'		=> trim($this->request->variable('style_name', $style['style_name'])),
 				'style_parent_id'	=> $this->request->variable('style_parent', (int) $style['style_parent_id']),
@@ -540,7 +550,7 @@ class acp_styles
 	/**
 	* List installed styles
 	*/
-	function show_installed()
+	protected function show_installed()
 	{
 		// Get all installed styles
 		$styles = $this->get_styles();
@@ -605,7 +615,7 @@ class acp_styles
 	/**
 	* Show list of styles that can be installed
 	*/
-	function show_available()
+	protected function show_available()
 	{
 		// Get list of styles
 		$styles = $this->find_available(true);
@@ -674,7 +684,7 @@ class acp_styles
 	* @param bool $all if true, function will return all installable styles. if false, function will return only styles that can be installed
 	* @return array List of styles
 	*/
-	function find_available($all)
+	protected function find_available($all)
 	{
 		// Get list of installed styles
 		$installed = $this->get_styles();
@@ -763,7 +773,7 @@ class acp_styles
 	* @param int $parent parent style id
 	* @param int $level style inheritance level
 	*/
-	function show_styles_list(&$styles, $parent, $level)
+	protected function show_styles_list(&$styles, $parent, $level)
 	{
 		foreach ($styles as &$style)
 		{
@@ -782,7 +792,7 @@ class acp_styles
 	* @param string $name Name of parent style
 	* @param string $level Styles tree level
 	*/
-	function show_available_child_styles(&$styles, $name, $level)
+	protected function show_available_child_styles(&$styles, $name, $level)
 	{
 		foreach ($styles as &$style)
 		{
@@ -801,7 +811,7 @@ class acp_styles
 	* @param array $style Current style, false if root
 	* @return bool True if something was updated, false if not
 	*/
-	function update_styles_tree(&$styles, $style = false)
+	protected function update_styles_tree(&$styles, $style = false)
 	{
 		$parent_id = ($style === false) ? 0 : $style['style_id'];
 		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
@@ -839,7 +849,7 @@ class acp_styles
 	* @param int $level current tree level
 	* @return array Style ids, names and levels
 	*/
-	function find_possible_parents($styles, $id = -1, $parent = 0, $level = 0)
+	protected function find_possible_parents($styles, $id = -1, $parent = 0, $level = 0)
 	{
 		$results = array();
 		foreach ($styles as $style)
@@ -866,7 +876,7 @@ class acp_styles
 	* @param array $style style row
 	* @param array $level style inheritance level
 	*/
-	function list_style(&$style, $level)
+	protected function list_style(&$style, $level)
 	{
 		// Mark row as shown
 		if (!empty($style['_shown'])) return;
@@ -982,11 +992,11 @@ class acp_styles
 	* @param string $title main title
 	* @param string $description page description
 	*/
-	function welcome_message($title, $description)
+	protected function welcome_message($title, $description)
 	{
 		$this->template->assign_vars(array(
-			'L_TITLE'	=> (isset($this->user->lang[$title])) ? $this->user->lang[$title] : $title,
-			'L_EXPLAIN'	=> (isset($this->user->lang[$description])) ? $this->user->lang[$description] : $description
+			'L_TITLE'	=> $this->user->lang[$title],
+			'L_EXPLAIN'	=> (isset($this->user->lang[$description])) ? $this->user->lang[$description] : ''
 			)
 		);
 	}
@@ -996,7 +1006,7 @@ class acp_styles
 	*
 	* @return array Directory names
 	*/
-	function find_style_dirs()
+	protected function find_style_dirs()
 	{
 		$styles = array();
 
@@ -1025,7 +1035,7 @@ class acp_styles
 	/**
 	* Sort styles
 	*/
-	function sort_styles($style1, $style2)
+	public function sort_styles($style1, $style2)
 	{
 		if ($style1['style_active'] != $style2['style_active'])
 		{
@@ -1044,7 +1054,7 @@ class acp_styles
 	* @param string $dir style directory
 	* @return array|bool Style data, false on error
 	*/
-	function read_style_cfg($dir)
+	protected function read_style_cfg($dir)
 	{
 		static $required = array('name', 'version', 'copyright');
 		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
@@ -1077,7 +1087,7 @@ class acp_styles
 	* @param $style style data
 	* @return int Style id
 	*/
-	function install_style($style)
+	protected function install_style($style)
 	{
 		// Generate row
 		$sql_ary = array();
@@ -1110,7 +1120,7 @@ class acp_styles
 	*
 	* @return array Rows with styles data
 	*/
-	function get_styles()
+	protected function get_styles()
 	{
 		$sql = 'SELECT *
 			FROM ' . STYLES_TABLE;
@@ -1127,7 +1137,7 @@ class acp_styles
 	*
 	* @return array Styles in following format: [style_id] = number of users
 	*/
-	function get_users()
+	protected function get_users()
 	{
 		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
 			FROM ' . USERS_TABLE . '
@@ -1150,7 +1160,7 @@ class acp_styles
 	* @param array $style Style data
 	* @return bool|string True on success, error message on error
 	*/
-	function uninstall_style($style)
+	protected function uninstall_style($style)
 	{
 		$id = $style['style_id'];
 		$path = $style['style_path'];
@@ -1189,7 +1199,7 @@ class acp_styles
 	* @param string $dir Directory to remove inside style's directory
 	* @return bool True on success, false on error
 	*/
-	function delete_style_files($path, $dir = '')
+	protected function delete_style_files($path, $dir = '')
 	{
 		$dirname = $this->styles_path . $path . $dir;
 		$result = true;
@@ -1234,11 +1244,11 @@ class acp_styles
 	* Get list of items from posted data
 	*
 	* @param string $name Variable name
-	* @param $default Default value for array: string or number
+	* @param string|int $default Default value for array
 	* @param bool $error If true, error will be triggered if list is empty
 	* @return array Items
 	*/
-	function request_vars($name, $default, $error = false)
+	protected function request_vars($name, $default, $error = false)
 	{
 		$item = $this->request->variable($name, $default);
 		$items = $this->request->variable($name . 's', array($default));
@@ -1262,11 +1272,13 @@ class acp_styles
 	}
 
 	/**
-	* Generates hardcoded bitfield
+	* Generates default bitfield
+	*
+	* This bitfield decides which bbcodes are defined in a template.
 	*
 	* @return string Bitfield
 	*/
-	function default_bitfield()
+	protected function default_bitfield()
 	{
 		static $value;
 		if (isset($value))
