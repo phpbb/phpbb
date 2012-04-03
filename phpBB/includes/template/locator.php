@@ -36,18 +36,6 @@ if (!defined('IN_PHPBB'))
 interface phpbb_template_locator
 {
 	/**
-	* Sets the list of style paths
-	*
-	* These paths will be searched for style files in the provided order.
-	* Paths may be outside of phpBB, but templates loaded from these paths
-	* will still be cached.
-	*
-	* @param array $style_paths An array of paths to style directories
-	* @return null
-	*/
-	public function set_paths($style_paths);
-
-	/**
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*

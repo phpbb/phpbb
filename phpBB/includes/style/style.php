@@ -22,28 +22,33 @@ if (!defined('IN_PHPBB'))
 class phpbb_style
 {
 	/**
-	* @var phpbb_template Template class.
+	* Template class.
 	* Handles everything related to templates.
+	* @var phpbb_template
 	*/
 	private $template;
 
 	/**
-	* @var string phpBB root path
+	* phpBB root path
+	* @var string
 	*/
 	private $phpbb_root_path;
 
 	/**
-	* @var phpEx PHP file extension
+	* PHP file extension
+	* @var string
 	*/
 	private $phpEx;
 
 	/**
-	* @var phpbb_config phpBB config instance
+	* phpBB config instance
+	* @var phpbb_config
 	*/
 	private $config;
 
 	/**
-	* @var user current user
+	* Current user
+	* @var phpbb_user
 	*/
 	private $user;
 
