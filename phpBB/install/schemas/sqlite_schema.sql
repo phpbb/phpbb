@@ -513,6 +513,25 @@ CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
+# Table: 'phpbb_post_revisions'
+CREATE TABLE phpbb_post_revisions (
+	revision_id INTEGER PRIMARY KEY NOT NULL ,
+	post_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	revision_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	revision_subject text(65535) NOT NULL DEFAULT '',
+	revision_text mediumtext(16777215) NOT NULL DEFAULT '',
+	revision_checksum varchar(32) NOT NULL DEFAULT '',
+	revision_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
+	bbcode_uid varchar(8) NOT NULL DEFAULT '',
+	revision_reason text(65535) NOT NULL DEFAULT ''
+);
+
+CREATE INDEX phpbb_post_revisions_forum_id ON phpbb_post_revisions (forum_id);
+CREATE INDEX phpbb_post_revisions_topic_id ON phpbb_post_revisions (topic_id);
+CREATE INDEX phpbb_post_revisions_poster_ip ON phpbb_post_revisions (poster_ip);
+
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
 	msg_id INTEGER PRIMARY KEY NOT NULL ,

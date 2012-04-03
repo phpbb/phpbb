@@ -1001,6 +1001,46 @@ BEGIN
 END;
 /
 
+/*
+	Table: 'phpbb_post_revisions'
+*/
+CREATE TABLE phpbb_post_revisions (
+	revision_id number(8) NOT NULL,
+	post_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	revision_time number(11) DEFAULT '0' NOT NULL,
+	revision_subject varchar2(765) DEFAULT '' ,
+	revision_text clob DEFAULT '' ,
+	revision_checksum varchar2(32) DEFAULT '' ,
+	revision_attachment number(1) DEFAULT '0' NOT NULL,
+	bbcode_bitfield varchar2(255) DEFAULT '' ,
+	bbcode_uid varchar2(8) DEFAULT '' ,
+	revision_reason varchar2(765) DEFAULT '' ,
+	CONSTRAINT pk_phpbb_post_revisions PRIMARY KEY (revision_id)
+)
+/
+
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_posts (post_id)
+/
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_posts (user_id)
+/
+CREATE INDEX phpbb_post_revisions_time ON phpbb_posts (revision_time)
+/
+
+CREATE SEQUENCE phpbb_posts_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_posts
+BEFORE INSERT ON phpbb_posts
+FOR EACH ROW WHEN (
+	new.post_id IS NULL OR new.post_id = 0
+)
+BEGIN
+	SELECT phpbb_posts_seq.nextval
+	INTO :new.post_id
+	FROM dual;
+END;
+/
 
 /*
 	Table: 'phpbb_privmsgs'

@@ -528,6 +528,26 @@ CREATE TABLE phpbb_posts (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_post_revisions'
+CREATE TABLE phpbb_post_revisions (
+	revision_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	revision_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	revision_subject blob DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
+	revision_text mediumblob NOT NULL,
+	revision_checksum varbinary(32) DEFAULT '' NOT NULL,
+	revision_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
+	bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
+	revision_reason blob DEFAULT '' NOT NULL,
+	PRIMARY KEY (revision_id),
+	KEY post_id (post_id),
+	KEY user_id (user_id),
+	KEY revision_time (revision_time)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
 	msg_id mediumint(8) UNSIGNED NOT NULL auto_increment,

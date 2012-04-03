@@ -711,6 +711,30 @@ CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
 /*
+	Table: 'phpbb_post_revisions'
+*/
+CREATE SEQUENCE phpbb_post_revisions_seq;
+
+CREATE TABLE phpbb_post_revisions (
+	revision_id INT4 DEFAULT nextval('phpbb_post_revisions_seq'),
+	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	revision_time INT4 DEFAULT '0' NOT NULL CHECK (revision_time >= 0),
+	revision_subject varchar(255) DEFAULT '' NOT NULL,
+	revision_text TEXT DEFAULT '' NOT NULL,
+	revision_checksum varchar(32) DEFAULT '' NOT NULL,
+	revision_attachment INT2 DEFAULT '0' NOT NULL CHECK (revision_attachment >= 0),
+	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
+	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
+	revision_reason varchar(255) DEFAULT '' NOT NULL,
+	PRIMARY KEY (revision_id)
+);
+
+CREATE INDEX phpbb_post_revisions_forum_id ON phpbb_post_revisions (post_id);
+CREATE INDEX phpbb_post_revisions_topic_id ON phpbb_post_revisions (user_id);
+CREATE INDEX phpbb_post_revisions_poster_ip ON phpbb_post_revisions (revision_time);
+
+/*
 	Table: 'phpbb_privmsgs'
 */
 CREATE SEQUENCE phpbb_privmsgs_seq;
