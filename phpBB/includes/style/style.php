@@ -119,7 +119,7 @@ class phpbb_style
 
 		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
-		$this->template->context = new phpbb_style_template_context();
+		$this->template->context = new phpbb_template_context();
 
 		if ($template_path !== false)
 		{

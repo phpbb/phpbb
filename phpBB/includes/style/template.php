@@ -32,7 +32,7 @@ if (!defined('IN_PHPBB'))
 class phpbb_style_template
 {
 	/**
-	* @var phpbb_style_template_context Template context.
+	* @var phpbb_template_context Template context.
 	* Stores template data used during template rendering.
 	*/
 	public $context;
@@ -253,15 +253,15 @@ class phpbb_style_template
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
-	* Returns an object implementing phpbb_style_template_renderer, or null
+	* Returns an object implementing phpbb_template_renderer, or null
 	* if template loading or compilation failed. Call render() on the
 	* renderer to display the template. This will result in template
 	* contents sent to the output stream (unless, of course, output
 	* buffering is in effect).
 	*
 	* @param string $handle Handle of the template to load
-	* @return phpbb_style_template_renderer Template renderer object, or null on failure
-	* @uses phpbb_style_template_compile is used to compile template source
+	* @return phpbb_template_renderer Template renderer object, or null on failure
+	* @uses phpbb_template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
@@ -285,18 +285,18 @@ class phpbb_style_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_style_template_renderer_include($output_file, $this);
+			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_style_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			$renderer = new phpbb_style_template_renderer_include($output_file, $this);
+			$renderer = new phpbb_template_renderer_include($output_file, $this);
 		}
 		else if (($code = $compile->compile_file($source_file)) !== false)
 		{
-			$renderer = new phpbb_style_template_renderer_eval($code, $this);
+			$renderer = new phpbb_template_renderer_eval($code, $this);
 		}
 		else
 		{
@@ -358,7 +358,7 @@ class phpbb_style_template
 		$this->context->append_var($varname, $varval);
 	}
 
-	// Docstring is copied from phpbb_style_template_context method with the same name.
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
@@ -369,7 +369,7 @@ class phpbb_style_template
 		return $this->context->assign_block_vars($blockname, $vararray);
 	}
 
-	// Docstring is copied from phpbb_style_template_context method with the same name.
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
