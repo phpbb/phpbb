@@ -455,6 +455,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_options] [int] DEFAULT (0) NOT NULL ,
 	[display_subforum_list] [int] DEFAULT (1) NOT NULL ,
 	[display_on_index] [int] DEFAULT (1) NOT NULL ,
+	[display_last_subject] [int] DEFAULT (1) NOT NULL ,
 	[enable_indexing] [int] DEFAULT (1) NOT NULL ,
 	[enable_icons] [int] DEFAULT (1) NOT NULL ,
 	[enable_prune] [int] DEFAULT (0) NOT NULL ,

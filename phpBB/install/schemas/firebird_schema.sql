@@ -376,6 +376,7 @@ CREATE TABLE phpbb_forums (
 	forum_options INTEGER DEFAULT 0 NOT NULL,
 	display_subforum_list INTEGER DEFAULT 1 NOT NULL,
 	display_on_index INTEGER DEFAULT 1 NOT NULL,
+	display_last_subject INTEGER DEFAULT 1 NOT NULL,
 	enable_indexing INTEGER DEFAULT 1 NOT NULL,
 	enable_icons INTEGER DEFAULT 1 NOT NULL,
 	enable_prune INTEGER DEFAULT 0 NOT NULL,

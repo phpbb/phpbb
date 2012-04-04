@@ -262,6 +262,7 @@ CREATE TABLE phpbb_forums (
 	forum_options int(20) UNSIGNED DEFAULT '0' NOT NULL,
 	display_subforum_list tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	display_on_index tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	display_last_subject tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_indexing tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_icons tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_prune tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
