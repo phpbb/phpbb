@@ -92,6 +92,20 @@ unset IFS
 if [ $error -eq 1 ]
 then
 	echo "PHP Syntax check failed:"
+	# php "display errors" (display_errors php.ini value)
+	# and "log errors" (log_errors php.ini value).
+	# these are independent settings - see main/main.c in php source.
+	# the "log errors" setting produces output which
+	# starts with "PHP Parse error:"; the "display errors"
+	# setting produces output starting with "Parse error:".
+	# if both are turned on php dumps the parse error twice.
+	# therefore here we try to grep for one version and
+	# if that yields no results grep for the other version.
 	$echo_e "$errors" | grep "^Parse error:"
+	if [ $? -ne 0 ]
+	then
+		# match failed
+		$echo_e "$errors" | grep "^PHP Parse error:"
+	fi
 	exit 1
 fi
