@@ -1109,7 +1109,6 @@ function get_schema_struct()
 			'forum_options'			=> array('UINT:20', 0),
 			'display_subforum_list'	=> array('BOOL', 1),
 			'display_on_index'		=> array('BOOL', 1),
-			'display_last_subject'	=> array('BOOL', 1),
 			'enable_indexing'		=> array('BOOL', 1),
 			'enable_icons'			=> array('BOOL', 1),
 			'enable_prune'			=> array('BOOL', 0),

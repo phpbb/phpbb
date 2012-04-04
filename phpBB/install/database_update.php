@@ -1084,9 +1084,6 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
-				FORUMS_TABLE		=> array(
-					'display_last_subject'	=> array('BOOL', 1),
-				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
