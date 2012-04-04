@@ -36,7 +36,7 @@ fi
 error=0
 errors=""
 
-if ! which $PHP_BIN >/dev/null 2>&1
+if ! which "$PHP_BIN" >/dev/null 2>&1
 then
 	echo "PHP Syntax check failed:"
 	echo "PHP binary does not exist or is not in path: $PHP_BIN"
@@ -73,7 +73,7 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	result=$(git cat-file -p $sha | $PHP_BIN -l 2>/dev/null)
+	result=$(git cat-file -p $sha | "$PHP_BIN" -l 2>/dev/null)
 	if [ $? -ne 0 ]
 	then
 		error=1
