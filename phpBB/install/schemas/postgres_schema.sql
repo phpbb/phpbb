@@ -398,6 +398,7 @@ CREATE TABLE phpbb_forums (
 	forum_options INT4 DEFAULT '0' NOT NULL CHECK (forum_options >= 0),
 	display_subforum_list INT2 DEFAULT '1' NOT NULL CHECK (display_subforum_list >= 0),
 	display_on_index INT2 DEFAULT '1' NOT NULL CHECK (display_on_index >= 0),
+	display_last_subject INT2 DEFAULT '1' NOT NULL CHECK (display_last_subject >= 0),
 	enable_indexing INT2 DEFAULT '1' NOT NULL CHECK (enable_indexing >= 0),
 	enable_icons INT2 DEFAULT '1' NOT NULL CHECK (enable_icons >= 0),
 	enable_prune INT2 DEFAULT '0' NOT NULL CHECK (enable_prune >= 0),
