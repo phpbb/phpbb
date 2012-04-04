@@ -73,7 +73,13 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	result=$(git cat-file -p $sha | "$PHP_BIN" -l 2>/dev/null)
+	# note: if display_errors=stderr in php.ini,
+	# parse errors are printed on stderr; otherwise
+	# they are printed on stdout.
+	# we filter everything other than parse errors
+	# with a grep below, therefore it should be safe
+	# to combine stdout and stderr in all circumstances
+	result=$(git cat-file -p $sha | "$PHP_BIN" -l 2>&1)
 	if [ $? -ne 0 ]
 	then
 		error=1
