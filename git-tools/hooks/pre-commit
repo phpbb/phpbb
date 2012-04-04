@@ -112,19 +112,19 @@ then
 	# 2. as mentioned above, with all output turned on
 	#    php will print parse errors twice, one time on stdout
 	#    and one time on stderr.
-	# 2. it is possible to set both display_errors and log_errors
+	# 3. it is possible to set both display_errors and log_errors
 	#    to off. if this is done php will print the text
 	#    "Errors parsing <file>" but will not say what
 	#    the errors are. useful behavior, this.
-	# 3. on my system display_errors defaults to on and
+	# 4. on my system display_errors defaults to on and
 	#    log_errors defaults to off, therefore providing
 	#    by default one copy of messages. your mileage may vary.
-	# 4. by setting display_errors=stderr and log_errors=on,
+	# 5. by setting display_errors=stderr and log_errors=on,
 	#    both sets of messages will be printed on stderr.
-	# 5. php-cgi binary, given display_errors=stderr and
+	# 6. php-cgi binary, given display_errors=stderr and
 	#    log_errors=on, still prints both sets of messages
 	#    on stderr, but formats one set as an html fragment.
-	# 6. your entry here? ;)
+	# 7. your entry here? ;)
 	$echo_e "$errors" | grep "^Parse error:"
 	if [ $? -ne 0 ]
 	then
