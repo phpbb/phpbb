@@ -112,7 +112,7 @@ do
 done
 
 # Abort commit if any errors
-if [ "$error" != '0' ]
+if [ $error -eq 1 ]
 then
 	exit 1
 fi
