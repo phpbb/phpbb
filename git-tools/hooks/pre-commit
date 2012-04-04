@@ -12,8 +12,10 @@
 # ln -s ../../git-tools/hooks/pre-commit \\
 #   .git/hooks/pre-commit
 
-# NOTE: this is run through /usr/bin/env
-PHP_BIN=php
+if [ -z "$PHP_BIN" ]
+then
+	PHP_BIN=php
+fi
 
 # necessary check for initial commit
 if git rev-parse --verify HEAD >/dev/null 2>&1
@@ -64,7 +66,7 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	result=$(git cat-file -p $sha | /usr/bin/env $PHP_BIN -l 2>/dev/null)
+	result=$(git cat-file -p $sha | $PHP_BIN -l 2>/dev/null)
 	if [ $? -ne 0 ]
 	then
 		error=1
