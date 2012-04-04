@@ -133,6 +133,7 @@ class acp_forums
 						'forum_style'			=> request_var('forum_style', 0),
 						'display_subforum_list'	=> request_var('display_subforum_list', false),
 						'display_on_index'		=> request_var('display_on_index', false),
+						'display_last_subject'	=> request_var('display_last_subject', true),
 						'forum_topics_per_page'	=> request_var('topics_per_page', 0),
 						'enable_indexing'		=> request_var('enable_indexing', true),
 						'enable_icons'			=> request_var('enable_icons', false),
@@ -444,6 +445,7 @@ class acp_forums
 							'enable_prune'			=> false,
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
+							'display_last_subject'	=> 0,
 							'prune_freq'			=> 1,
 							'forum_flags'			=> FORUM_FLAG_POST_REVIEW + FORUM_FLAG_ACTIVE_TOPICS,
 							'forum_options'			=> 0,
@@ -636,6 +638,7 @@ class acp_forums
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
 					'S_DISPLAY_SUBFORUM_LIST'	=> ($forum_data['display_subforum_list']) ? true : false,
+					'S_DISPLAY_SUBJECT'	=> ($forum_data['display_last_subject']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
 					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? true : false,
@@ -804,6 +807,7 @@ class acp_forums
 					'FORUM_TOPICS'		=> $row['forum_topics'],
 					'FORUM_POSTS'		=> $row['forum_posts'],
 
+					'S_DISPLAY_SUBJECT' => ($row['display_last_subject']) ? true : false,
 					'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
 					'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
 
