@@ -397,11 +397,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if ($row['forum_last_post_id'])
 		{
 			$last_post_subject = $row['forum_last_post_subject'];
-			if (utf8_strlen(htmlspecialchars_decode($last_post_subject)) > 30)
-			{	
-				$last_post_subject = htmlspecialchars(utf8_substr(htmlspecialchars_decode($last_post_subject, 0, 30)));
-				$last_post_subject .= '...';
-			}
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
@@ -456,7 +451,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
-			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $row['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
