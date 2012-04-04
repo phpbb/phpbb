@@ -17,6 +17,13 @@ then
 	PHP_BIN=php
 fi
 
+if [ $(echo -e test) = test ]
+then
+	echo_e="echo -e"
+else
+	echo_e="echo"
+fi
+
 # necessary check for initial commit
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
@@ -78,7 +85,7 @@ unset IFS
 
 if [ $error -eq 1 ]
 then
-	echo -e "PHP Syntax check failed:";
-	echo -e "$errors" | grep "^Parse error:"
+	echo "PHP Syntax check failed:"
+	$echo_e "$errors" | grep "^Parse error:"
 	exit 1
 fi
