@@ -35,15 +35,15 @@
 		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 			<!-- IF U_REMOVE_FRIEND -->
-				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
+				<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_REMOVE_FRIEND}" data-ajax="zebra"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
 			<!-- ELSEIF U_REMOVE_FOE -->
-				<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
+				<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_REMOVE_FOE}" data-ajax="zebra"><strong>{L_REMOVE_FOE}</strong></a></dd>
 			<!-- ELSE -->
 				<!-- IF U_ADD_FRIEND -->
-					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
+					<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_ADD_FRIEND}" data-ajax="zebra"><strong>{L_ADD_FRIEND}</strong></a></dd>
 				<!-- ENDIF -->
 				<!-- IF U_ADD_FOE -->
-					<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
+					<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_ADD_FOE}" data-ajax="zebra"><strong>{L_ADD_FOE}</strong></a></dd>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- ENDIF -->

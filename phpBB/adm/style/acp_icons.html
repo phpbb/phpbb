@@ -245,7 +245,7 @@
 			<td style="text-align: right; white-space: nowrap;">
 				<!-- IF items.S_FIRST_ROW and not PREVIOUS_PAGE -->{ICON_MOVE_UP_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a><!-- ENDIF -->&nbsp;
 				<!-- IF items.S_LAST_ROW and not NEXT_PAGE -->{ICON_MOVE_DOWN_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a><!-- ENDIF -->
-				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}">{ICON_DELETE}</a>
+				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- BEGINELSE -->

@@ -25,7 +25,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -254,6 +254,12 @@ class acp_forums
 				{
 					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
 					$cache->destroy('sql', FORUMS_TABLE);
+				}
+				
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response;
+					$json_response->send(array('success' => ($move_forum_name !== false)));
 				}
 
 			break;
