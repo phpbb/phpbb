@@ -17,7 +17,7 @@ then
 	PHP_BIN=php
 fi
 
-if [ $(echo -e test) = test ]
+if [ "$(echo -e test)" = test ]
 then
 	echo_e="echo -e"
 else
