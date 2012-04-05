@@ -2039,7 +2039,7 @@ function change_database_data(&$no_updates, $version)
 				),
 				'LEFT_JOIN'	=> array(
 					array(
-						'FROM'	=> array(PRIVMSGS_TO_TABLE, 't'),
+						'FROM'	=> array(PRIVMSGS_TO_TABLE => 't'),
 						'ON'	=> 'p.msg_id = t.msg_id',
 					),
 				),
