@@ -2405,4 +2405,3 @@ function change_database_data(&$no_updates, $version)
 		break;
 	}
 }
-
