@@ -226,10 +226,13 @@ switch ($mode)
 	break;
 
 	case 'quote':
-
 		$post_data['post_edit_locked'] = 0;
+		if ($auth->acl_get('f_reply', $forum_id) && $auth->acl_get('f_read', $forum_id))
+		{
+			$is_authed = true;
+		}
 
-	// no break;
+	break;
 
 	case 'reply':
 		if ($auth->acl_get('f_reply', $forum_id))
