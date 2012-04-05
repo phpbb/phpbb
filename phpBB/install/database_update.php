@@ -993,6 +993,8 @@ function database_update_info()
 		'3.0.10-RC2'	=> array(),
 		// No changes from 3.0.10-RC3 to 3.0.10
 		'3.0.10-RC3'	=> array(),
+		// No changes from 3.0.10 to 3.0.11-RC1
+		'3.0.10'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
 	);
