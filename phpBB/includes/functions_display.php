@@ -456,7 +456,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
-			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $row['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
+			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $config['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],

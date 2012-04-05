@@ -1084,9 +1084,6 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
-				FORUMS_TABLE		=> array(
-					'display_last_subject'	=> array('BOOL', 1),
-				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
@@ -2397,8 +2394,15 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
 			_sql($sql, $errored, $error_ary);
 			
+			//Create config value for displaying last subject on forum list
+			if(!isset($config['display_last_subject']))
+			{			
+				$config->set("display_last_subject", '1');
+			}
+			
 			$no_updates = false;
 
 		break;
 	}
 }
+
