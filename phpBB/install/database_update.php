@@ -1871,6 +1871,24 @@ function change_database_data(&$no_updates, $version)
 			}
 			// end Bing Bot addition
 
+			// Updates users having current style a deactivated one
+			$sql = 'SELECT style_id
+					FROM ' . STYLES_TABLE . '
+					WHERE style_active = 0';
+			$result = $db->sql_query($sql);
+
+			while($temp = $db->sql_fetchfield('style_id', false, $result))
+			{
+				$styles[] = $temp;
+			}
+
+			$db->sql_freeresult($result);
+			$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . $config['default_style'] .'
+					WHERE ' . $db->sql_in_set('user_style', $styles);
+			$result = $db->sql_query($sql);
+			$db->sql_freeresult($result);
+
 			// Delete shadow topics pointing to not existing topics
 			$batch_size = 500;
 
