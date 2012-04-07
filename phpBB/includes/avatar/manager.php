@@ -82,8 +82,6 @@ class phpbb_avatar_manager
 	**/
 	private function load_valid_drivers()
 	{
-		require_once($this->phpbb_root_path . 'includes/avatar/driver.' . $this->phpEx);
-
 		if ($this->cache)
 		{
 			self::$valid_drivers = $this->cache->get('avatar_drivers');
