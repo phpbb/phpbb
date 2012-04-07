@@ -91,130 +91,124 @@ class acp_users
 			{
 				$template->assign_var('S_USER_DELETE_QUEUE', true);
 			}
-
-			if (isset($_POST['approve']) || isset($_POST['deny']) && isset($_POST['delete_type']))
+			if (!empty($_POST['approve']))
 			{
-				if (isset($_POST['approve']) && !isset($_POST['deny']))
+				if (!function_exists('phpbb_delete_accounts'))
 				{
-					if (!function_exists('phpbb_delete_accounts'))
-					{
-						include("{$phpbb_root_path}includes/functions_user.$phpEx");
-					}
-
-					$del_user_ids = $request->variable('delete_user_ids', array(0));
-
-					// Let's get the information we're going to need for the users
-					$sql = 'SELECT username,
-								user_lang,
-								user_email,
-								user_jabber,
-								user_delete_type,
-								user_delete_pending_reason
-						FROM ' . USERS_TABLE . '
-						WHERE user_delete_pending = 1
-							AND user_delete_type NOT ' . ACCOUNT_DELETE_NONE . '
-							AND ' . $db->sql_in_set('user_id', explode(',', $del_user_ids));
-					$result = $db->sql_query($sql);
-
-					$del_user_data = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$del_user_data[$row['user_id']] = array(
-							'type'		=> $row['user_delete_type'],
-							'lang'		=> $row['user_lang'],
-							'email'		=> $row['user_email'],
-							'reason'	=> $row['user_delete_pending_reason'],
-							'im'		=> $row['user_jabber'],
-						);
-					}
-
-					phpbb_delete_accounts($del_user_data, true);
-
-					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
-
-					// @todo email the user
-					$messenger = new messenger;
-					foreach ($del_user_data as $user_id => $user_data)
-					{
-						$email_template = 'account_delete_';
-						switch ($user_data['type'])
-						{
-							case ACCOUNT_DELETE_SOFT:
-								$email_template .= 'soft';
-							break;
-
-							case ACCOUNT_DELETE_PROFILE:
-								$email_template .= 'profile';
-							break;
-
-							case ACCOUNT_DELETE_HARD:
-								$email_template .= 'hard';
-							break;
-
-						}
-						$messenger->template($email_template, $user_data['lang']);
-
-						$messenger->to($user_data['email'], $user_data['username']);
-						$messenger->im($user_data['im'], $user_data['username']);
-
-						$messenger->from($config['board_contact']);
-						$messenger->replyto($config['board_contact']);
-
-						$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
-
-						$messenger->assign_vars(array(
-							'USERNAME'	=> $user_data['username'],
-						));
-					}
-					$messenger->save_queue();
+					include("{$phpbb_root_path}includes/functions_user.$phpEx");
 				}
-				else if (isset($_POST['deny']))
+
+				$del_user_ids = $request->variable('delete_user_ids', array(0));
+
+				// Let's get the information we're going to need for the users
+				$sql = 'SELECT username,
+							user_lang,
+							user_email,
+							user_jabber,
+							user_delete_type,
+							user_delete_pending_reason
+					FROM ' . USERS_TABLE . '
+					WHERE user_delete_pending = 1
+						AND user_delete_type NOT ' . ACCOUNT_DELETE_NONE . '
+						AND ' . $db->sql_in_set('user_id', explode(',', $del_user_ids));
+				$result = $db->sql_query($sql);
+
+				$del_user_data = array();
+				while ($row = $db->sql_fetchrow($result))
 				{
-					/*
-					// @todo make this work
-					$sql_ary = array(
-						'user_delete_pending'			=> 0,
-						'user_delete_pending_time'		=> 0,
-						'user_delete_pending_type'		=> 0,
-						'user_delete_pending_reason'	=> '',
+					$del_user_data[$row['user_id']] = array(
+						'type'		=> $row['user_delete_type'],
+						'lang'		=> $row['user_lang'],
+						'email'		=> $row['user_email'],
+						'reason'	=> $row['user_delete_pending_reason'],
+						'im'		=> $row['user_jabber'],
 					);
-
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-						WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_delete_ids', array(0))));
-					$message = 'ACCOUNT_DELETE_REQUEST_DENIED';
-
-					$subject = $user->lang("{$message}_PM_SUBJECT");
-					$text    = $user->lang("{$message}_PM_TEXT");
-
-					$poll = $uid = $bitfield = $options = '';
-					generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
-
-					$data = array(
-					    'address_list'      => array('u' => array($_POST => 'to')),
-					    'from_user_id'      => $user->data['user_id'],
-					    'from_username'     => $user->data['username'],
-					    'icon_id'           => 0,
-					    'from_user_ip'      => $user->data['user_ip'],
-
-					    'enable_bbcode'     => true,
-					    'enable_smilies'    => true,
-					    'enable_urls'       => true,
-					    'enable_sig'        => true,
-
-					    'message'           => $text,
-					    'bbcode_bitfield'   => $bitfield,
-					    'bbcode_uid'        => $uid,
-					);
-
-					if (!function_exists('submit_pm'))
-					{
-						include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
-					}
-					submit_pm('post', $subject, &$data, false);
-					*/
 				}
-				trigger_error($message);
+
+				phpbb_delete_accounts($del_user_data, true);
+
+				// @todo email the user
+				$messenger = new messenger;
+				foreach ($del_user_data as $user_id => $user_data)
+				{
+					$email_template = 'account_delete_';
+					switch ($user_data['type'])
+					{
+						case ACCOUNT_DELETE_SOFT:
+							$email_template .= 'soft';
+						break;
+
+						case ACCOUNT_DELETE_PROFILE:
+							$email_template .= 'profile';
+						break;
+
+						case ACCOUNT_DELETE_HARD:
+							$email_template .= 'hard';
+						break;
+
+					}
+					$messenger->template($email_template, $user_data['lang']);
+
+					$messenger->to($user_data['email'], $user_data['username']);
+					$messenger->im($user_data['im'], $user_data['username']);
+
+					$messenger->from($config['board_contact']);
+					$messenger->replyto($config['board_contact']);
+
+					$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
+
+					$messenger->assign_vars(array(
+						'USERNAME'	=> $user_data['username'],
+					));
+				}
+				$messenger->save_queue();
+
+				trigger_error('ACCOUNT_DELETE_REQUEST_APPROVED');
+			}
+			else if (!empty($_POST['deny']))
+			{
+				// @todo make this work
+				$sql_ary = array(
+					'user_delete_pending'			=> 0,
+					'user_delete_pending_time'		=> 0,
+					'user_delete_pending_type'		=> 0,
+					'user_delete_pending_reason'	=> '',
+				);
+
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE ' . $db->sql_in_set('user_id', implode(',', $request->variable('user_delete_ids', array(0))));
+
+				$subject = $user->lang("{$message}_PM_SUBJECT");
+				$text    = $user->lang("{$message}_PM_TEXT");
+
+				$poll = $uid = $bitfield = $options = '';
+				generate_text_for_storage($text, $uid, $bitfield, $options, true, true, true);
+
+				$data = array(
+				    'address_list'      => array('u' => array($_POST => 'to')),
+				    'from_user_id'      => $user->data['user_id'],
+				    'from_username'     => $user->data['username'],
+				    'icon_id'           => 0,
+				    'from_user_ip'      => $user->data['user_ip'],
+
+				    'enable_bbcode'     => true,
+				    'enable_smilies'    => true,
+				    'enable_urls'       => true,
+				    'enable_sig'        => true,
+
+				    'message'           => $text,
+				    'bbcode_bitfield'   => $bitfield,
+				    'bbcode_uid'        => $uid,
+				);
+
+				if (!function_exists('submit_pm'))
+				{
+					include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
+				}
+				submit_pm('post', $subject, $data, false);
+
+				trigger_error('ACCOUNT_DELETE_REQUEST_DENIED');
 			}
 
 			$sql = 'SELECT user_id,
