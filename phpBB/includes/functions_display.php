@@ -1312,6 +1312,7 @@ function get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = fal
 function get_avatar($row, $alt, $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
+	global $request;
 
 	static $avatar_manager = null;
 
@@ -1369,7 +1370,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 		default:
 			if (empty($avatar_manager))
 			{
-				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->get_driver());
+				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->get_driver());
 			}
 
 			$avatar = $avatar_manager->get_driver($row['avatar_type']);

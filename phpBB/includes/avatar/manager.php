@@ -23,17 +23,19 @@ class phpbb_avatar_manager
 	private $phpbb_root_path;
 	private $phpEx;
 	private $config;
+	private $request;
 	private $cache;
 	private static $valid_drivers = false;
 
 	/**
 	* @TODO
 	**/
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_cache_driver_interface $cache = null)
+	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_request $request, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->config = $config;
+		$this->request = $request;
 		$this->cache = $cache;
 	}
 
@@ -66,7 +68,7 @@ class phpbb_avatar_manager
 			if ($new || !is_object(self::$valid_drivers[$avatar_type]))
 			{
 				$class_name = 'phpbb_avatar_driver_' . $avatar_type;
-				self::$valid_drivers[$avatar_type] = new $class_name($this->config, $this->phpbb_root_path, $this->phpEx, $this->cache);
+				self::$valid_drivers[$avatar_type] = new $class_name($this->config, $this->request, $this->phpbb_root_path, $this->phpEx, $this->cache);
 			}
 
 			return self::$valid_drivers[$avatar_type];

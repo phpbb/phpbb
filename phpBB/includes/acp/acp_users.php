@@ -32,6 +32,7 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $request;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -466,7 +467,7 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
+							$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
 							if ($driver = $avatar_manager->get_driver($user_row['user_avatar_type']))
 							{
 								$driver->delete($user_row);
@@ -1687,7 +1688,7 @@ class acp_users
 				$avatars_enabled = false;
 				if ($config['allow_avatar'])
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
+					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
 
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);

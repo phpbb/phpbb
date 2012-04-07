@@ -26,7 +26,13 @@ abstract class phpbb_avatar_driver
 	* @type phpbb_config
 	*/
 	protected $config;
-	
+
+	/**
+	* Current board configuration
+	* @type phpbb_config
+	*/
+	protected $request;
+
 	/**
 	* Current $phpbb_root_path
 	* @type string
@@ -62,13 +68,15 @@ abstract class phpbb_avatar_driver
 	* Construct an driver object
 	*
 	* @param $config The phpBB configuration
+	* @param $request The request object
 	* @param $phpbb_root_path The path to the phpBB root
 	* @param $phpEx The php file extension
 	* @param $cache A cache driver
 	*/
-	public function __construct(phpbb_config $config, $phpbb_root_path, $phpEx, phpbb_cache_driver_interface $cache = null)
+	public function __construct(phpbb_config $config, phpbb_request $request, $phpbb_root_path, $phpEx, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->config = $config;
+		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->cache = $cache;

@@ -289,7 +289,7 @@ class acp_groups
 
 				if ($config['allow_avatar'])
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
+					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
 
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);

@@ -50,7 +50,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function prepare_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = request_var('av_local_cat', '');
+		$category = $this->request->variable('av_local_cat', '');
 
 		$categories = array_keys($avatar_list);
 
@@ -110,9 +110,9 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 	public function process_form($template, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list();
-		$category = request_var('av_local_cat', '');
-		
-		$file = request_var('av_local_file', '');
+		$category = $this->request->variable('av_local_cat', '');
+
+		$file = $this->request->variable('av_local_file', '');
 		if (!isset($avatar_list[$category][urldecode($file)]))
 		{
 			$error[] = 'AVATAR_URL_NOT_FOUND';

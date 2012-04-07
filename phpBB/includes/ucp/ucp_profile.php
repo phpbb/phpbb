@@ -552,8 +552,8 @@ class ucp_profile
 
 				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $cache->getDriver());
-					
+					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
+
 					$avatar_drivers = $avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 					
