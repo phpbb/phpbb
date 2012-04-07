@@ -6,6 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
@@ -38,7 +39,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		$this->client = new Goutte\Client();
+		$this->client = new Goutte\Client(array(), array(), null, new CookieJar);
 		$this->root_url = self::$config['phpbb_functional_url'];
 	}
 
