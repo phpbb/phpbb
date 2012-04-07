@@ -39,7 +39,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		$this->client = new Goutte\Client(array(), array(), null, new CookieJar);
+		$this->cookieJar = new CookieJar;
+		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
 		$this->root_url = self::$config['phpbb_functional_url'];
 	}
 
