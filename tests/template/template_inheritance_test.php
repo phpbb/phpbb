@@ -7,14 +7,14 @@
 *
 */
 
-require_once dirname(__FILE__) . '/template_test_case.php';
+require_once dirname(__FILE__) . '/template_test_case_with_tree.php';
 
-class phpbb_template_template_inheritance_test extends phpbb_template_template_test_case
+class phpbb_template_template_inheritance_test extends phpbb_template_template_test_case_with_tree
 {
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public static function template_data()
+	public function template_data()
 	{
 		return array(
 			// First element of the array is test name - keep them distinct
@@ -60,20 +60,5 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 		$this->setup_engine();
 
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
-	}
-
-	protected function setup_engine(array $new_config = array())
-	{
-		global $phpbb_root_path, $phpEx, $user;
-
-		$defaults = $this->config_defaults();
-		$config = new phpbb_config(array_merge($defaults, $new_config));
-
-		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->parent_template_path = dirname(__FILE__) . '/parent_templates';
-		$this->template_locator = new phpbb_template_locator();
-		$this->template_provider = new phpbb_template_path_provider();
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->template_locator, $this->template_provider);
-		$this->template->set_custom_template($this->template_path, 'tests', $this->parent_template_path, 'parent');
 	}
 }

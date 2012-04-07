@@ -71,7 +71,7 @@
 	<li><a href="#templating">Templating</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#templates">General Templating</a></li>
-		<li><a href="#inheritance">Template Inheritance</a></li>
+		<li><a href="#stylestree">Styles Tree</a></li>
 	</ol></li>
 	<li><a href="#charsets">Character Sets and Encodings</a></li>
 	<li><a href="#translation">Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a>
@@ -248,7 +248,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/session.php - user::img()</li>
+	<li>/includes/user.php - phpbb_user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 
@@ -1144,15 +1144,19 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 		<div class="content">
 	<a name="cfgfiles"></a><h3>3.i. Style Config Files</h3>
-	<p>Style cfg files are simple name-value lists with the information necessary for installing a style. Similar cfg files exist for templates, themes and imagesets. These follow the same principle and will not be introduced individually. Styles can use installed components by using the required_theme/required_template/required_imageset entries. The important part of the style configuration file is assigning an unique name.</p>
+	<p>Style cfg files are simple name-value lists with the information necessary for installing a style. The important part of the style configuration file is assigning an unique name.</p>
 	<div class="codebox"><pre>
-        # General Information about this style
-        name = prosilver_duplicate
-        copyright = &copy; phpBB Group, 2007
-        version = 3.0.3
-        required_template = prosilver
-        required_theme = prosilver
-        required_imageset = prosilver
+# General Information about this style
+name = prosilver_duplicate
+copyright = &copy; phpBB Group, 2007
+version = 3.1.0
+
+# Defining a different template bitfield
+# template_bitfield = lNg=
+
+# Parent style
+# Set value to empty or to this style's name if this style does not have a parent style
+parent = prosilver
 	</pre></div>
 	<a name="genstyling"></a><h3>3.2. General Styling Rules</h3>
 <p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the indentation and coding guidelines also apply to templates where possible.</p>
@@ -1175,7 +1179,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 <p>Row colours/classes are now defined by the template, use an <code>IF S_ROW_COUNT</code> switch, see viewtopic or viewforum for an example.</p>
 
-<p>Remember block level ordering is important ... while not all pages validate as XHTML 1.0 Strict compliant it is something we're trying to work on.</p>
+<p>Remember block level ordering is important.</p>
 
 <p>Use a standard cellpadding of 2 and cellspacing of 0 on outer tables. Inner tables can vary from 0 to 3 or even 4 depending on the need.</p>
 
@@ -1243,13 +1247,13 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 <p>A bit later loops will be explained further. To not irritate you we will explain conditionals as well as other statements first.</p>
 
 <h4>Including files</h4>
-<p>Something that existed in 2.0.x which no longer exists in 3.0.x is the ability to assign a template to a variable. This was used (for example) to output the jumpbox. Instead (perhaps better, perhaps not but certainly more flexible) we now have INCLUDE. This takes the simple form:</p>
+<p>Something that existed in 2.0.x which no longer exists in 3.x is the ability to assign a template to a variable. This was used (for example) to output the jumpbox. Instead (perhaps better, perhaps not but certainly more flexible) we now have INCLUDE. This takes the simple form:</p>
 
 <div class="codebox"><pre>
 <span class="comment">&lt;!-- INCLUDE filename --&gt;</span>
 </pre></div>
 
-<p>You will note in the 3.0 templates the major sources start with <code>&lt;!-- INCLUDE overall_header.html --&gt;</code> or <code>&lt;!-- INCLUDE simple_header.html --&gt;</code>, etc. In 2.0.x control of &quot;which&quot; header to use was defined entirely within the code. In 3.0.x the template designer can output what they like. Note that you can introduce new templates (i.e. other than those in the default set) using this system and include them as you wish ... perhaps useful for a common &quot;menu&quot; bar or some such. No need to modify loads of files as with 2.0.x.</p>
+<p>You will note in the 3.x templates the major sources start with <code>&lt;!-- INCLUDE overall_header.html --&gt;</code> or <code>&lt;!-- INCLUDE simple_header.html --&gt;</code>, etc. In 2.0.x control of &quot;which&quot; header to use was defined entirely within the code. In 3.x the template designer can output what they like. Note that you can introduce new templates (i.e. other than those in the default set) using this system and include them as you wish ... perhaps useful for a common &quot;menu&quot; bar or some such. No need to modify loads of files as with 2.0.x.</p>
 
 <p>Added in <strong>3.0.6</strong> is the ability to include a file using a template variable to specify the file, this functionality only works for root variables (i.e. not block variables).</p>
 <div class="codebox"><pre>
@@ -1281,7 +1285,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 <p>it will be included and executed inline.<br /><br />A note, it is very much encouraged that template designers do not include PHP. The ability to include raw PHP was introduced primarily to allow end users to include banner code, etc. without modifying multiple files (as with 2.0.x). It was not intended for general use ... hence <!-- w --><a href="http://www.phpbb.com">www.phpbb.com</a><!-- w --> will <strong>not</strong> make available template sets which include PHP. And by default templates will have PHP disabled (the admin will need to specifically activate PHP for a template).</p>
 
 <h4>Conditionals/Control structures</h4>
-<p>The most significant addition to 3.0.x are conditions or control structures, &quot;if something then do this else do that&quot;. The system deployed is very similar to Smarty. This may confuse some people at first but it offers great potential and great flexibility with a little imagination. In their most simple form these constructs take the form:</p>
+<p>The most significant addition to 3.x are conditions or control structures, &quot;if something then do this else do that&quot;. The system deployed is very similar to Smarty. This may confuse some people at first but it offers great potential and great flexibility with a little imagination. In their most simple form these constructs take the form:</p>
 
 <div class="codebox"><pre>
 <span class="comment">&lt;!-- IF expr --&gt;</span>
@@ -1352,7 +1356,7 @@ div
 <span class="comment">&lt;!-- ENDIF --&gt;</span>
 </pre></div>
 
-<p>Each statement will be tested in turn and the relevant output generated when a match (if a match) is found. It is not necessary to always use ELSEIF, ELSE can be used alone to match &quot;everything else&quot;.<br /><br />So what can you do with all this? Well take for example the colouration of rows in viewforum. In 2.0.x row colours were predefined within the source as either row color1, row color2 or row class1, row class2. In 3.0.x this is moved to the template, it may look a little daunting at first but remember control flows from top to bottom and it's not too difficult:</p>
+<p>Each statement will be tested in turn and the relevant output generated when a match (if a match) is found. It is not necessary to always use ELSEIF, ELSE can be used alone to match &quot;everything else&quot;.<br /><br />So what can you do with all this? Well take for example the colouration of rows in viewforum. In 2.0.x row colours were predefined within the source as either row color1, row color2 or row class1, row class2. In 3.x this is moved to the template, it may look a little daunting at first but remember control flows from top to bottom and it's not too difficult:</p>
 
 <div class="codebox"><pre>
 &lt;table&gt;
@@ -1623,24 +1627,25 @@ div
 &lt;/form&gt;
 		</pre></div><br />
 
-	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
-		<p>When basing a new style on an existing one, it is not necessary to provide all the template files. By declaring the base style name in the <strong>inherit_from</strong> field in the template configuration file, the style can be set to inherit template files from the base style. The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
+	<a name="stylestree"></a><h3>4.ii. Styles Tree</h3>
+		<p>When basing a new style on an existing one, it is not necessary to provide all the template files. By declaring the base style name in the <strong>parent</strong> field in the style configuration file, the style can be set to reuse template files from the parent style.</p>
 
-		<p>The effect of doing so is that the template engine will use the template files in the new style where they exist, but fall back to files in the base style otherwise. Declaring a style to inherit from another also causes it to use some of the configuration settings of the base style, notably database storage.</p>
+		<p>The effect of doing so is that the template engine will use the template files in the new style where they exist, but fall back to files in the parent style otherwise.</p>
 
-		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
+		<p>We strongly encourage the use of parent styles for styles based on the bundled styles, as it will ease the update procedure.</p>
 
 		<div class="codebox"><pre>
-        # General Information about this template
-        name = inherits
-        copyright = &copy; phpBB Group, 2007
-        version = 3.0.3
+# General Information about this style
+name = Custom Style
+copyright = &amp;copy; phpBB Group, 2007
+version = 3.1.0
 
-        # Defining a different template bitfield
-        template_bitfield = lNg=
+# Defining a different template bitfield
+# template_bitfield = lNg=
 
-        # Are we inheriting?
-        inherit_from = prosilver
+# Parent style
+# Set value to empty or to this style's name if this style does not have a parent style
+parent = prosilver
 		</pre></div>
 
 		</div>
@@ -2347,7 +2352,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &lt; 5.2.0.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &lt; 5.3.2.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2356,7 +2361,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.2.0.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.2.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
@@ -2365,7 +2370,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<div class="codebox"><pre>
 	...
-'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.2.0.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.2.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>

@@ -270,11 +270,12 @@ class phpbb_extension_finder
 	* Finds all directories matching the configured options
 	*
 	* @param bool $cache Whether the result should be cached
+	* @param bool $extension_keys Whether the result should have extension name as array key
 	* @return array An array of paths to found directories
 	*/
-	public function get_directories($cache = true)
+	public function get_directories($cache = true, $extension_keys = false)
 	{
-		return $this->find_with_root_path($cache, true);
+		return $this->find_with_root_path($cache, true, $extension_keys);
 	}
 
 	/**
@@ -294,16 +295,25 @@ class phpbb_extension_finder
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
 	*                     otherwise
+	* @param bool $extension_keys If true, result will be associative array
+	*					with extension name as key
 	* @return array An array of paths to found items
 	*/
-	protected function find_with_root_path($cache = true, $is_dir = false)
+	protected function find_with_root_path($cache = true, $is_dir = false, $extension_keys = false)
 	{
 		$items = $this->find($cache, $is_dir);
 
 		$result = array();
 		foreach ($items as $item => $ext_name)
 		{
-			$result[] = $this->phpbb_root_path . $item;
+			if ($extension_keys)
+			{
+				$result[$ext_name] = $this->phpbb_root_path . $item;
+			}
+			else
+			{
+				$result[] = $this->phpbb_root_path . $item;
+			}
 		}
 
 		return $result;

@@ -37,6 +37,13 @@ function list_extensions()
 	global $phpbb_extension_manager;
 
 	$phpbb_extension_manager->load_extensions();
+	$all = array_keys($phpbb_extension_manager->all_available());
+
+	if (empty($all))
+	{
+		echo "There were no extensions found.\n";
+		exit(3);
+	}
 
 	echo "Enabled:\n";
 	$enabled = array_keys($phpbb_extension_manager->all_enabled());
@@ -49,7 +56,6 @@ function list_extensions()
 	echo "\n";
 
 	echo "Available:\n";
-	$all = array_keys($phpbb_extension_manager->all_available());
 	$purged = array_diff($all, $enabled, $disabled);
 	print_extensions($purged);
 }

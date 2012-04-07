@@ -24,7 +24,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $config, $db, $user, $auth, $template, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
@@ -129,6 +129,11 @@ class acp_main
 						set_config('record_online_users', 1, true);
 						set_config('record_online_date', time(), true);
 						add_log('admin', 'LOG_RESET_ONLINE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_ONLINE_SUCCESS');
+						}
 					break;
 
 					case 'stats':
@@ -179,6 +184,11 @@ class acp_main
 						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_STATS_SUCCESS');
+						}
 					break;
 
 					case 'user':
@@ -241,7 +251,11 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
-
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
+						}
 					break;
 
 					case 'date':
@@ -252,6 +266,11 @@ class acp_main
 
 						set_config('board_startdate', time() - 1);
 						add_log('admin', 'LOG_RESET_DATE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_DATE_SUCCESS');
+						}
 					break;
 
 					case 'db_track':
@@ -327,14 +346,14 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POST_MARKING_SUCCESS');
+						}
 					break;
 
 					case 'purge_cache':
-						if ((int) $user->data['user_type'] !== USER_FOUNDER)
-						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
 						global $cache;
 						$cache->purge();
 
@@ -343,6 +362,11 @@ class acp_main
 						cache_moderators();
 
 						add_log('admin', 'LOG_PURGE_CACHE');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_CACHE_SUCCESS');
+						}
 					break;
 
 					case 'purge_sessions':
@@ -389,6 +413,11 @@ class acp_main
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_PURGE_SESSIONS');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_SESSIONS_SUCCESS');
+						}
 					break;
 				}
 			}
@@ -397,11 +426,11 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.2.0', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.2', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=1958605">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="http://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
 			));
 		}
 

@@ -26,10 +26,6 @@ hr {
 	border-top-color: #CCCCCC;
 }
 
-hr.dashed {
-	border-top-color: #CCCCCC;
-}
-
 /* Search box
 --------------------------------------------- */
 
@@ -450,6 +446,10 @@ dl.faq dt {
 .posthilit {
 	background-color: #F3BFCC;
 	color: #BC2A4D;
+}
+
+.announce, .unreadpost {
+	/* Highlight the announcements & unread posts box */
 }
 
 /* Post signature */
@@ -957,7 +957,7 @@ dl.mini dt {
 
 /* Avatar gallery */
 #gallery label {
-	background-color: #FFFFFF;
+	background: #FFFFFF;
 	border-color: #CCC;
 }
 
@@ -990,6 +990,10 @@ option.disabled-option {
 ---------------------------------------- */
 dd label {
 	color: #333;
+}
+
+fieldset.fields1 {
+	background-color: transparent;
 }
 
 /* Hover effects */
@@ -1070,3 +1074,17 @@ input.search {
 input.disabled {
 	color: #666666;
 }
+
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	background-color: #FFFFFF;
+	border-color: #999999;
+}
+.phpbb_alert .alert_close {
+	background-image: url("./images/alert_close.png");
+}
+#darken {
+	background-color: #000000;
+}
+

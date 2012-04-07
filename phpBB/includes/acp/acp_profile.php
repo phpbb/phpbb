@@ -242,6 +242,15 @@ class acp_profile
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('DEACTIVATE'),
+					));
+				}
+
 				trigger_error($user->lang['PROFILE_FIELD_ACTIVATED'] . adm_back_link($this->u_action));
 
 			break;
@@ -266,7 +275,16 @@ class acp_profile
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('ACTIVATE'),
+					));
+				}
+
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
+
 				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
 
 			break;

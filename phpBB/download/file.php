@@ -56,6 +56,7 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->set_cache($cache->get_driver());
 	$phpbb_class_loader->set_cache($cache->get_driver());
 
+	$phpbb_dispatcher = new phpbb_event_dispatcher();
 	$request = new phpbb_request();
 	$db = new $sql_db();
 
@@ -77,6 +78,9 @@ if (isset($_GET['avatar']))
 
 	// load extensions
 	$phpbb_extension_manager = new phpbb_extension_manager($db, EXT_TABLE, $phpbb_root_path, ".$phpEx", $cache->get_driver());
+
+	$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
+	$phpbb_subscriber_loader->load();
 
 	$filename = request_var('avatar', '');
 	$avatar_group = false;

@@ -35,6 +35,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'APPROVE'								=> 'Approve',
 	'ATTACHMENT'						=> 'Attachment',
 	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
@@ -47,9 +48,9 @@ $lang = array_merge($lang, array(
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'CODE'					=> 'Code',
-	'COLLAPSE_QR'			=> 'Hide Quick Reply',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
+	'DISAPPROVE'					=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(
@@ -61,7 +62,7 @@ $lang = array_merge($lang, array(
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
-	'FULL_EDITOR'			=> 'Full Editor',
+	'FULL_EDITOR'			=> 'Full Editor &amp; Preview',
 	
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
@@ -97,7 +98,6 @@ $lang = array_merge($lang, array(
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
-	'SHOW_QR'				=> 'Quick Reply',
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
 	'TOTAL_VOTES'			=> 'Total votes',

@@ -15,7 +15,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/group_positions.xml');
 	}
 
-	public static function get_group_value_data()
+	public function get_group_value_data()
 	{
 		return array(
 			array('teampage', 1, 0),
@@ -38,7 +38,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
-	public static function get_group_count_data()
+	public function get_group_count_data()
 	{
 		return array(
 			array('teampage', 2),
@@ -59,7 +59,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $test_class->get_group_count());
 	}
 
-	public static function add_group_data()
+	public function add_group_data()
 	{
 		return array(
 			array('teampage', 1, array(
@@ -93,7 +93,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function delete_group_data()
+	public function delete_group_data()
 	{
 		return array(
 			array('teampage', 1, false, array(
@@ -147,7 +147,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function move_up_data()
+	public function move_up_data()
 	{
 		return array(
 			array('teampage', 1, array(
@@ -186,7 +186,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function move_down_data()
+	public function move_down_data()
 	{
 		return array(
 			array('teampage', 1, array(
@@ -225,7 +225,7 @@ class phpbb_group_positions_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public static function move_data()
+	public function move_data()
 	{
 		return array(
 			array('teampage', 1, 1, array(

@@ -343,7 +343,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 			$userdata = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$auth2 = new auth();
+			$auth2 = new phpbb_auth();
 			$auth2->acl($userdata);
 
 			if (!$auth2->acl_get('a_') && !$auth2->acl_get('m_') && !$auth2->acl_getf_global('m_'))
@@ -1666,6 +1666,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 
 	$subject = censor_text($subject);
 
+	// Exclude guests, current user and banned users from notifications
 	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
 
 	if (!sizeof($recipients))
@@ -1673,18 +1674,12 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 		return;
 	}
 
-	// Get banned User ID's
-	$sql = 'SELECT ban_userid
-		FROM ' . BANLIST_TABLE . '
-		WHERE ' . $db->sql_in_set('ban_userid', array_map('intval', array_keys($recipients))) . '
-			AND ban_exclude = 0';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
+	if (!function_exists('phpbb_get_banned_user_ids'))
 	{
-		unset($recipients[$row['ban_userid']]);
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
+	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients));
+	$recipients = array_diff(array_keys($recipients), $banned_users);
 
 	if (!sizeof($recipients))
 	{
@@ -1693,7 +1688,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 
 	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
 		FROM ' . USERS_TABLE . '
-		WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($recipients)));
+		WHERE ' . $db->sql_in_set('user_id', $recipients);
 	$result = $db->sql_query($sql);
 
 	$msg_list_ary = array();

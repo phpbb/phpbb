@@ -1214,6 +1214,7 @@ CREATE TABLE phpbb_reports (
 	report_closed number(1) DEFAULT '0' NOT NULL,
 	report_time number(11) DEFAULT '0' NOT NULL,
 	report_text clob DEFAULT '' ,
+	reported_post_text clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
 )
 /
@@ -1444,17 +1445,15 @@ CREATE TABLE phpbb_styles (
 	style_name varchar2(765) DEFAULT '' ,
 	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
-	template_id number(8) DEFAULT '0' NOT NULL,
-	theme_id number(8) DEFAULT '0' NOT NULL,
+	style_path varchar2(100) DEFAULT '' ,
+	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
+	style_parent_id number(4) DEFAULT '0' NOT NULL,
+	style_parent_tree clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_styles PRIMARY KEY (style_id),
 	CONSTRAINT u_phpbb_style_name UNIQUE (style_name)
 )
 /
 
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id)
-/
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id)
-/
 
 CREATE SEQUENCE phpbb_styles_seq
 /
@@ -1467,69 +1466,6 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_styles_seq.nextval
 	INTO :new.style_id
-	FROM dual;
-END;
-/
-
-
-/*
-	Table: 'phpbb_styles_template'
-*/
-CREATE TABLE phpbb_styles_template (
-	template_id number(8) NOT NULL,
-	template_name varchar2(765) DEFAULT '' ,
-	template_copyright varchar2(765) DEFAULT '' ,
-	template_path varchar2(100) DEFAULT '' ,
-	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
-	template_inherits_id number(4) DEFAULT '0' NOT NULL,
-	template_inherit_path varchar2(255) DEFAULT '' ,
-	CONSTRAINT pk_phpbb_styles_template PRIMARY KEY (template_id),
-	CONSTRAINT u_phpbb_tmplte_nm UNIQUE (template_name)
-)
-/
-
-
-CREATE SEQUENCE phpbb_styles_template_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_styles_template
-BEFORE INSERT ON phpbb_styles_template
-FOR EACH ROW WHEN (
-	new.template_id IS NULL OR new.template_id = 0
-)
-BEGIN
-	SELECT phpbb_styles_template_seq.nextval
-	INTO :new.template_id
-	FROM dual;
-END;
-/
-
-
-/*
-	Table: 'phpbb_styles_theme'
-*/
-CREATE TABLE phpbb_styles_theme (
-	theme_id number(8) NOT NULL,
-	theme_name varchar2(765) DEFAULT '' ,
-	theme_copyright varchar2(765) DEFAULT '' ,
-	theme_path varchar2(100) DEFAULT '' ,
-	CONSTRAINT pk_phpbb_styles_theme PRIMARY KEY (theme_id),
-	CONSTRAINT u_phpbb_theme_name UNIQUE (theme_name)
-)
-/
-
-
-CREATE SEQUENCE phpbb_styles_theme_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_styles_theme
-BEFORE INSERT ON phpbb_styles_theme
-FOR EACH ROW WHEN (
-	new.theme_id IS NULL OR new.theme_id = 0
-)
-BEGIN
-	SELECT phpbb_styles_theme_seq.nextval
-	INTO :new.theme_id
 	FROM dual;
 END;
 /

@@ -25,8 +25,4 @@ require_once 'test_framework/phpbb_test_case_helpers.php';
 require_once 'test_framework/phpbb_test_case.php';
 require_once 'test_framework/phpbb_database_test_case.php';
 require_once 'test_framework/phpbb_database_test_connection_manager.php';
-
-if (version_compare(PHP_VERSION, '5.3.0-dev', '>='))
-{
-	require_once 'test_framework/phpbb_functional_test_case.php';
-}
+require_once 'test_framework/phpbb_functional_test_case.php';

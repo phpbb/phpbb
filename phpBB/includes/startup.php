@@ -19,7 +19,8 @@ if (!defined('E_DEPRECATED'))
 {
 	define('E_DEPRECATED', 8192);
 }
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+$level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+error_reporting($level);
 
 /*
 * Remove variables created by register_globals from the global scope
@@ -144,6 +145,37 @@ if (function_exists('date_default_timezone_set') && function_exists('date_defaul
 	// and then falls back to UTC when everything fails.
 	// We just set the timezone to whatever date_default_timezone_get() returns.
 	date_default_timezone_set(@date_default_timezone_get());
+}
+
+// Autoloading of dependencies.
+// Three options are supported:
+// 1. If dependencies are installed with Composer, Composer will create a
+//    vendor/.composer/autoload.php. If this file exists it will be
+//    automatically used by phpBB. This is the default mode that phpBB
+//    will use when shipped.
+// 2. To disable composer autoloading, PHPBB_NO_COMPOSER_AUTOLOAD can be specified.
+// 	  Additionally specify PHPBB_AUTOLOAD=/path/to/autoload.php in the
+//    environment. This is useful for running CLI scripts and tests.
+//    /path/to/autoload.php should define and register class loaders
+//    for all of phpBB's dependencies.
+// 3. You can also set PHPBB_NO_COMPOSER_AUTOLOAD without setting PHPBB_AUTOLOAD.
+//    In this case autoloading needs to be defined before running any phpBB
+//    script. This might be useful in cases when phpBB is integrated into a
+//    larger program.
+if (getenv('PHPBB_NO_COMPOSER_AUTOLOAD'))
+{
+	if (getenv('PHPBB_AUTOLOAD'))
+	{
+		require(getenv('PHPBB_AUTOLOAD'));
+	}
+}
+else
+{
+	if (!file_exists($phpbb_root_path . 'vendor/.composer/autoload.php'))
+	{
+		trigger_error('You have not set up composer dependencies. See http://getcomposer.org/.', E_USER_ERROR);
+	}
+	require($phpbb_root_path . 'vendor/.composer/autoload.php');
 }
 
 $starttime = explode(' ', microtime());

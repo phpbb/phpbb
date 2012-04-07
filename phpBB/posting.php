@@ -38,7 +38,7 @@ $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['full_editor']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
@@ -1198,8 +1198,8 @@ if (!sizeof($error) && $preview)
 			'PREVIEW_MESSAGE'		=> $preview_message,
 			'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-			'S_DISPLAY_PREVIEW'		=> true)
-		);
+			'S_DISPLAY_PREVIEW'		=> !empty($preview_message),
+		));
 	}
 }
 

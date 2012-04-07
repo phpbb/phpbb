@@ -128,7 +128,7 @@ class acp_users
 		$dropdown_modes = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$this->p_master->module_auth($row['module_auth']))
+			if (!$this->p_master->module_auth_self($row['module_auth']))
 			{
 				continue;
 			}
@@ -1555,7 +1555,7 @@ class acp_users
 								|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
 							{
 								// We also need to check if the user has the permission to cloak.
-								$user_auth = new auth();
+								$user_auth = new phpbb_auth();
 								$user_auth->acl($user_row);
 
 								$session_sql_ary = array(

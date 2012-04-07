@@ -17,9 +17,9 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.2.0') < 0)
+if (version_compare(PHP_VERSION, '5.3.2') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.2.0 or higher before trying to install phpBB 3.1');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.2 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
@@ -75,8 +75,6 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
-include($phpbb_root_path . 'includes/auth.' . $phpEx);
-include($phpbb_root_path . 'includes/session.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
@@ -92,6 +90,7 @@ $cache = $cache_factory->get_service();
 $phpbb_class_loader_ext->set_cache($cache->get_driver());
 $phpbb_class_loader->set_cache($cache->get_driver());
 
+$phpbb_dispatcher = new phpbb_event_dispatcher();
 $request = new phpbb_request();
 
 // make sure request_var uses this request instance
@@ -177,8 +176,8 @@ $sub = request_var('sub', '');
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$user = new user();
-$auth = new auth();
+$user = new phpbb_user();
+$auth = new phpbb_auth();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -201,11 +200,12 @@ $config = new phpbb_config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_template_locator = new phpbb_template_locator();
-$phpbb_template_path_provider = new phpbb_template_path_provider();
-$template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_template_locator, $phpbb_template_path_provider);
-$template->set_ext_dir_prefix('adm/');
-$template->set_custom_template('../adm/style', 'admin');
+$phpbb_style_resource_locator = new phpbb_style_resource_locator();
+$phpbb_style_path_provider = new phpbb_style_path_provider();
+$template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider);
+$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
+$style->set_ext_dir_prefix('adm/');
+$style->set_custom_style('admin', '../adm/style', '');
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 

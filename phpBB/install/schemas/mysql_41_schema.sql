@@ -647,6 +647,7 @@ CREATE TABLE phpbb_reports (
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumtext NOT NULL,
+	reported_post_text mediumtext NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -760,37 +761,12 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (style_id),
-	UNIQUE style_name (style_name),
-	KEY template_id (template_id),
-	KEY theme_id (theme_id)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_template'
-CREATE TABLE phpbb_styles_template (
-	template_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	template_name varchar(255) DEFAULT '' NOT NULL,
-	template_copyright varchar(255) DEFAULT '' NOT NULL,
-	template_path varchar(100) DEFAULT '' NOT NULL,
+	style_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
-	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
-	PRIMARY KEY (template_id),
-	UNIQUE tmplte_nm (template_name)
-) CHARACTER SET `utf8` COLLATE `utf8_bin`;
-
-
-# Table: 'phpbb_styles_theme'
-CREATE TABLE phpbb_styles_theme (
-	theme_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	theme_name varchar(255) DEFAULT '' NOT NULL,
-	theme_copyright varchar(255) DEFAULT '' NOT NULL,
-	theme_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (theme_id),
-	UNIQUE theme_name (theme_name)
+	style_parent_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
+	style_parent_tree text NOT NULL,
+	PRIMARY KEY (style_id),
+	UNIQUE style_name (style_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

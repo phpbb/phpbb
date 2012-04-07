@@ -853,6 +853,7 @@ CREATE TABLE phpbb_reports (
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
 	report_text TEXT DEFAULT '' NOT NULL,
+	reported_post_text TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
 );
 
@@ -994,47 +995,14 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
-	template_id INT4 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
-	theme_id INT4 DEFAULT '0' NOT NULL CHECK (theme_id >= 0),
+	style_path varchar(100) DEFAULT '' NOT NULL,
+	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
+	style_parent_id INT4 DEFAULT '0' NOT NULL CHECK (style_parent_id >= 0),
+	style_parent_tree varchar(8000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (style_id)
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
-
-/*
-	Table: 'phpbb_styles_template'
-*/
-CREATE SEQUENCE phpbb_styles_template_seq;
-
-CREATE TABLE phpbb_styles_template (
-	template_id INT4 DEFAULT nextval('phpbb_styles_template_seq'),
-	template_name varchar(255) DEFAULT '' NOT NULL,
-	template_copyright varchar(255) DEFAULT '' NOT NULL,
-	template_path varchar(100) DEFAULT '' NOT NULL,
-	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
-	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
-	template_inherit_path varchar(255) DEFAULT '' NOT NULL,
-	PRIMARY KEY (template_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
-
-/*
-	Table: 'phpbb_styles_theme'
-*/
-CREATE SEQUENCE phpbb_styles_theme_seq;
-
-CREATE TABLE phpbb_styles_theme (
-	theme_id INT4 DEFAULT nextval('phpbb_styles_theme_seq'),
-	theme_name varchar(255) DEFAULT '' NOT NULL,
-	theme_copyright varchar(255) DEFAULT '' NOT NULL,
-	theme_path varchar(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (theme_id)
-);
-
-CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
 
 /*
 	Table: 'phpbb_topics'

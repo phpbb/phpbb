@@ -352,6 +352,10 @@ class phpbb_extension_manager
 	public function all_available()
 	{
 		$available = array();
+		if (!is_dir($this->phpbb_root_path . 'ext/'))
+		{
+			return $available;
+		}
 
 		$iterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/'),
@@ -427,6 +431,28 @@ class phpbb_extension_manager
 			}
 		}
 		return $disabled;
+	}
+	
+	/**
+	* Check to see if a given extension is available on the filesystem
+	*
+	* @param string $name Extension name to check NOTE: Can be user input
+	* @return bool Depending on whether or not the extension is available
+	*/
+	public function available($name)
+	{
+		return file_exists($this->get_extension_path($name, true));
+	}
+
+	/**
+	* Check to see if a given extension is enabled
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is enabled
+	*/
+	public function enabled($name)
+	{
+		return isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'];
 	}
 
 	/**

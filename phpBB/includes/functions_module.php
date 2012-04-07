@@ -128,7 +128,7 @@ class p_master
 		foreach ($this->module_cache['modules'] as $key => $row)
 		{
 			// Not allowed to view module?
-			if (!$this->module_auth($row['module_auth']))
+			if (!$this->module_auth_self($row['module_auth']))
 			{
 				unset($this->module_cache['modules'][$key]);
 				continue;
@@ -315,9 +315,23 @@ class p_master
 	}
 
 	/**
-	* Check module authorisation
+	* Check module authorisation.
+	*
+	* This is a non-static version that uses $this->acl_forum_id
+	* for the forum id.
 	*/
-	function module_auth($module_auth, $forum_id = false)
+	function module_auth_self($module_auth)
+	{
+		return self::module_auth($module_auth, $this->acl_forum_id);
+	}
+
+	/**
+	* Check module authorisation.
+	*
+	* This is a static version, it must be given $forum_id.
+	* See also module_auth_self.
+	*/
+	static function module_auth($module_auth, $forum_id)
 	{
 		global $auth, $config;
 		global $request;
@@ -362,10 +376,8 @@ class p_master
 
 		$module_auth = implode(' ', $tokens);
 
-		// Make sure $id seperation is working fine
+		// Make sure $id separation is working fine
 		$module_auth = str_replace(' , ', ',', $module_auth);
-
-		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
 
 		$is_auth = false;
 		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '$request->variable(\'\\1\', false)'), $module_auth) . ');');

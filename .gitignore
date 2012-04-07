@@ -3,12 +3,16 @@
 /phpBB/cache/*.html
 /phpBB/cache/*.php
 /phpBB/cache/queue.php.lock
+/phpBB/composer.phar
 /phpBB/config.php
+/phpBB/config_dev.php
+/phpBB/config_test.php
 /phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
 /phpBB/images/avatars/upload/*
 /phpBB/store/*
+/phpBB/vendor
 /tests/phpbb_unit_tests.sqlite2
 /tests/test_config.php
 /tests/tmp/*
