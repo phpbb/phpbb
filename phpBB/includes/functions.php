@@ -5076,6 +5076,7 @@ function page_footer($run_cron = true)
 
 	$vars = array('run_cron', 'page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_footer_override', compact($vars)));
+
 	if ($page_footer_override)
 	{
 		return;
