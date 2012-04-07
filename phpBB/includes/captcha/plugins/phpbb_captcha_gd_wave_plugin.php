@@ -39,7 +39,7 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 		}
 	}
 
-	function get_instance()
+	public static function get_instance()
 	{
 		return new phpbb_captcha_gd_wave();
 	}
