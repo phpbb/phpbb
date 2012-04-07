@@ -234,20 +234,20 @@ class acp_users
 					ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
 					ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
 				);
-				
-				$delete_type_dropdown = array('<select name="delete_type">');
-				
+
+				$type = '';
 				foreach($types as $type_key => $type_value)
 				{
-					$selected = ($type_key == $row['user_delete_type']) ? true : false;
-					$delete_type_dropdown[] = '<option value="' . $type_key . '"' . $selected . '>' . $type_value . '</option>';
+					if ($row['user_delete_pending_type'] == $type_key)
+					{
+						$type = $type_value;
+					}					
 				}
-				$delete_type_dropdown[] = '</select>';
 
 				$template->assign_block_vars('queue', array(
 					'USERNAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 					'USER_ID'		=> $row['user_id'],
-					'DELETE_TYPE'	=> implode('', $delete_type_dropdown),
+					'DELETE_TYPE'	=> $type,
 					'DELETE_REASON'	=> $row['user_delete_pending_reason'],
 					'DELETE_TIME'	=> $user->format_date($row['user_delete_pending_time']),
 				));
