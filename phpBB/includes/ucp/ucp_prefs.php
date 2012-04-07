@@ -65,9 +65,9 @@ class ucp_prefs
 					{
 						$data['style'] = $config['default_style'];
 					}
-					else if (!phpbb_validate_style($data['style']))
+					else if (!phpbb_style_is_active($data['style']))
 					{
-						$data['style'] = (int) $user->data['user_style']);
+						$data['style'] = (int) $user->data['user_style'];
 					}
 
 					$error = validate_data($data, array(

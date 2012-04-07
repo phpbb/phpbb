@@ -1952,7 +1952,7 @@ function validate_jabber($jid)
 * @param int $style_id The style_id of a style which should be checked if activated or not.
 * @return boolean
 */
-function phpbb_validate_style($style_id)
+function phpbb_style_is_active($style_id)
 {
 	global $db;
 

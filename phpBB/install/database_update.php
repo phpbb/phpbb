@@ -2030,18 +2030,18 @@ function change_database_data(&$no_updates, $version)
 		// Changes from 3.0.10 to 3.0.11-RC1
 		case '3.0.10':
 			// Updates users having current style a deactivated one
-			$deactivated_style_ids = array();
 			$sql = 'SELECT style_id
 					FROM ' . STYLES_TABLE . '
 					WHERE style_active = 0';
 			$result = $db->sql_query($sql);
 
+			$deactivated_style_ids = array();
 			while ($temp_style_id = $db->sql_fetchfield('style_id', false, $result))
 			{
 				$deactivated_style_ids[] = (int) $temp_style_id;
 			}
-
 			$db->sql_freeresult($result);
+
 			if (!empty($deactivated_style_ids))
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -2049,6 +2049,7 @@ function change_database_data(&$no_updates, $version)
 						WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
 				$result = $db->sql_query($sql);
 			}
+
 			$no_updates = false;
 		break;
 	}
