@@ -1,0 +1,10 @@
+Subject: Your account has been deleted
+
+{USERNAME},
+
+Your user account on "{SITENAME}" has been deleted. All profile information, posts, topics, and private messages have been deleted.
+This operation cannot be undone, but if you wish to return to {SITENAME}, you may register a new account.
+
+If you feel that this was done in error, please respond to this email to inform the forum administration.
+
+{EMAIL_SIG}

@@ -96,26 +96,82 @@ class acp_users
 			{
 				if (isset($_POST['approve']) && !isset($_POST['deny']))
 				{
-					if (!function_exists('phpbb_delete_account'))
+					if (!function_exists('phpbb_delete_accounts'))
 					{
 						include("{$phpbb_root_path}includes/functions_user.$phpEx");
 					}
-					// This won't work yet, since the first variable needs to be the user ID
-					// since this will be a form potentially allowing multiple users to be selected
-					// for deletion at once (similar to MCP handling of topics)
-					// we'll need to put this code into a method and make it recursive for each user ID
-					phpbb_delete_account(true, $_POST['delete_type']);
+
+					$del_user_ids = $request->variable('delete_user_ids', array(0));
+
+					// Let's get the information we're going to need for the users
+					$sql = 'SELECT username,
+								user_lang,
+								user_email,
+								user_jabber,
+								user_delete_type,
+								user_delete_pending_reason
+						FROM ' . USERS_TABLE . '
+						WHERE user_delete_pending = 1
+							AND user_delete_type NOT ' . ACCOUNT_DELETE_NONE . '
+							AND ' . $db->sql_in_set('user_id', explode(',', $del_user_ids));
+					$result = $db->sql_query($sql);
+
+					$del_user_data = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$del_user_data[$row['user_id']] = array(
+							'type'		=> $row['user_delete_type'],
+							'lang'		=> $row['user_lang'],
+							'email'		=> $row['user_email'],
+							'reason'	=> $row['user_delete_pending_reason'],
+							'im'		=> $row['user_jabber'],
+						);
+					}
+
+					phpbb_delete_accounts($del_user_data, true);
+
 					$message = 'ACCOUNT_DELETE_REQUEST_APPROVED';
 
 					// @todo email the user
 					$messenger = new messenger;
-					$messenger->to($user->data['user_email']);
-					$messenger->from($config['board_contact']);
-					$messenger->replyto($config['board_contact']);
-					$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
+					foreach ($del_user_data as $user_id => $user_data)
+					{
+						$email_template = 'account_delete_';
+						switch ($user_data['type'])
+						{
+							case ACCOUNT_DELETE_SOFT:
+								$email_template .= 'soft';
+							break;
+
+							case ACCOUNT_DELETE_PROFILE:
+								$email_template .= 'profile';
+							break;
+
+							case ACCOUNT_DELETE_HARD:
+								$email_template .= 'hard';
+							break;
+
+						}
+						$messenger->template($email_template, $user_data['lang']);
+
+						$messenger->to($user_data['email'], $user_data['username']);
+						$messenger->im($user_data['im'], $user_data['username']);
+
+						$messenger->from($config['board_contact']);
+						$messenger->replyto($config['board_contact']);
+
+						$messenger->subject($user->lang("{$message}_EMAIL_SUBJECT"));
+
+						$messenger->assign_vars(array(
+							'USERNAME'	=> $user_data['username'],
+						));
+					}
+					$messenger->save_queue();
 				}
 				else if (isset($_POST['deny']))
 				{
+					/*
+					// @todo make this work
 					$sql_ary = array(
 						'user_delete_pending'			=> 0,
 						'user_delete_pending_time'		=> 0,
@@ -156,12 +212,17 @@ class acp_users
 						include("{$phpbb_root_path}includes/functions_privmsgs.$phpEx");
 					}
 					submit_pm('post', $subject, &$data, false);
+					*/
 				}
 				trigger_error($message);
 			}
 
-			$sql = 'SELECT user_id, username, user_colour, user_delete_pending_time, user_delete_pending_reason
-			, user_delete_pending_type 
+			$sql = 'SELECT user_id,
+						username,
+						user_colour,
+						user_delete_pending_time,
+						user_delete_pending_reason,
+						user_delete_pending_type 
 				FROM ' . USERS_TABLE . '
 				WHERE user_delete_pending = 1
 				ORDER BY user_delete_pending_time ASC';
@@ -169,9 +230,9 @@ class acp_users
 			while($row = $db->sql_fetchrow($resut))
 			{
 				$types = array(
-					SELF_ACCOUNT_DELETE_SOFT	=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
-					SELF_ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
-					SELF_ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
+					ACCOUNT_DELETE_SOFT	=> $user->lang('ACP_ACCOUNT_DELETE_SOFT'),
+					ACCOUNT_DELETE_PROFILE => $user->lang('ACP_ACCOUNT_DELETE_PROFILE'),
+					ACCOUNT_DELETE_HARD	=> $user->lang('ACP_ACCOUNT_DELETE_HARD'),
 				);
 				
 				$delete_type_dropdown = array('<select name="delete_type">');
@@ -181,7 +242,7 @@ class acp_users
 					$selected = ($type_key == $row['user_delete_type']) ? true : false;
 					$delete_type_dropdown[] = '<option value="' . $type_key . '"' . $selected . '>' . $type_value . '</option>';
 				}
-				$delete_type_dropdown[] = '</select>'
+				$delete_type_dropdown[] = '</select>';
 
 				$template->assign_block_vars('queue', array(
 					'USERNAME'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),

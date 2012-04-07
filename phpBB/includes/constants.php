@@ -57,6 +57,12 @@ define('ACL_NEVER', 0);
 define('ACL_YES', 1);
 define('ACL_NO', -1);
 
+// Self Account Deletion
+define('ACCOUNT_DELETE_NONE', 0);
+define('ACCOUNT_DELETE_SOFT', 1);
+define('ACCOUNT_DELETE_PROFILE', 2);
+define('ACCOUNT_DELETE_HARD', 3);
+
 // Login error codes
 define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
@@ -210,12 +216,6 @@ define('CAPTCHA_MAX_CHARS', 7);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);
-
-// Self Account Deletion
-define('SELF_ACCOUNT_DELETE_NONE', 0);
-define('SELF_ACCOUNT_DELETE_SOFT', 1);
-define('SELF_ACCOUNT_DELETE_PROFILE', 2);
-define('SELF_ACCOUNT_DELETE_HARD', 3);
 
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');
