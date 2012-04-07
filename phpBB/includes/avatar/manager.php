@@ -116,7 +116,8 @@ class phpbb_avatar_manager
 	/**
 	* @TODO
 	**/
-	public function get_valid_drivers() {
+	public function get_valid_drivers()
+	{
 		if (self::$valid_drivers === false)
 		{
 			$this->load_valid_drivers();
