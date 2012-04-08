@@ -24,6 +24,15 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 {
+	private $phpbb_root_path, $phpEx, $config;
+
+	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->config = $config;
+	}
+
 	/**
 	* Runs this cron task.
 	*
@@ -31,14 +40,12 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $config, $error;
-
 		// Select the search method
-		$search_type = basename($config['search_type']);
+		$search_type = basename($this->config['search_type']);
 
 		if (!class_exists($search_type))
 		{
-			include("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+			include($this->phpbb_root_path . "includes/search/$search_type." . $this->phpEx);
 		}
 
 		// We do some additional checks in the module to ensure it can actually be utilised
@@ -62,12 +69,10 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $phpbb_root_path, $phpEx, $config;
-
 		// Select the search method
-		$search_type = basename($config['search_type']);
+		$search_type = basename($this->config['search_type']);
 
-		return file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
+		return file_exists($this->phpbb_root_path . 'includes/search/' . $search_type . '.' . $this->phpEx);
 	}
 
 	/**
@@ -81,7 +86,6 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['search_last_gc'] < time() - $config['search_gc'];
+		return $this->config['search_last_gc'] < time() - $this->config['search_gc'];
 	}
 }

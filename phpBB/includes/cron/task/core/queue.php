@@ -22,6 +22,15 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 {
+	private $phpbb_root_path, $phpEx, $config;
+
+	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config)
+	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->config = $config;
+	}
+
 	/**
 	* Runs this cron task.
 	*
@@ -29,10 +38,9 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx;
 		if (!class_exists('queue'))
 		{
-			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->phpEx);
 		}
 		$queue = new queue();
 		$queue->process();
@@ -47,8 +55,7 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $phpbb_root_path, $phpEx;
-		return file_exists($phpbb_root_path . 'cache/queue.' . $phpEx);
+		return file_exists($this->phpbb_root_path . 'cache/queue.' . $this->phpEx);
 	}
 
 	/**
@@ -61,7 +68,6 @@ class phpbb_cron_task_core_queue extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['last_queue_run'] < time() - $config['queue_interval_config'];
+		return $this->config['last_queue_run'] < time() - $this->config['queue_interval_config'];
 	}
 }

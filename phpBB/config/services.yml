@@ -1,3 +1,6 @@
+imports:
+    - { resource: cron_tasks.yml }
+
 services:
     class_loader:
         class: phpbb_class_loader
@@ -107,7 +110,7 @@ services:
     cron.task_provider:
         class: phpbb_cron_task_provider
         arguments:
-            - @ext.manager
+            - @container
 
     cron.manager:
         class: phpbb_cron_manager

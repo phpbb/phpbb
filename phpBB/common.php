@@ -88,42 +88,43 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$container = new ContainerBuilder();
-$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/config'));
+$phpbb_container = new ContainerBuilder();
+$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/config'));
 $loader->load('parameters.yml');
 $loader->load('services.yml');
 
-$container->setParameter('core.root_path', $phpbb_root_path);
-$container->setParameter('core.php_ext', $phpEx);
+$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+$phpbb_container->setParameter('core.php_ext', $phpEx);
+$phpbb_container->set('container', $phpbb_container);
 
 // Setup class loader first
-$phpbb_class_loader = $container->get('class_loader');
-$phpbb_class_loader_ext = $container->get('class_loader.ext');
+$phpbb_class_loader = $phpbb_container->get('class_loader');
+$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 // set up caching
-$cache = $container->get('cache');
+$cache = $phpbb_container->get('cache');
 
 // Instantiate some basic classes
-$phpbb_dispatcher = $container->get('dispatcher');
-$request	= $container->get('request');
-$user		= $container->get('user');
-$auth		= $container->get('auth');
-$db			= $container->get('dbal.conn');
+$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+$request	= $phpbb_container->get('request');
+$user		= $phpbb_container->get('user');
+$auth		= $phpbb_container->get('auth');
+$db			= $phpbb_container->get('dbal.conn');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Grab global variables, re-cache if necessary
-$config = $container->get('config');
+$config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 // load extensions
-$phpbb_extension_manager = $container->get('ext.manager');
-$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
-$template = $container->get('template');
-$style = $container->get('style');
+$template = $phpbb_container->get('template');
+$style = $phpbb_container->get('style');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
@@ -136,5 +137,5 @@ foreach ($cache->obtain_hooks() as $hook)
 
 if (!$config['use_system_cron'])
 {
-	$cron = $container->get('cron.manager');
+	$cron = $phpbb_container->get('cron.manager');
 }

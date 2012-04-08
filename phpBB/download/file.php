@@ -44,23 +44,24 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-	$container = new ContainerBuilder();
-	$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../config'));
+	$phpbb_container = new ContainerBuilder();
+	$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__.'/../config'));
 	$loader->load('parameters.yml');
 	$loader->load('services.yml');
 
-	$container->setParameter('core.root_path', $phpbb_root_path);
-	$container->setParameter('core.php_ext', $phpEx);
+	$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+	$phpbb_container->setParameter('core.php_ext', $phpEx);
+	$phpbb_container->set('container', $phpbb_container);
 
-	$phpbb_class_loader = $container->get('class_loader');
-	$phpbb_class_loader_ext = $container->get('class_loader.ext');
+	$phpbb_class_loader = $phpbb_container->get('class_loader');
+	$phpbb_class_loader_ext = $phpbb_container->get('class_loader.ext');
 
 	// set up caching
-	$cache = $container->get('cache');
+	$cache = $phpbb_container->get('cache');
 
-	$phpbb_dispatcher = $container->get('dispatcher');
-	$request	= $container->get('request');
-	$db			= $container->get('dbal.conn');
+	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	$request	= $phpbb_container->get('request');
+	$db			= $phpbb_container->get('dbal.conn');
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -71,13 +72,13 @@ if (isset($_GET['avatar']))
 
 	request_var('', 0, false, false, $request);
 
-	$config = $container->get('config');
+	$config = $phpbb_container->get('config');
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
 	// load extensions
-	$phpbb_extension_manager = $container->get('ext.manager');
-	$phpbb_subscriber_loader = $container->get('event.subscriber_loader');
+	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+	$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
