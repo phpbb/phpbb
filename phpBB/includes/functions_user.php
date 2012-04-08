@@ -1949,6 +1949,8 @@ function validate_jabber($jid)
 }
 
 /**
+* Verifies whether a style ID corresponds to an active style.
+*
 * @param int $style_id The style_id of a style which should be checked if activated or not.
 * @return boolean
 */
