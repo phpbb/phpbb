@@ -468,7 +468,8 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']))
+							$driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']);
+							if ($driver)
 							{
 								$driver->delete($user_row);
 							}
