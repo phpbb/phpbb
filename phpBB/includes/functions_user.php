@@ -1949,6 +1949,27 @@ function validate_jabber($jid)
 }
 
 /**
+* Verifies whether a style ID corresponds to an active style.
+*
+* @param int $style_id The style_id of a style which should be checked if activated or not.
+* @return boolean
+*/
+function phpbb_style_is_active($style_id)
+{
+	global $db;
+
+	$sql = 'SELECT style_active
+		FROM ' . STYLES_TABLE . '
+		WHERE style_id = '. (int) $style_id;
+	$result = $db->sql_query($sql);
+
+	$style_is_active = (bool) $db->sql_fetchfield('style_active');
+	$db->sql_freeresult($result);
+
+	return $style_is_active;
+}
+
+/**
 * Remove avatar
 */
 function avatar_delete($mode, $row, $clean_db = false)

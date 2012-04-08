@@ -993,6 +993,8 @@ function database_update_info()
 		'3.0.10-RC2'	=> array(),
 		// No changes from 3.0.10-RC3 to 3.0.10
 		'3.0.10-RC3'	=> array(),
+		// No changes from 3.0.10 to 3.0.11-RC1
+		'3.0.10'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
 	);
@@ -2023,6 +2025,32 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.10-RC3 to 3.0.10
 		case '3.0.10-RC3':
+		break;
+		
+		// Changes from 3.0.10 to 3.0.11-RC1
+		case '3.0.10':
+			// Updates users having current style a deactivated one
+			$sql = 'SELECT style_id
+				FROM ' . STYLES_TABLE . '
+				WHERE style_active = 0';
+			$result = $db->sql_query($sql);
+
+			$deactivated_style_ids = array();
+			while ($style_id = $db->sql_fetchfield('style_id', false, $result))
+			{
+				$deactivated_style_ids[] = (int) $style_id;
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($deactivated_style_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $config['default_style'] .'
+					WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
+			$no_updates = false;
 		break;
 	}
 }
