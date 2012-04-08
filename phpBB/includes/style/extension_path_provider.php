@@ -82,20 +82,24 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 		$directories = array();
 
 		$finder = $this->extension_manager->get_finder();
-		foreach ($this->base_path_provider as $path)
+		foreach ($this->base_path_provider as $key => $paths)
 		{
-			if ($path && !phpbb_is_absolute($path))
+			if ($key == 'style')
 			{
-				$directories = array_merge($directories, $finder
-					->directory('/' . $this->ext_dir_prefix . $path)
-					->get_directories()
-				);
+				foreach ($paths as $path)
+				{
+					$directories['style'][] = $path;
+					if ($path && !phpbb_is_absolute($path))
+					{
+						$result = $finder->directory('/' . $this->ext_dir_prefix . $path)
+							->get_directories(true, true);
+						foreach ($result as $ext => $ext_path)
+						{
+							$directories[$ext][] = $ext_path;
+						}
+					}
+				}
 			}
-		}
-
-		foreach ($this->base_path_provider as $path)
-		{
-			$directories[] = $path;
 		}
 
 		return $directories;
@@ -111,15 +115,5 @@ class phpbb_style_extension_path_provider extends phpbb_extension_provider imple
 	{
 		$this->base_path_provider->set_styles($styles);
 		$this->items = null;
-	}
-
-	/**
-	* Retrieves the path to the main style passed into set_styles()
-	*
-	* @return string Main style path
-	*/
-	public function get_main_style_path()
-	{
-		return $this->base_path_provider->get_main_style_path();
 	}
 }

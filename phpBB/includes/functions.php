@@ -4770,7 +4770,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
 		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> ($user->theme['style_parent_id']) ? "{$web_path}styles/" . rawurlencode($user->theme['style_parent_tree']) . '/template' : "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4860,6 +4860,7 @@ function page_footer($run_cron = true)
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
+		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
 		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);

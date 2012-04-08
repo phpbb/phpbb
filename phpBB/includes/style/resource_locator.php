@@ -39,12 +39,6 @@ class phpbb_style_resource_locator
 	private $roots = array();
 
 	/**
-	* Index of the main style in the roots array.
-	* @var int
-	*/
-	private $main_root_id = 0;
-
-	/**
 	* Location of templates directory within style directories.
 	* Must have trailing slash. Empty if templates are stored in root
 	* style directory, such as admin control panel templates.
@@ -70,17 +64,6 @@ class phpbb_style_resource_locator
 	private $filenames = array();
 
 	/**
-	* Set main style location (must have been added through set_paths first).
-	*
-	* @param string $style_path Path to style directory
-	* @return null
-	*/
-	public function set_main_style($style_path)
-	{
-		$this->main_root_id = array_search($style_path, $this->roots, true);
-	}
-
-	/**
 	* Sets the list of style paths
 	*
 	* These paths will be searched for style files in the provided order.
@@ -95,16 +78,18 @@ class phpbb_style_resource_locator
 		$this->roots = array();
 		$this->files = array();
 		$this->filenames = array();
-		$this->main_root_id = 0;
 
-		foreach ($style_paths as $path)
+		foreach ($style_paths as $key => $paths)
 		{
-			// Make sure $path has no ending slash
-			if (substr($path, -1) === '/')
+			foreach ($paths as $path)
 			{
-				$path = substr($path, 0, -1);
+				// Make sure $path has no ending slash
+				if (substr($path, -1) === '/')
+				{
+					$path = substr($path, 0, -1);
+				}
+				$this->roots[$key][] = $path;
 			}
-			$this->roots[] = $path;
 		}
 	}
 
@@ -125,9 +110,12 @@ class phpbb_style_resource_locator
 
 			$this->filename[$handle] = $filename;
 
-			foreach ($this->roots as $root_index => $root)
+			foreach ($this->roots as $root_key => $root_paths)
 			{
-				$this->files[$root_index][$handle] = $root . '/' . $this->template_path . $filename;
+				foreach ($root_paths as $root_index => $root)
+				{
+					$this->files[$root_key][$root_index][$handle] = $root . '/' . $this->template_path . $filename;
+				}
 			}
 		}
 	}
@@ -174,12 +162,12 @@ class phpbb_style_resource_locator
 	public function get_virtual_source_file_for_handle($handle)
 	{
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$this->main_root_id][$handle]))
+		if (!isset($this->files['style'][0][$handle]))
 		{
 			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		$source_file = $this->files[$this->main_root_id][$handle];
+		$source_file = $this->files['style'][0][$handle];
 		return $source_file;
 	}
 
@@ -197,31 +185,107 @@ class phpbb_style_resource_locator
 	* handle to a path without any filesystem or styles tree checks.
 	*
 	* @param string $handle Template handle (i.e. "friendly" template name)
+	* @param bool $find_all If true, each root path will be checked and function
+	*				will return array of files instead of string and will not
+	*				trigger a error if template does not exist
 	* @return string Source file path
 	*/
-	public function get_source_file_for_handle($handle)
+	public function get_source_file_for_handle($handle, $find_all = false)
 	{
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$this->main_root_id][$handle]))
+		if (!isset($this->files['style'][0][$handle]))
 		{
 			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
 		}
 
 		// locate a source file that exists
-		$source_file = $this->files[0][$handle];
+		$source_file = $this->files['style'][0][$handle];
 		$tried = $source_file;
-		for ($i = 1, $n = count($this->roots); $i < $n && !file_exists($source_file); $i++)
+		$found = false;
+		$found_all = array();
+		foreach ($this->roots as $root_key => $root_paths)
 		{
-			$source_file = $this->files[$i][$handle];
-			$tried .= ', ' . $source_file;
+			foreach ($root_paths as $root_index => $root)
+			{
+				$source_file = $this->files[$root_key][$root_index][$handle];
+				$tried .= ', ' . $source_file;
+				if (file_exists($source_file))
+				{
+					$found = true;
+					break;
+				}
+			}
+			if ($found)
+			{
+				if ($find_all)
+				{
+					$found_all[] = $source_file;
+					$found = false;
+				}
+				else
+				{
+					break;
+				}
+			}
 		}
 
 		// search failed
-		if (!file_exists($source_file))
+		if (!$found && !$find_all)
 		{
 			trigger_error("style resource locator: File for handle $handle does not exist. Could not find: $tried", E_USER_ERROR);
 		}
 
-		return $source_file;
+		return ($find_all) ? $found_all : $source_file;
+	}
+
+	/**
+	* Locates source file path, accounting for styles tree and verifying that
+	* the path exists.
+	*
+	* Unlike previous functions, this function works without template handle
+	* and it can search for more than one file. If more than one file name is
+	* specified, it will return location of file that it finds first.
+	*
+	* @param array $files List of files to locate.
+	* @param bool $return_default Determines what to return if file does not
+	*				exist. If true, function will return location where file is
+	*				supposed to be. If false, function will return false.
+	* @param bool $return_full_path If true, function will return full path
+	*				to file. If false, function will return file name. This
+	*				parameter can be used to check which one of set of files
+	*				is available.
+	* @return string or boolean Source file path if file exists or $return_default is
+	*				true. False if file does not exist and $return_default is false
+	*/
+	public function get_first_file_location($files, $return_default = false, $return_full_path = true)
+	{
+		// set default value
+		$default_result = false;
+
+		// check all available paths
+		foreach ($this->roots as $root_paths)
+		{
+			foreach ($root_paths as $path)
+			{
+				// check all files
+				foreach ($files as $filename)
+				{
+					$source_file = $path . '/' . $filename;
+					if (file_exists($source_file))
+					{
+						return ($return_full_path) ? $source_file : $filename;
+					}
+
+					// assign first file as result if $return_default is true
+					if ($return_default && $default_result === false)
+					{
+						$default_result = $source_file;
+					}
+				}
+			}
+		}
+
+		// search failed
+		return $default_result;
 	}
 }
