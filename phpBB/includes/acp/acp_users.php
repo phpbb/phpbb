@@ -33,6 +33,7 @@ class acp_users
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 		global $request;
+		global $phpbb_avatar_manager;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -467,8 +468,7 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
-							if ($driver = $avatar_manager->get_driver($user_row['user_avatar_type']))
+							if ($driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']))
 							{
 								$driver->delete($user_row);
 							}
@@ -1688,9 +1688,7 @@ class acp_users
 				$avatars_enabled = false;
 				if ($config['allow_avatar'])
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
-
-					$avatar_drivers = $avatar_manager->get_valid_drivers();
+					$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 
 					// This is normalised data, without the user_ prefix
@@ -1703,7 +1701,7 @@ class acp_users
 							$driver = request_var('avatar_driver', '');
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
-								$avatar = $avatar_manager->get_driver($driver);
+								$avatar = $phpbb_avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $avatar_data, $error);
 
 								if ($result && empty($error))
@@ -1758,7 +1756,7 @@ class acp_users
 								'avatar' => "acp_avatar_options_$driver.html",
 							));
 
-							$avatar = $avatar_manager->get_driver($driver);
+							$avatar = $phpbb_avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{

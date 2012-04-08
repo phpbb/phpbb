@@ -30,6 +30,7 @@ class ucp_profile
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 		global $request;
+		global $phpbb_avatar_manager;
 
 		$user->add_lang('posting');
 
@@ -552,11 +553,9 @@ class ucp_profile
 
 				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
-
-					$avatar_drivers = $avatar_manager->get_valid_drivers();
+					$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
-					
+
 					// This is normalised data, without the user_ prefix
 					$avatar_data = phpbb_avatar_driver::clean_row($user->data, phpbb_avatar_driver::FROM_USER);
 
@@ -567,7 +566,7 @@ class ucp_profile
 							$driver = request_var('avatar_driver', '');
 							if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 							{
-								$avatar = $avatar_manager->get_driver($driver);
+								$avatar = $phpbb_avatar_manager->get_driver($driver);
 								$result = $avatar->process_form($template, $avatar_data, $error);
 
 								if ($result && empty($error))
@@ -594,7 +593,7 @@ class ucp_profile
 							else
 							{
 								// They are removing their avatar or are trying to play games with us
-								if ($avatar = $avatar_manager->get_driver($user->data['user_avatar_type']))
+								if ($avatar = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
 								{
 									$avatar->delete($avatar_data);
 								}
@@ -634,7 +633,7 @@ class ucp_profile
 								'avatar' => "ucp_avatar_options_$driver.html",
 							));
 
-							$avatar = $avatar_manager->get_driver($driver);
+							$avatar = $phpbb_avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{

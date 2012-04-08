@@ -1313,8 +1313,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 	global $request;
-
-	static $avatar_manager = null;
+	global $phpbb_avatar_manager;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -1368,12 +1367,7 @@ function get_avatar($row, $alt, $ignore_config = false)
 		break;
 
 		default:
-			if (empty($avatar_manager))
-			{
-				$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->get_driver());
-			}
-
-			$avatar = $avatar_manager->get_driver($row['avatar_type']);
+			$avatar = $phpbb_avatar_manager->get_driver($row['avatar_type']);
 
 			if ($avatar)
 			{

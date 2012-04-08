@@ -26,6 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_avatar_manager;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -282,16 +283,13 @@ class acp_groups
 
 				// Setup avatar data for later
 				$avatars_enabled = false;
-				$avatar_manager = null;
 				$avatar_drivers = null;
 				$avatar_data = null;
 				$avatar_error = array();
 
 				if ($config['allow_avatar'])
 				{
-					$avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->getDriver());
-
-					$avatar_drivers = $avatar_manager->get_valid_drivers();
+					$avatar_drivers = $phpbb_avatar_manager->get_valid_drivers();
 					sort($avatar_drivers);
 
 					// This is normalised data, without the group_ prefix
@@ -337,7 +335,7 @@ class acp_groups
 						$driver = request_var('avatar_driver', '');
 						if (in_array($driver, $avatar_drivers) && $config["allow_avatar_$driver"])
 						{
-							$avatar = $avatar_manager->get_driver($driver);
+							$avatar = $phpbb_avatar_manager->get_driver($driver);
 							$result = $avatar->process_form($template, $avatar_data, $avatar_error);
 
 							if ($result && empty($avatar_error))
@@ -534,7 +532,7 @@ class acp_groups
 								'avatar' => "acp_avatar_options_$driver.html",
 							));
 
-							$avatar = $avatar_manager->get_driver($driver);
+							$avatar = $phpbb_avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $avatar_data, $avatar_error))
 							{

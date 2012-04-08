@@ -82,6 +82,8 @@ if (isset($_GET['avatar']))
 	$phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
 	$phpbb_subscriber_loader->load();
 
+	$phpbb_avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->get_driver());
+
 	$filename = request_var('avatar', '');
 	$avatar_group = false;
 	$exit = false;
