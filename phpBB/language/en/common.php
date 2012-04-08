@@ -169,7 +169,7 @@ $lang = array_merge($lang, array(
 	),
 
 	'EDIT_POST'							=> 'Edit post',
-	'ELLIPSIS'							=>	' ...',
+	'ELLIPSIS'							=>	'…',
 	'EMAIL'								=> 'E-mail', // Short form for EMAIL_ADDRESS
 	'EMAIL_ADDRESS'						=> 'E-mail address',
 	'EMAIL_SMTP_ERROR_RESPONSE'			=> 'Ran into problems sending e-mail at <strong>Line %1$s</strong>. Response: %2$s.',
