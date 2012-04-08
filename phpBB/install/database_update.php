@@ -2045,7 +2045,7 @@ function change_database_data(&$no_updates, $version)
 			if (!empty($deactivated_style_ids))
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_style = ' . $config['default_style'] .'
+						SET user_style = ' . (int) $config['default_style'] .'
 						WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
 				$result = $db->sql_query($sql);
 			}

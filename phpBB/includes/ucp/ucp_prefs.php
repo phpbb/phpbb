@@ -63,7 +63,7 @@ class ucp_prefs
 				{
 					if ($config['override_user_style'])
 					{
-						$data['style'] = $config['default_style'];
+						$data['style'] = (int) $config['default_style'];
 					}
 					else if (!phpbb_style_is_active($data['style']))
 					{
