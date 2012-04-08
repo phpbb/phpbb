@@ -2031,8 +2031,8 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.10':
 			// Updates users having current style a deactivated one
 			$sql = 'SELECT style_id
-					FROM ' . STYLES_TABLE . '
-					WHERE style_active = 0';
+				FROM ' . STYLES_TABLE . '
+				WHERE style_active = 0';
 			$result = $db->sql_query($sql);
 
 			$deactivated_style_ids = array();
@@ -2045,9 +2045,9 @@ function change_database_data(&$no_updates, $version)
 			if (!empty($deactivated_style_ids))
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_style = ' . (int) $config['default_style'] .'
-						WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
-				$result = $db->sql_query($sql);
+					SET user_style = ' . (int) $config['default_style'] .'
+					WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
+				_sql($sql, $errored, $error_ary);
 			}
 
 			$no_updates = false;
