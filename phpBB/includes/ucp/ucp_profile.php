@@ -557,7 +557,7 @@ class ucp_profile
 					sort($avatar_drivers);
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = phpbb_avatar_driver::clean_row($user->data, phpbb_avatar_driver_interface::FROM_USER);
+					$avatar_data = phpbb_avatar_manager::clean_row($user->data);
 
 					if ($submit)
 					{

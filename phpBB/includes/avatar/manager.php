@@ -125,4 +125,23 @@ class phpbb_avatar_manager
 
 		return array_keys(self::$valid_drivers);
 	}
+
+	/**
+	* Strip out user_ and group_ prefixes from keys
+	**/
+	public static function clean_row($row)
+	{
+		$keys = array_keys($row);
+		$values = array_values($row);
+
+		$keys = array_map(
+			function ($key)
+			{
+				return preg_replace('(user_|group_)', '', $key);
+			},
+			$row
+		);
+
+		return array_combine($keys, $values);
+	}
 }

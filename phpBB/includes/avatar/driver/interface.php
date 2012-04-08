@@ -22,12 +22,6 @@ if (!defined('IN_PHPBB'))
 interface phpbb_avatar_driver_interface
 {
 	/**
-	* @TODO
-	*/
-	const FROM_USER = 0;
-	const FROM_GROUP = 1;
-
-	/**
 	* Get the avatar url and dimensions
 	*
 	* @param $ignore_config Whether this function should respect the users prefs
@@ -63,9 +57,4 @@ interface phpbb_avatar_driver_interface
 	* @TODO
 	**/
 	public function delete($row);
-
-	/**
-	* @TODO
-	**/
-	public static function clean_row($row, $src = phpbb_avatar_driver_interface::FROM_USER);
 }

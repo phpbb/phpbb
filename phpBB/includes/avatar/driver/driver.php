@@ -119,45 +119,4 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	{
 		return true;
 	}
-
-	/**
-	* @inheritdoc
-	**/
-	public static function clean_row($row, $src = phpbb_avatar_driver_interface::FROM_USER)
-	{
-		$return = array();
-		$prefix = false;
-
-		if ($src == phpbb_avatar_driver_interface::FROM_USER)
-		{
-			$prefix = 'user_';
-		}
-		else if ($src == phpbb_avatar_driver_interface::FROM_GROUP)
-		{
-			$prefix = 'group_';
-		}
-
-		if ($prefix)
-		{
-			$len = strlen($prefix);
-			foreach ($row as $key => $val)
-			{
-				$sub = substr($key, 0, $len);
-				if ($sub == $prefix)
-				{
-					$return[substr($key, $len)] = $val;
-				}
-				else
-				{
-					$return[$key] = $val;
-				}
-			}
-		}
-		else
-		{
-			$return = $row;
-		}
-
-		return $return;
-	}
 }

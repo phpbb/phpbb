@@ -293,7 +293,7 @@ class acp_groups
 					sort($avatar_drivers);
 
 					// This is normalised data, without the group_ prefix
-					$avatar_data = phpbb_avatar_driver::clean_row($group_row, phpbb_avatar_driver_interface::FROM_GROUP);
+					$avatar_data = phpbb_avatar_manager::clean_row($group_row);
 				}
 
 
