@@ -2391,13 +2391,33 @@ function change_database_data(&$no_updates, $version)
 			{
 				set_config('teampage_memberships', '1');
 			}
-			
+
 			// Clear styles table and add prosilver entry
 			_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
 
 			$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
 			_sql($sql, $errored, $error_ary);
-			
+
+			// Update avatars to modular types
+			$avatar_type_map = array(
+				AVATAR_UPLOAD	=> 'upload',
+				AVATAR_GALLERY	=> 'local',
+				AVATAR_REMOTE	=> 'remote',
+			);
+
+			foreach ($avatar_type_map as $old => $new)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_avatar_type = '" . $db->sql_escape($new) . "'
+					WHERE user_avatar_type = '" . $db->sql_escape($old) . "'";
+				_sql($sql, $errored, $error_ary);
+
+				$sql = 'UPDATE ' . GROUPS_TABLE . "
+					SET group_avatar_type = '" . $db->sql_escape($new) . "'
+					WHERE group_avatar_type = '" . $db->sql_escape($old) . "'";
+				_sql($sql, $errored, $error_ary);
+			}
+
 			$no_updates = false;
 
 		break;
