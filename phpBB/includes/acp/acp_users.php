@@ -1692,7 +1692,7 @@ class acp_users
 					sort($avatar_drivers);
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = phpbb_avatar_driver::clean_row($user_row, phpbb_avatar_driver::FROM_USER);
+					$avatar_data = phpbb_avatar_driver::clean_row($user_row, phpbb_avatar_driver_interface::FROM_USER);
 
 					if ($submit)
 					{
