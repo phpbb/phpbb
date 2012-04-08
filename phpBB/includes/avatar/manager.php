@@ -137,7 +137,7 @@ class phpbb_avatar_manager
 		$keys = array_map(
 			function ($key)
 			{
-				return preg_replace('(user_|group_)', '', $key);
+				return preg_replace('#^(?:user_|group_)#', '', $key);
 			},
 			$row
 		);
