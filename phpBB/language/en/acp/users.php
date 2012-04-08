@@ -77,6 +77,7 @@ $lang = array_merge($lang, array(
 
 	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.',
 
+	'NO_POSTS'				=> 'The user has no posts.',
 	'NO_SPECIAL_RANK'		=> 'No special rank assigned',
 	'NO_WARNINGS'			=> 'No warnings.',
 	'NOT_MANAGE_FOUNDER'	=> 'You tried to manage a user with founder status. Only founders are allowed to manage other founders.',

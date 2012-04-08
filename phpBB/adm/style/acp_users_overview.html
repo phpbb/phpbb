@@ -141,6 +141,9 @@
 		<dl>
 			<dt><label for="delete_type">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
 			<dd><select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain"<!-- IF USER_POSTS == 0 --> disabled="disabled" class="disabled-option"<!-- ENDIF -->>{L_RETAIN_POSTS}</option><option value="remove"<!-- IF USER_POSTS == 0 --> disabled="disabled" class="disabled-option"<!-- ENDIF -->>{L_DELETE_POSTS}</option></select></dd>
+			<!-- IF USER_POSTS == 0 -->
+			<dd>{L_NO_POSTS}</dd>
+			<!-- ENDIF -->
 		</dl>
 		<p class="quick">
 			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
