@@ -2036,9 +2036,9 @@ function change_database_data(&$no_updates, $version)
 			$result = $db->sql_query($sql);
 
 			$deactivated_style_ids = array();
-			while ($temp_style_id = $db->sql_fetchfield('style_id', false, $result))
+			while ($style_id = $db->sql_fetchfield('style_id', false, $result))
 			{
-				$deactivated_style_ids[] = (int) $temp_style_id;
+				$deactivated_style_ids[] = (int) $style_id;
 			}
 			$db->sql_freeresult($result);
 
