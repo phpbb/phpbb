@@ -116,7 +116,8 @@ services:
         class: phpbb_cron_manager
         arguments:
             - @cron.task_provider
-            - @cache.driver
+            - %core.root_path%
+            - %core.php_ext%
 
     cron.lock_db:
         class: phpbb_lock_db

@@ -23,6 +23,8 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_cron_task_wrapper
 {
+	private $task, $phpbb_root_path, $phpEx;
+
 	/**
 	* Constructor.
 	*
@@ -30,9 +32,11 @@ class phpbb_cron_task_wrapper
 	*
 	* @param phpbb_cron_task $task The cron task to wrap.
 	*/
-	public function __construct(phpbb_cron_task $task)
+	public function __construct(phpbb_cron_task $task, $phpbb_root_path, $phpEx)
 	{
 		$this->task = $task;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
 	}
 
 	/**
@@ -62,16 +66,6 @@ class phpbb_cron_task_wrapper
 	}
 
 	/**
-	* Returns the name of wrapped task. It is the same as the wrapped class's class name.
-	*
-	* @return string		Class name of wrapped task.
-	*/
-	public function get_name()
-	{
-		return get_class($this->task);
-	}
-
-	/**
 	* Returns a url through which this task may be invoked via web.
 	*
 	* When system cron is not in use, running a cron task is accomplished
@@ -82,8 +76,6 @@ class phpbb_cron_task_wrapper
 	*/
 	public function get_url()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$name = $this->get_name();
 		if ($this->is_parametrized())
 		{
@@ -98,7 +90,7 @@ class phpbb_cron_task_wrapper
 		{
 			$extra = '';
 		}
-		$url = append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $name . $extra);
+		$url = append_sid($this->phpbb_root_path . 'cron.' . $this->phpEx, 'cron_type=' . $name . $extra);
 		return $url;
 	}
 

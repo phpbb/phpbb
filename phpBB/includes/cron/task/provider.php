@@ -45,7 +45,12 @@ class phpbb_cron_task_provider implements IteratorAggregate
 		$tasks = array();
 		foreach ($definitions as $name => $definition)
 		{
-			$tasks[] = $this->container->get($name);
+			$task = $this->container->get($name);
+			if ($task instanceof phpbb_cron_task_base) {
+				$task->set_name($name);
+			}
+
+			$tasks[] = $task;
 		}
 
 		return new ArrayIterator($tasks);

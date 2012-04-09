@@ -32,13 +32,18 @@ class phpbb_cron_manager
 	*/
 	protected $tasks = array();
 
+	protected $phpbb_root_path, $phpEx;
+
 	/**
 	* Constructor. Loads all available tasks.
 	*
 	* @param array|Traversable $tasks Provides an iterable set of task names
 	*/
-	public function __construct($tasks)
+	public function __construct($tasks, $phpbb_root_path, $phpEx)
 	{
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+
 		$this->load_tasks($tasks);
 	}
 
@@ -54,8 +59,7 @@ class phpbb_cron_manager
 	{
 		foreach ($tasks as $task)
 		{
-			$wrapper = new phpbb_cron_task_wrapper($task);
-			$this->tasks[] = $wrapper;
+			$this->tasks[] = $this->wrap_task($task);
 		}
 	}
 
@@ -118,5 +122,10 @@ class phpbb_cron_manager
 			}
 		}
 		return null;
+	}
+
+	public function wrap_task(phpbb_cron_task $task)
+	{
+		return new phpbb_cron_task_wrapper($task, $this->phpbb_root_path, $this->phpEx);
 	}
 }
