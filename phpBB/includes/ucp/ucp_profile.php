@@ -74,10 +74,10 @@ class ucp_profile
 						$self_delete_lang .= 'FAIL';
 					break;
 				}
-				$delete_account = $request->variable('delete_account', false, false, phpbb_request_interface::POST);
+
 				$template->assign_vars(array(
 					'L_DELETE_ACCOUNT_EXPLAIN'		=> $user->lang($self_delete_lang),
-					'S_DELETE_ACCOUNT_ALLOWED'		=> ($config['account_delete_method'] && $auth->acl_get('u_delete_acct')),
+					'S_DELETE_ACCOUNT_ALLOWED'		=> $config['account_delete_method'] && $auth->acl_get('u_delete_acct'),
 				));
 
 				if ($submit)
@@ -108,7 +108,7 @@ class ucp_profile
 						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
-					if ($delete_account && (!$config['account_delete_method'] || !$auth->acl_get('u_delete_self')))
+					if ($delete && !($config['account_delete_method'] && $auth->acl_get('u_delete_self')))
 					{
 						$error[] = 'DELETE_ACCOUNT_FAIL';
 					}
@@ -131,15 +131,12 @@ class ucp_profile
 
 					if (!sizeof($error))
 					{
-						// If we're deleting the account, no need to let a bunch of other stuff happen first. Let's jump on in
-						// We've already made sure they entered their current password, so now we just check for the checkbox
-						// since the global setting was checked earlier
-						if ($delete_account)
+						// Handle account deletion
+						if ($delete)
 						{
-							// The third argument is sanitized within the function
-							$reason = $request->variable('delete_reason', '');
-							trigger_error(phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $reason));
+							trigger_error(phpbb_delete_account($user->data['user_id'], false, $config['account_delete_method'], $request->variable('delete_reason', '', true, phpbb_request_interface::POST)));
 						}
+
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
