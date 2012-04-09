@@ -529,7 +529,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		confirm_box(false, ($action == 'split_all') ? 'SPLIT_TOPIC_ALL' : 'SPLIT_TOPIC_BEYOND', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -538,7 +538,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	}
 	else
 	{
-		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
+		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
@@ -635,7 +635,7 @@ function merge_posts($topic_id, $to_topic_id)
 		confirm_box(false, 'MERGE_POSTS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -644,7 +644,7 @@ function merge_posts($topic_id, $to_topic_id)
 	}
 	else
 	{
-		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
+		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
