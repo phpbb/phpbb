@@ -252,12 +252,14 @@ a#logo:hover {
 	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
+	border-radius: 7px;
 }
 
 .navbar {
 	padding: 0 10px;
 	background-color: #ebebeb;
 	padding: 5px 10px 5px 10px;
+	border-radius: 7px;
 }
 
 .forabg {
@@ -265,6 +267,7 @@ a#logo:hover {
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;
+	border-radius: 7px;
 }
 
 .forumbg {
@@ -272,6 +275,7 @@ a#logo:hover {
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;
+	border-radius: 7px;
 }
 
 .panel {
@@ -279,6 +283,7 @@ a#logo:hover {
 	padding: 5px 10px;
 	background-color: #f3f3f3;
 	color: #3f3f3f;
+	border-radius: 7px;
 }
 
 .post {
@@ -286,6 +291,7 @@ a#logo:hover {
 	margin-bottom: 4px;
 	background-repeat: no-repeat;
 	background-position: 100% 0;
+	border-radius: 7px;
 }
 
 .inner:after {
@@ -305,6 +311,10 @@ ul.linklist {
 	margin: 0;
 	height: 4%;
 	overflow: hidden;
+}
+
+#cp-main .panel {
+	padding: 5px 10px;
 }
 
 ul.linklist li {
