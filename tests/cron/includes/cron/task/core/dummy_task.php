@@ -11,6 +11,11 @@ class phpbb_cron_task_core_dummy_task extends phpbb_cron_task_base
 {
 	public static $was_run = 0;
 
+	public function get_name()
+	{
+		return get_class($this);
+	}
+
 	public function run()
 	{
 		self::$was_run++;

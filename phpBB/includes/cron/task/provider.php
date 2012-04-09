@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 
 /**
 * Provides cron manager with tasks
@@ -28,7 +28,7 @@ class phpbb_cron_task_provider implements IteratorAggregate
 {
 	private $container;
 
-	public function __construct(Container $container)
+	public function __construct(TaggedContainerInterface $container)
 	{
 		$this->container = $container;
 	}
