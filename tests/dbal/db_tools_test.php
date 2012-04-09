@@ -354,9 +354,20 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_simple'));
 	}
 
+	public function test_unique_index_exists()
+	{
+		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', 'i_uniq'));
+	}
+
 	public function test_create_index_against_index_exists()
 	{
 		$this->tools->sql_create_index('prefix_table_name', 'fookey', array('c_timestamp', 'c_decimal'));
 		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'fookey'));
+	}
+
+	public function test_create_unique_index_against_unique_index_exists()
+	{
+		$this->tools->sql_create_unique_index('prefix_table_name', 'i_uniq_ts_id', array('c_timestamp', 'c_id'));
+		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', 'i_uniq_ts_id'));
 	}
 }
