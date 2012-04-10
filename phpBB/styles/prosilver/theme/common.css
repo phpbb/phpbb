@@ -257,7 +257,6 @@ a#logo:hover {
 
 .navbar {
 	padding: 0 10px;
-	background-color: #ebebeb;
 	padding: 5px 10px 5px 10px;
 	border-radius: 7px;
 }
@@ -281,8 +280,6 @@ a#logo:hover {
 .panel {
 	margin-bottom: 4px;
 	padding: 5px 10px;
-	background-color: #f3f3f3;
-	color: #3f3f3f;
 	border-radius: 7px;
 }
 
@@ -543,14 +540,6 @@ li.pagination {
 	padding: 1px 0 1px 15px;
 	font-size: 0.9em;
 	background: none 0 50% no-repeat;
-}
-
-.row .pagination span a, li.pagination span a {
-	background-color: #FFFFFF;
-}
-
-.row .pagination span a:hover, li.pagination span a:hover {
-	background-color: #d2d2d2;
 }
 
 /* jQuery popups
