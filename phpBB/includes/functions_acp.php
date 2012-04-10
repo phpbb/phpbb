@@ -342,6 +342,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
 	global $phpbb_root_path, $user;
+	global $phpbb_dispatcher;
+
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
@@ -515,6 +517,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					}
 				}
 
+			break;
+
+			default:
+				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.validate_config_vars', compact($vars)));
 			break;
 		}
 	}
