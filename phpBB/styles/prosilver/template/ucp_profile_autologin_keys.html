@@ -7,7 +7,13 @@
 	<div class="inner">
 
 	<fieldset>
-	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- IF .errors -->
+	<p class="error">
+		<!-- BEGIN errors -->
+			{errors} <br />
+		<!-- END errors -->
+	</p>
+	<!-- ENDIF -->
 	<!-- IF .sessions -->
 		<p>{L_PROFILE_AUTOLOGIN_KEYS}</p>
 		<table>
