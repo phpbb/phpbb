@@ -1804,6 +1804,9 @@ class install_install extends module
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
+		// Obtain any submitted data
+		$data = $this->get_submitted_data();
+
 		// We need to fill the config to let internal functions correctly work
 		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
 		set_config(null, null, null, $config);
