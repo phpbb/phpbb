@@ -12,28 +12,6 @@
 */
 class phpbb_functional_auth_test extends phpbb_functional_test_case
 {
-	private $sid = '';
-	// since we need to login for each test (sessions aren't held) let's make it simple
-	private function login()
-	{
-		$crawler = $this->request('GET', 'ucp.php');
-		$this->assertContains("Please login in order to access the User Control Panel.", $crawler->filter('html')->text());
-
-		$form = $crawler->selectButton('Login')->form();
-		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
-
-		$cookies = $this->cookieJar->all();
-		$sid = '';
-		// get the SID from the cookie
-		foreach ($cookies as $key => $cookie);
-		{
-			if (substr($key, -4) == '_sid')
-			{
-				$this->sid = $cookie->getValue();
-			}
-		}
-	}
-
 	public function test_login()
 	{
 		$this->login();

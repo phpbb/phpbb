@@ -18,6 +18,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $cache = null;
 	protected $db = null;
 	protected $extension_manager = null;
+	/**
+	* @var string Session ID for current test's session (each test makes its own)
+	*/
+	protected $sid;
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -220,5 +224,25 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
+	}
+
+	protected function login()
+	{
+		$crawler = $this->request('GET', 'ucp.php');
+		$this->assertContains("Please login in order to access the User Control Panel.", $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton('Login')->form();
+		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
+
+		$cookies = $this->cookieJar->all();
+		$sid = '';
+		// get the SID from the cookie
+		foreach ($cookies as $key => $cookie);
+		{
+			if (substr($key, -4) == '_sid')
+			{
+				$this->sid = $cookie->getValue();
+			}
+		}
 	}
 }
