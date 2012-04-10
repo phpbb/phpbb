@@ -1110,20 +1110,6 @@ function database_update_info()
 					'group_legend'		=> array('UINT', 0),
 				),
 			),
-			'drop_columns'      => array(
-			    STYLES_TABLE		    => array(
-			        'imageset_id',
-			        'template_id',
-			        'theme_id',
-                ),
-            ),
-            'drop_tables'       => array(
-                STYLES_IMAGESET_TABLE,
-                STYLES_IMAGESET_DATA_TABLE,
-                STYLES_TEMPLATE_TABLE,
-                STYLES_TEMPLATE_DATA_TABLE,
-                STYLES_THEME_TABLE,
-            ),
 		),
 	);
 }
@@ -1135,7 +1121,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
 
 	switch ($version)
 	{
@@ -2312,13 +2298,6 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
-				'edit'	=> array(
-					'base'		=> 'acp_styles',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_STYLES_EDIT',
-					'auth'		=> 'acl_a_styles',
-					'cat'		=> 'ACP_STYLE_MANAGEMENT',
-				),
 				'cache'	=> array(
 					'base'		=> 'acp_styles',
 					'class'		=> 'acp',
@@ -2421,13 +2400,133 @@ function change_database_data(&$no_updates, $version)
 			{
 				set_config('teampage_memberships', '1');
 			}
-			
-			// Clear styles table and add prosilver entry
-			_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
 
-			$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
-			_sql($sql, $errored, $error_ary);
-			
+			// Check if styles table was already updated
+			if ($db_tools->sql_table_exists(STYLES_THEME_TABLE))
+			{
+				// Get list of valid installed styles
+				$available_styles = array('prosilver');
+
+				$iterator = new DirectoryIterator($phpbb_root_path . 'styles');
+				$skip_dirs = array('.', '..', 'prosilver');
+				foreach ($iterator as $fileinfo)
+				{
+					if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/style.cfg'))
+					{
+						$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
+						if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+						{
+							// 3.1 style
+							$available_styles[] = $fileinfo->getFilename();
+						}
+					}
+				}
+
+				// Get all installed styles
+				if ($db_tools->sql_table_exists(STYLES_IMAGESET_TABLE))
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id, i.imageset_path, i.imageset_id
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id
+							AND i.imageset_id = s.imageset_id";
+				}
+				else
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id";
+				}
+				$result = $db->sql_query($sql);
+
+				$styles = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$styles[] = $row;
+				}
+				$db->sql_freeresult($result);
+
+				// Check each style
+				$valid_styles = array();
+				foreach ($styles as $style_row)
+				{
+					if (
+						// Ignore styles with parent style
+						$style_row['template_inherits_id'] == 0 &&
+						// Check if components match
+						$style_row['template_path'] == $style_row['theme_path'] && (!isset($style_row['imageset_path']) || $style_row['template_path'] == $style_row['imageset_path']) &&
+						// Check if components are valid
+						in_array($style_row['template_path'], $available_styles)
+						)
+					{
+						// Valid style. Keep it
+						$sql_ary = array(
+							'style_path'	=> $style_row['template_path'],
+							'bbcode_bitfield'	=> $style_row['bbcode_bitfield'],
+							'style_parent_id'	=> 0,
+							'style_parent_tree'	=> '',
+						);
+						_sql('UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE style_id = ' . $style_row['style_id'], $errored, $error_ary);
+						$valid_styles[] = $style_row['style_id'];
+					}
+				}
+
+				// Remove old styles tables
+				$changes = array(
+					'drop_columns'      => array(
+						STYLES_TABLE		    => array(
+							'imageset_id',
+							'template_id',
+							'theme_id',
+						),
+					),
+
+					'drop_tables'       => array(
+						STYLES_IMAGESET_TABLE,
+						STYLES_IMAGESET_DATA_TABLE,
+						STYLES_TEMPLATE_TABLE,
+						STYLES_TEMPLATE_DATA_TABLE,
+						STYLES_THEME_TABLE,
+					)
+				);
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
+
+				// Remove old entries from styles table
+				if (!sizeof($valid_styles))
+				{
+					// No valid styles: remove everything and add prosilver
+					_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+
+					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_id, style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES (1, 'prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+					_sql($sql, $errored, $error_ary);
+
+					set_config('default_style', '1');
+
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
+					_sql($sql, $errored, $error_ary);
+				}
+				else
+				{
+					// There are valid styles in styles table. Remove styles that are outdated
+					_sql('DELETE FROM ' . STYLES_TABLE . ' WHERE ' . $db->sql_in_set('style_id', $valid_styles, true), $errored, $error_ary);
+
+					// Change default style
+					if (!in_array($config['default_style'], $valid_styles))
+					{
+						set_config('default_style', $valid_styles[0]);
+					}
+
+					// Reset styles for users
+					_sql('UPDATE ' . USERS_TABLE . ' SET user_style = 0 WHERE ' . $db->sql_in_set('user_style', $valid_styles, true), $errored, $error_ary);
+				}
+			}
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
