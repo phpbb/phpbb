@@ -108,6 +108,18 @@ function adm_page_footer($copyright_html = true)
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 	global $request;
+	global $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_footer_override = false;
+
+	$vars = array('copyright_html', 'adm_page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer_override', compact($vars)));
+
+	if ($adm_page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
