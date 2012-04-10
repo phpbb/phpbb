@@ -22,6 +22,7 @@ function adm_page_header($page_title)
 {
 	global $config, $db, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
+	global $phpbb_dispatcher;
 
 	if (defined('HEADER_INC'))
 	{
@@ -29,6 +30,16 @@ function adm_page_header($page_title)
 	}
 
 	define('HEADER_INC', true);
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_header_override = false;
+
+	$vars = array('page_title', 'adm_page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_header_override', compact($vars)));
+	if ($adm_page_header_override)
+	{
+		return;
+	}
 
 	// gzip_compression
 	if ($config['gzip_compress'])
