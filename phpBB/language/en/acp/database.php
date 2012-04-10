@@ -43,7 +43,7 @@ $lang = array_merge($lang, array(
 	'BACKUP_INVALID'	=> 'The selected file to backup is invalid.',
 	'BACKUP_OPTIONS'	=> 'Backup options',
 	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully.',
-	'BACKUP_TYPE'		=> 'Backup type',
+	'BACKUP_TYPE'		=> 'Backup type:',
 
 	'DATABASE'			=> 'Database utilities',
 	'DATA_ONLY'			=> 'Data only',
@@ -52,7 +52,7 @@ $lang = array_merge($lang, array(
 	'DESELECT_ALL'		=> 'Deselect all',
 	'DOWNLOAD_BACKUP'	=> 'Download backup',
 
-	'FILE_TYPE'			=> 'File type',
+	'FILE_TYPE'			=> 'File type:',
 	'FILE_WRITE_FAIL'	=> 'Unable to write file to storage folder.',
 	'FULL_BACKUP'		=> 'Full',
 
@@ -62,13 +62,13 @@ $lang = array_merge($lang, array(
 	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
 
 	'SELECT_ALL'			=> 'Select all',
-	'SELECT_FILE'			=> 'Select a file',
+	'SELECT_FILE'			=> 'Select a file:',
 	'START_BACKUP'			=> 'Start backup',
 	'START_RESTORE'			=> 'Start restore',
 	'STORE_AND_DOWNLOAD'	=> 'Store and download',
 	'STORE_LOCAL'			=> 'Store file locally',
 	'STRUCTURE_ONLY'		=> 'Structure only',
 
-	'TABLE_SELECT'		=> 'Table select',
+	'TABLE_SELECT'		=> 'Table select:',
 	'TABLE_SELECT_ERROR'=> 'You must select at least one table.',
 ));

@@ -112,10 +112,10 @@ $lang = array_merge($lang, array(
 	'COPY_PERMISSIONS_CONFIRM'				=> 'Are you sure you wish to carry out this operation? Please be aware that this will overwrite any existing permissions on the selected targets.',
 	'COPY_PERMISSIONS_FORUM_FROM_EXPLAIN'	=> 'The source forum you want to copy permissions from.',
 	'COPY_PERMISSIONS_FORUM_TO_EXPLAIN'		=> 'The destination forums you want the copied permissions applied to.',
-	'COPY_PERMISSIONS_FROM'					=> 'Copy permissions from',
-	'COPY_PERMISSIONS_TO'					=> 'Apply permissions to',
+	'COPY_PERMISSIONS_FROM'					=> 'Copy permissions from:',
+	'COPY_PERMISSIONS_TO'					=> 'Apply permissions to:',
 
-	'CREATE_ROLE'				=> 'Create role',
+	'CREATE_ROLE'				=> 'Create role:',
 	'CREATE_ROLE_FROM'			=> 'Use settings from…',
 	'CUSTOM'					=> 'Custom…',
 
@@ -130,6 +130,7 @@ $lang = array_merge($lang, array(
 	'GROUPS_NOT_ASSIGNED'		=> 'No group assigned to this role',
 
 	'LOOK_UP_GROUP'				=> 'Look up usergroup',
+	'LOOK_UP_GROUP_COLON'		=> 'Look up usergroup:',
 	'LOOK_UP_USER'				=> 'Look up user',
 
 	'MANAGE_GROUPS'		=> 'Manage groups',
@@ -151,11 +152,11 @@ $lang = array_merge($lang, array(
 	'REMOVE_PERMISSIONS'			=> 'Remove permissions',
 	'REMOVE_ROLE'					=> 'Remove role',
 	'RESULTING_PERMISSION'			=> 'Resulting permission',
-	'ROLE'							=> 'Role',
+	'ROLE'							=> 'Role:',
 	'ROLE_ADD_SUCCESS'				=> 'Role successfully added.',
 	'ROLE_ASSIGNED_TO'				=> 'Users/Groups assigned to %s',
 	'ROLE_DELETED'					=> 'Role successfully removed.',
-	'ROLE_DESCRIPTION'				=> 'Role description',
+	'ROLE_DESCRIPTION'				=> 'Role description:',
 
 	'ROLE_ADMIN_FORUM'			=> 'Forum Admin',
 	'ROLE_ADMIN_FULL'			=> 'Full Admin',
@@ -213,6 +214,7 @@ $lang = array_merge($lang, array(
 	'ROLE_DETAILS'					=> 'Role details',
 	'ROLE_EDIT_SUCCESS'				=> 'Role successfully edited.',
 	'ROLE_NAME'						=> 'Role name',
+	'ROLE_NAME_COLON'				=> 'Role name:',
 	'ROLE_NAME_ALREADY_EXIST'		=> 'A role named <strong>%s</strong> already exist for the specified permission type.',
 	'ROLE_NOT_ASSIGNED'				=> 'Role has not been assigned yet.',
 
@@ -221,14 +223,14 @@ $lang = array_merge($lang, array(
 	'SELECTED_USER_NOT_EXIST'		=> 'The selected user(s) do not exist.',
 	'SELECT_FORUM_SUBFORUM_EXPLAIN'	=> 'The forum you select here will include all subforums into the selection.',
 	'SELECT_ROLE'					=> 'Select role…',
-	'SELECT_TYPE'					=> 'Select type',
+	'SELECT_TYPE'					=> 'Select type:',
 	'SET_PERMISSIONS'				=> 'Set permissions',
 	'SET_ROLE_PERMISSIONS'			=> 'Set role permissions',
 	'SET_USERS_PERMISSIONS'			=> 'Set user permissions',
 	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set user forum permissions',
 
 	'TRACE_DEFAULT'					=> 'By default every permission is <samp>NO</samp> (unset). So the permission can be overwritten by other settings.',
-	'TRACE_FOR'						=> 'Trace for',
+	'TRACE_FOR'						=> 'Trace for:',
 	'TRACE_GLOBAL_SETTING'			=> '%s (global)',
 	'TRACE_GROUP_NEVER_TOTAL_NEVER'	=> 'This group’s permission is set to <samp>NEVER</samp> like the total result so the old result is kept.',
 	'TRACE_GROUP_NEVER_TOTAL_NEVER_LOCAL'	=> 'This group’s permission for this forum is set to <samp>NEVER</samp> like the total result so the old result is kept.',

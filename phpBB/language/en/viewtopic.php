@@ -35,8 +35,8 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'APPROVE'								=> 'Approve',
-	'ATTACHMENT'						=> 'Attachment',
+	'APPROVE'							=> 'Approve',
+	'ATTACHMENT'						=> 'Attachment:',
 	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked topic successfully.',
@@ -47,10 +47,8 @@ $lang = array_merge($lang, array(
 	'BUMPED_BY'				=> 'Last bumped by %1$s on %2$s.',
 	'BUMP_TOPIC'			=> 'Bump topic',
 
-	'CODE'					=> 'Code',
-
 	'DELETE_TOPIC'			=> 'Delete topic',
-	'DISAPPROVE'					=> 'Disapprove',
+	'DISAPPROVE'			=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(
@@ -91,16 +89,17 @@ $lang = array_merge($lang, array(
 	'POLL_VOTED_OPTION'		=> 'You voted for this option',
 	'PRINT_TOPIC'			=> 'Print view',
 
-	'QUICK_MOD'				=> 'Quick-mod tools',
+	'QUICK_MOD'				=> 'Quick-mod tools:',
 	'QUICKREPLY'			=> 'Quick Reply',
 	'QUOTE'					=> 'Quote',
+	'QUOTE_COLON'			=> 'Quote:',
 
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
-	'TOTAL_VOTES'			=> 'Total votes',
+	'TOTAL_VOTES'			=> 'Total votes:',
 
 	'UNLOCK_TOPIC'			=> 'Unlock topic',
 
@@ -113,7 +112,6 @@ $lang = array_merge($lang, array(
 		2	=> '%d posts',
 	),
 	'VIEW_UNREAD_POST'		=> 'First unread post',
-	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
 	'VOTE_CONVERTED'		=> 'Changing votes is not supported for converted polls.',
 

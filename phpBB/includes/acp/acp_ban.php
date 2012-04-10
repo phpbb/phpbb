@@ -85,7 +85,7 @@ class acp_ban
 		switch ($mode)
 		{
 			case 'user':
-				$l_ban_cell = $user->lang['USERNAME'];
+				$l_ban_cell = $user->lang['USERNAME_COLON'];
 			break;
 
 			case 'ip':
@@ -93,7 +93,7 @@ class acp_ban
 			break;
 
 			case 'email':
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+				$l_ban_cell = $user->lang['EMAIL_ADDRESS_COLON'];
 			break;
 		}
 

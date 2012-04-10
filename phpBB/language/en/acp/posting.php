@@ -98,7 +98,6 @@ $lang = array_merge($lang, array(
 	'AFTER_ICONS'			=> 'After %s',
 	'AFTER_SMILIES'			=> 'After %s',
 
-	'CODE'						=> 'Code',
 	'CURRENT_ICONS'				=> 'Current icons',
 	'CURRENT_ICONS_EXPLAIN'		=> 'Choose what to do with the currently installed icons.',
 	'CURRENT_SMILIES'			=> 'Current smilies',
@@ -234,12 +233,15 @@ $lang = array_merge($lang, array(
 
 	'RANK_ADDED'			=> 'The rank was successfully added.',
 	'RANK_IMAGE'			=> 'Rank image',
+	'RANK_IMAGE_COLON'		=> 'Rank image:',
 	'RANK_IMAGE_EXPLAIN'	=> 'Use this to define a small image associated with the rank. The path is relative to the root phpBB directory.',
 	'RANK_IMAGE_IN_USE'		=> '(In use)',
 	'RANK_MINIMUM'			=> 'Minimum posts',
+	'RANK_MINIMUM_COLON'	=> 'Minimum posts:',
 	'RANK_REMOVED'			=> 'The rank was successfully deleted.',
-	'RANK_SPECIAL'			=> 'Set as special rank',
+	'RANK_SPECIAL'			=> 'Set as special rank:',
 	'RANK_TITLE'			=> 'Rank title',
+	'RANK_TITLE_COLON'		=> 'Rank title:',
 	'RANK_UPDATED'			=> 'The rank was successfully updated.',
 ));
 
@@ -277,12 +279,12 @@ $lang = array_merge($lang, array(
 	'REASON_ADD'				=> 'Add report/denial reason',
 	'REASON_ADDED'				=> 'Report/denial reason successfully added.',
 	'REASON_ALREADY_EXIST'		=> 'A reason with this title already exist, please enter another title for this reason.',
-	'REASON_DESCRIPTION'		=> 'Reason description',
+	'REASON_DESCRIPTION'		=> 'Reason description:',
 	'REASON_DESC_TRANSLATED'	=> 'Displayed reason description',
 	'REASON_EDIT'				=> 'Edit report/denial reason',
 	'REASON_EDIT_EXPLAIN'		=> 'Here you are able to add or edit a reason. If the reason is translated the localised version is used instead of the description entered here.',
 	'REASON_REMOVED'			=> 'Report/denial reason successfully removed.',
-	'REASON_TITLE'				=> 'Reason title',
+	'REASON_TITLE'				=> 'Reason title:',
 	'REASON_TITLE_TRANSLATED'	=> 'Displayed reason title',
 	'REASON_UPDATED'			=> 'Report/denial reason successfully updated.',
 

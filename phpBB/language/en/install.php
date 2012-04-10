@@ -319,7 +319,7 @@ $lang = array_merge($lang, array(
 
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
-	'SELECT_LANG'				=> 'Select language',
+	'SELECT_LANG'				=> 'Select language:',
 	'SERVER_CONFIG'				=> 'Server configuration',
 	'SEARCH_INDEX_UNCONVERTED'	=> 'Search index was not converted',
 	'SEARCH_INDEX_UNCONVERTED_EXPLAIN'	=> 'Your old search index was not converted. Searching will always yield an empty result. To create a new search index go to the Administration Control Panel, select Maintenance and then choose Search index from the submenu.',
@@ -406,8 +406,6 @@ $lang = array_merge($lang, array(
 	'DIFF_UNIFIED'						=> 'Unified diff',
 	'DO_NOT_UPDATE'						=> 'Do not update this file',
 	'DONE'								=> 'Done',
-	'DOWNLOAD'							=> 'Download',
-	'DOWNLOAD_AS'						=> 'Download as',
 	'DOWNLOAD_UPDATE_METHOD_BUTTON'		=> 'Download modified files archive (recommended)',
 	'DOWNLOAD_CONFLICTS'				=> 'Download conflicts for this file',
 	'DOWNLOAD_CONFLICTS_EXPLAIN'		=> 'Search for &lt;&lt;&lt; to spot conflicts',
@@ -419,7 +417,7 @@ $lang = array_merge($lang, array(
 
 	'FILE_ALREADY_UP_TO_DATE'		=> 'File is already up to date.',
 	'FILE_DIFF_NOT_ALLOWED'			=> 'File not allowed to be diffed.',
-	'FILE_USED'						=> 'Information used from',			// Single file
+	'FILE_USED'						=> 'Information used from:',			// Single file
 	'FILES_CONFLICT'				=> 'Conflict files',
 	'FILES_CONFLICT_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. phpBB determined that these files create conflicts if they are tried to be merged. Please investigate the conflicts and try to manually resolve them or continue the update choosing the preferred merging method. If you resolve the conflicts manually check the files again after you modified them. You are also able to choose between the preferred merge method for every file. The first one will result in a file where the conflicting lines from your old file will be lost, the other one will result in losing the changes from the newer file.',
 	'FILES_MODIFIED'				=> 'Modified files',
@@ -473,7 +471,7 @@ $lang = array_merge($lang, array(
 	'NO_UPDATES_REQUIRED'			=> 'No updates required',
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
-	'NUM_CONFLICTS'					=> 'Number of conflicts',
+	'NUM_CONFLICTS'					=> 'Number of conflicts:',
 	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently differences from %1$d of %2$d files have been checked.<br />Please wait until all files are checked.',
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
@@ -487,7 +485,7 @@ $lang = array_merge($lang, array(
 	'RESULT'					=> 'Result',
 	'RUN_DATABASE_SCRIPT'		=> 'Update my database now',
 
-	'SELECT_DIFF_MODE'			=> 'Select diff mode',
+	'SELECT_DIFF_MODE'			=> 'Select diff mode:',
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',
 	'SELECT_FTP_SETTINGS'		=> 'Select FTP settings',
 	'SHOW_DIFF_CONFLICT'		=> 'Show differences/conflicts',
@@ -562,7 +560,6 @@ $lang = array_merge($lang, array(
 	'UPDATING_TO_LATEST_STABLE'		=> 'Updating database to latest stable release',
 	'UPDATED_VERSION'				=> 'Updated version',
 	'UPGRADE_INSTRUCTIONS'			=> 'A new feature release <strong>%1$s</strong> is available. Please read <a href="%2$s" title="%2$s"><strong>the release announcement</strong></a> to learn about what it has to offer, and how to upgrade.',
-	'UPLOAD_METHOD'					=> 'Upload method',
 
 	'UPDATE_DB_SUCCESS'				=> 'Database update was successful.',
 	'USER_ACTIVE'					=> 'Active user',

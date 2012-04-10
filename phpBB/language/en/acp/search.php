@@ -64,25 +64,25 @@ $lang = array_merge($lang, array(
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',
 
-	'INDEX_STATS'							=> 'Index statistics',
+	'INDEX_STATS'							=> 'Index statistics:',
 	'INDEXING_IN_PROGRESS'					=> 'Indexing in progress',
 	'INDEXING_IN_PROGRESS_EXPLAIN'			=> 'The search backend is currently indexing all posts on the board. This can take from a few minutes to a few hours depending on your board’s size.',
 
-	'LIMIT_SEARCH_LOAD'						=> 'Search page system load limit',
+	'LIMIT_SEARCH_LOAD'						=> 'Search page system load limit:',
 	'LIMIT_SEARCH_LOAD_EXPLAIN'				=> 'If the 1 minute system load exceeds this value the search page will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
 
 	'MAX_SEARCH_CHARS'						=> 'Max characters indexed by search',
 	'MAX_SEARCH_CHARS_EXPLAIN'				=> 'Words with no more than this many characters will be indexed for searching.',
-	'MAX_NUM_SEARCH_KEYWORDS'				=> 'Maximum number of allowed keywords',
+	'MAX_NUM_SEARCH_KEYWORDS'				=> 'Maximum number of allowed keywords:',
 	'MAX_NUM_SEARCH_KEYWORDS_EXPLAIN'		=> 'Maximum number of words the user is able to search for. A value of 0 allows an unlimited number of words.',
 	'MIN_SEARCH_CHARS'						=> 'Min characters indexed by search',
 	'MIN_SEARCH_CHARS_EXPLAIN'				=> 'Words with at least this many characters will be indexed for searching.',
-	'MIN_SEARCH_AUTHOR_CHARS'				=> 'Min author name characters',
+	'MIN_SEARCH_AUTHOR_CHARS'				=> 'Min author name characters:',
 	'MIN_SEARCH_AUTHOR_CHARS_EXPLAIN'		=> 'Users have to enter at least this many characters of the name when performing a wildcard author search. If the author’s username is shorter than this number you can still search for the author’s posts by entering the complete username.',
 
 	'PROGRESS_BAR'							=> 'Progress bar',
 
-	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval',
+	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval:',
 	'SEARCH_GUEST_INTERVAL_EXPLAIN'			=> 'Number of seconds guests must wait between searches. If one guest searches all others have to wait until the time interval passed.',
 	'SEARCH_INDEX_CREATE_REDIRECT'			=> array(
 		2	=> 'All posts up to post id %2$d have now been indexed, of which %1$d posts were within this step.<br />',
@@ -95,18 +95,19 @@ $lang = array_merge($lang, array(
 	),
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
-	'SEARCH_INTERVAL'						=> 'User search flood interval',
+	'SEARCH_INTERVAL'						=> 'User search flood interval:',
 	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independently for each user.',
-	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',
+	'SEARCH_STORE_RESULTS'					=> 'Search result cache length:',
 	'SEARCH_STORE_RESULTS_EXPLAIN'			=> 'Cached search results will expire after this time, in seconds. Set to 0 if you want to disable search cache.',
 	'SEARCH_TYPE'							=> 'Search backend',
+	'SEARCH_TYPE_COLON'						=> 'Search backend:',
 	'SEARCH_TYPE_EXPLAIN'					=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search will use phpBB’s own fulltext search.',
 	'SWITCHED_SEARCH_BACKEND'				=> 'You switched the search backend. In order to use the new search backend you should make sure that there is an index for the backend you chose.',
 
 	'TOTAL_WORDS'							=> 'Total number of indexed words',
 	'TOTAL_MATCHES'							=> 'Total number of word to post relations indexed',
 
-	'YES_SEARCH'							=> 'Enable search facilities',
+	'YES_SEARCH'							=> 'Enable search facilities:',
 	'YES_SEARCH_EXPLAIN'					=> 'Enables user facing search functionality including member search.',
 	'YES_SEARCH_UPDATE'						=> 'Enable fulltext updating',
 	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overridden if search is disabled.',

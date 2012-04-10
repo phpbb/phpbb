@@ -42,9 +42,9 @@ $lang = array_merge($lang, array(
 
 	'CANNOT_REMOVE_MODULE'	=> 'Unable to remove module, it has assigned children. Please remove or move all children before performing this action.',
 	'CATEGORY'				=> 'Category',
-	'CHOOSE_MODE'			=> 'Choose module mode',
+	'CHOOSE_MODE'			=> 'Choose module mode:',
 	'CHOOSE_MODE_EXPLAIN'	=> 'Choose the modules mode being used.',
-	'CHOOSE_MODULE'			=> 'Choose module',
+	'CHOOSE_MODULE'			=> 'Choose module:',
 	'CHOOSE_MODULE_EXPLAIN'	=> 'Choose the file being called by this module.',
 	'CREATE_MODULE'			=> 'Create new module',
 
@@ -60,13 +60,13 @@ $lang = array_merge($lang, array(
 	'MODULE'					=> 'Module',
 	'MODULE_ADDED'				=> 'Module successfully added.',
 	'MODULE_DELETED'			=> 'Module successfully removed.',
-	'MODULE_DISPLAYED'			=> 'Module displayed',
+	'MODULE_DISPLAYED'			=> 'Module displayed:',
 	'MODULE_DISPLAYED_EXPLAIN'	=> 'If you do not wish to display this module, but want to use it, set this to no.',
 	'MODULE_EDITED'				=> 'Module successfully edited.',
-	'MODULE_ENABLED'			=> 'Module enabled',
-	'MODULE_LANGNAME'			=> 'Module language name',
+	'MODULE_ENABLED'			=> 'Module enabled:',
+	'MODULE_LANGNAME'			=> 'Module language name:',
 	'MODULE_LANGNAME_EXPLAIN'	=> 'Enter the displayed module name. Use language constant if name is served from language file.',
-	'MODULE_TYPE'				=> 'Module type',
+	'MODULE_TYPE'				=> 'Module type:',
 
 	'NO_CATEGORY_TO_MODULE'	=> 'Unable to turn category into module. Please remove/move all children before performing this action.',
 	'NO_MODULE'				=> 'No module found.',
@@ -74,8 +74,8 @@ $lang = array_merge($lang, array(
 	'NO_MODULE_LANGNAME'	=> 'No module language name specified.',
 	'NO_PARENT'				=> 'No Parent',
 
-	'PARENT'				=> 'Parent',
+	'PARENT'				=> 'Parent:',
 	'PARENT_NO_EXIST'		=> 'Parent does not exist.',
 
-	'SELECT_MODULE'			=> 'Select a module',
+	'SELECT_MODULE'			=> 'Select a module:',
 ));

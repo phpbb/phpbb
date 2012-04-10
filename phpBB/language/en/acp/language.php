@@ -65,10 +65,10 @@ $lang = array_merge($lang, array(
 	'LANGUAGE_PACK_NOT_EXIST'			=> 'The selected language pack does not exist.',
 	'LANGUAGE_PACK_USED_BY'				=> 'Used by (including robots)',
 	'LANGUAGE_VARIABLE'					=> 'Language variable',
-	'LANG_AUTHOR'						=> 'Language pack author',
-	'LANG_ENGLISH_NAME'					=> 'English name',
-	'LANG_ISO_CODE'						=> 'ISO code',
-	'LANG_LOCAL_NAME'					=> 'Local name',
+	'LANG_AUTHOR'						=> 'Language pack author:',
+	'LANG_ENGLISH_NAME'					=> 'English name:',
+	'LANG_ISO_CODE'						=> 'ISO code:',
+	'LANG_LOCAL_NAME'					=> 'Local name:',
 
 	'MISSING_LANGUAGE_FILE'		=> 'Missing language file: <strong style="color:red">%s</strong>',
 	'MISSING_LANG_VARIABLES'	=> 'Missing language variables',
@@ -93,7 +93,7 @@ $lang = array_merge($lang, array(
 	'UNABLE_TO_WRITE_FILE'		=> 'The file could not be written to %s.',
 	'UPLOAD_COMPLETED'			=> 'The upload was completed successfully.',
 	'UPLOAD_FAILED'				=> 'The upload failed for unknown reasons. You may need to replace the relevant file manually.',
-	'UPLOAD_METHOD'				=> 'Upload method',
+	'UPLOAD_METHOD'				=> 'Upload method:',
 	'UPLOAD_SETTINGS'			=> 'Upload settings',
 
 	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid.',

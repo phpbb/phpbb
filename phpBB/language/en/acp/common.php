@@ -142,6 +142,7 @@ $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS'			=> 'Post settings',
 	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
 	'ACP_PRUNE_USERS'			=> 'Prune users',
+	'ACP_PRUNE_USERS_COLON'		=> 'Prune users:',
 	'ACP_PRUNING'				=> 'Pruning',
 
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
@@ -207,6 +208,7 @@ $lang = array_merge($lang, array(
 	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',
+	'ACTION_COLON'			=> 'Action:',
 	'ACTIONS'				=> 'Actions',
 	'ACTIVATE'				=> 'Activate',
 	'ADD'					=> 'Add',
@@ -229,6 +231,7 @@ $lang = array_merge($lang, array(
 	'DISABLE'					=> 'Disable',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',
+	'DOWNLOAD_AS_COLON'			=> 'Download as:',
 	'DOWNLOAD_STORE'			=> 'Download or store file',
 	'DOWNLOAD_STORE_EXPLAIN'	=> 'You may directly download the file or save it in your <samp>store/</samp> folder.',
 	'DOWNLOADS'          		=> 'Downloads',
@@ -246,14 +249,14 @@ $lang = array_merge($lang, array(
 	'GLOBAL_MASK'			=> 'Global permission mask',
 
 	'INSTALL'				=> 'Install',
-	'IP'					=> 'User IP',
-	'IP_HOSTNAME'			=> 'IP addresses or hostnames',
+	'IP_HOSTNAME'			=> 'IP addresses or hostnames:',
 
 	'LOGGED_IN_AS'			=> 'You are logged in as:',
 	'LOGIN_ADMIN'			=> 'To administer the board you must be an authenticated user.',
 	'LOGIN_ADMIN_CONFIRM'	=> 'To administer the board you must re-authenticate yourself.',
 	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel.',
 	'LOOK_UP_FORUM'			=> 'Select a forum',
+	'LOOK_UP_FORUM_COLON'	=> 'Select a forum:',
 	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum.',
 
 	'MANAGE'				=> 'Manage',
@@ -283,7 +286,6 @@ $lang = array_merge($lang, array(
 	'RESYNC'							=> 'Resynchronise',
 	'RESYNC_FILES_STATS'				=> 'Resynchronise files statistics',
 	'RESYNC_FILES_STATS_EXPLAIN'		=> 'Recalculates the total number and size of files attached to posts and private messages.',
-	'RETURN_TO'							=> 'Return to…',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
@@ -295,11 +297,12 @@ $lang = array_merge($lang, array(
 
 	'SHOW_ALL_OPERATIONS'	=> 'Show all operations',
 
-	'TOTAL_SIZE'      		=> 'Total size',
+	'TOTAL_SIZE'      		=> 'Total size:',
 
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
+	'USERS_PER_PAGE'		=> 'Users per page:',
 
 	'WARNING'				=> 'Warning',
 ));
@@ -319,7 +322,7 @@ $lang = array_merge($lang, array(
 	'ACP_USERS_LOGS_EXPLAIN'	=> 'This lists all actions carried out by users or on users (reports, warnings and user notes).',
 	'ALL_ENTRIES'				=> 'All entries',
 
-	'DISPLAY_LOG'	=> 'Display entries from previous',
+	'DISPLAY_LOG'	=> 'Display entries from previous:',
 
 	'NO_ENTRIES'	=> 'No log entries for this period.',
 
@@ -333,13 +336,13 @@ $lang = array_merge($lang, array(
 	'ADMIN_INTRO'				=> 'Thank you for choosing phpBB as your board solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your board experience. Each page will have instructions on how to use the tools.',
 	'ADMIN_LOG'					=> 'Logged administrator actions',
 	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item or following the link below.',
-	'AVATAR_DIR_SIZE'			=> 'Avatar directory size',
+	'AVATAR_DIR_SIZE'			=> 'Avatar directory size:',
 
-	'BOARD_STARTED'		=> 'Board started',
-	'BOARD_VERSION'		=> 'Board version',
+	'BOARD_STARTED'		=> 'Board started:',
+	'BOARD_VERSION'		=> 'Board version:',
 
-	'DATABASE_SERVER_INFO'	=> 'Database server',
-	'DATABASE_SIZE'			=> 'Database size',
+	'DATABASE_SERVER_INFO'	=> 'Database server:',
+	'DATABASE_SIZE'			=> 'Database size:',
 
 	// Enviroment configuration checks, mbstring related
 	'ERROR_MBSTRING_FUNC_OVERLOAD'					=> 'Function overloading is improperly configured',
@@ -351,21 +354,21 @@ $lang = array_merge($lang, array(
 	'ERROR_MBSTRING_HTTP_OUTPUT'					=> 'HTTP output character conversion is improperly configured',
 	'ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN'			=> '<var>mbstring.http_output</var> must be set to <samp>pass</samp>. You can check the current value on the <samp>PHP information</samp> page.',
 
-	'FILES_PER_DAY'		=> 'Attachments per day',
+	'FILES_PER_DAY'		=> 'Attachments per day:',
 	'FORUM_STATS'		=> 'Board statistics',
 
-	'GZIP_COMPRESSION'	=> 'GZip compression',
+	'GZIP_COMPRESSION'	=> 'GZip compression:',
 
 	'NOT_AVAILABLE'		=> 'Not available',
-	'NUMBER_FILES'		=> 'Number of attachments',
-	'NUMBER_POSTS'		=> 'Number of posts',
-	'NUMBER_TOPICS'		=> 'Number of topics',
-	'NUMBER_USERS'		=> 'Number of users',
-	'NUMBER_ORPHAN'		=> 'Orphan attachments',
+	'NUMBER_FILES'		=> 'Number of attachments:',
+	'NUMBER_POSTS'		=> 'Number of posts:',
+	'NUMBER_TOPICS'		=> 'Number of topics:',
+	'NUMBER_USERS'		=> 'Number of users:',
+	'NUMBER_ORPHAN'		=> 'Orphan attachments:',
 
 	'PHP_VERSION_OLD'	=> 'The version of PHP on this server will no longer be supported by future versions of phpBB. %sDetails%s',
 
-	'POSTS_PER_DAY'		=> 'Posts per day',
+	'POSTS_PER_DAY'		=> 'Posts per day:',
 
 	'PURGE_CACHE'			=> 'Purge the cache',
 	'PURGE_CACHE_CONFIRM'	=> 'Are you sure you wish to purge the cache?',
@@ -401,10 +404,10 @@ $lang = array_merge($lang, array(
 	'STATISTIC'					=> 'Statistic',
 	'STATISTIC_RESYNC_OPTIONS'	=> 'Resynchronise or reset statistics',
 
-	'TOPICS_PER_DAY'	=> 'Topics per day',
+	'TOPICS_PER_DAY'	=> 'Topics per day:',
 
-	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments',
-	'USERS_PER_DAY'		=> 'Users per day',
+	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments:',
+	'USERS_PER_DAY'		=> 'Users per day:',
 
 	'VALUE'						=> 'Value',
 	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version information.',
@@ -420,6 +423,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'INACTIVE_DATE'					=> 'Inactive date',
 	'INACTIVE_REASON'				=> 'Reason',
+	'INACTIVE_REASON_COLON'			=> 'Reason:',
 	'INACTIVE_REASON_MANUAL'		=> 'Account deactivated by administrator',
 	'INACTIVE_REASON_PROFILE'		=> 'Profile details changed',
 	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
@@ -438,7 +442,8 @@ $lang = array_merge($lang, array(
 	'SORT_LAST_REMINDER'=> 'Last reminded',
 	'SORT_REMINDER'		=> 'Reminder sent',
 
-	'USER_IS_INACTIVE'		=> 'User is inactive',
+	'USER_IS_INACTIVE'			=> 'User is inactive',
+	'USER_IS_INACTIVE_COLON'	=> 'User is inactive:',
 ));
 
 // Send statistics page

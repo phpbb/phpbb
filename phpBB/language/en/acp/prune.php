@@ -38,10 +38,10 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_PRUNE_USERS_EXPLAIN'	=> 'This section allows you to delete or deactivate users on your board. Accounts can be filtered in a variety of ways; by post count, most recent activity, etc. Criteria may be combined to narrow down which accounts are affected. For example, you can prune users with fewer than 10 posts, who were also inactive after 2002-01-01. Alternatively, you may skip the criteria selection completely by entering a list of users (each on a separate line) into the text field. Take care with this facility! Once a user is deleted, there is no way to reverse the action.',
 
-	'DEACTIVATE_DELETE'			=> 'Deactivate or delete',
+	'DEACTIVATE_DELETE'			=> 'Deactivate or delete:',
 	'DEACTIVATE_DELETE_EXPLAIN'	=> 'Choose whether to deactivate users or delete them entirely. Please note that deleted users cannot be restored!',
 	'DELETE_USERS'				=> 'Delete',
-	'DELETE_USER_POSTS'			=> 'Delete pruned user posts',
+	'DELETE_USER_POSTS'			=> 'Delete pruned user posts:',
 	'DELETE_USER_POSTS_EXPLAIN' => 'Removes posts made by deleted users, has no effect if users are deactivated.',
 
 	'JOINED_EXPLAIN'			=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format.',
@@ -70,18 +70,19 @@ $lang = array_merge($lang, array(
 	'NO_PRUNE'			=> 'No forums pruned.',
 
 	'SELECTED_FORUM'	=> 'Selected forum',
-	'SELECTED_FORUMS'	=> 'Selected forums',
+	'SELECTED_FORUMS'	=> 'Selected forums:',
 
 	'POSTS_PRUNED'					=> 'Posts pruned',
-	'PRUNE_ANNOUNCEMENTS'			=> 'Prune announcements',
+	'PRUNE_ANNOUNCEMENTS'			=> 'Prune announcements:',
 	'PRUNE_FINISHED_POLLS'			=> 'Prune closed polls',
 	'PRUNE_FINISHED_POLLS_EXPLAIN'	=> 'Removes topics with polls which have ended.',
 	'PRUNE_FORUM_CONFIRM'			=> 'Are you sure you want to prune the selected forums with the settings specified? Once removed, there is no way to recover the pruned posts and topics.',
-	'PRUNE_NOT_POSTED'				=> 'Days since last posted',
-	'PRUNE_NOT_VIEWED'				=> 'Days since last viewed',
+	'PRUNE_NOT_POSTED'				=> 'Days since last posted:',
+	'PRUNE_NOT_VIEWED'				=> 'Days since last viewed:',
 	'PRUNE_OLD_POLLS'				=> 'Prune old polls',
+	'PRUNE_OLD_POLLS_COLON'			=> 'Prune old polls:',
 	'PRUNE_OLD_POLLS_EXPLAIN'		=> 'Removes topics with polls not voted in for post age days.',
-	'PRUNE_STICKY'					=> 'Prune stickies',
+	'PRUNE_STICKY'					=> 'Prune stickies:',
 	'PRUNE_SUCCESS'					=> 'Pruning of forums was successful.',
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',

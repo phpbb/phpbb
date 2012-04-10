@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'ALL_AVAILABLE'			=> 'All available',
 	'ALL_RESULTS'			=> 'All results',
 
-	'DISPLAY_RESULTS'		=> 'Display results as',
+	'DISPLAY_RESULTS'		=> 'Display results as:',
 
 	'FOUND_SEARCH_MATCHES'		=> array(
 		1	=> 'Search found %d match',
@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 
 	'GLOBAL'				=> 'Global announcement',
 
-	'IGNORED_TERMS'			=> 'ignored',
+	'IGNORED_TERMS'			=> 'ignored:',
 	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored because they are too common words: <strong>%s</strong>.',
 
 	'JUMP_TO_POST'			=> 'Jump to post',
@@ -74,29 +74,32 @@ $lang = array_merge($lang, array(
 	'POST_CHARACTERS'		=> 'characters of posts',
 
 	'RECENT_SEARCHES'		=> 'Recent searches',
-	'RESULT_DAYS'			=> 'Limit results to previous',
-	'RESULT_SORT'			=> 'Sort results by',
+	'RESULT_DAYS'			=> 'Limit results to previous:',
+	'RESULT_SORT'			=> 'Sort results by:',
 	'RETURN_FIRST'			=> 'Return first',
+	'RETURN_FIRST_COLON'	=> 'Return first:',
 	'RETURN_TO_SEARCH_ADV'	=> 'Return to advanced search',
 
-	'SEARCHED_FOR'				=> 'Search term used',
-	'SEARCHED_TOPIC'			=> 'Searched topic',
+	'SEARCHED_FOR'				=> 'Search term used:',
+	'SEARCHED_TOPIC'			=> 'Searched topic:',
 	'SEARCH_ALL_TERMS'			=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'			=> 'Search for any terms',
 	'SEARCH_AUTHOR'				=> 'Search for author',
+	'SEARCH_AUTHOR_COLON'		=> 'Search for author:',
 	'SEARCH_AUTHOR_EXPLAIN'		=> 'Use * as a wildcard for partial matches.',
 	'SEARCH_FIRST_POST'			=> 'First post of topics only',
 	'SEARCH_FORUMS'				=> 'Search in forums',
+	'SEARCH_FORUMS_COLON'		=> 'Search in forums:',
 	'SEARCH_FORUMS_EXPLAIN'		=> 'Select the forum or forums you wish to search in. Subforums are searched automatically if you do not disable “search subforums“ below.',
-	'SEARCH_IN_RESULTS'			=> 'Search these results',
+	'SEARCH_IN_RESULTS'			=> 'Search these results:',
 	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Place <strong>+</strong> in front of a word which must be found and <strong>-</strong> in front of a word which must not be found. Put a list of words separated by <strong>|</strong> into brackets if only one of the words must be found. Use * as a wildcard for partial matches.',
 	'SEARCH_MSG_ONLY'			=> 'Message text only',
 	'SEARCH_OPTIONS'			=> 'Search options',
 	'SEARCH_QUERY'				=> 'Search query',
-	'SEARCH_SUBFORUMS'			=> 'Search subforums',
+	'SEARCH_SUBFORUMS'			=> 'Search subforums:',
 	'SEARCH_TITLE_MSG'			=> 'Post subjects and message text',
 	'SEARCH_TITLE_ONLY'			=> 'Topic titles only',
-	'SEARCH_WITHIN'				=> 'Search within',
+	'SEARCH_WITHIN'				=> 'Search within:',
 	'SORT_ASCENDING'			=> 'Ascending',
 	'SORT_AUTHOR'				=> 'Author',
 	'SORT_DESCENDING'			=> 'Descending',
