@@ -355,7 +355,7 @@ ul.rightside {
 /* Table styles
 ----------------------------------------*/
 table.table1 {
-	/* See tweaks.css */
+	width: 100%;
 }
 
 #ucp-main table.table1 {
@@ -548,7 +548,7 @@ li.pagination {
 	border: 1px solid transparent;
 	position: fixed;
 	display: none;
-	top: 100px;
+	top: 40%;
 	left: 35%;
 	width: 30%;
 	z-index: 50;
@@ -666,4 +666,8 @@ p.rules a {
 
 .hidden {
 	display: none;
+}
+
+.smilies {
+	vertical-align: text-bottom;
 }

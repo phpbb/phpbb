@@ -221,7 +221,7 @@ function addquote(post_id, username, l_wrote)
 
 	// Get text selection - not only the post content :(
 	// IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-	if (window.getSelection && !is_ie)
+	if (window.getSelection && !is_ie && !window.opera)
 	{
 		theSelection = window.getSelection().toString();
 	}

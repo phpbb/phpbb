@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_renderer_include implements phpbb_template_renderer
+class phpbb_style_template_renderer_include implements phpbb_style_template_renderer
 {
 	/**
 	* Template path to be included.
@@ -45,7 +45,7 @@ class phpbb_template_renderer_include implements phpbb_template_renderer
 	* Displays the template managed by this renderer by including
 	* the php file containing the template.
 	*
-	* @param phpbb_template_context $context Template context to use
+	* @param phpbb_style_template_context $context Template context to use
 	* @param array $lang Language entries to use
 	*/
 	public function render($context, $lang)

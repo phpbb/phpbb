@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-stream_filter_register('phpbb_template', 'phpbb_template_filter');
+stream_filter_register('phpbb_template', 'phpbb_style_template_filter');
 
 /**
 * Extension of template class - Functions needed for compiling templates only.
@@ -23,23 +23,29 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 * @package phpBB3
 * @uses template_filter As a PHP stream filter to perform compilation of templates
 */
-class phpbb_template_compile
+class phpbb_style_template_compile
 {
 	/**
-	* Whether <!-- PHP --> tags are allowed
+	* Array of parameters to forward to template filter
 	*
-	* @var bool
+	* @var array
 	*/
-	private $allow_php;
+	private $filter_params;
 
 	/**
 	* Constructor.
 	*
 	* @param bool @allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
+	* @param phpbb_style_resource_locator $locator Resource locator
+	* @param string $phpbb_root_path Path to phpBB root directory
 	*/
-	public function __construct($allow_php)
+	public function __construct($allow_php, $locator, $phpbb_root_path)
 	{
-		$this->allow_php = $allow_php;
+		$this->filter_params = array(
+			'allow_php'	=> $allow_php,
+			'locator'	=> $locator,
+			'phpbb_root_path'	=> $phpbb_root_path
+		);
 	}
 
 	/**
@@ -116,7 +122,7 @@ class phpbb_template_compile
 	*/
 	private function compile_stream_to_stream($source_stream, $dest_stream)
 	{
-		stream_filter_append($source_stream, 'phpbb_template', null, array('allow_php' => $this->allow_php));
+		stream_filter_append($source_stream, 'phpbb_template', null, $this->filter_params);
 		stream_copy_to_stream($source_stream, $dest_stream);
 	}
 }

@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * Permission/Auth class
 * @package phpBB3
 */
-class auth
+class phpbb_auth
 {
 	var $acl = array();
 	var $cache = array();

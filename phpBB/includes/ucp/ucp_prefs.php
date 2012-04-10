@@ -60,7 +60,14 @@ class ucp_prefs
 
 				if ($submit)
 				{
-					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
+					if ($config['override_user_style'])
+					{
+						$data['style'] = (int) $config['default_style'];
+					}
+					else if (!phpbb_style_is_active($data['style']))
+					{
+						$data['style'] = (int) $user->data['user_style'];
+					}
 
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),

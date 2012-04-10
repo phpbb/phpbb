@@ -54,7 +54,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$this->response = request_var('recaptcha_response_field', '');
 	}
 
-	function get_instance()
+	public static function get_instance()
 	{
 		$instance = new phpbb_recaptcha();
 		return $instance;

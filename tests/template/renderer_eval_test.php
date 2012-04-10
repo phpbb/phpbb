@@ -13,8 +13,8 @@ class phpbb_template_renderer_eval_test extends phpbb_test_case
 	{
 		$compiled_code = '<a href="<?php echo \'Test\'; ?>">';
 		$valid_code = '<a href="Test">';
-		$context = new phpbb_template_context();
-		$template = new phpbb_template_renderer_eval($compiled_code, NULL);
+		$context = new phpbb_style_template_context();
+		$template = new phpbb_style_template_renderer_eval($compiled_code, NULL);
 		ob_start();
 		try
 		{

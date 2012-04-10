@@ -4,8 +4,9 @@ These style definitions are IE 7 and 8 specific
 tweaks required due to its poor CSS support.
 -------------------------------------------------*/
 
-table.table1 {
-	width: 100%;
+/* Clear float fix for IE7 */
+.inner {
+	zoom: 1;
 }
 
 /* Align checkboxes/radio buttons nicely */
@@ -28,9 +29,4 @@ dl.details dd {
 /* Headerbar height fix for IE7 */
 #site-description p {
 	*margin-bottom: 1.0em;
-}
-
-/* Clear float fix for IE7 */
-.inner {
-	zoom: 1;
 }

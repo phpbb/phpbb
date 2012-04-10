@@ -66,6 +66,17 @@ $('[data-ajax]').each(function() {
 });
 
 
+/**
+ * This simply appends #preview to the action of the
+ * QR action when you click the Full Editor & Preview button
+ */
+$('#qr_full_editor').click(function() {
+	$('#qr_postform').attr('action', function(i, val) {
+		return val + '#preview';
+	});
+});
+
+
 
 /**
  * This AJAXifies the quick-mod tools. The reason it cannot be a standard
