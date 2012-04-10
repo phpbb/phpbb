@@ -30,8 +30,9 @@ class acp_users
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
+		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_dispatcher;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -1040,9 +1041,7 @@ class acp_users
 				));
 
 				$vars = array('data', 'check_ary', 'sql_ary', 'user_row', 'quick_tool_ary');
-				$event = new phpbb_event_data(compact($vars));
-				$phpbb_dispatcher->dispatch('core.acp_users_overview', $event);
-				extract($event->get_data_filtered($vars));
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_overview', compact($vars)));
 
 			break;
 
