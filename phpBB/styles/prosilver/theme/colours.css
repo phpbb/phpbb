@@ -65,7 +65,7 @@ hr {
 
 .panel {
 	background-color: #ECF1F3;
-	color: #28313F;
+	color: #28313F;	
 }
 
 .post:target .content {
@@ -86,22 +86,6 @@ hr {
 
 .fieldsbg {
 	background-color: #E7E8EA;
-}
-
-span.corners-top {
-	background-image: url("./images/corners_left.png");
-}
-
-span.corners-top span {
-	background-image: url("./images/corners_right.png");
-}
-
-span.corners-bottom {
-	background-image: url("./images/corners_left.png");
-}
-
-span.corners-bottom span {
-	background-image: url("./images/corners_right.png");
 }
 
 /* Horizontal lists
@@ -882,39 +866,6 @@ ul.cplist {
 
 #cp-main .pm {
 	background-color: #FFFFFF;
-}
-
-#cp-main span.corners-top, #cp-menu span.corners-top {
-	background-image: url("./images/corners_left2.gif");
-}
-
-#cp-main span.corners-top span, #cp-menu span.corners-top span {
-	background-image: url("./images/corners_right2.gif");
-}
-
-#cp-main span.corners-bottom, #cp-menu span.corners-bottom {
-	background-image: url("./images/corners_left2.gif");
-}
-
-#cp-main span.corners-bottom span, #cp-menu span.corners-bottom span {
-	background-image: url("./images/corners_right2.gif");
-}
-
-/* Topicreview */
-#cp-main .panel #topicreview span.corners-top, #cp-menu .panel #topicreview span.corners-top {
-	background-image: url("./images/corners_left.gif");
-}
-
-#cp-main .panel #topicreview span.corners-top span, #cp-menu .panel #topicreview span.corners-top span {
-	background-image: url("./images/corners_right.gif");
-}
-
-#cp-main .panel #topicreview span.corners-bottom, #cp-menu .panel #topicreview span.corners-bottom {
-	background-image: url("./images/corners_left.gif");
-}
-
-#cp-main .panel #topicreview span.corners-bottom span, #cp-menu .panel #topicreview span.corners-bottom span {
-	background-image: url("./images/corners_right.gif");
 }
 
 /* Friends list */
