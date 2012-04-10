@@ -77,7 +77,6 @@ $lang = array_merge($lang, array(
 
 	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.',
 
-	'NO_POSTS'				=> 'The user has no posts.',
 	'NO_SPECIAL_RANK'		=> 'No special rank assigned',
 	'NO_WARNINGS'			=> 'No warnings.',
 	'NOT_MANAGE_FOUNDER'	=> 'You tried to manage a user with founder status. Only founders are allowed to manage other founders.',
@@ -125,6 +124,7 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_SPECIAL'			=> 'Pre-defined groups user is a member of',
 	'USER_LIFTED_NR'				=> 'Successfully removed the user’s newly registered status.',
 	'USER_NO_ATTACHMENTS'			=> 'There are no attached files to display.',
+	'USER_NO_POSTS'					=> 'The user has no posts.',
 	'USER_OUTBOX_EMPTIED'			=> 'Successfully emptied user’s private message outbox.',
 	'USER_OUTBOX_EMPTY'				=> 'The user’s private message outbox was already empty.',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',
