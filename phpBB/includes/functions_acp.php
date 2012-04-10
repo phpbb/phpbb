@@ -194,6 +194,7 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
 	global $user, $module;
+	global $phpbb_dispatcher;
 
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
@@ -304,6 +305,9 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	{
 		$tpl .= $vars['append'];
 	}
+
+	$vars = array('tpl_type', 'key', 'new', 'config_key', 'vars', 'tpl');
+	extract($phpbb_dispatcher->trigger_event('core.build_cfg_template', compact($vars)));
 
 	return $tpl;
 }
