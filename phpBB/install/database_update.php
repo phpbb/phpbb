@@ -189,6 +189,12 @@ $config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
+// Update asset_version
+if (isset($config['assets_version']))
+{
+	set_config('assets_version', $config['assets_version'] + 1);
+}
+
 // phpbb_db_tools will be taken from new files (under install/update/new)
 // if possible, falling back to the board's copy.
 $db_tools = new phpbb_db_tools($db, true);
@@ -2423,6 +2429,11 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 			
 			$no_updates = false;
+
+			if (!isset($config['assets_version']))
+			{
+				$config->set('assets_version', '1');
+			}
 
 		break;
 	}
