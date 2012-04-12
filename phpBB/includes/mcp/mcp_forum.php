@@ -286,6 +286,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			));
 		}
 
+		$vars = array('topic_row', 'row');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_forum_topicrow', compact($vars)));
+
 		$template->assign_block_vars('topicrow', $topic_row);
 	}
 	unset($topic_rows);

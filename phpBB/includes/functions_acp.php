@@ -22,6 +22,7 @@ function adm_page_header($page_title)
 {
 	global $config, $db, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
+	global $phpbb_dispatcher;
 
 	if (defined('HEADER_INC'))
 	{
@@ -29,6 +30,16 @@ function adm_page_header($page_title)
 	}
 
 	define('HEADER_INC', true);
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_header_override = false;
+
+	$vars = array('page_title', 'adm_page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_header_override', compact($vars)));
+	if ($adm_page_header_override)
+	{
+		return;
+	}
 
 	// gzip_compression
 	if ($config['gzip_compress'])
@@ -97,6 +108,18 @@ function adm_page_footer($copyright_html = true)
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 	global $request;
+	global $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$adm_page_footer_override = false;
+
+	$vars = array('copyright_html', 'adm_page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer_override', compact($vars)));
+
+	if ($adm_page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -194,6 +217,7 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
 	global $user, $module;
+	global $phpbb_dispatcher;
 
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
@@ -305,6 +329,9 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		$tpl .= $vars['append'];
 	}
 
+	$vars = array('tpl_type', 'key', 'new', 'config_key', 'vars', 'tpl');
+	extract($phpbb_dispatcher->trigger_event('core.build_cfg_template', compact($vars)));
+
 	return $tpl;
 }
 
@@ -315,6 +342,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
 	global $phpbb_root_path, $user;
+	global $phpbb_dispatcher;
+
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
@@ -488,6 +517,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					}
 				}
 
+			break;
+
+			default:
+				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.validate_config_vars', compact($vars)));
 			break;
 		}
 	}

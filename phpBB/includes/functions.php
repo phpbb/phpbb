@@ -4526,6 +4526,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	define('HEADER_INC', true);
 
+	// A listener can set this variable to `true` when it overrides this function
+	$page_header_override = false;
+
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
+	extract($phpbb_dispatcher->trigger_event('core.page_header_override', compact($vars)));
+	if ($page_header_override)
+	{
+		return;
+	}
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
@@ -4827,6 +4837,18 @@ function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 	global $request;
+	global $phpbb_dispatcher;
+
+	// A listener can set this variable to `true` when it overrides this function
+	$page_footer_override = false;
+
+	$vars = array('run_cron', 'page_footer_override');
+	extract($phpbb_dispatcher->trigger_event('core.page_footer_override', compact($vars)));
+
+	if ($page_footer_override)
+	{
+		return;
+	}
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -4911,6 +4933,9 @@ function page_footer($run_cron = true)
 function garbage_collection()
 {
 	global $cache, $db;
+	global $phpbb_dispatcher;
+
+	$phpbb_dispatcher->dispatch('core.garbage_collection');
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))

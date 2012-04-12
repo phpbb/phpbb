@@ -575,6 +575,9 @@ switch ($mode)
 			unset($module);
 		}
 
+		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled');
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_viewprofile', compact($vars)));
+
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// Custom Profile Fields
@@ -1630,7 +1633,7 @@ page_footer();
 */
 function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
 {
-	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
+	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -1691,7 +1694,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	}
 
 	// Dump it out to the template
-	return array(
+	$data = array(
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1739,6 +1742,11 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+
+	$vars = array('data');
+	extract($phpbb_dispatcher->trigger_event('core.memberlist_profile_data', compact($vars)));
+
+	return $data;
 }
 
 function _sort_last_active($first, $second)
