@@ -343,7 +343,7 @@ function still_on_time($extra_time = 15)
 
 /**
 *
-* @version Version 0.1 / slightly modified for phpBB 3.0.x (using $H$ as hash type identifier)
+* @version Version 0.1 / slightly modified for phpBB 3.1.x (using $H$ as hash type identifier)
 *
 * Portable PHP password hashing framework.
 *
