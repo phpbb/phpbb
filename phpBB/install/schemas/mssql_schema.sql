@@ -58,8 +58,16 @@ CREATE TABLE [phpbb_acl_groups] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_option_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_role_id] [int] DEFAULT (0) NOT NULL ,
-	[auth_setting] [int] DEFAULT (0) NOT NULL 
+	[auth_setting] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_acl_groups] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_groups] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [group_id] ON [phpbb_acl_groups]([group_id]) 
 GO
@@ -147,8 +155,16 @@ CREATE TABLE [phpbb_acl_users] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_option_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_role_id] [int] DEFAULT (0) NOT NULL ,
-	[auth_setting] [int] DEFAULT (0) NOT NULL 
+	[auth_setting] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_acl_users] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_users] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id]) 
 GO
@@ -368,8 +384,16 @@ GO
 CREATE TABLE [phpbb_ext] (
 	[ext_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[ext_active] [int] DEFAULT (0) NOT NULL ,
-	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL 
+	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_ext] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_ext] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name]) 
 GO
@@ -523,8 +547,16 @@ GO
 CREATE TABLE [phpbb_forums_watch] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_forums_watch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_forums_watch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [forum_id] ON [phpbb_forums_watch]([forum_id]) 
 GO
@@ -672,8 +704,16 @@ CREATE TABLE [phpbb_login_attempts] (
 	[attempt_time] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[username] [varchar] (255) DEFAULT (0) NOT NULL ,
-	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL 
+	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_login_attempts] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_login_attempts] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) 
 GO
@@ -697,8 +737,16 @@ CREATE TABLE [phpbb_moderator_cache] (
 	[username] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_id] [int] DEFAULT (0) NOT NULL ,
 	[group_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[display_on_index] [int] DEFAULT (1) NOT NULL 
+	[display_on_index] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_moderator_cache] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_moderator_cache] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [disp_idx] ON [phpbb_moderator_cache]([display_on_index]) 
 GO
@@ -835,8 +883,16 @@ CREATE TABLE [phpbb_oauth_tokens] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[provider] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[oauth_token] [text] DEFAULT ('') NOT NULL 
+	[oauth_token] [text] DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_oauth_tokens] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_oauth_tokens] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id]) 
 GO
@@ -852,8 +908,16 @@ CREATE TABLE [phpbb_poll_options] (
 	[poll_option_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[poll_option_text] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[poll_option_total] [int] DEFAULT (0) NOT NULL 
+	[poll_option_total] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_poll_options] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_poll_options] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [poll_opt_id] ON [phpbb_poll_options]([poll_option_id]) 
 GO
@@ -869,8 +933,16 @@ CREATE TABLE [phpbb_poll_votes] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[poll_option_id] [int] DEFAULT (0) NOT NULL ,
 	[vote_user_id] [int] DEFAULT (0) NOT NULL ,
-	[vote_user_ip] [varchar] (40) DEFAULT ('') NOT NULL 
+	[vote_user_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_poll_votes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_poll_votes] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [topic_id] ON [phpbb_poll_votes]([topic_id]) 
 GO
@@ -1054,8 +1126,16 @@ CREATE TABLE [phpbb_privmsgs_to] (
 	[pm_replied] [int] DEFAULT (0) NOT NULL ,
 	[pm_marked] [int] DEFAULT (0) NOT NULL ,
 	[pm_forwarded] [int] DEFAULT (0) NOT NULL ,
-	[folder_id] [int] DEFAULT (0) NOT NULL 
+	[folder_id] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_privmsgs_to] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_privmsgs_to] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [msg_id] ON [phpbb_privmsgs_to]([msg_id]) 
 GO
@@ -1295,8 +1375,16 @@ GO
 CREATE TABLE [phpbb_search_wordmatch] (
 	[post_id] [int] DEFAULT (0) NOT NULL ,
 	[word_id] [int] DEFAULT (0) NOT NULL ,
-	[title_match] [int] DEFAULT (0) NOT NULL 
+	[title_match] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_search_wordmatch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_search_wordmatch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  UNIQUE  INDEX [unq_mtch] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) 
 GO
@@ -1572,8 +1660,16 @@ GO
 CREATE TABLE [phpbb_topics_watch] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_topics_watch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_topics_watch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [topic_id] ON [phpbb_topics_watch]([topic_id]) 
 GO
@@ -1593,8 +1689,16 @@ CREATE TABLE [phpbb_user_notifications] (
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[method] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[notify] [int] DEFAULT (1) NOT NULL 
+	[notify] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_user_notifications] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_user_notifications] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 
 /*
@@ -1604,8 +1708,16 @@ CREATE TABLE [phpbb_user_group] (
 	[group_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[group_leader] [int] DEFAULT (0) NOT NULL ,
-	[user_pending] [int] DEFAULT (1) NOT NULL 
+	[user_pending] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
 )GO
+
+ALTER TABLE [phpbb_user_group] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_user_group] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	) 
+GO
 
 CREATE  INDEX [group_id] ON [phpbb_user_group]([group_id]) 
 GO

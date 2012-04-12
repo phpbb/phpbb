@@ -31,6 +31,19 @@ $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', '
 
 foreach ($supported_dbms as $dbms)
 {
+	include(dirname(__FILE__) . '/../includes/db/schema_data.php');
+	if ($dbms == 'mssql')
+	{
+		foreach ($schema_data as $table_name => $table_data)
+		{
+			if (!isset($table_data['PRIMARY_KEY']))
+			{
+				$schema_data[$table_name]['COLUMNS']['mssqlindex'] = array('UINT', NULL, 'auto_increment');
+				$schema_data[$table_name]['PRIMARY_KEY'] = 'mssqlindex';
+			}
+		}
+	}
+
 	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wb');
 
 	$line = '';
