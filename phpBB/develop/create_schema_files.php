@@ -346,7 +346,7 @@ foreach ($supported_dbms as $dbms)
 
 			case 'mssql':
 				$line = substr($line, 0, -2);
-				$line .= "\n) ON [PRIMARY]" . (($textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '') . "\n";
+				$line .= "\n)";// ON [PRIMARY]" . (($textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '') . "\n";
 				$line .= "GO\n\n";
 			break;
 		}
@@ -383,7 +383,7 @@ foreach ($supported_dbms as $dbms)
 					$line .= "\tCONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED \n";
 					$line .= "\t(\n";
 					$line .= "\t\t[" . implode("],\n\t\t[", $table_data['PRIMARY_KEY']) . "]\n";
-					$line .= "\t)  ON [PRIMARY] \n";
+					$line .= "\t) \n";
 					$line .= "GO\n\n";
 				break;
 
@@ -478,7 +478,7 @@ foreach ($supported_dbms as $dbms)
 					case 'mssql':
 						$line .= ($key_data[0] == 'INDEX') ? 'CREATE  INDEX' : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? 'CREATE  UNIQUE  INDEX' : '';
-						$line .= " [{$key_name}] ON [{$table_name}]([" . implode('], [', $key_data[1]) . "]) ON [PRIMARY]\n";
+						$line .= " [{$key_name}] ON [{$table_name}]([" . implode('], [', $key_data[1]) . "]) \n";
 						$line .= "GO\n\n";
 					break;
 
