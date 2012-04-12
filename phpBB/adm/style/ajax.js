@@ -28,7 +28,8 @@ phpbb.add_ajax_callback('forum_down', function() {
 
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.up').children('a'),
-			callback: 'forum_up'
+			callback: 'forum_up',
+			overlay: false
 		});
 	}
 
@@ -43,7 +44,8 @@ phpbb.add_ajax_callback('forum_down', function() {
 
 		phpbb.ajaxify({
 			selector: tr.prev().find('.down').children('a'),
-			callback: 'forum_down'
+			callback: 'forum_down',
+			overlay: false
 		});
 	}
 });
@@ -61,7 +63,8 @@ phpbb.add_ajax_callback('forum_up', function() {
 
 		phpbb.ajaxify({
 			selector: el.parents('span').siblings('.down').children('a'),
-			callback: 'forum_down'
+			callback: 'forum_down',
+			overlay: false
 		});
 	}
 
@@ -76,7 +79,8 @@ phpbb.add_ajax_callback('forum_up', function() {
 
 		phpbb.ajaxify({
 			selector: tr.next().find('.up').children('a'),
-			callback: 'forum_up'
+			callback: 'forum_up',
+			overlay: false
 		});
 	}
 });
