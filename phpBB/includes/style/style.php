@@ -22,28 +22,33 @@ if (!defined('IN_PHPBB'))
 class phpbb_style
 {
 	/**
-	* @var phpbb_style_template Template class.
+	* Template class.
 	* Handles everything related to templates.
+	* @var phpbb_template
 	*/
 	private $template;
 
 	/**
-	* @var string phpBB root path
+	* phpBB root path
+	* @var string
 	*/
 	private $phpbb_root_path;
 
 	/**
-	* @var phpEx PHP file extension
+	* PHP file extension
+	* @var string
 	*/
 	private $phpEx;
 
 	/**
-	* @var phpbb_config phpBB config instance
+	* phpBB config instance
+	* @var phpbb_config
 	*/
 	private $config;
 
 	/**
-	* @var user current user
+	* Current user
+	* @var phpbb_user
 	*/
 	private $user;
 
@@ -66,9 +71,9 @@ class phpbb_style
 	* @param user $user current user
 	* @param phpbb_style_resource_locator $locator style resource locator
 	* @param phpbb_style_path_provider $provider style path provider
-	* @param phpbb_style_template $template template
+	* @param phpbb_template $template template
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_style_template $template)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider, phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -119,7 +124,7 @@ class phpbb_style
 
 		$this->template->cachepath = $this->phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $name) . '_';
 
-		$this->template->context = new phpbb_style_template_context();
+		$this->template->context = new phpbb_template_context();
 
 		if ($template_path !== false)
 		{

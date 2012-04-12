@@ -29,50 +29,50 @@ if (!defined('IN_PHPBB'))
 * Base Template class.
 * @package phpBB3
 */
-class phpbb_style_template
+class phpbb_template
 {
 	/**
-	* @var phpbb_style_template_context Template context.
+	* Template context.
 	* Stores template data used during template rendering.
+	* @var phpbb_template_context
 	*/
 	public $context;
 
 	/**
-	* @var string Path of the cache directory for the template
+	* Path of the cache directory for the template
+	* @var string
 	*/
 	public $cachepath = '';
 
 	/**
-	* @var string phpBB root path
+	* phpBB root path
+	* @var string
 	*/
 	private $phpbb_root_path;
 
 	/**
-	* @var phpEx PHP file extension
+	* PHP file extension
+	* @var string
 	*/
 	private $phpEx;
 
 	/**
-	* @var phpbb_config phpBB config instance
+	* phpBB config instance
+	* @var phpbb_config
 	*/
 	private $config;
 
 	/**
-	* @var user current user
+	* Current user
+	* @var phpbb_user
 	*/
 	private $user;
 
 	/**
-	* Style resource locator
-	* @var phpbb_style_resource_locator
+	* Template locator
+	* @var phpbb_template_locator
 	*/
 	private $locator;
-
-	/**
-	* Template path provider
-	* @var phpbb_style_path_provider
-	*/
-	private $provider;
 
 	/**
 	* Location of templates directory within style directories
@@ -85,10 +85,9 @@ class phpbb_style_template
 	*
 	* @param string $phpbb_root_path phpBB root path
 	* @param user $user current user
-	* @param phpbb_style_resource_locator $locator style resource locator
-	* @param phpbb_style_path_provider $provider style path provider
+	* @param phpbb_template_locator $locator template locator
 	*/
-	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_style_resource_locator $locator, phpbb_style_path_provider_interface $provider)
+	public function __construct($phpbb_root_path, $phpEx, $config, $user, phpbb_template_locator $locator)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -96,7 +95,6 @@ class phpbb_style_template
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->template_path = $this->locator->template_path;
-		$this->provider = $provider;
 	}
 
 	/**
@@ -253,15 +251,15 @@ class phpbb_style_template
 	* configuration setting may be used to force templates to be always
 	* recompiled.
 	*
-	* Returns an object implementing phpbb_style_template_renderer, or null
+	* Returns an object implementing phpbb_template_renderer, or null
 	* if template loading or compilation failed. Call render() on the
 	* renderer to display the template. This will result in template
 	* contents sent to the output stream (unless, of course, output
 	* buffering is in effect).
 	*
 	* @param string $handle Handle of the template to load
-	* @return phpbb_style_template_renderer Template renderer object, or null on failure
-	* @uses phpbb_style_template_compile is used to compile template source
+	* @return phpbb_template_renderer Template renderer object, or null on failure
+	* @uses phpbb_template_compile is used to compile template source
 	*/
 	private function _tpl_load($handle)
 	{
@@ -285,18 +283,18 @@ class phpbb_style_template
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
-			return new phpbb_style_template_renderer_include($output_file, $this);
+			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_style_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->locator, $this->phpbb_root_path);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
-			$renderer = new phpbb_style_template_renderer_include($output_file, $this);
+			$renderer = new phpbb_template_renderer_include($output_file, $this);
 		}
 		else if (($code = $compile->compile_file($source_file)) !== false)
 		{
-			$renderer = new phpbb_style_template_renderer_eval($code, $this);
+			$renderer = new phpbb_template_renderer_eval($code, $this);
 		}
 		else
 		{
@@ -358,7 +356,7 @@ class phpbb_style_template
 		$this->context->append_var($varname, $varval);
 	}
 
-	// Docstring is copied from phpbb_style_template_context method with the same name.
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
@@ -369,7 +367,7 @@ class phpbb_style_template
 		return $this->context->assign_block_vars($blockname, $vararray);
 	}
 
-	// Docstring is copied from phpbb_style_template_context method with the same name.
+	// Docstring is copied from phpbb_template_context method with the same name.
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
