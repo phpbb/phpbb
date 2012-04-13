@@ -665,7 +665,7 @@ class ucp_profile
 
 						'KEY' => $row['key_id'],
 						'IP' => $row['last_ip'],
-						'LOGIN_TIME' => $row['last_login'],
+						'LOGIN_TIME' => $user->format_date($row['last_login']),
 					));
 				}
 

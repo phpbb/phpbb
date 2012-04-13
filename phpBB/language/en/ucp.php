@@ -377,7 +377,7 @@ $lang = array_merge($lang, array(
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
-	'PROFILE_AUTOLOGIN_KEYS'	=> 'The persisten login keys can be selected and deleted.',
+	'PROFILE_AUTOLOGIN_KEYS'	=> 'The persistent login keys can be selected and deleted.',
 	'PROFILE_NO_AUTOLOGIN_KEYS'	=> 'There are no saved persistent login keys.',
 
 	'RECIPIENT'							=> 'Recipient',
