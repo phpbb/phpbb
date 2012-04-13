@@ -8,7 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
-require_once dirname(__FILE__) . '/phpbb_database_connection_helper.php';
+require_once dirname(__FILE__) . '/phpbb_database_connection_odbc_pdo_wrapper.php';
 
 class phpbb_database_test_connection_manager
 {
