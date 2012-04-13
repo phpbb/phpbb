@@ -22,6 +22,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @var string Session ID for current test's session (each test makes its own)
 	*/
 	protected $sid;
+	/**
+	* @var array Language array used by phpBB
+	*/
+	protected $lang = array();
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -46,6 +50,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->cookieJar = new CookieJar;
 		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
 		$this->root_url = self::$config['phpbb_functional_url'];
+		// Clear the language array so that things
+		// that were added in other tests are gone
+		$this->lang = array();
+		$this->add_lang('common');
 	}
 
 	public function request($method, $path)
@@ -244,5 +252,29 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$this->sid = $cookie->getValue();
 			}
 		}
+	}
+
+	protected function add_lang($lang_file)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		if (is_array($lang_file))
+		{
+			foreach ($lang_file as $file)
+			{
+				$this->add_lang($file);
+			}
+		}
+
+		$lang_path = "{$phpbb_root_path}language/en/$lang_file.$phpEx";
+
+		$lang = array();
+
+		if (file_exists($lang_path))
+		{
+			include($lang_path);
+		}
+
+		$this->lang = array_merge($this->lang, $lang);
 	}
 }
