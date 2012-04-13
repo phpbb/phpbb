@@ -14,14 +14,14 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 	public function test_includejs_compilation()
 	{
 		// Reset the engine state
-		$this->setup_engine();
+		$this->setup_engine(array('assets_version' => 1));
 
 		// Prepare correct result
 		$dir = dirname(__FILE__);
 		$scripts = array(
-			'<script src="' . $dir . '/templates/parent_and_child.html"></script>',
-			'<script src="' . $dir . '/parent_templates/parent_only.html"></script>',
-			'<script src="' . $dir . '/templates/child_only.html"></script>'
+			'<script src="' . $dir . '/templates/parent_and_child.html?assets_version=1"></script>',
+			'<script src="' . $dir . '/parent_templates/parent_only.html?assets_version=1"></script>',
+			'<script src="' . $dir . '/templates/child_only.html?assets_version=1"></script>'
 		);
 
 		// Run test
