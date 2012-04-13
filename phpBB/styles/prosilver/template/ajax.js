@@ -60,7 +60,8 @@ $('[data-ajax]').each(function() {
 		phpbb.ajaxify({
 			selector: this,
 			refresh: $this.attr('data-refresh') !== undefined,
-			callback: fn
+			callback: fn,
+			overlay: $this.attr('data-overlay') === undefined
 		});
 	}
 });
