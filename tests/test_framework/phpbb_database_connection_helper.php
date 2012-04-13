@@ -14,7 +14,7 @@
 *
 * This is used in the custom PHPUnit ODBC driver
 */
-class phpbb_database_connection_ODBC_PDO_wrapper extends PDO
+class phpbb_database_connection_odbc_pdo_wrapper extends PDO
 {
 	// Name of the driver being used (i.e. mssql, firebird)
 	public $driver = '';

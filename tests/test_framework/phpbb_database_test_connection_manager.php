@@ -97,13 +97,13 @@ class phpbb_database_test_connection_manager
 			{
 				case 'mssql':
 				case 'mssql_odbc':
-					$this->pdo = new phpbb_database_connection_ODBC_PDO_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+					$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 				break;
 
 				case 'firebird':
 					if (!empty($this->config['custom_dsn']))
 					{
-						$this->pdo = new phpbb_database_connection_ODBC_PDO_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
+						$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 						break;
 					}
 					// Fall through if they're using the firebird PDO driver and not the generic ODBC driver
