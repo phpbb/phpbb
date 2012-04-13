@@ -639,11 +639,25 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
+		//Give the number of topics a user has along with percentage of all topics, and topics per day.
+		$sql = 'SELECT COUNT(topic_id) as topics
+			FROM phpbb_topics 
+			WHERE topic_poster = '.$user_id;
+		$result = $db->sql_query($sql);
+		$topics = (int) $db->sql_fetchfield('topics');
+		$db->sql_freeresult($result);
+		$topics_per_day = $topics / $memberdays;
+		$topic_percentage = ($config['num_topics']) ? min(100, ($topics / $config['num_topics']) * 100) : 0;
+
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
 			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
+
+			'TOPICS'			=> $topics,
+		        'TOPICS_DAY'			=> $user->lang('TOPIC_DAY', $topics_per_day),
+		        'TOPICS_PCT'			=> $user->lang('TOPIC_PCT', $topic_percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
