@@ -621,6 +621,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_UNANSWERED'			=> 'View unanswered posts',
 	'SEARCH_UNREAD'				=> 'View unread posts',
 	'SEARCH_USER_POSTS'			=> 'Search user’s posts',
+    'SEARCH_USER_TOPICS'		=> 'Search user’s topics',
 	'SECONDS'					=> 'Seconds',
 	'SEE_ALL'					=> 'See All',
 	'SELECT'					=> 'Select',
