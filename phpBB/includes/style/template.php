@@ -507,6 +507,9 @@ class phpbb_style_template
 			$file = $this->locator->get_first_file_location(array($file), true, true);
 		}
 
+		$file .= (strpos($file, '?') === false) ? '?' : '&';
+		$file .= 'assets_version=' . $this->config['assets_version'];
+
 		// Add HTML code
 		$code = '<script src="' . htmlspecialchars($file) . '"></script>';
 		$this->context->append_var('SCRIPTS', $code);
