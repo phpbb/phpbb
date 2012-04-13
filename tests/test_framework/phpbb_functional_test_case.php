@@ -25,7 +25,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* @var array Language array used by phpBB
 	*/
-	protected $lang = array();
+	private $lang = array();
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -236,10 +236,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function login()
 	{
-		$crawler = $this->request('GET', 'ucp.php');
-		$this->assertContains("Please login in order to access the User Control Panel.", $crawler->filter('html')->text());
+		$this->add_lang('ucp');
 
-		$form = $crawler->selectButton('Login')->form();
+		$crawler = $this->request('GET', 'ucp.php');
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
 
 		$cookies = $this->cookieJar->all();
@@ -276,5 +278,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$this->lang = array_merge($this->lang, $lang);
+	}
+
+	protected function lang()
+	{
+		$args = func_get_args();
+		$key = $args[0];
+
+		if (empty($this->lang[$key]))
+		{
+			return false;
+		}
+
+		$args[0] = $this->lang[$key];
+
+		return call_user_func_array('sprintf', $args);
 	}
 }
