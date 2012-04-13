@@ -138,7 +138,7 @@ class phpbb_style_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, root directory and locator from params, 
+	* Get the allow_php option, root directory and locator from params,
 	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
@@ -882,8 +882,6 @@ class phpbb_style_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include_js($tag_args)
 	{
-		global $config;
-
 		// Process dynamic includes
 		if ($tag_args[0] == '{')
 		{
@@ -896,14 +894,14 @@ class phpbb_style_template_filter extends php_user_filter
 		}
 
 		// Locate file
-		$filename = $this->locator->get_first_file_location(array($tag_args), false, true) . '?assets_version=' . $config['assets_version'];
-		
+		$filename = $this->locator->get_first_file_location(array($tag_args), false, true);
+
 		if ($filename === false)
 		{
 			// File does not exist, find it during run time
 			return ' $_template->_js_include(\'' . addslashes($tag_args) . '\', true); ';
 		}
-		
+
 		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{
 			// Absolute path, include as is
