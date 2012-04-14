@@ -642,7 +642,8 @@ switch ($mode)
 		// Give the number of topics a user has along with percentage of all topics, and topics per day.
 		$sql = 'SELECT COUNT(topic_id) as topics
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_poster = ' . $user_id;
+			WHERE topic_poster = ' . $user_id . '
+				AND topic_approved = 1';
 		$result = $db->sql_query($sql);
 		$topics = (int) $db->sql_fetchfield('topics');
 		$db->sql_freeresult($result);
