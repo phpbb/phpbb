@@ -10,11 +10,10 @@
 require_once dirname(__FILE__) . '/base.php';
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 class phpbb_security_redirect_test extends phpbb_security_test_base
 {
-	public static function provider()
+	public function provider()
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(
@@ -30,7 +29,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 	protected function setUp()
 	{
 		parent::setUp();
-		
+
 		$GLOBALS['config'] = array(
 			'force_server_vars'	=> '0',
 		);
@@ -57,4 +56,3 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		}
 	}
 }
-

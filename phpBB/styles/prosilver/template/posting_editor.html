@@ -149,13 +149,13 @@
 <!-- IF $EXTRA_POSTING_OPTIONS eq 1 -->
 
 	<!-- IF not S_SHOW_DRAFTS -->
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_HAS_ATTACHMENTS -->
 		<div class="panel bg2">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<h3>{L_POSTED_ATTACHMENTS}</h3>
 
 			<fieldset class="fields2">
@@ -177,13 +177,13 @@
 
 			</fieldset>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg2">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
@@ -194,7 +194,7 @@
 
 		</fieldset>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- ENDIF -->
 
@@ -210,7 +210,7 @@
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg3" id="options-panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<fieldset class="fields1">
 			<!-- IF S_BBCODE_ALLOWED -->

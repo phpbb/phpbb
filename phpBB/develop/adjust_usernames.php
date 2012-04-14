@@ -48,5 +48,3 @@ echo 'FINISHED';
 
 // Done
 $db->sql_close();
-
-?>

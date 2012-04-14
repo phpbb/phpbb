@@ -3,13 +3,13 @@
 	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT  -->
 			</ul>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF forumrow.S_IS_CAT or forumrow.S_FIRST_ROW  or forumrow.S_NO_CAT  -->
 		<div class="forabg">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 			<ul class="topiclist">
 				<li class="header">
 					<dl class="icon">
@@ -25,7 +25,7 @@
 
 	<!-- IF not forumrow.S_IS_CAT -->
 		<li class="row">
-			<dl class="icon" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
+			<dl class="icon {forumrow.FORUM_IMG_STYLE}">
 				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
 				<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED --><!-- <a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}"><img src="{T_THEME_PATH}/images/feed.gif" alt="{L_FEED} - {forumrow.FORUM_NAME}" /></a> --><!-- ENDIF -->
 
@@ -55,14 +55,14 @@
 	<!-- IF forumrow.S_LAST_ROW -->
 			</ul>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	<!-- ENDIF -->
 
 <!-- BEGINELSE -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<strong>{L_NO_FORUMS}</strong>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- END forumrow -->

@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -20,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACP Permission/Auth class
 * @package phpBB3
 */
-class auth_admin extends auth
+class auth_admin extends phpbb_auth
 {
 	/**
 	* Init auth settings
@@ -131,7 +130,7 @@ class auth_admin extends auth
 			{
 				if ($user->data['user_id'] != $userdata['user_id'])
 				{
-					$auth2 = new auth();
+					$auth2 = new phpbb_auth();
 					$auth2->acl($userdata);
 				}
 				else
@@ -1281,5 +1280,3 @@ class auth_admin extends auth
 		return true;
 	}
 }
-
-?>

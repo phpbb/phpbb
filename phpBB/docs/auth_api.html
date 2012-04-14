@@ -1,14 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="en" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="copyright" content="phpBB Group" />
+<meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="This is an explanation of how to use the phpBB auth/acl API" />
 <title>phpBB3 &bull; Auth API</title>
@@ -93,7 +86,7 @@
 	<p>To use any methods contained with the <code>auth</code> class it first needs to be instantiated. This is best achieved early in the execution of the script in the following manner:</p>
 
 	<div class="codebox"><pre>
-$auth = new auth();
+$auth = new phpbb_auth();
 	</pre></div>
 
 	<p>Once an instance of the class has been created you are free to call the various methods it contains. Please note that should you wish to use the <code>auth_admin</code> methods you will need to instantiate this separately but in the same way.</p>

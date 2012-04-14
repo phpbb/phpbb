@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -28,14 +27,15 @@ class ucp_groups
 	{
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $cache, $template;
+		global $request;
 
 		$user->add_lang('groups');
 
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
 		$error = $data = array();
 
 		switch ($mode)
@@ -560,7 +560,7 @@ class ucp_groups
 								{
 									if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 									{
-										$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+										$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 									}
 								}
 
@@ -570,7 +570,7 @@ class ucp_groups
 									{
 										if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 										{
-											$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+											$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 										}
 									}
 								}
@@ -731,7 +731,7 @@ class ucp_groups
 
 							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
-							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+							'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 						));
 
 					break;
@@ -1067,7 +1067,7 @@ class ucp_groups
 								'mode'		=> $mode,
 								'action'	=> $action
 							);
-							confirm_box(false, sprintf($user->lang['GROUP_CONFIRM_ADD_USER' . ((sizeof($name_ary) == 1) ? '' : 'S')], implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
@@ -1109,5 +1109,3 @@ class ucp_groups
 		$this->tpl_name = 'ucp_groups_' . $mode;
 	}
 }
-
-?>

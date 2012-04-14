@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -210,7 +209,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
-			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+			$this->warn_msg[] = $user->lang('MAX_FONT_SIZE_EXCEEDED', (int) $config['max_' . $this->mode . '_font_size']);
 
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
@@ -319,13 +318,13 @@ class bbcode_firstpass extends bbcode
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
@@ -374,13 +373,13 @@ class bbcode_firstpass extends bbcode
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
@@ -772,7 +771,7 @@ class bbcode_firstpass extends bbcode
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
+						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -1117,7 +1116,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1126,7 +1125,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : $user->lang('TOO_FEW_CHARS_LIMIT', $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1445,7 +1444,7 @@ class parse_message extends bbcode_firstpass
 			}
 			else
 			{
-				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+				$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 			}
 		}
 
@@ -1536,7 +1535,7 @@ class parse_message extends bbcode_firstpass
 				}
 				else
 				{
-					$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 				}
 			}
 		}
@@ -1553,9 +1552,10 @@ class parse_message extends bbcode_firstpass
 	function get_submitted_attachment_data($check_user_id = false)
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
+		global $request;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, phpbb_request_interface::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
@@ -1593,7 +1593,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $not_orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($not_orphan[$row['attach_id']]);
 			}
@@ -1619,7 +1619,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($orphan[$row['attach_id']]);
 			}
@@ -1698,5 +1698,3 @@ class parse_message extends bbcode_firstpass
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
 	}
 }
-
-?>

@@ -8,7 +8,7 @@
 
 <form action="{S_LOGIN_ACTION}" method="post" id="login">
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div class="content">
 		<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
@@ -45,13 +45,13 @@
 		</dl>
 		</fieldset>
 	</div>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 
 <!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 			<h3>{L_REGISTER}</h3>
@@ -61,7 +61,7 @@
 			<p><a href="{U_REGISTER}" class="button2">{L_REGISTER}</a></p>
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
