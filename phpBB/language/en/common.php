@@ -735,7 +735,6 @@ $lang = array_merge($lang, array(
 	'TOTAL_POSTS_COUNT'	=> array(
 		2	=> 'Total posts <strong>%d</strong>',
 	),
-	
 	'TOPIC_REPORTED'	=> 'This topic has been reported',
 	'TOTAL_TOPICS'		=> array(
 		2	=> 'Total topics <strong>%d</strong>',
@@ -743,7 +742,9 @@ $lang = array_merge($lang, array(
 	'TOTAL_USERS'		=> array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
-	'TOTAL_USER_TOPICS'	=> 'Total topics',
+	'TOTAL_USER_TOPICS'  => 'Total topics',
+	'TOPIC_DAY'    => '%.2f topics per day',
+	'TOPIC_PCT'    => '%.2f%% of all topics',
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',
