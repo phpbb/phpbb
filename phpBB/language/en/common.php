@@ -101,7 +101,7 @@ $lang = array_merge($lang, array(
 
 	'BACK_TO_TOP'			=> 'Top',
 	'BACK_TO_PREV'			=> 'Back to previous page',
-	'BAN_TRIGGERED_BY_EMAIL'=> 'A ban has been issued on your e-mail address.',
+	'BAN_TRIGGERED_BY_EMAIL'=> 'A ban has been issued on your email address.',
 	'BAN_TRIGGERED_BY_IP'	=> 'A ban has been issued on your IP address.',
 	'BAN_TRIGGERED_BY_USER'	=> 'A ban has been issued on your username.',
 	'BBCODE_GUIDE'			=> 'BBCode guide',
@@ -169,9 +169,9 @@ $lang = array_merge($lang, array(
 	),
 
 	'EDIT_POST'							=> 'Edit post',
-	'EMAIL'								=> 'E-mail', // Short form for EMAIL_ADDRESS
-	'EMAIL_ADDRESS'						=> 'E-mail address',
-	'EMAIL_SMTP_ERROR_RESPONSE'			=> 'Ran into problems sending e-mail at <strong>Line %1$s</strong>. Response: %2$s.',
+	'EMAIL'								=> 'Email', // Short form for EMAIL_ADDRESS
+	'EMAIL_ADDRESS'						=> 'Email address',
+	'EMAIL_SMTP_ERROR_RESPONSE'			=> 'Ran into problems sending email at <strong>Line %1$s</strong>. Response: %2$s.',
 	'EMPTY_SUBJECT'						=> 'You must specify a subject when posting a new topic.',
 	'EMPTY_MESSAGE_SUBJECT'				=> 'You must specify a subject when composing a new message.',
 	'ENABLED'							=> 'Enabled',
@@ -296,7 +296,7 @@ $lang = array_merge($lang, array(
 	'INFORMATION'				=> 'Information',
 	'INTERESTS'					=> 'Interests',
 	'INVALID_DIGEST_CHALLENGE'	=> 'Invalid digest challenge.',
-	'INVALID_EMAIL_LOG'			=> '<strong>%s</strong> possibly an invalid e-mail address?',
+	'INVALID_EMAIL_LOG'			=> '<strong>%s</strong> possibly an invalid email address?',
 	'INVALID_PLURAL_RULE'		=> 'The chosen plural rule is invalid. Valid values are integers between 0 and 15.',
 	'IP'						=> 'IP',
 	'IP_BLACKLISTED'			=> 'Your IP %1$s has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
@@ -391,9 +391,9 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_OPERATION'			=> 'You do not have the necessary permissions to complete this operation.',
 	'NO_CONNECT_TO_SMTP_HOST'	=> 'Could not connect to smtp host : %1$s : %2$s',
 	'NO_BIRTHDAYS'				=> 'No birthdays today',
-	'NO_EMAIL_MESSAGE'			=> 'E-mail message was blank.',
+	'NO_EMAIL_MESSAGE'			=> 'Email message was blank.',
 	'NO_EMAIL_RESPONSE_CODE'	=> 'Could not get mail server response codes.',
-	'NO_EMAIL_SUBJECT'			=> 'No e-mail subject specified.',
+	'NO_EMAIL_SUBJECT'			=> 'No email subject specified.',
 	'NO_FORUM'					=> 'The forum you selected does not exist.',
 	'NO_FORUMS'					=> 'This board has no forums.',
 	'NO_GROUP'					=> 'The requested usergroup does not exist.',
@@ -521,7 +521,7 @@ $lang = array_merge($lang, array(
 	'REPORT_BY'					=> 'Report by',
 	'REPORT_POST'				=> 'Report this post',
 	'REPORTING_POST'			=> 'Reporting post',
-	'RESEND_ACTIVATION'			=> 'Resend activation e-mail',
+	'RESEND_ACTIVATION'			=> 'Resend activation email',
 	'RESET'						=> 'Reset',
 	'RESTORE_PERMISSIONS'		=> 'Restore permissions',
 	'RETURN_INDEX'				=> '%sReturn to the index page%s',
@@ -571,8 +571,8 @@ $lang = array_merge($lang, array(
 	'SELECT_ALL_CODE'			=> 'Select all',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a destination forum',
 	'SELECT_FORUM'				=> 'Select a forum',
-	'SEND_EMAIL'				=> 'E-mail',				// Used for submit buttons
-	'SEND_EMAIL_USER'			=> 'E-mail',				// Used as: {L_SEND_EMAIL_USER} {USERNAME} -> E-mail UserX
+	'SEND_EMAIL'				=> 'Email',				// Used for submit buttons
+	'SEND_EMAIL_USER'			=> 'Email',				// Used as: {L_SEND_EMAIL_USER} {USERNAME} -> Email UserX
 	'SEND_PRIVATE_MESSAGE'		=> 'Send private message',
 	'SETTINGS'					=> 'Settings',
 	'SIGNATURE'					=> 'Signature',
@@ -604,7 +604,7 @@ $lang = array_merge($lang, array(
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
 	'TIMEOUT_PROCESSING_REQ'			=> 'Request timed out.',
-	
+
 	'TOO_LARGE'						=> 'The value you entered is too large.',
 	'TOO_LARGE_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too large.',
 
@@ -623,7 +623,7 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_PASSWORD_CONFIRM'		=> 'The password confirmation you entered is too long.',
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_LONG_USERNAME'				=> 'The username you entered is too long.',
-	'TOO_LONG_EMAIL'				=> 'The e-mail address you entered is too long.',
+	'TOO_LONG_EMAIL'				=> 'The email address you entered is too long.',
 	'TOO_LONG_WEBSITE'				=> 'The website address you entered is too long.',
 	'TOO_LONG_YIM'					=> 'The Yahoo! Messenger name you entered is too long.',
 
@@ -644,10 +644,10 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_PASSWORD_CONFIRM'	=> 'The password confirmation you entered is too short.',
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_USERNAME'			=> 'The username you entered is too short.',
-	'TOO_SHORT_EMAIL'				=> 'The e-mail address you entered is too short.',
+	'TOO_SHORT_EMAIL'				=> 'The email address you entered is too short.',
 	'TOO_SHORT_WEBSITE'				=> 'The website address you entered is too short.',
 	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
-	
+
 	'TOO_SMALL'						=> 'The value you entered is too small.',
 	'TOO_SMALL_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too small.',
 
