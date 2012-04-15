@@ -274,6 +274,7 @@ $lang = array_merge($lang, array(
 	'POST_REPORTED_SUCCESS'		=> 'This post has been successfully reported.',
 	'POST_UNLOCKED_SUCCESS'		=> 'Post unlocked successfully.',
 
+	'RANK'						=> 'User rank',
 	'READ_USERNOTES'			=> 'User notes',
 	'READ_WARNINGS'				=> 'User warnings',
 	'REPORTER'					=> 'Reporter',
