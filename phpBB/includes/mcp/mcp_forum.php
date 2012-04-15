@@ -433,7 +433,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id");
+	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
