@@ -187,7 +187,7 @@ $lang = array_merge($lang, array(
 	),
 
 	'EDIT_POST'							=> 'Edit post',
-	'EMAIL'								=> 'E-mail',  // Short form for EMAIL_ADDRESS
+	'EMAIL'								=> 'E-mail', // Short form for EMAIL_ADDRESS
 	'EMAIL_COLON'						=> 'E-mail:', // Short form for EMAIL_ADDRESS_COLON
 	'EMAIL_ADDRESS'						=> 'E-mail address',
 	'EMAIL_ADDRESS_COLON'				=> 'E-mail address:',
@@ -729,14 +729,14 @@ $lang = array_merge($lang, array(
 	'TOPIC_ICON'		=> 'Topic icon',
 	'TOPIC_ICON_COLON'	=> 'Topic icon:',
 	'TOPIC_LOCKED'		=> 'This topic is locked, you cannot edit posts or make further replies.',
-	'TOPIC_LOCKED_SHORT'	=> 'Topic locked',
+	'TOPIC_LOCKED_SHORT'=> 'Topic locked',
 	'TOPIC_MOVED'		=> 'Moved topic',
 	'TOPIC_REVIEW'		=> 'Topic review',
-	'TOPIC_REVIEW_COLON'	=> 'Topic review:',
+	'TOPIC_REVIEW_COLON'=> 'Topic review:',
 	'TOPIC_TITLE'		=> 'Topic title',
 	'TOPIC_UNAPPROVED'	=> 'This topic has not been approved',
 	'TOTAL_ATTACHMENTS'	=> 'Attachment(s)',
-	'TOTAL_LOGS'			=> array(
+	'TOTAL_LOGS'		=> array(
 		1	=> '%d log',
 		2	=> '%d logs',
 	),

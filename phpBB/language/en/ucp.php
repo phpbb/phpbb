@@ -600,7 +600,9 @@ $lang = array_merge($lang, array(
 		'DELETE_MESSAGE'	=> 'Delete message'
 	),
 	'PM_CHECK' => array(
+		'SUBJECT'	=> 'Subject',
 		'SENDER'	=> 'Sender',
+		'MESSAGE'	=> 'Message',
 		'STATUS'	=> 'Message status',
 		'TO'		=> 'Sent To'
 	),

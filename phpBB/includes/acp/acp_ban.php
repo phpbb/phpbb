@@ -89,7 +89,7 @@ class acp_ban
 			break;
 
 			case 'ip':
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+				$l_ban_cell = $user->lang['IP_HOSTNAME_COLON'];
 			break;
 
 			case 'email':
