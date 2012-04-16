@@ -28,9 +28,9 @@
 		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE_COLON}</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF LOCATION --><dt>{L_LOCATION_COLON}</dt> <dd>{LOCATION}</dd><!-- ENDIF -->
-		<!-- IF AGE !== '' --><dt>{L_AGE}</dt> <dd>{AGE}</dd><!-- ENDIF -->
-		<!-- IF OCCUPATION --><dt>{L_OCCUPATION}</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
-		<!-- IF INTERESTS --><dt>{L_INTERESTS}</dt> <dd>{INTERESTS}</dd><!-- ENDIF -->
+		<!-- IF AGE !== '' --><dt>{L_AGE_COLON}</dt> <dd>{AGE}</dd><!-- ENDIF -->
+		<!-- IF OCCUPATION --><dt>{L_OCCUPATION_COLON}</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
+		<!-- IF INTERESTS --><dt>{L_INTERESTS_COLON}</dt> <dd>{INTERESTS}</dd><!-- ENDIF -->
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS_COLON}</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
 		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
@@ -78,19 +78,19 @@
 		<h3>{L_USER_FORUM}</h3>
 		<dl class="details">
 			<dt>{L_JOINED_COLON}</dt> <dd>{JOINED}</dd>
-			<dt>{L_VISITED}</dt> <dd>{VISITED}</dd>
+			<dt>{L_VISITED_COLON}</dt> <dd>{VISITED}</dd>
 			<!-- IF S_WARNINGS -->
 			<dt>{L_WARNINGS_COLON} </dt>
 			<dd><strong>{WARNINGS}</strong><!-- IF U_NOTES or U_WARN --> [ <!-- IF U_NOTES --><a href="{U_NOTES}">{L_VIEW_NOTES}</a><!-- ENDIF --> <!-- IF U_WARN --><!-- IF U_NOTES --> | <!-- ENDIF --><a href="{U_WARN}">{L_WARN_USER}</a><!-- ENDIF --> ]<!-- ENDIF --></dd>
 			<!-- ENDIF -->
-			<dt>{L_TOTAL_POSTS}</dt>
+			<dt>{L_TOTAL_POSTS_COLON}</dt>
 				<dd>{POSTS} <!-- IF S_DISPLAY_SEARCH -->| <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong><!-- ENDIF -->
 					<!-- IF POSTS_PCT --><br />({POSTS_PCT} / {POSTS_DAY})<!-- ENDIF -->
 					<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />(<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)<!-- ELSEIF POSTS_IN_QUEUE --><br />({L_POSTS_IN_QUEUE})<!-- ENDIF -->
 				</dd>
 			<!-- IF S_SHOW_ACTIVITY and POSTS -->
-				<dt>{L_ACTIVE_IN_FORUM}</dt> <dd><!-- IF ACTIVE_FORUM != '' --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
-				<dt>{L_ACTIVE_IN_TOPIC}</dt> <dd><!-- IF ACTIVE_TOPIC != '' --><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
+				<dt>{L_ACTIVE_IN_FORUM_COLON}</dt> <dd><!-- IF ACTIVE_FORUM != '' --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
+				<dt>{L_ACTIVE_IN_TOPIC_COLON}</dt> <dd><!-- IF ACTIVE_TOPIC != '' --><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
 			<!-- ENDIF -->
 		</dl>
 	</div>

@@ -14,12 +14,12 @@
 </dl>
 <!-- ENDIF -->
 <dl>
-	<dt><label>{L_REGISTERED}</label></dt>
+	<dt><label>{L_REGISTERED_COLON}</label></dt>
 	<dd><strong>{USER_REGISTERED}</strong></dd>
 </dl>
 <!-- IF S_USER_IP -->
 <dl>
-	<dt><label>{L_REGISTERED_IP}</label></dt>
+	<dt><label>{L_REGISTERED_IP_COLON}</label></dt>
 	<dd><a href="{U_SHOW_IP}">{REGISTERED_IP}</a></dd>
 	<dd>[ <a href="{U_WHOIS}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_WHOIS}</a> ]</dd>
 </dl>
@@ -37,7 +37,7 @@
 	<dd><strong>{USER_WARNINGS}</strong></dd>
 </dl>
 <dl>
-	<dt><label for="user_founder">{L_FOUNDER}</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
+	<dt><label for="user_founder">{L_FOUNDER_COLON}</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_YES}</label>
 		<label><input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
@@ -107,16 +107,16 @@
 	<fieldset>
 		<legend>{L_USER_TOOLS}</legend>
 	<dl>
-		<dt><label for="quicktools">{L_QUICK_TOOLS}</label></dt>
+		<dt><label for="quicktools">{L_QUICK_TOOLS_COLON}</label></dt>
 		<dd><select id="quicktools" name="action" onchange="display_reason(this.options[this.selectedIndex].value);">{S_ACTION_OPTIONS}</select></dd>
 	</dl>
 	<div style="display: none;" id="reasons">
 		<dl>
-			<dt><label for="ban_reason">{L_BAN_REASON}</label></dt>
+			<dt><label for="ban_reason">{L_BAN_REASON_COLON}</label></dt>
 			<dd><input name="ban_reason" type="text" class="text medium" maxlength="3000" id="ban_reason" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="ban_give_reason">{L_BAN_GIVE_REASON}</label></dt>
+			<dt><label for="ban_give_reason">{L_BAN_GIVE_REASON_COLON}</label></dt>
 			<dd><input name="ban_give_reason" type="text" class="text medium" maxlength="3000" id="ban_give_reason" /></dd>
 		</dl>
 	</div>

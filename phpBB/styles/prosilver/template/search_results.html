@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <h2><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
-<!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS} <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
+<!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS_COLON} <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->
 	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO_COLON} {SEARCH_TOPIC}</a></p>
@@ -17,7 +17,7 @@
 	<!-- IF SEARCH_MATCHES -->
 		<div class="search-box">
 			<!-- IF SEARCH_IN_RESULTS -->
-				<label for="add_keywords">{L_SEARCH_IN_RESULTS} <input type="text" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
+				<label for="add_keywords">{L_SEARCH_IN_RESULTS_COLON} <input type="text" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
 				<input class="button2" type="submit" name="submit" value="{L_SEARCH}" />
 			<!-- ENDIF -->
 		</div>

@@ -36,8 +36,10 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ABOUT_USER'			=> 'Profile',
-	'ACTIVE_IN_FORUM'		=> 'Most active forum:',
-	'ACTIVE_IN_TOPIC'		=> 'Most active topic:',
+	'ACTIVE_IN_FORUM'		=> 'Most active forum',
+	'ACTIVE_IN_FORUM_COLON'	=> 'Most active forum:',
+	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
+	'ACTIVE_IN_TOPIC_COLON'	=> 'Most active topic:',
 	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
 	'AFTER'					=> 'After',
@@ -78,14 +80,17 @@ $lang = array_merge($lang, array(
 	'IM_ICQ'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s.',
-	'IM_MESSAGE'			=> 'Your message:',
+	'IM_MESSAGE'			=> 'Your message',
+	'IM_MESSAGE_COLON'		=> 'Your message:',
 	'IM_MSNM'				=> 'Please note that you need Windows Live Messenger installed to use this.',
 	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
 	'IM_MSNM_CONNECT'		=> 'WLM is not connected.\nYou have to connect to WLM to continue.',
-	'IM_NAME'				=> 'Your Name:',
+	'IM_NAME'				=> 'Your Name',
+	'IM_NAME_COLON'			=> 'Your Name:',
 	'IM_NO_DATA'			=> 'There is no suitable contact information for this user.',
 	'IM_NO_JABBER'			=> 'Sorry, direct messaging of Jabber users is not supported on this board. You will need a Jabber client installed on your system to contact the recipient above.',
-	'IM_RECIPIENT'			=> 'Recipient:',
+	'IM_RECIPIENT'			=> 'Recipient',
+	'IM_RECIPIENT_COLON'	=> 'Recipient:',
 	'IM_SEND'				=> 'Send message',
 	'IM_SEND_MESSAGE'		=> 'Send message',
 	'IM_SENT_JABBER'		=> 'Your message to %1$s has been sent successfully.',
@@ -111,7 +116,8 @@ $lang = array_merge($lang, array(
 	'ORDER'					=> 'Order',
 	'OTHER'					=> 'Other',
 
-	'POST_IP'				=> 'Posted from IP/domain:',
+	'POST_IP'				=> 'Posted from IP/domain',
+	'POST_IP_COLON'			=> 'Posted from IP/domain:',
 
 	'RANK'					=> 'Rank',
 	'RANK_COLON'			=> 'Rank:',
@@ -121,7 +127,8 @@ $lang = array_merge($lang, array(
 	'REMOVE_FRIEND'			=> 'Remove friend',
 
 	'SELECT_MARKED'			=> 'Select marked',
-	'SELECT_SORT_METHOD'	=> 'Select sort method:',
+	'SELECT_SORT_METHOD'	=> 'Select sort method',
+	'SELECT_SORT_METHOD_COLON'	=> 'Select sort method:',
 	'SEND_AIM_MESSAGE'		=> 'Send AIM message',
 	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
@@ -133,7 +140,8 @@ $lang = array_merge($lang, array(
 	'SORT_LAST_ACTIVE'		=> 'Last active',
 	'SORT_POST_COUNT'		=> 'Post count',
 
-	'USERNAME_BEGINS_WITH'	=> 'Username begins with:',
+	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
+	'USERNAME_BEGINS_WITH_COLON'	=> 'Username begins with:',
 	'USER_ADMIN'			=> 'Administer user',
 	'USER_BAN'				=> 'Banning',
 	'USER_FORUM'			=> 'User statistics',
@@ -146,7 +154,8 @@ $lang = array_merge($lang, array(
 	'USER_PRESENCE'			=> 'Board presence',
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
-	'VISITED'				=> 'Last visited:',
+	'VISITED'				=> 'Last visited',
+	'VISITED_COLON'			=> 'Last visited:',
 
 	'WWW'					=> 'Website',
 ));

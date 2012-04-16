@@ -93,7 +93,7 @@
 		<dl>
 			<dt><label for="rename_folder_id">{L_RENAME_FOLDER_COLON}</label></dt>
 			<dd><select name="rename_folder_id" id="rename_folder_id">{S_FOLDER_OPTIONS}</select></dd>
-			<dt><label for="new_folder_name">{L_NEW_FOLDER_NAME}</label></dt>
+			<dt><label for="new_folder_name">{L_NEW_FOLDER_NAME_COLON}</label></dt>
 			<dd><input type="text" class="inputbox tiny" name="new_folder_name" id="new_folder_name" maxlength="30" /> <input class="button2" type="submit" name="rename_folder" value="{L_RENAME}" /></dd>
 		</dl>
 		<hr class="dashed" />
@@ -109,7 +109,7 @@
 	<hr class="dashed" />
 
 	<dl>
-		<dt><label for="full_action1">{L_IF_FOLDER_FULL}</label></dt>
+		<dt><label for="full_action1">{L_IF_FOLDER_FULL_COLON}</label></dt>
 		<dd style="margin-top: 3px;"><label for="full_action1"><input type="radio" name="full_action" id="full_action1" value="1"{S_DELETE_CHECKED} /> {L_DELETE_OLDEST_MESSAGES}</label></dd>
 		<dd style="margin-top: 3px;"><label for="full_action2"><input type="radio" name="full_action" id="full_action2" value="2"{S_MOVE_CHECKED} /> {L_MOVE_TO_FOLDER_COLON}</label> <select name="full_move_to">{S_FULL_FOLDER_OPTIONS}</select></dd>
 		<dd style="margin-top: 3px;"><label for="full_action3" style="white-space:normal;"><input type="radio" name="full_action" id="full_action3" value="3"{S_HOLD_CHECKED} /> {L_HOLD_NEW_MESSAGES}</label></dd>
@@ -117,7 +117,7 @@
 
 
 	<dl>
-		<dt><label>{L_DEFAULT_ACTION}</label><br /><span>{L_DEFAULT_ACTION_EXPLAIN}</span></dt>
+		<dt><label>{L_DEFAULT_ACTION_COLON}</label><br /><span>{L_DEFAULT_ACTION_EXPLAIN}</span></dt>
 		<dd>{DEFAULT_ACTION}</dd>
 		<dd><input class="button2" type="submit" name="fullfolder" value="{L_CHANGE}" /></dd>
 	</dl>

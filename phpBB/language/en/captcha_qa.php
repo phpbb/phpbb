@@ -50,7 +50,8 @@ $lang = array_merge($lang, array(
 	'QUESTION_DELETED'			=> 'Question deleted',
 	'QUESTION_LANG'				=> 'Language',
 	'QUESTION_LANG_EXPLAIN'		=> 'The language this question and its answers are written in.',
-	'QUESTION_STRICT'			=> 'Strict check:',
+	'QUESTION_STRICT'			=> 'Strict check',
+	'QUESTION_STRICT_COLON'		=> 'Strict check:',
 	'QUESTION_STRICT_EXPLAIN'	=> 'Enable to enforce mixed case, punctuation and whitespace.',
 
 	'QUESTION_TEXT'				=> 'Question',

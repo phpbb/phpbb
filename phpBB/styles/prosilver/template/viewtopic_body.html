@@ -78,7 +78,7 @@
 			<!-- IF S_DISPLAY_RESULTS -->
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd class="resultbar">{L_TOTAL_VOTES} {TOTAL_VOTES}</dd>
+					<dd class="resultbar">{L_TOTAL_VOTES_COLON} {TOTAL_VOTES}</dd>
 				</dl>
 			<!-- ENDIF -->
 
@@ -205,7 +205,7 @@
 				<ul class="profile-icons">
 					<!-- IF postrow.U_PM --><li class="pm-icon"><a href="{postrow.U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_EMAIL --><li class="email-icon"><a href="{postrow.U_EMAIL}" title="{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}"><span>{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_WWW --><li class="web-icon"><a href="{postrow.U_WWW}" title="{L_VISIT_WEBSITE} {postrow.U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
+					<!-- IF postrow.U_WWW --><li class="web-icon"><a href="{postrow.U_WWW}" title="{L_VISIT_WEBSITE_COLON} {postrow.U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_MSN --><li class="msnm-icon"><a href="{postrow.U_MSN}" onclick="popup(this.href, 550, 320); return false;" title="{L_MSNM}"><span>{L_MSNM}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_ICQ --><li class="icq-icon"><a href="{postrow.U_ICQ}" onclick="popup(this.href, 550, 320); return false;" title="{L_ICQ}"><span>{L_ICQ}</span></a></li><!-- ENDIF -->
 					<!-- IF postrow.U_YIM --><li class="yahoo-icon"><a href="{postrow.U_YIM}" onclick="popup(this.href, 780, 550); return false;" title="{L_YIM}"><span>{L_YIM}</span></a></li><!-- ENDIF -->
@@ -265,7 +265,7 @@
 <!-- IF .quickmod -->
 	<form method="post" action="{S_MOD_ACTION}" id="quickmodform" data-ajax="true">
 	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}</label>
+		<label for="quick-mod-select">{L_QUICK_MOD_COLON}</label>
 		<select name="action" id="quick-mod-select">
 			<!-- BEGIN quickmod -->
 			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>

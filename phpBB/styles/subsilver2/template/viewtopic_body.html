@@ -109,7 +109,7 @@
 		<!-- ENDIF -->
 		<!-- IF S_DISPLAY_RESULTS -->
 			<tr>
-				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES} {TOTAL_VOTES}</b></td>
+				<td class="gensmall" colspan="4" align="center"><b>{L_TOTAL_VOTES_COLON} {TOTAL_VOTES}</b></td>
 			</tr>
 		<!-- ELSE -->
 			<tr>
@@ -350,7 +350,7 @@
 	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}">
 	<!-- IF .quickmod -->
 		<form method="post" action="{S_MOD_ACTION}">
-			<span class="gensmall">{L_QUICK_MOD}</span>
+			<span class="gensmall">{L_QUICK_MOD_COLON}</span>
 			<select name="action" id="quick-mod-select">
 				<!-- BEGIN quickmod -->
 				<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>

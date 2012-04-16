@@ -35,8 +35,9 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'APPROVE'							=> 'Approve',
-	'ATTACHMENT'						=> 'Attachment:',
+	'APPROVE'								=> 'Approve',
+	'ATTACHMENT'						=> 'Attachment',
+	'ATTACHMENT_COLON'					=> 'Attachment:',
 	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked topic successfully.',
@@ -48,7 +49,7 @@ $lang = array_merge($lang, array(
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
-	'DISAPPROVE'			=> 'Disapprove',
+	'DISAPPROVE'					=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(
@@ -89,7 +90,8 @@ $lang = array_merge($lang, array(
 	'POLL_VOTED_OPTION'		=> 'You voted for this option',
 	'PRINT_TOPIC'			=> 'Print view',
 
-	'QUICK_MOD'				=> 'Quick-mod tools:',
+	'QUICK_MOD'				=> 'Quick-mod tools',
+	'QUICK_MOD_COLON'		=> 'Quick-mod tools:',
 	'QUICKREPLY'			=> 'Quick Reply',
 	'QUOTE'					=> 'Quote',
 	'QUOTE_COLON'			=> 'Quote:',
@@ -99,7 +101,8 @@ $lang = array_merge($lang, array(
 
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
-	'TOTAL_VOTES'			=> 'Total votes:',
+	'TOTAL_VOTES'			=> 'Total votes',
+	'TOTAL_VOTES_COLON'		=> 'Total votes:',
 
 	'UNLOCK_TOPIC'			=> 'Unlock topic',
 

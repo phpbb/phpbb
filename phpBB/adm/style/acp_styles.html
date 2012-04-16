@@ -44,11 +44,11 @@
 		<dd><strong>{STYLE_PATH}</strong></dd>
 	</dl>
 	<dl>
-		<dt><label for="name">{L_COPYRIGHT}</label></dt>
+		<dt><label for="name">{L_COPYRIGHT_COLON}</label></dt>
 		<dd><strong>{STYLE_COPYRIGHT}</strong></dd>
 	</dl>
 	<dl>
-		<dt><label for="style_parent">{L_INHERITING_FROM}</label></dt>
+		<dt><label for="style_parent">{L_INHERITING_FROM_COLON}</label></dt>
 		<dd><select id="style_parent" name="style_parent">
 			<option value=""<!-- IF STYLE_PARENT == 0 --> selected="selected"<!-- ENDIF -->> - </option>
 			<!-- BEGIN parent_styles -->
@@ -57,7 +57,7 @@
 		</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="style_active">{L_STYLE_ACTIVE}</label></dt>
+		<dt><label for="style_active">{L_STYLE_ACTIVE_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="style_active" value="1"<!-- IF S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="style_active" value="0"<!-- IF not S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>

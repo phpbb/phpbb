@@ -65,18 +65,18 @@
 
 	<h2>{L_FORUM}</h2>
 
-	<p>{L_SELECTED_FORUMS} {FORUM_LIST}</p>
+	<p>{L_SELECTED_FORUMS_COLON} {FORUM_LIST}</p>
 
 	<form id="acp_prune" method="post" action="{U_ACTION}">
 
 	<fieldset>
 		<legend>{L_FORUM_PRUNE}</legend>
 	<dl>
-		<dt><label for="prune_days">{L_PRUNE_NOT_POSTED}</label></dt>
+		<dt><label for="prune_days">{L_PRUNE_NOT_POSTED_COLON}</label></dt>
 		<dd><input type="text" id="prune_days" name="prune_days" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="prune_vieweddays">{L_PRUNE_NOT_VIEWED}</label></dt>
+		<dt><label for="prune_vieweddays">{L_PRUNE_NOT_VIEWED_COLON}</label></dt>
 		<dd><input type="text" id="prune_vieweddays" name="prune_vieweddays" /></dd>
 	</dl>
 	<dl>
@@ -85,12 +85,12 @@
 			<label><input type="radio" class="radio" id="polls" name="prune_old_polls" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS}</label></dt>
+		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="prune_announce" value="1" /> {L_YES}</label>
 			<label><input type="radio" class="radio" id="announce" name="prune_announce" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="sticky">{L_PRUNE_STICKY}</label></dt>
+		<dt><label for="sticky">{L_PRUNE_STICKY_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="prune_sticky" value="1" /> {L_YES}</label>
 			<label><input type="radio" class="radio" id="sticky" name="prune_sticky" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>

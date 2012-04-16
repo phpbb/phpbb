@@ -13,7 +13,7 @@
 	<fieldset>
 		<legend>{L_SELECT_USER}</legend>
 	<dl>
-		<dt><label for="username">{L_ENTER_USERNAME}</label></dt>
+		<dt><label for="username">{L_ENTER_USERNAME_COLON}</label></dt>
 		<dd><input class="text medium" type="text" id="username" name="username" /></dd>
 		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 		<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
@@ -68,7 +68,7 @@
 	<form id="mode_select" method="post" action="{U_MODE_SELECT}">
 
 	<fieldset class="quick">
-		{L_SELECT_FORM} <select name="mode" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_FORM_OPTIONS}</select> <input class="button2" type="submit" value="{L_GO}" />
+		{L_SELECT_FORM_COLON} <select name="mode" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_FORM_OPTIONS}</select> <input class="button2" type="submit" value="{L_GO}" />
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
@@ -106,7 +106,7 @@
 	<fieldset>
 		<legend>{L_ACP_USER_RANK}</legend>
 	<dl>
-		<dt><label for="user_rank">{L_USER_RANK}</label></dt>
+		<dt><label for="user_rank">{L_USER_RANK_COLON}</label></dt>
 		<dd><select name="user_rank" id="user_rank">{S_RANK_OPTIONS}</select></dd>
 	</dl>
 	</fieldset>
@@ -146,7 +146,7 @@
 
 	<!-- IF S_GROUP_OPTIONS -->
 		<fieldset class="quick">
-			{L_USER_GROUP_ADD} <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+			{L_USER_GROUP_ADD_COLON} <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 			{S_FORM_TOKEN}
 		</fieldset>
 	<!-- ENDIF -->

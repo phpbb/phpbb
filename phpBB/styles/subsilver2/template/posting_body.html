@@ -123,7 +123,7 @@
 
 <!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_ICON}</b></td>
+		<td class="row1"><b class="genmed">{L_ICON_COLON}</b></td>
 		<td class="row2">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -320,14 +320,14 @@
 
 <!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
+		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR_COLON}</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
 		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
 	</tr>
 <!-- ENDIF -->
 
 <!-- IF S_EDIT_REASON -->
 	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON}</b></td>
+		<td class="row1" valign="top"><b class="genmed">{L_EDIT_REASON_COLON}</b></td>
 		<td class="row2"><input class="post" type="text" name="edit_reason" size="50" value="{EDIT_REASON}" /></td>
 	</tr>
 <!-- ENDIF -->
@@ -355,7 +355,7 @@
 		<!-- INCLUDE posting_poll_body.html -->
 	<!-- ELSEIF S_POLL_DELETE -->
 		<tr>
-			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}</b></span></td>
+			<td class="row1"><span class="genmed"><b>{L_POLL_DELETE_COLON}</b></span></td>
 			<td class="row2"><input type="checkbox" class="radio" name="poll_delete" /></td>
 		</tr>
 	<!-- ENDIF -->

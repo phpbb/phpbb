@@ -62,7 +62,8 @@ $lang = array_merge($lang, array(
 	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered.',
 
 	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
-	'FOUNDER'						=> 'Founder:',
+	'FOUNDER'						=> 'Founder',
+	'FOUNDER_COLON'					=> 'Founder:',
 	'FOUNDER_EXPLAIN'				=> 'Founders have all administrative permissions and can never be banned, deleted or altered by non-founder members.',
 
 	'GROUP_APPROVE'					=> 'Approve member',
@@ -79,13 +80,17 @@ $lang = array_merge($lang, array(
 	'NO_WARNINGS'			=> 'No warnings.',
 	'NOT_MANAGE_FOUNDER'	=> 'You tried to manage a user with founder status. Only founders are allowed to manage other founders.',
 
-	'QUICK_TOOLS'			=> 'Quick tools:',
+	'QUICK_TOOLS'			=> 'Quick tools',
+	'QUICK_TOOLS_COLON'		=> 'Quick tools:',
 
-	'REGISTERED'			=> 'Registered:',
-	'REGISTERED_IP'			=> 'Registered from IP:',
+	'REGISTERED'			=> 'Registered',
+	'REGISTERED_COLON'		=> 'Registered:',
+	'REGISTERED_IP'			=> 'Registered from IP',
+	'REGISTERED_IP_COLON'	=> 'Registered from IP:',
 	'RETAIN_POSTS'			=> 'Retain posts',
 
-	'SELECT_FORM'			=> 'Select form:',
+	'SELECT_FORM'			=> 'Select form',
+	'SELECT_FORM_COLON'		=> 'Select form:',
 
 	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
@@ -115,7 +120,8 @@ $lang = array_merge($lang, array(
 	'USER_AVATAR_TYPE_NOT_ALLOWED'	=> 'The current avatar cannot be displayed because its type has been disallowed.',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 	'USER_DELETED'					=> 'User deleted successfully.',
-	'USER_GROUP_ADD'				=> 'Add user to group:',
+	'USER_GROUP_ADD'				=> 'Add user to group',
+	'USER_GROUP_ADD_COLON'			=> 'Add user to group:',
 	'USER_GROUP_NORMAL'				=> 'User defined groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
 	'USER_GROUP_SPECIAL'			=> 'Pre-defined groups user is a member of',
@@ -129,7 +135,8 @@ $lang = array_merge($lang, array(
 	'USER_PREFS_UPDATED'			=> 'User preferences updated.',
 	'USER_PROFILE'					=> 'User profile',
 	'USER_PROFILE_UPDATED'			=> 'User profile updated.',
-	'USER_RANK'						=> 'User rank:',
+	'USER_RANK'						=> 'User rank',
+	'USER_RANK_COLON'				=> 'User rank:',
 	'USER_RANK_UPDATED'				=> 'User rank updated.',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
 	'USER_WARNING_LOG_DELETED'		=> 'No information available. Possibly the log entry has been deleted.',

@@ -71,7 +71,7 @@
 				<td width="100%"><b class="gen">{JOINED}</b></td>
 			</tr>
 			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_VISITED} </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_VISITED_COLON} </td>
 				<td width="100%"><b class="gen">{VISITED}</b></td>
 			</tr>
 			<!-- IF S_WARNINGS -->
@@ -81,18 +81,18 @@
 				</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS} </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS_COLON} </td>
 				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF -->
 				<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />[<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>]<!-- ELSEIF POSTS_IN_QUEUE --><br />[{L_POSTS_IN_QUEUE}]<!-- ENDIF -->
 				<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a><!-- ENDIF --></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
-					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM} </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM_COLON} </td>
 					<td><!-- IF ACTIVE_FORUM != '' --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 				<tr>
-					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC} </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC_COLON} </td>
 					<td><!-- IF ACTIVE_TOPIC != '' --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
@@ -150,16 +150,16 @@
 			</tr>
 			<!-- IF AGE !== '' -->
 			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE} </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE_COLON} </td>
 				<td><b class="genmed">{AGE}</b></td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_OCCUPATION} </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_OCCUPATION_COLON} </td>
 				<td><!-- IF OCCUPATION --><b class="genmed">{OCCUPATION}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_INTERESTS} </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_INTERESTS_COLON} </td>
 				<td><!-- IF INTERESTS --><b class="genmed">{INTERESTS}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
