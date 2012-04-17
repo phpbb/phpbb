@@ -31,8 +31,10 @@ config_ns="phpbb.hooks.commit-msg";
 if [ "$(git config --bool $config_ns.fatal)" = "true" ]
 then
 	fatal=1;
+	severity=Error;
 else
 	fatal=0;
+	severity=Warning;
 fi
 
 debug_level=$(git config --int $config_ns.debug || echo 0);
@@ -187,7 +189,7 @@ do
 					# Don't be too strict.
 					# Commits may be temporary, intended to be squashed later.
 					# Just issue a warning here.
-					complain "Warning: heading should be a sentence beginning with a capital letter." 1>&2
+					complain "$severity: heading should be a sentence beginning with a capital letter." 1>&2
 					complain "You entered:" 1>&2
 					complain "$line" 1>&2
 				fi
