@@ -63,10 +63,17 @@ debug()
 
 quit()
 {
-	if [ $1 -gt 0 ] && [ $1 -ne $ERR_UNKNOWN ] && [ $fatal -eq 0 ]
+	if [ $1 -eq 0 ] || [ $1 -eq $ERR_UNKNOWN ]
 	then
+		# success
+		exit 0;
+	elif [ $fatal -eq 0 ]
+	then
+		# problems found but fatal is false
+		complain 'Please run `git commit --amend` and fix the problems mentioned.' 1>&2
 		exit 0;
 	else
+		complain "Aborting commit." 1>&2
 		exit $1;
 	fi
 }
