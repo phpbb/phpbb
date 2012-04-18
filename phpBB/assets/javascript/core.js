@@ -446,5 +446,30 @@ phpbb.add_ajax_callback('alt_text', function() {
 	el.text(alt_text);
 });
 
+/**
+ * This callback is based on the alt_text callback.
+ *
+ * It replaces the current text with the text in the alt-text data attribute,
+ * and replaces the text in the attribute with the current text so that the
+ * process can be repeated.
+ * Additionally it replaces the icon of the link and changes the link itself.
+ */
+phpbb.add_ajax_callback('toggle_subscribe', function() {
+	var el = $(this),
+		alt_text;
+
+	phpbb.ajax_callbacks['alt_text'].call(this);
+
+	if (el.attr('href').indexOf('unwatch') !== -1)
+	{
+		el.attr('href', el.attr('href').replace('unwatch', 'watch'));
+		el.parent().attr('class', 'icon-subscribe');
+	}
+	else
+	{
+		el.attr('href', el.attr('href').replace('watch', 'unwatch'));
+		el.parent().attr('class', 'icon-unsubscribe');
+	}
+});
 
 })(jQuery); // Avoid conflicts with other libraries
