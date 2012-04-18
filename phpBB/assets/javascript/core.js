@@ -436,11 +436,12 @@ phpbb.add_ajax_callback = function(id, callback)
  * the alt-text data attribute, and replaces the text in the attribute with the
  * current text so that the process can be repeated.
  */
-phpbb.add_ajax_callback('alt_text', function(data) {
+phpbb.add_ajax_callback('alt_text', function() {
 	var el = $(this),
 		alt_text;
 
 	alt_text = el.attr('data-alt-text');
+	el.attr('data-alt-text', el.text());
 	el.attr('title', alt_text);
 	el.text(alt_text);
 });
