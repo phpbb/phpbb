@@ -841,8 +841,16 @@ class phpbb_template_filter extends php_user_filter
 	{
 		if (!preg_match('/^\w+$/', $tag_args))
 		{
-			// do something
-			var_dump($tag_args);
+			// The hook location is wrongly formatted,
+			// if the `DEBUG` constant is set then trigger a waring,
+			// otherwise drop the hook and continue
+			if (defined('DEBUG'))
+			{
+				global $user;
+				trigger_error($user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_NOTICE);
+			}
+
+			return;
 		}
 		$location = $tag_args;
 
