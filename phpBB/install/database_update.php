@@ -2404,7 +2404,7 @@ function change_database_data(&$no_updates, $version)
 			// Check if styles table was already updated
 			if ($db_tools->sql_table_exists(STYLES_THEME_TABLE))
 			{
-				// Get list of valid installed styles
+				// Get list of valid 3.1 styles
 				$available_styles = array('prosilver');
 
 				$iterator = new DirectoryIterator($phpbb_root_path . 'styles');
@@ -2447,12 +2447,12 @@ function change_database_data(&$no_updates, $version)
 				}
 				$db->sql_freeresult($result);
 
-				// Check each style
+				// Decide which styles to keep, all others will be deleted
 				$valid_styles = array();
 				foreach ($styles as $style_row)
 				{
 					if (
-						// Ignore styles with parent style
+						// Delete styles with parent style (not supported yet)
 						$style_row['template_inherits_id'] == 0 &&
 						// Check if components match
 						$style_row['template_path'] == $style_row['theme_path'] && (!isset($style_row['imageset_path']) || $style_row['template_path'] == $style_row['imageset_path']) &&
