@@ -2468,7 +2468,7 @@ function change_database_data(&$no_updates, $version)
 							'style_parent_tree'	=> '',
 						);
 						_sql('UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE style_id = ' . $style_row['style_id'], $errored, $error_ary);
-						$valid_styles[] = $style_row['style_id'];
+						$valid_styles[] = (int) $style_row['style_id'];
 					}
 				}
 
