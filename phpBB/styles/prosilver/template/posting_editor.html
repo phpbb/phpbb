@@ -37,10 +37,10 @@
 			<!-- ENDIF -->
 			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2"></textarea></dt>
+				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
-				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
-				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
+				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" /></dd>
+				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" /></dd>
 			</dl>
 			<!-- ENDIF -->
 		<!-- ELSE -->
@@ -87,8 +87,8 @@
 	<dl>
 		<dt><label for="icon">{L_ICON}:</label></dt>
 		<dd>
-			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
-			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon -->
+			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" tabindex="1" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
+			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} tabindex="1" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" /></label> <!-- END topic_icon -->
 		</dd>
 	</dl>
 	<!-- ENDIF -->
