@@ -2310,7 +2310,7 @@ function change_database_data(&$no_updates, $version)
 			_add_modules($modules_to_install);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
-			    WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
+				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
 			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
@@ -2474,15 +2474,15 @@ function change_database_data(&$no_updates, $version)
 
 				// Remove old styles tables
 				$changes = array(
-					'drop_columns'      => array(
-						STYLES_TABLE		    => array(
+					'drop_columns'	=> array(
+						STYLES_TABLE		=> array(
 							'imageset_id',
 							'template_id',
 							'theme_id',
 						),
 					),
 
-					'drop_tables'       => array(
+					'drop_tables'	=> array(
 						STYLES_IMAGESET_TABLE,
 						STYLES_IMAGESET_DATA_TABLE,
 						STYLES_TEMPLATE_TABLE,
