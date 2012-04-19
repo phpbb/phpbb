@@ -272,6 +272,7 @@ $lang = array_merge($lang, array(
 	'REPLACE_THEME_EXPLAIN'		=> 'This theme will replace the one you are deleting in any styles that use it.',
 	'REPLACE_WITH_OPTION'		=> 'Replace with “%s”',
 	'REQUIRES_STYLE'			=> 'This style requires the style "%s" to be installed.',
+	'RESERVED_STYLE_DIR'		=> 'Directory "%s" is reserved, please move style to a different directory.',
 
 	'SELECT_IMAGE'				=> 'Select image',
 	'SELECT_TEMPLATE'			=> 'Select template file',
