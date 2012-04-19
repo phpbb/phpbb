@@ -833,7 +833,7 @@ class phpbb_template_filter extends php_user_filter
 	}
 
 	/**
-	* Compile RUNHOOKS tag.
+	* Compile EVENT tag.
 	*
 	* $tag_args should be a single string identifying hook location.
 	*/
