@@ -2503,10 +2503,17 @@ function change_database_data(&$no_updates, $version)
 					// No valid styles: remove everything and add prosilver
 					_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
 
-					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_id, style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES (1, 'prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
 					_sql($sql, $errored, $error_ary);
 
-					set_config('default_style', '1');
+					$sql = 'SELECT style_id
+						FROM ' . $table . "
+						WHERE style_name = 'prosilver'";
+					$result = _sql($sql, $errored, $error_ary);
+					$default_style = $db->sql_fetchfield($result);
+					$db->sql_freeresult($result);
+
+					set_config('default_style', $default_style);
 
 					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
 					_sql($sql, $errored, $error_ary);
