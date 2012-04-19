@@ -30,7 +30,7 @@ class phpbb_extension_manager
 	protected $cache_name;
 
 	/**
-	* Creates a manager and loads information from database
+	* Creates a manager, index.htm in ext/ folder if not exists and loads information from database
 	*
 	* @param dbal $db A database connection
 	* @param string $extension_table The name of the table holding extensions
@@ -47,6 +47,22 @@ class phpbb_extension_manager
 		$this->phpEx = $phpEx;
 		$this->extension_table = $extension_table;
 		$this->cache_name = $cache_name;
+
+		// check if ext/index.htm exists - if not, create it
+		if( file_exists($this->phpbb_root_path . 'ext/') && !file_exists($this->phpbb_root_path . 'ext/index.htm') )
+		{
+			file_put_contents($this->phpbb_root_path . 'ext/index.htm', '<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+</body>
+</html>
+');
+		}
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
@@ -432,7 +448,7 @@ class phpbb_extension_manager
 		}
 		return $disabled;
 	}
-	
+
 	/**
 	* Check to see if a given extension is available on the filesystem
 	*
