@@ -47,6 +47,7 @@ class phpbb_template_compile
 			'locator'	=> $locator,
 			'phpbb_root_path'	=> $phpbb_root_path,
 			'extension_manager'	=> $extension_manager,
+			'template_compile'	=> $this,
 		);
 	}
 
