@@ -442,4 +442,29 @@ phpbb.add_ajax_callback('alt_text', function(data) {
 });
 
 
+/**
+ * Mother function for the lightbox implementation.
+ */
+phpbb.attachment_lightbox = function() {
+	this.init = function() {
+		if(this.sources === undefined) {
+			return this.addSources();
+		}
+		else {
+			return this.enable();
+		}
+	}
+	
+	this.addSources() {
+		this.sources = [];
+		this.imageAlts = [];
+		$('.attach-image img').each(function(i, image){
+			this.sources.push(image.src);
+			this.imageAlts.push(image.alt);
+		});
+		
+		return this.sources;
+	}
+}
+
 })(jQuery); // Avoid conflicts with other libraries
