@@ -357,7 +357,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	}
 	$db->sql_freeresult($result);
 
-	if (!$user_rows)
+	if (empty($user_rows))
 	{
 		return false;
 	}
