@@ -516,7 +516,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	$load_extensions = implode(',', $load_extensions);
 
 	$config_data = "<?php\n";
-	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
 	$config_data_array = array(
 		'dbms'			=> $dbms,

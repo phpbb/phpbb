@@ -13,7 +13,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Helper functions for phpBB 2.0.x to phpBB 3.0.x conversion
+* Helper functions for phpBB 2.0.x to phpBB 3.1.x conversion
 */
 
 /**
