@@ -491,7 +491,8 @@ class acp_prune
 
 		if ($group_id)
 		{
-			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . '
+			$sql = 'SELECT user_id
+				FROM ' . USER_GROUP_TABLE . '
 				WHERE group_id = ' . (int) $group_id . '
 					AND user_pending = 0
 					AND ' . $db->sql_in_set('user_id', $user_ids, false, true);
@@ -505,6 +506,7 @@ class acp_prune
 			{
 				$user_ids[] = $row['poster_id'];
 			}
+			$db->sql_freeresult($result);
 
 			// only get usernames if they are needed (not part of some later query)
 			if (!$posts_on_queue)
@@ -516,7 +518,8 @@ class acp_prune
 
 		if ($posts_on_queue)
 		{
-			$sql = 'SELECT poster_id, COUNT(post_id) AS queue_posts FROM ' . POSTS_TABLE . '
+			$sql = 'SELECT poster_id, COUNT(post_id) AS queue_posts
+				FROM ' . POSTS_TABLE . '
 				WHERE ' . $db->sql_in_set('poster_id', $user_ids, false, true) .
 				' GROUP BY poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
@@ -528,6 +531,7 @@ class acp_prune
 			{
 				$user_ids[] = $row['poster_id'];
 			}
+			$db->sql_freeresult($result);
 
 			// do an additional query to get the correct set of usernames
 			user_get_id_name($user_ids, $usernames);
