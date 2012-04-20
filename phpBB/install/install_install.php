@@ -165,25 +165,28 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-		// Check for register_globals being enabled
-		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+		// Don't check for register_globals on 5.4+
+		if (version_compare($php_version, '5.4.0-dev') < 0)
 		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			// Check for register_globals being enabled
+			if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+			{
+				$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			}
+			else
+			{
+				$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+			}
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
+				'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+				'RESULT'		=> $result,
+
+				'S_EXPLAIN'		=> true,
+				'S_LEGEND'		=> false,
+			));
 		}
-		else
-		{
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
 
 		// Check for url_fopen
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
