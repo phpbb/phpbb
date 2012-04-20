@@ -1,8 +1,8 @@
 <!-- You should retain this javascript in your own template! -->
 
-<!-- IF S_IN_SEARCH_POPUP -->
 	<script type="text/javascript">
 	// <![CDATA[
+<!-- IF S_IN_SEARCH_POPUP -->
 		function insert_user(user)
 		{
 			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = ( opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value.length && opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value + "\n" + user : user;
@@ -60,9 +60,46 @@
 				}
 			}
 		}
+<!-- ENDIF -->
+
+		/**
+		* Toggle a section's visibility status
+		*/
+		function toggle_section(link, panel_id, expand_text, collapse_text)
+		{
+			if (window.jQuery)
+			{
+				var panel = jQuery('#' + panel_id);
+				if (panel.is(':visible'))
+				{
+					jQuery(link).text(expand_text);
+					panel.slideUp('fast');
+				}
+				else
+				{
+					jQuery(link).text(collapse_text);
+					panel.slideDown('fast');
+				}
+			}
+			else
+			{
+				var panel = document.getElementById(panel_id);
+				if (panel.style.display == 'none')
+				{
+					link.innerHTML = collapse_text;
+					panel.style.display = '';
+				}
+				else
+				{
+					link.innerHTML = expand_text;
+					panel.style.display = 'none';
+				}
+			}
+
+			return false;
+		}
 	// ]]>
 	</script>
-<!-- ENDIF -->
 
 <form method="post" action="{S_MODE_ACTION}" name="search">
 

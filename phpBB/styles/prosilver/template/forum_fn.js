@@ -434,6 +434,43 @@ function apply_onkeypress_event()
 }
 
 /**
+* Toggle a section's visibility status
+*/
+function toggle_section(link, panel_id, expand_text, collapse_text)
+{
+	if (jquery_present)
+	{
+		var panel = jQuery('#' + panel_id);
+		if (panel.is(':visible'))
+		{
+			jQuery(link).text(expand_text);
+			panel.slideUp('fast');
+		}
+		else
+		{
+			jQuery(link).text(collapse_text);
+			panel.slideDown('fast');
+		}
+	}
+	else
+	{
+		var panel = document.getElementById(panel_id);
+		if (panel.style.display == 'none')
+		{
+			link.innerHTML = collapse_text;
+			panel.style.display = '';
+		}
+		else
+		{
+			link.innerHTML = expand_text;
+			panel.style.display = 'none';
+		}
+	}
+
+	return false;
+}
+
+/**
 * Detect JQuery existance. We currently do not deliver it, but some styles do, so why not benefit from it. ;)
 */
 var jquery_present = typeof jQuery == 'function';
