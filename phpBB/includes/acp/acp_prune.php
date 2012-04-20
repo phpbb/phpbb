@@ -408,7 +408,8 @@ class acp_prune
 					$joined_after[2] += 1;
 				}
 
-				$joined_sql = ' AND user_regdate BETWEEN ' . gmmktime(0, 0, 0, (int) $joined_after[1], (int) $joined_after[2], (int) $joined_after[0]) . ' AND ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
+				$joined_sql = ' AND user_regdate BETWEEN ' . gmmktime(0, 0, 0, (int) $joined_after[1], (int) $joined_after[2], (int) $joined_after[0]) .
+					' AND ' . gmmktime(0, 0, 0, (int) $joined_before[1], (int) $joined_before[2], (int) $joined_before[0]);
 			}
 			else if (empty($joined_before) && !empty($joined_after))
 			{
