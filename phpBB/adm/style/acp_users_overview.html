@@ -140,9 +140,11 @@
 		<legend>{L_DELETE_USER}</legend>
 		<dl>
 			<dt><label for="delete_type">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-			<dd><select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain"<!-- IF USER_POSTS == 0 --> disabled="disabled" class="disabled-option"<!-- ENDIF -->>{L_RETAIN_POSTS}</option><option value="remove"<!-- IF USER_POSTS == 0 --> disabled="disabled" class="disabled-option"<!-- ENDIF -->>{L_DELETE_POSTS}</option></select></dd>
-			<!-- IF USER_POSTS == 0 -->
-			<dd>{L_USER_NO_POSTS}</dd>
+			<dd>
+			<!-- IF USER_TOTAL_POSTS == 0 -->
+			{L_USER_NO_POSTS}
+			<!-- ELSE -->
+			<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
 			<!-- ENDIF -->
 		</dl>
 		<p class="quick">

@@ -1009,6 +1009,13 @@ class acp_users
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);
 
+				$sql = 'SELECT COUNT(post_id) as user_total_posts
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id = '. $user_id;
+				$result = $db->sql_query($sql);
+				$user_row['user_total_posts'] = (int) $db->sql_fetchfield('user_total_posts');
+				$db->sql_freeresult($result);
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
@@ -1036,6 +1043,7 @@ class acp_users
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
+					'USER_TOTAL_POSTS'	=> $user_row['user_total_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
 				));
 
