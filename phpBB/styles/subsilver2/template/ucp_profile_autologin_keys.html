@@ -13,29 +13,28 @@
 		</td>
 	</tr>
 <!-- ENDIF -->
-<!-- IF .sessions -->
-	<tr>
-		<td colspan="4" class="row1">{L_PROFILE_AUTOLOGIN_KEYS}</td>
+
+<tr>
+	<td colspan="4" class="row1">{L_PROFILE_AUTOLOGIN_KEYS}</td>
+</tr>
+<tr>
+	<th>{L_MARK}</th>
+	<th>{L_LOGIN_KEY}</th>
+	<th>{L_IP}</th>
+	<th>{L_LOGIN_TIME}</th>
+</tr>
+<!-- BEGIN sessions -->
+	<!-- IF sessions.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td class="genmed" style="text-align: center"><input type="checkbox" name="keys[]" value="{sessions.KEY}" id="{sessions.KEY}"/></td>
+		<td class="genmed"><label for="{sessions.KEY}">{sessions.KEY}</label></td>
+		<td class="genmed" style="text-align: center">{sessions.IP}</td>
+		<td class="genmed" style="text-align: center">{sessions.LOGIN_TIME}</td>
 	</tr>
-	<tr>
-		<th>{L_MARK}</th>
-		<th>{L_LOGIN_KEY}</th>
-		<th>{L_IP}</th>
-		<th>{L_LOGIN_TIME}</th>
-	</tr>
-	<!-- BEGIN sessions -->
-		<!-- IF sessions.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td class="genmed" style="text-align: center"><input type="checkbox" name="keys[]" value="{sessions.KEY}" id="{sessions.KEY}"/></td>
-			<td class="genmed"><label for="{sessions.KEY}">{sessions.KEY}</label></td>
-			<td class="genmed" style="text-align: center">{sessions.IP}</td>
-			<td class="genmed" style="text-align: center">{sessions.LOGIN_TIME}</td>
-		</tr>
-	<!-- END sessions -->
-<!-- ELSE -->
+<!-- BEGINELSE -->
 	<tr>
 		<td colspan="4" class="row1">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td>
 	</tr>
-<!-- ENDIF -->
+<!-- END sessions -->
 
 <!-- IF .sessions -->
 	<tr>
