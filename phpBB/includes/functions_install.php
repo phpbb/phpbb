@@ -511,6 +511,16 @@ function adjust_language_keys_callback($matches)
 	}
 }
 
+/**
+* Creates the output to be stored in a phpBB config.php file
+*
+* @param	array	$data Array containing the database connection information
+* @param	string	$dbms The name of the DBAL class to use
+* @param	array	$load_extensions Array of additional extensions that should be loaded
+* @param	bool	$debug If the debug constants should be enabled by default or not
+*
+* @return	string	The output to write to the file
+*/
 function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false)
 {
 	$load_extensions = implode(',', $load_extensions);
