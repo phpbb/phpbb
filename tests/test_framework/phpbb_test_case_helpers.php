@@ -41,4 +41,49 @@ class phpbb_test_case_helpers
 		$this->expectedTriggerError = true;
 		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
 	}
+
+	static public function get_test_config()
+	{
+		$config = array();
+
+		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+		{
+			$config = array_merge($config, array(
+				'dbms'		=> 'sqlite',
+				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			));
+		}
+
+		if (file_exists(dirname(__FILE__) . '/../test_config.php'))
+		{
+			include(dirname(__FILE__) . '/../test_config.php');
+
+			$config = array_merge($config, array(
+				'dbms'		=> $dbms,
+				'dbhost'	=> $dbhost,
+				'dbport'	=> $dbport,
+				'dbname'	=> $dbname,
+				'dbuser'	=> $dbuser,
+				'dbpasswd'	=> $dbpasswd,
+			));
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_DBMS']))
+		{
+			$config = array_merge($config, array(
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $_SERVER['PHPBB_TEST_DBMS'] : '',
+				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
+				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
+				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
+				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
+				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : ''
+			));
+		}
+
+		return $config;
+	}
 }
