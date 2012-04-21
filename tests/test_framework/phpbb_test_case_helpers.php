@@ -70,6 +70,11 @@ class phpbb_test_case_helpers
 				'dbuser'	=> $dbuser,
 				'dbpasswd'	=> $dbpasswd,
 			));
+
+			if (isset($phpbb_functional_url))
+			{
+				$config['phpbb_functional_url'] = $phpbb_functional_url;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
@@ -81,6 +86,13 @@ class phpbb_test_case_helpers
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
 				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
 				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : ''
+			));
+		}
+
+		if (isset($_SERVER['PHPBB_FUNCTIONAL_URL']))
+		{
+			$config = array_merge($config, array(
+				'phpbb_functional_url'	=> isset($_SERVER['PHPBB_FUNCTIONAL_URL']) ? $_SERVER['PHPBB_FUNCTIONAL_URL'] : '',
 			));
 		}
 
