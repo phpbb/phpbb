@@ -256,6 +256,8 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions',
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
+	'LOGIN_KEY'					=> 'Login Key',
+	'LOGIN_TIME'				=> 'Login Time',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
 	'LOGOUT_FAILED'				=> 'You were not logged out, as the request did not match your session. Please contact the board administrator if you continue to experience problems.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
@@ -377,7 +379,7 @@ $lang = array_merge($lang, array(
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
 	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
-	'PROFILE_AUTOLOGIN_KEYS'	=> 'The persistent login keys keeps the user logged in till the user signs out. Logout does only delete the persistent key on the current machine. The persistent login keys for all machines can be viewed/deleted by the user.',
+	'PROFILE_AUTOLOGIN_KEYS'	=> 'The persistent login keys logins the user automatically on each visit until logout. Logout does only delete the persistent key on the current machine. The persistent login keys for all machines can be viewed/deleted by the user here.',
 	'PROFILE_NO_AUTOLOGIN_KEYS'	=> 'There are no saved persistent login keys.',
 
 	'RECIPIENT'							=> 'Recipient',
