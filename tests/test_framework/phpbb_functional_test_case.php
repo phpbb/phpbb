@@ -6,6 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
@@ -17,6 +18,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $cache = null;
 	protected $db = null;
 	protected $extension_manager = null;
+	/**
+	* @var string Session ID for current test's session (each test makes its own)
+	*/
+	protected $sid;
+	/**
+	* @var array Language array used by phpBB
+	*/
+	private $lang = array();
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -38,8 +47,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$this->markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		$this->client = new Goutte\Client();
+		$this->cookieJar = new CookieJar;
+		$this->client = new Goutte\Client(array(), array(), null, $this->cookieJar);
 		$this->root_url = self::$config['phpbb_functional_url'];
+		// Clear the language array so that things
+		// that were added in other tests are gone
+		$this->lang = array();
+		$this->add_lang('common');
 	}
 
 	public function request($method, $path)
@@ -218,5 +232,66 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
+	}
+
+	protected function login()
+	{
+		$this->add_lang('ucp');
+
+		$crawler = $this->request('GET', 'ucp.php');
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
+
+		$cookies = $this->cookieJar->all();
+		$sid = '';
+		// get the SID from the cookie
+		foreach ($cookies as $key => $cookie);
+		{
+			if (substr($key, -4) == '_sid')
+			{
+				$this->sid = $cookie->getValue();
+			}
+		}
+	}
+
+	protected function add_lang($lang_file)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		if (is_array($lang_file))
+		{
+			foreach ($lang_file as $file)
+			{
+				$this->add_lang($file);
+			}
+		}
+
+		$lang_path = "{$phpbb_root_path}language/en/$lang_file.$phpEx";
+
+		$lang = array();
+
+		if (file_exists($lang_path))
+		{
+			include($lang_path);
+		}
+
+		$this->lang = array_merge($this->lang, $lang);
+	}
+
+	protected function lang()
+	{
+		$args = func_get_args();
+		$key = $args[0];
+
+		if (empty($this->lang[$key]))
+		{
+			throw new Exception('Language key "' . $key . '" could not be found.');
+		}
+
+		$args[0] = $this->lang[$key];
+
+		return call_user_func_array('sprintf', $args);
 	}
 }
