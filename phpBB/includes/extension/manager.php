@@ -49,7 +49,7 @@ class phpbb_extension_manager
 		$this->cache_name = $cache_name;
 
 		// check if ext/index.htm exists - if not, create it
-		if( file_exists($this->phpbb_root_path . 'ext/') && !file_exists($this->phpbb_root_path . 'ext/index.htm') )
+		if (file_exists($this->phpbb_root_path . 'ext/') && !file_exists($this->phpbb_root_path . 'ext/index.htm'))
 		{
 			file_put_contents($this->phpbb_root_path . 'ext/index.htm', '<html>
 <head>
