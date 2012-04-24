@@ -229,7 +229,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		if (empty($this->lang[$key]))
 		{
-			throw new Exception('Language key "' . $key . '" could not be found.');
+			throw new RuntimeException('Language key "' . $key . '" could not be found.');
 		}
 
 		$args[0] = $this->lang[$key];

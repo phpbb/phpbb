@@ -18,6 +18,14 @@ class phpbb_functional_lang_test extends phpbb_functional_test_case
 		$this->assertEquals('Board index', $this->lang('FORUM_INDEX'));
 	}
 
+	/**
+	* @expectedException RuntimeException
+	*/
+	public function test_lang_missing()
+	{
+		$this->assertEquals('Your account has now been activated. Thank you for registering.', $this->lang('ACCOUNT_ACTIVE'));
+	}
+
 	public function test_add_lang()
 	{
 		$this->add_lang('ucp');
