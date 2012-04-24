@@ -170,7 +170,6 @@ if (!$auth->acl_get('f_read', $forum_id))
 		'U_POST_NEW_TOPIC'		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : ''
 	));
 
-	$s_forum_rules = '';
 	gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 
 	page_footer();
