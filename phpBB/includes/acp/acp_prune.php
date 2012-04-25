@@ -521,8 +521,8 @@ class acp_prune
 		{
 			$sql = 'SELECT poster_id, COUNT(post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . '
-				WHERE ' . $db->sql_in_set('poster_id', $user_ids, false, true) .
-				' GROUP BY poster_id
+				WHERE ' . $db->sql_in_set('poster_id', $user_ids, false, true) . '
+				GROUP BY poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
 			$result = $db->sql_query($result);
 
