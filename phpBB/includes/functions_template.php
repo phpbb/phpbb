@@ -345,7 +345,7 @@ class template_compile
 				$loop_start = '($_' . $tag_args . '_count < ' . $match[2] . ' ? $_' . $tag_args . '_count : ' . $match[2] . ')';
 			}
 
-			if (strlen($match[3]) < 1 || $match[3] == -1)
+			if (sizeof($match) < 4 || strlen($match[3]) < 1 || $match[3] == -1)
 			{
 				$loop_end = '$_' . $tag_args . '_count';
 			}
@@ -528,7 +528,19 @@ class template_compile
 				default:
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
+						if (!empty($varrefs[1]))
+						{
+							$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+							$token = "isset($token) ? $token : null";
+						}
+						else if ($varrefs[2])
+						{
+							$token = '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']';
+						}
+						else
+						{
+							$token = '(isset($this->_rootref[\'' . $varrefs[3] . '\']) && $this->_rootref[\'' . $varrefs[3] . '\'])';
+						}
 					}
 					else if (preg_match('#^\.((?:[a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
@@ -554,7 +566,7 @@ class template_compile
 							// Add the block reference for the last child.
 							$varref .= "['" . $blocks[0] . "']";
 						}
-						$token = "sizeof($varref)";
+						$token = "(isset($varref) ? sizeof($varref) : 0)";
 					}
 					else if (!empty($token))
 					{
@@ -737,7 +749,7 @@ class template_compile
 
 		// Append the variable reference.
 		$varref .= "['$varname']";
-		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
+		$varref = ($echo) ? "<?php if (isset($varref)) echo $varref; ?>" : ((isset($varref)) ? $varref : '');
 
 		return $varref;
 	}

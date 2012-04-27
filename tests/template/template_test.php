@@ -7,90 +7,10 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/template.php';
+require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_test extends phpbb_test_case
+class phpbb_template_template_test extends phpbb_template_template_test_case
 {
-	private $template;
-	private $template_path;
-
-	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = true;
-
-	private function display($handle)
-	{
-		// allow the templates to throw notices
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
-		ob_start();
-
-		try
-		{
-			$this->assertTrue($this->template->display($handle, false));
-		}
-		catch (Exception $exception)
-		{
-			// reset the error level even when an error occured
-			// PHPUnit turns trigger_error into exceptions as well
-			error_reporting($error_level);
-			ob_end_clean();
-			throw $exception;
-		}
-
-		$result = self::trim_template_result(ob_get_clean());
-
-		// reset error level
-		error_reporting($error_level);
-		return $result;
-	}
-
-	private static function trim_template_result($result)
-	{
-		return str_replace("\n\n", "\n", implode("\n", array_map('trim', explode("\n", trim($result)))));
-	}
-
-	private function setup_engine()
-	{
-		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->template = new template();
-		$this->template->set_custom_template($this->template_path, 'tests');
-	}
-
-	protected function setUp()
-	{
-		// Test the engine can be used
-		$this->setup_engine();
-
-		$template_cache_dir = dirname($this->template->cachepath);
-		if (!is_writable($template_cache_dir))
-		{
-			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
-		}
-
-		foreach (glob($this->template->cachepath . '*') as $file)
-		{
-			unlink($file);
-		}
-
-		$GLOBALS['config'] = array(
-			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
-		);
-	}
-
-	protected function tearDown()
-	{
-		if (is_object($this->template))
-		{
-			foreach (glob($this->template->cachepath . '*') as $file)
-			{
-				unlink($file);
-			}
-		}
-	}
-
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
@@ -299,46 +219,6 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->display('test');
 	}
 
-	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
-	{
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		foreach ($destroy as $block)
-		{
-			$this->template->destroy_block_vars($block);
-		}
-
-		try
-		{
-			$this->assertEquals($expected, $this->display('test'), "Testing $file");
-			$this->assertFileExists($cache_file);
-		}
-		catch (ErrorException $e)
-		{
-			if (file_exists($cache_file))
-			{
-				copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-			}
-
-			throw $e;
-		}
-
-		// For debugging
-		if (self::PRESERVE_CACHE)
-		{
-			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-		}
-	}
-
 	/**
 	* @dataProvider template_data
 	*/
@@ -380,14 +260,9 @@ class phpbb_template_template_test extends phpbb_test_case
 			$this->template->destroy_block_vars($block);
 		}
 
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
 		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
 
 		$this->template->assign_display('test', 'VARIABLE', false);
-
-		error_reporting($error_level);
 
 		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
 	}
