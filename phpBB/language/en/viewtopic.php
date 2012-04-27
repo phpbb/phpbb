@@ -57,13 +57,13 @@ $lang = array_merge($lang, array(
 		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
 		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
 	),
-	'EMAIL_TOPIC'			=> 'E-mail friend',
+	'EMAIL_TOPIC'			=> 'Email friend',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
 	'FULL_EDITOR'			=> 'Full Editor &amp; Preview',
-	
+
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
 	'LOGIN_VIEWTOPIC'		=> 'The board requires you to be registered and logged in to view this topic.',
