@@ -183,7 +183,7 @@ $lang = array_merge($lang, array(
 	'IMG_ICON_BACK_TOP'		=> 'Top',
 
 	'IMG_ICON_CONTACT_AIM'		=> 'AIM',
-	'IMG_ICON_CONTACT_EMAIL'	=> 'Send e-mail',
+	'IMG_ICON_CONTACT_EMAIL'	=> 'Send email',
 	'IMG_ICON_CONTACT_ICQ'		=> 'ICQ',
 	'IMG_ICON_CONTACT_JABBER'	=> 'Jabber',
 	'IMG_ICON_CONTACT_MSNM'		=> 'WLM',
@@ -255,7 +255,7 @@ $lang = array_merge($lang, array(
 	'NO_UNIT'					=> 'None',
 
 	'ONLY_STYLE'			=> 'This is the only remaining style, you cannot delete it.',
-	
+
 	'PARENT_STYLE_NOT_FOUND'	=> 'Parent style was not found. This style may not work correctly. Please uninstall it.',
 	'PURGED_CACHE'				=> 'Cache was purged.',
 
