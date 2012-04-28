@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* acp_mods [English]
+* acp_extensions [English]
 *
 * @package language
 * @copyright (c) 2012 phpBB Group 
@@ -37,8 +37,8 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'EXTENSION'				=> 'Extension',
 	'EXTENSIONS'			=> 'Extensions',
-	'EXTENSIONS_ADMIN'		=> 'Extensions Admin',
-	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Admin is a tool in your phpBB Board which allows you to manage all of your extensions. For more information about extensions please visit <a href="http://phpbb.com/mods/extensions/">this page</a> on phpBB&#39;s Offical Website.',
+	'EXTENSIONS_ADMIN'		=> 'Extensions Manager',
+	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Manager is a tool in your phpBB Board which allows you to manage all of your extensions statuses and view information about them.',
 
 	'DETAILS'				=> 'Details',
 
@@ -59,10 +59,10 @@ $lang = array_merge($lang, array(
 	'PURGE_EXPLAIN'			=> 'Purging an extension clears an extensions data while retaining its files.',
 	'DELETE_EXPLAIN'		=> 'Deleting an extension removes all of its files and settings. Log entries will remain, although any language variables added by the extension will not be available.',
 
-	'ENABLE_SUCESS'			=> 'The extension was enabled sucessfully',
-	'DISABLE_SUCESS'		=> 'The extension was disabled sucessfully',
-	'PURGE_SUCESS'			=> 'The extension was purged sucessfully',
-	'DELETE_SUCESS'			=> 'The extension was deleted sucessfully',
+	'ENABLE_SUCESS'			=> 'The extension was enabled successfully',
+	'DISABLE_SUCESS'		=> 'The extension was disabled successfully',
+	'PURGE_SUCESS'			=> 'The extension was purged successfully',
+	'DELETE_SUCESS'			=> 'The extension was deleted successfully',
 
 	'ENABLE_FAIL'			=> 'The extension could not be enabled',
 	'DISABLE_FAIL'			=> 'The extension could not be disabled',
@@ -73,10 +73,10 @@ $lang = array_merge($lang, array(
 	'EXTENSION_ACTIONS'			=> 'Actions',
 	'EXTENSION_OPTIONS'			=> 'Options',
 
-	'ENABLE_CONFIRM'			=> 'Are you sure you wish to enable this extension?',
-	'DISABLE_CONFIRM'			=> 'Are your sure you wish to disable this extension?',
-	'PURGE_CONFIRM'				=> 'Are you sure you wish to purge this extensions data? This cannot be undone.',
-	'DELETE_CONFIRM'			=> 'Are you sure you wish to data this extensions files and clear its data? This cannot be undone.',
+	'ENABLE_CONFIRM'			=> 'Are you sure that you wish to enable this extension?',
+	'DISABLE_CONFIRM'			=> 'Are you sure that you wish to disable this extension?',
+	'PURGE_CONFIRM'				=> 'Are you sure that you wish to purge this extension&#39;s data? This cannot be undone.',
+	'DELETE_CONFIRM'			=> 'Are you sure that you wish to data this extension&#39;s files and clear its data? This cannot be undone.',
 
 	'WARNING'			=> 'Warning',
 	'RETURN'			=> 'Return',
@@ -94,11 +94,10 @@ $lang = array_merge($lang, array(
 
 	'REQUIREMENTS'			=> 'Requirements',
 	'PHPBB_VERSION'			=> 'phpBB Version',
-	'PHP_VERSION'			=> 'php Version',
+	'PHP_VERSION'			=> 'PHP Version',
 	'AUTHOR_INFORMATION'	=> 'Author Information',
-	'AUTHOR_NAME'			=> 'Author Name',
-	'AUTHOR_USERNAME'		=> 'Author Username',
-	'AUTHOR_EMAIL'			=> 'Author Email',
-	'AUTHOR_HOMEPAGE'		=> 'Author Homepage',
-	'AUTHOR_ROLE'			=> 'Author Role',
+	'AUTHOR_NAME'			=> 'Name',
+	'AUTHOR_EMAIL'			=> 'Email',
+	'AUTHOR_HOMEPAGE'		=> 'Homepage',
+	'AUTHOR_ROLE'			=> 'Role',
 ));

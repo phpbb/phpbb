@@ -181,7 +181,7 @@ class acp_extensions
 
 	function parse_meta_info($ext_name, $phpbb_extension_manager)
 	{
-		$phpbb_extension_manager->get_meta_data($ext_name)
+		$phpbb_extension_manager->get_meta_data($ext_name);
 
 		$template->assign_vars(array(
 			'NAME'			=> $metadata['name'],
@@ -194,8 +194,7 @@ class acp_extensions
 			'REQUIRE_PHP'	=> $metadata['require']['php'],
 			'REQUIRE_PHPBB'	=> $metadata['require']['phpbb'],
 			'DISPLAY_NAME'	=> $metadata['extra']['display-name'],
-			)
-		);
+		));
 
 		foreach ($metadata['authors'] as $author)
 		{
