@@ -18,8 +18,8 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->parent_template_path = dirname(__FILE__) . '/parent_templates';
+		$this->template_path = $this->test_path . '/templates';
+		$this->parent_template_path = $this->test_path . '/parent_templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
 		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator);

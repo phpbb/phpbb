@@ -17,11 +17,10 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 		$this->setup_engine(array('assets_version' => 1));
 
 		// Prepare correct result
-		$dir = dirname(__FILE__);
 		$scripts = array(
-			'<script src="' . $dir . '/templates/parent_and_child.html?assets_version=1"></script>',
-			'<script src="' . $dir . '/parent_templates/parent_only.html?assets_version=1"></script>',
-			'<script src="' . $dir . '/templates/child_only.html?assets_version=1"></script>'
+			'<script src="' . $this->test_path . '/templates/parent_and_child.html?assets_version=1"></script>',
+			'<script src="' . $this->test_path . '/parent_templates/parent_only.html?assets_version=1"></script>',
+			'<script src="' . $this->test_path . '/templates/child_only.html?assets_version=1"></script>'
 		);
 
 		// Run test
