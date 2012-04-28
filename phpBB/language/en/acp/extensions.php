@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION'				=> 'Extension',
 	'EXTENSIONS'			=> 'Extensions',
 	'EXTENSIONS_ADMIN'		=> 'Extensions Admin',
-	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Admin is a tool in your phpBB Board which allows you to manage all of your extensions. For more information about extensions please visit <a href="http://phpbb.com/mods/extensions/">this page</a> on phpBBs Offical Website.',
+	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Admin is a tool in your phpBB Board which allows you to manage all of your extensions. For more information about extensions please visit <a href="http://phpbb.com/mods/extensions/">this page</a> on phpBB&#39;s Offical Website.',
 
 	'DETAILS'				=> 'Details',
 
