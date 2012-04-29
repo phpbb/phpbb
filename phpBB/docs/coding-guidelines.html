@@ -397,7 +397,7 @@ for ($i = 0; $i &lt; size; $i++)
 	</pre></div>
 
 	<h4>Where to put the braces:</h4>
-	<p>This one is a bit of a holy war, but we're going to use a style that can be summed up in one sentence: Braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
+	<p>In PHP code, braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
 
 	<div class="codebox"><pre>
 if (condition)
@@ -424,6 +424,30 @@ while (condition)
 
 function do_stuff()
 {
+	...
+}
+	</pre></div>
+	
+	<p>In JavaScript code, braces always go on the same line:</p>
+
+	<div class="codebox"><pre>
+if (condition) {
+	while (condition2) {
+		...
+	}
+} else {
+	...
+}
+
+for (var i = 0; i &lt; size; i++) {
+	...
+}
+
+while (condition) {
+	...
+}
+
+function do_stuff() {
 	...
 }
 	</pre></div>
