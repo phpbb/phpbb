@@ -1099,7 +1099,7 @@ while ($row = $db->sql_fetchrow($result))
 		{
 			$user_sig = '';
 
-			// We add the signature to every posters entry because enable_sig is post dependant
+			// We add the signature to every posters entry because enable_sig is post dependent
 			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];

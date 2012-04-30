@@ -397,7 +397,7 @@ foreach ($supported_dbms as $dbms)
 				}
 			}
 
-			// Adjust default value if db-dependant specified
+			// Adjust default value if db-dependent specified
 			if (is_array($column_data[1]))
 			{
 				$column_data[1] = (isset($column_data[1][$dbms])) ? $column_data[1][$dbms] : $column_data[1]['default'];
