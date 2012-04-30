@@ -1326,7 +1326,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 /**
 * Fetches the number of items which need a moderators attention
 */
-public function mcp_quick_info()
+function mcp_quick_info()
 {
 	global $auth, $cache, $db, $template, $user, $phpEx, $phpbb_root_path;
 
