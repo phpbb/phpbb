@@ -1324,8 +1324,8 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 }
 
 /**
- * Fetches the number of items which need a moderators attention
- */
+* Fetches the number of items which need a moderators attention
+*/
 public function mcp_quick_info()
 {
 	global $auth, $cache, $db, $template, $user, $phpEx, $phpbb_root_path;
@@ -1417,7 +1417,6 @@ public function mcp_quick_info()
 				'U_MODERATOR_APPROVE_TOPICS'    => append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics', true, $user->session_id),
 			));
 		}
-    }
 
     // Don't forget PMs
 	if ($auth->acl_getf_global('m_'))
