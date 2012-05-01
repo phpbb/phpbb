@@ -124,6 +124,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_co
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_max_word_len', '254');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_min_word_len', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');

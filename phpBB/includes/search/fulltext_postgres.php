@@ -9,6 +9,7 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -16,16 +17,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
-
-/**
 * fulltext_postgres
 * Fulltext search for PostgreSQL
 * @package search
 */
-class fulltext_postgres extends search_backend
+class phpbb_search_fulltext_postgres extends phpbb_search_base
 {
 	var $stats = array();
 	var $word_length = array();
@@ -73,6 +69,16 @@ class fulltext_postgres extends search_backend
 		}
 
 		$error = false;
+	}
+
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	function get_name()
+	{
+		return 'PostgreSQL Fulltext';
 	}
 
 	/**
