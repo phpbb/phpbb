@@ -1933,7 +1933,7 @@ function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 * UTF8-safe basename() function
 *
 * basename() has some limitations and is dependent on the locale setting
-* according to the PHP manual. Therefore we provide our own locale independant
+* according to the PHP manual. Therefore we provide our own locale independent
 * basename function.
 *
 * @param string $filename The filename basename() should be applied to
