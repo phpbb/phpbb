@@ -1503,7 +1503,7 @@ class phpbb_db_tools
 			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$this->sql_layer])) ? $column_data[1][$this->sql_layer] : $column_data[1]['default'];
