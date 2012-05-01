@@ -42,7 +42,7 @@
 	<th colspan="2">{L_CONFIRM_CHANGES}</th>
 </tr>
 <tr>
-	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_PASSWORD}: </b><br /><span class="gensmall">{L_CURRENT_PASSWORD_EXPLAIN}</span></td>
+	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_PASSWORD}: </b><br /><span class="gensmall"><!-- IF S_CHANGE_PASSWORD -->{L_CURRENT_CHANGE_PASSWORD_EXPLAIN}<!-- ELSE -->{L_CURRENT_PASSWORD_EXPLAIN}<!-- ENDIF --></span></td>
 	<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="255" value="{CUR_PASSWORD}" /></td>
 </tr>
 <tr>
