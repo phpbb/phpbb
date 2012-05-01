@@ -1109,7 +1109,7 @@ CREATE TABLE [phpbb_reports] (
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_text] [text] DEFAULT ('') NOT NULL
+	[reported_post_text] [text] DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1323,7 +1323,6 @@ CREATE TABLE [phpbb_styles] (
 	[style_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[style_active] [int] DEFAULT (1) NOT NULL ,
-	[style_path] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
 	[style_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[style_parent_tree] [varchar] (8000) DEFAULT ('') NOT NULL 

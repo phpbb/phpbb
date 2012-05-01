@@ -1091,7 +1091,6 @@ function get_schema_struct()
 			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
-			'style_path'			=> array('VCHAR:100', ''),
 			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'style_parent_id'		=> array('UINT:4', 0),
 			'style_parent_tree'		=> array('TEXT', ''),

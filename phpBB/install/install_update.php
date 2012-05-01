@@ -1644,9 +1644,9 @@ class install_update extends module
 					$info['custom'] = array();
 /*
 					// Get custom installed styles...
-					$sql = 'SELECT style_name, style_path
+					$sql = 'SELECT style_name
 						FROM ' . STYLES_TABLE . "
-						WHERE LOWER(style_name) NOT IN ('subsilver2', 'prosilver')";
+						WHERE style_name NOT IN ('subsilver2', 'prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
@@ -1665,7 +1665,7 @@ class install_update extends module
 							{
 								foreach ($templates as $row)
 								{
-									$info['custom'][$filename][] = str_replace('/prosilver/', '/' . $row['style_path'] . '/', $filename);
+									$info['custom'][$filename][] = str_replace('/prosilver/', '/' . $row['style_name'] . '/', $filename);
 								}
 							}
 						}
