@@ -89,7 +89,7 @@ class phpbb_style
 	*/
 	public function set_style()
 	{
-		$style_name = $this->user->theme['style_path'];
+		$style_name = $this->user->theme['style_name'];
 		$style_dirs = ($this->user->theme['style_parent_id']) ? array_reverse(explode('/', $this->user->theme['style_parent_tree'])) : array();
 		$paths = array($this->get_style_path($style_name));
 		foreach ($style_dirs as $dir)
