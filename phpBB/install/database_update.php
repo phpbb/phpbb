@@ -260,7 +260,7 @@ if ($has_global && !$ga_forum_id)
 		</form>
 	<?php
 	_print_footer();
-	exit;
+	exit_handler();
 }
 
 header('Content-type: text/html; charset=UTF-8');
