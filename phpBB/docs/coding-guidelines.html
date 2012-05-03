@@ -295,10 +295,16 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 	<p>We will not be using any form of hungarian notation in our naming conventions. Many of us believe that hungarian naming is one of the primary code obfuscation techniques currently in use.</p>
 
 	<h4>Variable Names:</h4>
-	<p>Variable names should be in all lowercase, with words separated by an underscore, example:</p>
+	<p>In PHP, variable names should be in all lowercase, with words separated by an underscore, example:</p>
 
 	<div class="indent">
 		<p><code>$current_user</code> is right, but <code>$currentuser</code> and <code> $currentUser</code> are not.</p>
+	</div>
+	
+	<p>In JavaScript, variable names should use camel caps:</p>
+	
+	<div class="indent">
+		<p><code>currentUser</code> is right, but <code>currentuser</code> and <code>current_user</code> are not.</p>
 	</div>
 
 	<p>Names should be descriptive, but concise. We don't want huge sentences as our variable names, but typing an extra couple of characters is always better than wondering what exactly a certain variable is for. </p>
@@ -317,7 +323,7 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	</pre></div>
 
 	<h4>Function Names:</h4>
-	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character. Function names should preferably have a verb in them somewhere. Good function names are <code>print_login_status()</code>, <code>get_user_data()</code>, etc. </p>
+	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character in PHP, and camel caps in JavaScript. Function names should preferably have a verb in them somewhere. Good function names are <code>print_login_status()</code>, <code>get_user_data()</code>, etc. Constructor functions in JavaScript should begin with a capital letter.</p>
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
