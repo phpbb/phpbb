@@ -588,17 +588,20 @@ phpbb.add_ajax_callback('toggle_link', function() {
 /**
  * Mother function for the lightbox implementation.
  */
-phpbb.attachment_lightbox = function() {
+phpbb.attachment_lightbox = function()
+{
 	this.init = function() {
-		if(this.sources === undefined) {
+		if(this.sources === undefined)
+		{
 			return this.addSources();
 		}
-		else {
+		else
+		{
 			return this.enable();
 		}
 	}
 	
-	this.addSources() {
+	this.addSources = function() {
 		this.sources = [];
 		this.imageAlts = [];
 		$('.attach-image img').each(function(i, image){
