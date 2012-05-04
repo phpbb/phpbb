@@ -268,8 +268,6 @@ class mcp_queue
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$forum_list = implode(', ', $forum_list);
-
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
