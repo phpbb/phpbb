@@ -1098,11 +1098,14 @@ function display_user_activity(&$userdata)
 
 		if (!empty($active_t_row))
 		{
-			$sql = 'SELECT topic_title
+		$sql = 'SELECT topic_title, topic_poster, forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $active_t_row['topic_id'];
 			$result = $db->sql_query($sql);
-			$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+		$row = $db->sql_fetchrow();
+		$active_t_row['topic_title'] = (string) $row['topic_title'];
+		$active_t_row['topic_poster'] = (int) $row['topic_poster'];
+		$active_t_row['forum_id'] = (int) $row['forum_id'];
 			$db->sql_freeresult($result);
 		}
 	}
@@ -1120,7 +1123,10 @@ function display_user_activity(&$userdata)
 	}
 
 	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
-	if (!empty($active_t_row['num_posts']))
+
+	if (!empty($active_t_row['num_posts']) &&
+		($user->data['user_id'] == $active_t_row['topic_poster'] ||
+		$auth->acl_get('f_read_other', $active_t_row['forum_id'])))
 	{
 		$active_t_name = $active_t_row['topic_title'];
 		$active_t_id = $active_t_row['topic_id'];
