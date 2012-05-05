@@ -88,19 +88,22 @@ class mcp_logs
 			case 'topic_logs':
 				$topic_id = request_var('t', 0);
 
-				$sql = 'SELECT forum_id
+				$sql = 'SELECT forum_id, topic_poster
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_id = ' . $topic_id;
 				$result = $db->sql_query($sql);
-				$forum_id = (int) $db->sql_fetchfield('forum_id');
+				$topic_data = (int) $db->sql_fetchrow();
+
 				$db->sql_freeresult($result);
 
-				if (!in_array($forum_id, $forum_list))
+				if (!in_array($topic_data['forum_id'], $forum_list) ||
+					($user->data['user_id'] != $topic_data['topic_poster'] &&
+					!$auth->acl_get('f_read_other', $topic_data['forum_id'])))
 				{
 					trigger_error('NOT_AUTHORISED');
 				}
 
-				$forum_list = array($forum_id);
+				$forum_list = array($topic_data['forum_id']);
 			break;
 		}
 

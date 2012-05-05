@@ -219,6 +219,18 @@ class mcp_warn
 			trigger_error('CANNOT_WARN_SELF');
 		}
 
+		if (!$auth->acl_get('f_read_other', $user_row['forum_id'])){
+			$sql = 'SELECT topic_poster
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $user_row['topic_id'];
+			$result = $db->sql_query_limit($sql, 1);
+			$topic_poster = $db->sql_fetchfield('topic_poster');
+			$db->sql_freeresult($result);
+			if($topic_poster != $user->data['user_id']){
+				trigger_error('USER_CANNOT_READ_TOPIC');
+			}
+		}
+
 		// Check if there is already a warning for this post to prevent multiple
 		// warnings for the same offence
 		$sql = 'SELECT post_id
