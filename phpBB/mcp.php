@@ -641,6 +641,7 @@ function get_pm_data($pm_ids)
 */
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
+// brunoais: requires checking
 	global $db, $user, $auth, $template;
 
 	$sort_days = request_var('st', 0);

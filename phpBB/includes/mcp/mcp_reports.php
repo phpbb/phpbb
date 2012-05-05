@@ -344,7 +344,9 @@ class mcp_reports
 
 				$sql = 'SELECT r.report_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . '
-					WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . "
+					WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
+							AND (t.topic_poster = ' . $user->data['user_id'] . '
+								OR  ' . $db->sql_in_set('t.forum_id', get_forum_list('f_read_other', true, true)) . ")
 						$report_state
 						AND r.post_id = p.post_id
 						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
