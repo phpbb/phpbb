@@ -344,7 +344,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 
 // Now that I know he can read some topics in this forum, can he read this specific topic?
 if ($topic_data['topic_type'] != POST_ANNOUNCE && $topic_data['topic_type'] != POST_GLOBAL &&
-	!$auth->acl_get('f_read_other', $forum_id) && $user->data['user_id'] != $topic_data['topic_poster'])
+	$user->data['user_id'] != $topic_data['topic_poster'] && !$auth->acl_get('f_read_other', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
