@@ -986,7 +986,7 @@ class acp_styles
 			while (($file = readdir($dp)) !== false)
 			{
 				$dir = $this->styles_path . $file;
-				if ($file[0] == '.' || !is_dir($dir))
+				if (!preg_match('/^[A-Za-z0-9_]+$/', $file) || !is_dir($dir))
 				{
 					continue;
 				}
