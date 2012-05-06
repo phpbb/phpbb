@@ -112,6 +112,11 @@ class mcp_reports
 
 				$post_info = $post_info[$post_id];
 
+				if ($user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $forum_id) )
+				{
+					trigger_error('SORRY_AUTH_THREAD');
+				}
+
 				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
 				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
 				{

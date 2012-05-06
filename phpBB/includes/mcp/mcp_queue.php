@@ -180,6 +180,11 @@ class mcp_queue
 
 				$post_info = $post_info[$post_id];
 
+				if ($user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $post_info['forum_id']) )
+				{
+					trigger_error('SORRY_AUTH_THREAD');
+				}
+
 				if ($post_info['topic_first_post_id'] != $post_id && topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
 				{
 					$template->assign_vars(array(
