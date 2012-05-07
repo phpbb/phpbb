@@ -1417,6 +1417,7 @@ function mcp_quick_info()
 				'U_MODERATOR_APPROVE_TOPICS'    => append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics', true, $user->session_id),
 			));
 		}
+	}
 
     // Don't forget PMs
 	if ($auth->acl_getf_global('m_'))
@@ -1449,6 +1450,5 @@ function mcp_quick_info()
 			));
 		}
 	}
-
 	return;
 }
