@@ -128,8 +128,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// For the other ones, you can only read the topics you started
 	$unlimited_read_forums = $auth->acl_getf('f_read_other', true);
 	//limit the appearence
-	$topic_limiter = ' AND (' . $db->sql_in_set('t.forum_id', array_keys($unlimited_read_forums)) .'
-							OR ' . $user->data['user_id'] . ' = t.topic_poster ) ';
+	$topic_limiter = ' AND (' . $db->sql_in_set('t.forum_id', array_keys($unlimited_read_forums)) . '
+							OR t.topic_poster = ' . $user->data['user_id'] . ' ) ';
 
 	// clear arrays
 	$id_ary = array();

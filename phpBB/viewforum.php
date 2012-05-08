@@ -274,7 +274,7 @@ if ($sort_days || !$auth->acl_get('f_read_other', $forum_id))
 	$sql_limit_time = '';
 	$min_post_time = 0;
 
-	if($sort_days)
+	if ($sort_days)
 	{
 		$min_post_time = time() - ($sort_days * 86400);
 		$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
