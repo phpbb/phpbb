@@ -238,13 +238,27 @@ echo '</feed>';
 garbage_collection();
 exit_handler();
 
-	function get_unlimited_reading_forums($readable_forum_id = false)
+
+	/**
+	* This calculates which forums is the current user able to read all the topics given a list of forums that the user is able to read some topics (permission f_read)
+	* this takes f_read_other in account.
+	* Note: If readable_forum_ids contains a forum_id that the user is unable to see (does not have f_read permission), the result is undefined
+	*
+	* @param	array	$readable_forum_ids		A list of forums that you know the user is able to read but you don't know if the user can read all the topics in that forum.
+	*											Use false if you don't have such information
+	*											Defaults to false
+	*
+	* @return	array	An array with the forum_id's of the forums where the user has permission to read all the topics without exceptions
+	*
+	*/
+	function get_unlimited_reading_forums($readable_forum_ids = false)
 	{
 		global $auth;
 		static $forum_ids;
-		if(!$readable_forum_id)
+
+		if (!$readable_forum_ids)
 		{
-			$readable_forum_id = $this->get_readable_forums();
+			$readable_forum_ids = $this->get_readable_forums();
 		}
 		if (!isset($forum_ids))
 		{
@@ -252,9 +266,10 @@ exit_handler();
 		}
 
 		// if the user cannot read, he cannot read without limits
-		return array_intersect($forum_ids, $readable_forum_id);
+		return array_intersect($forum_ids, $readable_forum_ids);
 	}
 		global $auth, $db, $user;
+
 		// Get the forums
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($forum_ids);
 
@@ -276,9 +291,9 @@ exit_handler();
 				!$auth->acl_get('f_read_other', $this->forum_id)
 			))
 	var $unlimited_reading_forums = array();
-		$this->unlimited_reading_forums = $this->get_unlimited_reading_forums( $in_fid_ary );
+		$this->unlimited_reading_forums = $this->get_unlimited_reading_forums($in_fid_ary);
 			// Who has no right to see all forums cannot see how many topics are there
-			if(in_array((int)$row['forum_id'], $this->unlimited_reading_forums, true))
+			if (isset($this->unlimited_reading_forums[$row['forum_id']]))
 			{
 				$item_row['statistics'] = $user->lang('TOTAL_TOPICS', (int) $row['forum_topics'])
 					. ' ' . $this->separator_stats . ' ' . $user->lang('TOTAL_POSTS_OTHER', (int) $row['forum_posts']);
