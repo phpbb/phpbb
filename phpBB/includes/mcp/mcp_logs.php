@@ -92,7 +92,7 @@ class mcp_logs
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_id = ' . $topic_id;
 				$result = $db->sql_query($sql);
-				$topic_data = (int) $db->sql_fetchrow();
+				$topic_data = $db->sql_fetchrow();
 
 				$db->sql_freeresult($result);
 
