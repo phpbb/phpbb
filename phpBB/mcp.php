@@ -73,6 +73,8 @@ $report_id = request_var('r', 0);
 $user_id = request_var('u', 0);
 $username = utf8_normalize_nfc(request_var('username', '', true));
 
+$topic_owner = 0;
+
 if ($post_id)
 {
 	// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
@@ -88,7 +90,7 @@ if ($post_id)
 }
 else if ($topic_id)
 {
-	$sql = 'SELECT forum_id
+	$sql = 'SELECT forum_id, topic_poster
 		FROM ' . TOPICS_TABLE . "
 		WHERE topic_id = $topic_id";
 	$result = $db->sql_query($sql);
@@ -96,6 +98,7 @@ else if ($topic_id)
 	$db->sql_freeresult($result);
 
 	$forum_id = (int) $row['forum_id'];
+	$topic_owner = (int) $row['topic_poster'];
 }
 
 // If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
@@ -126,8 +129,11 @@ if (!$auth->acl_getf_global('m_'))
 	}
 }
 
-// if the user cannot read the forum he tries to access then we won't allow mcp access either
-if ($forum_id && !$auth->acl_get('f_read', $forum_id))
+// if the user cannot read the forum or topic he tries to access then we won't allow mcp access either
+if ($forum_id && !$auth->acl_get('f_read', $forum_id) ||
+		($topic_owner !== 0 && ($topic_owner !== (int) $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id))
+		)
+	) 
 {
 	trigger_error('NOT_AUTHORISED');
 }

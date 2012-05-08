@@ -342,6 +342,17 @@ if (!$auth->acl_get('f_read', $forum_id))
 	login_box('', $user->lang['LOGIN_VIEWFORUM']);
 }
 
+// Now that I know he can read some topics in this forum, can he read this specific topic?
+if (!$auth->acl_get('f_read_other', $forum_id) && $user->data['user_id'] != $topic_data['topic_poster'])
+{
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error('SORRY_AUTH_THREAD');
+	}
+
+	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+}
+
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box
 if ($topic_data['forum_password'])

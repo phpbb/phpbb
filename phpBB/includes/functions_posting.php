@@ -933,7 +933,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	$topic_rows = array();
 	if (sizeof($topic_ids))
 	{
-		$sql = 'SELECT topic_id, forum_id, topic_title
+		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 		$result = $db->sql_query($sql);
@@ -955,7 +955,8 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 
 		if (isset($topic_rows[$draft['topic_id']])
 			&& (
-				($topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+				($topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']) &&
+					($topic_rows[$draft['topic_id']]['topic_poster'] == $user->data['user_id'] || $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id'])))
 				||
 				(!$topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_getf_global('f_read'))
 			))
@@ -1009,10 +1010,19 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
+	$table_join = '';
+	$join_condition = '';
+	if ($auth->acl_get('f_read', $forum_id) && !$auth->acl_get('f_read_other', $forum_id))
+	{
+		$table_join = ', ' . TOPICS_TABLE . ' t';
+		$join_condition = ' AND p.topic_id = t.topic_id AND t.topic_poster = ' . $user->data['user_id'];
+	}
+
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT p.post_id
-		FROM ' . POSTS_TABLE . ' p' . "
+		FROM ' . POSTS_TABLE . " p  $table_join
 		WHERE p.topic_id = $topic_id
+			$join_condition
 			AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
