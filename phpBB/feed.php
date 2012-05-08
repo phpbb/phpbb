@@ -139,6 +139,19 @@ $global_vars = array_merge($global_vars, array(
 
 $feed->close();
 
+// Check if output is necessary
+// Parse If-Modified-Since Request Header
+// See: http://tools.ietf.org/html/rfc2616#section-14.25
+$if_modified_time = phpbb_parse_if_modified_since();
+
+if ($if_modified_time && $if_modified_time >= $feed_updated_time)
+{
+	send_status_line(304, 'Not Modified');
+	header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
+	garbage_collection();
+	exit_handler();
+}
+
 // Output page
 
 // gzip_compression
