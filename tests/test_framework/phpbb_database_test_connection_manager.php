@@ -63,6 +63,13 @@ class phpbb_database_test_connection_manager
 				// e.g. Driver={SQL Server Native Client 10.0};Server=(local)\SQLExpress;
 				$dsn .= $this->config['dbhost'];
 
+				// Primarily for MSSQL Native/Azure as ODBC needs it in $dbhost, attached to the Server param
+				if ($this->config['dbport'])
+				{
+					$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
+					$dsn .= $port_delimiter . $this->config['dbport'];
+				}
+
 				if ($use_db)
 				{
 					$dsn .= ';Database=' . $this->config['dbname'];
