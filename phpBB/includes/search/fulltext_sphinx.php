@@ -18,33 +18,27 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
+/**
+* This statement is necessary as this file is sometimes included from within a
+* function and the variables used are in global space.
+*/
+global $phpbb_root_path, $phpEx, $table_prefix;
 require($phpbb_root_path . "includes/sphinxapi-0.9.8." . $phpEx);
 
 define('INDEXER_NAME', 'indexer');
 define('SEARCHD_NAME', 'searchd');
-define('SPHINX_TABLE', table_prefix() . 'sphinx');
+define('SPHINX_TABLE', $table_prefix . 'sphinx');
 
 define('MAX_MATCHES', 20000);
 define('CONNECT_RETRIES', 3);
 define('CONNECT_WAIT_TIME', 300);
 
 /**
-* Returns the global table prefix
-* This function is necessary as this file is sometimes included from within a
-* function and table_prefix is in global space.
-*/
-function table_prefix()
-{
-	global $table_prefix;
-	return $table_prefix;
-}
-
-/**
 * fulltext_sphinx
 * Fulltext search based on the sphinx search deamon
 * @package search
 */
-class fulltext_sphinx
+class phpbb_search_fulltext_sphinx
 {
 	var $stats = array();
 	var $word_length = array();
@@ -53,7 +47,7 @@ class fulltext_sphinx
 	var $common_words = array();
 	var $id;
 
-	function fulltext_sphinx(&$error)
+	public function __construct(&$error)
 	{
 		global $config;
 
@@ -81,6 +75,16 @@ class fulltext_sphinx
 		$config['fulltext_sphinx_max_word_len'] = 400;
 
 		$error = false;
+	}
+	
+	/**
+	* Returns the name of this search backend to be displayed to administrators
+	*
+	* @return string Name
+	*/
+	public function get_name()
+	{
+		return 'Sphinx Fulltext';
 	}
 
 	/**
