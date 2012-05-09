@@ -178,10 +178,11 @@ class mcp_queue
 
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
+				$back_to_viewtopic = (request_var('backtoviewtopic', 0)) ? '&amp;backtoviewtopic=1' : '';
 
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
-					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
+					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id{$back_to_viewtopic}"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
@@ -716,7 +717,7 @@ function approve_post($post_id_list, $id, $mode)
 		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = (request_var('backtoviewtopic', 0)) ? request_var('redirect', "index.$phpEx") : $post_url;
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
