@@ -1013,7 +1013,7 @@ class acp_users
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = '. $user_id;
 				$result = $db->sql_query_limit($sql, 1);
-				$user_row['user_has_posts'] = ($db->sql_fetchfield('post_id') ? 1 : 0);
+				$user_row['user_has_posts'] = (bool) $db->sql_fetchfield('post_id');
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
