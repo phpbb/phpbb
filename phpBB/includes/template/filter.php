@@ -845,7 +845,27 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Compile EVENT tag.
 	*
-	* $tag_args should be a single string identifying hook location.
+	* $tag_args should be a single string identifying the event.
+	* The event name can contain letters, numbers and underscores only.
+	* If an invalid event name is specified, an E_USER_ERROR will be
+	* triggered.
+	*
+	* Event tags are only functional when the template engine has
+	* an instance of the extension manager. Extension manager would
+	* be called upon to find all extensions listening for the specified
+	* event, and to obtain additional template fragments. All such
+	* template fragments will be compiled and included in the generated
+	* compiled template code for the current template being compiled.
+	*
+	* The above means that whenever an extension is enabled or disabled,
+	* template cache should be cleared in order to update the compiled
+	* template code for the active set of template event listeners.
+	*
+	* This also means that extensions cannot return different template
+	* fragments at different times. Once templates are compiled, changing
+	* such template fragments would have no effect.
+	*
+	* @param string $tag_args EVENT tag arguments, as a string - for EVENT this is the event name
 	*/
 	private function compile_tag_event($tag_args)
 	{
