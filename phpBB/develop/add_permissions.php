@@ -1,15 +1,11 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : add_permissions.php
-// STARTED   : Sat Nov 06, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/**
+*
+* @package phpBB3
+* @copyright (c) 2004 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
 //
 // Security message:
