@@ -37,6 +37,21 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		);
 	}
 
+	public function template_data_error()
+	{
+		return array(
+			array(
+				'Include a nonexistent file',
+				'invalid/include_nonexistent_file.html',
+				array(),
+				array(),
+				array(),
+				E_USER_ERROR,
+				'invalid/output/include_nonexistent_file.html',
+			),
+		);
+	}
+
 	/**
 	* @dataProvider template_data
 	*/
@@ -51,5 +66,22 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		// the trailing newline into compiled templates
 		$expected = trim($expected);
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+	}
+
+	/**
+	* @dataProvider template_data_error
+	*/
+	public function test_template_error($description, $file, $vars, $block_vars, $destroy, $error, $expected)
+	{
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
+
+		$this->assertFileNotExists($cache_file);
+
+		$expected = file_get_contents(dirname(__FILE__) . '/templates/' . $expected);
+		// apparently the template engine does not put
+		// the trailing newline into compiled templates
+		$expected = trim($expected);
+		$this->setExpectedTriggerError($error, $expected);
+		$this->run_template($file, $vars, $block_vars, $destroy, '', $cache_file);
 	}
 }
