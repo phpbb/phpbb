@@ -266,7 +266,9 @@ class phpbb_template_filter extends php_user_filter
 	}
 
 	/**
-	* Callback for replacing matched tokens with PHP code
+	* Callback for replacing matched tokens with compiled template code.
+	*
+	* Compiled template code is an HTML stream with embedded PHP.
 	*
 	* @param array $matches Regular expression matches
 	* @return string compiled template code
@@ -355,8 +357,6 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'EVENT':
-				// return value here will be compiled code (html with embedded php).
-				// we don't want to wrap it in php tags here.
 				return '<?php ' . $this->compile_tag_event($matches[2]) . '?>';
 			break;
 
