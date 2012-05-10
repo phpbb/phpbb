@@ -889,13 +889,6 @@ class phpbb_template_filter extends php_user_filter
 			// < ?php? > sans the spaces
 			return ' ?' . '>' . $all_compiled . '<?php ';
 		}
-
-		// 1. find all mods defining hooks for location
-		// 2. obtain mods' template fragments
-		// 3. compile template fragments
-		// 4. return compiled code
-		// note: need to make sure we get fragments in the right order
-		return 'echo "test";';
 	}
 
 	/**
