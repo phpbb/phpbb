@@ -168,10 +168,13 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$row_insert = self::get_default_values();
 		$row_insert[$column_name] = $column_value;
 
+		$row_expect = $row_insert;
+
 		// empty table
 		$sql = 'DELETE FROM prefix_table_name';
 		$result = $this->db->sql_query($sql);
 
+		$row_insert['c_varbinary'] = $this->db->sql_escape_binary($row_insert['c_varbinary']);
 		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row_insert);
 		$result = $this->db->sql_query($sql);
 
@@ -181,9 +184,8 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$row_actual = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$row_expect = $row_insert;
-
 		unset($row_actual['id']); // auto increment id changes, so ignore
+		$row_actual['c_varbinary'] = $this->db->sql_unescape_binary($row_actual['c_varbinary']);
 
 		$type = $this->table_data['COLUMNS'][$column_name][0];
 		$this->assertEquals($row_expect[$column_name], $row_actual[$column_name], "Column $column_name of type $type should have equal return and input value.");
