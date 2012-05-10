@@ -301,7 +301,7 @@ class phpbb_template
 			return new phpbb_template_renderer_include($output_file, $this);
 		}
 
-		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->template_name, $this->locator, $this->phpbb_root_path, $this->extension_manager);
+		$compile = new phpbb_template_compile($this->config['tpl_allow_php'], $this->template_name, $this->locator, $this->phpbb_root_path, $this->extension_manager, $this->user);
 
 		if ($compile->compile_file_to_file($source_file, $output_file) !== false)
 		{
