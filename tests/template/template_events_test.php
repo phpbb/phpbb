@@ -49,7 +49,7 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 		$this->parent_template_path = dirname(__FILE__) . '/parent_templates';
 		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_style_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider);
+		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator);
 		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
 		$this->style->set_custom_style('tests', array($this->template_path, $this->parent_template_path), '');
 	}
