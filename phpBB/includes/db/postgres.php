@@ -112,7 +112,9 @@ class dbal_postgres extends dbal
 
 		if ($this->db_connect_id)
 		{
-			if (version_compare($this->sql_server_info(true), '8.2', '>='))
+			$version = $this->sql_server_info(true);
+
+			if (version_compare($version, '8.2', '>='))
 			{
 				$this->multi_insert = true;
 			}
@@ -121,6 +123,15 @@ class dbal_postgres extends dbal
 			{
 				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
 			}
+
+			if (version_compare($version, '9.0', '>='))
+			{
+				// The default output escaping method for binary columns is
+				// 'hex' since PostgreSQL 9.0. Change it back to the old
+				// pre-9.0 default method 'escape' so we can handle both alike.
+				@pg_query($this->db_connect_id, 'SET bytea_output TO escape');
+			}
+
 			return $this->db_connect_id;
 		}
 
@@ -377,6 +388,22 @@ class dbal_postgres extends dbal
 	function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function sql_escape_binary($data)
+	{
+		return pg_escape_bytea($data);
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function sql_unescape_binary($data)
+	{
+		return pg_unescape_bytea($data);
 	}
 
 	/**
