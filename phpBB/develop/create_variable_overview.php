@@ -1,17 +1,13 @@
 <?php
-// -------------------------------------------------------------
-//
-// FILENAME  : create_variable_overview.php
-// STARTED   : Fri Aug 15 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
-
-/*
-	This script generates an index of some template vars and their use within the templates.
-	It writes down all language variables used by various templates.
+/**
+*
+* @package phpBB3
+* @copyright (c) 2003 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+* This script generates an index of some template vars and their use within the templates.
+* It writes down all language variables used by various templates.
+*
 */
 
 //
