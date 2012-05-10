@@ -22,6 +22,18 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				'invalid/output/unknown_tag.html',
 			),
+			/*
+			* Produces a parse error which is fatal, therefore
+			* destroying the test suite.
+			array(
+				'ENDIF without IF',
+				'invalid/endif_without_if.html',
+				array(),
+				array(),
+				array(),
+				'invalid/output/endif_without_if.html',
+			),
+			*/
 		);
 	}
 
