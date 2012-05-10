@@ -123,7 +123,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			'c_vchar_uni' => '',
 			'c_vchar_uni_size' => '',
 			'c_vchar_ci' => '',
-			'c_varbinary' => '',
+			'c_varbinary' => "\xDE\xAD\xCA\xFE\xBA\xBE",
 		);
 	}
 
