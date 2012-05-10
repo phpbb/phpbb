@@ -105,6 +105,12 @@ class phpbb_template_filter extends php_user_filter
 	private $extension_manager;
 
 	/**
+	* Current user
+	* @var phpbb_user
+	*/
+	private $user;
+
+	/**
 	* Template compiler.
 	*
 	* @var phpbb_template_compile
@@ -174,6 +180,10 @@ class phpbb_template_filter extends php_user_filter
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
 		$this->template_name = $this->params['template_name'];
 		$this->extension_manager = $this->params['extension_manager'];
+		if (isset($this->params['user']))
+		{
+			$this->user = $this->params['user'];
+		}
 		$this->template_compile = $this->params['template_compile'];
 		return true;
 	}
@@ -842,8 +852,14 @@ class phpbb_template_filter extends php_user_filter
 		if (!preg_match('/^\w+$/', $tag_args))
 		{
 			// The hook location is wrongly formatted,
-			global $user;
-			trigger_error($user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_ERROR);
+			if ($this->user)
+			{
+				trigger_error($this->user->lang('ERR_TEMPLATE_EVENT_LOCATION', $tag_args), E_USER_ERROR);
+			}
+			else
+			{
+				trigger_error(sprintf('The specified template event location <em>[%s]</em> is wrongly formatted.', $tag_args), E_USER_ERROR);
+			}
 		}
 		$location = $tag_args;
 
