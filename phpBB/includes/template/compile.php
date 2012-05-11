@@ -36,17 +36,17 @@ class phpbb_template_compile
 	* Constructor.
 	*
 	* @param bool $allow_php Whether PHP code will be allowed in templates (inline PHP code, PHP tag and INCLUDEPHP tag)
-	* @param string $template_name Name of top-level template being compiled
+	* @param string $style_name Name of style to which the template being compiled belongs
 	* @param phpbb_style_resource_locator $locator Resource locator
 	* @param string $phpbb_root_path Path to phpBB root directory
 	* @param phpbb_extension_manager $extension_manager Extension manager to use for finding template fragments in extensions; if null, template hooks will not be invoked
 	* @param phpbb_user $user Current user
 	*/
-	public function __construct($allow_php, $template_name, $locator, $phpbb_root_path, $extension_manager = null, $user = null)
+	public function __construct($allow_php, $style_name, $locator, $phpbb_root_path, $extension_manager = null, $user = null)
 	{
 		$this->filter_params = array(
 			'allow_php'	=> $allow_php,
-			'template_name'	=> $template_name,
+			'style_name'	=> $style_name,
 			'locator'	=> $locator,
 			'phpbb_root_path'	=> $phpbb_root_path,
 			'extension_manager'	=> $extension_manager,

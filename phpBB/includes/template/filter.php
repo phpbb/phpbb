@@ -88,14 +88,15 @@ class phpbb_template_filter extends php_user_filter
 	private $phpbb_root_path;
 
 	/**
-	* Name of the top-level template being compiled and/or rendered.
+	* Name of the style that the template being compiled and/or rendered
+        * belongs to.
 	*
-	* This is used by hooks implementation to invoke template-specific
+	* This is used by hooks implementation to invoke style-specific
 	* template hooks.
 	*
 	* @var string
 	*/
-	private $template_name;
+	private $style_name;
 
 	/**
 	* Extension manager.
@@ -168,7 +169,7 @@ class phpbb_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, template_name, root directory and locator from params,
+	* Get the allow_php option, style_name, root directory and locator from params,
 	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
@@ -178,7 +179,7 @@ class phpbb_template_filter extends php_user_filter
 		$this->allow_php = $this->params['allow_php'];
 		$this->locator = $this->params['locator'];
 		$this->phpbb_root_path = $this->params['phpbb_root_path'];
-		$this->template_name = $this->params['template_name'];
+		$this->style_name = $this->params['style_name'];
 		$this->extension_manager = $this->params['extension_manager'];
 		if (isset($this->params['user']))
 		{
@@ -896,17 +897,16 @@ class phpbb_template_filter extends php_user_filter
 			$files = array_merge($files, $finder
 				->extension_prefix($location)
 				->extension_suffix('.html')
-				->extension_directory("/styles/" . $this->template_name . "/template")
+				->extension_directory("/styles/" . $this->style_name . "/template")
 				->get_files());
 
 			$all_compiled = '';
 			foreach ($files as $file)
 			{
 				$compiled = $this->template_compile->compile_file($file);
-				if ($compiled === false)
-				{
-					trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
-				}
+                                if ($compiled === false) {
+                                        trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+                                }
 				$all_compiled .= $compiled;
 			}
 			// Need spaces inside php tags as php cannot grok
