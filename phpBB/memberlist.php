@@ -796,7 +796,7 @@ switch ($mode)
 				{
 					trigger_error('SORRY_AUTH_READ');
 				}
-				if($row['topic_poster'] != $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id))
+				if($row['topic_poster'] != (int) $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id))
 				{
 					trigger_error('SORRY_AUTH_READ_THREAD');
 				}

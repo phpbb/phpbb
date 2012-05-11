@@ -97,7 +97,7 @@ class mcp_logs
 				$db->sql_freeresult($result);
 
 				if (!in_array($topic_data['forum_id'], $forum_list) ||
-					($user->data['user_id'] != $topic_data['topic_poster'] &&
+					((int) $user->data['user_id'] != $topic_data['topic_poster'] &&
 					!$auth->acl_get('f_read_other', $topic_data['forum_id'])))
 				{
 					trigger_error('NOT_AUTHORISED');

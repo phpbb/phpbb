@@ -40,7 +40,7 @@ function mcp_post_details($id, $mode, $action)
 
 	$post_info = $post_info[$post_id];
 
-	if ($user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $post_info['forum_id']))
+	if ((int) $user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $post_info['forum_id']))
 	{
 		trigger_error('SORRY_AUTH_TOPIC');
 	}

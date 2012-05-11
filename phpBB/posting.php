@@ -272,7 +272,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 // Is the user able to read the quoted post?
 // Is the user able to reply to this topic?
 if (($mode === 'quote' || $mode === 'reply' || $mode === 'edit' || $mode === 'delete') &&
-	$post_data['topic_poster'] != $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id) 
+	$post_data['topic_poster'] != (int) $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id) 
 	)
 {
 	if ($user->data['user_id'] != ANONYMOUS)

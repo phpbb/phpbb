@@ -226,7 +226,7 @@ class mcp_warn
 			$result = $db->sql_query_limit($sql, 1);
 			$topic_poster = $db->sql_fetchfield('topic_poster');
 			$db->sql_freeresult($result);
-			if ($topic_poster != $user->data['user_id'])
+			if ($topic_poster != (int) $user->data['user_id'])
 			{
 				trigger_error('USER_CANNOT_READ_TOPIC');
 			}

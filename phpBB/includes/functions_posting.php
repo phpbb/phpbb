@@ -1015,7 +1015,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	if ($auth->acl_get('f_read', $forum_id) && !$auth->acl_get('f_read_other', $forum_id))
 	{
 		$table_join = ', ' . TOPICS_TABLE . ' t';
-		$join_condition = ' AND p.topic_id = t.topic_id AND t.topic_poster = ' . $user->data['user_id'];
+		$join_condition = ' AND p.topic_id = t.topic_id AND t.topic_poster = ' . (int) $user->data['user_id'];
 	}
 
 	// Go ahead and pull all data for this topic

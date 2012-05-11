@@ -260,7 +260,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (($post['forum_id'] &&
 				(!$auth->acl_get('f_read', $post['forum_id']) ||
-					($user->data['user_id'] != $post['topic_poster'] &&
+					((int) $user->data['user_id'] != $post['topic_poster'] &&
 					!$auth->acl_get('f_read_other', $post['forum_id']))
 				)
 				) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))

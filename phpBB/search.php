@@ -129,7 +129,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$unlimited_read_forums = $auth->acl_getf('f_read_other', true);
 	//limit the appearence
 	$topic_limiter = ' AND (' . $db->sql_in_set('t.forum_id', array_keys($unlimited_read_forums)) . '
-							OR t.topic_poster = ' . $user->data['user_id'] . ' ) ';
+							OR t.topic_poster = ' . (int) $user->data['user_id'] . ' ) ';
 
 	// clear arrays
 	$id_ary = array();

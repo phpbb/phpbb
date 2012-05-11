@@ -287,7 +287,7 @@ exit_handler();
 		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_approved, t.topic_title, t.topic_time, t.topic_views, t.topic_poster, t.topic_replies, t.topic_type
 		// If I can read, make sure that I can read all topics or I started this topic
 		if (!$auth->acl_get('f_read', $this->forum_id) ||
-			(	$user->data['user_id'] != $this->topic_data['topic_poster'] &&
+			((int) $user->data['user_id'] != $this->topic_data['topic_poster'] &&
 				!$auth->acl_get('f_read_other', $this->forum_id)
 			))
 	var $unlimited_reading_forums = array();

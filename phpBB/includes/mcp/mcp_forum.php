@@ -159,7 +159,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		FROM ' . TOPICS_TABLE . ' t
 		WHERE
 			 ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . " AND
-				((t.topic_type <> ' . POST_NORMAL . ' AND t.topic_type <> ' . POST_STICKY . ') OR
+				(t.topic_poster = ' . (int) $user->data['user_id'] . ' OR
 				t.topic_poster = ' . $user->data['user_id'] . ' OR 1='. (($auth->acl_get('f_read_other', $forum_id))? '1' : '0') . ')
 				)
 				AND ' : '') . '

@@ -1125,7 +1125,7 @@ function display_user_activity(&$userdata)
 	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
 
 	if (!empty($active_t_row['num_posts']) &&
-		($user->data['user_id'] == $active_t_row['topic_poster'] ||
+		((int) $user->data['user_id'] == $active_t_row['topic_poster'] ||
 		$auth->acl_get('f_read_other', $active_t_row['forum_id'])))
 	{
 		$active_t_name = $active_t_row['topic_title'];

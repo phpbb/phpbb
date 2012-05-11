@@ -38,7 +38,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	$topic_info = $topic_info[$topic_id];
 
-	if ($user->data['user_id'] != $topic_info['topic_poster'] &&
+	if ((int) $user->data['user_id'] != $topic_info['topic_poster'] &&
 		!$auth->acl_get('f_read_other', $topic_info['forum_id']))
 	{
 		if ($user->data['user_id'] != ANONYMOUS)
