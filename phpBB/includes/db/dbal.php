@@ -951,7 +951,7 @@ class dbal
 	*
 	* @return string				Transformed string
 	*/
-	function sql_escape_binary($data)
+	function sql_encode_binary($data)
 	{
 		return $data;
 	}
@@ -963,7 +963,7 @@ class dbal
 	*
 	* @return string				Transformed string
 	*/
-	function sql_unescape_binary($data)
+	function sql_decode_binary($data)
 	{
 		return $data;
 	}

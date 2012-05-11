@@ -393,7 +393,7 @@ class dbal_postgres extends dbal
 	/**
 	* @inheritdoc
 	*/
-	function sql_escape_binary($data)
+	function sql_encode_binary($data)
 	{
 		return pg_escape_bytea($data);
 	}
@@ -401,7 +401,7 @@ class dbal_postgres extends dbal
 	/**
 	* @inheritdoc
 	*/
-	function sql_unescape_binary($data)
+	function sql_decode_binary($data)
 	{
 		return pg_unescape_bytea($data);
 	}
