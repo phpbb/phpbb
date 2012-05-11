@@ -903,6 +903,10 @@ class phpbb_template_filter extends php_user_filter
 			foreach ($files as $file)
 			{
 				$compiled = $this->template_compile->compile_file($file);
+				if ($compiled === false)
+				{
+					trigger_error(sprintf('The file could not be compiled: %s', phpbb_filter_root_path($file)), E_USER_ERROR);
+				}
 				$all_compiled .= $compiled;
 			}
 			// Need spaces inside php tags as php cannot grok
