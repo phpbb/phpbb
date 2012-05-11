@@ -371,7 +371,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$sort_join = USERS_TABLE . ' u, ';
 					$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
 				}
-
 				if ($show_results == 'posts')
 				{
 					$sql = "SELECT p.post_id
