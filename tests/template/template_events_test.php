@@ -11,30 +11,48 @@ require_once dirname(__FILE__) . '/template_test_case.php';
 
 class phpbb_template_template_events_test extends phpbb_template_template_test_case
 {
-	public function test_simple_event()
+	public function template_data()
 	{
-		// Reset the engine state
-		$this->setup_engine();
-
-		// Prepare correct result
-		$contents = "Simple in trivial extension.";
-
-		// Run test
-		$cache_file = $this->template->cachepath . 'event_simple.html.php';
-		$this->run_template('event_simple.html', array(), array(), array(), $contents, $cache_file);
+		return array(
+			/*
+			array(
+				'', // File
+				array(), // vars
+				array(), // block vars
+				array(), // destroy
+				'', // Expected result
+			),
+			*/
+			array(
+				'Simple template event',
+				'event_simple.html',
+				array(),
+				array(),
+				array(),
+				"Simple in trivial extension.",
+			),
+			array(
+				'Universal template event ("all" style)',
+				'event_universal.html',
+				array(),
+				array(),
+				array(),
+				"Universal in trivial extension.",
+			),
+		);
 	}
 
-	public function test_universal_event()
+	/**
+	* @dataProvider template_data
+	*/
+	public function test_event($desc, $file, array $vars, array $block_vars, array $destroy, $expected)
 	{
 		// Reset the engine state
 		$this->setup_engine();
 
-		// Prepare correct result
-		$contents = "Universal in trivial extension.";
-
 		// Run test
-		$cache_file = $this->template->cachepath . 'event_universal.html.php';
-		$this->run_template('event_universal.html', array(), array(), array(), $contents, $cache_file);
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
 	}
 
 	protected function setup_engine(array $new_config = array())
