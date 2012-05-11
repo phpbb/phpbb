@@ -36,17 +36,40 @@ found on the wiki (see below).
     $dbuser = 'user';
     $dbpasswd = 'password';
 
-Alternatively you can specify parameters in the environment, so e.g. the following
-will run phpunit with the same parameters as in the shown test_config.php file:
+Alternatively you can specify parameters in the environment, so e.g. the
+following will run phpunit with the same parameters as in the shown
+test_config.php file:
 
     $ PHPBB_TEST_DBMS='mysqli' PHPBB_TEST_DBHOST='localhost' \
       PHPBB_TEST_DBNAME='database' PHPBB_TEST_DBUSER='user' \
       PHPBB_TEST_DBPASSWD='password' phpunit
 
+Special Database Cases
+----------------------
+In order to run tests on some of the databases that we support, it will be
+necessary to provide a custom DSN string in test_config.php. This is only
+needed for MSSQL 2000+ (PHP module), MSSQL via ODBC, and Firebird when
+PDO_Firebird does not work on your system
+(https://bugs.php.net/bug.php?id=61183). The variable must be named $custom_dsn.
+
+Examples:
+Firebird using http://www.firebirdsql.org/en/odbc-driver/
+$custom_dsn = "Driver={Firebird/InterBase(r) driver};dbname=$dbhost:$dbname";
+
+MSSQL
+$custom_dsn = "Driver={SQL Server Native Client 10.0};Server=$dbhost;Database=$dbname";
+
+The other fields in test_config.php should be filled out as you would normally
+to connect to that database in phpBB.
+
+Additionally, you will need to be running the DbUnit fork from
+https://github.com/phpbb/dbunit/tree/phpbb.
+
 Running
 =======
 
-Once the prerequisites are installed, run the tests from the project root directory (above phpBB):
+Once the prerequisites are installed, run the tests from the project root
+directory (above phpBB):
 
     $ phpunit
 
@@ -54,8 +77,8 @@ Slow tests
 --------------
 Certain tests, such as the UTF-8 normalizer or the DNS tests tend to be slow.
 Thus these tests are in the `slow` group, which is excluded by default. You can
-enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you only
-want the slow tests, run:
+enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
+only want the slow tests, run:
 
     $ phpunit --group slow
 
