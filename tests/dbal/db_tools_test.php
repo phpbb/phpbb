@@ -189,51 +189,6 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertEquals($row_expect[$column_name], $row_actual[$column_name], "Column $column_name of type $type should have equal return and input value.");
 	}
 
-	public function test_auto_increment()
-	{
-		$sql = 'DELETE FROM prefix_table_name';
-		$result = $this->db->sql_query($sql);
-
-		$row1 = array_merge(self::get_default_values(), array(
-			'c_uint' => 1,
-			'c_vchar' => '1', // these values are necessary to avoid unique index issues
-			'c_vchar_size' => '1',
-		));
-		$row2 = array_merge(self::get_default_values(), array(
-			'c_uint' => 2,
-			'c_vchar' => '2',
-			'c_vchar_size' => '2',
-		));
-
-		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row1);
-		$result = $this->db->sql_query($sql);
-		$id1 = $this->db->sql_nextid();
-
-		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row2);
-		$result = $this->db->sql_query($sql);
-		$id2 = $this->db->sql_nextid();
-
-		$this->assertGreaterThan($id1, $id2, 'Auto increment should increase the id value');
-
-		$sql = "SELECT *
-			FROM prefix_table_name WHERE c_id = $id1";
-		$result = $this->db->sql_query($sql);
-		$row_actual = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		$row1['c_id'] = $id1;
-		$this->assertEquals($row1, $row_actual);
-
-		$sql = "SELECT *
-			FROM prefix_table_name WHERE c_id = $id2";
-		$result = $this->db->sql_query($sql);
-		$row_actual = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		$row2['c_id'] = $id2;
-		$this->assertEquals($row2, $row_actual);
-	}
-
 	public function test_list_columns()
 	{
 		$this->assertEquals(
