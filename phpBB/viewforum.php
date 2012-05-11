@@ -268,7 +268,7 @@ gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $
 // Limit topics to certain time frame, obtain correct topic count
 // global announcements must not be counted, normal announcements have to
 // be counted, as forum_topics(_real) includes them
-// If the user has limited access to the topics he can see the number also has to be recounted
+// If the user has limited access to the topics he can see, the number also has to be recounted
 if ($sort_days || !$auth->acl_get('f_read_other', $forum_id))
 {
 	$sql_limit_time = '';
