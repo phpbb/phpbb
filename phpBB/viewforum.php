@@ -283,13 +283,19 @@ if ($sort_days || !$auth->acl_get('f_read_other', $forum_id))
 		$template->assign_var('S_SORT_DAYS', true);
 	}
 
+	$user_check = '';
+	if (!$auth->acl_get('f_read_other', $forum_id))
+	{
+		$user_check = ' AND topic_poster = '. $user->data['user_id'];
+	}
+
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
 			AND (
 				( topic_last_post_time >= $min_post_time
-					" . (($auth->acl_get('f_read_other', $forum_id)) ? '' : 'AND topic_poster = '. $user->data['user_id'] ) . ')
-				OR topic_type = ' . POST_ANNOUNCE . '
+					$user_check)
+				OR topic_type = " . POST_ANNOUNCE . '
 				OR topic_type = ' . POST_GLOBAL . ')
 			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
 	$result = $db->sql_query($sql);
@@ -527,7 +533,6 @@ else
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
 	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 }
-
 
 // Grab just the sorted topic ids
 // Do not include the topic ids from the topics that the user is unable to see
