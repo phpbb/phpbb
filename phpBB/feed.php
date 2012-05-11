@@ -280,7 +280,7 @@ exit_handler();
 	var $unlimited_read = false;
 		// Make sure we can read all topics this forum else
 		// You'll need to be the topic starter to see it all
-		$unlimited_read = $auth->acl_get('f_read_other', $this->forum_id);
+		$this->unlimited_read = $auth->acl_get('f_read_other', $this->forum_id);
 
 		global $auth, $db, $user;
 				' . ((!$this->unlimited_read) ? 'AND topic_poster = ' . $user->data['user_id'] : ''). '

@@ -348,7 +348,7 @@ if ($topic_data['topic_type'] != POST_ANNOUNCE && $topic_data['topic_type'] != P
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		trigger_error('SORRY_AUTH_THREAD');
+		trigger_error('SORRY_AUTH_TOPIC');
 	}
 
 	login_box('', $user->lang['LOGIN_VIEWFORUM']);

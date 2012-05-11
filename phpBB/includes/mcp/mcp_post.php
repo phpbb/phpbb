@@ -42,7 +42,7 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $post_info['forum_id']))
 	{
-		trigger_error('SORRY_AUTH_THREAD');
+		trigger_error('SORRY_AUTH_TOPIC');
 	}
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());

@@ -1060,7 +1060,7 @@ function display_user_activity(&$userdata)
 	{
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
-	// Please check if this leaks data on letting users view the existance of threads they should not be able to see
+	// Please check if this leaks data on letting users view the existance of topics they should not be able to see
 		// Obtain active forum
 		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
@@ -1084,7 +1084,7 @@ function display_user_activity(&$userdata)
 		}
 
 		// Obtain active topic
-	// Please check if this leaks data on letting users view the existance of threads they should not be able to see
+	// Please check if this leaks data on letting users view the existance of topics they should not be able to see
 		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $userdata['user_id'] . '
@@ -1164,7 +1164,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 	$is_watching = 0;
 
-	// Is user watching this thread?
+	// Is user watching this topic?
 	if ($user_id != ANONYMOUS)
 	{
 		$can_watch = true;
