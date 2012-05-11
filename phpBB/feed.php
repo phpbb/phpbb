@@ -270,7 +270,7 @@ exit_handler();
 	}
 		global $auth, $db, $user;
 
-		// Get the forums
+
 		$unlimited_access_forums = $this->get_unlimited_reading_forums($forum_ids);
 
 				AND (' . $db->sql_in_set('forum_id', $unlimited_access_forums, false, true) . '
