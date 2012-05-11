@@ -106,7 +106,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			'c_bool' => 0,
 			'c_vchar' => '',
 			'c_vchar_size' => '',
-			'c_char_size' => '',
+			'c_char_size' => 'abcd',
 			'c_xstext' => '',
 			'c_stext' => '',
 			'c_text' => '',
