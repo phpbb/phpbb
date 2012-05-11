@@ -102,9 +102,10 @@ $lang = array_merge($lang, array(
 
 // Forum Permissions
 $lang = array_merge($lang, array(
+<<<<<<< HEAD
 	'ACL_F_LIST'		=> 'Can see forum',
 	'ACL_F_READ'		=> 'Can read forum',
-	'ACL_F_READ_OTHER'	=> 'Can view topics started by other members',
+	'ACL_F_SEARCH'		=> 'Can search the forum',
 	'ACL_F_SUBSCRIBE'	=> 'Can subscribe forum',
 	'ACL_F_PRINT'		=> 'Can print topics',
 	'ACL_F_EMAIL'		=> 'Can email topics',
@@ -135,6 +136,42 @@ $lang = array_merge($lang, array(
 	'ACL_F_POLL'		=> 'Can create polls',
 	'ACL_F_VOTE'		=> 'Can vote in polls',
 	'ACL_F_VOTECHG'		=> 'Can change existing vote',
+=======
+	'acl_f_list'		=> array('lang' => 'Can see forum', 'cat' => 'post'),
+	'acl_f_read'		=> array('lang' => 'Can read forum', 'cat' => 'post'),
+	'acl_f_read_other'	=> array('lang' => 'Can view topics started by other members', 'cat' => 'post'),
+	'acl_f_post'		=> array('lang' => 'Can start new topics', 'cat' => 'post'),
+	'acl_f_reply'		=> array('lang' => 'Can reply to topics', 'cat' => 'post'),
+	'acl_f_icons'		=> array('lang' => 'Can use topic/post icons', 'cat' => 'post'),
+	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
+	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
+
+	'acl_f_poll'		=> array('lang' => 'Can create polls', 'cat' => 'polls'),
+	'acl_f_vote'		=> array('lang' => 'Can vote in polls', 'cat' => 'polls'),
+	'acl_f_votechg'		=> array('lang' => 'Can change existing vote', 'cat' => 'polls'),
+
+	'acl_f_attach'		=> array('lang' => 'Can attach files', 'cat' => 'content'),
+	'acl_f_download'	=> array('lang' => 'Can download files', 'cat' => 'content'),
+	'acl_f_sigs'		=> array('lang' => 'Can use signatures', 'cat' => 'content'),
+	'acl_f_bbcode'		=> array('lang' => 'Can use BBCode', 'cat' => 'content'),
+	'acl_f_smilies'		=> array('lang' => 'Can use smilies', 'cat' => 'content'),
+	'acl_f_img'			=> array('lang' => 'Can use [img] BBCode tag', 'cat' => 'content'),
+	'acl_f_flash'		=> array('lang' => 'Can use [flash] BBCode tag', 'cat' => 'content'),
+
+	'acl_f_edit'		=> array('lang' => 'Can edit own posts', 'cat' => 'actions'),
+	'acl_f_delete'		=> array('lang' => 'Can delete own posts', 'cat' => 'actions'),
+	'acl_f_user_lock'	=> array('lang' => 'Can lock own topics', 'cat' => 'actions'),
+	'acl_f_bump'		=> array('lang' => 'Can bump topics', 'cat' => 'actions'),
+	'acl_f_report'		=> array('lang' => 'Can report posts', 'cat' => 'actions'),
+	'acl_f_subscribe'	=> array('lang' => 'Can subscribe forum', 'cat' => 'actions'),
+	'acl_f_print'		=> array('lang' => 'Can print topics', 'cat' => 'actions'),
+	'acl_f_email'		=> array('lang' => 'Can email topics', 'cat' => 'actions'),
+
+	'acl_f_search'		=> array('lang' => 'Can search the forum', 'cat' => 'misc'),
+	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'misc'),
+	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'misc'),
+	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'misc'),
+>>>>>>> [feature/only-op-can-view] ACP language keys and SQL data
 ));
 
 // Moderator Permissions
