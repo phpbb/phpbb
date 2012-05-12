@@ -67,4 +67,4 @@ More Information
 ================
 
 Further information is available on phpbb wiki:
-http://wiki.phpbb.com/display/DEV/Unit+Tests
+http://wiki.phpbb.com/Unit_Tests
