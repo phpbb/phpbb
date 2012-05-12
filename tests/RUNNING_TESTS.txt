@@ -36,6 +36,12 @@ found on the wiki (see below).
     $dbuser = 'user';
     $dbpasswd = 'password';
 
+It is possible to have multiple test_config.php files, for example if you
+are testing on multiple databases. You can specify which test_config.php file
+to use in the environment as follows:
+
+    $ PHPBB_TEST_CONFIG=tests/test_config.php phpunit
+
 Alternatively you can specify parameters in the environment, so e.g. the following
 will run phpunit with the same parameters as in the shown test_config.php file:
 
