@@ -237,6 +237,37 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 
 		return ($find_all) ? $found_all : $source_file;
 	}
+        
+        public function locate_source_file($source_file, $find_all = false) {
+		$tried = $source_file;
+		$found = false;
+		$found_all = array();
+		foreach ($this->roots as $root_key => $root_paths)
+		{
+			foreach ($root_paths as $root_index => $root)
+			{
+				$source_file = $this->files[$root_key][$root_index][$handle];
+				$tried .= ', ' . $source_file;
+				if (file_exists($source_file))
+				{
+					$found = true;
+					break;
+				}
+			}
+			if ($found)
+			{
+				if ($find_all)
+				{
+					$found_all[] = $source_file;
+					$found = false;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+        }
 
 	/**
 	* Locates source file path, accounting for styles tree and verifying that
