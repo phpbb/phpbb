@@ -21,6 +21,7 @@ the following PHP extensions must be installed and enabled to run unit tests:
 
 Database Tests
 --------------
+
 By default all tests requiring a database connection will use sqlite. If you
 do not have sqlite installed the tests will be skipped. If you wish to run the
 tests on a different database you have to create a test_config.php file within
@@ -54,6 +55,7 @@ directory (above phpBB):
 
 Slow tests
 --------------
+
 Certain tests, such as the UTF-8 normalizer or the DNS tests tend to be slow.
 Thus these tests are in the `slow` group, which is excluded by default. You can
 enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
