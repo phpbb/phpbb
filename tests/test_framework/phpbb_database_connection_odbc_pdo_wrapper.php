@@ -25,7 +25,7 @@ class phpbb_database_connection_odbc_pdo_wrapper extends PDO
 	function __construct($dbms, $version, $dsn, $user, $pass)
 	{
 		$this->driver = $dbms;
-		$this->version = (double)$version;
+		$this->version = (double) $version;
 
 		parent::__construct($dsn, $user, $pass);
 	}
