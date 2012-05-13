@@ -2043,7 +2043,8 @@ function change_database_data(&$no_updates, $version)
 						'ON'	=> 'p.msg_id = t.msg_id',
 					),
 				),
-				'WHERE'		=> 't.user_id IS NULL');
+				'WHERE'		=> 't.user_id IS NULL',
+			);
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 
 			do
