@@ -2062,7 +2062,7 @@ function change_database_data(&$no_updates, $version)
 				{
 					$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 						WHERE ' . $db->sql_in_set('msg_id', $delete_pms);
-					$db->sql_query($sql);
+					_sql($sql, $errored, $error_ary);
 				}
 			}
 			while (sizeof($delete_pms) == $batch_size);
