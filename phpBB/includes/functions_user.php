@@ -527,62 +527,12 @@ function user_delete($mode, $user_id, $post_username = false)
 		WHERE session_user_id = ' . $user_id;
 	$db->sql_query($sql);
 
-	// Remove any undelivered mails...
-	$sql = 'SELECT msg_id, user_id
-		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$result = $db->sql_query($sql);
-
-	$undelivered_msg = $undelivered_user = array();
-	while ($row = $db->sql_fetchrow($result))
+	// Clean the private messages tables from the user
+	if (!function_exists('phpbb_delete_user_pms'))
 	{
-		$undelivered_msg[] = $row['msg_id'];
-		$undelivered_user[$row['user_id']][] = true;
+		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($undelivered_msg))
-	{
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-		$db->sql_query($sql);
-	}
-
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE author_id = ' . $user_id . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
-	$db->sql_query($sql);
-
-	// Delete all to-information
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE user_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
-	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-		SET author_id = ' . ANONYMOUS . '
-		WHERE author_id = ' . $user_id;
-	$db->sql_query($sql);
-
-	foreach ($undelivered_user as $_user_id => $ary)
-	{
-		if ($_user_id == $user_id)
-		{
-			continue;
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
-				user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
-			WHERE user_id = ' . $_user_id;
-		$db->sql_query($sql);
-	}
+	phpbb_delete_user_pms($user_id);
 
 	$db->sql_transaction('commit');
 
