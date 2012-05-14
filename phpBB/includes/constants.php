@@ -245,7 +245,7 @@ define('NOTIFICATIONS_TABLE',		$table_prefix . 'notifications');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
 define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
-define('POST_REVISIONS_TABLE',		$table_previx . 'post_revisions');
+define('POST_REVISIONS_TABLE',		$table_prefix . 'post_revisions');
 define('PRIVMSGS_TABLE',			$table_prefix . 'privmsgs');
 define('PRIVMSGS_FOLDER_TABLE',		$table_prefix . 'privmsgs_folder');
 define('PRIVMSGS_RULES_TABLE',		$table_prefix . 'privmsgs_rules');
