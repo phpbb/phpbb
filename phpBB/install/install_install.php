@@ -53,11 +53,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path;
+		global $lang, $template, $language, $phpbb_root_path, $cache;
 
 		switch ($sub)
 		{
 			case 'intro':
+				$cache->purge();
+
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
