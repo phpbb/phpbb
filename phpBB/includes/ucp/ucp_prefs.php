@@ -134,6 +134,33 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
+				// check for count of installed languages
+				$sql = 'SELECT lang_id
+								FROM ' . LANG_TABLE;
+				$result = $db->sql_query($sql);
+				if( $db->sql_affectedrows() > 1 )
+				{
+					$s_more_languages = true;
+				}
+				else
+				{
+					$s_more_languages = false;
+				}
+
+				// check for count of installed and active styles
+				$sql = 'SELECT style_id
+								FROM ' . STYLES_TABLE . '
+								WHERE style_active = 1';
+				$result = $db->sql_query($sql);
+				if( $db->sql_affectedrows() > 1 )
+				{
+					$s_more_styles = true;
+				}
+				else
+				{
+					$s_more_styles = false;
+				}
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -154,6 +181,9 @@ class ucp_prefs
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
+
+					'S_MORE_LANGUAGES'	=> $s_more_languages,
+					'S_MORE_STYLES'			=> $s_more_styles,
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),
