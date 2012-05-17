@@ -49,6 +49,7 @@ class phpbb_database_test_connection_manager
 		switch ($this->dbms['PDO'])
 		{
 			case 'sqlite2':
+			case 'sqlite3':
 				$dsn .= $this->config['dbhost'];
 			break;
 
@@ -164,6 +165,7 @@ class phpbb_database_test_connection_manager
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 				$sql = 'SELECT name
 					FROM sqlite_master
 					WHERE type = "table"';
@@ -303,6 +305,11 @@ class phpbb_database_test_connection_manager
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
+			),
+			'sqlite3'		=> array(
+				'SCHEMA'		=> 'sqlite_3',
+				'DELIM'			=> ';',
+				'PDO'			=> 'sqlite',
 			),
 		);
 
