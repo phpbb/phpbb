@@ -34,7 +34,7 @@
 			<td style="text-align: center">{sessions.LOGIN_TIME}</td>
 		</tr>
 	<!-- BEGINELSE -->
-		<tr><td colspan="4" class="bg1">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td></tr>
+		<tr><td colspan="4" class="bg1" style="text-align: center">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td></tr>
 	<!-- END sessions -->
 	</tbody>
 	</table>
@@ -44,8 +44,7 @@
 
 <!-- IF .sessions -->
 	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
-		<input type="submit" name="submit" value="{L_DELETE}" class="button1" />
+		{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_DELETE}" class="button1" />
 		{S_FORM_TOKEN}
 	</fieldset>
 <!-- ENDIF -->

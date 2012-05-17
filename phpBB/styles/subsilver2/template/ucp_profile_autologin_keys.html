@@ -32,15 +32,14 @@
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td colspan="4" class="row1">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td>
+		<td colspan="4" class="row1" style="text-align: center">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td>
 	</tr>
 <!-- END sessions -->
 
 <!-- IF .sessions -->
 	<tr>
 		<td class="cat" colspan="4" align="center">
-			{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
-			<input type="submit" name="submit" value="{L_DELETE}" class="button1" />
+			{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_DELETE}" />
 			{S_FORM_TOKEN}
 		</td>
 	</tr>
