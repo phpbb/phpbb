@@ -134,11 +134,11 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				// check for count of installed languages
-				$sql = 'SELECT lang_id
+				// check if there are any user-selectable languages
+				$sql = 'SELECT COUNT(lang_id) as languages_count
 								FROM ' . LANG_TABLE;
 				$result = $db->sql_query($sql);
-				if( $db->sql_affectedrows() > 1 )
+				if( $db->sql_fetchfield('languages_count') > 1 )
 				{
 					$s_more_languages = true;
 				}
@@ -146,13 +146,14 @@ class ucp_prefs
 				{
 					$s_more_languages = false;
 				}
+				$db->sql_freeresult($result);
 
-				// check for count of installed and active styles
-				$sql = 'SELECT style_id
+				// check if there are any user-selectable styles
+				$sql = 'SELECT COUNT(style_id) as styles_count
 								FROM ' . STYLES_TABLE . '
 								WHERE style_active = 1';
 				$result = $db->sql_query($sql);
-				if( $db->sql_affectedrows() > 1 )
+				if( $db->sql_fetchfield('styles_count') > 1 )
 				{
 					$s_more_styles = true;
 				}
@@ -160,6 +161,7 @@ class ucp_prefs
 				{
 					$s_more_styles = false;
 				}
+				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
