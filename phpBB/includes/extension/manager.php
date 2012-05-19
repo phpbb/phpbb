@@ -464,3 +464,4 @@ class phpbb_extension_manager
 	{
 		return new phpbb_extension_finder($this, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
 	}
+}

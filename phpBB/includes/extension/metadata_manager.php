@@ -39,7 +39,7 @@ class phpbb_extension_metadata_manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $phpEx php file extension
 	*/
-	public function __construct($ext_name, dbal $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php', template $template)
+	public function __construct($ext_name, dbal $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php', phpbb_template $template)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
@@ -84,7 +84,7 @@ class phpbb_extension_metadata_manager
 			break;
 			
 			case 'name':
-				if($this->validate_name)
+				if ($this->validate_name)
 				{
 					if ($template_output)
 					{
@@ -106,7 +106,7 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Sets the filepath of the metadata file
 	 * 
-	 * @return null
+	 * @return boolean  Set to true if it exists
 	 */
 	private function set_meta_data_file()
 	{
@@ -115,7 +115,7 @@ class phpbb_extension_metadata_manager
 
 		$this->metadata_file = $metadata_filepath;
 
-		if(!file_exists($this->metadata_file))
+		if (!file_exists($this->metadata_file))
 		{
 			return false;
 		}
@@ -153,14 +153,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_name()
 	{
-		if(preg_match('^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$', $this->metadata['name']))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return preg_match('^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$', $this->metadata['name']);
 	}
 
 	/**
@@ -170,14 +163,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_type()
 	{
-		if ($this->metadata['type'] != 'phpbb3-extension')
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return $this->metadata['type'] != 'phpbb3-extension';
 	}
 
 	/**
@@ -187,14 +173,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_description()
 	{
-		if(preg_match('^{10,}$', $this->metadata['description']))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return preg_match('^{10,}$', $this->metadata['description']);
 	}
 
 	/**
@@ -204,14 +183,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_version()
 	{
-		if(preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['version']))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['version']);
 	}
 
 	/**
@@ -221,14 +193,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_license()
 	{
-		if ($this->metadata['license'] != 'GPLv2')
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return $this->metadata['license'] != 'GPLv2';
 	}
 
 	/**
@@ -238,14 +203,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_require_phpbb()
 	{
-		if(preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['require']['phpbb']) && version_compare($this->metadata['require']['phpbb']), '3.1.0', '>')
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return (preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['require']['phpbb']) && version_compare($this->metadata['require']['phpbb']), '3.1.0', '>');
 	}
 
 	/**
@@ -255,14 +213,7 @@ class phpbb_extension_metadata_manager
 	 */
 	private function validate_extra_display_name()
 	{
-		if(preg_match('^[a-zA-Z0-9_]{2,0}$', $this->metadata['name']))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return preg_match('^[a-zA-Z0-9_]{2,0}$', $this->metadata['name']);
 	}
 
 	/**
