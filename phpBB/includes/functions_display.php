@@ -1348,7 +1348,7 @@ function phpbb_mcp_quick_info()
 		{
 			// We add a ternary conditional to allow for having both permissions
 			$sql_where .= '(' . $db->sql_in_set('forum_id', get_forum_list('m_report')) . '
-				AND post_reported = 1)' . ($m_approve ? 'OR' : '');
+				AND post_reported = 1)' . ($m_approve ? ' OR ' : '');
 		}
 
 		// Check for m_approve
@@ -1366,7 +1366,7 @@ function phpbb_mcp_quick_info()
 			$unapproved_topics_array = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$unapproved_topics_array[] = (int) $row['topic_first_post_id'];
+				$unapproved_topics_array[] = $row['topic_first_post_id'];
 				$unapproved_topics_count++;
 			}
 			$db->sql_freeresult($result);
