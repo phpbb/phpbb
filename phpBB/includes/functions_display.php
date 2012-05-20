@@ -1416,7 +1416,7 @@ function phpbb_mcp_quick_info()
 		}
 	}
 
-    // Don't forget PMs
+    // Don't forget reported PMs
 	if ($auth->acl_getf_global('m_'))
 	{
 		$reported_pms = 0;
@@ -1435,7 +1435,7 @@ function phpbb_mcp_quick_info()
 			$cache->put('_reported_pms', $reported_pms, 300);
 		}
 
-		// Dump to the template again
+		// Dump to the template
 		if ($reported_pms)
 		{
 			$template->assign_vars(array(
