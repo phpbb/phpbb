@@ -28,7 +28,7 @@ class phpbb_extension_metadata_manager
 	protected $phpbb_root_path;
 	protected $ext_name;
 	protected $template;
-	protected $metadata;
+	public $metadata;
 	protected $metadata_file;
 
 	/**
@@ -55,13 +55,13 @@ class phpbb_extension_metadata_manager
 	 * Processes and gets the metadata requested
 	 * 
 	 * @param  string $element         All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	 * @param  bool $template_output   True if you want the requested metadata assigned to template vars
+	 * @param  boolean $template_output   True if you want the requested metadata assigned to template vars
 	 * @return array                   Contains all of the requested metadata
 	 */
-	public function get_meta_data($element = 'all', $template_output = false)
+	public function get_metadata($element = 'all', $template_output = false)
 	{
 		// TODO: Check ext_name exists and is an extension that exists
-		if (!$this->set_meta_data_file())
+		if (!$this->set_metadata_file())
 		{
 			return false;
 		}
@@ -99,7 +99,7 @@ class phpbb_extension_metadata_manager
 					return false;
 				}
 			break;
-			// TODO: Add remaining cases
+			// TODO: Add remaining cases as needed
 		}
 	}
 
@@ -108,7 +108,7 @@ class phpbb_extension_metadata_manager
 	 * 
 	 * @return boolean  Set to true if it exists
 	 */
-	private function set_meta_data_file()
+	private function set_metadata_file()
 	{
 		$ext_filepath = $this->extension_manager->get_extension_path($this->ext_name);
 		$metadata_filepath = $this->phpbb_root_path . $ext_filepath . '/composer.json';
@@ -141,15 +141,14 @@ class phpbb_extension_metadata_manager
 
 //		TODO: Remove all parts of the array we don't want or shouldn't be there due to nub mod authors
 //		$this->metadata = $metadata_finished;
-		$metadata_finished = $this->metadata;
 
-		return $metadata_finished;
+		return $this->metadata;
 	}
 
 	/**
 	 * Validates the contents of the name field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_name()
 	{
@@ -159,7 +158,7 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the type field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_type()
 	{
@@ -169,7 +168,7 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the description field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_description()
 	{
@@ -179,27 +178,28 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the version field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_version()
 	{
-		return preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['version']);
+		return preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}', $this->metadata['version']);
 	}
 
 	/**
 	 * Validates the contents of the license field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_license()
 	{
-		return $this->metadata['license'] != 'GPLv2';
+		// Nothing to validate except existence
+		return isset($this->metadata['version']);
 	}
 
 	/**
 	 * Validates the contents of the phpbb requirement field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_require_phpbb()
 	{
@@ -209,7 +209,7 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the display name field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_extra_display_name()
 	{
@@ -232,41 +232,60 @@ class phpbb_extension_metadata_manager
 	/**
 	 * Validates the contents of the php requirement field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_require_php()
 	{
-
+		return preg_match('^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$', $this->metadata['require']['phpbb']
 	}
 
 	/**
 	 * Validates the contents of the time field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_time()
 	{
-
+		// Need to validate
+		return true;
 	}
 
 	/**
 	 * Validates the contents of the homepage field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_homepage()
 	{
-
+		return preg_match('([\d\w-.]+?\.(a[cdefgilmnoqrstuwz]|b[abdefghijmnorstvwyz]|c[acdfghiklmnoruvxyz]|d[ejkmnoz]|e[ceghrst]|f[ijkmnor]|g[abdefghilmnpqrstuwy]|h[kmnrtu]|i[delmnoqrst]|j[emop]|k[eghimnprwyz]|l[abcikrstuvy]|m[acdghklmnopqrstuvwxyz]|n[acefgilopruz]|om|p[aefghklmnrstwy]|qa|r[eouw]|s[abcdeghijklmnortuvyz]|t[cdfghjkmnoprtvwz]|u[augkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]|aero|arpa|biz|com|coop|edu|info|int|gov|mil|museum|name|net|org|pro)(\b|\W(?<!&|=)(?!\.\s|\.{3}).*?))(\s|$)', $this->metadata['homepage'])
 	}
 
 	/**
 	 * Validates the contents of the authors field
 	 * 
-	 * @return bool True when passes validation
+	 * @return boolean True when passes validation
 	 */
 	private function validate_authors()
 	{
+		// Need to validate
+		$number_authors = sizeof($this->metadata['authors']); // Might be helpful later on
 
+		if (!isset($this->metadata['authors']['1']))
+		{
+			return false;
+		}
+		else
+		{
+			foreach ($this->metadata['authors'] as $author)
+			{
+				if (!isset($author['name']))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	/**
