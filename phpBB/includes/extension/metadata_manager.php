@@ -27,7 +27,6 @@ class phpbb_extension_metadata_manager
 	protected $db;
 	protected $phpbb_root_path;
 	protected $ext_name;
-	protected $template;
 	public $metadata;
 	protected $metadata_file;
 
@@ -39,14 +38,13 @@ class phpbb_extension_metadata_manager
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $phpEx php file extension
 	*/
-	public function __construct($ext_name, dbal $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php', phpbb_template $template)
+	public function __construct($ext_name, dbal $db, phpbb_extension_manager $extension_manager, $phpbb_root_path, $phpEx = '.php')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $db;
 		$this->phpEx = $phpEx;
 		$this->extension_manager = $extension_manager;
 		$this->ext_name = $ext_name;
-		$this->template = $template;
 		$this->metadata = array();
 		$this->metadata_file = '';
 	}
@@ -58,7 +56,7 @@ class phpbb_extension_metadata_manager
 	 * @param  boolean $template_output   True if you want the requested metadata assigned to template vars
 	 * @return array                   Contains all of the requested metadata
 	 */
-	public function get_metadata($element = 'all', $template_output = false)
+	public function get_metadata($element = 'all', $template_output = false, phpbb_template $template)
 	{
 		// TODO: Check ext_name exists and is an extension that exists
 		if (!$this->set_metadata_file())
@@ -77,7 +75,7 @@ class phpbb_extension_metadata_manager
 
 				if ($template_output) 
 				{
-					$this->output_template_data();
+					$this->output_template_data($template);
 				}
 
 				return $this->metadata;
@@ -88,7 +86,7 @@ class phpbb_extension_metadata_manager
 				{
 					if ($template_output)
 					{
-						$this->template->assign_vars(array(
+						$template->assign_vars(array(
 							'MD_NAME'	=> htmlspecialchars($this->metadata['name']),
 						));
 					}
@@ -309,7 +307,7 @@ class phpbb_extension_metadata_manager
 	 * 
 	 * @return null
 	 */
-	public function output_template_data()
+	public function output_template_data(phpbb_template $template)
 	{
 		$template->assign_vars(array(
 			'MD_NAME'			=> htmlspecialchars($this->metadata['name']),
