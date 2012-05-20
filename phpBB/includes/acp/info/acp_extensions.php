@@ -19,7 +19,7 @@ class acp_extensions_info
 			'title'		=> 'ACP_EXTENSIONS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'main'		=> array('title' => 'ACP_EXTENSIONS', 'auth' => 'acl_a_extensions', 'cat' => array('ACP_CAT_SYSTEM')),
+				'main'		=> array('title' => 'ACP_EXTENSIONS', 'auth' => 'acl_a_extensions', 'cat' => array('ACP_GENERAL_TASKS')),
 			),
 		);
 	}
