@@ -125,6 +125,13 @@ class acp_extensions
 		}
 	}
 
+	/**
+	 * Lists all the enabled extensions and dumps to the template
+	 * 
+	 * @param  $db       A database connection
+	 * @param  $template An instance of the template engine
+	 * @return null
+	 */
 	private function list_enabled_exts($db, $template)
 	{
 		$sql = 'SELECT ext_name
@@ -148,6 +155,13 @@ class acp_extensions
 		return;
 	}
 
+	/**
+	 * Lists all the disabled extensions and dumps to the template
+	 * 
+	 * @param  $db       A database connection
+	 * @param  $template An instance of the template engine
+	 * @return null
+	 */
 	private function list_disabled_exts($db, $template)
 	{
 		$sql = 'SELECT ext_name
@@ -172,6 +186,13 @@ class acp_extensions
 		return;
 	}
 
+	/**
+	 * Lists all the available extensions and dumps to the template
+	 * 
+	 * @param  $db       A database connection
+	 * @param  $template An instance of the template engine
+	 * @return null
+	 */
 	function list_available_exts($phpbb_extension_manager, $template)
 	{
 		$phpbb_extension_manager->load_extensions();
