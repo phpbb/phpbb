@@ -9,85 +9,85 @@
 	<fieldset>
 		<legend>{L_EXT_DETAILS}</legend>
 		<dl>
-			<dt><label for="display_name">{L_DISPLAY_NAME}:</label></dt>
-			<dd><strong id="display_name">{DISPLAY_NAME}</strong></dd>
+			<dt><label for="md_display_name">{L_DISPLAY_NAME}:</label></dt>
+			<dd><strong id="md_display_name">{MD_DISPLAY_NAME}</strong></dd>
 		</dl>
 		<dl>
-			<dt><label for="name">{L_CLEAN_NAME}:</label></dt>
-			<dd><strong id="name">{NAME}</strong></dd>
+			<dt><label for="md_name">{L_CLEAN_NAME}:</label></dt>
+			<dd><strong id="md_name">{MD_NAME}</strong></dd>
 		</dl>
 		<dl>
-			<dt><label for="type">{L_TYPE}:</label></dt>
-			<dd><p id="type">{TYPE}</p></dd>
+			<dt><label for="md_type">{L_TYPE}:</label></dt>
+			<dd><p id="md_type">{MD_TYPE}</p></dd>
 		</dl>
 		<dl>
-			<dt><label for="description">{L_DESCRIPTION}:</label></dt>
-			<dd><p id="description">{DESCRIPTION}</p></dd>
+			<dt><label for="md_description">{L_DESCRIPTION}:</label></dt>
+			<dd><p id="md_description">{MD_DESCRIPTION}</p></dd>
 		</dl>
 		<dl>
-			<dt><label for="version">{L_VERSION}:</label></dt>
-			<dd><p id="version">{VERSION}</p></dd>
+			<dt><label for="md_version">{L_VERSION}:</label></dt>
+			<dd><p id="md_version">{MD_VERSION}</p></dd>
 		</dl>
 		<dl>
-			<dt><label for="homepage">{L_HOPEPAGE}:</label></dt>
-			<dd><p id="homepage">{HOMEPAGE}</p></dd>
+			<dt><label for="md_homepage">{L_HOMEPAGE}:</label></dt>
+			<dd><p id="md_homepage">{MD_HOMEPAGE}</p></dd>
 		</dl>
 <!-- 		<dl>
 			<dt><label for="path">{L_PATH}:</label></dt>
 			<dd><p id="path">{PATH}</p></dd>
 		</dl> -->
 		<dl>
-			<dt><label for="time">{L_TIME}:</label></dt>
-			<dd><p id="time">{TIME}</p></dd>
+			<dt><label for="md_time">{L_TIME}:</label></dt>
+			<dd><p id="md_time">{MD_TIME}</p></dd>
 		</dl>
 		<dl>
-			<dt><label for="licence">{L_LICENCE}:</label></dt>
-			<dd><p id="licence">{LICENCE}</p></dd>
+			<dt><label for="md_license">{L_LICENSE}:</label></dt>
+			<dd><p id="md_license">{MD_LICENSE}</p></dd>
 		</dl>
 	</fieldset>
 	
 	<fieldset>
 		<legend>{L_REQUIREMENTS}</legend>
-		<!-- IF REQUIRE_PHPBB -->
+		<!-- IF MD_REQUIRE_PHPBB -->
 		<dl>
 			<dt><label for="require_phpbb">{L_PHPBB_VERSION}:</label></dt>
-			<dd><p id="require_phpbb">{REQUIRE_PHPBB}</p></dd>
+			<dd><p id="require_phpbb">{MD_REQUIRE_PHPBB}</p></dd>
 		</dl>
 		<!-- ENDIF -->
-		<!-- IF REQUIRE_PHP -->
+		<!-- IF MD_REQUIRE_PHP -->
 		<dl>
 			<dt><label for="require_php">{L_PHP_VERSION}:</label></dt>
-			<dd><p id="require_php">{REQUIRE_PHP}</p></dd>
+			<dd><p id="require_php">{MD_REQUIRE_PHP}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_AUTHOR_INFORMATION}</legend>
-		<!-- BEGIN authors -->
+		<!-- BEGIN md_authors -->
 		<dl>
-			<dt><label for="author_name">{L_AUTHOR_NAME}:</label></dt>
-			<dd><strong id="author_name">{authors.AUTHOR_NAME}</strong></dd>
+			<dt><label for="md_author_name">{L_AUTHOR_NAME}:</label></dt>
+			<dd><strong id="md_author_name">{md_authors.AUTHOR_NAME}</strong></dd>
 		</dl>
-		<!-- IF authors.AUTHOR_EMAIL -->
+		<!-- IF md_authors.AUTHOR_EMAIL -->
 		<dl>
-			<dt><label for="author_email">{L_AUTHOR_EMAIL}:</label></dt>
-			<dd><strong id="author_email"><a href="mailto:{authors.AUTHOR_EMAIL}">{authors.AUTHOR_EMAIL}</a></strong></dd>
-		</dl>
-		<!-- ENDIF -->
-		<!-- IF authors.AUTHOR_HOMEPAGE -->
-		<dl>
-			<dt><label for="author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
-			<dd><strong id="author_url"><a href="{authors.AUTHOR_HOMEPAGE}">{authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+			<dt><label for="md_author_email">{L_AUTHOR_EMAIL}:</label></dt>
+			<dd><strong id="md_author_email"><a href="mailto:{md_authors.AUTHOR_EMAIL}">{md_authors.AUTHOR_EMAIL}</a></strong></dd>
 		</dl>
 		<!-- ENDIF -->
-		<!-- IF authors.AUTHOR_ROLE -->
+		<!-- IF md_authors.AUTHOR_HOMEPAGE -->
+		<dl>
+			<dt><label for="md_author_url">{L_AUTHOR_HOMEPAGE}:</label></dt>
+			<dd><strong id="md_author_url"><a href="{md_authors.AUTHOR_HOMEPAGE}">{md_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF md_authors.AUTHOR_ROLE -->
 		<dl>
 			<dt><label for="author_role">{L_AUTHOR_ROLE}:</label></dt>
-			<dd><strong id="author_role">{authors.AUTHOR_ROLE}</strong></dd>
+			<dd><strong id="md_author_role">{md_authors.AUTHOR_ROLE}</strong></dd>
 		</dl>
 		<!-- ENDIF -->
-		<!-- END authors -->
+		<!-- END md_authors -->
 	</fieldset>
 	
 <!-- INCLUDE overall_footer.html -->
