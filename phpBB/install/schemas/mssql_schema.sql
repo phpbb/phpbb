@@ -12,6 +12,7 @@
 CREATE TABLE [phpbb_attachments] (
 	[attach_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[post_msg_id] [int] DEFAULT (0) NOT NULL ,
+	[post_revision_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[in_message] [int] DEFAULT (0) NOT NULL ,
 	[poster_id] [int] DEFAULT (0) NOT NULL ,
