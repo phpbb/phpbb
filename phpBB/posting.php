@@ -420,17 +420,19 @@ if ($mode == 'edit')
 }
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
-
-// We need to store some original information for post revisions before it gets changed
-$orig_data = array(
-	'post_text'				=> $post_data['post_text'],
-	'post_subject'			=> $post_data['post_subject'],
-	'post_attachment'		=> $post_data['post_attachment'],
-	'post_checksum'			=> $post_data['post_checksum'],
-	'post_attachment'		=> $post_data['post_attachment'],
-	'bbcode_uid'			=> $post_data['bbcode_uid'],
-	'bbcode_bitfield'		=> $post_data['bbcode_bitfield'],
-);
+if ($mode == 'edit')
+{
+	// We need to store some original information for post revisions before it gets changed
+	$orig_data = array(
+		'post_text'				=> $post_data['post_text'],
+		'post_subject'			=> $post_data['post_subject'],
+		'post_attachment'		=> $post_data['post_attachment'],
+		'post_checksum'			=> $post_data['post_checksum'],
+		'post_attachment'		=> $post_data['post_attachment'],
+		'bbcode_uid'			=> $post_data['bbcode_uid'],
+		'bbcode_bitfield'		=> $post_data['bbcode_bitfield'],
+	);
+}
 
 $message_parser = new parse_message();
 
@@ -1113,7 +1115,7 @@ if ($submit || $preview || $refresh)
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
 
 				// for post revisions, we need to store some current post data as well
-				'orig_post_text'		=> $orig_post_text,
+				'orig_data'		=> $orig_data,
 			);
 
 			if ($mode == 'edit')
