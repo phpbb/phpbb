@@ -82,6 +82,7 @@ $lang = array_merge($lang, array(
 	'NO_ATTACHMENT_SELECTED'=> 'You haven’t selected an attachment to download or view.',
 	'NO_NEWER_TOPICS'		=> 'There are no newer topics in this forum.',
 	'NO_OLDER_TOPICS'		=> 'There are no older topics in this forum.',
+	'NO_REVISIONS'			=> 'There are no revisions for this post.',
 	'NO_UNREAD_POSTS'		=> 'There are no new unread posts for this topic.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.',
 	'NO_VOTES'				=> 'No votes',

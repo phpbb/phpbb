@@ -1582,11 +1582,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			// However, we only need to do this if post revisions are being tracked
 			// and, if the user is not a moderator, the post has not been locked
-			if ($config['track_post_revisions'] && (!$post_data['post_edit_locked'] || $auth->acl_getf('m_edit', $post_data['forum_id'])))
+			if ($config['track_post_revisions'] && (!$data['post_edit_locked'] || $auth->acl_getf('m_edit', $data['forum_id'])))
 			{
 				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
 					'post_id'				=> $data['post_id'],
-					'revision_reason'		=> $data['post_edit_reason']
+					'revision_reason'		=> $data['post_edit_reason'],
 					'user_id'				=> $user->data['user_id'],
 					'revision_time'			=> $current_time,
 					'revision_subject'		=> $data['orig_data']['post_subject'],

@@ -512,6 +512,7 @@ CREATE TABLE phpbb_posts (
 	post_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
+	current_revision_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_postcount tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_reason blob NOT NULL,
