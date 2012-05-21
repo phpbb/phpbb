@@ -1576,6 +1576,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[POSTS_TABLE]['sql']['post_text'] = $data['message'];
 			}
 
+			// Now we store the previous post information in the revisions table.
+			// The original editing mechanism should not be altered much because revisions can be disabled
+			// so we just added this on at the end.
+
+			// However, we only need to do this if post revisions are being tracked
+			// and, if the user is not a moderator, the post has not been locked
+			if ($config['track_post_revisions'] && (!$post_data['post_edit_locked'] || $auth->acl_getf('m_edit', $post_data['forum_id'])))
+			{
+				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
+					'post_id'				=> $data['post_id'],
+					'revision_reason'		=> $data['post_edit_reason']
+					'user_id'				=> $user->data['user_id'],
+					'revision_time'			=> $current_time,
+					'revision_subject'		=> $data['orig_data']['post_subject'],
+					'revision_text'			=> $data['orig_data']['post_text'],
+					'revision_checksum'		=> $data['orig_data']['post_checksum'],
+					'revision_attachment'	=> $data['orig_data']['post_attachment'],
+					'bbcode_uid'			=> $data['orig_data']['bbcode_uid'],
+					'bbcode_bitfield'		=> $data['orig_data']['bbcode_uid'],
+				);
+			}
+
 		break;
 	}
 
@@ -1797,6 +1819,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
 			WHERE post_id = ' . $data['post_id'];
+		$db->sql_query($sql);
+	}
+
+	// If applicable, insert a new post revision
+	if (isset($sql_data[POST_REVISIONS_TABLE]['sql']))
+	{
+		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
+			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
 		$db->sql_query($sql);
 	}
 

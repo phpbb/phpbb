@@ -49,6 +49,7 @@ CONNECT phpbb/phpbb_password;
 CREATE TABLE phpbb_attachments (
 	attach_id number(8) NOT NULL,
 	post_msg_id number(8) DEFAULT '0' NOT NULL,
+	post_revision_id number(8) DEFAULT '0' NOT NULL,
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	in_message number(1) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,

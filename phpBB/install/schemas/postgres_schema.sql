@@ -91,6 +91,7 @@ CREATE SEQUENCE phpbb_attachments_seq;
 CREATE TABLE phpbb_attachments (
 	attach_id INT4 DEFAULT nextval('phpbb_attachments_seq'),
 	post_msg_id INT4 DEFAULT '0' NOT NULL CHECK (post_msg_id >= 0),
+	post_revision_id INT4 DEFAULT '0' NOT NULL CHECK (post_revision_id >= 0),
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	in_message INT2 DEFAULT '0' NOT NULL CHECK (in_message >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),

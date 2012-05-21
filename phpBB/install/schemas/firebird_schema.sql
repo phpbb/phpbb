@@ -8,6 +8,7 @@
 CREATE TABLE phpbb_attachments (
 	attach_id INTEGER NOT NULL,
 	post_msg_id INTEGER DEFAULT 0 NOT NULL,
+	post_revision_id INTEGER DEFAULT 0 NOT NULL,
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	in_message INTEGER DEFAULT 0 NOT NULL,
 	poster_id INTEGER DEFAULT 0 NOT NULL,
