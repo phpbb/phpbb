@@ -375,7 +375,9 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT * FROM (SELECT 1) AS TBL WHERE 1 = 0';
+		$sql = 'SELECT user_id
+			FROM phpbb_users
+			WHERE 1 = 0';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);
