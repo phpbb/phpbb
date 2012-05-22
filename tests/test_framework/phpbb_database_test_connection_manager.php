@@ -80,6 +80,21 @@ class phpbb_database_test_connection_manager
 				{
 					$dsn .= ';dbname=' . $this->config['dbname'];
 				}
+				else if ($this->dbms['PDO'] == 'pgsql')
+				{
+					// Postgres always connects to a
+					// database. If the database is not
+					// specified here, but the username
+					// is specified, then connection
+					// will be to the database named
+					// as the username.
+					//
+					// For greater compatibility, connect
+					// instead to postgres database which
+					// should always exist:
+					// http://www.postgresql.org/docs/9.0/static/manage-ag-templatedbs.html
+					$dsn .= ';dbname=postgres';
+				}
 			break;
 		}
 
