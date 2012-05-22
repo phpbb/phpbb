@@ -14,14 +14,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 {
 	protected $client;
 	protected $root_url;
+
 	/**
 	* @var string Session ID for current test's session (each test makes its own)
 	*/
 	protected $sid;
+
 	/**
 	* @var array Language array used by phpBB
 	*/
-	private $lang = array();
+	protected $lang = array();
 
 	static protected $config = array();
 	static protected $already_installed = false;
@@ -187,8 +189,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
 
 		$cookies = $this->cookieJar->all();
-		$sid = '';
-		// get the SID from the cookie
+		
+		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $key => $cookie);
 		{
 			if (substr($key, -4) == '_sid')
@@ -200,8 +202,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function add_lang($lang_file)
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if (is_array($lang_file))
 		{
 			foreach ($lang_file as $file)
@@ -210,7 +210,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
-		$lang_path = "{$phpbb_root_path}language/en/$lang_file.$phpEx";
+		$lang_path = "./phpBB/language/en/$lang_file.php";
 
 		$lang = array();
 
