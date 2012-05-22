@@ -558,7 +558,5 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 	}
 
-	$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
-
 	return $config_data;
 }
