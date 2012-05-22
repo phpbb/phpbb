@@ -156,6 +156,7 @@ $lang = array_merge($lang, array(
 	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'post'),
 	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'post'),
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'post'),	
+	'acl_f_revisions'	=> array('lang' => 'Can view and manage own post revisions', 'cat' => 'post'),
 
 	'acl_f_attach'		=> array('lang' => 'Can attach files', 'cat' => 'content'),	
 	'acl_f_icons'		=> array('lang' => 'Can use topic/post icons', 'cat' => 'content'),
@@ -177,7 +178,7 @@ $lang = array_merge($lang, array(
 	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
 	'acl_m_report'		=> array('lang' => 'Can close and delete reports', 'cat' => 'post_actions'),
 	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
-	'acl_m_revisions'	=> array('lang' => 'Can view post revisions', 'cat' => 'post_actions'),
+	'acl_m_revisions'	=> array('lang' => 'Can view and manage post revisions', 'cat' => 'post_actions'),
 
 	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
 	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),

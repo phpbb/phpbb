@@ -3,20 +3,20 @@
 class phpbb_revisions_revision
 {
 	/**
-	 * @var dbal Database object
-	 */
+	* @var dbal Database object
+	*/
 	private $db;
 	/**
-	 * @var phpbb_template Template object
-	 */
+	* @var phpbb_template Template object
+	*/
 	private $template;
 	/**
-	 * @var string Relative root path of phpBB directory
-	 */
+	* @var string Relative root path of phpBB directory
+	*/
 	private $phpbb_root_path;
 	/**
-	 * @var string PHP file extension
-	 */
+	* @var string PHP file extension
+	*/
 	private $phpEx;
 
 	/**
@@ -38,42 +38,51 @@ class phpbb_revisions_revision
 	/**
 	* @var string Text that has been run through decode_message()
 	*/
+	private $text_decoded;
 	/**
-	 * @var string Parsed text
-	 */
+	* @var string Parsed text
+	*/
 	private $text;
 	/**
-	 * @var int Revision time
-	 */
+	* @var int Revision time
+	*/
 	private $time;
 	/**
-	 * @var string BBCode UID
-	 */
+	* @var string BBCode UID
+	*/
 	private $uid;
 	/**
-	 * @var string BBCode Bitfield
-	 */
+	* @var string BBCode Bitfield
+	*/
 	private $bitfield;
 	/**
-	 * @var int BBCode options
-	 */
+	* @var int BBCode options
+	*/
 	private $options;
 	/**
-	 * @var string Reason for revision
-	 */
+	* @var string Reason for revision
+	*/
 	private $reason;
 	/**
-	 * @var int ID of user who made revision
-	 */
+	* @var int ID of user who made revision
+	*/
 	private $user;
 	/**
-	 * @var string Checksum of post text
-	 */
+	* @var string Checksum of post text
+	*/
 	private $checksum;
 	/**
-	 * @var int Revision has attachment?
-	 */
+	* @var int Revision has attachment?
+	*/
 	private $attachment;
+	/**
+	* @var int ID of the poster (not necessarily who made the revision)
+	*/
+	private $poster_id;
+	/**
+	* @var int ID of the forum
+	*/
+	private $forum_id;
 
 	public function __construct($revision_id = 0)
 	{
@@ -94,13 +103,13 @@ class phpbb_revisions_revision
 	/**
 	* Load a revision from the database
 	*
-	* @return null;
+	* @return phpbb_revisions_revision Current revision object
 	*/
 	public function load()
 	{
 		if (!$this->id)
 		{
-			return $false;
+			return false;
 		}
 
 		$sql = 'SELECT r.*, p.*
@@ -113,7 +122,15 @@ class phpbb_revisions_revision
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$this->set_data($row);
+		if (!empty($row))
+		{
+			$this->set_data($row);
+			return $this;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -134,9 +151,14 @@ class phpbb_revisions_revision
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$next = new phpbb_revisions_revision($row['revision_id']);
-		$next->set_data($row);
-		return $next;
+		if (!empty($row))
+		{
+			$next = new phpbb_revisions_revision($row['revision_id']);
+			$next->set_data($row);
+			return $next;
+		}
+
+		return false;
 	}
 
 	/**
@@ -157,9 +179,14 @@ class phpbb_revisions_revision
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$previous = new phpbb_revisions_revision($row['revision_id']);
-		$previous->set_data($row);
-		return $previous;
+		if (!empty($row))
+		{
+			$previous = new phpbb_revisions_revision($row['revision_id']);
+			$previous->set_data($row);
+			return $previous;
+		}
+
+		return false;
 	}
 
 	/**
@@ -169,7 +196,7 @@ class phpbb_revisions_revision
 	* @param array $row Data from database
 	* @return null
 	*/
-	public function set_data(array $row)
+	public function set_data($row)
 	{
 		$this->subject = $row['revision_subject'];
 		$this->bitfield = $row['bbcode_bitfield'];
@@ -186,6 +213,9 @@ class phpbb_revisions_revision
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
 		$this->user = $row['user_id'];
+
+		$this->poster_id = $row['poster_id'];
+		$this->forum_id = $row['forum_id'];
 	}
 
 
@@ -217,7 +247,32 @@ class phpbb_revisions_revision
 	*/
 	public function get_id()
 	{
-		return $this->id;
+		return $this->get('id');
+	}
+
+	/**
+	* Returns the ID of the poster.
+	*
+	* @return int Revision ID
+	*/
+	public function get_poster_id()
+	{
+		return $this->get('poster_id');
+	}
+
+	/**
+	* Return the value of a specified class property
+	*
+	* @return mixed Null if property not defined, otherwise the value of the property
+	*/
+	public function get($property)
+	{
+		if(isset($this->$property))
+		{
+			return $this->$property;
+		}
+
+		return null;
 	}
 
 	/**

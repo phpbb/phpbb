@@ -313,6 +313,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_print', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_read', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_reply', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_report', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_revisions', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_search', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_sigs', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_smilies', 1);
