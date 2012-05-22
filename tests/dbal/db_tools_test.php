@@ -165,6 +165,11 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	*/
 	public function test_created_column($column_name, $column_value)
 	{
+		if ($column_name === 'c_varbinary' && stripos(get_class($this->db), 'mysql') === false)
+		{
+			$this->markTestIncomplete('Binary handling is not implemented properly on non-MySQL DBMSes.');
+		}
+
 		$row_insert = self::get_default_values();
 		$row_insert[$column_name] = $column_value;
 
