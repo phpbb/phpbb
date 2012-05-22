@@ -2572,6 +2572,12 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Create config value for displaying last subject on forum list
+			if (!isset($config['display_last_subject']))
+			{			
+				$config->set('display_last_subject', '1');
+			}
+			
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
