@@ -301,7 +301,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 		<p><code>$current_user</code> is right, but <code>$currentuser</code> and <code> $currentUser</code> are not.</p>
 	</div>
 	
-	<p>In JavaScript, variable names should use camel caps:</p>
+	<p>In JavaScript, variable names should use camel case:</p>
 	
 	<div class="indent">
 		<p><code>currentUser</code> is right, but <code>currentuser</code> and <code>current_user</code> are not.</p>
@@ -532,7 +532,7 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
 
 	<h4>Commas after every array element:</h4>
-	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line. In JavaScript, you should not use the trailing comma, as IE doesn't like it.</p>
+	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line. In JavaScript, do not use the trailing comma, as it causes browsers to throw errors.</p>
 
 	<p class="bad">// wrong</p>
 	<div class="codebox"><pre>
