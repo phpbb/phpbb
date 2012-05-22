@@ -16,12 +16,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected $root_url;
 
 	/**
-	* @var string Session ID for current test's session (each test makes its own)
+	* Session ID for current test's session (each test makes its own)
+	* @var string
 	*/
 	protected $sid;
 
 	/**
-	* @var array Language array used by phpBB
+	* Language array used by phpBB
+	* @var array
 	*/
 	protected $lang = array();
 
