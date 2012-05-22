@@ -1924,8 +1924,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0 ' .
 					$sql_update_unapproved . '
-					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
-				GROUP BY t.forum_id';
+					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
