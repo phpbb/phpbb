@@ -210,7 +210,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
-		$lang_path = "./phpBB/language/en/$lang_file.php";
+		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";
 
 		$lang = array();
 
