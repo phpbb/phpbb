@@ -3,87 +3,129 @@
 class phpbb_revisions_revision
 {
 	/**
-	* @var dbal Database object
+	* Database object
+	* @var dbal
 	*/
 	private $db;
+
 	/**
-	* @var phpbb_template Template object
+	* Template object
+	* @var phpbb_template
 	*/
 	private $template;
+
 	/**
-	* @var string Relative root path of phpBB directory
+	* Relative root path of phpBB directory
+	* @var string
 	*/
 	private $phpbb_root_path;
+
 	/**
-	* @var string PHP file extension
+	* PHP file extension
+	* @var string
 	*/
 	private $phpEx;
 
 	/**
-	* @var int Revision ID
+	* Revision ID
+	* @var int
 	*/
 	private $id;
+
 	/**
-	* @var int Post ID
+	* Post ID
+	* @var int
 	*/
 	private $post;
+
 	/**
-	* @var string Revision subject
+	* Revision subject
+	* @var string
 	*/
 	private $subject;
+
 	/**
-	* @var string Unparsed text
+	* Unparsed text
+	* @var string
 	*/
 	private $text_raw;
+
 	/**
-	* @var string Text that has been run through decode_message()
+	* Text that has been run through decode_message()
+	* @var string
 	*/
 	private $text_decoded;
+
 	/**
-	* @var string Parsed text
+	* Parsed text
+	* @var string
 	*/
 	private $text;
+
 	/**
-	* @var int Revision time
+	* Revision time
+	* @var int
 	*/
 	private $time;
+
 	/**
-	* @var string BBCode UID
+	* BBCode UID
+	* @var string
 	*/
 	private $uid;
+
 	/**
-	* @var string BBCode Bitfield
+	* BBCode Bitfield
+	* @var string
 	*/
 	private $bitfield;
+
 	/**
-	* @var int BBCode options
+	* BBCode options
+	* @var int
 	*/
 	private $options;
+
 	/**
-	* @var string Reason for revision
+	* Reason for revision
+	* @var string
 	*/
 	private $reason;
 	/**
-	* @var int ID of user who made revision
+	* ID of user who made revision
+	* @var int
 	*/
 	private $user;
+
 	/**
-	* @var string Checksum of post text
+	* Checksum of post text
+	* @var string
 	*/
 	private $checksum;
+
 	/**
-	* @var int Revision has attachment?
+	* Revision has attachment?
+	* @var int
 	*/
 	private $attachment;
+
 	/**
-	* @var int ID of the poster (not necessarily who made the revision)
+	* ID of the poster (not necessarily who made the revision)
+	* @var int
 	*/
 	private $poster_id;
+
 	/**
-	* @var int ID of the forum
+	* ID of the forum
+	* @var int
 	*/
 	private $forum_id;
 
+	/**
+	* Constructor method
+	*
+	* @param int $revision_id ID of the revision to instantiate
+	*/
 	public function __construct($revision_id = 0)
 	{
 		global $db, $template, $phpbb_root_path, $phpEx;
@@ -127,10 +169,8 @@ class phpbb_revisions_revision
 			$this->set_data($row);
 			return $this;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
 
 	/**
@@ -203,10 +243,10 @@ class phpbb_revisions_revision
 		$this->uid = $row['bbcode_uid'];
 
 		$this->text_raw = $row['revision_text'];
-		$this->text_decoded = decode_message($row['revision_text'], $row['bbcode_uid']);
 		$this->options = (($row['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0) +
 				(($row['enable_smilies']) ? OPTION_FLAG_SMILIES : 0) + 
 				(($row['enable_magic_url']) ? OPTION_FLAG_LINKS : 0);
+		$this->text_decoded = generate_text_for_edit($row['revision_text'], $row['bbcode_uid'], $this->options);
 		$this->text = generate_text_for_display($row['revision_text'], $this->bitfield, $this->uid, $this->options);
 
 		$this->attachment = $row['revision_attachment'];
@@ -233,11 +273,14 @@ class phpbb_revisions_revision
 
 		if (!class_exists('diff'))
 		{
-			include("{$phpbb_root_path}includes/diff/diff.$phpEx");
+			include("{$this->phpbb_root_path}includes/diff/diff.{$this->phpEx}");
+			include("{$this->phpbb_root_path}includes/diff/engine.{$this->phpEx}");
+			include("{$this->phpbb_root_path}includes/diff/renderer.{$this->phpEx}");
 		}
-
 		$diff = new diff($revision->text_decoded, $this->text_decoded, false);
-		return $diff;
+		$rdiff = new diff_renderer_inline();
+		
+		return $rdiff->render($diff);
 	}
 
 	/**
