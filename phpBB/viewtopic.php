@@ -989,7 +989,7 @@ $sql_ary = array(
 		),
 		array(
 			'FROM'	=> array(POST_REVISIONS_TABLE => 'rr'),
-			'ON'	=> 'rr.post_id = p.post_id AND rr.revision_time <= r.revision_time',
+			'ON'	=> 'rr.post_id = p.post_id',
 		),
 	),
 
