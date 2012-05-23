@@ -55,6 +55,8 @@ else if ($to && $from)
 
 	if ($user->data['user_id'] != $revision_to->get_poster_id() || !$auth->acl_get('m_revisions'))
 	{
+		echo $revision_to->get_poster_id();
+		echo $user->data['user_id'];
 		// @todo - create this language entry
 		trigger_error('NO_AUTH_VIEW_REVISIONS');
 	}
@@ -66,7 +68,12 @@ else if ($to && $from)
 
 	$comparison = $revision_to->compare_to($revision_from);
 
-	print_r($comparison);
+	$template->assign_vars(array(
+		'COMPARISON'	=> true,
+		'DIFF'			=> $comparison,
+	));
+
+	$tpl_body = 'revisions_body.html';
 }
 else if ($post_id)
 {
@@ -88,11 +95,20 @@ else if ($post_id)
 		$template->assign_block_vars('revisions', array(
 			'SUBJECT'		=> $revision->get('subject'),
 			'TEXT'			=> $revision->get('text'),
+			'TEXT_TRUNCATED'=> truncate_string($revision->get('text'), 255, 255, false, '...'),
 			'TIME'			=> $user->format_date($revision->get('time')),
+
+			'U_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id",
+
 		));
 	}
 }
-else
+if (!$tpl_body)
 {
 	trigger_error('NO_REVISIONS');
 }
+page_header('Revisions');
+$template->set_filenames(array(
+	'body'	=> $tpl_body,
+));
+page_footer();

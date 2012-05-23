@@ -250,6 +250,14 @@ div[class].topic-actions {
 	font-size: 1.3em;
 }
 
+.postbody .content .ins {
+	background-color:#99FF99;
+}
+
+.postbody .content .del {
+	background-color:#FFAAAA;
+}
+
 .search .postbody {
 	width: 68%
 }
