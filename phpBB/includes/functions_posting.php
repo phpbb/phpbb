@@ -1813,20 +1813,24 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 	}
 
+	// If applicable, insert a new post revision
+	if (isset($sql_data[POST_REVISIONS_TABLE]['sql']))
+	{
+		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
+			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
+		$db->sql_query($sql);
+		// Update the posts table with the new revision ID
+		$sql_data[POSTS_TABLE]['sql'] += array(
+			'current_revision_id' => $db->sql_nextid(),
+		);
+	}
+
 	// Update the posts table
 	if (isset($sql_data[POSTS_TABLE]['sql']))
 	{
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
 			WHERE post_id = ' . $data['post_id'];
-		$db->sql_query($sql);
-	}
-
-	// If applicable, insert a new post revision
-	if (isset($sql_data[POST_REVISIONS_TABLE]['sql']))
-	{
-		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
-			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
 		$db->sql_query($sql);
 	}
 

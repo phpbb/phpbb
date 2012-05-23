@@ -969,7 +969,9 @@ if (!sizeof($post_list))
 $max_post_time = 0;
 
 $sql_ary = array(
-	'SELECT'	=> 'u.*, z.friend, z.foe, p.*, r.*',
+	'SELECT'	=> 'u.*, z.friend, z.foe,
+	p.post_id, p.topic_id, p.forum_id, p.poster_id, p.icon_id, p.poster_ip, p.post_time, p.post_approved, p.post_reported, p.enable_bbcode, p.enable_smilies,	p.enable_magic_url, p.enable_sig, p.post_username, p.current_revision_id, p.post_postcount, p.post_edit_locked,
+		r.revision_subject AS post_subject, r.revision_text AS post_text, r.revision_checksum AS post_checksum, r.revision_attachment AS post_attachment, r.bbcode_bitfield AS bbcode_bitfield, r.bbcode_uid AS bbcode_uid, r.revision_time AS post_edit_time, r.revision_reason AS post_edit_reason, r.user_id AS post_edit_user, COUNT(rr.revision_id) AS post_edit_count',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -984,6 +986,10 @@ $sql_ary = array(
 		array(
 			'FROM'	=> array(POST_REVISIONS_TABLE => 'r'),
 			'ON'	=> 'p.current_revision_id = r.revision_id',
+		),
+		array(
+			'FROM'	=> array(POST_REVISIONS_TABLE => 'rr'),
+			'ON'	=> 'rr.post_id = p.post_id AND rr.revision_time <= r.revision_time',
 		),
 	),
 
