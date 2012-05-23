@@ -78,6 +78,8 @@ $f_permissions = array(
 	'f_report'	=> array(1, 0),
 	'f_revisions'	=> array(1, 0),
 	'f_subscribe'	=> array(1, 0),
+	'f_wiki_create'	=> array(1, 0),
+	'f_wiki_edit'	=> array(1, 0),
 );
 
 $m_permissions = array(

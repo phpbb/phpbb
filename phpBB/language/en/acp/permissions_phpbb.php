@@ -143,6 +143,8 @@ $lang = array_merge($lang, array(
 	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
 	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
 	'acl_f_revisions'	=> array('lang' => 'Can view and manage own post revisions', 'cat' => 'post'),
+	'acl_f_wiki_create'	=> array('lang' => 'Can create wiki posts', 'cat' => 'post'),
+	'acl_f_wiki_edit'	=> array('lang' => 'Can edit wiki posts', 'cat' => 'post'),
 
 	'acl_f_poll'		=> array('lang' => 'Can create polls', 'cat' => 'polls'),
 	'acl_f_vote'		=> array('lang' => 'Can vote in polls', 'cat' => 'polls'),
