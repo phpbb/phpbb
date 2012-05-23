@@ -54,8 +54,8 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(
-		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
-		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
+		1	=> 'Current revision by %2$s on %3$s, %1$d total revision.',
+		2	=> 'Current revision by %2$s on %3$s, %1$d total revisions.',
 	),
 	'EMAIL_TOPIC'			=> 'Email friend',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
