@@ -969,7 +969,7 @@ if (!sizeof($post_list))
 $max_post_time = 0;
 
 $sql_ary = array(
-	'SELECT'	=> 'u.*, z.friend, z.foe, p.*',
+	'SELECT'	=> 'u.*, z.friend, z.foe, p.*, r.*',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -981,10 +981,16 @@ $sql_ary = array(
 			'FROM'	=> array(ZEBRA_TABLE => 'z'),
 			'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
 		),
+		array(
+			'FROM'	=> array(POST_REVISIONS_TABLE => 'r'),
+			'ON'	=> 'p.current_revision_id = r.revision_id',
+		),
 	),
 
 	'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
 		AND u.user_id = p.poster_id',
+
+	'GROUP_BY'	=> 'p.post_id',
 );
 
 /**
