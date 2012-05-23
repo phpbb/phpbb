@@ -125,8 +125,11 @@ class phpbb_revisions_revision
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
+	* @param bool $autoload Whether or not to automatically load data if constructor receives ID
+	*				This is helpful if we already have the data and don't want to load it but still
+	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id = 0)
+	public function __construct($revision_id = 0, $autoload = true)
 	{
 		global $db, $template, $phpbb_root_path, $phpEx;
 
@@ -136,7 +139,7 @@ class phpbb_revisions_revision
 		$this->phpEx = $phpEx;
 
 		$this->id = (int) $revision_id;
-		if ($this->id)
+		if ($this->id && $autoload)
 		{
 			$this->load();
 		}
@@ -154,10 +157,12 @@ class phpbb_revisions_revision
 			return false;
 		}
 
-		$sql = 'SELECT r.*, p.*
+		$sql = 'SELECT r.*, p.*, u.username, u.user_colour
 			FROM ' . POST_REVISIONS_TABLE . ' r
 			LEFT JOIN ' . POSTS_TABLE . ' p
 				ON p.post_id = r.post_id
+			LEFT JOIN ' . USERS_TABLE . ' u
+				ON u.user_id = r.user_id
 			WHERE r.revision_id = ' . (int) $this->id . '
 			ORDER BY r.revision_id DESC';
 		$result = $this->db->sql_query($sql);
@@ -179,24 +184,16 @@ class phpbb_revisions_revision
 	*/
 	public function load_next()
 	{
-		$sql = 'SELECT r.*, p.*
-			FROM ' . POST_REVISIONS_TABLE . ' r
-			LEFT JOIN ' . POSTS_TABLE . " p
-				ON p.post_id = r.post_id
-			WHERE r.revision_id > {$this->id}
-			ORDER BY r.revision_id ASC
-			LIMIT 1";
+		$sql = 'SELECT revision_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE revision_id > ' . (int) $this->id . '
+			ORDER BY revision_id ASC
+			LIMIT 1';
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
-
-		$next = new phpbb_revisions_revision($row['revision_id']);
-		if (!empty($row))
-		{
-			$next->set_data($row);
-		}
-
-		return $next;
+		
+		return new phpbb_revisions_revision($row['revision_id']);
 	}
 
 	/**
@@ -206,24 +203,16 @@ class phpbb_revisions_revision
 	*/
 	public function load_previous()
 	{
-		$sql = 'SELECT r.*, p.*
-			FROM ' . POST_REVISIONS_TABLE . ' r
-			LEFT JOIN ' . POSTS_TABLE . " p
-				ON p.post_id = r.post_id
-			WHERE r.revision_id < {$this->id}
-			ORDER BY r.revision_id DESC
-			LIMIT 1";
+		$sql = 'SELECT revision_id
+			FROM ' . POST_REVISIONS_TABLE . '
+			WHERE revision_id < ' . (int) $this->id . '
+			ORDER BY revision_id DESC
+			LIMIT 1';
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$previous = new phpbb_revisions_revision($row['revision_id']);
-		if (!empty($row))
-		{
-			$previous->set_data($row);
-		}
-
-		return $previous;
+		return new phpbb_revisions_revision($row['revision_id']);;
 	}
 
 	/**
@@ -247,36 +236,10 @@ class phpbb_revisions_revision
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
 		$this->user = $row['user_id'];
+		$this->username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 
 		$this->poster_id = $row['poster_id'];
 		$this->forum_id = $row['forum_id'];
-	}
-
-
-	/**
-	* Calculate and return the diff between two post revisions
-	*
-	* @param phpbb_revisions_revision $revision This revision is the starting point in the comparison
-	* @return mixed
-	*/
-	public function compare_to(phpbb_revisions_revision $revision)
-	{
-		if (empty($this->text) || empty($revision->text))
-		{
-			return false;
-		}
-
-		if (!class_exists('diff'))
-		{
-			include("{$this->phpbb_root_path}includes/diff/diff.{$this->phpEx}");
-			include("{$this->phpbb_root_path}includes/diff/engine.{$this->phpEx}");
-			include("{$this->phpbb_root_path}includes/diff/renderer.{$this->phpEx}");
-		}
-
-		$diff = new diff($revision->text, $this->text, false);
-		$rdiff = new diff_renderer_inline();
-
-		return $rdiff->render($diff);
 	}
 
 	/**

@@ -46,15 +46,15 @@ class phpbb_revisions_post
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$rev = new phpbb_revisions_revision($row['revision_id']);
+			$rev = new phpbb_revisions_revision($row['revision_id'], false);
 			$rev->set_data($row);
 			$this->revisions[] = $rev;
-			$this->poster_id = $row['poster_id'];
-			$this->forum_id = $row['forum_id'];
+			$this->poster_id = $this->poster_id ?: $row['poster_id'];
+			$this->forum_id = $this->forum_id ?: $row['forum_id'];
 		}
 		$this->db->sql_freeresult($result);
 
-		return $revisions;
+		return $this->revisions;
 	}
 
 	/**
