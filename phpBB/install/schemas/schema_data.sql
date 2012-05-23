@@ -230,6 +230,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'imag
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_per_post_max', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_per_wiki_post_max', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_allow_wiki', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
@@ -322,6 +324,8 @@ INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_subscribe', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_user_lock', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_vote', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_votechg', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_wiki_create', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_wiki_edit', 1);
 
 # -- Moderator related auth options
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);

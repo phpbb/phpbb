@@ -157,6 +157,8 @@ $lang = array_merge($lang, array(
 	'acl_f_postcount'	=> array('lang' => 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>', 'cat' => 'post'),
 	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'post'),	
 	'acl_f_revisions'	=> array('lang' => 'Can view and manage own post revisions', 'cat' => 'post'),
+	'acl_f_wiki_create'	=> array('lang' => 'Can create wiki posts', 'cat' => 'post'),
+	'acl_f_wiki_edit'	=> array('lang' => 'Can edit wiki posts', 'cat' => 'post'),
 
 	'acl_f_attach'		=> array('lang' => 'Can attach files', 'cat' => 'content'),	
 	'acl_f_icons'		=> array('lang' => 'Can use topic/post icons', 'cat' => 'content'),
