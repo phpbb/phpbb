@@ -963,6 +963,7 @@ CREATE TABLE phpbb_posts (
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(8) DEFAULT '' ,
 	current_revision_id number(8) DEFAULT '0' NOT NULL,
+	post_wiki number(1) DEFAULT '0' NOT NULL,
 	post_postcount number(1) DEFAULT '1' NOT NULL,
 	post_edit_time number(11) DEFAULT '0' NOT NULL,
 	post_edit_reason varchar2(765) DEFAULT '' ,
