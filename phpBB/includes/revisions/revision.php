@@ -167,10 +167,9 @@ class phpbb_revisions_revision
 		if (!empty($row))
 		{
 			$this->set_data($row);
-			return $this;
 		}
 
-		return false;
+		return $this;
 	}
 
 	/**
@@ -191,14 +190,13 @@ class phpbb_revisions_revision
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		$next = new phpbb_revisions_revision($row['revision_id']);
 		if (!empty($row))
 		{
-			$next = new phpbb_revisions_revision($row['revision_id']);
 			$next->set_data($row);
-			return $next;
 		}
 
-		return false;
+		return $next;
 	}
 
 	/**
@@ -219,14 +217,13 @@ class phpbb_revisions_revision
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		$previous = new phpbb_revisions_revision($row['revision_id']);
 		if (!empty($row))
 		{
-			$previous = new phpbb_revisions_revision($row['revision_id']);
 			$previous->set_data($row);
-			return $previous;
 		}
 
-		return false;
+		return $previous;
 	}
 
 	/**
@@ -239,15 +236,12 @@ class phpbb_revisions_revision
 	public function set_data($row)
 	{
 		$this->subject = $row['revision_subject'];
-		$this->bitfield = $row['bbcode_bitfield'];
-		$this->uid = $row['bbcode_uid'];
-
 		$this->text_raw = $row['revision_text'];
 		$this->options = (($row['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0) +
 				(($row['enable_smilies']) ? OPTION_FLAG_SMILIES : 0) + 
 				(($row['enable_magic_url']) ? OPTION_FLAG_LINKS : 0);
 		$this->text_decoded = generate_text_for_edit($row['revision_text'], $row['bbcode_uid'], $this->options);
-		$this->text = generate_text_for_display($row['revision_text'], $this->bitfield, $this->uid, $this->options);
+		$this->text = generate_text_for_display($row['revision_text'], $row['bbcode_bitfield'], $row['bbcode_uid'], $this->options);
 
 		$this->attachment = $row['revision_attachment'];
 		$this->checksum = md5($this->text_raw);
@@ -262,11 +256,12 @@ class phpbb_revisions_revision
 	/**
 	* Calculate and return the diff between two post revisions
 	*
+	* @param phpbb_revisions_revision $revision This revision is the starting point in the comparison
 	* @return mixed
 	*/
 	public function compare_to(phpbb_revisions_revision $revision)
 	{
-		if (empty($this->text_decoded) || empty($revision->text_decoded))
+		if (empty($this->text) || empty($revision->text))
 		{
 			return false;
 		}
@@ -277,9 +272,10 @@ class phpbb_revisions_revision
 			include("{$this->phpbb_root_path}includes/diff/engine.{$this->phpEx}");
 			include("{$this->phpbb_root_path}includes/diff/renderer.{$this->phpEx}");
 		}
-		$diff = new diff($revision->text_decoded, $this->text_decoded, false);
+
+		$diff = new diff($revision->text, $this->text, false);
 		$rdiff = new diff_renderer_inline();
-		
+
 		return $rdiff->render($diff);
 	}
 
