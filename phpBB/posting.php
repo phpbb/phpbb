@@ -420,19 +420,6 @@ if ($mode == 'edit')
 }
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
-if ($mode == 'edit')
-{
-	// We need to store some original information for post revisions before it gets changed
-	$orig_data = array(
-		'post_text'				=> $post_data['post_text'],
-		'post_subject'			=> $post_data['post_subject'],
-		'post_attachment'		=> $post_data['post_attachment'],
-		'post_checksum'			=> $post_data['post_checksum'],
-		'post_attachment'		=> $post_data['post_attachment'],
-		'bbcode_uid'			=> $post_data['bbcode_uid'],
-		'bbcode_bitfield'		=> $post_data['bbcode_bitfield'],
-	);
-}
 
 $message_parser = new parse_message();
 
@@ -1110,18 +1097,18 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
+				'current_revision_id'	=> 0,
+				'revision_count'		=> 0,
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
-
-				// for post revisions, we need to store some current post data as well
-				'orig_data'		=> $orig_data,
 			);
 
 			if ($mode == 'edit')
 			{
 				$data['topic_replies_real'] = $post_data['topic_replies_real'];
 				$data['topic_replies'] = $post_data['topic_replies'];
+				$data['revision_count'] = $post_data['revision_count'] + 1;
 			}
 
 			// The last parameter tells submit_post if search indexer has to be run
