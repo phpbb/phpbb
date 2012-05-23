@@ -513,6 +513,7 @@ CREATE TABLE phpbb_posts (
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	current_revision_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	revision_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_wiki tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	post_postcount tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,

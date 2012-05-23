@@ -884,6 +884,7 @@ CREATE TABLE [phpbb_posts] (
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[current_revision_id] [int] DEFAULT (0) NOT NULL ,
+	[revision_count] [int] DEFAULT (0) NOT NULL ,
 	[post_wiki] [int] DEFAULT (0) NOT NULL ,
 	[post_postcount] [int] DEFAULT (1) NOT NULL ,
 	[post_edit_time] [int] DEFAULT (0) NOT NULL ,
