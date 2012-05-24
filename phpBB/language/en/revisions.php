@@ -37,11 +37,26 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
+	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
+
 	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view these revisions.',
-	'NO_REVISIONS'				=> 'There are no revisions associated with the specified post ID.',
+	'NO_DIFF'					=> 'There are no differences to display within the specified revision range.',
+	'NO_POST'					=> 'The specified post does not exist.',
+	'NO_REVISIONS'				=> 'The specified revision does not exist.',
+	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 
 	'REVISION'							=> 'Revision',
 	'REVISIONS'							=> 'Revisions',
-	'REVISIONS_COMPARE_TITLE'			=> 'Differences between revisions %1$s and %2$s of %3$s',
+	'REVISION_COUNT'					=> array(
+		0		=> '0 revisions',
+		1		=> '1 revision',
+		2		=> '%1$s revisions',
+	),
+	'REVISIONS_COMPARE_TITLE'			=> 'Comparing post revisions',
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
+	'REVISION_USER_COUNT'				=> array(
+		0		=> '0 users',
+		1		=> '1 user',
+		2		=> '%1$s users',
+	),
 ));
