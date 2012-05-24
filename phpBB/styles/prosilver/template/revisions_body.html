@@ -1,7 +1,10 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF COMPARISON -->
-	<h2>{REVISIONS_COMPARE_TITLE}</h2>
+<!-- IF DISPLAY_COMPARISON -->
+	<h2>{L_REVISIONS_COMPARE_TITLE}</h2>
+	<p><div class="left-box">{L_COMPARE_SUMMARY}</div>
+	<div class="right-box">{L_LAST_REVISION_TIME}</div></p>
+	<br class="clear" />
 	<div class="panel">
 		<div class="inner">
 			<div class="postbody">
@@ -9,7 +12,7 @@
 				<!-- IF DIFF -->
 				{DIFF}
 				<!-- ELSE -->
-				{L_NO_DIFF}
+				<em>{L_NO_DIFF}</em>
 				<!-- ENDIF -->
 				</div>
 			</div>
@@ -17,7 +20,5 @@
 	</div>
 <!-- ENDIF -->
 
-<!-- IF POST_VIEW -->
-<!-- ENDIF -->
-
 <!-- INCLUDE overall_footer.html -->
+s

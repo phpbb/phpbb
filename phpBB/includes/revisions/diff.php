@@ -8,6 +8,12 @@ class phpbb_revisions_diff
 	private $diff;
 	private $rdiff;
 
+	/**
+	* Constructor method
+	*
+	* @param phpbb_revisions_revision $from Starting revision for comparison
+	* @param phpbb_revisions_revision $to Ending revision for comparison
+	*/
 	public function __construct(phpbb_revisions_revision $from, phpbb_revisions_revision $to)
 	{
 		global $phpbb_root_path, $phpEx;
@@ -23,12 +29,18 @@ class phpbb_revisions_diff
 		$this->from = $from;
 	}
 
-	public function render()
+	/**
+	* Render a diff between two properties
+	*
+	* @param string $property Which class property to compare
+	* @return string HTML diff representation
+	*/
+	public function render($property)
 	{
-		$from_text = $this->from->get('text');
-		$to_text = $this->to->get('text');
+		$from_property = $this->from->get($property);
+		$to_property = $this->to->get($property);
 
-		$this->diff = new diff($from_text, $to_text, false);
+		$this->diff = new diff($from_property, $to_property, false);
 		$this->rdiff = new diff_renderer_inline();
 
 		return $this->rdiff->render($this->diff);
