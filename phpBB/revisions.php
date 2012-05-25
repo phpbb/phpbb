@@ -151,8 +151,8 @@ if ($post_id)
 		$subject_diff = new phpbb_revisions_diff($revision_from_subject, $revision_to_subject);
 
 		// Generate our diffs
-		$r_text_diff = $text_diff->render() ?: ($user->lang('NO_DIFF') . '<br />' . $revision_to->get('text'));
-		$r_subject_diff = bbcode_nl2br($subject_diff->render()) ?: ($user->lang('NO_DIFF') . '<br />' . $revision_to->get('subject'));
+		$r_text_diff = $text_diff->render() ?: ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
+		$r_subject_diff = bbcode_nl2br($subject_diff->render()) ?: ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
 
 		// Consolidate some language strings
 		$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
