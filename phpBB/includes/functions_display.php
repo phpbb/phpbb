@@ -1267,10 +1267,19 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_dispatcher;
 
 	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
-		return '';
+		$empty_avatar = '';
+		if ($config['allow_avatar'] || $ignore_config)
+		{
+			// This allows extensions to change the default return when no avatar is given
+			// Useful for default avatars
+			$vars = array('empty_avatar');
+			extract($phpbb_dispatcher->trigger_event('core.user_default_avatar', compact($vars)));
+		}
+		return $empty_avatar;
 	}
 
 	$avatar_img = '';
