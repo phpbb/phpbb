@@ -108,6 +108,24 @@ ul.revisions li.revision_date {
 	width: 25%;
 }
 
+dl.revision {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #CADCEB;
+	padding: 5px;
+}
+
+dl.revision dt {
+	display:inline-block;
+	width:20%;
+	vertical-align: top;
+}
+
+dl.revision dd {
+	display:inline-block;
+	width:75%;
+}
+
 .forum-image {
 	float: left;
 	padding-top: 5px;
@@ -301,12 +319,14 @@ div[class].topic-actions {
 	font-size: 1.3em;
 }
 
-.postbody .content .ins {
-	background-color:#99FF99;
+.postbody .content ins {
+	text-decoration: none;
+	background-color: #99FF99;
 }
 
-.postbody .content .del {
-	background-color:#FFAAAA;
+.postbody .content del {
+	text-decoration: none;
+	background-color: #FFAAAA;
 }
 
 .search .postbody {

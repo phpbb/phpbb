@@ -38,15 +38,13 @@ $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
-	'LINES_ADDED'				=> array(
-		0 =>'0 lines added',
-		1 =>'1 line added',
-		2 => '%1$s lines added',
+	'REVISION_ADDITIONS'		=> array(
+		1 =>'1 addition',
+		2 => '%1$s additions',
 	),
-	'LINES_REMOVED'				=> array(
-		0 =>'0 lines removed',
-		1 =>'1 line removed',
-		2 => '%1$s lines removed',
+	'REVISION_DELETIONS'		=> array(
+		1 =>'1 deletion',
+		2 => '%1$s deletions',
 	),
 
 	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view these revisions.',
