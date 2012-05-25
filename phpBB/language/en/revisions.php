@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'					=> 'The specified post does not exist.',
 	'NO_REVISIONS'				=> 'The specified revision does not exist.',
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
+	'NO_REASON'					=> 'No reason given.',
 
 	'REVISION'							=> 'Revision',
 	'REVISIONS'							=> 'Revisions',
