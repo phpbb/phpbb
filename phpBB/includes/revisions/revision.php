@@ -122,6 +122,18 @@ class phpbb_revisions_revision
 	private $forum_id;
 
 	/**
+	* Username of user who made the revision
+	* @var string
+	*/
+	private $username;
+
+	/**
+	* Avatar of user who made the revision
+	* @var string
+	*/
+	private $avatar;
+
+	/**
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
@@ -157,7 +169,7 @@ class phpbb_revisions_revision
 			return false;
 		}
 
-		$sql = 'SELECT r.*, p.*, u.username, u.user_colour
+		$sql = 'SELECT r.*, p.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
 			FROM ' . POST_REVISIONS_TABLE . ' r
 			LEFT JOIN ' . POSTS_TABLE . ' p
 				ON p.post_id = r.post_id
@@ -235,11 +247,31 @@ class phpbb_revisions_revision
 		$this->attachment = $row['revision_attachment'];
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
+		
 		$this->user = $row['user_id'];
 		$this->username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		
+		$this->avatar = $row['user_avatar'];
+		$this->avatar_type = $row['user_avatar_type'];
+		$this->avatar_height = $row['user_avatar_height'];
+		$this->avatar_width = $row['user_avatar_width'];
 
 		$this->poster_id = $row['poster_id'];
 		$this->forum_id = $row['forum_id'];
+	}
+
+	/**
+	* Returns the Avatar of the user who made the revision
+	*
+	* @param int $width Custom width
+	* @param int $height Custom height
+	* @return string Avatar image string
+	*/
+	public function get_avatar($width = 0, $height = 0)
+	{
+		$height = $height ?: $this->get('avatar_height');
+		$width = $width ?: $this->get('avatar_width');
+		return get_user_avatar($this->get('avatar'), $this->get('avatar_type'), $width, $height);
 	}
 
 	/**

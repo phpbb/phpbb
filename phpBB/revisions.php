@@ -43,18 +43,18 @@ if ($revision_id)
 	}
 	else
 	{
-		$revision_from_id = (int) $revision_id;
-		if (!$revision_from_id)
+		$revision_to_id = (int) $revision_id;
+		if (!$revision_to_id)
 		{
 			trigger_error('NO_REVISIONS');
 		}
 	}
 
-	// Now get the post ID from the starting (from) revision ID
+	// Now get the post ID from the to (ending) revision ID
 	// since in the latter case, that's all we know
 	$sql = 'SELECT post_id
 		FROM ' . POST_REVISIONS_TABLE . '
-		WHERE revision_id = ' . (int) $revision_from_id;
+		WHERE revision_id = ' . (int) $revision_to_id;
 	$result = $db->sql_query($sql);
 	$post_id = $db->sql_fetchrow('post_id');
 
@@ -111,17 +111,29 @@ if ($post_id)
 		$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
 		$l_last_revision_time = $user->lang('LAST_REVISION_TIME', $user->format_date($post_data['post_edit_time']));
 
-		// If we have not been given a starting point, set it to the first revision
-		$revision_from = $revision_from_id && isset($revisions[$revision_from_id]) ? $revisions[$revision_from_id] : $revisions[0];
-		// Likewise, if we have not been given an ending point, set it to the final revision
+		//  If we have not been given an ending point, set it to the final revision
 		$revision_to = $revision_to_id && isset($revisions[$revision_to_id]) ? $revisions[$revision_to_id] : $revisions[$total_revisions - 1];
+		// Likewise, if we have not been given a starting point, set it to the revision prior to the ending one
+		$revision_from = $revision_from_id && isset($revisions[$revision_from_id]) ? $revisions[$revision_from_id] : $revisions[/*Figure out the previous revision ID and put it here*/0];
 
 		$diff = new phpbb_revisions_diff($revision_from, $revision_to);
 
+		// We want to display a list of revisions with a few details about each
+		foreach ($revisions as $revision)
+		{
+			$template->assign_block_vars('revisions', array(
+				'USERNAME'			=> $revision->get('username'),
+				'USER_AVATAR'		=> $revision->get_avatar(20, 20),
+				'DATE'				=> $user->format_date($revision->get('time')),
+
+				'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
+			));
+		}
+
 		$template->assign_vars(array(
 			'DISPLAY_COMPARISON'	=> true,
-			'TEXT_DIFF'				=> $diff->render('text'),
-			'SUBJECT_DIFF'			=> $diff->render('subject'),
+			'TEXT_DIFF'				=> $diff->render('text') ?: ($user->lang('NO_DIFF') . '<br />' . $revision_to->get('text')),
+			'SUBJECT_DIFF'			=> $diff->render('subject') ?: ($user->lang('NO_DIFF') . '<br />' . $revision_to->get('subject')),
 
 			'L_COMPARE_SUMMARY'		=> $l_compare_summary,
 			'L_LAST_REVISION_TIME'	=> $l_last_revision_time,

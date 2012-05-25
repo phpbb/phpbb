@@ -2,18 +2,28 @@
 
 <!-- IF DISPLAY_COMPARISON -->
 	<h2>{L_REVISIONS_COMPARE_TITLE}</h2>
-	<p><div class="left-box">{L_COMPARE_SUMMARY}</div>
-	<div class="right-box">{L_LAST_REVISION_TIME}</div></p>
+	<p><div class="left-box">{L_LAST_REVISION_TIME}</div>
+	<div class="right-box"></div></p>
+	<hr />
+	<p><div class="left-box">{L_COMPARE_SUMMARY}</div></p>
 	<br class="clear" />
+	<!-- BEGIN revisions -->
+		<div>
+			{revisions.USER_AVATAR} {revisions.USERNAME}
+		</div>
+	<!-- END revisions -->
 	<div class="panel">
 		<div class="inner">
 			<div class="postbody">
 				<div class="content">
-				<!-- IF DIFF -->
-				{DIFF}
-				<!-- ELSE -->
-				<em>{L_NO_DIFF}</em>
-				<!-- ENDIF -->
+					<dl class="revision">
+						<dt>{L_SUBJECT}:</dt>
+						<dd>{SUBJECT_DIFF}</dd>
+					</dl>
+					<dl class="revision">
+						<dt>{L_MESSAGE}:</dt>
+						<dd>{TEXT_DIFF}</dd>
+					</dl>
 				</div>
 			</div>
 		</div>
@@ -21,4 +31,3 @@
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->
-s
