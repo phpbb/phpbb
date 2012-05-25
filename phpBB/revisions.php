@@ -113,13 +113,12 @@ if ($post_id)
 		// otherwise, if we have not been given a starting revision we will need to grab the previous revision's ID from the database.
 		if (!$revision_from_id || !isset($revisions[$revision_from_id]))
 		{
-			$sql_where = $revision_id ? 'AND revision_id < ' . (int) $revision_to_id : '';
 			$sql = 'SELECT revision_id
 				FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $post_id . "
-					$sql_where
-				ORDER BY revision_id ASC
-				LIMIT 1";
+					AND revision_id < $revision_to_id
+				ORDER BY revision_id " . ($revision_id ? 'DESC' : 'ASC') . '
+				LIMIT 1';
 			$result = $db->sql_query($sql);
 			$revision_from_id = $db->sql_fetchfield('revision_id');
 			$db->sql_freeresult($result);
@@ -135,11 +134,9 @@ if ($post_id)
 	else
 	{
 		$revision_from = $revisions[$revision_from_id];
-		if (!class_exists('diff'))
+		if (!class_exists('FineDiff'))
 		{
-			include("{$phpbb_root_path}includes/diff/diff.{$phpEx}");
-			include("{$phpbb_root_path}includes/diff/engine.{$phpEx}");
-			include("{$phpbb_root_path}includes/diff/renderer.{$phpEx}");
+			include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
 		}
 
 		$revision_from_text = $revision_from->get('text_decoded');
@@ -147,16 +144,30 @@ if ($post_id)
 		$revision_to_text = $revision_to->get('text_decoded');
 		$revision_to_subject = $revision_to->get('subject');
 
-		$text_diff = new phpbb_revisions_diff($revision_from_text, $revision_to_text);
-		$subject_diff = new phpbb_revisions_diff($revision_from_subject, $revision_to_subject);
+		// Default granularity is set to character
+		$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
+		$r_subject_diff = sizeof($subject_diff->edits) > 1 ? $subject_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));;
 
-		// Generate our diffs
-		$r_text_diff = $text_diff->render() ?: ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
-		$r_subject_diff = bbcode_nl2br($subject_diff->render()) ?: ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
+		$text_diff = new FineDiff($revision_from->get('text_decoded'), $revision_to->get('text_decoded'), FineDiff::$wordGranularity);
+		$r_text_diff = sizeof($text_diff->edits) > 1 ? $text_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
+
+		$additions = $deletions = 0;
+		// Count additions and deletions
+		foreach ($text_diff->getOps() as $op)
+		{
+			if ($op instanceof FineDiffInsertOp)
+			{
+				$additions++;
+			}
+			else if ($op instanceof FineDiffDeleteOp)
+			{
+				$deletions++;
+			}
+		}
 
 		// Consolidate some language strings
 		$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
-		$l_lines_added_removed = $user->lang('LINES_ADDED', $text_diff->count_added_lines()) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('LINES_REMOVED', $text_diff->count_deleted_lines());
+		$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $additions) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('REVISION_DELETIONS', $deletions);
 
 		// We want to display a list of revisions with a few details about each
 		// But we want it in order from most recent -> oldest, so we have to flip it
