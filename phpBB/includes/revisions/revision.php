@@ -245,7 +245,7 @@ class phpbb_revisions_revision
 		$this->text_decoded = $this->text_for_edit['text'];
 		$this->text = generate_text_for_display($row['revision_text'], $row['bbcode_bitfield'], $row['bbcode_uid'], $this->options);
 
-
+		$this->time = $row['revision_time'];
 		$this->attachment = $row['revision_attachment'];
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
