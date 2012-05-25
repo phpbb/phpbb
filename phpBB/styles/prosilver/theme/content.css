@@ -57,6 +57,57 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+ul.revisions {
+	display: block;
+	list-style-type: none;
+	margin: 0 auto;
+	width: 75%;
+	border: 1px solid #CADCEB;
+}
+
+ul.revisions:first-child {
+	margin-top: 5px;
+}
+
+ul.revisions:last-child {
+	margin-bottom: 5px;
+}
+
+ul.revisions.even {
+	background-color:#E1EBF2;
+}
+
+ul.revisions.odd {
+	background-color:#ECF3F7;
+}
+
+ul.revisions li {
+	display: inline-block;
+	padding:10px;
+}
+
+ul.revisions li.revision_id {
+	width: 5%;
+}
+
+ul.revisions li.revision_user {
+	vertical-align: middle;
+	width:10%;
+}
+
+ul.revisions li.revision_user span {
+	vertical-align: text-top;
+}
+
+ul.revisions li.revision_reason {
+	width:55%;
+}
+
+ul.revisions li.revision_date {
+	text-align: right;
+	width: 25%;
+}
+
 .forum-image {
 	float: left;
 	padding-top: 5px;

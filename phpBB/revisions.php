@@ -44,6 +44,7 @@ if ($revision_id)
 	else
 	{
 		$revision_to_id = (int) $revision_id;
+
 		if (!$revision_to_id)
 		{
 			trigger_error('NO_REVISIONS');
@@ -107,19 +108,21 @@ if ($post_id)
 		$revision_to = $revision_to_id && isset($revisions[$revision_to_id]) ? $revisions[$revision_to_id] : end($revisions);
 		// If we are using the final revision, we would like to have its ID available
 		$revision_to_id = $revision_to->get('id');
-		// If we have not been given a starting point, we will need to grab the previous revision's ID from the database.
+		
+		// If we have not been given a starting point, and we are viewing revisions by post, grab the first revision
+		// otherwise, if we have not been given a starting revision we will need to grab the previous revision's ID from the database.
 		if (!$revision_from_id || !isset($revisions[$revision_from_id]))
 		{
+			$sql_where = $revision_id ? 'AND revision_id < ' . (int) $revision_to_id : '';
 			$sql = 'SELECT revision_id
 				FROM ' . POST_REVISIONS_TABLE . '
-				WHERE revision_id < ' . (int) $revision_to_id . '
-					AND post_id = ' . (int) $post_id . '
-				ORDER BY revision_id DESC
-				LIMIT 1';
+				WHERE post_id = ' . (int) $post_id . "
+					$sql_where
+				ORDER BY revision_id ASC
+				LIMIT 1";
 			$result = $db->sql_query($sql);
 			$revision_from_id = $db->sql_fetchfield('revision_id');
 			$db->sql_freeresult($result);
-
 		}
 	}
 
@@ -156,6 +159,9 @@ if ($post_id)
 		$l_lines_added_removed = $user->lang('LINES_ADDED', $text_diff->count_added_lines()) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('LINES_REMOVED', $text_diff->count_deleted_lines());
 
 		// We want to display a list of revisions with a few details about each
+		// But we want it in order from most recent -> oldest, so we have to flip it
+		$revisions = array_reverse($revisions, true);
+		
 		foreach ($revisions as $revision)
 		{
 			// Only show revisions within the from -> to range

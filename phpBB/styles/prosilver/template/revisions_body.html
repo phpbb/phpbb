@@ -7,11 +7,16 @@
 	<hr />
 	<p><div class="left-box">{L_COMPARE_SUMMARY} {L_WITH} {L_LINES_ADDED_REMOVED}</div></p>
 	<br class="clear" />
+	<div class="center">
 	<!-- BEGIN revisions -->
-		<div>
-			<a href="{revisions.U_REVISION_VIEW}">{revisions.ID}</a> {revisions.USER_AVATAR} {revisions.USERNAME} {revisions.DATE}
-		</div>
+	<ul class="revisions <!-- IF revisions.S_ROW_COUNT is odd -->odd<!-- ELSE -->even<!-- ENDIF -->">
+		<li class="revision_id"><a href="{revisions.U_REVISION_VIEW}">#{revisions.ID}</a></li>
+		<li class="revsion_user">{revisions.USER_AVATAR} <span>{revisions.USERNAME}</span></li>
+		<li class="revision_reason"><!-- IF revisions.REASON --><strong>{revisions.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
+		<li class="revision_date">{revisions.DATE}</li>
+	</ul>
 	<!-- END revisions -->
+	</div>
 	<div class="panel">
 		<div class="inner">
 			<div class="postbody">
