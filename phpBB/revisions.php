@@ -144,7 +144,7 @@ if ($post_id)
 		$revision_to_text = $revision_to->get('text_decoded');
 		$revision_to_subject = $revision_to->get('subject');
 
-		// Default granularity is set to character
+		// We use word granularity because character granularity can be too confusing and line-granularity is not aesthetically pleasing for prose diffs
 		$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
 		$r_subject_diff = sizeof($subject_diff->edits) > 1 ? $subject_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));;
 
@@ -152,6 +152,7 @@ if ($post_id)
 		$r_text_diff = sizeof($text_diff->edits) > 1 ? $text_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
 
 		$additions = $deletions = 0;
+
 		// Count additions and deletions
 		foreach ($text_diff->getOps() as $op)
 		{
