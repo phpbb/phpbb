@@ -61,7 +61,7 @@ class phpbb_revisions_post
 			return $this->revisions;
 		}
 
-		$sql = 'SELECT r.*, u.username, u.user_colour
+		$sql = 'SELECT r.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
 			FROM ' . POST_REVISIONS_TABLE . ' r
 			LEFT JOIN ' . USERS_TABLE . ' u
 				ON u.user_id = r.user_id
