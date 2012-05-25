@@ -5,11 +5,11 @@
 	<p><div class="left-box">{L_LAST_REVISION_TIME}</div>
 	<div class="right-box"></div></p>
 	<hr />
-	<p><div class="left-box">{L_COMPARE_SUMMARY}</div></p>
+	<p><div class="left-box">{L_COMPARE_SUMMARY} {L_WITH} {L_LINES_ADDED_REMOVED}</div></p>
 	<br class="clear" />
 	<!-- BEGIN revisions -->
 		<div>
-			{revisions.USER_AVATAR} {revisions.USERNAME}
+			<a href="{revisions.U_REVISION_VIEW}">{revisions.ID}</a> {revisions.USER_AVATAR} {revisions.USERNAME} {revisions.DATE}
 		</div>
 	<!-- END revisions -->
 	<div class="panel">

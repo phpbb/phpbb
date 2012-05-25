@@ -38,6 +38,16 @@ $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
+	'LINES_ADDED'				=> array(
+		0 =>'0 lines added',
+		1 =>'1 line added',
+		2 => '%1$s lines added',
+	),
+	'LINES_REMOVED'				=> array(
+		0 =>'0 lines removed',
+		1 =>'1 line removed',
+		2 => '%1$s lines removed',
+	),
 
 	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view these revisions.',
 	'NO_DIFF'					=> 'There are no differences to display within the specified revision range.',
@@ -59,4 +69,6 @@ $lang = array_merge($lang, array(
 		1		=> '1 user',
 		2		=> '%1$s users',
 	),
+
+	'WITH'						=> 'with',
 ));
