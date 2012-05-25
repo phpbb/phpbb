@@ -134,6 +134,13 @@ if ($post_id)
 	else
 	{
 		$revision_from = $revisions[$revision_from_id];
+
+		// We only allow two revisions from the same post to be diff'd
+		if ($revision_from->get('post') != $revision_to->get('post'))
+		{
+			trigger_error('REVISIONS_FROM_DIFFERENT_POSTS');
+		}
+
 		if (!class_exists('FineDiff'))
 		{
 			include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
