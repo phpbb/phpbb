@@ -146,11 +146,6 @@ if ($post_id)
 			include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
 		}
 
-		$revision_from_text = $revision_from->get('text_decoded');
-		$revision_from_subject = $revision_from->get('subject');
-		$revision_to_text = $revision_to->get('text_decoded');
-		$revision_to_subject = $revision_to->get('subject');
-
 		// We use word granularity because character granularity can be too confusing and line-granularity is not aesthetically pleasing for prose diffs
 		$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
 		$r_subject_diff = sizeof($subject_diff->edits) > 1 ? $subject_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));;
