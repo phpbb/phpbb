@@ -970,7 +970,7 @@ $max_post_time = 0;
 
 $sql_ary = array(
 	'SELECT'	=> 'u.*, z.friend, z.foe,
-	p.post_id, p.topic_id, p.forum_id, p.poster_id, p.icon_id, p.poster_ip, p.post_time, p.post_approved, p.post_reported, p.enable_bbcode, p.enable_smilies,	p.enable_magic_url, p.enable_sig, p.post_username, p.current_revision_id, p.post_postcount, p.post_edit_locked, p.revision_count AS post_edit_count,
+		p.post_id, p.topic_id, p.forum_id, p.poster_id, p.icon_id, p.poster_ip, p.post_time, p.post_approved, p.post_reported, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.enable_sig, p.post_username, p.current_revision_id, p.post_postcount, p.post_edit_locked, p.revision_count AS post_edit_count,
 		r.revision_subject AS post_subject, r.revision_text AS post_text, r.revision_checksum AS post_checksum, r.revision_attachment AS post_attachment, r.bbcode_bitfield AS bbcode_bitfield, r.bbcode_uid AS bbcode_uid, r.revision_time AS post_edit_time, r.revision_reason AS post_edit_reason, r.user_id AS post_edit_user',
 
 	'FROM'		=> array(
@@ -1497,6 +1497,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));
 		}
+
+		// Every post has >= 1 revision, so we don't display this when there is only one revision because that is the original post
+		$l_edited_by = $row['post_edit_count'] > 1 ? $l_edited_by : '';
 	}
 	else
 	{
