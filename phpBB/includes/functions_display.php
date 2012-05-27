@@ -1334,14 +1334,13 @@ function phpbb_mcp_quick_info()
 
 	$m_approve = $auth->acl_getf_global('m_approve');
 	$m_report = $auth->acl_getf_global('m_report');
-	$allow = ($m_approve || $m_report) ? true : false;
 
 	// We have one or both of m_report and m_approve
-	if ($allow)
+	if ($m_approve || $m_report)
 	{
 		$reported_posts_count = $unapproved_posts_count = $unapproved_topics_count = 0;
 
-		$sql_where = 'WHERE ';
+		$sql_where = '';
 
 		// Check for m_report
 		if ($m_report)
@@ -1367,21 +1366,18 @@ function phpbb_mcp_quick_info()
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$unapproved_topics_array[] = $row['topic_first_post_id'];
-				$unapproved_topics_count++;
 			}
 			$db->sql_freeresult($result);
 
-			if (sizeof($unapproved_topics_array))
-			{
-				$sql_where .= ' AND ' . $db->sql_in_set('post_id', $unapproved_topics_array, true);
-			}
+			$unapproved_topics_count = count($unapproved_topics_array);
+
+			$sql_where .= $unapproved_topics_count ? ' AND ' . $db->sql_in_set('post_id', $unapproved_topics_array, true) : '';
 		}
 
 		// Reported Posts and Approved Posts
 		$sql = 'SELECT post_reported, post_approved
-					FROM ' . POSTS_TABLE .
-				$sql_where . '
-					OR (forum_id = 0 AND post_reported = 1)';
+			FROM ' . POSTS_TABLE . "
+			WHERE $sql_where";
 		$result = $db->sql_query($sql);
 
 		// Count number of unapproved and reported posts
@@ -1399,21 +1395,16 @@ function phpbb_mcp_quick_info()
 			}
 		}
 		$db->sql_freeresult($result);
+	
+		$template->assign_vars(array(
+			'TOTAL_MODERATOR_REPORTS'		=> $user->lang('MODERATOR_REPORTED_POSTS', $reported_posts_count),
+			'TOTAL_MODERATOR_POSTS'			=> $user->lang('MODERATOR_APPROVE_POSTS', $unapproved_posts_count),
+			'TOTAL_MODERATOR_TOPICS'    	=> $user->lang('MODERATOR_APPROVE_TOPICS', $unapproved_topics_count),
 
-		// Lets use this data
-		if ($reported_posts_count || $unapproved_posts_count || $unapproved_topics_count)
-		{
-			// And export variables to the template
-			$template->assign_vars(array(
-				'TOTAL_MODERATOR_REPORTS'		=> $user->lang('MODERATOR_REPORTED_POSTS', $reported_posts_count),
-				'TOTAL_MODERATOR_POSTS'			=> $user->lang('MODERATOR_APPROVE_POSTS', $unapproved_posts_count),
-				'TOTAL_MODERATOR_TOPICS'    	=> $user->lang('MODERATOR_APPROVE_TOPICS', $unapproved_topics_count),
-
-				'U_MODERATOR_REPORTS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'reports', 'mode' => 'reports'), true, $user->session_id),
-				'U_MODERATOR_APPROVE_POSTS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_posts'), true, $user->session_id),
-				'U_MODERATOR_APPROVE_TOPICS'    => append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_topics'), true, $user->session_id),
-			));
-		}
+			'U_MODERATOR_REPORTS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'reports', 'mode' => 'reports'), true, $user->session_id),
+			'U_MODERATOR_APPROVE_POSTS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_posts'), true, $user->session_id),
+			'U_MODERATOR_APPROVE_TOPICS'    => append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'queue', 'mode' => 'unapproved_topics'), true, $user->session_id),
+		));
 	}
 
     // Don't forget reported PMs
@@ -1421,7 +1412,6 @@ function phpbb_mcp_quick_info()
 	{
 		$reported_pms = 0;
 
-		// Lets have a cache
 		if (($reported_pms = $cache->get('_reported_pms')) === false)
 		{
 			$sql = 'SELECT COUNT(msg_id) AS pms_count
@@ -1439,7 +1429,7 @@ function phpbb_mcp_quick_info()
 		if ($reported_pms)
 		{
 			$template->assign_vars(array(
-				'TOTAL_MODERATOR_PMS'			=> $user->lang('MODERATOR_REPORTED_PMS', $reported_pms);
+				'TOTAL_MODERATOR_PMS'			=> $user->lang('MODERATOR_REPORTED_PMS', $reported_pms),
 				'U_MODERATOR_PMS'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", array('i' => 'pm_reports', 'mode' => 'pm_reports'), true, $user->session_id),
 			));
 		}
