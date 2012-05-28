@@ -8,7 +8,6 @@
 CREATE TABLE phpbb_attachments (
 	attach_id INTEGER NOT NULL,
 	post_msg_id INTEGER DEFAULT 0 NOT NULL,
-	post_revision_id INTEGER DEFAULT 0 NOT NULL,
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	in_message INTEGER DEFAULT 0 NOT NULL,
 	poster_id INTEGER DEFAULT 0 NOT NULL,
@@ -715,7 +714,7 @@ CREATE TABLE phpbb_posts (
 	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	current_revision_id INTEGER DEFAULT 0 NOT NULL,
-	revision_count INTEGETER DEFAULT 0 NOT NULL,
+	revision_count INTEGER DEFAULT 0 NOT NULL,
 	post_wiki INTEGER DEFAULT 0 NOT NULL,
 	post_postcount INTEGER DEFAULT 1 NOT NULL,
 	post_edit_time INTEGER DEFAULT 0 NOT NULL,
@@ -745,6 +744,7 @@ BEGIN
 	NEW.post_id = GEN_ID(phpbb_posts_gen, 1);
 END;;
 
+
 # Table: 'phpbb_post_revisions'
 CREATE TABLE phpbb_post_revisions (
 	revision_id INTEGER NOT NULL,
@@ -762,9 +762,9 @@ CREATE TABLE phpbb_post_revisions (
 
 ALTER TABLE phpbb_post_revisions ADD PRIMARY KEY (revision_id);;
 
-CREATE INDEX phpbb_post_revisions_post_id ON phpbb_posts(post_id);;
-CREATE INDEX phpbb_post_revisions_user_id ON phpbb_posts(user_id);;
-CREATE INDEX phpbb_post_revisions_time ON phpbb_posts(revision_time);;
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions(post_id);;
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions(user_id);;
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions(revision_time);;
 
 CREATE GENERATOR phpbb_post_revisions_gen;;
 SET GENERATOR phpbb_post_revisions_gen TO 0;;
@@ -1041,6 +1041,15 @@ BEGIN
 	NEW.reason_id = GEN_ID(phpbb_reports_reasons_gen, 1);
 END;;
 
+
+# Table: 'phpbb_revision_attachments'
+CREATE TABLE phpbb_revision_attachments (
+	revision_id INTEGER DEFAULT 0 NOT NULL,
+	attachment_id INTEGER DEFAULT 0 NOT NULL
+);;
+
+CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments(revision_id);;
+CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments(attachment_id);;
 
 # Table: 'phpbb_search_results'
 CREATE TABLE phpbb_search_results (

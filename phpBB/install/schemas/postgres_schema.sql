@@ -91,7 +91,6 @@ CREATE SEQUENCE phpbb_attachments_seq;
 CREATE TABLE phpbb_attachments (
 	attach_id INT4 DEFAULT nextval('phpbb_attachments_seq'),
 	post_msg_id INT4 DEFAULT '0' NOT NULL CHECK (post_msg_id >= 0),
-	post_revision_id INT4 DEFAULT '0' NOT NULL CHECK (post_revision_id >= 0),
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	in_message INT2 DEFAULT '0' NOT NULL CHECK (in_message >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),
@@ -734,9 +733,9 @@ CREATE TABLE phpbb_post_revisions (
 	PRIMARY KEY (revision_id)
 );
 
-CREATE INDEX phpbb_post_revisions_forum_id ON phpbb_post_revisions (post_id);
-CREATE INDEX phpbb_post_revisions_topic_id ON phpbb_post_revisions (user_id);
-CREATE INDEX phpbb_post_revisions_poster_ip ON phpbb_post_revisions (revision_time);
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id);
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id);
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time);
 
 /*
 	Table: 'phpbb_privmsgs'
@@ -951,6 +950,17 @@ CREATE TABLE phpbb_reports_reasons (
 	PRIMARY KEY (reason_id)
 );
 
+
+/*
+	Table: 'phpbb_revision_attachments'
+*/
+CREATE TABLE phpbb_revision_attachments (
+	revision_id INT4 DEFAULT '0' NOT NULL CHECK (revision_id >= 0),
+	attachment_id INT4 DEFAULT '0' NOT NULL CHECK (attachment_id >= 0)
+);
+
+CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments (revision_id);
+CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments (attachment_id);
 
 /*
 	Table: 'phpbb_search_results'

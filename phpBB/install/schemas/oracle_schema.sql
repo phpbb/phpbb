@@ -49,7 +49,6 @@ CONNECT phpbb/phpbb_password;
 CREATE TABLE phpbb_attachments (
 	attach_id number(8) NOT NULL,
 	post_msg_id number(8) DEFAULT '0' NOT NULL,
-	post_revision_id number(8) DEFAULT '0' NOT NULL,
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	in_message number(1) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,
@@ -1005,6 +1004,7 @@ BEGIN
 END;
 /
 
+
 /*
 	Table: 'phpbb_post_revisions'
 */
@@ -1024,27 +1024,28 @@ CREATE TABLE phpbb_post_revisions (
 )
 /
 
-CREATE INDEX phpbb_post_revisions_post_id ON phpbb_posts (post_id)
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id)
 /
-CREATE INDEX phpbb_post_revisions_user_id ON phpbb_posts (user_id)
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id)
 /
-CREATE INDEX phpbb_post_revisions_time ON phpbb_posts (revision_time)
-/
-
-CREATE SEQUENCE phpbb_posts_seq
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time)
 /
 
-CREATE OR REPLACE TRIGGER t_phpbb_posts
-BEFORE INSERT ON phpbb_posts
+CREATE SEQUENCE phpbb_post_revisions_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_post_revisions
+BEFORE INSERT ON phpbb_post_revisions
 FOR EACH ROW WHEN (
-	new.post_id IS NULL OR new.post_id = 0
+	new.revision_id IS NULL OR new.revision_id = 0
 )
 BEGIN
-	SELECT phpbb_posts_seq.nextval
-	INTO :new.post_id
+	SELECT phpbb_post_revisions_seq.nextval
+	INTO :new.revision_id
 	FROM dual;
 END;
 /
+
 
 /*
 	Table: 'phpbb_privmsgs'
@@ -1381,6 +1382,20 @@ BEGIN
 END;
 /
 
+
+/*
+	Table: 'phpbb_revision_attachments'
+*/
+CREATE TABLE phpbb_revision_attachments (
+	revision_id number(8) DEFAULT '0' NOT NULL,
+	attachment_id number(8) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments (revision_id)
+/
+CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments (attachment_id)
+/
 
 /*
 	Table: 'phpbb_search_results'

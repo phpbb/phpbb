@@ -1382,6 +1382,9 @@ function get_schema_struct()
 			'post_attachment'		=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:8', ''),
+			'current_revision_id'	=> array('UINT', 0),
+			'revision_count'		=> array('UINT', 0),
+			'post_wiki'				=> array('BOOL', 0),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
 			'post_edit_reason'		=> array('STEXT_UNI', ''),
@@ -1419,7 +1422,7 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'post_id'				=> array('INDEX', 'post_id'),
 			'user_id'				=> array('INDEX', 'user_id'),
-			'revision_time'			=> array('INDEX', 'revision_time'),
+			'time'					=> array('INDEX', 'revision_time'),
 		),
 	);
 
@@ -1611,6 +1614,17 @@ function get_schema_struct()
 			'reason_order'			=> array('USINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'reason_id',
+	);
+
+	$schema_data['phpbb_revision_attachments'] = array(
+		'COLUMNS'		=> array(
+			'revision_id'			=> array('UINT', 0),
+			'attachment_id'			=> array('UINT', 0),
+		),
+		'KEYS'			=> array(
+			'r_id'					=> array('INDEX', 'revision_id'),
+			'a_id'					=> array('INDEX', 'attachment_id'),
+		),
 	);
 
 	$schema_data['phpbb_search_results'] = array(

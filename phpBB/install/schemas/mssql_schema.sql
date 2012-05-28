@@ -12,7 +12,6 @@
 CREATE TABLE [phpbb_attachments] (
 	[attach_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[post_msg_id] [int] DEFAULT (0) NOT NULL ,
-	[post_revision_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[in_message] [int] DEFAULT (0) NOT NULL ,
 	[poster_id] [int] DEFAULT (0) NOT NULL ,
@@ -938,7 +937,7 @@ CREATE TABLE [phpbb_post_revisions] (
 	[revision_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[revision_reason] [varchar] (255) DEFAULT ('') NOT NULL
+	[revision_reason] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -955,7 +954,7 @@ GO
 CREATE  INDEX [user_id] ON [phpbb_post_revisions]([user_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [revision_time] ON [phpbb_post_revisions]([revision_time]) ON [PRIMARY]
+CREATE  INDEX [time] ON [phpbb_post_revisions]([revision_time]) ON [PRIMARY]
 GO
 
 
@@ -1256,6 +1255,22 @@ ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD
 	(
 		[reason_id]
 	)  ON [PRIMARY] 
+GO
+
+
+/*
+	Table: 'phpbb_revision_attachments'
+*/
+CREATE TABLE [phpbb_revision_attachments] (
+	[revision_id] [int] DEFAULT (0) NOT NULL ,
+	[attachment_id] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE  INDEX [r_id] ON [phpbb_revision_attachments]([revision_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [a_id] ON [phpbb_revision_attachments]([attachment_id]) ON [PRIMARY]
 GO
 
 

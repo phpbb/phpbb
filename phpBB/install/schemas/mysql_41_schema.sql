@@ -7,7 +7,6 @@
 CREATE TABLE phpbb_attachments (
 	attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	post_msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	post_revision_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	in_message tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -538,7 +537,7 @@ CREATE TABLE phpbb_post_revisions (
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	revision_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	revision_subject varchar(255) DEFAULT '' NOT NULL,
+	revision_subject varchar(255) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	revision_text mediumtext NOT NULL,
 	revision_checksum varchar(32) DEFAULT '' NOT NULL,
 	revision_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -548,7 +547,7 @@ CREATE TABLE phpbb_post_revisions (
 	PRIMARY KEY (revision_id),
 	KEY post_id (post_id),
 	KEY user_id (user_id),
-	KEY revision_time (revision_time)
+	KEY time (revision_time)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -727,6 +726,15 @@ CREATE TABLE phpbb_reports_reasons (
 	reason_description mediumtext NOT NULL,
 	reason_order smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (reason_id)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_revision_attachments'
+CREATE TABLE phpbb_revision_attachments (
+	revision_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	attachment_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	KEY r_id (revision_id),
+	KEY a_id (attachment_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

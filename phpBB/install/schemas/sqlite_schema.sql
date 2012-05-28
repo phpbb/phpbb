@@ -9,7 +9,6 @@ BEGIN TRANSACTION;
 CREATE TABLE phpbb_attachments (
 	attach_id INTEGER PRIMARY KEY NOT NULL ,
 	post_msg_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	post_revision_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	topic_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	in_message INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	poster_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -532,9 +531,9 @@ CREATE TABLE phpbb_post_revisions (
 	revision_reason text(65535) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX phpbb_post_revisions_forum_id ON phpbb_post_revisions (forum_id);
-CREATE INDEX phpbb_post_revisions_topic_id ON phpbb_post_revisions (topic_id);
-CREATE INDEX phpbb_post_revisions_poster_ip ON phpbb_post_revisions (poster_ip);
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id);
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id);
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time);
 
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
@@ -706,6 +705,15 @@ CREATE TABLE phpbb_reports_reasons (
 	reason_order INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
+
+# Table: 'phpbb_revision_attachments'
+CREATE TABLE phpbb_revision_attachments (
+	revision_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	attachment_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
+CREATE INDEX phpbb_revision_attachments_r_id ON phpbb_revision_attachments (revision_id);
+CREATE INDEX phpbb_revision_attachments_a_id ON phpbb_revision_attachments (attachment_id);
 
 # Table: 'phpbb_search_results'
 CREATE TABLE phpbb_search_results (

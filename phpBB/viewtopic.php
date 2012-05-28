@@ -1309,9 +1309,9 @@ if (sizeof($attach_list))
 		// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
 		if (!sizeof($attachments))
 		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 0
-				WHERE ' . $db->sql_in_set('post_revision_id', $attach_list);
+			$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+				SET revision_attachment = 0
+				WHERE ' . $db->sql_in_set('revision_id', $attach_list);
 			$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
