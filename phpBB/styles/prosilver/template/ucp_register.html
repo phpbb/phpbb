@@ -21,11 +21,11 @@
 <form method="post" action="{S_UCP_ACTION}" id="register">
 
 <div class="panel">
-	<div class="inner">
+	<div class="inner" >
 
 	<h2>{SITENAME} - {L_REGISTRATION}</h2>
 
-	<fieldset class="fields2">
+	<div style="width: 40%;float: left;"><fieldset class="fields2">
 	<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
 	<!-- IF L_REG_COND -->
 		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
@@ -70,6 +70,19 @@
 	<!-- ENDIF -->
 
 	</fieldset>
+	</div>
+	<div>
+		{L_OR}
+	</div>
+	<div style="width: 40%;float:right;">
+		<dl>
+			<dt>{L_FEDERATED_REGISTRATION}:</dt>
+			<dd><div><a href=""><img style="width: 133px; height: 33px;" src="{T_THEME_PATH}/images/logo_google.png" alt="Google"/></a></div>
+				<div><a href="">Facebook</a></div>
+				<div><a href="">OpenID</a></div>
+			</dd>
+		</dl>
+	</div>
 	</div>
 </div>
 <!-- IF CAPTCHA_TEMPLATE -->
