@@ -1026,7 +1026,7 @@ while ($row = $db->sql_fetchrow($result))
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
 	{
-		$attach_list[] = (int) $row['post_id'];
+		$attach_list[] = (int) $row['current_revision_id'];
 
 		if ($row['post_approved'])
 		{
@@ -1295,7 +1295,7 @@ if (sizeof($attach_list))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+			WHERE ' . $db->sql_in_set('post_revision_id', $attach_list) . '
 				AND in_message = 0
 			ORDER BY filetime DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
@@ -1311,7 +1311,7 @@ if (sizeof($attach_list))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 0
-				WHERE ' . $db->sql_in_set('post_id', $attach_list);
+				WHERE ' . $db->sql_in_set('post_revision_id', $attach_list);
 			$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
