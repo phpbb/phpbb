@@ -125,84 +125,83 @@ if ($post_id)
 		}
 	}
 
-	if ($total_revisions == 1 || !$revision_from_id)
+	// If we only have one revision and/or there aren't any previous revisions to load, just compare it to itself
+	$revision_from = ($total_revisions == 1 || !$revision_from_id) ? $revision_to : $revisions[$revision_from_id];
+
+	// We only allow two revisions from the same post to be diff'd
+	if ($revision_from->get('post') != $revision_to->get('post'))
 	{
-		// Stuff to do if we only have one revision to work with.
-
-		// Basically, we just display the revision and explain that it's the only one.
+		trigger_error('REVISIONS_FROM_DIFFERENT_POSTS');
 	}
-	else
+
+	if (!class_exists('FineDiff'))
 	{
-		$revision_from = $revisions[$revision_from_id];
-
-		// We only allow two revisions from the same post to be diff'd
-		if ($revision_from->get('post') != $revision_to->get('post'))
-		{
-			trigger_error('REVISIONS_FROM_DIFFERENT_POSTS');
-		}
-
-		if (!class_exists('FineDiff'))
-		{
-			include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
-		}
-
-		// We use word granularity because character granularity can be too confusing and line-granularity is not aesthetically pleasing for prose diffs
-		$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
-		$r_subject_diff = sizeof($subject_diff->edits) > 1 ? $subject_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));;
-
-		$text_diff = new FineDiff($revision_from->get('text_decoded'), $revision_to->get('text_decoded'), FineDiff::$wordGranularity);
-		$r_text_diff = sizeof($text_diff->edits) > 1 ? $text_diff->renderDiffToHTML() : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
-
-		$additions = $deletions = 0;
-
-		// Count additions and deletions
-		foreach ($text_diff->getOps() as $op)
-		{
-			if ($op instanceof FineDiffInsertOp)
-			{
-				$additions++;
-			}
-			else if ($op instanceof FineDiffDeleteOp)
-			{
-				$deletions++;
-			}
-		}
-
-		// Consolidate some language strings
-		$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
-		$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $additions) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('REVISION_DELETIONS', $deletions);
-
-		// We want to display a list of revisions with a few details about each
-		// But we want it in order from most recent -> oldest, so we have to flip it
-		$revisions = array_reverse($revisions, true);
-		
-		foreach ($revisions as $revision)
-		{
-			// Only show revisions within the from -> to range
-			if ($revision->get('id') >= $revision_from_id && $revision->get('id') <= $revision_to_id)
-			{
-				$template->assign_block_vars('revisions', array(
-					'USERNAME'			=> $revision->get('username'),
-					'USER_AVATAR'		=> $revision->get_avatar(20, 20),
-					'DATE'				=> $user->format_date($revision->get('time')),
-					'REASON'			=> $revision->get('reason'),
-					'ID'				=> $revision->get('id'),
-
-					'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
-				));
-			}
-		}
-
-		$template->assign_vars(array(
-			'DISPLAY_COMPARISON'	=> true,
-			'TEXT_DIFF'				=> $r_text_diff,
-			'SUBJECT_DIFF'			=> $r_subject_diff,
-
-			'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-			'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($post_data['post_edit_time'])),
-			'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-		));
+		include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
 	}
+
+	// We use word granularity because character granularity can be too confusing and line-granularity is not aesthetically pleasing for prose diffs
+	$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
+	$r_subject_diff = $subject_diff->renderDiffToHTML();// : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
+
+	$text_diff = new FineDiff($revision_from->get('text_raw'), $revision_to->get('text_raw'), FineDiff::$wordGranularity);
+	$r_text_diff = $text_diff->renderDiffToHTML();// : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
+
+	$subject_additions = $subject_deletions = $text_additions = $text_deletions = 0;;
+
+	// Count additions and deletions
+	foreach ($text_diff->getOps() as $op)
+	{
+		if ($op instanceof FineDiffInsertOp)
+		{
+			$text_additions++;
+		}
+		else if ($op instanceof FineDiffDeleteOp)
+		{
+			$text_deletions++;
+		}
+	}
+
+	$r_text_diff = $r_text_diff;//($text_additions || $text_deletions) ? $r_text_diff : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
+	$r_subject_diff = $r_subject_diff;//($subject_additions || $subject_deletions) ? $r_subject_diff : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
+
+	// Consolidate some language strings
+	$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
+	$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_additions) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('REVISION_DELETIONS', $text_deletions);
+
+	// We want to display a list of revisions with a few details about each
+	// But we want it in order from most recent -> oldest, so we have to flip it
+	//$revisions = array_reverse($revisions, true);
+
+
+	foreach ($revisions as $revision)
+	{
+		// Only show revisions within the from -> to range
+		$revisions_block = array(
+			'USERNAME'			=> $revision->get('username'),
+			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
+			'DATE'				=> $user->format_date($revision->get('time')),
+			'REASON'			=> $revision->get('reason'),
+			'ID'				=> $revision->get('id'),
+
+			'IN_RANGE'			=> $revision->get('id') >= $revision_from_id && $revision->get('id') <= $revision_to_id,
+			'CURRENT_REVISION'	=> $revision->get('id') == $post_data['current_revision_id'],
+
+			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
+			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
+		);
+
+		$template->assign_block_vars('revisions', $revisions_block);
+	}
+
+	$template->assign_vars(array(
+		'DISPLAY_COMPARISON'	=> true,
+		'TEXT_DIFF'				=> $r_text_diff,
+		'SUBJECT_DIFF'			=> $r_subject_diff,
+
+		'L_COMPARE_SUMMARY'		=> $l_compare_summary,
+		'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revision_to->get('time'))),
+		'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
+	));
 	// Ready the page for viewing
 	page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
 
