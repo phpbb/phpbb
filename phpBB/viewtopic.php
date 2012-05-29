@@ -969,9 +969,7 @@ if (!sizeof($post_list))
 $max_post_time = 0;
 
 $sql_ary = array(
-	'SELECT'	=> 'u.*, z.friend, z.foe,
-		p.post_id, p.topic_id, p.forum_id, p.poster_id, p.icon_id, p.poster_ip, p.post_time, p.post_approved, p.post_reported, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.enable_sig, p.post_username, p.current_revision_id, p.post_postcount, p.post_edit_locked, p.revision_count AS post_edit_count,
-		r.revision_subject AS post_subject, r.revision_text AS post_text, r.revision_checksum AS post_checksum, r.revision_attachment AS post_attachment, r.bbcode_bitfield AS bbcode_bitfield, r.bbcode_uid AS bbcode_uid, r.revision_time AS post_edit_time, r.revision_reason AS post_edit_reason, r.user_id AS post_edit_user',
+	'SELECT'	=> 'u.*, z.friend, z.foe, p.*',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -983,16 +981,10 @@ $sql_ary = array(
 			'FROM'	=> array(ZEBRA_TABLE => 'z'),
 			'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
 		),
-		array(
-			'FROM'	=> array(POST_REVISIONS_TABLE => 'r'),
-			'ON'	=> 'p.current_revision_id = r.revision_id',
-		),
 	),
 
 	'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
 		AND u.user_id = p.poster_id',
-
-	'GROUP_BY'	=> 'p.post_id',
 );
 
 /**
@@ -1026,7 +1018,7 @@ while ($row = $db->sql_fetchrow($result))
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
 	{
-		$attach_list[] = (int) $row['current_revision_id'];
+		$attach_list[] = (int) $row['post_id'];
 
 		if ($row['post_approved'])
 		{
@@ -1295,7 +1287,7 @@ if (sizeof($attach_list))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_revision_id', $attach_list) . '
+			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 				AND in_message = 0
 			ORDER BY filetime DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
@@ -1309,9 +1301,9 @@ if (sizeof($attach_list))
 		// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
 		if (!sizeof($attachments))
 		{
-			$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
-				SET revision_attachment = 0
-				WHERE ' . $db->sql_in_set('revision_id', $attach_list);
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_attachment = 0
+				WHERE ' . $db->sql_in_set('post_id', $attach_list);
 			$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
@@ -1476,7 +1468,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				$display_username = get_username_string('full', $row['post_edit_user'], $post_edit_list[$row['post_edit_user']]['username'], $post_edit_list[$row['post_edit_user']]['user_colour']);
 			}
 
-			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true));
+			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)));
 		}
 		else
 		{
@@ -1497,9 +1489,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			$l_edited_by = $user->lang('EDITED_TIMES_TOTAL', (int) $row['post_edit_count'], $display_username, $user->format_date($row['post_edit_time'], false, true), append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)));
 		}
-
-		// Every post has >= 1 revision, so we don't display this when there is only one revision because that is the original post
-		$l_edited_by = $row['post_edit_count'] > 1 ? $l_edited_by : '';
 	}
 	else
 	{
