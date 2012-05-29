@@ -35,13 +35,16 @@
 
 			if (value == {FORUM_POST})
 			{
+				dE('forum_subforums_options', 1);
 				dE('forum_post_options', 1);
+				dE('forum_prune_options', 1);
 				dE('forum_link_options', -1);
 				dE('forum_rules_options', 1);
 				dE('forum_cat_options', -1);
 			}
 			else if (value == {FORUM_LINK})
 			{
+				dE('forum_subforums_options', -1);
 				dE('forum_post_options', -1);
 				dE('forum_link_options', 1);
 				dE('forum_rules_options', -1);
@@ -49,6 +52,7 @@
 			}
 			else if (value == {FORUM_CAT})
 			{
+				dE('forum_subforums_options', 1);
 				dE('forum_post_options', -1);
 				dE('forum_link_options', -1);
 				dE('forum_rules_options', 1);
@@ -76,6 +80,7 @@
 
 			<!-- IF not S_FORUM_POST -->
 				dE('forum_post_options', -1);
+				dE('forum_prune_options', -1);
 			<!-- ENDIF -->
 
 			<!-- IF not S_FORUM_CAT -->
@@ -184,33 +189,21 @@
 	</dl>
 	</fieldset>
 
+	<fieldset>
+		<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
+
 	<div id="forum_cat_options">
-		<fieldset>
-			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
 			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}:</label><br /><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_active" value="1"<!-- IF S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_active" value="0"<!-- IF not S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
-		</fieldset>
 	</div>
 
 	<div id="forum_post_options">
-		<fieldset>
-			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
 			<dt><label for="forum_status">{L_FORUM_STATUS}:</label></dt>
 			<dd><select id="forum_status" name="forum_status">{S_STATUS_OPTIONS}</select></dd>
-		</dl>
-		<dl>
-			<dt><label for="display_subforum_list">{L_LIST_SUBFORUMS}:</label><br /><span>{L_LIST_SUBFORUMS_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="display_subforum_list" value="1"<!-- IF S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="display_subforum_list" value="0"<!-- IF not S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
-		</dl>
-		<dl>
-			<dt><label for="display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
 			<dt><label for="enable_post_review">{L_ENABLE_POST_REVIEW}:</label><br /><span>{L_ENABLE_POST_REVIEW_EXPLAIN}</span></dt>
@@ -241,8 +234,40 @@
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
 			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
 		</dl>
-		</fieldset>
+	</div>
 
+	<div id="forum_subforums_options">
+		<dl>
+			<dt><label for="display_subforum_list">{L_LIST_SUBFORUMS}:</label><br /><span>{L_LIST_SUBFORUMS_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="display_subforum_list" value="1"<!-- IF S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="display_subforum_list" value="0"<!-- IF not S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		<dl>
+			<dt><label for="display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+	</div>
+
+	<div id="forum_link_options">
+		<dl>
+			<dt><label for="link_display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="link_display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="link_display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		<dl>
+			<dt><label for="forum_link">{L_FORUM_LINK}:</label><br /><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
+			<dd><input class="text medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" maxlength="255" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}:</label><br /><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+	</div>
+	</fieldset>
+
+	<div id="forum_prune_options">
 		<fieldset>
 			<legend>{L_FORUM_PRUNE_SETTINGS}</legend>
 		<dl>
@@ -276,26 +301,6 @@
 			<dt><label for="prune_sticky">{L_PRUNE_STICKY}:</label></dt>
 			<dd><label><input type="radio" class="radio" name="prune_sticky" value="1"<!-- IF S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="prune_sticky" value="0"<!-- IF not S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
-		</dl>
-		</fieldset>
-	</div>
-
-	<div id="forum_link_options">
-		<fieldset>
-			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
-		<dl>
-			<dt><label for="link_display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="link_display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="link_display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
-		</dl>
-		<dl>
-			<dt><label for="forum_link">{L_FORUM_LINK}:</label><br /><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
-			<dd><input class="text medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" maxlength="255" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}:</label><br /><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		</fieldset>
 	</div>
