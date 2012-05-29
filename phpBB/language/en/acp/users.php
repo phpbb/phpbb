@@ -124,6 +124,7 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_SPECIAL'			=> 'Pre-defined groups user is a member of',
 	'USER_LIFTED_NR'				=> 'Successfully removed the user’s newly registered status.',
 	'USER_NO_ATTACHMENTS'			=> 'There are no attached files to display.',
+	'USER_NO_POSTS_TO_DELETE'			=> 'The user has no posts to retain or delete.',
 	'USER_OUTBOX_EMPTIED'			=> 'Successfully emptied user’s private message outbox.',
 	'USER_OUTBOX_EMPTY'				=> 'The user’s private message outbox was already empty.',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',
