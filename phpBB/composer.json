@@ -1,7 +1,14 @@
 {
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "http://packages.zendframework.com/"
+		}
+	],
 	"minimum-stability": "beta",
 	"require": {
-		"symfony/event-dispatcher": "2.1.*"
+		"symfony/event-dispatcher": "2.1.*",
+		"zendframework/zend-openid": "2.0.*"
 	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.x-dev"
