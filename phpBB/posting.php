@@ -1116,8 +1116,6 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
-				'current_revision_id'	=> 0,
-				'revision_count'		=> 0,
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
@@ -1129,7 +1127,6 @@ if ($submit || $preview || $refresh)
 			{
 				$data['topic_replies_real'] = $post_data['topic_replies_real'];
 				$data['topic_replies'] = $post_data['topic_replies'];
-				$data['revision_count'] = $post_data['revision_count'] + 1;
 			}
 
 			// The last parameter tells submit_post if search indexer has to be run
