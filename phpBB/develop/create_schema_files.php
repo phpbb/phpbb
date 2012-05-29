@@ -1382,8 +1382,6 @@ function get_schema_struct()
 			'post_attachment'		=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:8', ''),
-			'current_revision_id'	=> array('UINT', 0),
-			'revision_count'		=> array('UINT', 0),
 			'post_wiki'				=> array('BOOL', 0),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
