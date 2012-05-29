@@ -322,8 +322,15 @@ class session
 			}
 		}
 
-		// Is session_id is set or session_id is set and matches the url param if required
-		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === $_GET['sid'])))
+		// if no session id is set, redirect to index.php
+		if (defined('NEED_SID') && (!isset($_GET['sid']) || $this->session_id !== $_GET['sid']))
+		{
+			send_status_line(401, 'Not authorized');
+			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		}
+
+		// if session id is set
+		if (!empty($this->session_id))
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
