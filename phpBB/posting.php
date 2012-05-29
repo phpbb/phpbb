@@ -421,6 +421,25 @@ if ($mode == 'edit')
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
+// If we are storing revisions, we need to go ahead and save the current post's version-able information
+$original_post_data = array();
+
+if ($config['track_post_revisions'] && $mode == 'edit')
+{
+	$original_post_data = array(
+		'post_id'				=> $post_data['post_id'],
+		'user_id'				=> $post_data['poster_id'],
+		'revision_time'			=> ($post_data['post_edit_time']) ?: $post_data['post_time'],
+		'revision_subject'		=> $post_data['post_subject'],
+		'revision_text'			=> $post_data['post_text'],
+		'revision_checksum'		=> $post_data['post_checksum'],
+		'revision_attachment'	=> $post_data['post_attachment'],
+		'bbcode_bitfield'		=> $post_data['bbcode_bitfield'],
+		'bbcode_uid'			=> $post_data['bbcode_uid'],
+		'revision_reason'		=> $post_data['post_edit_reason'],
+	);
+}
+
 $message_parser = new parse_message();
 
 if (isset($post_data['post_text']))
@@ -1102,6 +1121,8 @@ if ($submit || $preview || $refresh)
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
+
+				'original_post_data'	=> $original_post_data,
 			);
 
 			if ($mode == 'edit')
