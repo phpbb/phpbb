@@ -497,8 +497,6 @@ CREATE TABLE phpbb_posts (
 	post_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	bbcode_uid varchar(8) NOT NULL DEFAULT '',
-	current_revision_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	revision_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_wiki INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_postcount INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	post_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',

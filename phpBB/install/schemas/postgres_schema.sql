@@ -693,8 +693,6 @@ CREATE TABLE phpbb_posts (
 	post_attachment INT2 DEFAULT '0' NOT NULL CHECK (post_attachment >= 0),
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
-	current_revision_id INT4 DEFAULT '0' NOT NULL CHECK (current_revision_id >= 0),
-	revision_count INT4 DEFAULT '0' NOT NULL CHECK (revision_count >= 0),
 	post_wiki INT2 DEFAULT '0' NOT NULL CHECK (post_wiki >= 0),
 	post_postcount INT2 DEFAULT '1' NOT NULL CHECK (post_postcount >= 0),
 	post_edit_time INT4 DEFAULT '0' NOT NULL CHECK (post_edit_time >= 0),
