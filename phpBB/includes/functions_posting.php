@@ -1807,13 +1807,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 
 		// However, we can only have up to the maximum number of revisions per post, if set
-		// So now we need to be sure we haven't overreached. If so, we delete the oldest revision.
-		if ($config['revisions_per_post_max'] < $data['post_edit_count'])
+		// So now we need to be sure we haven't overreached. If so, we delete the oldest
+		// revisions until we have the maximum we can have.
+		if ($limit = ($data['post_edit_count'] - $config['revisions_per_post_max']))
 		{
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $data['post_id'] . '
 				ORDER BY revision_time ASC
-				LIMIT 1';
+				LIMIT ' . $limit;
 			$db->sql_query($sql);
 		}
 	}
