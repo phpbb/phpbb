@@ -16,11 +16,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Prune all forums cron task.
+* Prune excess post revisions
 *
 * It is intended to be invoked from system cron.
-* This task will find all forums for which pruning is enabled, and will
-* prune all forums as necessary.
+* This task will find all posts that have old revisions or
+* more than the maximum number of allowed revisions and
+* remove the excess revisions.
 *
 * @package phpBB3
 */
@@ -40,11 +41,9 @@ class phpbb_cron_task_core_prune_post_revisions extends phpbb_cron_task_base
 		if ($config['post_revisions_max_age'])
 		{
 			// First we get all revision IDs of revisions that are older than the date in the board settings
-			$earliest_allowed = time() - $config['post_revisions_max_age'];
-
 			$sql = 'SELECT revision_id
 				FROM ' . POST_REVISIONS_TABLE . '
-				WHERE revision_time < ' . (int) $earliest_allowed;
+				WHERE revision_time < ' . (time() - $config['post_revisions_max_age']);
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -62,12 +61,14 @@ class phpbb_cron_task_core_prune_post_revisions extends phpbb_cron_task_base
 				FROM ' . POSTS_TABLE . '
 				WHERE post_edit_count > ' . (int) $config['revisions_per_post_max'];
 			$result = $db->sql_query($sql);
-			while($row = $db->sql_fetchrow($result))
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$id	= $row['post_id'];
 				$excess	= $row['post_edit_count'] - $config['revisions_per_post_max'];
 
 				// Query in a loop? Uh oh! But I can't find a better way...
+				// At least this will really only occur when the config value is decreased in the ACP
+				// because it is also looked at on an individual post bases when a revision is made
 				$inner_sql = 'SELECT revision_id
 					FROM ' . POST_REVISIONS_TABLE . '
 					WHERE post_id = ' . (int) $id . '
