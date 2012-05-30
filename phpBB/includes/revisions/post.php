@@ -33,9 +33,11 @@ class phpbb_revisions_post
 			return false;
 		}
 
-		$sql = 'SELECT *
-			FROM ' . POSTS_TABLE . '
-			WHERE post_id = ' . (int) $this->post_id;
+		$sql = 'SELECT p.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
+			FROM ' . POSTS_TABLE . ' p
+			LEFT JOIN ' . USERS_TABLE . ' u
+				ON u.user_id = p.poster_id
+			WHERE p.post_id = ' . (int) $this->post_id;
 		$result = $this->db->sql_query($sql);
 		$this->post_data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -84,27 +86,83 @@ class phpbb_revisions_post
 		}
 		$this->db->sql_freeresult($result);
 
+		// The final revision is the current post state, so we can just put the post data into a revision object
+		// We store it as index 0 because it doesn't have a revision ID but we can always know how to access it
+		$this->revisions[0] = new phpbb_revisions_revision();
+		$this->revisions[0]->set_data(array(
+			'revision_subject'		=> $this->post_data['post_subject'],
+			'revision_text'			=> $this->post_data['post_text'],
+			'revision_checksum'		=> $this->post_data['post_checksum'],
+			'poster_id'				=> $this->post_data['poster_id'],
+			'user_id'				=> $this->post_data['poster_id'],
+			'username'				=> $this->post_data['username'],
+			'user_colour'			=> $this->post_data['user_colour'],
+			'forum_id'				=> $this->post_data['forum_id'],
+			'enable_bbcode'			=> $this->post_data['enable_bbcode'],
+			'enable_smilies'		=> $this->post_data['enable_smilies'],
+			'enable_magic_url'		=> $this->post_data['enable_magic_url'],
+			'bbcode_uid'			=> $this->post_data['bbcode_uid'],
+			'bbcode_bitfield'		=> $this->post_data['bbcode_bitfield'],
+			'revision_time'			=> $this->post_data['post_time'],
+			'revision_attachment'	=> $this->post_data['post_attachment'],
+			'user_avatar'			=> $this->post_data['user_avatar'],
+			'user_avatar_type'		=> $this->post_data['user_avatar_type'],
+			'user_avatar_width'		=> $this->post_data['user_avatar_width'],
+			'user_avatar_height'	=> $this->post_data['user_avatar_height'],
+			'enable_bbcode'			=> $this->post_data['enable_bbcode'],
+			'enable_smilies'		=> $this->post_data['enable_smilies'],
+			'enable_magic_url'		=> $this->post_data['enable_magic_url'],
+			'revision_reason'		=> $this->post_data['post_edit_reason'],
+		));
+
 		return $this->revisions;
 	}
 
 	/**
-	* Returns the ID of the post
+	* Revert the post to a different revision. The revision must be linked to this object's post id
 	*
-	* @return int Post ID
+	* @param int $new_revision_id ID of the revision to switch to
+	* @return null
 	*/
-	public function get_post_id()
+	public function revert($new_revision_id)
 	{
-		return $this->get('post_id');
-	}
+		if (!$this->post_id || empty($this->revisions) || empty($this->revisions[$new_revision_id]))
+		{
+			return false;
+		}
 
-	/**
-	* Returns the ID of the poster of the post
-	*
-	* @return int Poster ID
-	*/
-	public function get_poster_id()
-	{
-		return $this->get('poster_id');
+		// First, we create a new revision with the current post information
+		$sql_insert_ary = array(
+			'post_id'				=> $data['post_id'],
+			'user_id'				=> $data['poster_id'],
+			'revision_time'			=> time(),
+			'revision_subject'		=> $data['post_subject'],
+			'revision_text'			=> $data['post_text'],
+			'revision_checksum'		=> $data['post_checksum'],
+			'revision_attachment'	=> $data['post_attachment'],
+			'bbcode_bitfield'		=> $data['bbcode_bitfield'],
+			'bbcode_uid'			=> $data['bbcode_uid'],
+			'revision_reason'		=> $data['post_edit_reason'],
+		);
+		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_insert_ary);
+		$db->sql_query($sql);
+
+		// Next, we update the post table with the information from the new revision
+		$sql_update_ary = array(
+			'poster_id'			=> $this->revisions[$new_revision_id]['user_id'],
+			'post_edit_time'	=> $this->revisions[$new_revision_id]['revision_time'],
+			'post_subject'		=> $this->revisions[$new_revision_id]['revision_subject'],
+			'post_text'			=> $this->revisions[$new_revision_id]['revision_text'],
+			'post_checksum'		=> $this->revisions[$new_revision_id]['revision_checksum'],
+			'post_attachment'	=> $this->revisions[$new_revision_id]['revision_attachment'],
+			'bbcode_bitfield'	=> $this->revisions[$new_revision_id]['bbcode_bitfield'],
+			'bbcode_uid'		=> $this->revisions[$new_revision_id]['bbcode_uid'],
+			'post_reason'		=> $this->revisions[$new_revision_id]['revision_reason'],
+		);
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET ' . $this->db->sql_build_array('UPDATE', $sql_update_ary) . '
+			WHERE post_id = ' . $this->revisions[$new_revision_id]['post_id'];
+		$db->sql_squery($sql);
 	}
 
 	/**
@@ -118,8 +176,6 @@ class phpbb_revisions_post
 		{
 			return $this->$property;
 		}
-
-		return null;
 	}
 
 	/**
@@ -131,8 +187,8 @@ class phpbb_revisions_post
 	 */
 	static public function sort_post_revisions(phpbb_revisions_revision $a, phpbb_revisions_revision $b)
 	{
-		$a_order = $a->get('id');
-		$b_order = $b->get('id');
+		$a_order = $a->get('time');
+		$b_order = $b->get('time');
 
 		if ($a_order == $b_order)
 		{
