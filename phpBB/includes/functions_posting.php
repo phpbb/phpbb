@@ -1805,6 +1805,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
 			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
 		$db->sql_query($sql);
+
+		// However, we can only have up to the maximum number of revisions per post, if set
+		// So now we need to be sure we haven't overreached. If so, we delete the oldest revision.
+		if ($config['revisions_per_post_max'] < $data['post_edit_count'])
+		{
+			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+				WHERE post_id = ' . (int) $data['post_id'] . '
+				ORDER BY revision_time ASC
+				LIMIT 1';
+			$db->sql_query($sql);
+		}
 	}
 
 	// Update the posts table
