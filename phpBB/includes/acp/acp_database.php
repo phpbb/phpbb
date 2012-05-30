@@ -57,7 +57,7 @@ class acp_database
 				{
 					case 'download':
 						$type	= request_var('type', '');
-						$table	= request_var('table', array(''));
+						$table	= array_intersect($this->db_tools->sql_list_tables(), request_var('table', array('')));
 						$format	= request_var('method', '');
 						$where	= request_var('where', '');
 
