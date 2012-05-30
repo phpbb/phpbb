@@ -180,8 +180,7 @@ class acp_database
 					break;
 
 					default:
-						include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
-						$tables = get_tables($db);
+						$tables = $this->db_tools->sql_list_tables();
 						asort($tables);
 						foreach ($tables as $table_name)
 						{
