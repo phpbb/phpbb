@@ -116,7 +116,6 @@ if ($post_id)
 			$sql = 'SELECT revision_id
 				FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $post_id . "
-					AND revision_id < $revision_to_id
 				ORDER BY revision_id " . ($revision_id ? 'DESC' : 'ASC') . '
 				LIMIT 1';
 			$result = $db->sql_query($sql);
@@ -171,10 +170,12 @@ if ($post_id)
 	// We want to display a list of revisions with a few details about each
 	// But we want it in order from most recent -> oldest, so we have to flip it
 	//$revisions = array_reverse($revisions, true);
-
-
+	$revision_number = 1;
 	foreach ($revisions as $revision)
 	{
+		echo 'Revision From ID: ' . $revision_from_id . '<br />';
+		echo 'Revision ID: ' . $revision->get('id') . '<br />';
+		echo 'Revision To ID: ' . $revision_to_id . '<br /><br />';
 		// Only show revisions within the from -> to range
 		$revisions_block = array(
 			'USERNAME'			=> $revision->get('username'),
@@ -182,15 +183,17 @@ if ($post_id)
 			'DATE'				=> $user->format_date($revision->get('time')),
 			'REASON'			=> $revision->get('reason'),
 			'ID'				=> $revision->get('id'),
+			'NUMBER'			=> $revision_number,
 
-			'IN_RANGE'			=> $revision->get('id') >= $revision_from_id && $revision->get('id') <= $revision_to_id,
-			'CURRENT_REVISION'	=> $revision->get('id') == $post_data['current_revision_id'],
+			'IN_RANGE'			=> ($revision_to_id === 0 && $post_id) || ($revision->get('id') >= $revision_from_id && $revision->get('id') <= $revision_to_id),
+			'CURRENT_REVISION'	=> $revision->get('id') === 0,
 
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
 			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
 		);
 
 		$template->assign_block_vars('revisions', $revisions_block);
+		$revision_number++;
 	}
 
 	$template->assign_vars(array(

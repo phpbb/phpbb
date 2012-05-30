@@ -190,44 +190,6 @@ class phpbb_revisions_revision
 	}
 
 	/**
-	* Load the revision directly following this revision.
-	*
-	* @return phpbb_revisions_revision Next revision object
-	*/
-	public function load_next()
-	{
-		$sql = 'SELECT revision_id
-			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_id > ' . (int) $this->id . '
-			ORDER BY revision_id ASC
-			LIMIT 1';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-		
-		return new phpbb_revisions_revision($row['revision_id']);
-	}
-
-	/**
-	* Loads the revision directly before the current revision
-	*
-	* @return phpbb_revisions_revision Previous revision object
-	*/
-	public function load_previous()
-	{
-		$sql = 'SELECT revision_id
-			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_id < ' . (int) $this->id . '
-			ORDER BY revision_id DESC
-			LIMIT 1';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return new phpbb_revisions_revision($row['revision_id']);;
-	}
-
-	/**
 	* Set data from database directly to class properties
 	* 	NOTE: Expects data from revisions table left joined on posts table, like the query in load()
 	*
