@@ -171,6 +171,9 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 
+$auth_manager = new phpbb_auth_manager();
+$auth_manager->auth_method_OpenID('hardolaf@gmail.com');
+
 // Output page
 page_header($user->lang['INDEX']);
 

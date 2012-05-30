@@ -2994,7 +2994,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if (isset($_POST['login']))
+	if ($request->is_set_post('login'))
 	{
 		// Get credential
 		if ($admin)
