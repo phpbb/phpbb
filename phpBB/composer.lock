@@ -1,13 +1,37 @@
 {
-    "hash": "0ae5feb1ebe1269cd471d8124a63f484",
+    "hash": "050843c5643922977d0d152b4fc8e897",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
             "version": "v2.1.0-BETA4"
         },
         {
+            "package": "zendframework/zend-http",
+            "version": "2.0.0-rc1"
+        },
+        {
+            "package": "zendframework/zend-loader",
+            "version": "2.0.0-rc1"
+        },
+        {
             "package": "zendframework/zend-openid",
             "version": "2.0.0-beta5"
+        },
+        {
+            "package": "zendframework/zend-session",
+            "version": "2.0.0-rc1"
+        },
+        {
+            "package": "zendframework/zend-stdlib",
+            "version": "2.0.0-rc1"
+        },
+        {
+            "package": "zendframework/zend-uri",
+            "version": "2.0.0-rc1"
+        },
+        {
+            "package": "zendframework/zend-validator",
+            "version": "2.0.0-rc1"
         }
     ],
     "packages-dev": null,

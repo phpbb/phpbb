@@ -8,7 +8,9 @@
 	"minimum-stability": "beta",
 	"require": {
 		"symfony/event-dispatcher": "2.1.*",
-		"zendframework/zend-openid": "2.0.*"
+		"zendframework/zend-http": "2.0.*",
+		"zendframework/zend-openid": "2.0.*",
+		"zendframework/zend-session": "2.0.*"
 	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.x-dev"
