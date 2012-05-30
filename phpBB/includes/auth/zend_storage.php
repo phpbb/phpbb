@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package phpBB3
+* @package auth
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
  * Implements the storage methods of the ZendFramework OpenID Consumer code.
  * This allows the saving of user tokens and logins for federated logins.
  *
- * @package phpBB3
+ * @package auth
  */
 class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStorage
 {
@@ -95,5 +95,3 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 
 	}
 }
-
-?>
