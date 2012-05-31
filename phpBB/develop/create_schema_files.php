@@ -923,32 +923,35 @@ function get_schema_struct()
 		),
 	);
 
-	$schema_data['phpbb_auth_openid_association'] = array(
+	$schema_data['phpbb_auth_openid_assoc'] = array(
 		'COLUMNS'		=> array(
-			'url'			=> array('VCHAR_UNI:256', 0),
-			'handle'		=> array('VCHAR_UNI:256', 0),
-			'mac_func'		=> array('CHAR:16', 0),
-			'secret'		=> array('VCHAR_UNI:256', 0),
-			'expires'		=> array('TIMESTAMP', 0),
+			'assoc_url'			=> array('VCHAR', ''),
+			'assoc_handle'		=> array('VCHAR', ''),
+			'assoc_mac_func'	=> array('CHAR:16', ''),
+			'assoc_secret'		=> array('VCHAR', ''),
+			'assoc_expires'		=> array('TIMESTAMP', 0),
 		),
 		'PRIMARY_KEY'	=> 'url',
+		'KEYS'			=> array(
+			'hdl'		=> array('INDEX', 'assoc_handle'),
+		),
 	);
 
 	$schema_data['phpbb_auth_openid_discovery'] = array(
 		'COLUMNS'		=> array(
-			'id'			=> array('VCHAR_UNI:256', 0),
-			'realID'		=> array('VCHAR_UNI:256', 0),
-			'server'		=> array('VCHAR_UNI:256', 0),
-			'version'		=> array('VCHAR_UNI:256', 0),
-			'expires'		=> array('TIMESTAMP', 0),
+			'discovery_id'			=> array('VCHAR', ''),
+			'discovery_real_id'		=> array('VCHAR', ''),
+			'discovery_server'		=> array('VCHAR', ''),
+			'discovery_version'		=> array('VCHAR', ''),
+			'discovery_expires'		=> array('TIMESTAMP', 0),
 		),
-		'PRIMARY_KEY'	=> 'id',
+		'PRIMARY_KEY'	=> 'disocvery_id',
 	);
 
 	$schema_data['phpbb_auth_openid_nonce'] = array(
 		'COLUMNS'		=> array(
-			'nonce'			=> array('VCHAR_UNI:256', 0),
-			'created'		=> array('TIMESTAMP', 0),
+			'nonce'			=> array('VCHAR', ''),
+			'nonce_created'	=> array('TIMESTAMP', 0),
 		),
 		'PRIMARY_KEY'	=> 'nonce',
 	);

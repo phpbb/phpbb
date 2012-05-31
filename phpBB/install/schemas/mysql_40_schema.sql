@@ -90,6 +90,37 @@ CREATE TABLE phpbb_acl_users (
 );
 
 
+# Table: 'phpbb_auth_openid_assoc'
+CREATE TABLE phpbb_auth_openid_assoc (
+	assoc_url varbinary(255) DEFAULT '' NOT NULL,
+	assoc_handle varbinary(255) DEFAULT '' NOT NULL,
+	assoc_mac_func binary(16) DEFAULT '' NOT NULL,
+	assoc_secret varbinary(255) DEFAULT '' NOT NULL,
+	assoc_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (url),
+	KEY hdl (assoc_handle)
+);
+
+
+# Table: 'phpbb_auth_openid_discovery'
+CREATE TABLE phpbb_auth_openid_discovery (
+	discovery_id varbinary(255) DEFAULT '' NOT NULL,
+	discovery_real_id varbinary(255) DEFAULT '' NOT NULL,
+	discovery_server varbinary(255) DEFAULT '' NOT NULL,
+	discovery_version varbinary(255) DEFAULT '' NOT NULL,
+	discovery_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (disocvery_id)
+);
+
+
+# Table: 'phpbb_auth_openid_nonce'
+CREATE TABLE phpbb_auth_openid_nonce (
+	nonce varbinary(255) DEFAULT '' NOT NULL,
+	nonce_created int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (nonce)
+);
+
+
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
 	ban_id mediumint(8) UNSIGNED NOT NULL auto_increment,
