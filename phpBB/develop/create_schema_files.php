@@ -923,6 +923,36 @@ function get_schema_struct()
 		),
 	);
 
+	$schema_data['phpbb_auth_openid_association'] = array(
+		'COLUMNS'		=> array(
+			'url'			=> array('VCHAR_UNI:256', 0),
+			'handle'		=> array('VCHAR_UNI:256', 0),
+			'mac_func'		=> array('CHAR:16', 0),
+			'secret'		=> array('VCHAR_UNI:256', 0),
+			'expires'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'url',
+	);
+
+	$schema_data['phpbb_auth_openid_discovery'] = array(
+		'COLUMNS'		=> array(
+			'id'			=> array('VCHAR_UNI:256', 0),
+			'realID'		=> array('VCHAR_UNI:256', 0),
+			'server'		=> array('VCHAR_UNI:256', 0),
+			'version'		=> array('VCHAR_UNI:256', 0),
+			'expires'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'id',
+	);
+
+	$schema_data['phpbb_auth_openid_nonce'] = array(
+		'COLUMNS'		=> array(
+			'nonce'			=> array('VCHAR_UNI:256', 0),
+			'created'		=> array('TIMESTAMP', 0),
+		),
+		'PRIMARY_KEY'	=> 'nonce',
+	);
+
 	$schema_data['phpbb_banlist'] = array(
 		'COLUMNS'		=> array(
 			'ban_id'			=> array('UINT', NULL, 'auto_increment'),

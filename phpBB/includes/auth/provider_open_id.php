@@ -25,9 +25,14 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 
 	public function process($request)
 	{
-		$storage = new phpbb_auth_zend_storage();
+		global $db;
+		$storage = new phpbb_auth_zend_storage($db);
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
-		$consumer->check($request->variable('id', ''), $request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
+		if (!$consumer->login($request->variable('open_id_identifier', ''), 'index.php'))
+		{
+			throw new phpbb_auth_exception($consumer->getError());
+		}
+		/*$consumer->check($request->variable('id', ''), $request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
 		if ($consumer->getError())
 		{
 			throw new phpbb_auth_exception($consumer->getError());
@@ -35,6 +40,6 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		else
 		{
 			return true;
-		}
+		}*/
 	}
 }

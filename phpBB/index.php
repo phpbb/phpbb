@@ -170,11 +170,17 @@ $template->assign_vars(array(
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
-
-$auth_manager = new phpbb_auth_manager();
-$provider = $auth_manager->get_provider('open_id');
-$request->overwrite('id', 'hardolaf@gmail.com');
-$provider->process($request);
+try
+{
+	$auth_manager = new phpbb_auth_manager();
+	$provider = $auth_manager->get_provider('open_id');
+	$request->overwrite('open_id_identifier', 'hardolaf@gmail.com');
+	$provider->process($request);
+}
+catch (phpbb_auth_exception $e)
+{
+	trigger_error($e->getMessage());
+}
 
 // Output page
 page_header($user->lang['INDEX']);
