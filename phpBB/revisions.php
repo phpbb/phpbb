@@ -22,49 +22,9 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('revisions', 'viewtopic'));
 
-// Initialize data from URL
-$post_id = $request->variable('p', 0);
-// This defaults to a string on purpose
-$revision_id = $request->variable('r', '');
-
 // Initialize some defaults
+$post_id = $request->variable('p', 0);
 $revision_from_id = $revision_to_id = 0;
-
-if ($revision_id)
-{
-	preg_match('/([0-9]+)\.{3}([0-9]+)/', $revision_id, $match);
-	if (!empty($match))
-	{
-		// When revisions.php?r=1...2
-		// $match[0] contains 1...2
-		// $match[1] and $match[2] contain 1 and 2 respectively
-		$revision_from_id = $match[1];
-		$revision_to_id = $match[2];
-	}
-	else
-	{
-		$revision_to_id = (int) $revision_id;
-
-		if (!$revision_to_id)
-		{
-			trigger_error('NO_REVISIONS');
-		}
-	}
-
-	// Now get the post ID from the to (ending) revision ID
-	// since in the latter case, that's all we know
-	$sql = 'SELECT post_id
-		FROM ' . POST_REVISIONS_TABLE . '
-		WHERE revision_id = ' . (int) $revision_to_id;
-	$result = $db->sql_query($sql);
-	$post_id = $db->sql_fetchfield('post_id');
-	$db->sql_freeresult($result);
-
-	if (!$post_id)
-	{
-		trigger_error('NO_REVISIONS');
-	}
-}
 
 if ($post_id)
 {
@@ -215,5 +175,4 @@ if ($post_id)
 	page_footer();
 }
 
-// Generally, we won't get to this point, but just in case
 trigger_error('NO_REVISIONS');
