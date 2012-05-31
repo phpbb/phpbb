@@ -137,7 +137,7 @@ CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_expires INTEGER DEFAULT 0 NOT NULL
 );;
 
-ALTER TABLE phpbb_auth_openid_assoc ADD PRIMARY KEY (url);;
+ALTER TABLE phpbb_auth_openid_assoc ADD PRIMARY KEY (assoc_url);;
 
 CREATE INDEX phpbb_auth_openid_assoc_hdl ON phpbb_auth_openid_assoc(assoc_handle);;
 
@@ -150,7 +150,7 @@ CREATE TABLE phpbb_auth_openid_discovery (
 	discovery_expires INTEGER DEFAULT 0 NOT NULL
 );;
 
-ALTER TABLE phpbb_auth_openid_discovery ADD PRIMARY KEY (disocvery_id);;
+ALTER TABLE phpbb_auth_openid_discovery ADD PRIMARY KEY (discovery_id);;
 
 
 # Table: 'phpbb_auth_openid_nonce'

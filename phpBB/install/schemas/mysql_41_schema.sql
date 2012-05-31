@@ -97,7 +97,7 @@ CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_mac_func char(16) DEFAULT '' NOT NULL,
 	assoc_secret varchar(255) DEFAULT '' NOT NULL,
 	assoc_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (url),
+	PRIMARY KEY (assoc_url),
 	KEY hdl (assoc_handle)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
@@ -109,7 +109,7 @@ CREATE TABLE phpbb_auth_openid_discovery (
 	discovery_server varchar(255) DEFAULT '' NOT NULL,
 	discovery_version varchar(255) DEFAULT '' NOT NULL,
 	discovery_expires int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (disocvery_id)
+	PRIMARY KEY (discovery_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

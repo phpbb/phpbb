@@ -181,7 +181,7 @@ GO
 ALTER TABLE [phpbb_auth_openid_assoc] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_auth_openid_assoc] PRIMARY KEY  CLUSTERED 
 	(
-		[url]
+		[assoc_url]
 	)  ON [PRIMARY] 
 GO
 
@@ -204,7 +204,7 @@ GO
 ALTER TABLE [phpbb_auth_openid_discovery] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_auth_openid_discovery] PRIMARY KEY  CLUSTERED 
 	(
-		[disocvery_id]
+		[discovery_id]
 	)  ON [PRIMARY] 
 GO
 

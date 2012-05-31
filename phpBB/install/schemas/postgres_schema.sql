@@ -197,7 +197,7 @@ CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_mac_func char(16) DEFAULT '' NOT NULL,
 	assoc_secret varchar(255) DEFAULT '' NOT NULL,
 	assoc_expires INT4 DEFAULT '0' NOT NULL CHECK (assoc_expires >= 0),
-	PRIMARY KEY (url)
+	PRIMARY KEY (assoc_url)
 );
 
 CREATE INDEX phpbb_auth_openid_assoc_hdl ON phpbb_auth_openid_assoc (assoc_handle);
@@ -211,7 +211,7 @@ CREATE TABLE phpbb_auth_openid_discovery (
 	discovery_server varchar(255) DEFAULT '' NOT NULL,
 	discovery_version varchar(255) DEFAULT '' NOT NULL,
 	discovery_expires INT4 DEFAULT '0' NOT NULL CHECK (discovery_expires >= 0),
-	PRIMARY KEY (disocvery_id)
+	PRIMARY KEY (discovery_id)
 );
 
 

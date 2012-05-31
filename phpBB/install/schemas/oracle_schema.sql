@@ -219,7 +219,7 @@ CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_mac_func char(16) DEFAULT '' ,
 	assoc_secret varchar2(255) DEFAULT '' ,
 	assoc_expires number(11) DEFAULT '0' NOT NULL,
-	CONSTRAINT pk_phpbb_auth_openid_assoc PRIMARY KEY (url)
+	CONSTRAINT pk_phpbb_auth_openid_assoc PRIMARY KEY (assoc_url)
 )
 /
 
@@ -235,7 +235,7 @@ CREATE TABLE phpbb_auth_openid_discovery (
 	discovery_server varchar2(255) DEFAULT '' ,
 	discovery_version varchar2(255) DEFAULT '' ,
 	discovery_expires number(11) DEFAULT '0' NOT NULL,
-	CONSTRAINT pk_phpbb_auth_openid_discovery PRIMARY KEY (disocvery_id)
+	CONSTRAINT pk_phpbb_auth_openid_discovery PRIMARY KEY (discovery_id)
 )
 /
 

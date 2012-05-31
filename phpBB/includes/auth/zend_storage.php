@@ -24,27 +24,27 @@ if (!defined('IN_PHPBB'))
 class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStorage
 {
 
+	protected $db;
+
 	public function __construct($db)
 	{
-		$this->_db = $db;
-		$this->_association_table = AUTH_OPENID_ASSOC_TABLE;
-		$this->_discovery_table = AUTH_OPENID_DISCOVERY_TABLE;
-		$this->_nonce_table = AUTH_OPENID_NONCE_TABLE;
+		$this->db = $db;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addAssociation($url, $handle, $macFunc, $secret, $expires)
 	{
-		$table = $this->_association_table;
-		$secret = base64_encode($secret);
-		$this->_db->insert($table, array(
+		$data = array(
 			'assoc_url'     => $url,
 			'assoc_handle'  => $handle,
 			'assoc_mac_func' => $macFunc,
-			'assoc_secret'  => $secret,
+			'assoc_secret'  => base64_encode($secret),
 			'assoc_expires' => $expires,
-		));
+		);
+		$sql = 'INSERT INTO ' . AUTH_OPENID_ASSOC_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
+		$this->db->sql_query($sql);
 		return true;
 	}
 
@@ -53,20 +53,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getAssociation($url, &$handle, &$macFunc, &$secret, &$expires)
 	{
-		$table = $this->_association_table;
-		$this->_db->delete(
-			$table, $this->_db->quoteInto('expires < ?', time())
-		);
-		$select = $this->_db->select()
-				->from($table, array('assoc_handle', 'assoc_mac_func', 'assoc_secret', 'assoc_expires'))
-				->where('assoc_url = ?', $url);
-		$res = $this->_db->fetchRow($select);
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_expires < ' . time();
+		$this->db->sql_query($sql);
+		$sql = 'SELECT assoc_handle, assoc_mac_func, assoc_secret, assoc_expires FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
+		$result = $this->db->sql_query($sql);
+		$assoc = $this->db->sql_fetchrow($result);
 
-		if (is_array($res)) {
-			$handle  = $res['assoc_handle'];
-			$macFunc = $res['assoc_mac_func'];
-			$secret  = base64_decode($res['assoc_secret']);
-			$expires = $res['assoc_expires'];
+		if (is_array($assoc)) {
+			$handle  = $assoc['assoc_handle'];
+			$macFunc = $assoc['assoc_mac_func'];
+			$secret  = base64_decode($assoc['assoc_secret']);
+			$expires = $assoc['assoc_expires'];
 			return true;
 		}
 		return false;
@@ -77,20 +74,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getAssociationByHandle($handle, &$url, &$macFunc, &$secret, &$expires)
 	{
-		$table = $this->_association_table;
-		$this->_db->delete(
-			$table, $this->_db->quoteInto('assoc_expires < ', time())
-		);
-		$select = $this->_db->select()
-				->from($table, array('assoc_url', 'assoc_mac_func', 'assoc_secret', 'assoc_expires'))
-				->where('assoc_handle = ?', $handle);
-		$res = $select->fetchRow($select);
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_expires < ' . time();
+		$this->db->sql_query($sql);
+		$sql = 'SELECT assoc_url, assoc_mac_func, assoc_secret, assoc_expires FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_handle = \'' . $this->db->sql_escape($handle) . '\'';
+		$result = $this->db->sql_query($sql);
+		$assoc = $this->db->sql_fetchrow($result);
 
-		if (is_array($res)) {
-			$url     = $res['assoc_url'];
-			$macFunc = $res['assoc_mac_func'];
-			$secret  = base64_decode($res['assoc_secret']);
-			$expires = $res['assoc_expires'];
+		if (is_array($assoc)) {
+			$url     = $assoc['assoc_url'];
+			$macFunc = $assoc['assoc_mac_func'];
+			$secret  = base64_decode($assoc['assoc_secret']);
+			$expires = $assoc['assoc_expires'];
 			return true;
 		}
 		return false;
@@ -101,8 +95,8 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function delAssociation($url)
 	{
-		$table = $this->_association_table;
-		$this->_db->query("delete from $table where assoc_url = '$url'");
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
+		$this->db->sql_query($sql);
 		return true;
 	}
 
@@ -111,15 +105,15 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function addDiscoveryInfo($id, $realId, $server, $version, $expires)
 	{
-		$table = $this->_discovery_table;
-		$this->_db->insert($table, array(
+		$data = array(
 			'discovery_id'      => $id,
 			'discovery_real_id'  => $realId,
 			'discovery_server'  => $server,
 			'discovery_version' => $version,
 			'discovery_expires' => $expires,
-		));
-
+		);
+		$sql = 'INSERT INTO ' . AUTH_OPENID_DISCOVERY_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
+		$this->db->sql_query($sql);
 		return true;
 	}
 
@@ -128,18 +122,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getDiscoveryInfo($id, &$realId, &$server, &$version, &$expires)
 	{
-		$table = $this->_discovery_table;
-		$this->_db->delete($table, $this->quoteInto('discovery_expires < ?', time()));
-		$select = $this->_db->select()
-				->from($table, array('discovery_real_id', 'discovery_server', 'discovery_version', 'discovery_expires'))
-				->where('discovery_id = ?', $id);
-		$res = $this->_db->fetchRow($select);
+		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_expires < ' . time();
+		$this->db->sql_query($sql);
+		$sql = 'SELECT discovery_real_id, discovery_server, discovery_version, discovery_expires FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
+		$result = $this->db->sql_query($sql);
+		$discovery = $this->db->sql_fetchrow($result);
 
-		if (is_array($res)) {
-			$realId  = $res['discovery_real_id'];
-			$server  = $res['discovery_server'];
-			$version = $res['discovery_version'];
-			$expires = $res['discovery_expires'];
+		if (is_array($discovery)) {
+			$realId  = $discovery['discovery_real_id'];
+			$server  = $discovery['discovery_server'];
+			$version = $discovery['discovery_version'];
+			$expires = $discovery['discovery_expires'];
 			return true;
 		}
 		return false;
@@ -150,8 +143,8 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function delDiscoveryInfo($id)
 	{
-		$table = $this->_discovery_table;
-		$this->_db->delete($table, $this->_db->quoteInto('discovery_id = ?', $id));
+		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
+		$this->db->sql_query($sql);
 		return true;
 	}
 
@@ -160,11 +153,12 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function isUniqueNonce($provider, $nonce)
 	{
-		$table = $this->_nonce_table;
 		try {
-			$ret = $this->_db->insert($table, array(
+			$data = array(
 				'nonce' => $nonce,
-			));
+			);
+			$sql = 'INSERT INTO ' . AUTH_OPENID_NONCE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
+			$return = $this->db->sql_query($sql);
 		} catch (Zend_Db_Statement_Exception $e) {
 			return false;
 		}

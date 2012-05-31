@@ -1102,7 +1102,7 @@ function database_update_info()
 						'assoc_secret'		=> array('VCHAR', ''),
 						'assoc_expires'		=> array('TIMESTAMP', 0),
 					),
-					'PRIMARY_KEY'	=> 'url',
+					'PRIMARY_KEY'	=> 'assoc_url',
 					'KEYS'			=> array(
 						'hdl'		=> array('INDEX', 'assoc_handle'),
 					),
@@ -1115,7 +1115,7 @@ function database_update_info()
 						'discovery_version'		=> array('VCHAR', ''),
 						'discovery_expires'		=> array('TIMESTAMP', 0),
 					),
-					'PRIMARY_KEY'	=> 'disocvery_id',
+					'PRIMARY_KEY'	=> 'discovery_id',
 				),
 				AUTH_OPENID_NONCE_TABLE => array(
 					'COLUMNS'		=> array(
