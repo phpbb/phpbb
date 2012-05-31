@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 class acp_styles
 {
 	public $u_action;
-	
+
 	protected $u_base_action;
 	protected $s_hidden_fields;
 	protected $mode;
