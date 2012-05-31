@@ -1566,12 +1566,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				// Additionally, do not include the sender if he is in the group he wants to send to. ;)
-				if ($row['user_id'] === $user->data['user_id'])
-				{
-					continue;
-				}
-
 				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
 				$recipients[$row['user_id']] = $field;
 			}
