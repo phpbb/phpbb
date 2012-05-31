@@ -493,6 +493,14 @@ class dbal_mssqlnative extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
+	}
+
+	/**
 	* Build LIKE expression
 	* @access private
 	*/
