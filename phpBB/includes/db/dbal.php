@@ -501,6 +501,18 @@ class dbal
 	}
 
 	/**
+	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
+	*
+	* @param string $column_name	The column name to use
+	*
+	* @return string				A SQL statement like "LOWER($column_name)"
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER($column_name)";
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on
