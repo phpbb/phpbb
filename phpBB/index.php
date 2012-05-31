@@ -172,7 +172,7 @@ $template->assign_vars(array(
 );
 
 $auth_manager = new phpbb_auth_manager();
-$auth_manager->auth_method_OpenID('hardolaf@gmail.com');
+$auth_manager->auth_method_openid('hardolaf@gmail.com');
 
 // Output page
 page_header($user->lang['INDEX']);

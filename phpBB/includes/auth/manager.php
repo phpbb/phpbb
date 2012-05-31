@@ -20,13 +20,17 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_manager {
+class phpbb_auth_manager
+{
+	protected $request;
 
-	public function __construct() {
-
+	public function __construct($request)
+	{
+		$this->request = $request;
 	}
 
-	public function auth_method_chooser($method, $params = null) {
+	public function auth_method_chooser($method, $params = null)
+	{
 		switch($method)
 		{
 			case 'traditional':
@@ -38,16 +42,17 @@ class phpbb_auth_manager {
 		}
 	}
 
-	public function auth_method_traditional() {
+	public function auth_method_traditional()
+	{
 
 	}
 
-	public function auth_method_OpenID($id) {
-		global $request;
+	public function auth_method_openid($id)
+	{
 		$storage = new phpbb_auth_zend_storage();
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
-		$consumer->check($id, $request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
-		if($consumer->getError())
+		$consumer->check($id, $this->request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
+		if ($consumer->getError())
 		{
 			die($consumer->getError());
 		}
@@ -57,7 +62,8 @@ class phpbb_auth_manager {
 		}
 	}
 
-	public function auth_method_facebook_connect() {
+	public function auth_method_facebook_connect()
+	{
 		return null;
 	}
 }
