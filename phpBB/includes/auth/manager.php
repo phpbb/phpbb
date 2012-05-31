@@ -16,54 +16,22 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* This class handles the selection of auth method which
+* This class handles the selection of authentication provider to use.
 *
 * @package auth
 */
 class phpbb_auth_manager
 {
-	protected $request;
-
-	public function __construct($request)
+	public function get_authenticator($authType)
 	{
-		$this->request = $request;
-	}
-
-	public function auth_method_chooser($method, $params = null)
-	{
-		switch($method)
+		$authenticator = 'phpbb_auth_provider_'.$authType;
+		if(class_exists($authenticator))
 		{
-			case 'traditional':
-				return $this->auth_method_traditional();
-			case 'OpenID':
-				return $this->auth_method_OpenID($params['id']);
-			case 'facebook_connect':
-				return $this->auth_method_facebook_connect();
-		}
-	}
-
-	public function auth_method_traditional()
-	{
-
-	}
-
-	public function auth_method_openid($id)
-	{
-		$storage = new phpbb_auth_zend_storage();
-		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
-		$consumer->check($id, $this->request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
-		if ($consumer->getError())
-		{
-			die($consumer->getError());
+			return new $authenticator();
 		}
 		else
 		{
-			return true;
+			// Throw error
 		}
-	}
-
-	public function auth_method_facebook_connect()
-	{
-		return null;
 	}
 }
