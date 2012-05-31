@@ -30,7 +30,7 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		$consumer->check($request->variable('id', ''), $request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
 		if ($consumer->getError())
 		{
-			die($consumer->getError());
+			throw new phpbb_auth_exception($consumer->getError());
 		}
 		else
 		{

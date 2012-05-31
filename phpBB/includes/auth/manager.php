@@ -22,16 +22,16 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_manager
 {
-	public function get_authenticator($authType)
+	public function get_provider($auth_type)
 	{
-		$authenticator = 'phpbb_auth_provider_'.$authType;
-		if(class_exists($authenticator))
+		$provider = 'phpbb_auth_provider_' . $auth_type;
+		if (class_exists($provider))
 		{
-			return new $authenticator();
+			return new $provider();
 		}
 		else
 		{
-			// Throw error
+			throw new phpbb_auth_exception('Authentication provider, ' . $provider . ', not found.');
 		}
 	}
 }
