@@ -53,13 +53,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getAssociation($url, &$handle, &$macFunc, &$secret, &$expires)
 	{
-		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_expires < ' . time();
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . '
+				WHERE assoc_expires < ' . time();
 		$this->db->sql_query($sql);
-		$sql = 'SELECT assoc_handle, assoc_mac_func, assoc_secret, assoc_expires FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
+		$sql = 'SELECT assoc_handle, assoc_mac_func, assoc_secret, assoc_expires
+				FROM ' . AUTH_OPENID_ASSOC_TABLE . '
+				WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
 		$result = $this->db->sql_query($sql);
 		$assoc = $this->db->sql_fetchrow($result);
 
-		if (is_array($assoc)) {
+		if (is_array($assoc))
+		{
 			$handle  = $assoc['assoc_handle'];
 			$macFunc = $assoc['assoc_mac_func'];
 			$secret  = base64_decode($assoc['assoc_secret']);
@@ -74,13 +78,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getAssociationByHandle($handle, &$url, &$macFunc, &$secret, &$expires)
 	{
-		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_expires < ' . time();
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . '
+				WHERE assoc_expires < ' . time();
 		$this->db->sql_query($sql);
-		$sql = 'SELECT assoc_url, assoc_mac_func, assoc_secret, assoc_expires FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_handle = \'' . $this->db->sql_escape($handle) . '\'';
+		$sql = 'SELECT assoc_url, assoc_mac_func, assoc_secret, assoc_expires 
+				FROM ' . AUTH_OPENID_ASSOC_TABLE . '
+				WHERE assoc_handle = \'' . $this->db->sql_escape($handle) . '\'';
 		$result = $this->db->sql_query($sql);
 		$assoc = $this->db->sql_fetchrow($result);
 
-		if (is_array($assoc)) {
+		if (is_array($assoc))
+		{
 			$url     = $assoc['assoc_url'];
 			$macFunc = $assoc['assoc_mac_func'];
 			$secret  = base64_decode($assoc['assoc_secret']);
@@ -95,7 +103,8 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function delAssociation($url)
 	{
-		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . ' WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
+		$sql = 'DELETE FROM ' . AUTH_OPENID_ASSOC_TABLE . '
+				WHERE assoc_url = \'' . $this->db->sql_escape($url) . '\'';
 		$this->db->sql_query($sql);
 		return true;
 	}
@@ -122,13 +131,17 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function getDiscoveryInfo($id, &$realId, &$server, &$version, &$expires)
 	{
-		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_expires < ' . time();
+		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . '
+				WHERE discovery_expires < ' . time();
 		$this->db->sql_query($sql);
-		$sql = 'SELECT discovery_real_id, discovery_server, discovery_version, discovery_expires FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
+		$sql = 'SELECT discovery_real_id, discovery_server, discovery_version, discovery_expires 
+				FROM ' . AUTH_OPENID_DISCOVERY_TABLE . '
+				WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
 		$result = $this->db->sql_query($sql);
 		$discovery = $this->db->sql_fetchrow($result);
 
-		if (is_array($discovery)) {
+		if (is_array($discovery))
+		{
 			$realId  = $discovery['discovery_real_id'];
 			$server  = $discovery['discovery_server'];
 			$version = $discovery['discovery_version'];
@@ -143,7 +156,8 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function delDiscoveryInfo($id)
 	{
-		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . ' WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
+		$sql = 'DELETE FROM ' . AUTH_OPENID_DISCOVERY_TABLE . '
+				WHERE discovery_id = \'' . $this->db->sql_escape($id) . '\'';
 		$this->db->sql_query($sql);
 		return true;
 	}
@@ -153,13 +167,16 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function isUniqueNonce($provider, $nonce)
 	{
-		try {
+		try
+		{
 			$data = array(
 				'nonce' => $nonce,
 			);
 			$sql = 'INSERT INTO ' . AUTH_OPENID_NONCE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
 			$return = $this->db->sql_query($sql);
-		} catch (Zend_Db_Statement_Exception $e) {
+		}
+		catch (Zend_Db_Statement_Exception $e)
+		{
 			return false;
 		}
 		return true;
