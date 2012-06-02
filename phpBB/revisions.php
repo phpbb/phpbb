@@ -22,157 +22,89 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('revisions', 'viewtopic'));
 
-// Initialize some defaults
-$post_id = $request->variable('p', 0);
-$revision_from_id = $revision_to_id = 0;
-
-if ($post_id)
+if (!($post_id = $request->variable('p', 0)))
 {
-	$post = new phpbb_revisions_post($post_id);
-	$post_data = $post->get('post_data');
-
-	// We check one property that all posts should have
-	// to make sure we specified an existing post
-	if (empty($post_data['post_id']))
-	{
-		trigger_error('NO_POST');
-	}
-
-	$revisions = $post->load_revisions();
-
-	// Get the total number of revisions
-	$total_revisions = count($revisions);
-
-	if (!$total_revisions)
-	{
-		trigger_error('NO_REVISIONS_POST');
-	}
-	
-	if ($total_revisions > 1)
-	{
-		// Sort the revisions based on ID with a custom sort method
-		uasort($revisions, array('phpbb_revisions_post', 'sort_post_revisions'));
-
-		// Now we count the number of different users who have made revisions to the post
-		$revision_users = array();
-		foreach ($revisions as $revision)
-		{
-			if (!in_array($revision->get('user_id'), $revision_users))
-			{
-				$revision_users[] = $revision->get('user_id');
-			}
-		}
-		$total_revision_users = count($revision_users);
-
-		// If we have not been given an ending point, set it to the final revision
-		$revision_to = $revision_to_id && isset($revisions[$revision_to_id]) ? $revisions[$revision_to_id] : end($revisions);
-		// If we are using the final revision, we would like to have its ID available
-		$revision_to_id = $revision_to->get('id');
-		
-		// If we have not been given a starting point, and we are viewing revisions by post, grab the first revision
-		// otherwise, if we have not been given a starting revision we will need to grab the previous revision's ID from the database.
-		if (!$revision_from_id || !isset($revisions[$revision_from_id]))
-		{
-			$sql = 'SELECT revision_id
-				FROM ' . POST_REVISIONS_TABLE . '
-				WHERE post_id = ' . (int) $post_id . "
-				ORDER BY revision_id " . ($revision_id ? 'DESC' : 'ASC') . '
-				LIMIT 1';
-			$result = $db->sql_query($sql);
-			$revision_from_id = $db->sql_fetchfield('revision_id');
-			$db->sql_freeresult($result);
-		}
-	}
-
-	// If we only have one revision and/or there aren't any previous revisions to load, just compare it to itself
-	$revision_from = ($total_revisions == 1 || !$revision_from_id) ? $revision_to : $revisions[$revision_from_id];
-
-	// We only allow two revisions from the same post to be diff'd
-	if ($revision_from->get('post') != $revision_to->get('post'))
-	{
-		trigger_error('REVISIONS_FROM_DIFFERENT_POSTS');
-	}
-
-	if (!class_exists('FineDiff'))
-	{
-		include("{$phpbb_root_path}includes/revisions/finediff.{$phpEx}");
-	}
-
-	// We use word granularity because character granularity can be too confusing and line-granularity is not aesthetically pleasing for prose diffs
-	$subject_diff = new FineDiff($revision_from->get('subject'), $revision_to->get('subject'), FineDiff::$wordGranularity);
-	$r_subject_diff = $subject_diff->renderDiffToHTML();// : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
-
-	$text_diff = new FineDiff($revision_from->get('text_raw'), $revision_to->get('text_raw'), FineDiff::$wordGranularity);
-	$r_text_diff = $text_diff->renderDiffToHTML();// : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
-
-	$subject_additions = $subject_deletions = $text_additions = $text_deletions = 0;;
-
-	// Count additions and deletions
-	foreach ($text_diff->getOps() as $op)
-	{
-		if ($op instanceof FineDiffInsertOp)
-		{
-			$text_additions++;
-		}
-		else if ($op instanceof FineDiffDeleteOp)
-		{
-			$text_deletions++;
-		}
-	}
-
-	$r_text_diff = $r_text_diff;//($text_additions || $text_deletions) ? $r_text_diff : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('text'));
-	$r_subject_diff = $r_subject_diff;//($subject_additions || $subject_deletions) ? $r_subject_diff : ('<span class="error">' . $user->lang('NO_DIFF') . '</span><br />' . $revision_to->get('subject'));
-
-	// Consolidate some language strings
-	$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . ' ' . $user->lang('BY') . ' ' . $user->lang('REVISION_USER_COUNT', $total_revision_users);
-	$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_additions) . ' ' . strtolower($user->lang('AND')) . ' ' . $user->lang('REVISION_DELETIONS', $text_deletions);
-
-	// We want to display a list of revisions with a few details about each
-	// But we want it in order from most recent -> oldest, so we have to flip it
-	//$revisions = array_reverse($revisions, true);
-	$revision_number = 1;
-	foreach ($revisions as $revision)
-	{
-		echo 'Revision From ID: ' . $revision_from_id . '<br />';
-		echo 'Revision ID: ' . $revision->get('id') . '<br />';
-		echo 'Revision To ID: ' . $revision_to_id . '<br /><br />';
-		// Only show revisions within the from -> to range
-		$revisions_block = array(
-			'USERNAME'			=> $revision->get('username'),
-			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
-			'DATE'				=> $user->format_date($revision->get('time')),
-			'REASON'			=> $revision->get('reason'),
-			'ID'				=> $revision->get('id'),
-			'NUMBER'			=> $revision_number,
-
-			'IN_RANGE'			=> ($revision_to_id === 0 && $post_id) || ($revision->get('id') >= $revision_from_id && $revision->get('id') <= $revision_to_id),
-			'CURRENT_REVISION'	=> $revision->get('id') === 0,
-
-			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
-			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
-		);
-
-		$template->assign_block_vars('revisions', $revisions_block);
-		$revision_number++;
-	}
-
-	$template->assign_vars(array(
-		'DISPLAY_COMPARISON'	=> true,
-		'TEXT_DIFF'				=> $r_text_diff,
-		'SUBJECT_DIFF'			=> $r_subject_diff,
-
-		'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-		'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revision_to->get('time'))),
-		'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-	));
-	// Ready the page for viewing
-	page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
-
-	$template->set_filenames(array(
-		'body'		=> 'revisions_body.html',
-	));
-
-	page_footer();
+	trigger_error('NO_POST');
 }
 
-trigger_error('NO_REVISIONS');
+$post = new phpbb_revisions_post($post_id);
+$post_data = $post->get('post_data');
+
+if (empty($post_data['post_id']))
+{
+	trigger_error('NO_POST');
+}
+
+$revisions = $post->get_revisions();
+
+// Get the total number of revisions
+$total_revisions = count($revisions);
+
+if (!count($total_revisions))
+{
+	trigger_error('NO_REVISIONS_POST');
+}
+
+// Display the current revision of the post as it would appear in the topic
+$current = $revisions[0];
+$template->assign_vars(array(
+	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+	'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+	
+	'RANK_TITLE'		=> $post_data['rank_title'],
+	'RANK_IMG'			=> $post_data['rank_image'],
+	'RANK_IMG_SRC'		=> $post_data['rank_image_src'],
+
+	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
+
+	'POST_DATE'			=> $user->format_date($post_data['post_time']),
+	'POST_SUBJECT'		=> $current->get('post_subject'),
+	'MESSAGE'			=> $current->get('text'),
+	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
+
+	'MINI_POST_IMG'		=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
+	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
+
+	'POST_ID'			=> $post_data['post_id'],
+	'POSTER_ID'			=> $poster_id,
+));
+
+$revision_number = 1;
+foreach ($revisions as $revision)
+{
+	// Only show revisions within the from -> to range
+	$revisions_block = array(
+		'USERNAME'			=> $revision->get('username'),
+		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
+		'DATE'				=> $user->format_date($revision->get('time')),
+		'REASON'			=> $revision->get('reason'),
+		'ID'				=> $revision->get('id'),
+		'NUMBER'			=> $revision_number,
+
+		'IN_RANGE'			=> true,
+		'CURRENT_REVISION'	=> $revision->get('id') === 0,
+
+		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
+		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
+	);
+
+	$template->assign_block_vars('revisions', $revisions_block);
+	$revision_number++;
+}
+
+$template->assign_vars(array(
+	'DISPLAY_COMPARISON'	=> true,
+	'TEXT_DIFF'				=> $revisions[0]->get('text'),
+	'SUBJECT_DIFF'			=> $revisions[0]->get('subject'),
+	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
+	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revisions[0]->get('time'))),
+	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
+));
+// Ready the page for viewing
+page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
+
+$template->set_filenames(array(
+	'body'		=> 'revisions_body.html',
+));
+
+page_footer();

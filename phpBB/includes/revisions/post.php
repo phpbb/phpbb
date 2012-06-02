@@ -6,7 +6,7 @@ class phpbb_revisions_post
 
 	private $post_id;
 	private $post_data;
-	private $revisions = array();
+	private $revisions;
 
 	/**
 	* Constructor, initialize some class properties
@@ -18,7 +18,7 @@ class phpbb_revisions_post
 
 		$this->post_id = (int) $id;
 
-		$this->load_post_data();
+		$this->get_post_data();
 	}
 
 	/**
@@ -26,14 +26,24 @@ class phpbb_revisions_post
 	*
 	* @return array Array of post data from database
 	*/
-	public function load_post_data()
+	public function get_post_data()
+	{
+		return $post_data ?: $this->load_post_data();
+	}
+
+	/**
+	* Load post data into an array
+	*
+	* @return array Array of post data from database
+	*/
+	private function load_post_data()
 	{
 		if (!$this->post_id)
 		{
 			return false;
 		}
 
-		$sql = 'SELECT p.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
+		$sql = 'SELECT p.*, u.*
 			FROM ' . POSTS_TABLE . ' p
 			LEFT JOIN ' . USERS_TABLE . ' u
 				ON u.user_id = p.poster_id
@@ -42,16 +52,30 @@ class phpbb_revisions_post
 		$this->post_data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		$post_data['user_sig_options'] = ($row['enable_bbcode'] ? OPTION_FLAG_BBCODE : 0) +
+										($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0) +
+										($row['enable_magic_url'] ? OPTION_FLAG_LINKS : 0);
+		$this->post_data['user_sig_parsed'] = generate_text_for_display($this->post_data['user_sig'], $this->post_data['user_sig_bbcode_uid'], $this->post_data['user_sig_bbcode_bitfield'], $this->post_data['user_sig_options']);
+
 		return $this->post_data;
 	}
 
+	/**
+	* Return revision array
+	*
+	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
+	*/
+	public function get_revisions()
+	{
+		return $this->revisions ? $this->revisions : $this->load_revisions();
+	}
 
 	/**
 	* Retrieve all revisions from a specified post from database
 	*
 	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
 	*/
-	public function load_revisions()
+	private function load_revisions()
 	{
 		if (!$this->post_id)
 		{
@@ -114,6 +138,8 @@ class phpbb_revisions_post
 			'enable_magic_url'		=> $this->post_data['enable_magic_url'],
 			'revision_reason'		=> $this->post_data['post_edit_reason'],
 		));
+
+		uasort($this->revisions, array('phpbb_revisions_post', 'sort_post_revisions'));
 
 		return $this->revisions;
 	}
