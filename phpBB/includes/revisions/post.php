@@ -43,10 +43,12 @@ class phpbb_revisions_post
 			return false;
 		}
 
-		$sql = 'SELECT p.*, u.*
+		$sql = 'SELECT p.*, u.*, r.*
 			FROM ' . POSTS_TABLE . ' p
 			LEFT JOIN ' . USERS_TABLE . ' u
 				ON u.user_id = p.poster_id
+			LEFT JOIN ' . RANKS_TABLE . ' r
+				ON r.rank_id = u.user_rank
 			WHERE p.post_id = ' . (int) $this->post_id;
 		$result = $this->db->sql_query($sql);
 		$this->post_data = $this->db->sql_fetchrow($result);

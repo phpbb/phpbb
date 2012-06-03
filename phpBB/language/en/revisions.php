@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
-	'REVISIONS_COMPARE_TITLE'			=> 'Comparing post revisions',
+	'REVISIONS_COMPARE_TITLE'			=> 'Post Revision History',
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
 	'REVISION_USER_COUNT'				=> array(
 		0		=> '0 users',

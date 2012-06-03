@@ -53,17 +53,20 @@ $template->assign_vars(array(
 	
 	'RANK_TITLE'		=> $post_data['rank_title'],
 	'RANK_IMG'			=> $post_data['rank_image'],
-	'RANK_IMG_SRC'		=> $post_data['rank_image_src'],
 
 	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $current->get('post_subject'),
+	'POST_SUBJECT'		=> $current->get('subject'),
 	'MESSAGE'			=> $current->get('text'),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
-	'MINI_POST_IMG'		=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
-	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
+	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
+	'POSTER_POSTS'		=> $post_data['user_posts'],
+	'POSTER_LOCATION'	=> $post_data['user_from'],
+
+	'MINI_POST_IMG'		=> $user->img('icon_post_target', 'POST'),
+	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_data['post_id']) . '#p' . $post_data['post_id'],
 
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $poster_id,
