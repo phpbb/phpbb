@@ -2305,6 +2305,13 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
+				'autologin_keys'	=> array(
+					'base'		=> 'ucp_profile',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PROFILE',
+				),
 			);
 
 			_add_modules($modules_to_install);
