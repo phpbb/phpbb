@@ -1458,7 +1458,7 @@ class acp_users
 				$data = array(
 					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
-					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
+					'tz'				=> request_var('tz', $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
 					'dst'				=> request_var('dst', $user_row['user_dst']),
 					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
@@ -1495,7 +1495,7 @@ class acp_users
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-						'tz'			=> array('num', false, -14, 14),
+						'tz'			=> array('timezone'),
 
 						'topic_sk'		=> array('string', false, 1, 1),
 						'topic_sd'		=> array('string', false, 1, 1),
