@@ -120,7 +120,10 @@ class ucp_register
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
-				$coppa_birthday = $user->format_date(mktime($now['hours'] + $user->data['user_dst'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday'] - 1, $now['year'] - 13), $user->lang['DATE_FORMAT']);
+				$coppa_birthday = $user->create_datetime()
+					->setDate($now['year'] - 13, $now['mon'], $now['mday'] - 1)
+					->setTime(0, 0, 0)
+					->format($user->lang['DATE_FORMAT'], true);
 				unset($now);
 
 				$template->assign_vars(array(
@@ -163,7 +166,6 @@ class ucp_register
 			$captcha->init(CONFIRM_REG);
 		}
 
-		$is_dst = $config['board_dst'];
 		$timezone = $config['board_timezone'];
 
 		$data = array(
@@ -280,7 +282,6 @@ class ucp_register
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> $data['tz'],
-					'user_dst'				=> $is_dst,
 					'user_lang'				=> $data['lang'],
 					'user_type'				=> $user_type,
 					'user_actkey'			=> $user_actkey,
