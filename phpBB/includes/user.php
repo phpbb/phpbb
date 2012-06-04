@@ -126,7 +126,7 @@ class phpbb_user extends phpbb_session
 		if (is_numeric($this->tz))
 		{
 			// Might still be numeric by chance
-			$this->tz = sprintf('Etc/GMT%+d', ($this->tz + ($this->data['user_id'] != ANONYMOUS ? $this->data['user_dst'] : $config['board_dst'])));
+			$this->tz = sprintf('Etc/GMT%+d', $this->tz);
 		}
 
 		$this->tz = new DateTimeZone($this->tz);

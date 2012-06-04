@@ -1971,7 +1971,7 @@ function change_database_data(&$no_updates, $version)
 					'user_email'			=> '',
 					'user_lang'				=> $config['default_lang'],
 					'user_style'			=> $config['default_style'],
-					'user_timezone'			=> 0,
+					'user_timezone'			=> 'UTC',
 					'user_dateformat'		=> $config['default_dateformat'],
 					'user_allow_massemail'	=> 0,
 				);

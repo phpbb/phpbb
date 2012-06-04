@@ -43,7 +43,6 @@ class ucp_prefs
 					'style'			=> request_var('style', (int) $user->data['user_style']),
 					'tz'			=> request_var('tz', $user->data['user_timezone']),
 
-					'dst'			=> request_var('dst', (bool) $user->data['user_dst']),
 					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
 					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
 					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
@@ -93,7 +92,6 @@ class ucp_prefs
 							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> $user->data['user_options'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -145,7 +143,6 @@ class ucp_prefs
 					'S_HIDE_ONLINE'		=> $data['hideonline'],
 					'S_NOTIFY_PM'		=> $data['notifypm'],
 					'S_POPUP_PM'		=> $data['popuppm'],
-					'S_DST'				=> $data['dst'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),

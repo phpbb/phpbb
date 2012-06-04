@@ -1460,7 +1460,6 @@ class acp_users
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
 					'tz'				=> request_var('tz', $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
-					'dst'				=> request_var('dst', $user_row['user_dst']),
 					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
@@ -1531,7 +1530,6 @@ class acp_users
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -1654,7 +1652,6 @@ class acp_users
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
 					'POPUP_PM'			=> $data['popuppm'],
-					'DST'				=> $data['dst'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
