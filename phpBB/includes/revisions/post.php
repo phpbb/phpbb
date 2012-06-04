@@ -150,7 +150,7 @@ class phpbb_revisions_post
 	* Revert the post to a different revision. The revision must be linked to this object's post id
 	*
 	* @param int $new_revision_id ID of the revision to switch to
-	* @return null
+	* @return bool True/false based on success or failure
 	*/
 	public function revert($new_revision_id)
 	{
@@ -159,38 +159,49 @@ class phpbb_revisions_post
 			return false;
 		}
 
+		$this->db->sql_transaction('begin');
+
 		// First, we create a new revision with the current post information
 		$sql_insert_ary = array(
-			'post_id'				=> $data['post_id'],
-			'user_id'				=> $data['poster_id'],
+			'post_id'				=> $this->post_data['post_id'],
+			'user_id'				=> $this->post_data['poster_id'],
 			'revision_time'			=> time(),
-			'revision_subject'		=> $data['post_subject'],
-			'revision_text'			=> $data['post_text'],
-			'revision_checksum'		=> $data['post_checksum'],
-			'revision_attachment'	=> $data['post_attachment'],
-			'bbcode_bitfield'		=> $data['bbcode_bitfield'],
-			'bbcode_uid'			=> $data['bbcode_uid'],
-			'revision_reason'		=> $data['post_edit_reason'],
+			'revision_subject'		=> $this->post_data['post_subject'],
+			'revision_text'			=> $this->post_data['post_text'],
+			'revision_checksum'		=> $this->post_data['post_checksum'],
+			'revision_attachment'	=> $this->post_data['post_attachment'],
+			'bbcode_bitfield'		=> $this->post_data['bbcode_bitfield'],
+			'bbcode_uid'			=> $this->post_data['bbcode_uid'],
+			'revision_reason'		=> $this->post_data['post_edit_reason'],
 		);
+
 		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_insert_ary);
-		$db->sql_query($sql);
+		$this->db->sql_query($sql);
+
+		$new_revision = $this->revisions[$new_revision_id];
+		var_dump($new_revision);
 
 		// Next, we update the post table with the information from the new revision
 		$sql_update_ary = array(
-			'poster_id'			=> $this->revisions[$new_revision_id]['user_id'],
-			'post_edit_time'	=> $this->revisions[$new_revision_id]['revision_time'],
-			'post_subject'		=> $this->revisions[$new_revision_id]['revision_subject'],
-			'post_text'			=> $this->revisions[$new_revision_id]['revision_text'],
-			'post_checksum'		=> $this->revisions[$new_revision_id]['revision_checksum'],
-			'post_attachment'	=> $this->revisions[$new_revision_id]['revision_attachment'],
-			'bbcode_bitfield'	=> $this->revisions[$new_revision_id]['bbcode_bitfield'],
-			'bbcode_uid'		=> $this->revisions[$new_revision_id]['bbcode_uid'],
-			'post_reason'		=> $this->revisions[$new_revision_id]['revision_reason'],
+			'post_edit_user'	=> $new_revision->get('user_id'),
+			'post_edit_time'	=> $new_revision->get('revision_time'),
+			'post_subject'		=> $new_revision->get('revision_subject'),
+			'post_text'			=> $new_revision->get('revision_text'),
+			'post_checksum'		=> $new_revision->get('revision_checksum'),
+			'post_attachment'	=> $new_revision->get('revision_attachment'),
+			'bbcode_bitfield'	=> $new_revision->get('bbcode_bitfield'),
+			'bbcode_uid'		=> $new_revision->get('bbcode_uid'),
+			'post_reason'		=> $new_revision->get('revision_reason'),
 		);
+
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $sql_update_ary) . '
-			WHERE post_id = ' . $this->revisions[$new_revision_id]['post_id'];
-		$db->sql_squery($sql);
+			WHERE post_id = ' . $new_revision->get('post_id');
+		$this->db->sql_query($sql);
+
+		$this->db->sql_transaction('commit');
+
+		return true;
 	}
 
 	/**
