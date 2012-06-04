@@ -74,7 +74,7 @@ $lang = array_merge($lang, array(
 	'ALL_FORUMS'					=> 'All forums',
 	'ALL_MESSAGES'					=> 'All messages',
 	'ALL_POSTS'						=> 'All posts',
-	'ALL_TIMES'						=> 'All times are %1$s %2$s',
+	'ALL_TIMES'						=> 'All times are <abbr title="%2$s">%1$s</abbr>',
 	'ALL_TOPICS'					=> 'All Topics',
 	'AND'							=> 'And',
 	'ARE_WATCHING_FORUM'			=> 'You have subscribed to be notified of new posts in this forum.',
