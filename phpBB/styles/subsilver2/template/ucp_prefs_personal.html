@@ -78,10 +78,6 @@
 	</td>
 </tr>
 <tr>
-	<td class="row1" width="50%"><b class="genmed">{L_BOARD_DST}:</b></td>
-	<td class="row2"><input type="radio" class="radio" name="dst" value="1"<!-- IF S_DST --> checked="checked"<!-- ENDIF --> /> <span class="genmed">{L_YES}</span>&nbsp;&nbsp;<input type="radio" class="radio" name="dst" value="0"<!-- IF not S_DST --> checked="checked"<!-- ENDIF --> /> <span class="genmed">{L_NO}</span></td>
-</tr>
-<tr>
 	<td class="row1" width="50%"><b class="genmed">{L_BOARD_DATE_FORMAT}:</b><br /><span class="gensmall">{L_BOARD_DATE_FORMAT_EXPLAIN}</span></td>
 	<td class="row2">
 		<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }">

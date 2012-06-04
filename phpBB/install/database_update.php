@@ -1109,6 +1109,9 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_legend'		=> array('UINT', 0),
 				),
+				USERS_TABLE			=> array(
+					'user_timezone'		=> array('VCHAR:100', ''),
+				),
 			),
 		),
 	);
