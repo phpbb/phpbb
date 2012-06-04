@@ -100,7 +100,7 @@ class ucp_register
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
 					'lang'				=> $user->lang_name,
-					'tz'				=> request_var('tz', (float) $config['board_timezone']),
+					'tz'				=> request_var('tz', $config['board_timezone']),
 				));
 
 			}
@@ -172,7 +172,7 @@ class ucp_register
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
 			'lang'				=> basename(request_var('lang', $user->lang_name)),
-			'tz'				=> request_var('tz', (float) $timezone),
+			'tz'				=> request_var('tz', $timezone),
 		);
 
 		// Check and initialize some variables if needed
@@ -189,7 +189,7 @@ class ucp_register
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('email')),
-				'tz'				=> array('num', false, -14, 14),
+				'tz'				=> array('timezone'),
 				'lang'				=> array('language_iso_name'),
 			));
 
@@ -279,7 +279,7 @@ class ucp_register
 					'user_password'			=> phpbb_hash($data['new_password']),
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
-					'user_timezone'			=> (float) $data['tz'],
+					'user_timezone'			=> $data['tz'],
 					'user_dst'				=> $is_dst,
 					'user_lang'				=> $data['lang'],
 					'user_type'				=> $user_type,
@@ -453,7 +453,7 @@ class ucp_register
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
-			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
+			'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
