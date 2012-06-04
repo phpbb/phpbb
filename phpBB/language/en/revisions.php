@@ -54,6 +54,8 @@ $lang = array_merge($lang, array(
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 	'NO_REASON'					=> 'No reason given.',
 
+	'REVERT_POST_TITLE'			=> 'Revert post to another revision',
+	'REVERT_POST_TITLE_CONFIRM'	=> '<strong>Are you sure you wish to revert this post to the selected revision?</strong><br />A new revision containing the current post will be created so that you can undo this change later if desired.',
 	'REVISION'							=> 'Revision',
 	'REVISIONS'							=> 'Revisions',
 	'REVISION_COUNT'					=> array(

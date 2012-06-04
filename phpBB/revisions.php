@@ -28,14 +28,31 @@ if (!($post_id = $request->variable('p', 0)))
 }
 
 $post = new phpbb_revisions_post($post_id);
-$post_data = $post->get('post_data');
+$post_data = $post->get_post_data();
+$revisions = $post->get_revisions();
+
+// Handle reverting to a different revision
+if ($revert = $request->variable('revert', 0))
+{
+	if (confirm_box(true))
+	{
+		$post->revert($revert);
+	}
+	else
+	{
+		$s_hidden_fields = build_hidden_fields(array(
+			'post_id'	=> $post_id,
+			'revert'	=> $revert,
+		));
+
+		confirm_box(false, 'REVERT_POST_TITLE', $s_hidden_fields);
+	}
+}
 
 if (empty($post_data['post_id']))
 {
 	trigger_error('NO_POST');
 }
-
-$revisions = $post->get_revisions();
 
 // Get the total number of revisions
 $total_revisions = count($revisions);
@@ -70,13 +87,20 @@ $template->assign_vars(array(
 
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $poster_id,
+
+	// Comparison template variables
+	'DISPLAY_COMPARISON'	=> true,
+	'TEXT_DIFF'				=> $revisions[0]->get('text'),
+	'SUBJECT_DIFF'			=> $revisions[0]->get('subject'),
+	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
+	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revisions[0]->get('time'))),
+	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));
 
 $revision_number = 1;
 foreach ($revisions as $revision)
 {
-	// Only show revisions within the from -> to range
-	$revisions_block = array(
+	$template->assign_block_vars('revisions', array(
 		'USERNAME'			=> $revision->get('username'),
 		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 		'DATE'				=> $user->format_date($revision->get('time')),
@@ -89,20 +113,11 @@ foreach ($revisions as $revision)
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
 		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
-	);
-
-	$template->assign_block_vars('revisions', $revisions_block);
+		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get('post'), 'revert' => $revision->get('id'))),
+	));
 	$revision_number++;
 }
 
-$template->assign_vars(array(
-	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $revisions[0]->get('text'),
-	'SUBJECT_DIFF'			=> $revisions[0]->get('subject'),
-	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revisions[0]->get('time'))),
-	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-));
 // Ready the page for viewing
 page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
 
