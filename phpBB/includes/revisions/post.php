@@ -179,24 +179,24 @@ class phpbb_revisions_post
 		$this->db->sql_query($sql);
 
 		$new_revision = $this->revisions[$new_revision_id];
-		var_dump($new_revision);
 
 		// Next, we update the post table with the information from the new revision
 		$sql_update_ary = array(
-			'post_edit_user'	=> $new_revision->get('user_id'),
-			'post_edit_time'	=> $new_revision->get('revision_time'),
-			'post_subject'		=> $new_revision->get('revision_subject'),
-			'post_text'			=> $new_revision->get('revision_text'),
-			'post_checksum'		=> $new_revision->get('revision_checksum'),
-			'post_attachment'	=> $new_revision->get('revision_attachment'),
-			'bbcode_bitfield'	=> $new_revision->get('bbcode_bitfield'),
-			'bbcode_uid'		=> $new_revision->get('bbcode_uid'),
-			'post_reason'		=> $new_revision->get('revision_reason'),
+			'post_edit_user'	=> (int) $new_revision->get('user'),
+			'post_edit_time'	=> (int) $new_revision->get('time'),
+			'post_subject'		=> $new_revision->get('subject'),
+			'post_text'			=> $new_revision->get('text'),
+			'post_checksum'		=> $new_revision->get('checksum'),
+			'post_attachment'	=> (int) $new_revision->get('attachment'),
+			'bbcode_bitfield'	=> $new_revision->get('bitfield'),
+			'bbcode_uid'		=> (int) $new_revision->get('uid'),
+			'post_edit_reason'	=> $new_revision->get('reason'),
+			'post_edit_count'	=> 'post_edit_count + 1',
 		);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $sql_update_ary) . '
-			WHERE post_id = ' . $new_revision->get('post_id');
+			WHERE post_id = ' . (int) $new_revision->get('post');
 		$this->db->sql_query($sql);
 
 		$this->db->sql_transaction('commit');
