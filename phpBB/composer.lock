@@ -1,9 +1,13 @@
 {
-    "hash": "050843c5643922977d0d152b4fc8e897",
+    "hash": "e0ec3f91ec0ba03fd9bb1aa1b5667412",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
             "version": "v2.1.0-BETA4"
+        },
+        {
+            "package": "zendframework/zend-eventmanager",
+            "version": "2.0.0-rc1"
         },
         {
             "package": "zendframework/zend-http",

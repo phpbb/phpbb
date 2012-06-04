@@ -27,19 +27,34 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 	{
 		global $db;
 		$storage = new phpbb_auth_zend_storage($db);
-		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
-		if (!$consumer->login($request->variable('open_id_identifier', ''), 'index.php'))
+		$this->consumer = $consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+
+		if($request->variable('open_id_identifier', '') == '')
 		{
-			throw new phpbb_auth_exception($consumer->getError());
-		}
-		/*$consumer->check($request->variable('id', ''), $request->server('PHP_SELF'), 'https://www.google.com/accounts/o8/id');
-		if ($consumer->getError())
-		{
-			throw new phpbb_auth_exception($consumer->getError());
+			throw new phpbb_auth_exception('No OpenID identifier supplied.');
 		}
 		else
 		{
-			return true;
-		}*/
+			$identifier = $request->variable('open_id_identifier', '');
+		}
+		$return_to = 'check_auth_openid.php';
+
+		// Enable super globals so Zend Framework does not throw errors.
+		$request->enable_super_globals();
+
+		if (!$consumer->check($identifier, $return_to))
+		{
+			if($consumer->getError() != '')
+			{
+				throw new phpbb_auth_exception($consumer->getError());
+			}
+			else
+			{
+				if(!$consumer->login($identifier, $return_to)) {
+					throw new phpbb_auth_exception($consumer->getError());
+				}
+			}
+		}
+		$request->disable_super_globals();
 	}
 }

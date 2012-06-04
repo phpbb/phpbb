@@ -174,11 +174,14 @@ try
 {
 	$auth_manager = new phpbb_auth_manager();
 	$provider = $auth_manager->get_provider('open_id');
-	$request->overwrite('open_id_identifier', 'hardolaf@gmail.com');
+	$request->overwrite('open_id_identifier', 'http://hardolaf.myopenid.com/');
 	$provider->process($request);
 }
 catch (phpbb_auth_exception $e)
 {
+	print_r('<pre>');
+	print_r($provider);
+	print_r('</pre>');
 	trigger_error($e->getMessage());
 }
 
