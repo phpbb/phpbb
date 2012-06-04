@@ -1396,6 +1396,22 @@ function validate_language_iso_name($lang_iso)
 }
 
 /**
+* Validate Timezone Name
+*
+* Tests whether a timezone name is valid
+*
+* @param string $timezone	The timezone string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function validate_timezone($timezone)
+{
+	return (in_array($timezone, DateTimeZone::listIdentifiers())) ? false : 'TIMEZONE_INVALID';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username

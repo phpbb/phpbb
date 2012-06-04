@@ -1139,34 +1139,38 @@ function tz_select($default = '', $truncate = false)
 
 	if (!isset($timezones))
 	{
-		$timezones = DateTimeZone::listIdentifiers();
+		$unsorted_timezones = DateTimeZone::listIdentifiers();
+		$timezones = array();
 
-		foreach ($timezones as &$timezone)
+		foreach ($unsorted_timezones as $timezone)
 		{
 			$tz = new DateTimeZone($timezone);
 			$dt = new phpbb_datetime('now', $tz);
 			$offset = $dt->getOffset();
 			$offset_string = phpbb_format_timezone_offset($offset);
-			$timezone = 'GMT' . $offset_string . ' - ' . $timezone;
+			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+				'tz'		=> $timezone,
+				'label'		=> 'GMT' . $offset_string . ' - ' . $timezone,
+			);
 		}
-		unset($timezone);
+		unset($unsorted_timezones);
 
-		usort($timezones, 'tz_select_compare');
+		uksort($timezones, 'tz_select_compare');
 	}
 
 	$tz_select = '';
 
 	foreach ($timezones as $timezone)
 	{
-		if (isset($user->lang['timezones'][$timezone]))
+		if (isset($user->lang['timezones'][$timezone['tz']]))
 		{
-			$title = $label = $user->lang['timezones'][$timezone];
+			$title = $label = $user->lang['timezones'][$timezone['tz']];
 		}
 		else
 		{
 			// No label, we'll figure one out
 			// @todo rtl languages?
-			$bits = explode('/', str_replace('_', ' ', $timezone));
+			$bits = explode('/', str_replace('_', ' ', $timezone['label']));
 
 			$title = $label = implode(' - ', $bits);
 		}
@@ -1176,8 +1180,8 @@ function tz_select($default = '', $truncate = false)
 			$label = truncate_string($label, 50, 255, false, '...');
 		}
 
-		$selected = ($timezone === $default) ? ' selected="selected"' : '';
-		$tz_select .= '<option title="' . $title . '" value="' . $timezone . '"' . $selected . '>' . $label . '</option>';
+		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
 	}
 
 	return $tz_select;
