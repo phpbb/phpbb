@@ -1577,11 +1577,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 
 			if ($config['track_post_revisions'] && !empty($data['original_post_data']) && ($data['poster_id'] == $user->data['user_id'] || (!$data['post_edit_locked'] ||	$auth->acl_getf('m_edit', $data['forum_id']))))
-			{
-				foreach ($data['original_post_data'] as $orig_key => $orig_value)
-				{
-					$sql_data[POST_REVISIONS_TABLE]['sql'][$orig_key] = $orig_value;
-				}
+			{				
+				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
+					'post_id'				=> $data['original_post_data']['post_id'],
+					'user_id'				=> $data['original_post_data']['user_id'],
+					'revision_time'			=> $data['original_post_data']['post_time'],
+					'revision_subject'		=> $data['original_post_data']['post_subject'],
+					'revision_text'			=> $data['original_post_data']['message'],
+					'revision_checksum'		=> $data['original_post_data']['post_checksum'],
+					'revision_attachment'	=> $data['original_post_data']['post_attachment'],
+					'bbcode_bitfield'		=> $data['original_post_data']['bbcode_bitfield'],
+					'bbcode_uid'			=> $data['original_post_data']['bbcode_uid'],
+					'revision_reason'		=> $data['original_post_data']['post_edit_reason'],
+				);
 			}
 
 		break;
@@ -1805,18 +1813,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
 			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
 		$db->sql_query($sql);
-
-		// However, we can only have up to the maximum number of revisions per post, if set
-		// So now we need to be sure we haven't overreached. If so, we delete the oldest
-		// revisions until we have the maximum we can have.
-		if ($limit = ($data['post_edit_count'] - $config['revisions_per_post_max']))
-		{
-			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-				WHERE post_id = ' . (int) $data['post_id'] . '
-				ORDER BY revision_time ASC
-				LIMIT ' . $limit;
-			$db->sql_query($sql);
-		}
 	}
 
 	// Update the posts table
