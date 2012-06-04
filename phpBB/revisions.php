@@ -36,7 +36,33 @@ if ($revert = $request->variable('revert', 0))
 {
 	if (confirm_box(true))
 	{
-		$post->revert($revert);
+		if (($revert_result = $post->revert($revert)) === REVISION_REVERT_SUCCESS)
+		{
+			// Because we've changed things up, we need to update our arrays
+			$post_data = $post->get_post_data(true);
+			$revisions = $post->get_revisions(true);
+			$template->assign_var('S_POST_REVERTED', true);
+		}
+		else
+		{
+			switch ($revert_result)
+			{
+				default:
+				case REVISION_NOT_FOUND:
+					$lang = 'ERROR_REVISION_NOT_FOUND';
+				break;
+
+				case REVISION_INSERT_FAIL:
+					$lang = 'ERROR_REVISION_INSERT_FAIL';
+				break;
+
+				case REVISION_POST_UPDATE_FAIL:
+					$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
+				break;
+			}
+
+			trigger_error($lang);
+		}
 	}
 	else
 	{

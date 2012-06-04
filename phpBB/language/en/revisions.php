@@ -37,15 +37,11 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'BY'			=> 'by',
 
+	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
+	'ERROR_REVISION_INSERT_FAIL'		=> 'An error occurred when attempting to insert a new revisions.',
+	'ERROR_REVISION_POST_UPDATE_FAIL'	=> 'An error occurred when attempting to update the post to the specified revision.',
+
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
-	'REVISION_ADDITIONS'		=> array(
-		1 =>'1 addition',
-		2 => '%1$s additions',
-	),
-	'REVISION_DELETIONS'		=> array(
-		1 =>'1 deletion',
-		2 => '%1$s deletions',
-	),
 
 	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view these revisions.',
 	'NO_DIFF'					=> 'There are no differences to display within the specified revision range.',
@@ -54,16 +50,26 @@ $lang = array_merge($lang, array(
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 	'NO_REASON'					=> 'No reason given.',
 
+	'POST_REVERTED_SUCCESS'			=> 'The post has been reverted to the selected revision.',
+
 	'REVERT_POST_TITLE'			=> 'Revert post to another revision',
 	'REVERT_POST_TITLE_CONFIRM'	=> '<strong>Are you sure you wish to revert this post to the selected revision?</strong><br />A new revision containing the current post will be created so that you can undo this change later if desired.',
 	'REVISION'							=> 'Revision',
 	'REVISIONS'							=> 'Revisions',
+	'REVISION_ADDITIONS'		=> array(
+		1 =>'1 addition',
+		2 => '%1$s additions',
+	),
 	'REVISION_COUNT'					=> array(
 		0		=> '0 revisions',
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
 	'REVISIONS_COMPARE_TITLE'			=> 'Post Revision History',
+	'REVISION_DELETIONS'		=> array(
+		1 =>'1 deletion',
+		2 => '%1$s deletions',
+	),
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
 	'REVISION_USER_COUNT'				=> array(
 		0		=> '0 users',

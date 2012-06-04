@@ -2,12 +2,30 @@
 
 class phpbb_revisions_post
 {
+	/**
+	* phpBB DBAL Object
+	* @var dbal
+	*/
 	private $db;
 
+	/**
+	* Post ID number
+	* @var int
+	*/
 	private $post_id;
-	private $post_data;
-	private $revisions;
 
+	/**
+	* Array of data for the post
+	* @var array
+	*/
+	private $post_data;
+
+	/**
+	* Array of revisions for the post
+	* @var array
+	*/
+	private $revisions;
+	
 	/**
 	* Constructor, initialize some class properties
 	*/
@@ -24,11 +42,12 @@ class phpbb_revisions_post
 	/**
 	* Load post data into an array
 	*
+	* @param bool $refresh If true, the data will be reloaded whether it has been loaded already or not
 	* @return array Array of post data from database
 	*/
-	public function get_post_data()
+	public function get_post_data($refresh = false)
 	{
-		return $post_data ?: $this->load_post_data();
+		return $refresh || empty($post_data) ? $this->load_post_data() : $post_data;
 	}
 
 	/**
@@ -65,11 +84,12 @@ class phpbb_revisions_post
 	/**
 	* Return revision array
 	*
+	* @param bool $refresh If true, the data will be reloaded whether it has been loaded already or not
 	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
 	*/
 	public function get_revisions()
 	{
-		return $this->revisions ? $this->revisions : $this->load_revisions();
+		return $refresh || empty($this->revisions) ? $this->load_revisions() : $this->revisions;
 	}
 
 	/**
@@ -82,11 +102,6 @@ class phpbb_revisions_post
 		if (!$this->post_id)
 		{
 			return false;
-		}
-
-		if (!empty($this->revisions))
-		{
-			return $this->revisions;
 		}
 
 		$sql = 'SELECT r.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
@@ -150,13 +165,13 @@ class phpbb_revisions_post
 	* Revert the post to a different revision. The revision must be linked to this object's post id
 	*
 	* @param int $new_revision_id ID of the revision to switch to
-	* @return bool True/false based on success or failure
+	* @return int Numerical error code based on error (see constants.php for number values)
 	*/
 	public function revert($new_revision_id)
 	{
 		if (!$this->post_id || empty($this->revisions) || empty($this->revisions[$new_revision_id]))
 		{
-			return false;
+			return REVISION_NOT_FOUND;
 		}
 
 		$this->db->sql_transaction('begin');
@@ -176,7 +191,10 @@ class phpbb_revisions_post
 		);
 
 		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_insert_ary);
-		$this->db->sql_query($sql);
+		if (!$this->db->sql_query($sql))
+		{
+			return REVISION_INSERT_FAIL;
+		}
 
 		$new_revision = $this->revisions[$new_revision_id];
 
@@ -197,11 +215,14 @@ class phpbb_revisions_post
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $sql_update_ary) . '
 			WHERE post_id = ' . (int) $new_revision->get('post');
-		$this->db->sql_query($sql);
+		if (!$this->db->sql_query($sql))
+		{
+			return REVISION_POST_UPDATE_FAIL;
+		}
 
 		$this->db->sql_transaction('commit');
 
-		return true;
+		return REVISION_REVERT_SUCCESS;
 	}
 
 	/**
