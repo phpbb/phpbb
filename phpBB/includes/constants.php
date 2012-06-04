@@ -207,6 +207,12 @@ define('REFERER_VALIDATE_PATH', 2);
 define('CAPTCHA_MIN_CHARS', 4);
 define('CAPTCHA_MAX_CHARS', 7);
 
+// Post revision action results
+define('REVISION_REVERT_SUCCESS', 1);
+define('REVISION_NOT_FOUND', 2);
+define('REVISION_INSERT_FAIL', 3);
+define('REVISION_POST_UPDATE_FAIL', 4);
+
 // Additional constants
 define('VOTE_CONVERTED', 127);
 
