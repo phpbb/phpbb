@@ -412,6 +412,7 @@ $lang = array_merge($lang, array(
 	'SIGNATURE_EXPLAIN'			=> 'This is a block of text that can be added to posts you make. There is a %d character limit.',
 	'SIGNATURE_PREVIEW'			=> 'Your signature will appear like this in posts',
 	'SIGNATURE_TOO_LONG'		=> 'Your signature is too long.',
+	'SELECT_CURRENT_TIME'		=> 'Select current time',
 	'SELECT_TIMEZONE'			=> 'Select timezone',
 	'SORT'						=> 'Sort',
 	'SORT_COMMENT'				=> 'File comment',
@@ -422,7 +423,9 @@ $lang = array_merge($lang, array(
 	'SORT_SIZE'					=> 'File size',
 
 	'TIMEZONE'					=> 'Timezone',
+	'TIMEZONE_DATE_SUGGESTION'	=> 'Suggestion: %s',
 	'TIMEZONE_INVALID'			=> 'The timezone you selected is invalid.',
+	'TIMEZONE_SELECTED'			=> '(currently selected)',
 	'TO'						=> 'To',
 	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',

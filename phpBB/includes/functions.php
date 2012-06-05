@@ -1129,14 +1129,14 @@ function tz_select_compare($a, $b)
 
 /**
 * Pick a timezone
-* @todo Possible HTML escaping
 */
-function tz_select($default = '', $truncate = false)
+function tz_select($default = '', $truncate = false, $return_tzs_only = true)
 {
 	global $user;
 
 	static $timezones;
 
+	$default_offset = '';
 	if (!isset($timezones))
 	{
 		$unsorted_timezones = DateTimeZone::listIdentifiers();
@@ -1147,21 +1147,37 @@ function tz_select($default = '', $truncate = false)
 			$tz = new DateTimeZone($timezone);
 			$dt = new phpbb_datetime('now', $tz);
 			$offset = $dt->getOffset();
+			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
 			$offset_string = phpbb_format_timezone_offset($offset);
 			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
 				'tz'		=> $timezone,
-				'label'		=> 'GMT' . $offset_string . ' - ' . $timezone,
+				'offest'	=> 'GMT' . $offset_string,
+				'current'	=> $current_time,
 			);
+			if ($timezone === $default)
+			{
+				$default_offset = 'GMT' . $offset_string;
+			}
 		}
 		unset($unsorted_timezones);
 
 		uksort($timezones, 'tz_select_compare');
 	}
 
-	$tz_select = '';
+	$tz_select = $tz_dates = $opt_group = '';
 
 	foreach ($timezones as $timezone)
 	{
+		if ($opt_group != $timezone['offest'])
+		{
+			$tz_select .= ($opt_group) ? '</optgroup>' : '';
+			$tz_select .= '<optgroup label="' . $timezone['offest'] . ' - ' . $timezone['current'] . '">';
+			$opt_group = $timezone['offest'];
+
+			$selected = ($default_offset == $timezone['offest']) ? ' selected="selected"' : '';
+			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . ($selected ? ' ' . $user->lang['TIMEZONE_SELECTED'] : '') . '</option>';
+		}
+
 		if (isset($user->lang['timezones'][$timezone['tz']]))
 		{
 			$title = $label = $user->lang['timezones'][$timezone['tz']];
@@ -1169,10 +1185,10 @@ function tz_select($default = '', $truncate = false)
 		else
 		{
 			// No label, we'll figure one out
-			// @todo rtl languages?
-			$bits = explode('/', str_replace('_', ' ', $timezone['label']));
+			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
 
-			$title = $label = implode(' - ', $bits);
+			$label = implode(' - ', $bits);
+			$title = $timezone['offest'] . ' - ' . $label;
 		}
 
 		if ($truncate)
@@ -1181,10 +1197,19 @@ function tz_select($default = '', $truncate = false)
 		}
 
 		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
-		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
+		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . ($selected ? ' ' . $user->lang['TIMEZONE_SELECTED'] : '') . '</option>';
+	}
+	$tz_select .= '</optgroup>';
+
+	if ($return_tzs_only)
+	{
+		return $tz_select;
 	}
 
-	return $tz_select;
+	return array(
+		'tz_select'		=> $tz_select,
+		'tz_dates'		=> $tz_dates,
+	);
 }
 
 // Functions handling topic/post tracking/marking
