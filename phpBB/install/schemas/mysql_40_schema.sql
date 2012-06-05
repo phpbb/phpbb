@@ -90,6 +90,14 @@ CREATE TABLE phpbb_acl_users (
 );
 
 
+# Table: 'phpbb_auth_link'
+CREATE TABLE phpbb_auth_link (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	link_method varbinary(255) DEFAULT '0' NOT NULL,
+	link_index varbinary(255) DEFAULT '0' NOT NULL
+);
+
+
 # Table: 'phpbb_auth_openid_assoc'
 CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_url varbinary(255) DEFAULT '' NOT NULL,

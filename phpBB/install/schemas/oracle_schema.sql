@@ -211,6 +211,17 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id)
 /
 
 /*
+	Table: 'phpbb_auth_link'
+*/
+CREATE TABLE phpbb_auth_link (
+	user_id number(8) DEFAULT '0' NOT NULL,
+	link_method varchar2(255) DEFAULT '0' NOT NULL,
+	link_index varchar2(255) DEFAULT '0' NOT NULL
+)
+/
+
+
+/*
 	Table: 'phpbb_auth_openid_assoc'
 */
 CREATE TABLE phpbb_auth_openid_assoc (

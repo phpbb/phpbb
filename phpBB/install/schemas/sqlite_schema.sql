@@ -89,6 +89,14 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
+# Table: 'phpbb_auth_link'
+CREATE TABLE phpbb_auth_link (
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	link_method varchar(255) NOT NULL DEFAULT '0',
+	link_index varchar(255) NOT NULL DEFAULT '0'
+);
+
+
 # Table: 'phpbb_auth_openid_assoc'
 CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_url varchar(255) NOT NULL DEFAULT '',

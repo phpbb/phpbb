@@ -57,10 +57,9 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 	}
 
 	/**
+	 * Verifies the returned values from the external server.
 	 *
-	 * @global type $db
 	 * @param phpbb_request $request
-	 * @return type
 	 */
 	public function verify(phpbb_request $request)
 	{

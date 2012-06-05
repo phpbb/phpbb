@@ -90,6 +90,14 @@ CREATE TABLE phpbb_acl_users (
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
+# Table: 'phpbb_auth_link'
+CREATE TABLE phpbb_auth_link (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	link_method varchar(255) DEFAULT '0' NOT NULL,
+	link_index varchar(255) DEFAULT '0' NOT NULL
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
 # Table: 'phpbb_auth_openid_assoc'
 CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_url varchar(255) DEFAULT '' NOT NULL,

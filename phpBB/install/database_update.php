@@ -115,6 +115,9 @@ if(!defined(AUTH_OPENID_DISCOVERY_TABLE)) {
 if(!defined(AUTH_OPENID_NONCE_TABLE)) {
 	define('AUTH_OPENID_NONCE_TABLE',	$table_prefix . 'auth_openid_nonce');
 }
+if(!defined(AUTH_LINK_TABLE)) {
+	define('AUTH_LINK_TABLE',	$table_prefix . 'auth_link');
+}
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
 $phpbb_class_loader_ext->register();
@@ -1094,6 +1097,16 @@ function database_update_info()
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
 			'add_tables'		=> array(
+				AUTH_LINK_TABLE => array(
+					'COLUMNS'		=> array(
+						'user_id'		=> array('UINT', 0),
+						'link_method'	=> array('VCHAR', 0),
+						'link_index'	=> array('VCHAR', 0),
+					),
+					'KEY'			=> array(
+						'user_id'		=> array('INDEX', 'user_id'),
+					),
+				),
 				AUTH_OPENID_ASSOC_TABLE => array(
 					'COLUMNS'		=> array(
 						'assoc_url'			=> array('VCHAR', ''),

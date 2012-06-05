@@ -128,6 +128,14 @@ CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users(user_id);;
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users(auth_option_id);;
 CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users(auth_role_id);;
 
+# Table: 'phpbb_auth_link'
+CREATE TABLE phpbb_auth_link (
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	link_method VARCHAR(255) CHARACTER SET NONE DEFAULT 0 NOT NULL,
+	link_index VARCHAR(255) CHARACTER SET NONE DEFAULT 0 NOT NULL
+);;
+
+
 # Table: 'phpbb_auth_openid_assoc'
 CREATE TABLE phpbb_auth_openid_assoc (
 	assoc_url VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
