@@ -73,9 +73,9 @@ class phpbb_revisions_post
 		$this->post_data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$post_data['user_sig_options'] = ($row['enable_bbcode'] ? OPTION_FLAG_BBCODE : 0) +
-										($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0) +
-										($row['enable_magic_url'] ? OPTION_FLAG_LINKS : 0);
+		$this->post_data['user_sig_options'] = ($this->post_data['enable_bbcode'] ? OPTION_FLAG_BBCODE : 0) +
+										($this->post_data['enable_smilies'] ? OPTION_FLAG_SMILIES : 0) +
+										($this->post_data['enable_magic_url'] ? OPTION_FLAG_LINKS : 0);
 		$this->post_data['user_sig_parsed'] = generate_text_for_display($this->post_data['user_sig'], $this->post_data['user_sig_bbcode_uid'], $this->post_data['user_sig_bbcode_bitfield'], $this->post_data['user_sig_options']);
 
 		return $this->post_data;
@@ -87,7 +87,7 @@ class phpbb_revisions_post
 	* @param bool $refresh If true, the data will be reloaded whether it has been loaded already or not
 	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
 	*/
-	public function get_revisions()
+	public function get_revisions($refresh = false)
 	{
 		return $refresh || empty($this->revisions) ? $this->load_revisions() : $this->revisions;
 	}
@@ -203,18 +203,18 @@ class phpbb_revisions_post
 			'post_edit_user'	=> (int) $new_revision->get('user'),
 			'post_edit_time'	=> (int) $new_revision->get('time'),
 			'post_subject'		=> $new_revision->get('subject'),
-			'post_text'			=> $new_revision->get('text'),
+			'post_text'			=> $new_revision->get('text_raw'),
 			'post_checksum'		=> $new_revision->get('checksum'),
 			'post_attachment'	=> (int) $new_revision->get('attachment'),
 			'bbcode_bitfield'	=> $new_revision->get('bitfield'),
 			'bbcode_uid'		=> (int) $new_revision->get('uid'),
 			'post_edit_reason'	=> $new_revision->get('reason'),
-			'post_edit_count'	=> 'post_edit_count + 1',
+			'post_edit_count'	=> (int) $this->post_data['post_edit_count'] + 1,
 		);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $sql_update_ary) . '
-			WHERE post_id = ' . (int) $new_revision->get('post');
+			WHERE post_id = ' . (int) $this->post_id;
 		if (!$this->db->sql_query($sql))
 		{
 			return REVISION_POST_UPDATE_FAIL;

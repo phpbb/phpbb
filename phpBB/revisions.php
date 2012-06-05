@@ -112,7 +112,7 @@ $template->assign_vars(array(
 	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_data['post_id']) . '#p' . $post_data['post_id'],
 
 	'POST_ID'			=> $post_data['post_id'],
-	'POSTER_ID'			=> $poster_id,
+	'POSTER_ID'			=> $post_data['poster_id'],
 
 	// Comparison template variables
 	'DISPLAY_COMPARISON'	=> true,

@@ -30,108 +30,108 @@ class phpbb_revisions_revision
 	* Revision ID
 	* @var int
 	*/
-	private $id;
+	private $id = 0;
 
 	/**
 	* Post ID
 	* @var int
 	*/
-	private $post;
+	private $post = 0;
 
 	/**
 	* Revision subject
 	* @var string
 	*/
-	private $subject;
+	private $subject = '';
 
 	/**
 	* Unparsed text
 	* @var string
 	*/
-	private $text_raw;
+	private $text_raw = '';
 
 	/**
 	* Text that has been run through decode_message()
 	* @var string
 	*/
-	private $text_decoded;
+	private $text_decoded = '';
 
 	/**
 	* Parsed text
 	* @var string
 	*/
-	private $text;
+	private $text = '';
 
 	/**
 	* Revision time
 	* @var int
 	*/
-	private $time;
+	private $time = 0;
 
 	/**
 	* BBCode UID
 	* @var string
 	*/
-	private $uid;
+	private $uid = '';
 
 	/**
 	* BBCode Bitfield
 	* @var string
 	*/
-	private $bitfield;
+	private $bitfield = '';
 
 	/**
 	* BBCode options
 	* @var int
 	*/
-	private $options;
+	private $options = 0;
 
 	/**
 	* Reason for revision
 	* @var string
 	*/
-	private $reason;
+	private $reason = '';
 	/**
 	* ID of user who made revision
 	* @var int
 	*/
-	private $user;
+	private $user = 0;
 
 	/**
 	* Checksum of post text
 	* @var string
 	*/
-	private $checksum;
+	private $checksum = '';
 
 	/**
 	* Revision has attachment?
 	* @var int
 	*/
-	private $attachment;
+	private $attachment = 0;
 
 	/**
 	* ID of the poster (not necessarily who made the revision)
 	* @var int
 	*/
-	private $poster_id;
+	private $poster_id = 0;
 
 	/**
 	* ID of the forum
 	* @var int
 	*/
-	private $forum_id;
+	private $forum_id = 0;
 
 	/**
 	* Username of user who made the revision
 	* @var string
 	*/
-	private $username;
+	private $username = '';
 
 	/**
 	* Avatar of user who made the revision
 	* @var string
 	*/
-	private $avatar;
+	private $avatar = '';
 
 	/**
 	* Constructor method
@@ -261,6 +261,7 @@ class phpbb_revisions_revision
 	/**
 	* Return the value of a specified class property
 	*
+	* @param string $property The name of the proeprty to return
 	* @return mixed Null if property not defined, otherwise the value of the property
 	*/
 	public function get($property)
@@ -276,6 +277,7 @@ class phpbb_revisions_revision
 	/**
 	* Sets the ID of the revision
 	*
+	* @param int $id Revision ID
 	* @return null
 	*/
 	public function set_id($id = 0)
