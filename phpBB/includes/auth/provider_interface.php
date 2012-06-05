@@ -22,5 +22,12 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_auth_provider_interface
 {
-	public function process($request);
+	/**
+	 * This function as implemented, should process the start of a login request
+	 * if providing third party support, it should have redirects sent to
+	 * check_auth_{provider}.php in the root of the phpbb installation.
+	 *
+	 * @param phpbb_request $request
+	 */
+	public function process(phpbb_request $request);
 }

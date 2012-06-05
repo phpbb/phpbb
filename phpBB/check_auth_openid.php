@@ -1,24 +1,32 @@
 <?php
+/**
+*
+* @package phpBB3
+* @copyright (c) 2012 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+/**
+*/
+
+/**
+* @ignore
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
-$provider = new provider_open_id($request);
+$provider = new phpbb_auth_provider_open_id($request);
 
-// Enable super globals so Zend Framework does not throw errors.
-$request->enable_super_globals();
-
-$provider->verify($_GET, $id);
-if ($consumer->verify($_GET, $id))
+if ($provider->verify($request))
 {
-	$status = "VALID " . htmlspecialchars($id);
+	$status = 'VALID';
 }
 else
 {
-	$status = "INVALID " . htmlspecialchars($id);
+	$status = 'INVALID';
 }
 print $status;
-
-$request->disable_super_globals();
 ?>

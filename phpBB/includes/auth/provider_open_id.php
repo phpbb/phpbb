@@ -22,8 +22,15 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 {
+	public $id;
 
-	public function process($request)
+	/**
+	 * Performs the login request on the external server specified by
+	 * open_id_identifier. Red
+	 *
+	 * {@inheritDoc}
+	 */
+	public function process(phpbb_request $request)
 	{
 		global $db;
 		$storage = new phpbb_auth_zend_storage($db);
@@ -37,24 +44,35 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		{
 			$identifier = $request->variable('open_id_identifier', '');
 		}
-		$return_to = 'check_auth_openid.php';
+		$return_to = 'phpBB/check_auth_openid.php';
 
 		// Enable super globals so Zend Framework does not throw errors.
 		$request->enable_super_globals();
 
-		if (!$consumer->check($identifier, $return_to))
+		if (!$consumer->login($identifier, $return_to, 'http://192.168.0.112/'))
 		{
-			if($consumer->getError() != '')
-			{
-				throw new phpbb_auth_exception($consumer->getError());
-			}
-			else
-			{
-				if(!$consumer->login($identifier, $return_to)) {
-					throw new phpbb_auth_exception($consumer->getError());
-				}
-			}
+			throw new phpbb_auth_exception($consumer->getError());
 		}
 		$request->disable_super_globals();
+	}
+
+	/**
+	 *
+	 * @global type $db
+	 * @param phpbb_request $request
+	 * @return type
+	 */
+	public function verify(phpbb_request $request)
+	{
+		global $db;
+		$storage = new phpbb_auth_zend_storage($db);
+		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+
+		// Enable super globals so Zend Framework does not throw errors.
+		$request->enable_super_globals();
+		$id = '';
+		return $consumer->verify($_GET, $id);
+		$request->disable_super_globals();
+
 	}
 }

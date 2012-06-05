@@ -171,6 +171,7 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 		{
 			$data = array(
 				'nonce' => $nonce,
+				'nonce_created' => time();
 			);
 			$sql = 'INSERT INTO ' . AUTH_OPENID_NONCE_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);;
 			$return = $this->db->sql_query($sql);
@@ -187,6 +188,21 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function purgeNonces($date = null)
 	{
-
+		if(!is_int($date) && !is_string($date))
+		{
+			$time = 0;
+		}
+		elseif(is_string($date))
+		{
+			$time = time($date);
+		}
+		else
+		{
+			$time = $date;
+		}
+		$sql = 'DELETE FROM ' . AUTH_OPENID_NONCE_TABLE . '
+				WHERE nonce_create < ' . $time;
+		$this->db->sql_query($sql);
+		return true;
 	}
 }

@@ -22,7 +22,10 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 {
-	public function process($request)
+	/**
+	 * {@inheritDoc}
+	 */
+	public function process(phpbb_request $request)
 	{
 
 	}
