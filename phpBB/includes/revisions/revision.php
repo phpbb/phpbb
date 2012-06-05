@@ -203,9 +203,12 @@ class phpbb_revisions_revision
 		$this->options = (($row['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0) +
 				(($row['enable_smilies']) ? OPTION_FLAG_SMILIES : 0) + 
 				(($row['enable_magic_url']) ? OPTION_FLAG_LINKS : 0);
-		$this->text_for_edit = generate_text_for_edit($row['revision_text'], $row['bbcode_uid'], $this->options);
-		$this->text_decoded = $this->text_for_edit['text'];
-		$this->text = generate_text_for_display($row['revision_text'], $row['bbcode_bitfield'], $row['bbcode_uid'], $this->options);
+		$this->bitfield = $row['bbcode_bitfield'];
+		$this->uid = $row['bbcode_uid'];
+
+		$text_for_edit = generate_text_for_edit($this->text_raw, $this->uid, $this->options);
+		$this->text_decoded = $text_for_edit['text'];
+		$this->text = generate_text_for_display($this->text_raw, $this->uid, $this->bitfield, $this->options);
 
 		$this->time = $row['revision_time'];
 		$this->attachment = $row['revision_attachment'];

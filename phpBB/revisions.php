@@ -29,6 +29,12 @@ if (!($post_id = $request->variable('p', 0)))
 
 $post = new phpbb_revisions_post($post_id);
 $post_data = $post->get_post_data();
+
+if (empty($post_data['post_id']))
+{
+	trigger_error('NO_POST');
+}
+
 $revisions = $post->get_revisions();
 
 // Handle reverting to a different revision
@@ -73,11 +79,6 @@ if ($revert = $request->variable('revert', 0))
 
 		confirm_box(false, 'REVERT_POST_TITLE', $s_hidden_fields);
 	}
-}
-
-if (empty($post_data['post_id']))
-{
-	trigger_error('NO_POST');
 }
 
 // Get the total number of revisions

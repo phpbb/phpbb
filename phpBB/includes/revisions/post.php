@@ -227,7 +227,7 @@ class phpbb_revisions_post
 			'post_checksum'		=> $new_revision->get('checksum'),
 			'post_attachment'	=> (int) $new_revision->get('attachment'),
 			'bbcode_bitfield'	=> $new_revision->get('bitfield'),
-			'bbcode_uid'		=> (int) $new_revision->get('uid'),
+			'bbcode_uid'		=> $new_revision->get('uid'),
 			'post_edit_reason'	=> $new_revision->get('reason'),
 			'post_edit_count'	=> (int) $this->post_data['post_edit_count'] + 1,
 		);
