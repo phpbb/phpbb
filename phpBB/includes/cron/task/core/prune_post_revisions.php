@@ -68,7 +68,7 @@ class phpbb_cron_task_core_prune_post_revisions extends phpbb_cron_task_base
 
 				// Query in a loop? Uh oh! But I can't find a better way...
 				// At least this will really only occur when the config value is decreased in the ACP
-				// because it is also looked at on an individual post bases when a revision is made
+				// because this is also looked at on an individual post basis when a revision is made
 				// as well as during the revision reverting process
 				$inner_sql = 'SELECT revision_id
 					FROM ' . POST_REVISIONS_TABLE . '
