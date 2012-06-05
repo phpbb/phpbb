@@ -22,8 +22,6 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 {
-	public $id;
-
 	/**
 	 * Performs the login request on the external server specified by
 	 * open_id_identifier. Red
@@ -70,8 +68,24 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		// Enable super globals so Zend Framework does not throw errors.
 		$request->enable_super_globals();
 		$id = '';
-		return $consumer->verify($_GET, $id);
+		if($consumer->verify($_GET, $id))
+		{
+			$userID = 0;
+			$this->link($userID, $request->variable('openid_response_nonce', ''));
+		}
+		else
+		{
+			throw new phpbb_auth_exception('OpenID authentication failed.');
+		}
 		$request->disable_super_globals();
 
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function link($nonce)
+	{
+		$linker = new phpbb_auth_link_manager();
 	}
 }

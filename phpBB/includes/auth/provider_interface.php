@@ -30,4 +30,10 @@ interface phpbb_auth_provider_interface
 	 * @param phpbb_request $request
 	 */
 	public function process(phpbb_request $request);
+
+	/**
+	 * Links data from a providers auth_{provder} tables to the auth_links for
+	 * easy indexing upon successful authentication.
+	 */
+	public function link();
 }
