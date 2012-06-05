@@ -22,18 +22,17 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_link_manager {
 	/**
-	 * The DBAL being used by phpBB.
+	 * The dbal being used by phpBB.
 	 *
-	 * @var DBAL
+	 * @var dbal
 	 */
 	protected $db;
 
 	/**
-	 * Stores the DBAL for later use.
+	 * Stores the dbal for later use.
 	 */
-	public function __construct()
+	public function __construct($db)
 	{
-		global $db;
 		$this->db = $db;
 	}
 
@@ -42,8 +41,8 @@ class phpbb_auth_link_manager {
 	 *
 	 * @param string $provider
 	 * @param string $index
-	 * @return array - On success, the array $link is returned.
-	 *			boolean - Return false on failure.
+	 * @return array|boolean On success, the array $link is returned, on failure
+	 *						return false.
 	 */
 	public function get_link_by_index($provider, $index)
 	{
@@ -66,8 +65,8 @@ class phpbb_auth_link_manager {
 	 *
 	 * @param string $provider
 	 * @param integer $user
-	 * @return array - On success, the array $link is returned.
-	 *			boolean - Return false on failure.
+	 * @return array|boolean On success, the array $link is returned, on failure
+	 *						return false.
 	 */
 	public function get_link_by_user($provider, $user)
 	{
@@ -91,11 +90,11 @@ class phpbb_auth_link_manager {
 	 * @param string $provider
 	 * @param integers $user
 	 * @param string $index
-	 * @return boolean - true on success
+	 * @return boolean true on success
 	 */
 	public function add_link($provider, $user, $index)
 	{
-		if(is_empty($provider) || !is_int($user) || is_empty($index))
+		if (is_empty($provider) || !is_int($user) || is_empty($index))
 		{
 			throw new phpbb_auth_exception('You may not provide an empty variable to link.');
 		}
@@ -116,26 +115,26 @@ class phpbb_auth_link_manager {
 	 * @param string $provider
 	 * @param string $index
 	 * @param integer $user
-	 * @return boolean
+	 * @return boolean true on success.
 	 */
 	public function delete_link($provider = null, $index = null, $user = null)
 	{
-		if($provider === null && $index === null && $user === null)
+		if ($provider === null && $index === null && $user === null)
 		{
 			$sql = 'TRUNCATE ' . AUTH_LINK_TABLE;
 		}
-		elseif($provider === null)
+		elseif ($provider === null)
 		{
 			throw new phpbb_auth_exception('Provider must be specified unless ' . AUTH_LINK_TABLE . ' is being truncated.');
 		}
 		else
 		{
 			$sql_ary = array('link_provider' => $provider);
-			if($index !== null)
+			if ($index !== null)
 			{
 				$sql_ary['link_index'] = $index;
 			}
-			if(is_int($user))
+			if (is_int($user))
 			{
 				$sql_ary['user_id'] = $user;
 			}

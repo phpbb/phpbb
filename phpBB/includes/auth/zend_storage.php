@@ -188,11 +188,11 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 	 */
 	public function purgeNonces($date = null)
 	{
-		if(!is_int($date) && !is_string($date))
+		if (!is_int($date) && !is_string($date))
 		{
 			$time = 0;
 		}
-		elseif(is_string($date))
+		elseif (is_string($date))
 		{
 			$time = time($date);
 		}

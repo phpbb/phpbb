@@ -22,14 +22,23 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_auth_provider_interface
 {
+	protected $request;
+	protected $db;
+
+	/**
+	 * Stores the request and db variable for later use.
+	 *
+	 * @param phpbb_request $request
+	 * @param dbal $db
+	 */
+	public function __construct(phpbb_request $request, dbal $db);
+
 	/**
 	 * This function as implemented, should process the start of a login request
 	 * if providing third party support, it should have redirects sent to
 	 * check_auth_{provider}.php in the root of the phpbb installation.
-	 *
-	 * @param phpbb_request $request
 	 */
-	public function process(phpbb_request $request);
+	public function process();
 
 	/**
 	 * Links data from a providers auth_{provder} tables to the auth_links for

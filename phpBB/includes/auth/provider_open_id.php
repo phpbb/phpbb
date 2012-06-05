@@ -22,63 +22,73 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 {
+	protected $request;
+	protected $db;
+
 	/**
-	 * Performs the login request on the external server specified by
-	 * open_id_identifier. Red
-	 *
 	 * {@inheritDoc}
 	 */
-	public function process(phpbb_request $request)
+	public function __construct(phpbb_request $request, dbal $db)
 	{
-		global $db;
-		$storage = new phpbb_auth_zend_storage($db);
+		$this->request = $request;
+		$this->db = $db;
+	}
+	/**
+	 * Performs the login request on the external server specified by
+	 * open_id_identifier. Redirects the browser first to the external server
+	 * for authentication then back to /check_auth_openid.php to complete
+	 * login.
+	 */
+	public function process()
+	{
+		$storage = new phpbb_auth_zend_storage($this->db);
 		$this->consumer = $consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		if($request->variable('open_id_identifier', '') == '')
+		if($this->request->variable('open_id_identifier', '') == '')
 		{
 			throw new phpbb_auth_exception('No OpenID identifier supplied.');
 		}
 		else
 		{
-			$identifier = $request->variable('open_id_identifier', '');
+			$identifier = $this->request->variable('open_id_identifier', '');
 		}
 		$return_to = 'phpBB/check_auth_openid.php';
 
 		// Enable super globals so Zend Framework does not throw errors.
-		$request->enable_super_globals();
+		$this->request->enable_super_globals();
 
 		if (!$consumer->login($identifier, $return_to, 'http://192.168.0.112/'))
 		{
+			$this->request->disable_super_globals();
 			throw new phpbb_auth_exception($consumer->getError());
 		}
-		$request->disable_super_globals();
+		$this->request->disable_super_globals();
 	}
 
 	/**
 	 * Verifies the returned values from the external server.
-	 *
-	 * @param phpbb_request $request
 	 */
-	public function verify(phpbb_request $request)
+	public function verify()
 	{
-		global $db;
-		$storage = new phpbb_auth_zend_storage($db);
+		$storage = new phpbb_auth_zend_storage($this->db);
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
 		// Enable super globals so Zend Framework does not throw errors.
-		$request->enable_super_globals();
+		$this->request->enable_super_globals();
 		$id = '';
-		if($consumer->verify($_GET, $id))
+		if ($consumer->verify($_GET, $id))
 		{
-			$userID = 0;
-			$this->link($userID, $request->variable('openid_response_nonce', ''));
+			$user_id = 0;
+			$this->link($user_id, $this->request->variable('openid_response_nonce', ''));
 		}
 		else
 		{
+			$this->request->disable_super_globals();
 			throw new phpbb_auth_exception('OpenID authentication failed.');
 		}
-		$request->disable_super_globals();
+		$this->request->disable_super_globals();
 
+		return true;
 	}
 
 	/**
