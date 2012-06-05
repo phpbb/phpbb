@@ -9,6 +9,12 @@ class phpbb_revisions_post
 	private $db;
 
 	/**
+	* Config array
+	* @var array
+	*/
+	private $config;
+
+	/**
 	* Post ID number
 	* @var int
 	*/
@@ -176,7 +182,10 @@ class phpbb_revisions_post
 
 		$this->db->sql_transaction('begin');
 
-		// First, we create a new revision with the current post information
+		// We need to create a new revision with the current post information.
+		// We do this even when revision tracking is off; otherwise, the current
+		// version of the post will be lost when reverting because it is not already
+		// stored as a revision, but as the post itself
 		$sql_insert_ary = array(
 			'post_id'				=> $this->post_data['post_id'],
 			'user_id'				=> $this->post_data['poster_id'],
@@ -194,6 +203,17 @@ class phpbb_revisions_post
 		if (!$this->db->sql_query($sql))
 		{
 			return REVISION_INSERT_FAIL;
+		}
+
+		// But we do want to make sure we only have the maximum number of revisions allowed on a post
+		if ($config['max_revisions_per_post'] && ($remove_amount = count($this->revisions) - $config['max_revisions_per_post']))
+		{
+			// Delete the oldest one(s) until there aren't more than the max amount
+			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+				WHERE post_id = ' . (int) $this->post_id . '
+				ORDER BY revision_time ASC
+				LIMIT ' . (int) $remove_amount;
+			$db->sql_query($sql);
 		}
 
 		$new_revision = $this->revisions[$new_revision_id];
