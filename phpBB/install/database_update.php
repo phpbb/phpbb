@@ -2207,6 +2207,13 @@ function change_database_data(&$no_updates, $version)
 				set_config('search_type', 'phpbb_search_' . $config['search_type']);
 			}
 
+			if (!isset($config['fulltext_postgres_ts_name']))
+			{
+				set_config('fulltext_postgres_max_word_len', 254);
+				set_config('fulltext_postgres_min_word_len', 4);
+				set_config('fulltext_postgres_ts_name', 'simple');
+			}
+
 			if (!isset($config['load_jquery_cdn']))
 			{
 				set_config('load_jquery_cdn', 0);
