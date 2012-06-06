@@ -40,6 +40,11 @@ $revisions = $post->get_revisions();
 // Handle reverting to a different revision
 if ($revert = $request->variable('revert', 0))
 {
+	if(empty($this->revisions) || empty($this->revisions[$new_revision_id]))
+	{
+		trigger_error('ERROR_REVISION_NOT_FOUND');
+	}
+	
 	if (confirm_box(true))
 	{
 		if (($revert_result = $post->revert($revert)) === REVISION_REVERT_SUCCESS)
