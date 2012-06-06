@@ -18,9 +18,9 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
-$provider = new phpbb_auth_provider_open_id($request);
+$provider = new phpbb_auth_provider_open_id($request, $db);
 
-if ($provider->verify($request))
+if ($provider->verify())
 {
 	$status = 'VALID';
 }

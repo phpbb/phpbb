@@ -172,10 +172,10 @@ $template->assign_vars(array(
 );
 try
 {
-	$auth_manager = new phpbb_auth_manager();
-	$provider = $auth_manager->get_provider('open_id');
 	$request->overwrite('open_id_identifier', 'https://hardolaf.myopenid.com/');
-	$provider->process($request);
+	$auth_manager = new phpbb_auth_manager($request, $db);
+	$provider = $auth_manager->get_provider('open_id');
+	$provider->process();
 }
 catch (phpbb_auth_exception $e)
 {

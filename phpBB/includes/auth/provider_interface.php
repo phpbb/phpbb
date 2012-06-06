@@ -22,9 +22,6 @@ if (!defined('IN_PHPBB'))
 */
 interface phpbb_auth_provider_interface
 {
-	protected $request;
-	protected $db;
-
 	/**
 	 * Stores the request and db variable for later use.
 	 *

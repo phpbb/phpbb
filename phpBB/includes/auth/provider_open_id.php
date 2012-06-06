@@ -94,7 +94,7 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function link($nonce)
+	public function link()
 	{
 		$linker = new phpbb_auth_link_manager();
 	}

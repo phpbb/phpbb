@@ -22,12 +22,21 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_manager
 {
+	protected $request;
+	protected $db;
+
+	public function __construct(phpbb_request $request, dbal $db)
+	{
+		$this->request = $request;
+		$this->db = $db;
+	}
+
 	public function get_provider($auth_type)
 	{
 		$provider = 'phpbb_auth_provider_' . $auth_type;
 		if (class_exists($provider))
 		{
-			return new $provider();
+			return new $provider($this->request, $this->db);
 		}
 		else
 		{
