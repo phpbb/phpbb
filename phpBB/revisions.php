@@ -37,6 +37,14 @@ if (empty($post_data['post_id']))
 
 $revisions = $post->get_revisions();
 
+// Get the total number of revisions
+$total_revisions = count($revisions);
+
+if (!count($total_revisions))
+{
+	trigger_error('NO_REVISIONS_POST');
+}
+
 // Handle reverting to a different revision
 if ($revert = $request->variable('revert', 0))
 {
@@ -86,14 +94,6 @@ if ($revert = $request->variable('revert', 0))
 	}
 }
 
-// Get the total number of revisions
-$total_revisions = count($revisions);
-
-if (!count($total_revisions))
-{
-	trigger_error('NO_REVISIONS_POST');
-}
-
 // Display the current revision of the post as it would appear in the topic
 $current = $revisions[0];
 $template->assign_vars(array(
@@ -122,10 +122,10 @@ $template->assign_vars(array(
 
 	// Comparison template variables
 	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $revisions[0]->get('text'),
-	'SUBJECT_DIFF'			=> $revisions[0]->get('subject'),
+	'TEXT_DIFF'				=> $current->get('text'),
+	'SUBJECT_DIFF'			=> $current->get('subject'),
 	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($revisions[0]->get('time'))),
+	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get('time'))),
 	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));
 
