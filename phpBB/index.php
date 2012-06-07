@@ -170,7 +170,7 @@ $template->assign_vars(array(
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
-try
+/*try
 {
 	$request->overwrite('open_id_identifier', 'https://hardolaf.myopenid.com/');
 	$auth_manager = new phpbb_auth_manager($request, $db);
@@ -183,7 +183,7 @@ catch (phpbb_auth_exception $e)
 	print_r($provider);
 	print_r('</pre>');
 	trigger_error($e->getMessage());
-}
+}*/
 
 // Output page
 page_header($user->lang['INDEX']);

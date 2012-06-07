@@ -29,4 +29,7 @@ else
 	$status = 'INVALID';
 }
 print $status;
+print_r('<pre>');
+print_r($provider);
+print_r('</pre>');
 ?>
