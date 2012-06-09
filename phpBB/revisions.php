@@ -22,7 +22,10 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('revisions', 'viewtopic'));
 
-if (!($post_id = $request->variable('p', 0)))
+$post_id = $request->variable('p', 0);
+$revert = $request->variable('revert', 0);
+
+if (!$post_id)
 {
 	trigger_error('NO_POST');
 }
@@ -45,15 +48,52 @@ if (!count($total_revisions))
 	trigger_error('NO_REVISIONS_POST');
 }
 
-// Handle reverting to a different revision
-if ($revert = $request->variable('revert', 0))
+$current = $revisions[0];
+
+if(empty($evisions) || ($revert && empty($revisions[$revert])))
 {
-	if(empty($this->revisions) || empty($this->revisions[$new_revision_id]))
-	{
-		trigger_error('ERROR_REVISION_NOT_FOUND');
-	}
+	trigger_error('ERROR_REVISION_NOT_FOUND');
+}
+
+$last = $revert ? $this->revisions[$revert] : end($revisions);
+
+// Let's get our diff driver
+// @todo make this dynamic; for now we go with what we have
+$text_diff = new phpbb_revisions_diff_driver_finediff($current->get('text'), $last->get('text'));
+$subject_diff = new phpbb_revisions_diff_driver_finediff($current->get('subject'), $last->get('subject'));
+
+$template->assign_vars(array(
+	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+	'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 	
-	if (confirm_box(true))
+	'RANK_TITLE'		=> $post_data['rank_title'],
+	'RANK_IMG'			=> $post_data['rank_image'],
+
+	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
+
+	'POST_DATE'			=> $user->format_date($post_data['post_time']),
+	'POST_SUBJECT'		=> $revert ? $subject_diff->render() : $current->get('subject'),
+	'MESSAGE'			=> $revert ? $text_diff->render() : $current->get('text'),
+	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
+
+	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
+	'POSTER_POSTS'		=> $post_data['user_posts'],
+	'POSTER_LOCATION'	=> $post_data['user_from'],
+
+	'MINI_POST_IMG'		=> $user->img('icon_post_target', 'POST'),
+	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_data['post_id']) . '#p' . $post_data['post_id'],
+
+	'POST_ID'			=> $post_data['post_id'],
+	'POSTER_ID'			=> $post_data['poster_id'],
+
+	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get('time'))),
+));
+
+if ($revert)
+{
+	add_form_key('revert_form');
+	
+	if ($revert_confirm = $request->variable('confirm', 0) && check_form_key('revert_form', 120))
 	{
 		if (($revert_result = $post->revert($revert)) === REVISION_REVERT_SUCCESS)
 		{
@@ -90,42 +130,23 @@ if ($revert = $request->variable('revert', 0))
 			'revert'	=> $revert,
 		));
 
-		confirm_box(false, 'REVERT_POST_TITLE', $s_hidden_fields);
+		// Ready the page for viewing
+		page_header($user->lang('REVISIONS_REVERT_TITLE'), false);
+
+		$template->set_filenames(array(
+			'body'		=> 'revisions_revert_body.html',
+		));
+
+		page_footer();		
 	}
 }
 
-// Display the current revision of the post as it would appear in the topic
-$current = $revisions[0];
 $template->assign_vars(array(
-	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-	'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-	
-	'RANK_TITLE'		=> $post_data['rank_title'],
-	'RANK_IMG'			=> $post_data['rank_image'],
-
-	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
-
-	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $current->get('subject'),
-	'MESSAGE'			=> $current->get('text'),
-	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
-
-	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
-	'POSTER_POSTS'		=> $post_data['user_posts'],
-	'POSTER_LOCATION'	=> $post_data['user_from'],
-
-	'MINI_POST_IMG'		=> $user->img('icon_post_target', 'POST'),
-	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_data['post_id']) . '#p' . $post_data['post_id'],
-
-	'POST_ID'			=> $post_data['post_id'],
-	'POSTER_ID'			=> $post_data['poster_id'],
-
 	// Comparison template variables
 	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $current->get('text'),
-	'SUBJECT_DIFF'			=> $current->get('subject'),
+	'TEXT_DIFF'				=> $text_diff->render(),
+	'SUBJECT_DIFF'			=> $subject_diff->render(),
 	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get('time'))),
 	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));
 
