@@ -49,7 +49,7 @@ class phpbb_auth_link_manager {
 		$sql = $sql = 'SELECT *
 				FROM ' . AUTH_LINK_TABLE . '
 				WHERE link_provider = \'' . $this->db->sql_escape($provider) . '\'
-					AND link_index = \'' . $this->db_sql_escape($index) . '\'';
+					AND link_index = \'' . $this->db->sql_escape($index) . '\'';
 		$result = $this->db->sql_query($sql);
 		$link = $this->db->sql_fetchrow($result);
 

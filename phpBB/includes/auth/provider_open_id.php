@@ -24,15 +24,19 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 {
 	protected $request;
 	protected $db;
+	protected $config;
+	protected $user;
 	protected $sreg_props;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
 	{
 		$this->request = $request;
 		$this->db = $db;
+		$this->config = $config;
+		$this->user = $user;
 		$this->sreg_props = array(
 			"nickname"	=> true,
 			"email"		=> true,
@@ -42,6 +46,7 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 			"timezone"	=> false,
 		);
 	}
+
 	/**
 	 * Performs the login request on the external server specified by
 	 * open_id_identifier. Redirects the browser first to the external server
@@ -67,9 +72,9 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		if ($this->request->variable('Login', ''))
 		{
 			// Login
-			$autologin = $request('autologin', 'off');
-			$viewonline = $request('viewonline', 'off');
-			$return_to = 'phpBB/check_auth_openid.php?phpbb_process=login&phpbb_autologin=' . $autologin . '&phpbb_viewonline=' . $viewonline;
+			$autologin = $this->request->variable('autologin', 'off');
+			$viewonline = $this->request->variable('viewonline', 'off');
+			$return_to = 'check_auth_openid.php?phpbb.process=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
 			$extensions = null;
 		}
 		else
@@ -103,9 +108,10 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 	public function verify()
 	{
 		$storage = new phpbb_auth_zend_storage($this->db);
+		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		$process = $this->request->variable('phpbb_process', '');
+		$process = $this->request->variable('phpbb.process', 'login');
 		if ($process == 'register')
 		{
 			$extensions = array(
@@ -126,97 +132,15 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		$id = '';
 		if ($consumer->verify($_GET, $id, $extensions))
 		{
-			if ($process == 'login')
+			if ($process == 'login' && $this->login())
 			{
-				// Check to see if a link exists.
-				$link_manager = new phpbb_auth_link_manager($this->db);
-				$link = $link_manager->get_link_by_index('open_id', $request->variable('openid_identity', ''));
-				if (!$link)
-				{
-					throw new phpbb_auth_exception('Can not find a link between ' . $request->variable('openid_identity', '') . ' and any known account.');
-				}
-
-				// Login
+				$this->request->disable_super_globals();
+				return true;
 			}
-			elseif ($$process == 'register')
+			elseif ($process == 'register' && $this->register())
 			{
-				// Data array to hold all returned values.
-				$data = array();
-
-				// Data that must be supplied in order for registration to occur.
-				$req_data = array();
-
-				// Handle sreg data.
-				$sreg_data = $$extensions['sreg']->getProperties();
-				if (!is_empty($sreg_data))
-				{
-					if (!isset($sreg_data['email']))
-					{
-						$req_data[] = 'email';
-					}
-					else
-					{
-						$data['email'] = $sreg_data['email'];
-					}
-
-					if (!isset($sreg_data['dob']))
-					{
-						$req_data[] = 'dob';
-					}
-					else
-					{
-						$data['dob'] = $sreg_data['dob'];
-					}
-
-					if (!isset($sreg_data['nickname']))
-					{
-						$req_data[] = 'nickname';
-					}
-					else
-					{
-						// Check to see if the username already exists.
-						$sql = 'SELECT username
-							FROM ' . USERS_TABLE . "
-							WHERE username_clean = '" . $this->db->sql_escape($sreg_data['nickname']) . "'";
-						$result = $this->db->sql_query($sql);
-						if ($result)
-						{
-							$req_data['Username already exists'] = 'nickname';
-						}
-						$data['username'] = $sreg_data['nickname'];
-					}
-
-					if (isset($sreg_data['gender']))
-					{
-						$data['gender'] = $sreg_data['gender'];
-					}
-
-					if (isset($sreg_data['language']))
-					{
-						$data['language'] = $sreg_data['language'];
-					}
-
-					if (isset($sreg_data['timezone']))
-					{
-						$UTC_dtz = new DateTimeZone('UTC');
-						$registrant_dtz = new DateTimeZone($sreg_data['timezone']);
-
-						$UTC_dt = new DateTime('now', $UTC_dtz);
-						$registrant_dt = new DateTime('now', $registrant_dtz);
-
-						// Timezone is in hours, not seconds.
-						$data['timezone'] = $UTC_dt->getOffset($registrant_dt) / (60 * 60);
-					}
-				}
-
-				if (!empty($req_data))
-				{
-					// TODO HTTP request the missing, required data.
-					// Temporary exception.
-					throw new phpbb_auth_exception($req_data);
-				}
-
-				// Perform registration.
+				$this->request->disable_super_globals();
+				return true;
 			}
 		}
 		else
@@ -224,8 +148,144 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 			$this->request->disable_super_globals();
 			throw new phpbb_auth_exception('OpenID authentication failed.');
 		}
-		$this->request->disable_super_globals();
 
-		return true;
+		$this->request->disable_super_globals();
+		return false;
+	}
+
+	protected function login()
+	{
+		// Check to see if a link exists.
+		$link_manager = new phpbb_auth_link_manager($this->db);
+		$link = $link_manager->get_link_by_index('openid', $this->request->variable('openid_identity', ''));
+		if (!$link)
+		{
+			throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
+		}
+
+		// Get user
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $link['user_id'];
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		// Delete login attemps
+		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+				WHERE user_id = ' . $row['user_id'];
+		$this->db->sql_query($sql);
+
+		if ($row['user_login_attempts'] != 0)
+		{
+			// Successful, reset login attempts (the user passed all stages)
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_login_attempts = 0
+				WHERE user_id = ' . $row['user_id'];
+			$this->db->sql_query($sql);
+		}
+
+		// User inactive...
+		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+		{
+			$this->request->disable_super_globals();
+			throw new phpbb_auth_exception('Only actived users may login.');
+		}
+
+		// Create a non-admin session.
+		$autologin = (bool)$this->request->variable('phpbb.autologin', false);
+		$viewonline = (bool)$this->request->variable('phpbb.viewonline', true);
+		$result = $this->user->session_create($row['user_id'], false , $autologin, $viewonline);
+		if ($result === true)
+		{
+			return true;
+		}
+		else
+		{
+			$this->request->disable_super_globals();
+			throw new phpbb_auth_exception($result);
+		}
+	}
+
+	protected function register()
+	{
+		// Data array to hold all returned values.
+		$data = array();
+
+		// Data that must be supplied in order for registration to occur.
+		$req_data = array();
+
+		// Handle sreg data.
+		$sreg_data = $$extensions['sreg']->getProperties();
+		if (!is_empty($sreg_data))
+		{
+			if (!isset($sreg_data['email']))
+			{
+				$req_data[] = 'email';
+			}
+			else
+			{
+				$data['email'] = $sreg_data['email'];
+			}
+
+			if (!isset($sreg_data['dob']))
+			{
+				$req_data[] = 'dob';
+			}
+			else
+			{
+				$data['dob'] = $sreg_data['dob'];
+			}
+
+			if (!isset($sreg_data['nickname']))
+			{
+				$req_data[] = 'nickname';
+			}
+			else
+			{
+				// Check to see if the username already exists.
+				$sql = 'SELECT username
+					FROM ' . USERS_TABLE . "
+					WHERE username_clean = '" . $this->db->sql_escape($sreg_data['nickname']) . "'";
+				$result = $this->db->sql_query($sql);
+				if ($result)
+				{
+					$req_data['Username already exists'] = 'nickname';
+				}
+				$data['username'] = $sreg_data['nickname'];
+			}
+
+			if (isset($sreg_data['gender']))
+			{
+				$data['gender'] = $sreg_data['gender'];
+			}
+
+			if (isset($sreg_data['language']))
+			{
+				$data['language'] = $sreg_data['language'];
+			}
+
+			if (isset($sreg_data['timezone']))
+			{
+				$UTC_dtz = new DateTimeZone('UTC');
+				$registrant_dtz = new DateTimeZone($sreg_data['timezone']);
+
+				$UTC_dt = new DateTime('now', $UTC_dtz);
+				$registrant_dt = new DateTime('now', $registrant_dtz);
+
+				// Timezone is in hours, not seconds.
+				$data['timezone'] = $UTC_dt->getOffset($registrant_dt) / (60 * 60);
+			}
+		}
+
+		if (!empty($req_data))
+		{
+			// TODO HTTP request the missing, required data.
+			// Temporary exception.
+			$this->request->disable_super_globals();
+			throw new phpbb_auth_exception($req_data);
+		}
+
+		// Perform registration.
 	}
 }

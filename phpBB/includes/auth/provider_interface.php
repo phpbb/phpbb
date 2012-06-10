@@ -28,7 +28,7 @@ interface phpbb_auth_provider_interface
 	 * @param phpbb_request $request
 	 * @param dbal $db
 	 */
-	public function __construct(phpbb_request $request, dbal $db);
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user);
 
 	/**
 	 * This function as implemented, should process the start of a login or

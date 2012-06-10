@@ -18,11 +18,18 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
-$provider = new phpbb_auth_provider_open_id($request, $db);
+// Start session management
+$user->session_begin();
+$auth->acl($user->data);
+$user->setup();
+
+$provider = new phpbb_auth_provider_open_id($request, $db, $config, $user);
 
 if ($provider->verify())
 {
-	$status = 'VALID';
+	$redirect = 'index.php';
+	$redirect = reapply_sid($redirect);
+	redirect($redirect);
 }
 else
 {

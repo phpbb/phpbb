@@ -926,7 +926,7 @@ function get_schema_struct()
 	$schema_data['phpbb_auth_link'] = array(
 		'COLUMNS'		=> array(
 			'user_id'		=> array('UINT', 0),
-			'link_method'	=> array('VCHAR', 0),
+			'link_provider'	=> array('VCHAR', 0),
 			'link_index'	=> array('VCHAR', 0),
 		),
 		'KEY'			=> array(

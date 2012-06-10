@@ -171,7 +171,7 @@ GO
 */
 CREATE TABLE [phpbb_auth_link] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[link_method] [varchar] (255) DEFAULT (0) NOT NULL ,
+	[link_provider] [varchar] (255) DEFAULT (0) NOT NULL ,
 	[link_index] [varchar] (255) DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO

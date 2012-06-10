@@ -131,7 +131,7 @@ CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users(auth_role_id);;
 # Table: 'phpbb_auth_link'
 CREATE TABLE phpbb_auth_link (
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	link_method VARCHAR(255) CHARACTER SET NONE DEFAULT 0 NOT NULL,
+	link_provider VARCHAR(255) CHARACTER SET NONE DEFAULT 0 NOT NULL,
 	link_index VARCHAR(255) CHARACTER SET NONE DEFAULT 0 NOT NULL
 );;
 

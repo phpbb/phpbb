@@ -201,21 +201,8 @@ class phpbb_auth_zend_storage extends \Zend\OpenId\Consumer\Storage\AbstractStor
 			$time = $date;
 		}
 
-		// Discover what nonces have to be deleted.
-		$sql = 'SELECT FROM' . AUTH_OPENID_NONCE_TABLE . '
-				WHERE nonce_create < ' . $time;
-		$res = $this->db->sql_query($sql);
-		$link_manager = new phpbb_auth_link_manager();
-
-		while ($nonce = $this->db->sql_fetchrow($res))
-		{
-			$sql = 'DELECT FROM' . AUTH_LINK_TABLE . '
-					WHERE link_meth = \'open_id\' AND link_index = \'' . $nonce . '\'';
-			$this->db->sql_query($sql);
-		}
-
 		$sql = 'DELETE FROM ' . AUTH_OPENID_NONCE_TABLE . '
-				WHERE nonce_create < ' . $time;
+				WHERE nonce_created < ' . $time;
 		$this->db->sql_query($sql);
 		return true;
 	}

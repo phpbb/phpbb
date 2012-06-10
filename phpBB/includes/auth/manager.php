@@ -24,11 +24,15 @@ class phpbb_auth_manager
 {
 	protected $request;
 	protected $db;
+	protected $config;
+	protected $user;
 
-	public function __construct(phpbb_request $request, dbal $db)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
 	{
 		$this->request = $request;
 		$this->db = $db;
+		$this->config = $config;
+		$this->user = $user;
 	}
 
 	public function get_provider($auth_type)
@@ -36,7 +40,7 @@ class phpbb_auth_manager
 		$provider = 'phpbb_auth_provider_' . $auth_type;
 		if (class_exists($provider))
 		{
-			return new $provider($this->request, $this->db);
+			return new $provider($this->request, $this->db, $this->config, $this->user);
 		}
 		else
 		{
