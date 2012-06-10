@@ -816,6 +816,12 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	{
 		global $db, $config;
 
+		if($db->sql_layer != 'postgres')
+		{
+			$this->stats = array();
+			return;
+		}
+
 		$sql = "SELECT c2.relname, pg_catalog.pg_get_indexdef(i.indexrelid, 0, true) AS indexdef
 			  FROM pg_catalog.pg_class c1, pg_catalog.pg_index i, pg_catalog.pg_class c2
 			 WHERE c1.relname = '" . POSTS_TABLE . "'
