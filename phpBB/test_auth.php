@@ -21,9 +21,9 @@ include($phpbb_root_path . 'common.' . $phpEx);
 try
 {
 	$request->overwrite('Login', 'yes');
-	$request->overwrite('open_id_identifier', 'https://hardolaf.myopenid.com/');
+	$request->overwrite('openid_identifier', 'https://hardolaf.myopenid.com/');
 	$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
-	$provider = $auth_manager->get_provider('open_id');
+	$provider = $auth_manager->get_provider('openid');
 	$provider->process();
 }
 catch (phpbb_auth_exception $e)

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
+class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 {
 	protected $request;
 	protected $db;
@@ -49,7 +49,7 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 
 	/**
 	 * Performs the login request on the external server specified by
-	 * open_id_identifier. Redirects the browser first to the external server
+	 * openid_identifier. Redirects the browser first to the external server
 	 * for authentication then back to /check_auth_openid.php to complete
 	 * login.
 	 */
@@ -58,13 +58,13 @@ class phpbb_auth_provider_open_id implements phpbb_auth_provider_interface
 		$storage = new phpbb_auth_zend_storage($this->db);
 		$this->consumer = $consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		if ($this->request->variable('open_id_identifier', '') == '')
+		if ($this->request->variable('openid_identifier', '') == '')
 		{
 			throw new phpbb_auth_exception('No OpenID identifier supplied.');
 		}
 		else
 		{
-			$identifier = $this->request->variable('open_id_identifier', '');
+			$identifier = $this->request->variable('openid_identifier', '');
 		}
 
 		$root = 'http://192.168.0.112/';

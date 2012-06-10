@@ -23,7 +23,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 
-$provider = new phpbb_auth_provider_open_id($request, $db, $config, $user);
+$provider = new phpbb_auth_provider_openid($request, $db, $config, $user);
 
 if ($provider->verify())
 {
