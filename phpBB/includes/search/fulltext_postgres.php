@@ -33,7 +33,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	var $mbstring_regex = false;
 	var $tsearch_builtin = false;
 
-	function fulltext_postgres(&$error)
+	public function __construct(&$error)
 	{
 		global $db, $config;
 
@@ -76,7 +76,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*
 	* @return string Name
 	*/
-	function get_name()
+	public function get_name()
 	{
 		return 'PostgreSQL Fulltext';
 	}
@@ -86,7 +86,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	*/
 	function init()
 	{
-		global $db;
+		global $db, $user;
 
 		if ($db->sql_layer != 'postgres')
 		{
