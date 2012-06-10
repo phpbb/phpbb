@@ -50,7 +50,7 @@ if (!count($total_revisions))
 
 $current = $revisions[0];
 
-if(empty($evisions) || ($revert && empty($revisions[$revert])))
+if(empty($revisions) || ($revert && empty($revisions[$revert])))
 {
 	trigger_error('ERROR_REVISION_NOT_FOUND');
 }
@@ -158,7 +158,7 @@ $template->assign_vars(array(
 $revision_number = 1;
 foreach ($revisions as $revision)
 {
-	$template->assign_block_vars('revisions', array(
+	$template->assign_block_vars('revision', array(
 		'USERNAME'			=> $revision->get('username'),
 		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 		'DATE'				=> $user->format_date($revision->get('time')),
@@ -166,7 +166,7 @@ foreach ($revisions as $revision)
 		'ID'				=> $revision->get('id'),
 		'NUMBER'			=> $revision_number,
 
-		'IN_RANGE'			=> true,
+		'IN_RANGE'			=> true, // @todo when viewing revision ranges is implemented, this will need to be changed
 		'CURRENT_REVISION'	=> $revision->get('id') === 0,
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
@@ -176,7 +176,6 @@ foreach ($revisions as $revision)
 	$revision_number++;
 }
 
-// Ready the page for viewing
 page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
 
 $template->set_filenames(array(
