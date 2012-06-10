@@ -92,7 +92,7 @@ $template->assign_vars(array(
 if ($revert)
 {
 	add_form_key('revert_form');
-	
+
 	if ($revert_confirm = $request->variable('confirm', 0) && check_form_key('revert_form', 120))
 	{
 		if (($revert_result = $post->revert($revert)) === REVISION_REVERT_SUCCESS)
@@ -128,6 +128,11 @@ if ($revert)
 		$s_hidden_fields = build_hidden_fields(array(
 			'post_id'	=> $post_id,
 			'revert'	=> $revert,
+		));
+
+		$template->assign_vars(array(
+			'U_ACTION'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revert)),
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 		));
 
 		// Ready the page for viewing
