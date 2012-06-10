@@ -60,12 +60,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			{
 				$this->tsearch_builtin = true;
 			}
-
-
-			if (!$this->tsearch_builtin)
-			{
-				$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
-			}
 		}
 
 		$error = false;
@@ -95,19 +89,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if (!$this->tsearch_builtin)
 		{
-			$sql = "SELECT c.relname
-				  FROM pg_catalog.pg_class c
-				 WHERE c.relkind = 'r'
-				   AND c.relname = 'pg_ts_cfg'
-				   AND pg_catalog.pg_table_is_visible(c.oid)";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (empty ($row['relname']))
-			{
-				return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
-			}
+			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
 		}
 
 		return false;
@@ -481,14 +463,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$tmp_sql_match = array();
 		foreach (explode(',', $sql_match) as $sql_match_column)
 		{
-			if ($this->tsearch_builtin)
-			{
-				$tmp_sql_match[] = "to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', '" . $db->sql_escape($this->tsearch_query) . "')";
-			}
-			else
-			{
-				$tmp_sql_match[] = "to_tsvector (" . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($this->tsearch_query) . "')";
-			}
+			$tmp_sql_match[] = "to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', '" . $db->sql_escape($this->tsearch_query) . "')";
 		}
 
 		$sql = "SELECT $sql_select
@@ -889,19 +864,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
-		if ($db->sql_layer == 'postgres')
+		if ($db->sql_layer == 'postgres' && $this->tsearch_builtin)
 		{
-			if ($this->tsearch_builtin)
-			{
-				$sql = 'SELECT cfgname AS ts_name
-					  FROM pg_ts_config';
-			}
-			else
-			{
-				$sql = 'SELECT *
-					  FROM pg_ts_cfg';
-			}
-
+			$sql = 'SELECT cfgname AS ts_name
+				  FROM pg_ts_config';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
