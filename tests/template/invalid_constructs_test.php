@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_test extends phpbb_template_template_test_case
+class phpbb_template_invalid_constructs_test extends phpbb_template_template_test_case
 {
 	public function template_data()
 	{
