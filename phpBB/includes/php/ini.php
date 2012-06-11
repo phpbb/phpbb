@@ -67,9 +67,9 @@ class phpbb_php_ini
 	*/
 	public function get_bool($varname)
 	{
-		$value = strtolower($this->get_string($varname));
+		$value = $this->get_string($varname);
 
-		if (empty($value) || $value == 'off')
+		if (empty($value) || strtolower($value) == 'off')
 		{
 			return false;
 		}
@@ -128,7 +128,7 @@ class phpbb_php_ini
 	*/
 	public function get_bytes($varname)
 	{
-		$value = strtolower($this->get_string($varname));
+		$value = $this->get_string($varname);
 
 		if ($value === false)
 		{
@@ -151,9 +151,10 @@ class phpbb_php_ini
 			return false;
 		}
 
+		$value_lower = strtolower($value);
 		$value_numeric = phpbb_to_numeric($value);
 
-		switch ($value[strlen($value) - 1])
+		switch ($value_lower[strlen($value_lower) - 1])
 		{
 			case 'g':
 				$value_numeric *= 1024;
