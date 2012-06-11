@@ -1,5 +1,25 @@
 <?php
+/**
+*
+* @package phpbb_revisions
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
+* An API class to interface between the FineDiff diff engine and phpBB
+*
+* @package phpbb_revisions
+*/
 class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_base
 {
 	/**

@@ -62,8 +62,8 @@ $last = $revert ? $revisions[$revert] : end($revisions);
 $text_diff = new phpbb_revisions_diff_engine_finediff($current->get('text_decoded'), $last->get('text_decoded'));
 $subject_diff = new phpbb_revisions_diff_engine_finediff($current->get('subject'), $last->get('subject'));
 
-$text_diff_rendered = $text_diff->render();
-$subject_diff_renedered = $subject_diff->render();
+$text_diff_rendered = bbcode_nl2br($text_diff->render());
+$subject_diff_renedered = bbcode_nl2br($subject_diff->render());
 
 $template->assign_vars(array(
 	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),

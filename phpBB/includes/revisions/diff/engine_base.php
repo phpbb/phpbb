@@ -1,5 +1,25 @@
 <?php
+/**
+*
+* @package phpbb_revisions
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
+* A base API class for interfacing between phpBB and diff engines
+*
+* @package phpbb_revisions
+*/
 abstract class phpbb_revisions_diff_engine_base
 {
 	/**
