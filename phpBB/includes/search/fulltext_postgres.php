@@ -85,7 +85,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if (!$this->tsearch_usable)
 		{
-			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
+			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_USABLE'];
 		}
 
 		return false;
