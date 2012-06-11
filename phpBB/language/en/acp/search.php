@@ -65,11 +65,11 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_POSTGRES_TS_NOT_USABLE'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL 8.3 and above.',
 	'FULLTEXT_POSTGRES_TOTAL_POSTS'			=> 'Total number of indexed posts',
 	'FULLTEXT_POSTGRES_PCRE'					=> 'Support for non-latin UTF-8 characters using PCRE:',
-	'FULLTEXT_POSTGRES_TS_NAME'				=> 'Tsearch2 Configuration Profile:',
+	'FULLTEXT_POSTGRES_TS_NAME'				=> 'Text search Configuration Profile:',
 	'FULLTEXT_POSTGRES_MIN_WORD_LEN'			=> 'Minimum word length for keywords',
 	'FULLTEXT_POSTGRES_MAX_WORD_LEN'			=> 'Maximum word length for keywords',
 	'FULLTEXT_POSTGRES_PCRE_EXPLAIN'			=> 'This search backend requires PCRE unicode character properties, only available in PHP 4.4, 5.1 and above, if you want to search for non-latin characters.',
-	'FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'				=> 'The Tsearch2 configuration profile used to determine the parser and dictionary.',
+	'FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'				=> 'The Text search configuration profile used to determine the parser and dictionary.',
 	'FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'			=> 'Words with at least this many characters will be included in the query to the database.',
 	'FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'			=> 'Words with no more than this many characters will be included in the query to the database.',
 
