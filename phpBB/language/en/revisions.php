@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 		2		=> '%1$s revisions',
 	),
 	'REVISIONS_COMPARE_TITLE'			=> 'Post Revision History',
-	'REVISIONS_REVERT_TITLE'			=> 'Revert Post to Selected Revision'
+	'REVISIONS_REVERT_TITLE'			=> 'Revert Post to Selected Revision',
 	'REVISIONS_REVERT_EXPLAIN'			=> 'The changes between the current revision and the selected revision are displayed below. If you are satisfied with those changes, click Submit.',
 	'REVISION_DELETIONS'		=> array(
 		1 =>'1 deletion',
