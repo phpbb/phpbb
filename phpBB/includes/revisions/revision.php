@@ -189,14 +189,30 @@ class phpbb_revisions_revision
 			return false;
 		}
 
-		$sql = 'SELECT r.*, p.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
-			FROM ' . POST_REVISIONS_TABLE . ' r
-			LEFT JOIN ' . POSTS_TABLE . ' p
-				ON p.post_id = r.post_id
-			LEFT JOIN ' . USERS_TABLE . ' u
-				ON u.user_id = r.user_id
-			WHERE r.revision_id = ' . (int) $this->id . '
-			ORDER BY r.revision_id DESC';
+		$sql_ary = array(
+			'SELECT'	=> 'r.*, p.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height',
+
+			'FROM'		=> array(
+				POST_REVISIONS_TABLE	=> 'r',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(POSTS_TABLE => 'p'),
+					'ON'	=> 'p.post_id = r.post_id',
+				),
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'u.user_id = r.user_id',
+				),
+			),
+
+			'WHERE'		=> 'r.revision_id = ' . (int) $this->id,
+
+			'ORDER_BY'	=> 'r.revision_id DESC',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

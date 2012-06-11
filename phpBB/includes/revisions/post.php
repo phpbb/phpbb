@@ -88,13 +88,28 @@ class phpbb_revisions_post
 			return false;
 		}
 
-		$sql = 'SELECT p.*, u.*, r.*
-			FROM ' . POSTS_TABLE . ' p
-			LEFT JOIN ' . USERS_TABLE . ' u
-				ON u.user_id = p.poster_id
-			LEFT JOIN ' . RANKS_TABLE . ' r
-				ON r.rank_id = u.user_rank
-			WHERE p.post_id = ' . (int) $this->post_id;
+		$sql_ary = array(
+			'SELECT'	=> 'p.*, u.*, r.*',
+
+			'FROM'		=> array(
+				POSTS_TABLE		=> 'p',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'u.user_id = p.poster_id',
+				),
+				array(
+					'FROM'	=> array(RANKS_TABLE => 'r'),
+					'ON'	=> 'r.rank_id = u.user_rank',
+				),
+			),
+
+			'WHERE'		=> 'p.post_id = ' . (int) $this->post_id,
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		$this->post_data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -130,12 +145,26 @@ class phpbb_revisions_post
 			return false;
 		}
 
-		$sql = 'SELECT r.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
-			FROM ' . POST_REVISIONS_TABLE . ' r
-			LEFT JOIN ' . USERS_TABLE . ' u
-				ON u.user_id = r.user_id
-			WHERE r.post_id = ' . (int) $this->post_id . '
-			ORDER BY r.revision_id DESC';
+		$sql_ary = array(
+			'SELECT'	=> 'r.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height',
+
+			'FROM'		=> array(
+				POST_REVISIONS_TABLE	=> 'r',
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'u.user_id = r.user_id',
+				),
+			),
+
+			'WHERE'		=> 'r.post_id = ' . (int) $this->post_id,
+
+			'ORDER_BY'	=> 'r.revision_id DESC',
+		);
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
