@@ -255,14 +255,13 @@ class phpbb_revisions_post
 		}
 
 		// But we do want to make sure we only have the maximum number of revisions allowed on a post
-		if ($config['max_revisions_per_post'] && ($remove_amount = count($this->revisions) - $config['max_revisions_per_post']))
+		if ($config['max_revisions_per_post'] && ($remove_amount = sizeof($this->revisions) - $config['max_revisions_per_post']))
 		{
 			// Delete the oldest one(s) until there aren't more than the max amount
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $this->post_id . '
-				ORDER BY revision_time ASC
-				LIMIT ' . (int) $remove_amount;
-			$db->sql_query($sql);
+				ORDER BY revision_time ASC';
+			$db->sql_query_limit($sql, $remove_amount);
 		}
 
 		$new_revision = $this->revisions[$new_revision_id];
