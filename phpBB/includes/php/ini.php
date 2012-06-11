@@ -137,10 +137,17 @@ class phpbb_php_ini
 
 		if (is_numeric($value))
 		{
+			// Already in bytes.
 			return $value;
 		}
 		else if (strlen($value) < 2)
 		{
+			// Single character.
+			return false;
+		}
+		else if (strlen($value) < 3 && $value[0] === '-')
+		{
+			// Two characters but the first one is a minus.
 			return false;
 		}
 
