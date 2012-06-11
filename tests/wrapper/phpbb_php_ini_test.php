@@ -50,8 +50,9 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 	public function test_get_bytes()
 	{
 		$this->assertEquals(false, $this->php_ini->get_bytes('phpBB'));
+		$this->assertEquals(false, $this->php_ini->get_bytes('k'));
 		$this->assertEquals(false, $this->php_ini->get_bytes('M'));
-		$this->assertEquals(32 * pow(2, 20), $this->php_ini->get_bytes('32M'));
+		$this->assertEquals(32 * pow(2, 20), $this->php_ini->get_bytes('32m'));
 		$this->assertEquals(8 * pow(2, 30), $this->php_ini->get_bytes('8G'));
 		$this->assertEquals(1234, $this->php_ini->get_bytes('1234'));
 	}
