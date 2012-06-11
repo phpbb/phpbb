@@ -38,12 +38,14 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 	public function test_get_int()
 	{
 		$this->assertEquals(1234, $this->php_ini->get_int('1234'));
+		$this->assertEquals(-12345, $this->php_ini->get_int('-12345'));
 		$this->assertEquals(false, $this->php_ini->get_int('phpBB'));
 	}
 
 	public function test_get_float()
 	{
 		$this->assertEquals(1234.0, $this->php_ini->get_float('1234'));
+		$this->assertEquals(-12345.0, $this->php_ini->get_float('-12345'));
 		$this->assertEquals(false, $this->php_ini->get_float('phpBB'));
 	}
 
@@ -51,9 +53,14 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 	{
 		$this->assertEquals(false, $this->php_ini->get_bytes('phpBB'));
 		$this->assertEquals(false, $this->php_ini->get_bytes('k'));
+		$this->assertEquals(false, $this->php_ini->get_bytes('-k'));
 		$this->assertEquals(false, $this->php_ini->get_bytes('M'));
+		$this->assertEquals(false, $this->php_ini->get_bytes('-M'));
 		$this->assertEquals(32 * pow(2, 20), $this->php_ini->get_bytes('32m'));
+		$this->assertEquals(- 32 * pow(2, 20), $this->php_ini->get_bytes('-32m'));
 		$this->assertEquals(8 * pow(2, 30), $this->php_ini->get_bytes('8G'));
+		$this->assertEquals(- 8 * pow(2, 30), $this->php_ini->get_bytes('-8G'));
 		$this->assertEquals(1234, $this->php_ini->get_bytes('1234'));
+		$this->assertEquals(-12345, $this->php_ini->get_bytes('-12345'));
 	}
 }
