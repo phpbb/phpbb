@@ -28,7 +28,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	var $search_query;
 	var $tsearch_query;
 	var $common_words = array();
-	var $pcre_properties = false;
 	var $tsearch_usable = false;
 
 	public function __construct(&$error)
@@ -37,11 +36,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		$this->word_length = array('min' => $config['fulltext_postgres_min_word_len'], 'max' => $config['fulltext_postgres_max_word_len']);
 
-		// PHP may not be linked with the bundled PCRE lib and instead with an older version
-		if (phpbb_pcre_utf8_support())
-		{
-			$this->pcre_properties = true;
-		}
 
 		if ($db->sql_layer == 'postgres')
 		{
@@ -784,10 +778,12 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	{
 		global $user, $config, $db;
 
+		$pgsql_version = explode(',', substr($db->sql_server_info(), 10));
+
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_PCRE'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_PCRE_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
+			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->tsearch_usable) ? $user->lang['YES'] : $user->lang['NO']) . ' (PostgreSQL ' . $pgsql_version[0] . ')</dd>
 		</dl>
 		<dl>
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
