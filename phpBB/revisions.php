@@ -55,12 +55,18 @@ if(empty($revisions) || ($revert && empty($revisions[$revert])))
 	trigger_error('ERROR_REVISION_NOT_FOUND');
 }
 
-$last = $revert ? $revisions[$revert] : end($revisions);
+// If we are reverting, the from revision is the current post
+// Otherwise, it's the second array element (the first is the current)
+$first = $revert ? $current : next($revisions);
+
+// If we are reversting the, the to revision is the given revision ID
+// Otherwise, it is the final (i.e. current) revision
+$last = $revert ? $revisions[$revert] : $current;
 
 // Let's get our diff driver
-// @todo make this dynamic; for now we go with what we have
-$text_diff = new phpbb_revisions_diff_engine_finediff($current->get('text_decoded'), $last->get('text_decoded'));
-$subject_diff = new phpbb_revisions_diff_engine_finediff($current->get('subject'), $last->get('subject'));
+// @todo either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
+$text_diff = new phpbb_revisions_diff_engine_finediff($first->get('text_decoded'), $last->get('text_decoded'));
+$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get('subject'), $last->get('subject'));
 
 $text_diff_rendered = bbcode_nl2br($text_diff->render());
 $subject_diff_renedered = bbcode_nl2br($subject_diff->render());
@@ -98,7 +104,7 @@ if ($revert)
 
 	if ($revert_confirm = $request->variable('confirm', 0) && check_form_key('revert_form', 120))
 	{
-		if (($revert_result = $post->revert($revert)) === REVISION_REVERT_SUCCESS)
+		if (($revert_result = $post->revert($revert)) === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
 		{
 			// Because we've changed things up, we need to update our arrays
 			$post_data = $post->get_post_data(true);
@@ -110,15 +116,15 @@ if ($revert)
 			switch ($revert_result)
 			{
 				default:
-				case REVISION_NOT_FOUND:
+				case phpbb_revisions_post::REVISION_NOT_FOUND:
 					$lang = 'ERROR_REVISION_NOT_FOUND';
 				break;
 
-				case REVISION_INSERT_FAIL:
+				case phpbb_revisions_post::REVISION_INSERT_FAIL:
 					$lang = 'ERROR_REVISION_INSERT_FAIL';
 				break;
 
-				case REVISION_POST_UPDATE_FAIL:
+				case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
 					$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
 				break;
 			}
