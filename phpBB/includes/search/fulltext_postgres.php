@@ -30,7 +30,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	var $common_words = array();
 	var $pcre_properties = false;
 	var $mbstring_regex = false;
-	var $tsearch_builtin = false;
+	var $tsearch_usable = false;
 
 	public function __construct(&$error)
 	{
@@ -57,7 +57,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			$pgsql_version = explode('.', substr($db->sql_server_info(), 10));
 			if ($pgsql_version[0] >= 9 || $pgsql_version[0] == 8 && $pgsql_version[1] >= 3)
 			{
-				$this->tsearch_builtin = true;
+				$this->tsearch_usable = true;
 			}
 		}
 
@@ -86,7 +86,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'];
 		}
 
-		if (!$this->tsearch_builtin)
+		if (!$this->tsearch_usable)
 		{
 			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
 		}
@@ -869,7 +869,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
-		if ($db->sql_layer == 'postgres' && $this->tsearch_builtin)
+		if ($db->sql_layer == 'postgres' && $this->tsearch_usable)
 		{
 			$sql = 'SELECT cfgname AS ts_name
 				  FROM pg_ts_config';
