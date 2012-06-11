@@ -4987,3 +4987,16 @@ function phpbb_pcre_utf8_support()
 	}
 	return $utf8_pcre_properties;
 }
+
+/**
+* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
+*
+* @param string $input		A numeric string.
+*
+* @return int|float			Integer $input if $input fits integer,
+*							float $input otherwise.
+*/
+function phpbb_to_numeric($input)
+{
+	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
