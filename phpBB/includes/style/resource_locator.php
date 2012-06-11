@@ -264,10 +264,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		{
 			foreach ($root_paths as $root_index => $root)
 			{
-                        dump($this->files[$root_key][$root_index]);
-				$source_file = $this->files[$root_key][$root_index][$handle];
-				$tried .= ', ' . $source_file;
-                                dump($source_file);
+				$source_file = $root . '/' . $source_file;
 				if (file_exists($source_file))
 				{
 					$found = true;
@@ -278,6 +275,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 			{
 				if ($find_all)
 				{
+                                dump('x', $root_key, $source_file);
 					$found_all[] = $source_file;
 					$found = false;
 				}
@@ -288,7 +286,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 			}
 		}
                 
-                dump($find_all, $found_all);
+                dump(333, $find_all, $found_all);
                 if ($find_all) {
                         return $found_all;
                 } else {
