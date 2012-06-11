@@ -41,9 +41,9 @@ if (empty($post_data['post_id']))
 $revisions = $post->get_revisions();
 
 // Get the total number of revisions
-$total_revisions = count($revisions);
+$total_revisions = sizeof($revisions);
 
-if (!count($total_revisions))
+if (!$total_revisions)
 {
 	trigger_error('NO_REVISIONS_POST');
 }
