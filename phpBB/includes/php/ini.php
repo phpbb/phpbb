@@ -138,7 +138,7 @@ class phpbb_php_ini
 		if (is_numeric($value))
 		{
 			// Already in bytes.
-			return $value;
+			return $this->to_numeric($value);
 		}
 		else if (strlen($value) < 2)
 		{
@@ -151,7 +151,7 @@ class phpbb_php_ini
 			return false;
 		}
 
-		$value_numeric = (int) $value;
+		$value_numeric = $this->to_numeric($value);
 
 		switch ($value[strlen($value) - 1])
 		{
@@ -170,5 +170,18 @@ class phpbb_php_ini
 		}
 
 		return $value_numeric;
+	}
+
+	/**
+	* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
+	*
+	* @param string $input		A numeric string.
+	*
+	* @return int|float			Integer $input if $input fits integer,
+	*							float $input otherwise.
+	*/
+	protected function to_numeric($input)
+	{
+		return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 	}
 }
