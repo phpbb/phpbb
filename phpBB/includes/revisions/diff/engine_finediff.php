@@ -1,6 +1,6 @@
 <?php
 
-class phpbb_revisions_diff_driver_finediff extends phpbb_revisions_diff_driver_base
+class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_base
 {
 	/**
 	* Set the diff granularity
@@ -22,7 +22,7 @@ class phpbb_revisions_diff_driver_finediff extends phpbb_revisions_diff_driver_b
 			break;
 
 			case 'line':
-				$this->granularity = FineDiff::$paragraphGranularity
+				$this->granularity = FineDiff::$paragraphGranularity;
 			break;
 		}
 	}
@@ -107,7 +107,7 @@ class phpbb_revisions_diff_driver_finediff extends phpbb_revisions_diff_driver_b
 	{
 		if (!class_exists('FineDiff'))
 		{
-			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $phpEx);
+			require($this->phpbb_root_path . 'includes/revisions/finediff.' . $this->phpEx);
 		}
 
 		$this->diff = new FineDiff($this->from, $this->to, $this->granularity);

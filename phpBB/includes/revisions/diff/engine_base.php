@@ -1,6 +1,6 @@
 <?php
 
-abstract class phpbb_revisions_diff_driver_base
+abstract class phpbb_revisions_diff_engine_base
 {
 	/**
 	* Ending point for comparison
