@@ -59,8 +59,8 @@ $last = $revert ? $this->revisions[$revert] : end($revisions);
 
 // Let's get our diff driver
 // @todo make this dynamic; for now we go with what we have
-$text_diff = new phpbb_revisions_diff_driver_finediff($current->get('text'), $last->get('text'));
-$subject_diff = new phpbb_revisions_diff_driver_finediff($current->get('subject'), $last->get('subject'));
+$text_diff = new phpbb_revisions_diff_engine_finediff($current->get('text'), $last->get('text'));
+$subject_diff = new phpbb_revisions_diff_engine_finediff($current->get('subject'), $last->get('subject'));
 
 $template->assign_vars(array(
 	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
