@@ -34,7 +34,7 @@ class phpbb_php_ini
 	*/
 	public function get($varname)
 	{
-		return @ini_get($varname);
+		return ini_get($varname);
 	}
 
 	/**
