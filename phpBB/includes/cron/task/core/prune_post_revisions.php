@@ -73,9 +73,8 @@ class phpbb_cron_task_core_prune_post_revisions extends phpbb_cron_task_base
 				$inner_sql = 'SELECT revision_id
 					FROM ' . POST_REVISIONS_TABLE . '
 					WHERE post_id = ' . (int) $id . '
-					ORDER BY revision_id ASC
-					LIMIT ' . (int) $excess;
-				$inner_result = $db->sql_query($inner_sql);
+					ORDER BY revision_id ASC';
+				$inner_result = $db->sql_query_limit($inner_sql, $excess);
 				while ($inner_row = $db->sql_fetchrow($inner_result))
 				{
 					$prune_revision_ids[] = $inner_row['revision_id'];

@@ -1,5 +1,25 @@
 <?php
+/**
+*
+* @package phpbb_revisions
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
+* A class representing a single post, containing the revisions made to that post
+*
+* @package phpbb_revisions
+*/
 class phpbb_revisions_post
 {
 	/**
