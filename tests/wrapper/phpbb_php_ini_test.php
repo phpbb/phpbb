@@ -7,7 +7,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/phpbb_php_ini.php';
+require_once dirname(__FILE__) . '/phpbb_php_ini_fake.php';
 
 class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 {
@@ -15,7 +15,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 
 	public function setUp()
 	{
-		$this->php_ini = new phpbb_mock_phpbb_php_ini;
+		$this->php_ini = new phpbb_php_ini_fake;
 	}
 
 	public function test_get_string()

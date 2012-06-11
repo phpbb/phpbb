@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_phpbb_php_ini extends phpbb_php_ini
+class phpbb_php_ini_fake extends phpbb_php_ini
 {
 	function get($varname)
 	{
