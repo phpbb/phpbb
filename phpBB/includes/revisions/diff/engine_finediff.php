@@ -10,7 +10,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	*/
 	public function set_granularity($granularity)
 	{
-		switch ($granularty)
+		switch ($granularity)
 		{
 			default:
 			case 'word':

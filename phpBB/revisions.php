@@ -55,12 +55,15 @@ if(empty($revisions) || ($revert && empty($revisions[$revert])))
 	trigger_error('ERROR_REVISION_NOT_FOUND');
 }
 
-$last = $revert ? $this->revisions[$revert] : end($revisions);
+$last = $revert ? $revisions[$revert] : end($revisions);
 
 // Let's get our diff driver
 // @todo make this dynamic; for now we go with what we have
-$text_diff = new phpbb_revisions_diff_engine_finediff($current->get('text'), $last->get('text'));
+$text_diff = new phpbb_revisions_diff_engine_finediff($current->get('text_decoded'), $last->get('text_decoded'));
 $subject_diff = new phpbb_revisions_diff_engine_finediff($current->get('subject'), $last->get('subject'));
+
+$text_diff_rendered = $text_diff->render();
+$subject_diff_renedered = $subject_diff->render();
 
 $template->assign_vars(array(
 	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -72,8 +75,8 @@ $template->assign_vars(array(
 	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $revert ? $subject_diff->render() : $current->get('subject'),
-	'MESSAGE'			=> $revert ? $text_diff->render() : $current->get('text'),
+	'POST_SUBJECT'		=> $revert ? $subject_diff_renedered : $current->get('subject'),
+	'MESSAGE'			=> $revert ? $text_diff_rendered : $current->get('text'),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
 	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
@@ -149,8 +152,8 @@ if ($revert)
 $template->assign_vars(array(
 	// Comparison template variables
 	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $text_diff->render(),
-	'SUBJECT_DIFF'			=> $subject_diff->render(),
+	'TEXT_DIFF'				=> $text_diff_rendered,
+	'SUBJECT_DIFF'			=> $subject_diff_renedered,
 	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
 	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));

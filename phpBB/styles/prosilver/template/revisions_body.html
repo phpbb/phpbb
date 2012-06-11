@@ -41,7 +41,7 @@
 <div class="center">
 <!-- BEGIN revision -->
 <ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->">
-	<li class="revision_id">#{revisions.NUMBER}</li>
+	<li class="revision_id">#{revision.NUMBER}</li>
 	<li class="revsion_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
 	<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
 	<li class="revision_date">{revision.DATE}</li>
