@@ -97,7 +97,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
@@ -236,9 +236,27 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		}
 
 		return ($find_all) ? $found_all : $source_file;
+        /*
+		// If we don't have a file assigned to this handle, die.
+		if (!isset($this->files['style'][0][$handle]))
+		{
+			trigger_error("style resource locator: No file specified for handle $handle", E_USER_ERROR);
+		}
+                
+                $source_file = $this->files['style'][0][$handle];
+                $source_file = $this->locate_source_file($source_file, $find_all);
+                
+                if (!$find_all && $source_file === false) {
+                        // search failed
+			trigger_error("style resource locator: File for handle $handle does not exist.", E_USER_ERROR);
+                }
+                
+                return $source_file;
+                */
 	}
         
         public function locate_source_file($source_file, $find_all = false) {
+        dump($source_file);
 		$tried = $source_file;
 		$found = false;
 		$found_all = array();
@@ -246,8 +264,10 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		{
 			foreach ($root_paths as $root_index => $root)
 			{
+                        dump($this->files[$root_key][$root_index]);
 				$source_file = $this->files[$root_key][$root_index][$handle];
 				$tried .= ', ' . $source_file;
+                                dump($source_file);
 				if (file_exists($source_file))
 				{
 					$found = true;
@@ -267,6 +287,17 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 				}
 			}
 		}
+                
+                dump($find_all, $found_all);
+                if ($find_all) {
+                        return $found_all;
+                } else {
+                        if ($found) {
+                                return $source_file;
+                        } else {
+                                return false;
+                        }
+                }
         }
 
 	/**

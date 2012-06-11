@@ -1,4 +1,16 @@
 <?php
+
+function dump() {
+$args = func_get_args();
+
+ob_start();
+var_dump($args);
+$output = ob_get_clean();
+$stream = fopen('php://stderr', 'w');
+fputs($stream, $output);
+fclose($stream);
+}
+
 /**
 *
 * @package phpBB3
