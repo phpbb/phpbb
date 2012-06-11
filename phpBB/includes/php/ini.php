@@ -82,6 +82,7 @@ class phpbb_php_ini
 	*
 	* @param string $varname	The configuration option name.
 	* @return bool|int			False if configuration option does not exist,
+	*							false if configuration option value is not numeric,
 	*							the configuration option value (integer) otherwise.
 	*/
 	public function get_int($varname)
@@ -101,6 +102,7 @@ class phpbb_php_ini
 	*
 	* @param string $varname	The configuration option name.
 	* @return bool|float		False if configuration option does not exist,
+	*							false if configuration option value is not numeric,
 	*							the configuration option value (float) otherwise.
 	*/
 	public function get_float($varname)
@@ -121,6 +123,7 @@ class phpbb_php_ini
 	*
 	* @param string $varname	The configuration option name.
 	* @return bool|int|float	False if configuration option does not exist,
+	*							false if configuration option value is not well-formed,
 	*							the configuration option value otherwise.
 	*/
 	public function get_bytes($varname)
