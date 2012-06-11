@@ -2583,3 +2583,52 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 
 	return $url;
 }
+
+/**
+ * Configure plupload
+ */
+function plupload_configure()
+{
+	global $cache, $template, $config, $user;
+	
+	$extensions = $cache->obtain_attach_extensions($forum_id);
+	$groups = array();
+
+	// Re-arrange the extension array to $groups[$group_name][]
+	foreach ($extensions as $k => $extension)
+	{
+		if ($k === '_allowed_')
+		{
+			continue;
+		}
+
+		if (!isset($groups[$extension['group_name']]))
+		{
+			$groups[$extension['group_name']] = array();
+		}
+
+		$groups[$extension['group_name']][] = $k;
+	}
+
+	$filters = array();
+	// $extensions redefined!
+	foreach ($groups as $group => $extensions)
+	{
+		$filters[] = sprintf(
+			"{title: '%s', extensions: '%s'}",
+			ucfirst(strtolower($group)),
+			implode(',', $extensions)
+		);
+	}
+
+	$template->assign_vars(array(
+		'IMG_MAX_HEIGHT'	=> $config['img_max_height'],
+		'IMG_MAX_WIDTH'		=> $config['img_max_width'],
+		'S_PLUPLOAD'		=> true,
+		'FILTERS'			=> implode(',', $filters),
+	));
+
+	// Assign the plupload i18n strings
+	$assign = $user->add_lang('plupload');
+	$template->assign_vars($assign);
+}

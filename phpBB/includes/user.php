@@ -518,7 +518,7 @@ class phpbb_user extends phpbb_session
 		}
 		else if ($lang_set)
 		{
-			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
+			return $this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
 		}
 	}
 
@@ -618,13 +618,10 @@ class phpbb_user extends phpbb_session
 				return;
 			}
 
-			// Do not suppress error if in DEBUG mode
-			$include_result = (defined('DEBUG')) ? (include $language_filename) : (@include $language_filename);
+			$subset_lang = $this->include_lang_file($language_filename);
+			$lang = array_merge($lang, $subset_lang);
 
-			if ($include_result === false)
-			{
-				trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
-			}
+			return $subset_lang;
 		}
 		else if ($use_db)
 		{
@@ -632,6 +629,26 @@ class phpbb_user extends phpbb_session
 			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
 			// For example: help:faq, posting
 		}
+	}
+
+	/**
+	 * Include the language file and return the strings it contains
+	 *
+	 * @param string $language_filename the filename to include
+	 *
+	 * @return array array of translation strings to be merged
+	 */
+	function include_lang_file($language_filename)
+	{
+		// Do not suppress error if in DEBUG_EXTRA mode
+		$include_result = (defined('DEBUG')) ? (include $language_filename) : (@include $language_filename);
+	
+		if ($include_result === false)
+		{
+			trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
+		}
+
+		return $lang;
 	}
 
 	/**
