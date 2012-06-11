@@ -38,8 +38,7 @@ class phpbb_php_ini
 	}
 
 	/**
-	* Gets configuration option value as a string and performs various
-	* normalisation on the returned value.
+	* Gets the configuration option value as a trimmed string.
 	*
 	* @param string $varname	The configuration option name.
 	* @return bool|string		False if configuration option does not exist,
