@@ -55,7 +55,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		if ($db->sql_layer == 'postgres')
 		{
 			$pgsql_version = explode('.', substr($db->sql_server_info(), 10));
-			if ($pgsql_version[0] >= 8 && $pgsql_version[1] >= 3)
+			if ($pgsql_version[0] >= 9 || $pgsql_version[0] == 8 && $pgsql_version[1] >= 3)
 			{
 				$this->tsearch_builtin = true;
 			}
