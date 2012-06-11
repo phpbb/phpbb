@@ -21,6 +21,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 
 	public function test_get_string()
 	{
+		$this->assertSame(false, $this->php_ini->get_string(false));
 		$this->assertSame('phpbb', $this->php_ini->get_string(' phpbb '));
 	}
 
@@ -52,6 +53,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 
 	public function test_get_bytes_invalid()
 	{
+		$this->assertSame(false, $this->php_ini->get_bytes(false));
 		$this->assertSame(false, $this->php_ini->get_bytes('phpBB'));
 		$this->assertSame(false, $this->php_ini->get_bytes('k'));
 		$this->assertSame(false, $this->php_ini->get_bytes('-k'));
