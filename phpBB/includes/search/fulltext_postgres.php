@@ -2,9 +2,8 @@
 /**
 *
 * @package search
-* @version $Id: fulltext_postgres.php,v 1.49 2010/02/12 10:10:36 frantic Exp $
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
