@@ -29,7 +29,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	var $tsearch_query;
 	var $common_words = array();
 	var $pcre_properties = false;
-	var $mbstring_regex = false;
 	var $tsearch_usable = false;
 
 	public function __construct(&$error)
@@ -42,11 +41,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		if (phpbb_pcre_utf8_support())
 		{
 			$this->pcre_properties = true;
-		}
-
-		if (function_exists('mb_ereg'))
-		{
-			$this->mbstring_regex = true;
 		}
 
 		if ($db->sql_layer == 'postgres')
@@ -115,41 +109,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
 
 		// Split words
-		if ($this->pcre_properties)
-		{
-			$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-		else if ($this->mbstring_regex)
-		{
-			$split_keywords = mb_ereg_replace('([^\w\'*"()])', '\\1\\1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-		else
-		{
-			$split_keywords = preg_replace('#([^\w\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
-		}
-
-		if ($this->pcre_properties)
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
-			$this->split_words = $matches[1];
-		}
-		else if ($this->mbstring_regex)
-		{
-			mb_regex_encoding('UTF-8');
-			mb_ereg_search_init($split_keywords, '(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)');
-
-			while (($word = mb_ereg_search_regs()))
-			{
-				$this->split_words[] = $word[1];
-			}
-		}
-		else
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)#u', $split_keywords, $matches);
-			$this->split_words = $matches[1];
-		}
+		$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
+		$this->split_words = $matches[1];
 
 		// to allow phrase search, we need to concatenate quoted words
 		$tmp_split_words = array();
@@ -260,42 +223,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		global $config;
 
 		// Split words
-		if ($this->pcre_properties)
-		{
-			$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-		else if ($this->mbstring_regex)
-		{
-			$text = mb_ereg_replace('([^\w\'*])', '\\1\\1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-		else
-		{
-			$text = preg_replace('#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		}
-
-		if ($this->pcre_properties)
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
-			$text = $matches[1];
-		}
-		else if ($this->mbstring_regex)
-		{
-			mb_regex_encoding('UTF-8');
-			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
-
-			$text = array();
-			while (($word = mb_ereg_search_regs()))
-			{
-				$text[] = $word[1];
-			}
-		}
-		else
-		{
-			$matches = array();
-			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
-			$text = $matches[1];
-		}
+		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+		$text = $matches[1];
 
 		// remove too short or too long words
 		$text = array_values($text);
@@ -857,10 +788,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		<dl>
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_PCRE'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_PCRE_EXPLAIN'] . '</span></dt>
 			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
-		</dl>
-		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_MBSTRING_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
 		</dl>
 		<dl>
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
