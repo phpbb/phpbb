@@ -496,13 +496,18 @@ class phpbb_template
 	*
 	* @param string $file file name
 	* @param bool $locate True if file needs to be located
+	* @param bool $relative True if path is relative to phpBB root directory. Ignored if $locate == true
 	*/
-	public function _js_include($file, $locate = false)
+	public function _js_include($file, $locate = false, $relative = false)
 	{
 		// Locate file
 		if ($locate)
 		{
 			$file = $this->locator->get_first_file_location(array($file), true, true);
+		}
+		else if ($relative)
+		{
+			$file = $this->phpbb_root_path . $file;
 		}
 
 		$file .= (strpos($file, '?') === false) ? '?' : '&';
