@@ -115,7 +115,7 @@ class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_b
 	*/
 	public function operations_count()
 	{
-		return count($this->operations);
+		return sizeof($this->operations);
 	}
 
 	/**

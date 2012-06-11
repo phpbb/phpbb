@@ -22,6 +22,11 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_revisions_post
 {
+	// Post revision action results
+	const REVISION_REVERT_SUCCESS = 1;
+	const REVISION_NOT_FOUND = 2;
+	const REVISION_INSERT_FAIL = 3;
+	const REVISION_POST_UPDATE_FAIL = 4;
 	/**
 	* phpBB DBAL Object
 	* @var dbal
@@ -226,7 +231,7 @@ class phpbb_revisions_post
 	{
 		if (!$this->post_id || empty($this->revisions) || empty($this->revisions[$new_revision_id]))
 		{
-			return REVISION_NOT_FOUND;
+			return self::REVISION_NOT_FOUND;
 		}
 
 		$this->db->sql_transaction('begin');
@@ -251,7 +256,7 @@ class phpbb_revisions_post
 		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_insert_ary);
 		if (!$this->db->sql_query($sql))
 		{
-			return REVISION_INSERT_FAIL;
+			return self::REVISION_INSERT_FAIL;
 		}
 
 		// But we do want to make sure we only have the maximum number of revisions allowed on a post
@@ -285,12 +290,12 @@ class phpbb_revisions_post
 			WHERE post_id = ' . (int) $this->post_id;
 		if (!$this->db->sql_query($sql))
 		{
-			return REVISION_POST_UPDATE_FAIL;
+			return self::REVISION_POST_UPDATE_FAIL;
 		}
 
 		$this->db->sql_transaction('commit');
 
-		return REVISION_REVERT_SUCCESS;
+		return self::REVISION_REVERT_SUCCESS;
 	}
 
 	/**
