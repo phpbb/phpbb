@@ -17,21 +17,21 @@ class phpbb_template_template_locate_test extends phpbb_template_template_test_c
 			// First element of the array is test name - keep them distinct
 			array(
 				'simple inheritance - only parent template exists',
-				dirname(__FILE__) . '/parent_templates/parent_only.html',
+				$this->test_path . '/parent_templates/parent_only.html',
 				'parent_only.html',
 				false,
 				true,
 			),
 			array(
 				'simple inheritance - only child template exists',
-				dirname(__FILE__) . '/templates/child_only.html',
+				$this->test_path . '/templates/child_only.html',
 				'child_only.html',
 				false,
 				true,
 			),
 			array(
 				'simple inheritance - both parent and child templates exist',
-				dirname(__FILE__) . '/templates/parent_and_child.html',
+				$this->test_path . '/templates/parent_and_child.html',
 				'parent_and_child.html',
 				false,
 				true,
