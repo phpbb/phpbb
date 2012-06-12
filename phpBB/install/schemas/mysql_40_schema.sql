@@ -761,7 +761,6 @@ CREATE TABLE phpbb_styles (
 	style_name blob NOT NULL,
 	style_copyright blob NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	style_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
 	style_parent_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
 	style_parent_tree blob NOT NULL,

@@ -1096,7 +1096,6 @@ function database_update_info()
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
 				STYLES_TABLE		=> array(
-					'style_path'			=> array('VCHAR:100', ''),
 					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 					'style_parent_id'		=> array('UINT:4', 0),
 					'style_parent_tree'		=> array('TEXT', ''),
@@ -2507,7 +2506,7 @@ function change_database_data(&$no_updates, $version)
 					{
 						// Valid style. Keep it
 						$sql_ary = array(
-							'style_path'	=> $style_row['template_path'],
+							'style_name'	=> $style_row['template_path'],
 							'bbcode_bitfield'	=> $style_row['bbcode_bitfield'],
 							'style_parent_id'	=> 0,
 							'style_parent_tree'	=> '',
@@ -2548,7 +2547,7 @@ function change_database_data(&$no_updates, $version)
 					// No valid styles: remove everything and add prosilver
 					_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
 
-					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'kNg=', 0, '')";
 					_sql($sql, $errored, $error_ary);
 
 					$sql = 'SELECT style_id
@@ -2576,6 +2575,27 @@ function change_database_data(&$no_updates, $version)
 
 					// Reset styles for users
 					_sql('UPDATE ' . USERS_TABLE . ' SET user_style = 0 WHERE ' . $db->sql_in_set('user_style', $valid_styles, true), $errored, $error_ary);
+				}
+			}
+			else if ($db_tools->sql_column_exists(STYLES_TABLE, 'style_path'))
+			{
+				// style_path exists. Swap style_name and style_path and drop style_path
+				$sql = 'UPDATE ' . STYLES_TABLE . '
+					SET style_name = style_path';
+				_sql($sql, $errored, $error_ary);
+
+				$changes = array(
+					'drop_columns'	=> array(
+						STYLES_TABLE	=> array(
+							'style_path'
+						)
+					)
+				);
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
 				}
 			}
 

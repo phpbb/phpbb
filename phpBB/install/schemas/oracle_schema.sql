@@ -1445,7 +1445,6 @@ CREATE TABLE phpbb_styles (
 	style_name varchar2(765) DEFAULT '' ,
 	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
-	style_path varchar2(100) DEFAULT '' ,
 	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
 	style_parent_id number(4) DEFAULT '0' NOT NULL,
 	style_parent_tree clob DEFAULT '' ,
