@@ -86,6 +86,15 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 			$return_to = 'check_auth_openid.php?phpbb.process=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
 			$extensions = null;
 		}
+		elseif ($this->request->variable('Link', ''))
+		{
+			if(!isset($this->user->data['user_id']))
+			{
+				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
+			}
+			$return_to = 'check_auth_openid.php?phpbb.process=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$extensions = null;
+		}
 		else
 		{
 			// Register
@@ -127,13 +136,9 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
 		}
-		elseif ($process == 'login')
-		{
-			$extensions = null;
-		}
 		else
 		{
-			throw new phpbb_auth_exception('Unknown authentication process.');
+			$extensions = null;
 		}
 
 		// Enable super globals so Zend Framework does not throw errors.
@@ -147,6 +152,11 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 				return true;
 			}
 			elseif ($process == 'register' && $this->register())
+			{
+				$this->request->disable_super_globals();
+				return true;
+			}
+			elseif ($process == 'link' && $this->link())
 			{
 				$this->request->disable_super_globals();
 				return true;
@@ -222,6 +232,13 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		}
 	}
 
+	/**
+	 * Register an OpenID user with phpBB. Supports both simple registration
+	 * extension
+	 * (https://openid.net/specs/openid-simple-registration-extension-1_0.html)
+	 * and attribute exchange
+	 * (https://openid.net/specs/openid-attribute-exchange-1_0.html).
+	 */
 	protected function register()
 	{
 		// Data array to hold all returned values.
@@ -303,5 +320,33 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		}
 
 		// Perform registration.
+	}
+
+	/**
+	 * Link an existing phpBB account to an OpenID provider.
+	 */
+	protected function link()
+	{
+		$user_id = $this->request->variable('phpbb.user_id', -1);
+		if ($user_id == -1 || !is_int($user_id))
+		{
+			throw new phpbb_auth_exception('No phpbb user id or non-integer user id returned by the OpenID provider.');
+		}
+
+		// Verify that the user actually exists.
+		$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+		$res = $this->db->sql_query($sql);
+		if(!$res)
+		{
+			throw new phpbb_auth_exception('User id returned by provider does not resolve to any known phpBB user.');
+		}
+		$this->db->sql_freeresult($res);
+
+		$link_manager = new phpbb_auth_link_manager($this->db);
+		$link_manager->add_link('openid', $user_id, $this->request->variable('openid_identity', ''));
+
+		return true;
 	}
 }
