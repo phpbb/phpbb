@@ -22,18 +22,19 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('revisions', 'viewtopic'));
 
-$post_id = $request->variable('p', 0);
-$revert = $request->variable('revert', 0);
+$post_id	= $request->variable('p', 0);
+$revert		= $request->variable('revert', 0);
+$compare	= $request->variable('compare', '');
 
-// Allow to view revisions in a range
-$compare = $request->variable('compare', '');
+// Variables for first and last revisions for comparison
+$first = $last = null;
 
 if (!$post_id)
 {
 	// If not given a post ID, try to get it from other information
 	if ($revert)
 	{
-		$revert_revision = new phpbb_revisions_revision($revert);
+		$revert_revision = new phpbb_revisions_revision($revert, $db);
 	}
 	else if ($compare)
 	{
