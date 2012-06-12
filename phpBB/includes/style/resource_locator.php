@@ -44,7 +44,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* style directory, such as admin control panel templates.
 	* @var string
 	*/
-	public $template_path = 'template/';
+	private $template_path;
 
 	/**
 	* Map from root index to handles to source template file paths.
@@ -62,6 +62,11 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* @var array
 	*/
 	private $filenames = array();
+
+	public function __construct()
+	{
+		$this->set_default_template_path();
+	}
 
 	/**
 	* Sets the list of style paths
@@ -91,6 +96,19 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 				$this->roots[$key][] = $path;
 			}
 		}
+	}
+
+	/**
+	* Sets the location of templates directory within style directories.
+	*/
+	public function set_template_path($template_path)
+	{
+		$this->template_path = $template_path;
+	}
+
+	public function set_default_template_path()
+	{
+		$this->template_path = 'template/';
 	}
 
 	/**
