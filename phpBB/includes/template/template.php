@@ -475,7 +475,7 @@ class phpbb_template
 	*/
 	public function locate($files, $return_default = false, $return_full_path = true)
 	{
-		// add tempalte path prefix
+		// add template path prefix
 		$templates = array();
 		if (is_string($files))
 		{

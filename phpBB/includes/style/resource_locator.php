@@ -97,7 +97,7 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
 	*
-	* @param array $filname_array Should be a hash of handle => filename pairs.
+	* @param array $filename_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
