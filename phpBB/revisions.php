@@ -39,8 +39,11 @@ if (!$post_id)
 	{
 		$matches = array();
 		preg_match('/([0-9]+)\.{3}([0-9]+)/', $compare, $matches);
-		if ($matches && sizeof($matches) < 1)
+		if (!empty($matches))
 		{
+			// Note that $matches[0], in the case of a match, will be X...Y, where X and Y are the given numbers
+			// We don't actually have any use for it, we just want the X and Y, so that's what we look at below
+
 			// If the first number is not 0 (current revision) we can use it to figure out the post ID
 			if (!empty($matches[1]))
 			{
@@ -57,8 +60,8 @@ if (!$post_id)
 		}
 		else
 		{
-			// If we don't see the #...# pattern in $compare, we assume a single ID was given
-			// Set the to revision to the current post and the from to the given ID
+			// If we don't see the X...Y pattern in $compare, we assume a single ID was given
+			// Set the "to" revision to the current post
 			$first = phpbb_revisions_revision((int) $compare, $db, $template);
 
 			$post_id = $first->get_post_id();
