@@ -68,7 +68,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if ($db->sql_layer != 'postgres')
 		{
-			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'];
+			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
 		}
 
 		if (!$this->tsearch_usable)

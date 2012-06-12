@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'	=> 'Words with at least this many characters will be indexed for searching. You or your host can only change this setting by changing the mysql configuration.',
 	'FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching. You or your host can only change this setting by changing the mysql configuration.',
 
-	'FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL.',
+	'FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL.',
 	'FULLTEXT_POSTGRES_TS_NOT_USABLE'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL 8.3 and above.',
 	'FULLTEXT_POSTGRES_TOTAL_POSTS'			=> 'Total number of indexed posts',
 	'FULLTEXT_POSTGRES_VERSION_CHECK'		=> 'PostgreSQL version',
