@@ -45,10 +45,14 @@ if (!$post_id)
 			if (!empty($matches[1]))
 			{
 				$first = phpbb_revisions_revision($matches[1], $db, $template);
+				$post_id = $first->get_post_id();
 			}
-			else if ($matches[2])
-			{
 
+			// If the second number is not 0 (current revision) we can use it to figure out the post ID
+			if (!empty($matches[2]))
+			{
+				$last = phpbb_revisions_revision($matches[2], $db, $template);
+				$post_id = $post_id ?: $last->get_post_id();
 			}
 		}
 		else
@@ -60,7 +64,12 @@ if (!$post_id)
 			$post_id = $first->get_post_id();
 		}
 	}
-	trigger_error('NO_POST');
+	
+	// If we still don't have a post ID, we error
+	if (!$post_id)
+	{
+		trigger_error('NO_POST');
+	}
 }
 
 $post = new phpbb_revisions_post($post_id, $db);
