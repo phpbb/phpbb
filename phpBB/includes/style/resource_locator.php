@@ -295,18 +295,25 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 	* each template in the array to a path, and will return the first
 	* path that exists, or false if none exist.
 	*
+	* If $files is an array and template inheritance is involved, first
+	* each of the files will be checked in the selected style, then each
+	* of the files will be checked in the immediate parent, and so on.
+	*
 	* If $return_full_path is false, then instead of returning a usable
 	* path (when the template is found) only the template's basename
 	* will be returned. This can be used to check which of the templates
-	* specified in $files exists, provided different file names are
-	* used for different templates.
+	* specified in $files exists. Naturally more than one template must
+	* be given in $files.
 	*
-	* Just like get_first_file_location but works on a list of templates,
-	* not files.
-	*
-	* The templates given in the first argument first are prepended with
+	* This function works identically to get_first_file_location except
+	* it operates on a list of templates, not files. Practically speaking,
+	* the templates given in the first argument first are prepended with
 	* the template path (property in this class), then given to
 	* get_first_file_location for the rest of the processing.
+	*
+	* Templates given to this function can be relative paths for templates
+	* located in subdirectories of the template directories. The paths
+	* should be relative to the templates directory (template/ by default).
 	*
 	* @param string or array $files List of templates to locate. If there is only
 	*				one template, $files can be a string to make code easier to read.
