@@ -29,12 +29,6 @@ class phpbb_revisions_revision
 	private $db;
 
 	/**
-	* Template object
-	* @var phpbb_template
-	*/
-	private $template;
-
-	/**
 	* Revision ID
 	* @var int
 	*/
@@ -149,10 +143,9 @@ class phpbb_revisions_revision
 	*				This is helpful if we already have the data and don't want to load it but still
 	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id = 0, dbal $db, phpbb_template $template, $autoload = true)
+	public function __construct($revision_id = 0, dbal $db, $autoload = true)
 	{
 		$this->db = $db;
-		$this->template = $template;
 
 		$this->id = (int) $revision_id;
 		if ($this->id && $autoload)

@@ -190,7 +190,7 @@ class phpbb_revisions_post
 			$row['enable_smilies'] = $this->post_data['enable_smilies'];
 			$row['enable_magic_url'] = $this->post_data['enable_magic_url'];
 			
-			$rev = new phpbb_revisions_revision($row['revision_id'], false);
+			$rev = new phpbb_revisions_revision($row['revision_id'], $this->db, false);
 			$rev->set_data($row);
 			$this->revisions[$row['revision_id']] = $rev;
 		}
@@ -198,7 +198,7 @@ class phpbb_revisions_post
 
 		// The final revision is the current post state, so we can just put the post data into a revision object
 		// We store it as index 0 because it doesn't have a revision ID but we can always know how to access it
-		$this->revisions[0] = new phpbb_revisions_revision();
+		$this->revisions[0] = new phpbb_revisions_revision(0, $this->db, false);
 		$this->revisions[0]->set_data(array(
 			'revision_subject'		=> $this->post_data['post_subject'],
 			'revision_text'			=> $this->post_data['post_text'],
