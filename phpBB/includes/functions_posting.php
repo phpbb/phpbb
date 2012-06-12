@@ -2621,11 +2621,21 @@ function plupload_configure()
 		);
 	}
 
+	// Get the maximum 'safe' chunk size
+	$ini = new phpbb_php_ini();
+	$chunk_size = min(
+		$ini->get_bytes('upload_max_filesize'),
+		$ini->get_bytes('post_max_size'),
+		$ini->get_bytes('memory_limit'),
+		$config['max_filesize']
+	);
+
 	$template->assign_vars(array(
 		'IMG_MAX_HEIGHT'	=> $config['img_max_height'],
 		'IMG_MAX_WIDTH'		=> $config['img_max_width'],
 		'S_PLUPLOAD'		=> true,
 		'FILTERS'			=> implode(',', $filters),
+		'CHUNK_SIZE'		=> $chunk_size,
 	));
 
 	// Assign the plupload i18n strings
