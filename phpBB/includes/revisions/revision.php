@@ -35,18 +35,6 @@ class phpbb_revisions_revision
 	private $template;
 
 	/**
-	* Relative root path of phpBB directory
-	* @var string
-	*/
-	private $phpbb_root_path;
-
-	/**
-	* PHP file extension
-	* @var string
-	*/
-	private $phpEx;
-
-	/**
 	* Revision ID
 	* @var int
 	*/
@@ -161,14 +149,10 @@ class phpbb_revisions_revision
 	*				This is helpful if we already have the data and don't want to load it but still
 	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id = 0, $autoload = true)
+	public function __construct($revision_id = 0, dbal $db, phpbb_template $template, $autoload = true)
 	{
-		global $db, $template, $phpbb_root_path, $phpEx;
-
 		$this->db = $db;
 		$this->template = $template;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
 
 		$this->id = (int) $revision_id;
 		if ($this->id && $autoload)
@@ -272,9 +256,9 @@ class phpbb_revisions_revision
 	*/
 	public function get_avatar($width = 0, $height = 0)
 	{
-		$height = $height ?: $this->get('avatar_height');
-		$width = $width ?: $this->get('avatar_width');
-		return get_user_avatar($this->get('avatar'), $this->get('avatar_type'), $width, $height);
+		$height = $height ?: $this->avatar_height;
+		$width = $width ?: $this->avatar_width);
+		return get_user_avatar($this->avatar, $this->avatar_type, $width, $height);
 	}
 
 	/**
@@ -284,33 +268,127 @@ class phpbb_revisions_revision
 	*/
 	public function get_id()
 	{
-		return $this->get('id');
+		return $this->id;
+	}
+
+	/**
+	* Returns the post ID associated with this revision
+	*
+	* @return int Post ID
+	*/
+	public function get_post_id();
+	{
+		return $this->post;
 	}
 
 	/**
 	* Returns the ID of the poster.
 	*
-	* @return int Revision ID
+	* @return int Revision Poster ID
 	*/
-	public function get_poster_id()
+	public function get_iser_id()
 	{
-		return $this->get('poster_id');
+		return $this->user;
 	}
 
 	/**
-	* Return the value of a specified class property
+	* Returns the Subject of the revision.
 	*
-	* @param string $property The name of the proeprty to return
-	* @return mixed Null if property not defined, otherwise the value of the property
+	* @return string Revision Subject
 	*/
-	public function get($property)
+	public function get_subject()
 	{
-		if(isset($this->$property))
-		{
-			return $this->$property;
-		}
+		return $this->subject;
+	}
 
-		return null;
+	/**
+	* Returns the parsed text associated with this revision
+	*
+	* @return string Parsed text
+	*/
+	public function get_text();
+	{
+		return $this->text;
+	}
+
+	/**
+	* Returns the decoded text (i.e. as you would see when editing)
+	*
+	* @return string Decoded text
+	*/
+	public function get_text_decoded()
+	{
+		return $this->text_decoded;
+	}
+
+	/**
+	* Returns the text options (i.e. bbcode, smilies, urls) of the revision.
+	*
+	* @return int Revision text options
+	*/
+	public function get_options()
+	{
+		return $this->options;
+	}
+
+	/**
+	* Returns the time of the revision
+	*
+	* @return int Timestamp
+	*/
+	public function get_time()
+	{
+		return $this->time;
+	}
+
+	/**
+	* Returns the revision reason
+	*
+	* @return string Revision reason
+	*/
+	public function get_reason()
+	{
+		return $this->reason;
+	}
+
+	/**
+	* Returns the revision checksum
+	*
+	* @return string Revision checksum
+	*/
+	public function get_checksum()
+	{
+		return $this->checksum;
+	}
+
+	/**
+	* Returns the revision bitfield
+	*
+	* @return string Revision bitfield
+	*/
+	public function get_bitfield()
+	{
+		return $this->bitfield;
+	}
+
+	/**
+	* Returns the revision uid
+	*
+	* @return string Revision uid
+	*/
+	public function get_uid()
+	{
+		return $this->uid;
+	}
+
+	/**
+	* Returns the revision attachment
+	*
+	* @return bool Whether or not this revision has an attachment
+	*/
+	public function get_attachment()
+	{
+		return (bool) $this->attachment;
 	}
 
 	/**

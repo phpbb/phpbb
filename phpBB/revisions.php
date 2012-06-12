@@ -44,12 +44,20 @@ if (!$post_id)
 			// If the first number is not 0 (current revision) we can use it to figure out the post ID
 			if (!empty($matches[1]))
 			{
-				$first = phpbb_revisions_revision($matches[1]);
+				$first = phpbb_revisions_revision($matches[1], $db, $template);
 			}
 			else if ($matches[2])
 			{
 
 			}
+		}
+		else
+		{
+			// If we don't see the #...# pattern in $compare, we assume a single ID was given
+			// Set the to revision to the current post and the from to the given ID
+			$first = phpbb_revisions_revision((int) $compare, $db, $template);
+
+			$post_id = $first->get_post_id();
 		}
 	}
 	trigger_error('NO_POST');
@@ -96,8 +104,8 @@ if (empty($last))
 
 // Let's get our diff driver
 // @todo either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
-$text_diff = new phpbb_revisions_diff_engine_finediff($first->get('text_decoded'), $last->get('text_decoded'));
-$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get('subject'), $last->get('subject'));
+$text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(), $last->get_text_decoded());
+$subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $last->get_subject());
 
 $text_diff_rendered = bbcode_nl2br($text_diff->render());
 $subject_diff_renedered = bbcode_nl2br($subject_diff->render());
@@ -112,8 +120,8 @@ $template->assign_vars(array(
 	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $revert ? $subject_diff_renedered : $current->get('subject'),
-	'MESSAGE'			=> $revert ? $text_diff_rendered : $current->get('text'),
+	'POST_SUBJECT'		=> $revert ? $subject_diff_renedered : $current->get_subject(),
+	'MESSAGE'			=> $revert ? $text_diff_rendered : $current->get_text(),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
 	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
@@ -126,7 +134,7 @@ $template->assign_vars(array(
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $post_data['poster_id'],
 
-	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get('time'))),
+	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
 ));
 
 if ($revert)
@@ -201,19 +209,19 @@ $revision_number = 1;
 foreach ($revisions as $revision)
 {
 	$template->assign_block_vars('revision', array(
-		'USERNAME'			=> $revision->get('username'),
+		'USERNAME'			=> $revision->get_username(),
 		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
-		'DATE'				=> $user->format_date($revision->get('time')),
-		'REASON'			=> $revision->get('reason'),
-		'ID'				=> $revision->get('id'),
+		'DATE'				=> $user->format_date($revision->get_time()),
+		'REASON'			=> $revision->get_reason(),
+		'ID'				=> $revision->get_id(),
 		'NUMBER'			=> $revision_number,
 
 		'IN_RANGE'			=> true, // @todo when viewing revision ranges is implemented, this will need to be changed
-		'CURRENT_REVISION'	=> $revision->get('id') === 0,
+		'CURRENT_REVISION'	=> $revision->get_id() === 0,
 
-		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get('id'))),
-		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get('post'))). '#p' . $revision->get('post'),
-		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get('post'), 'revert' => $revision->get('id'))),
+		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
+		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post())). '#p' . $revision->get_post(),
+		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post(), 'revert' => $revision->get_id())),
 	));
 	$revision_number++;
 }
