@@ -27,6 +27,8 @@ interface phpbb_auth_provider_interface
 	 *
 	 * @param phpbb_request $request
 	 * @param dbal $db
+	 * @param phpbb_config_db $config
+	 * @param phpbb_user $user
 	 */
 	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user);
 

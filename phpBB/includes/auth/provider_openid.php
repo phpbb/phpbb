@@ -26,6 +26,15 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 	protected $db;
 	protected $config;
 	protected $user;
+
+	/**
+	 * This is the array of configurable OpenID Simple Registration Extension
+	 * data items that will be requested during registration using a third party
+	 * provider.
+	 * https://openid.net/specs/openid-simple-registration-extension-1_0.html
+	 *
+	 * @var array
+	 */
 	protected $sreg_props;
 
 	/**
@@ -153,6 +162,12 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		return false;
 	}
 
+	/**
+	 * Perform phpBB login from data gathered returned from a third party
+	 * provider.
+	 * 
+	 * @return true on success
+	 */
 	protected function login()
 	{
 		// Check to see if a link exists.
@@ -215,8 +230,9 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		// Data that must be supplied in order for registration to occur.
 		$req_data = array();
 
-		// Handle sreg data.
-		$sreg_data = $$extensions['sreg']->getProperties();
+		// Handle OpenId simple registration extension (sreg) information from
+		// the OpenID provider.
+		$sreg_data = $extensions['sreg']->getProperties();
 		if (!is_empty($sreg_data))
 		{
 			if (!isset($sreg_data['email']))
@@ -267,14 +283,14 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 
 			if (isset($sreg_data['timezone']))
 			{
-				$UTC_dtz = new DateTimeZone('UTC');
+				$utc_dtz = new DateTimeZone('UTC');
 				$registrant_dtz = new DateTimeZone($sreg_data['timezone']);
 
-				$UTC_dt = new DateTime('now', $UTC_dtz);
+				$utc_dt = new DateTime('now', $utc_dtz);
 				$registrant_dt = new DateTime('now', $registrant_dtz);
 
 				// Timezone is in hours, not seconds.
-				$data['timezone'] = $UTC_dt->getOffset($registrant_dt) / (60 * 60);
+				$data['timezone'] = $utc_dt->getOffset($registrant_dt) / (60 * 60);
 			}
 		}
 
