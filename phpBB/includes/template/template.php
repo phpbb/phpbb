@@ -36,7 +36,7 @@ class phpbb_template
 	* Stores template data used during template rendering.
 	* @var phpbb_template_context
 	*/
-	public $context;
+	private $context;
 
 	/**
 	* Path of the cache directory for the template
@@ -95,6 +95,7 @@ class phpbb_template
 		$this->user = $user;
 		$this->locator = $locator;
 		$this->template_path = $this->locator->template_path;
+		$this->context = new phpbb_template_context();
 	}
 
 	/**
