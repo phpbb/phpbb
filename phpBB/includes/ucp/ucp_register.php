@@ -442,6 +442,7 @@ class ucp_register
 			break;
 		}
 
+		$tz_select = tz_select($data['tz'], true, false);
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
@@ -454,7 +455,8 @@ class ucp_register
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
-			'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
+			'S_TZ_OPTIONS'			=> $tz_select['tz_select'],
+			'S_TZ_DATE_OPTIONS'		=> $tz_select['tz_dates'],
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
