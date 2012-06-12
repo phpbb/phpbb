@@ -53,15 +53,8 @@
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd>
-			<select name="tz" id="tz" tabindex="7" class="autowidth tz_select">
-				<option value="">{L_SELECT_TIMEZONE}</option>
-				{S_TZ_OPTIONS}
-			</select>
-		</dd>
-	</dl>
+
+	<!-- INCLUDE timezone_option.html -->
 
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>

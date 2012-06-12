@@ -1,0 +1,22 @@
+<dl>
+	<dt><label for="timezone">{L_BOARD_TIMEZONE}:</label></dt>
+	<!-- IF S_TZ_DATE_OPTIONS -->
+	<dd id="tz_select_date" style="display: none;">
+		<select name="tz_date" id="tz_date" class="autowidth tz_select" onchange="phpbb_switch_tz_date(false);">
+			<option value="">{L_SELECT_CURRENT_TIME}</option>
+			{S_TZ_DATE_OPTIONS}
+		</select>
+		<a id="tz_select_date_suggest" style="display: none;" href="javascript: phpbb_preselect_tz_select(true, '');">{L_TIMEZONE_DATE_SUGGESTION}</a>
+	</dd>
+	<!-- ENDIF -->
+	<dd>
+		<select name="tz" id="timezone" class="autowidth tz_select">
+			<option value="">{L_SELECT_TIMEZONE}</option>
+			{S_TZ_OPTIONS}
+		</select>
+
+		<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
+		<script type="text/javascript">phpbb_enable_tz_dates();</script>
+		<script type="text/javascript">phpbb_preselect_tz_select(<!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->, '{L_TIMEZONE_DATE_SUGGESTION}');</script>
+	</dd>
+</dl>
