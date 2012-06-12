@@ -126,7 +126,7 @@ class phpbb_style
 
 		if ($template_path !== false)
 		{
-			$this->template->template_path = $this->locator->template_path = $template_path;
+			$this->locator->template_path = $template_path;
 		}
 
 		return true;
