@@ -130,7 +130,7 @@ class bbcode
 
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
+			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
 			$style_resource_locator = new phpbb_style_resource_locator();
 			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider());
