@@ -25,12 +25,37 @@ $user->setup(array('revisions', 'viewtopic'));
 $post_id = $request->variable('p', 0);
 $revert = $request->variable('revert', 0);
 
+// Allow to view revisions in a range
+$compare = $request->variable('compare', '');
+
 if (!$post_id)
 {
+	// If not given a post ID, try to get it from other information
+	if ($revert)
+	{
+		$revert_revision = new phpbb_revisions_revision($revert);
+	}
+	else if ($compare)
+	{
+		$matches = array();
+		preg_match('/([0-9]+)\.{3}([0-9]+)/', $compare, $matches);
+		if ($matches && sizeof($matches) < 1)
+		{
+			// If the first number is not 0 (current revision) we can use it to figure out the post ID
+			if (!empty($matches[1]))
+			{
+				$first = phpbb_revisions_revision($matches[1]);
+			}
+			else if ($matches[2])
+			{
+
+			}
+		}
+	}
 	trigger_error('NO_POST');
 }
 
-$post = new phpbb_revisions_post($post_id);
+$post = new phpbb_revisions_post($post_id, $db);
 $post_data = $post->get_post_data();
 
 if (empty($post_data['post_id']))
@@ -50,18 +75,24 @@ if (!$total_revisions)
 
 $current = $revisions[0];
 
-if(empty($revisions) || ($revert && empty($revisions[$revert])))
+if (empty($revisions) || ($revert && empty($revisions[$revert])))
 {
 	trigger_error('ERROR_REVISION_NOT_FOUND');
 }
 
 // If we are reverting, the from revision is the current post
 // Otherwise, it's the second array element (the first is the current)
-$first = $revert ? $current : next($revisions);
+if (empty($first))
+{
+	$first = $revert ? $current : next($revisions);
+}
 
 // If we are reversting the, the to revision is the given revision ID
 // Otherwise, it is the final (i.e. current) revision
-$last = $revert ? $revisions[$revert] : $current;
+if (empty($last))
+{
+	$last = $revert ? $revisions[$revert] : $current;
+}
 
 // Let's get our diff driver
 // @todo either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
@@ -102,9 +133,11 @@ if ($revert)
 {
 	add_form_key('revert_form');
 
-	if ($revert_confirm = $request->variable('confirm', 0) && check_form_key('revert_form', 120))
+	$revert_confirm = $request->variable('confirm', 0);
+	if ($revert_confirm && check_form_key('revert_form', 120))
 	{
-		if (($revert_result = $post->revert($revert)) === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
+		$revert_result = $post->revert($revert);
+		if ($revert_result === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
 		{
 			// Because we've changed things up, we need to update our arrays
 			$post_data = $post->get_post_data(true);

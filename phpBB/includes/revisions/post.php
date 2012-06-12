@@ -22,11 +22,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_revisions_post
 {
-	// Post revision action results
+	/**
+	* Error message constants
+	*/
 	const REVISION_REVERT_SUCCESS = 1;
 	const REVISION_NOT_FOUND = 2;
 	const REVISION_INSERT_FAIL = 3;
 	const REVISION_POST_UPDATE_FAIL = 4;
+
 	/**
 	* phpBB DBAL Object
 	* @var dbal
@@ -59,13 +62,15 @@ class phpbb_revisions_post
 	
 	/**
 	* Constructor, initialize some class properties
+	*
+	* @param int $post_id Post ID
+	* @param dbal $dbal phpBB DBAL object
 	*/
-	public function __construct($id = 0)
+	public function __construct($post_id, dbal $db)
 	{
-		global $db;
 		$this->db = $db;
 
-		$this->post_id = (int) $id;
+		$this->post_id = (int) $post_id;
 
 		$this->get_post_data();
 	}
@@ -78,7 +83,9 @@ class phpbb_revisions_post
 	*/
 	public function get_post_data($refresh = false)
 	{
-		return $refresh || empty($post_data) ? $this->load_post_data() : $post_data;
+		// If we are refreshing the data in the array or we don't have any data, load it fresh
+		// Otherwise, return the data we already have
+		return ($refresh || empty($post_data)) ? $this->load_post_data() : $post_data;
 	}
 
 	/**
@@ -135,7 +142,9 @@ class phpbb_revisions_post
 	*/
 	public function get_revisions($refresh = false)
 	{
-		return $refresh || empty($this->revisions) ? $this->load_revisions() : $this->revisions;
+		// If we are refreshing the data in the array or we don't have any data, load it fresh
+		// Otherwise, return the data we already have
+		return ($refresh || empty($this->revisions)) ? $this->load_revisions() : $this->revisions;
 	}
 
 	/**
@@ -216,8 +225,6 @@ class phpbb_revisions_post
 			'revision_reason'		=> $this->post_data['post_edit_reason'],
 		));
 
-		uasort($this->revisions, array('phpbb_revisions_post', 'sort_post_revisions'));
-
 		return $this->revisions;
 	}
 
@@ -260,7 +267,8 @@ class phpbb_revisions_post
 		}
 
 		// But we do want to make sure we only have the maximum number of revisions allowed on a post
-		if ($config['max_revisions_per_post'] && ($remove_amount = sizeof($this->revisions) - $config['max_revisions_per_post']))
+		$remove_amount = sizeof($this->revisions) - $config['max_revisions_per_post'];
+		if ($config['max_revisions_per_post'] && $remove_amount)
 		{
 			// Delete the oldest one(s) until there aren't more than the max amount
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
@@ -309,25 +317,5 @@ class phpbb_revisions_post
 		{
 			return $this->$property;
 		}
-	}
-
-	/**
-	 * Custom sort function used by usort() to order a post's revisions by ther ID's
-	 *
-	 * @param phpbb_revisions_revision $a First comparison argument
-	 * @param phpbb_revisions_revision $b Second comparison argument
-	 * @return int 0 for equal, 1 for a greater than b, -1 for b greater than a
-	 */
-	static public function sort_post_revisions(phpbb_revisions_revision $a, phpbb_revisions_revision $b)
-	{
-		$a_order = $a->get('time');
-		$b_order = $b->get('time');
-
-		if ($a_order == $b_order)
-		{
-			return 0;
-		}
-
-		return ($a_order > $b_order) ? 1 : -1;
 	}
 }
