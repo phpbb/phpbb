@@ -89,9 +89,9 @@ class phpbb_style
 	*/
 	public function set_style()
 	{
-		$style_name = $this->user->style['style_path'];
+		$style_path = $this->user->style['style_path'];
 		$style_dirs = ($this->user->style['style_parent_id']) ? array_reverse(explode('/', $this->user->style['style_parent_tree'])) : array();
-		$paths = array($this->get_style_path($style_name));
+		$paths = array($this->get_style_path($style_path));
 		foreach ($style_dirs as $dir)
 		{
 			$paths[] = $this->get_style_path($dir);
@@ -100,7 +100,7 @@ class phpbb_style
 		// Add 'all' path, used as last fallback path by hooks and extensions
 		$paths[] = $this->get_style_path('all');
 
-		return $this->set_custom_style($style_name, $paths);
+		return $this->set_custom_style($style_path, $paths);
 	}
 
 	/**
