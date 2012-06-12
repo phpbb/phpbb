@@ -70,7 +70,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 		if ($db->sql_layer != 'mysql4' && $db->sql_layer != 'mysqli')
 		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}
 
 		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
