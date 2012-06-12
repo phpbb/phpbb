@@ -508,22 +508,8 @@ class phpbb_template
 	*/
 	public function locate($files, $return_default = false, $return_full_path = true)
 	{
-		// add template path prefix
-		$templates = array();
-		if (is_string($files))
-		{
-			$templates[] = $this->template_path . $files;
-		}
-		else
-		{
-			foreach ($files as $file)
-			{
-				$templates[] = $this->template_path . $file;
-			}
-		}
-
 		// use resource locator to find files
-		return $this->locator->get_first_file_location($templates, $return_default, $return_full_path);
+		return $this->locator->get_first_template_location($files, $return_default, $return_full_path);
 	}
 
 	/**

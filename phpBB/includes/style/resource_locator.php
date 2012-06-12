@@ -229,4 +229,31 @@ class phpbb_style_resource_locator implements phpbb_template_locator
 		// search failed
 		return $default_result;
 	}
+
+	/**
+	* Just like get_first_file_location but works on a list of templates,
+	* not files.
+	*
+	* The templates given in the first argument first are prepended with
+	* the template path (property in this class), then given to
+	* get_first_file_location for the rest of the processing.
+	*/
+	public function get_first_template_location($templates, $return_default = false, $return_full_path = true)
+	{
+		// add template path prefix
+		$files = array();
+		if (is_string($templates))
+		{
+			$files[] = $this->template_path . $templates;
+		}
+		else
+		{
+			foreach ($templates as $template)
+			{
+				$files[] = $this->template_path . $template;
+			}
+		}
+
+		return $this->get_first_file_location($files, $return_default, $return_full_path);
+	}
 }
