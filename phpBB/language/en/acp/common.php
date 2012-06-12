@@ -401,6 +401,8 @@ $lang = array_merge($lang, array(
 	'STATISTIC'					=> 'Statistic',
 	'STATISTIC_RESYNC_OPTIONS'	=> 'Resynchronise or reset statistics',
 
+	'TIMEZONE_INVALID'	=> 'The timezone you selected is invalid.',
+	'TIMEZONE_SELECTED'	=> '(currently selected)',
 	'TOPICS_PER_DAY'	=> 'Topics per day',
 
 	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments',
