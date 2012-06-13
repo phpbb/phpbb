@@ -327,8 +327,8 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 	 */
 	protected function link()
 	{
-		$user_id = $this->request->variable('phpbb.user_id', -1);
-		if ($user_id == -1 || !is_int($user_id))
+		$user_id = $this->request->variable('phpbb.user_id', 0);
+		if ($user_id === 0 || !is_int($user_id))
 		{
 			throw new phpbb_auth_exception('No phpbb user id or non-integer user id returned by the OpenID provider.');
 		}
@@ -337,12 +337,12 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-		$res = $this->db->sql_query($sql);
-		if(!$res)
+		$result = $this->db->sql_query($sql);
+		if (!$result)
 		{
 			throw new phpbb_auth_exception('User id returned by provider does not resolve to any known phpBB user.');
 		}
-		$this->db->sql_freeresult($res);
+		$this->db->sql_freeresult($result);
 
 		$link_manager = new phpbb_auth_link_manager($this->db);
 		$link_manager->add_link('openid', $user_id, $this->request->variable('openid_identity', ''));
