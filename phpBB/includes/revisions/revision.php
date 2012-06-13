@@ -32,108 +32,108 @@ class phpbb_revisions_revision
 	* Revision ID
 	* @var int
 	*/
-	private $id = 0;
+	private $revision_id;
 
 	/**
 	* Post ID
 	* @var int
 	*/
-	private $post = 0;
+	private $post_id;
 
 	/**
 	* Revision subject
 	* @var string
 	*/
-	private $subject = '';
+	private $subject;
 
 	/**
 	* Unparsed text
 	* @var string
 	*/
-	private $text_raw = '';
+	private $text_raw;
 
 	/**
 	* Text that has been run through decode_message()
 	* @var string
 	*/
-	private $text_decoded = '';
+	private $text_decoded;
 
 	/**
 	* Parsed text
 	* @var string
 	*/
-	private $text = '';
+	private $text;
 
 	/**
 	* Revision time
 	* @var int
 	*/
-	private $time = 0;
+	private $time;
 
 	/**
 	* BBCode UID
 	* @var string
 	*/
-	private $uid = '';
+	private $uid;
 
 	/**
 	* BBCode Bitfield
 	* @var string
 	*/
-	private $bitfield = '';
+	private $bitfield;
 
 	/**
 	* BBCode options
 	* @var int
 	*/
-	private $options = 0;
+	private $options;
 
 	/**
 	* Reason for revision
 	* @var string
 	*/
-	private $reason = '';
+	private $reason;
 	/**
 	* ID of user who made revision
 	* @var int
 	*/
-	private $user = 0;
+	private $user;
 
 	/**
 	* Checksum of post text
 	* @var string
 	*/
-	private $checksum = '';
+	private $checksum;
 
 	/**
 	* Revision has attachment?
 	* @var int
 	*/
-	private $attachment = 0;
+	private $attachment;
 
 	/**
 	* ID of the poster (not necessarily who made the revision)
 	* @var int
 	*/
-	private $poster_id = 0;
+	private $poster_id;
 
 	/**
 	* ID of the forum
 	* @var int
 	*/
-	private $forum_id = 0;
+	private $forum_id;
 
 	/**
 	* Username of user who made the revision
 	* @var string
 	*/
-	private $username = '';
+	private $username;
 
 	/**
 	* Avatar of user who made the revision
 	* @var string
 	*/
-	private $avatar = '';
+	private $avatar;
 
 	/**
 	* Constructor method
@@ -147,8 +147,8 @@ class phpbb_revisions_revision
 	{
 		$this->db = $db;
 
-		$this->id = (int) $revision_id;
-		if ($this->id && $autoload)
+		$this->revision_id = (int) $revision_id;
+		if ($this->revision_id && $autoload)
 		{
 			$this->load();
 		}
@@ -161,7 +161,7 @@ class phpbb_revisions_revision
 	*/
 	public function load()
 	{
-		if (!$this->id)
+		if (!->base)
 		{
 			return false;
 		}
@@ -184,7 +184,7 @@ class phpbb_revisions_revision
 				),
 			),
 
-			'WHERE'		=> 'r.revision_id = ' . (int) $this->id,
+			'WHERE'		=> 'r.revision_id = ' . $this->revision_id,
 
 			'ORDER_BY'	=> 'r.revision_id DESC',
 		);
@@ -204,7 +204,7 @@ class phpbb_revisions_revision
 
 	/**
 	* Set data from database directly to class properties
-	* 	NOTE: Expects data from revisions table left joined on posts table, like the query in load()
+	* 	NOTE: Expects data from revisions table, posts table, and users table, like the query in load()
 	*
 	* @param array $row Data from database
 	* @return null
@@ -261,7 +261,7 @@ class phpbb_revisions_revision
 	*/
 	public function get_id()
 	{
-		return $this->id;
+		return (int) $this->revision_id;
 	}
 
 	/**
@@ -271,7 +271,7 @@ class phpbb_revisions_revision
 	*/
 	public function get_post_id();
 	{
-		return $this->post;
+		return (int) $this->post_id;
 	}
 
 	/**
@@ -279,9 +279,9 @@ class phpbb_revisions_revision
 	*
 	* @return int Revision Poster ID
 	*/
-	public function get_iser_id()
+	public function get_user_id()
 	{
-		return $this->user;
+		return (int) $this->user;
 	}
 
 	/**
@@ -321,7 +321,7 @@ class phpbb_revisions_revision
 	*/
 	public function get_options()
 	{
-		return $this->options;
+		return (int) $this->options;
 	}
 
 	/**
@@ -331,7 +331,7 @@ class phpbb_revisions_revision
 	*/
 	public function get_time()
 	{
-		return $this->time;
+		return (int) $this->time;
 	}
 
 	/**
@@ -387,11 +387,11 @@ class phpbb_revisions_revision
 	/**
 	* Sets the ID of the revision
 	*
-	* @param int $id Revision ID
+	* @param int $revision_id Revision ID
 	* @return null
 	*/
-	public function set_id($id = 0)
+	public function set_id($revision_id)
 	{
-		$this->id = $id;
+		$this->revision_id = (int) $revision_id;
 	}
 }

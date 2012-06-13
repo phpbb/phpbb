@@ -48,14 +48,14 @@ if (!$post_id)
 			// If the first number is not 0 (current revision) we can use it to figure out the post ID
 			if (!empty($matches[1]))
 			{
-				$first = phpbb_revisions_revision($matches[1], $db, $template);
+				$first = phpbb_revisions_revision($matches[1], $db);
 				$post_id = $first->get_post_id();
 			}
 
 			// If the second number is not 0 (current revision) we can use it to figure out the post ID
 			if (!empty($matches[2]))
 			{
-				$last = phpbb_revisions_revision($matches[2], $db, $template);
+				$last = phpbb_revisions_revision($matches[2], $db);
 				$post_id = $post_id ?: $last->get_post_id();
 			}
 		}
@@ -63,7 +63,7 @@ if (!$post_id)
 		{
 			// If we don't see the X...Y pattern in $compare, we assume a single ID was given
 			// Set the "to" revision to the current post
-			$first = phpbb_revisions_revision((int) $compare, $db, $template);
+			$first = phpbb_revisions_revision((int) $compare, $db);
 
 			$post_id = $first->get_post_id();
 		}
