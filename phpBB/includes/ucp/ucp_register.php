@@ -418,6 +418,7 @@ class ucp_register
 		{
 			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
 		}
+		$s_hidden_openid_fields = $s_hidden_fields;
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 		$confirm_image = '';
 
@@ -464,6 +465,20 @@ class ucp_register
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
 		));
 
+		// Temporary values for enabled providers until a way is created to select
+		// which are and which are not enabled. This should become automated at
+		// some point.
+		$s_hidden_openid_fields['auth_provider'] = 'openid';
+		$s_hidden_openid_fields['auth_action'] = 'login';
+		$s_hidden_openid_fields = build_hidden_fields($s_hidden_openid_fields);
+		$template->assign_vars(array(
+			'OPENID_IDENTIFIER'					=> 'openid_identifier',
+			'S_AUTH_PROVIDER_NON_OLYMPUS_COUNT'	=> 2,
+			'S_AUTH_PROVIDER_FACEBOOK_CONNECT'	=> true,
+			'S_AUTH_PROVIDER_OLYMPUS'			=> true,
+			'S_AUTH_PROVIDER_OPENID'			=> true,
+			'S_HIDDEN_OPENID_FIELDS'			=> $s_hidden_openid_fields,
+		));
 		//
 		$user->profile_fields = array();
 
