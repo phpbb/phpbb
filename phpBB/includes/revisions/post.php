@@ -118,7 +118,7 @@ class phpbb_revisions_post
 				),
 			),
 
-			'WHERE'		=> 'p.post_id = ' . (int) $this->post_id,
+			'WHERE'		=> 'p.post_id = ' . $this->post_id,
 		);
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
@@ -173,7 +173,7 @@ class phpbb_revisions_post
 				),
 			),
 
-			'WHERE'		=> 'r.post_id = ' . (int) $this->post_id,
+			'WHERE'		=> 'r.post_id = ' . $this->post_id,
 
 			'ORDER_BY'	=> 'r.revision_id DESC',
 		);
@@ -272,7 +272,7 @@ class phpbb_revisions_post
 		{
 			// Delete the oldest one(s) until there aren't more than the max amount
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-				WHERE post_id = ' . (int) $this->post_id . '
+				WHERE post_id = ' . $this->post_id . '
 				ORDER BY revision_time ASC';
 			$db->sql_query_limit($sql, $remove_amount);
 		}
@@ -281,16 +281,16 @@ class phpbb_revisions_post
 
 		// Next, we update the post table with the information from the new revision
 		$sql_update_ary = array(
-			'post_edit_user'	=> (int) $new_revision->get_user_id(),
-			'post_edit_time'	=> (int) $new_revision->get_time(),
+			'post_edit_user'	=> $new_revision->get_user_id(),
+			'post_edit_time'	=> $new_revision->get_time(),
 			'post_subject'		=> $new_revision->get_subject(),
 			'post_text'			=> $new_revision->get_text(),
 			'post_checksum'		=> $new_revision->get_checksum(),
-			'post_attachment'	=> (int) $new_revision->get_attachment(),
+			'post_attachment'	=> $new_revision->get_attachment(),
 			'bbcode_bitfield'	=> $new_revision->get_bitfield(),
 			'bbcode_uid'		=> $new_revision->get_uid(),
 			'post_edit_reason'	=> $new_revision->get_reason(),
-			'post_edit_count'	=> (int) $this->post_data['post_edit_count'] + 1,
+			'post_edit_count'	=> $this->post_data['post_edit_count'] + 1,
 		);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '
