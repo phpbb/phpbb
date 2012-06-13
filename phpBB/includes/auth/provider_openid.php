@@ -78,30 +78,35 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 
 		$root = 'http://192.168.0.112/';
 
-		if ($this->request->variable('login', ''))
+		$auth_action = $this->request->variable('auth_action', '');
+		if ($auth_action === 'login')
 		{
 			// Login
 			$autologin = $this->request->variable('autologin', 'off');
 			$viewonline = $this->request->variable('viewonline', 'off');
-			$return_to = 'check_auth_openid.php?phpbb.process=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
+			$return_to = 'check_auth_openid.php?phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
 			$extensions = null;
 		}
-		elseif ($this->request->variable('Link', ''))
+		elseif ($auth_action === 'link')
 		{
 			if(!isset($this->user->data['user_id']))
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}
-			$return_to = 'check_auth_openid.php?phpbb.process=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$return_to = 'check_auth_openid.php?phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
-		else
+		elseif ($auth_action === 'register')
 		{
 			// Register
-			$return_to = 'phpBB/check_auth_openid.php?phpbb_process=register';
+			$return_to = 'phpBB/check_auth_openid.php?phpbb.auth_action=register';
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
+		}
+		else
+		{
+			throw new phpbb_auth_exception('OpenID does not support this authentication action.');
 		}
 
 		// Enable super globals so Zend Framework does not throw errors.
@@ -129,8 +134,8 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		$process = $this->request->variable('phpbb.process', 'login');
-		if ($process == 'register')
+		$auth_action = $this->request->variable('phpbb.auth_action', 'login');
+		if ($auth_action === 'register')
 		{
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
@@ -146,17 +151,17 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$id = '';
 		if ($consumer->verify($_GET, $id, $extensions))
 		{
-			if ($process == 'login' && $this->login())
+			if ($auth_action == 'login' && $this->login())
 			{
 				$this->request->disable_super_globals();
 				return true;
 			}
-			elseif ($process == 'register' && $this->register())
+			elseif ($auth_action == 'register' && $this->register($extensions['sreg']->getProperties()))
 			{
 				$this->request->disable_super_globals();
 				return true;
 			}
-			elseif ($process == 'link' && $this->link())
+			elseif ($auth_action == 'link' && $this->link())
 			{
 				$this->request->disable_super_globals();
 				return true;
@@ -238,8 +243,11 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 	 * (https://openid.net/specs/openid-simple-registration-extension-1_0.html)
 	 * and attribute exchange
 	 * (https://openid.net/specs/openid-attribute-exchange-1_0.html).
+	 *
+	 * @param array $sreg_data Holds returned data from the OpenID provider that
+	 *		is needed to perform registration.
 	 */
-	protected function register()
+	protected function register($sreg_data)
 	{
 		// Data array to hold all returned values.
 		$data = array();
@@ -249,7 +257,6 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 
 		// Handle OpenId simple registration extension (sreg) information from
 		// the OpenID provider.
-		$sreg_data = $extensions['sreg']->getProperties();
 		if (!is_empty($sreg_data))
 		{
 			if (!isset($sreg_data['email']))

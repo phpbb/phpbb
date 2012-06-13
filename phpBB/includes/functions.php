@@ -3150,6 +3150,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	// which are and which are not enabled. This should become automated at
 	// some point.
 	$s_hidden_openid_fields['auth_provider'] = 'openid';
+	$s_hidden_openid_fields['auth_action'] = 'login';
 	$s_hidden_openid_fields = build_hidden_fields($s_hidden_openid_fields);
 	$template->assign_vars(array(
 		'OPENID_IDENTIFIER'					=> 'openid_identifier',
