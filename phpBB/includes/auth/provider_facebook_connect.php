@@ -22,10 +22,58 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interface
 {
+	protected $request;
+	protected $db;
+	protected $config;
+	protected $user;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function process(phpbb_request $request)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	{
+		$this->request = $request;
+		$this->db = $db;
+		$this->config = $config;
+		$this->user = $user;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function process()
+	{
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function verify()
+	{
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function login()
+	{
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function register()
+	{
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function link()
 	{
 
 	}
