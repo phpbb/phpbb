@@ -2994,7 +2994,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if ($request->is_set_post('login'))
+	if ($request->is_set_post('auth_provider'))
+	{
+		$auth_provider = $request->variable('auth_provider', '', false, phpbb_request_interface::POST);
+		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+		$auth_provider = $auth_manager->get_provider($auth_provider);
+		$auth_provider->process();
+	}
+	elseif ($request->is_set_post('login'))
 	{
 		// Get credential
 		if ($admin)
@@ -3136,16 +3143,21 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$s_hidden_fields['credential'] = $credential;
 	}
 
+	$s_hidden_openid_fields = $s_hidden_fields;
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	// Temporary values for enabled providers until a way is created to select
 	// which are and which are not enabled. This should become automated at
 	// some point.
+	$s_hidden_openid_fields['auth_provider'] = 'openid';
+	$s_hidden_openid_fields = build_hidden_fields($s_hidden_openid_fields);
 	$template->assign_vars(array(
+		'OPENID_IDENTIFIER'					=> 'openid_identifier',
 		'S_AUTH_PROVIDER_NON_OLYMPUS_COUNT'	=> 2,
 		'S_AUTH_PROVIDER_FACEBOOK_CONNECT'	=> true,
 		'S_AUTH_PROVIDER_OLYMPUS'			=> true,
 		'S_AUTH_PROVIDER_OPENID'			=> true,
+		'S_HIDDEN_OPENID_FIELDS'			=> $s_hidden_openid_fields,
 	));
 
 	$template->assign_vars(array(

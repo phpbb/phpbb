@@ -65,7 +65,7 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 	public function process()
 	{
 		$storage = new phpbb_auth_zend_storage($this->db);
-		$this->consumer = $consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
 		if ($this->request->variable('openid_identifier', '') == '')
 		{
@@ -78,7 +78,7 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 
 		$root = 'http://192.168.0.112/';
 
-		if ($this->request->variable('Login', ''))
+		if ($this->request->variable('login', ''))
 		{
 			// Login
 			$autologin = $this->request->variable('autologin', 'off');

@@ -20,7 +20,7 @@ include($phpbb_root_path . 'common.' . $phpEx);
 
 try
 {
-	$request->overwrite('Login', 'yes');
+	$request->overwrite('login', 'yes');
 	$request->overwrite('openid_identifier', 'https://hardolaf.myopenid.com/');
 	$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
 	$provider = $auth_manager->get_provider('openid');
