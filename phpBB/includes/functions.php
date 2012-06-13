@@ -3138,6 +3138,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
+	// Temporary values for enabled providers until a way is created to select
+	// which are and which are not enabled. This should become automated at
+	// some point.
+	$template->assign_vars(array(
+		'S_AUTH_PROVIDER_NON_OLYMPUS_COUNT'	=> 2,
+		'S_AUTH_PROVIDER_FACEBOOK_CONNECT'	=> true,
+		'S_AUTH_PROVIDER_OLYMPUS'			=> true,
+		'S_AUTH_PROVIDER_OPENID'			=> true,
+	));
+
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,

@@ -16,6 +16,7 @@
 		<div>
 			<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
 		</div>
+		<!-- IF S_AUTH_PROVIDER_OLYMPUS -->
 		<div style="width: 40%;float: left;">
 		<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
 		<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
@@ -49,18 +50,27 @@
 		</dl>
 		</fieldset>
 		</div>
+		<!-- IF S_AUTH_PROVIDER_NON_OLYMPUS_COUNT gt 0 -->
 		<div>
 			{L_OR}
 		</div>
+		<!-- ENDIF -->
+		<!-- ENDIF -->
+		<!-- IF S_AUTH_PROVIDER_NON_OLYMPUS_COUNT gt 0 -->
 		<div style="width: 40%;float: right;">
 			<dl>
 				<dt>{L_FEDERATED_LOGIN}:</dt>
-				<dd><div><a href=""><img style="width: 133px; height: 33px;" src="{T_THEME_PATH}/images/logo_google.png" alt="Google"/></a></div>
-					<div><a href="">Facebook</a></div>
-					<div><a href="">OpenID</a></div>
+				<dd>
+					<!-- IF S_AUTH_PROVIDER_OPENID --><dl>
+						<dt>{L_AUTH_PROVIDER_OPENID}</dt>
+						<dd><div><a href=""><img style="width: 133px; height: 33px;" src="{T_THEME_PATH}/images/logo_google.png" alt="Google"/></a></div>
+							<div><a href="">OpenID</a></div></dd>
+					</dl><!-- ENDIF -->
+					<!-- IF S_AUTH_PROVIDER_FACEBOOK_CONNECT --><div><a href="">Facebook</a></div><!-- ENDIF -->
 				</dd>
 			</dl>
 		</div>
+		<!-- ENDIF -->
 	</div>
 	</div>
 </div>
