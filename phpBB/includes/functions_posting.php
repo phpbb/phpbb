@@ -2589,7 +2589,7 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
  */
 function plupload_configure()
 {
-	global $cache, $template, $config, $user;
+	global $cache, $template, $config, $user, $s_action;
 	
 	$extensions = $cache->obtain_attach_extensions($forum_id);
 	$groups = array();
@@ -2636,6 +2636,7 @@ function plupload_configure()
 		'S_PLUPLOAD'		=> true,
 		'FILTERS'			=> implode(',', $filters),
 		'CHUNK_SIZE'		=> $chunk_size,
+		'S_PLUPLOAD_URL'	=> str_replace('&amp;', '&', $s_action),
 	));
 
 	// Assign the plupload i18n strings

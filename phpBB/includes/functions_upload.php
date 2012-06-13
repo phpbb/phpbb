@@ -43,6 +43,8 @@ class filespec
 
 	var $upload = '';
 
+	var $plupload = false;
+
 	/**
 	* File Class
 	* @access private
@@ -80,6 +82,9 @@ class filespec
 
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
+
+		$headers = getallheaders();
+		$this->plupload = isset($headers['X-Using-Plupload']);
 	}
 
 	/**
@@ -161,12 +166,12 @@ class filespec
 	*/
 	function is_uploaded()
 	{
-		if (!$this->local && !is_uploaded_file($this->filename))
+		if (!$this->local && !$this->plupload && !is_uploaded_file($this->filename))
 		{
 			return false;
 		}
 
-		if ($this->local && !file_exists($this->filename))
+		if (($this->local || $this->plupload) && !file_exists($this->filename))
 		{
 			return false;
 		}
@@ -570,7 +575,15 @@ class fileupload
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
-		$file = new filespec($upload, $this);
+
+		// Program flow note: handle_plupload utilises die() a lot
+		$result = $this->handle_plupload($form_name);
+		if (is_array($result))
+		{
+			$upload[$form_name] = array_merge($upload[$form_name], $result);
+		}
+
+		$file = new filespec($upload[$form_name], $this);
 
 		if ($file->init_error)
 		{
@@ -1041,5 +1054,180 @@ class fileupload
 			IMAGETYPE_WBMP		=> array('wbmp'),
 			IMAGETYPE_XBM		=> array('xbm'),
 		);
+	}
+
+	/**
+	 * Plupload allows for chunking so we must check for that and assemble
+	 * the whole file first before performing any checks on it.
+	 */
+	function handle_plupload($form_name)
+	{
+		global $config;
+		// Most of this code is adapted from the sample upload script provided
+		// with plupload
+		$tmp_dir = $config['upload_path'] . DIRECTORY_SEPARATOR . 'plupload';
+		$max_file_age = 5 * 3600;
+		
+		$chunk = intval(request_var('chunk', 0));
+		$chunks = intval(request_var('chunks', 0));
+		$file_name = request_var('name', '');
+
+		// If chunking is disabled or we are not using plupload, just return
+		// and handle the file as usual
+		if ($chunks < 2)
+		{
+			return;
+		}
+
+		$file_name = preg_replace('/[^\w\._]+]/', '_', $file_name);
+		$file_path = $tmp_dir . DIRECTORY_SEPARATOR . $file_name;
+
+		// If the plupload subdirectory does not exist in the tmp upload
+		// directory then create it
+		if (!file_exists($tmp_dir))
+		{
+			mkdir($tmp_dir);
+		}
+
+		// Remove old temporary file (perhaps failed uploads?)
+		if (is_dir($tmp_dir) && ($dir = opendir($tmp_dir)))
+		{
+			while (($file = readdir($dir)) !== false)
+			{
+				$tmp_file_path = $tmp_dir . DIRECTORY_SEPARATOR . $file;
+				if (
+					preg_match('/\.part$/', $file)
+					&& (filemtime($tmp_file_path) < time() - $max_file_age)
+					&& ($tmp_file_path !== "{$file_path}.part")
+				)
+				{
+					@unlink($tmp_file_path);
+				}
+			}
+
+			closedir($dir);
+		}
+		else
+		{
+			// Probably need translation strings for these errors
+			die('{
+				"jsonrpc": "2.0",
+				"error": {
+					"code": 100,
+					"message": "Failed to open temp directory."
+				},
+				"id": "id"
+			}');
+		}
+
+		$headers = getallheaders();
+		$content_type = $headers['Content-Type'];
+
+		// The following block of code has the comment:
+		// "Handle non multipart uploads older WebKit versions didn't support
+		// multipart in HTML5"
+		// So this may not be necessary any more if we do not intend to
+		// support those old versions of WebKit
+		$multipart = (strpos($content_type, 'multipart') !== false);
+		
+		if (
+			$multipart
+			&& (
+				!isset($_FILES[$form_name]['tmp_name'])
+				|| !is_uploaded_file($_FILES[$form_name]['tmp_name'])
+			)
+		)
+		{
+			die('{
+				"jsonrpc": "2.0",
+				"error": {
+					"code": 103,
+					"message": "Failed to move uploaded file."
+				},
+				"id": "id"
+			}');
+		}
+
+		// Move the file safely to our working tmp dir to read from it
+		// race condition?
+		$tmp_file =
+			$tmp_dir
+			. DIRECTORY_SEPARATOR
+			. basename($_FILES[$form_name]['tmp_name']);
+		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
+		{
+			die('{
+				"jsonrpc": "2.0",
+				"error": {
+					"code": 103,
+					"message": "Failed to move uploaded file."
+				},
+				"id": "id"
+			}');
+		}
+		
+		$out = fopen("{$file_path}.part", $chunk == 0 ? 'wb' : 'ab');
+		if ($out)
+		{
+			$in = fopen(($multipart) ? $tmp_file : 'php://input', 'rb');
+
+			if ($in)
+			{
+				while ($buf = fread($in, 4096))
+				{
+					fwrite($out, $buf);
+				}
+			}
+			else
+			{
+				die('{
+					"jsonrpc": "2.0",
+					"error": {
+						"code": 101,
+						"message": "Failed to open input stream."
+					},
+					"id" : "id"
+				}');
+			}
+
+			fclose($in);
+			fclose($out);
+
+			if ($multipart)
+			{
+				unlink($tmp_file);
+			}
+		}
+		else
+		{
+			die('{
+				"jsonrpc": "2.0",
+				"error": {
+					"code": 102,
+					"message": "Failed to open output stream."
+				},
+				"id": "id"
+			}');
+		}
+
+		// If we are done with all the chunks, strip the .part suffix and then
+		// handle the resulting file as normal, otherwise die and await the
+		// next chunk
+		if ($chunk == $chunks - 1)
+		{
+			rename("{$file_path}.part", $file_path);
+
+			// Need to modify some of the $_FILES values to reflect the new
+			// file
+			return array(
+				'tmp_name' => $file_path,
+				'name' => $file_name,
+				'size' => filesize($file_path)
+			);
+		}
+		else
+		{
+			die('{"jsonrpc": "2.0", "result": null, "id": "id"}');
+		}
 	}
 }
