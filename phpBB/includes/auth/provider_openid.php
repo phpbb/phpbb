@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
+class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 {
 	protected $request;
 	protected $db;
@@ -81,7 +81,6 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'login')
 		{
-			// Login
 			$autologin = $this->request->variable('autologin', 'off');
 			$viewonline = $this->request->variable('viewonline', 'off');
 			$return_to = 'check_auth_openid.php?phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
@@ -98,8 +97,7 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		}
 		elseif ($auth_action === 'register')
 		{
-			// Register
-			$return_to = 'phpBB/check_auth_openid.php?phpbb.auth_action=register';
+			$return_to = 'check_auth_openid.php?phpbb.auth_action=register';
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
@@ -134,16 +132,20 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		$auth_action = $this->request->variable('phpbb.auth_action', 'login');
+		$auth_action = $this->request->variable('phpbb.auth_action', '');
 		if ($auth_action === 'register')
 		{
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
 		}
-		else
+		elseif ($auth_action === 'login' | 'link')
 		{
 			$extensions = null;
+		}
+		else
+		{
+			throw new phpbb_auth_exception('Unrecognized authentication action.');
 		}
 
 		// Enable super globals so Zend Framework does not throw errors.
@@ -151,18 +153,38 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 		$id = '';
 		if ($consumer->verify($_GET, $id, $extensions))
 		{
-			if ($auth_action == 'login' && $this->login())
+			if ($auth_action == 'login')
 			{
+				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
+
+				// Check to see if a link exists.
+				$link_manager = new phpbb_auth_link_manager($this->db);
+				$link = $link_manager->get_link_by_index('openid', $this->request->variable('openid_identity', ''));
+				if (!$link)
+				{
+					throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
+				}
+
+				$admin = false; // OpenID can not be used for admin login.
+				$autologin = (bool)$this->request->variable('phpbb.autologin', false);
+				$viewonline = (bool)$this->request->variable('phpbb.viewonline', true);
+
+				if (!$this->login((int) $link['user_id'], $admin, $autologin, $viewonline))
+				{
+					$this->login_auth_fail((int) $link['user_id']);
+				}
 				return true;
 			}
 			elseif ($auth_action == 'register' && $this->register($extensions['sreg']->getProperties()))
 			{
+				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
 				return true;
 			}
 			elseif ($auth_action == 'link' && $this->link())
 			{
+				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
 				return true;
 			}
@@ -175,66 +197,6 @@ class phpbb_auth_provider_openid implements phpbb_auth_provider_interface
 
 		$this->request->disable_super_globals();
 		return false;
-	}
-
-	/**
-	 * Perform phpBB login from data gathered returned from a third party
-	 * provider.
-	 * 
-	 * @return true on success
-	 */
-	protected function login()
-	{
-		// Check to see if a link exists.
-		$link_manager = new phpbb_auth_link_manager($this->db);
-		$link = $link_manager->get_link_by_index('openid', $this->request->variable('openid_identity', ''));
-		if (!$link)
-		{
-			throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
-		}
-
-		// Get user
-		$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $link['user_id'];
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		// Delete login attemps
-		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
-				WHERE user_id = ' . $row['user_id'];
-		$this->db->sql_query($sql);
-
-		if ($row['user_login_attempts'] != 0)
-		{
-			// Successful, reset login attempts (the user passed all stages)
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_login_attempts = 0
-				WHERE user_id = ' . $row['user_id'];
-			$this->db->sql_query($sql);
-		}
-
-		// User inactive...
-		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
-		{
-			$this->request->disable_super_globals();
-			throw new phpbb_auth_exception('Only actived users may login.');
-		}
-
-		// Create a non-admin session.
-		$autologin = (bool)$this->request->variable('phpbb.autologin', false);
-		$viewonline = (bool)$this->request->variable('phpbb.viewonline', true);
-		$result = $this->user->session_create($row['user_id'], false , $autologin, $viewonline);
-		if ($result === true)
-		{
-			return true;
-		}
-		else
-		{
-			$this->request->disable_super_globals();
-			throw new phpbb_auth_exception($result);
-		}
 	}
 
 	/**
