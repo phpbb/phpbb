@@ -26,14 +26,34 @@ if (!defined('IN_PHPBB'))
 class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_base
 {
 	/**
+	* Config array
+	* @var array
+	*/
+	protected $config;
+
+	/**
+	* DBAL Object
+	* @var dbal
+	*/
+	protected $db;
+
+	/**
+	* Constructor method
+	*/
+	public function __construct()
+	{
+		global $config, $db;
+		$this->config = $config;
+		$this->db = $db;
+	}
+
+	/**
 	* Runs this cron task.
 	*
 	* @return void
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $db, $config;
-
 		$prune_revision_ids = array();
 
 		$iteration = 0;
@@ -42,9 +62,9 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 		// Now we get post IDs of posts with > the max number of revisions 
 		$sql = 'SELECT post_id, post_edit_count
 			FROM ' . POSTS_TABLE . '
-			WHERE post_edit_count > ' . (int) $config['revisions_per_post_max'];
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+			WHERE post_edit_count > ' . (int) $this->config['revisions_per_post_max'];
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Query in a loop? Uh oh! But I can't find a better way...
 			// At least this will really only occur when the config value is decreased in the ACP
@@ -54,8 +74,8 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 				FROM ' . POST_REVISIONS_TABLE . '
 				WHERE post_id = ' . (int) $row['post_id'] . '
 				ORDER BY revision_id ASC';
-			$inner_result = $db->sql_query_limit($inner_sql, $row['post_edit_count'] - $config['revisions_per_post_max']);
-			while ($inner_row = $db->sql_fetchrow($inner_result))
+			$inner_result = $this->db->sql_query_limit($inner_sql, $row['post_edit_count'] - $config['revisions_per_post_max']);
+			while ($inner_row = $this->db->sql_fetchrow($inner_result))
 			{
 				if (sizeof($prune_revision_ids[$iteration]) == $ids_per_iteration)
 				{
@@ -63,9 +83,9 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 				}
 				$prune_revision_ids[$iteration][] = $inner_row['revision_id'];
 			}
-			$db->sql_freeresult($inner_result);
+			$this->db->sql_freeresult($inner_result);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// Finally, if we have any revisions that meet the criteria, we delete them
 		if (!empty($prune_revision_ids))
@@ -73,10 +93,12 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 			for($i = 0; $i < $iteration; $i++)
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE ' . $db->sql_in_set('revision_id', $prune_revision_ids[$i]);
-				$result = $db->sql_query($sql);
+					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids[$i]);
+				$result = $this->db->sql_query($sql);
 			}
 		}
+
+		set_config('excess_revisions_last_prune_time', time());
 	}
 
 	/**
@@ -86,7 +108,16 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return $config['track_post_revisions'] && $config['revisions_per_post_max'];
+		return $this->config['track_post_revisions'] && $this->config['revisions_per_post_max'];
+	}
+
+	/**
+	* Returns whether this cron task should run, given last run time.
+	*
+	* @return bool
+	*/
+	public function should_run()
+	{
+		return $this->config['excess_revisions_last_prune_time'] < (time() - $this->config['excess_revisions_prune_wait_time']);
 	}
 }

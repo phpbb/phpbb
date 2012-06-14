@@ -26,14 +26,34 @@ if (!defined('IN_PHPBB'))
 class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 {
 	/**
+	* Config array
+	* @var array
+	*/
+	protected $config;
+
+	/**
+	* DBAL Object
+	* @var dbal
+	*/
+	protected $db;
+
+	/**
+	* Constructor that provides $
+	*/
+	public function __construct()
+	{
+		global $config, $db;
+		$this->config = $config;
+		$this->db = $db;
+	}
+
+	/**
 	* Runs this cron task.
 	*
 	* @return void
 	*/
 	public function run()
 	{
-		global $phpbb_root_path, $phpEx, $db, $config;
-
 		$prune_revision_ids = array();
 
 		// This allows us to split up the IDs so that we don't try to delete a ton all at once
@@ -43,9 +63,9 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 
 		$sql = 'SELECT revision_id
 			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_time < ' . (time() - $config['post_revisions_max_age']);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (sizeof($prune_revision_ids[$iteration]) == $ids_per_iteration)
 			{
@@ -54,7 +74,7 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 
 			$prune_revision_ids[$iteration][] = $row['revision_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// Finally, if we have any revisions that meet the criteria, we delete them
 		if (!empty($prune_revision_ids))
@@ -62,10 +82,12 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 			for($i = 0; $i < $iteration; $i++)
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE ' . $db->sql_in_set('revision_id', $prune_revision_ids[$i]);
-				$result = $db->sql_query($sql);
+					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids[$i]);
+				$result = $this->db->sql_query($sql);
 			}
 		}
+
+		set_config('old_revisions_last_prune_time', time());
 	}
 
 	/**
@@ -75,7 +97,16 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return $config['track_post_revisions'] && $config['post_revisions_max_age'];
+		return $this->config['track_post_revisions'] && $this->config['post_revisions_max_age'];
+	}
+
+	/**
+	* Returns whether this cron task should run, given last run time.
+	*
+	* @return bool
+	*/
+	public function should_run()
+	{
+		return $this->config['old_revisions_last_prune_time'] < (time() - $this->config['excess_revisions_prune_wait_time']);
 	}
 }
