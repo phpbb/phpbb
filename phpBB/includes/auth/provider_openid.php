@@ -132,7 +132,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		$auth_action = $this->request->variable('phpbb.auth_action', '');
+		$auth_action = $this->request->variable('phpbb_auth_action', '');
 		if ($auth_action === 'register')
 		{
 			$extensions = array(
@@ -145,7 +145,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 		else
 		{
-			throw new phpbb_auth_exception('Unrecognized authentication action.');
+			throw new phpbb_auth_exception('Invalid authentication action.');
 		}
 
 		// Enable super globals so Zend Framework does not throw errors.
@@ -167,8 +167,8 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				}
 
 				$admin = false; // OpenID can not be used for admin login.
-				$autologin = (bool)$this->request->variable('phpbb.autologin', false);
-				$viewonline = (bool)$this->request->variable('phpbb.viewonline', true);
+				$autologin = (bool)$this->request->variable('phpbb_autologin', false);
+				$viewonline = (bool)$this->request->variable('phpbb_viewonline', true);
 
 				if (!$this->login((int) $link['user_id'], $admin, $autologin, $viewonline))
 				{
@@ -296,7 +296,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 */
 	protected function link()
 	{
-		$user_id = $this->request->variable('phpbb.user_id', 0);
+		$user_id = $this->request->variable('phpbb_user_id', 0);
 		if ($user_id === 0 || !is_int($user_id))
 		{
 			throw new phpbb_auth_exception('No phpbb user id or non-integer user id returned by the OpenID provider.');
