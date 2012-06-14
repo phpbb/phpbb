@@ -181,13 +181,17 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			{
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
-				return true;
+				return true; // TODO: Change this to a redirect.
 			}
-			elseif ($auth_action == 'link' && $this->link())
+			elseif ($auth_action == 'link')
 			{
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
-				return true;
+
+				$user_id = $this->request->variable('phpbb_user_id', 0);
+				$identity = $this->request->variable('openid_identity', '');
+				$this->link($user_id, 'openid', $identity);
+				return true; // TODO: Change this to a redirect.
 			}
 		}
 		else
@@ -289,33 +293,5 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		// Perform registration.
-	}
-
-	/**
-	 * Link an existing phpBB account to an OpenID provider.
-	 */
-	protected function link()
-	{
-		$user_id = $this->request->variable('phpbb_user_id', 0);
-		if ($user_id === 0 || !is_int($user_id))
-		{
-			throw new phpbb_auth_exception('No phpbb user id or non-integer user id returned by the OpenID provider.');
-		}
-
-		// Verify that the user actually exists.
-		$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
-		$result = $this->db->sql_query($sql);
-		if (!$result)
-		{
-			throw new phpbb_auth_exception('User id returned by provider does not resolve to any known phpBB user.');
-		}
-		$this->db->sql_freeresult($result);
-
-		$link_manager = new phpbb_auth_link_manager($this->db);
-		$link_manager->add_link('openid', $user_id, $this->request->variable('openid_identity', ''));
-
-		return true;
 	}
 }

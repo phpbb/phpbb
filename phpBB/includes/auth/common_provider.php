@@ -29,6 +29,38 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	protected $user;
 
 	/**
+	 * Links a user to provider and an index.
+	 *
+	 * @param integer $user_id The user id of the account requested to be linked.
+	 * @param string $provider The authentication provider.
+	 * @param string $index The index needed to discover additional information from the authentication provider.
+	 * @return boolean true on success
+	 */
+	protected function link($user_id, $provider, $index)
+	{
+		if (!is_int($user_id) || $user_id <= 0)
+		{
+			throw new phpbb_auth_exception('Invalid user id supplied.');
+		}
+
+		// Verify that the user exists.
+		$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+		$result = $this->db->sql_query($sql);
+		if (!$result)
+		{
+			throw new phpbb_auth_exception('User id, ' . $user_id . ', does not resolve to any known phpBB user.');
+		}
+		$this->db->sql_freeresult($result);
+
+		$link_manager = new phpbb_auth_link_manager($this->db);
+		$link_manager->add_link($provider, $user_id, $index);
+
+		return true;
+	}
+
+	/**
 	 * Perform phpBB login from data gathered returned from a third party
 	 * provider.
 	 *
