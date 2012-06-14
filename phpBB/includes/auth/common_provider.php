@@ -32,8 +32,13 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	 * Perform phpBB login from data gathered returned from a third party
 	 * provider.
 	 *
-	 *
-	 * @return true on success
+	 * @global string $SID
+	 * @global string $_SID
+	 * @param integer $user_id The ID of the user attempting to log in.
+	 * @param boolean $admin Whether the user is trying to reauthenticate for the administration panel.
+	 * @param boolean $autologin Whether the user wants to autologin.
+	 * @param boolean $viewonline Whether the user wants to appear online or offline.
+	 * @return boolean true on success
 	 */
 	protected function login($user_id, $admin = false, $autologin = false, $viewonline = true)
 	{
@@ -108,6 +113,14 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		}
 	}
 
+	/**
+	 * Handles the limiting of login activity if authentication fails. This may
+	 * prompt additional requirements for authentication such as CAPTCHA.
+	 *
+	 * @param integer $user_id
+	 * @param string $username
+	 * @param string $username_clean
+	 */
 	protected function login_auth_fail($user_id, $username = 0, $username_clean = 0)
 	{
 		if(!is_int($user_id))

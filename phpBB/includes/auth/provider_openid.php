@@ -207,8 +207,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 * and attribute exchange
 	 * (https://openid.net/specs/openid-attribute-exchange-1_0.html).
 	 *
-	 * @param array $sreg_data Holds returned data from the OpenID provider that
-	 *		is needed to perform registration.
+	 * @param array $sreg_data Holds returned data from the OpenID provider that is needed to perform registration.
 	 */
 	protected function register($sreg_data)
 	{
