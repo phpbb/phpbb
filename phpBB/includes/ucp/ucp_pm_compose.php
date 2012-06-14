@@ -436,11 +436,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Get maximum number of allowed recipients
-	$sql = 'SELECT MAX(g.group_max_recipients) as max_recipients
-		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . $user->data['user_id'] . '
-			AND ug.user_pending = 0
-			AND ug.group_id = g.group_id';
+	$sql = 'SELECT g.group_max_recipients AS max_recipients
+		FROM ' . GROUPS_TABLE . ' g, ' . USERS_TABLE . ' u
+		WHERE u.user_id = ' . $user->data['user_id'] . '
+			AND u.group_id = g.group_id';
 	$result = $db->sql_query($sql);
 	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
 	$db->sql_freeresult($result);
