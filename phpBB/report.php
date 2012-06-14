@@ -154,7 +154,6 @@ if ($submit && $reason_id)
 		trigger_error('EMPTY_REPORT');
 	}
 
-
 	$sql_ary = array(
 		'reason_id'				=> (int) $reason_id,
 		'post_id'				=> $post_id,
