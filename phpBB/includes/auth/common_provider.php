@@ -163,4 +163,16 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			throw new phpbb_auth_exception('LOGIN_ERROR_ATTEMPTS');
 		}
 	}
+
+	/**
+	 * Redirects the user to the specified page after the authentication action
+	 * is completed.
+	 *
+	 * @param string $redirect_to
+	 */
+	protected function redirect($redirect_to = 'index.php')
+	{
+		$redirect_to = reapply_sid($redirect_to);
+		redirect($redirect_to);
+	}
 }

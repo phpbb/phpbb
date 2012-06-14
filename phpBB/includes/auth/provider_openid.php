@@ -83,7 +83,8 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		{
 			$autologin = $this->request->variable('autologin', 'off');
 			$viewonline = $this->request->variable('viewonline', 'off');
-			$return_to = 'check_auth_openid.php?phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline;
+			$redirect_to = $this->request->variable('redirect_to', 'index.php');
+			$return_to = 'check_auth_openid.php?phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to;
 			$extensions = null;
 		}
 		elseif ($auth_action === 'link')
@@ -174,7 +175,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				{
 					$this->login_auth_fail((int) $link['user_id']);
 				}
-				return true;
+				$this->redirect($this->request->variable('phpbb_redirect_to', ''));
 			}
 			elseif ($auth_action == 'register' && $this->register($extensions['sreg']->getProperties()))
 			{

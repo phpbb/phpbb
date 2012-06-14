@@ -22,13 +22,7 @@ $user->setup();
 
 $provider = new phpbb_auth_provider_openid($request, $db, $config, $user);
 
-if ($provider->verify())
-{
-	$redirect = 'index.php';
-	$redirect = reapply_sid($redirect);
-	redirect($redirect);
-}
-else
+if (!$provider->verify())
 {
 	$status = 'INVALID';
 }
