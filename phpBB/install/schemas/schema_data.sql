@@ -90,6 +90,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subject', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('excess_revisions_last_prune_time', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('excess_revisions_prune_wait_time', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
@@ -216,6 +218,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_post_limit', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_group_default', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('old_revisions_last_prune_time', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('old_revisions_prune_wait_time', '600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
