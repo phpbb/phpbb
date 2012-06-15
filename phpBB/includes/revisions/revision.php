@@ -161,7 +161,7 @@ class phpbb_revisions_revision
 	*/
 	public function load()
 	{
-		if (!$this->id)
+		if (!$this->revision_id)
 		{
 			return false;
 		}
