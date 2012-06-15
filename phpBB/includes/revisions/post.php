@@ -83,8 +83,6 @@ class phpbb_revisions_post
 	*/
 	public function get_post_data($refresh = false)
 	{
-		// If we are refreshing the data in the array or we don't have any data, load it fresh
-		// Otherwise, return the data we already have
 		return ($refresh || empty($post_data)) ? $this->load_post_data() : $post_data;
 	}
 
@@ -142,8 +140,6 @@ class phpbb_revisions_post
 	*/
 	public function get_revisions($refresh = false)
 	{
-		// If we are refreshing the data in the array or we don't have any data, load it fresh
-		// Otherwise, return the data we already have
 		return ($refresh || empty($this->revisions)) ? $this->load_revisions() : $this->revisions;
 	}
 
