@@ -29,6 +29,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	var $tsearch_query;
 	var $common_words = array();
 	var $tsearch_usable = false;
+	var $version;
 
 	public function __construct(&$error)
 	{
@@ -39,8 +40,9 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 		if ($db->sql_layer == 'postgres')
 		{
-			$pgsql_version = explode('.', substr($db->sql_server_info(), 10));
-			if ($pgsql_version[0] >= 9 || $pgsql_version[0] == 8 && $pgsql_version[1] >= 3)
+			$pgsql_version = explode(',', substr($db->sql_server_info(), 10));
+			$this->version = trim($pgsql_version[0]);
+			if(version_compare($this->version, '8.3', '>='))
 			{
 				$this->tsearch_usable = true;
 			}
@@ -778,12 +780,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	{
 		global $user, $config, $db;
 
-		$pgsql_version = explode(',', substr($db->sql_server_info(), 10));
-
 		$tpl = '
 		<dl>
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->tsearch_usable) ? $user->lang['YES'] : $user->lang['NO']) . ' (PostgreSQL ' . $pgsql_version[0] . ')</dd>
+			<dd>' . (($this->tsearch_usable) ? $user->lang['YES'] : $user->lang['NO']) . ' (PostgreSQL ' . $this->version . ')</dd>
 		</dl>
 		<dl>
 			<dt><label>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
