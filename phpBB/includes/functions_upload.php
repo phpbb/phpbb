@@ -151,7 +151,10 @@ class filespec
 	*/
 	function is_image()
 	{
-		return (strpos($this->mimetype, 'image/') !== false) ? true : false;
+		$finfo = new finfo(FILEINFO_MIME_TYPE);
+		$mimetype = $finfo->file($this->filename);
+
+		return (strpos($mimetype, 'image/') !== false) ? true : false;
 	}
 
 	/**
@@ -342,6 +345,7 @@ class filespec
 
 			// Remove temporary filename
 			@unlink($this->filename);
+			$this->filename = $this->destination_file;
 
 			if (sizeof($this->error))
 			{
