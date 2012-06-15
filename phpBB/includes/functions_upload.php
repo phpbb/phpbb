@@ -1071,16 +1071,16 @@ class fileupload
 	 */
 	function handle_plupload($form_name)
 	{
-		global $config, $request, $phpbb_root_path;
+		global $config, $request;
 
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
 		$tmp_dir = $config['upload_path'] . '/plupload';
 		$max_file_age = 5 * 3600;
 		
-		$chunk = request_var('chunk', 0);
-		$chunks_expected = request_var('chunks', 0);
-		$file_name = request_var('name', '');
+		$chunk = $request->variable('chunk', 0);
+		$chunks_expected = $request->variable('chunks', 0);
+		$file_name = $request->variable('name', '');
 
 		// If chunking is disabled or we are not using plupload, just return
 		// and handle the file as usual
@@ -1105,8 +1105,8 @@ class fileupload
 			);
 		}
 
-		$headers = getallheaders();
-		$content_type = $headers['Content-Type'];
+		$json_response = new phpbb_json_response();
+		$content_type = $request->server('CONTENT_TYPE');
 
 		// The following block of code has the comment:
 		// "Handle non multipart uploads older WebKit versions didn't support
@@ -1123,7 +1123,7 @@ class fileupload
 			)
 		)
 		{
-			phpbb_json_response::send(array(
+			$json_response->send(array(
 				'jsonrpc' => '2.0',
 				'id' => 'id',
 				'error' => array(
@@ -1141,7 +1141,7 @@ class fileupload
 			. basename($_FILES[$form_name]['tmp_name']);
 		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
 		{
-			phpbb_json_response::send(array(
+			$json_response->send(array(
 				'jsonrpc' => '2.0',
 				'id' => 'id',
 				'error' => array(
@@ -1165,7 +1165,7 @@ class fileupload
 			}
 			else
 			{
-				phpbb_json_response::send(array(
+				$json_response->send(array(
 					'jsonrpc' => '2.0',
 					'id' => 'id',
 					'error' => array(
@@ -1185,7 +1185,7 @@ class fileupload
 		}
 		else
 		{
-			phpbb_json_response::send(array(
+			$json_response->send(array(
 				'jsonrpc' => '2.0',
 				'id' => 'id',
 				'error' => array(
@@ -1212,7 +1212,7 @@ class fileupload
 		}
 		else
 		{
-			phpbb_json_response::send(array(
+			$json_response->send(array(
 				'jsonrpc' => '2.0',
 				'id' => 'id',
 				'result' => null,
