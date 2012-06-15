@@ -1488,7 +1488,7 @@ $allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') 
 
 if ($allowed)
 {
-	plupload_configure();
+	plupload_configure($cache, $template, $config, $user, $s_action, $forum_id);
 }
 
 // Attachment entry

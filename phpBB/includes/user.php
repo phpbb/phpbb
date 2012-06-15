@@ -518,7 +518,7 @@ class phpbb_user extends phpbb_session
 		}
 		else if ($lang_set)
 		{
-			return $this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
+			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
 		}
 	}
 
@@ -618,10 +618,13 @@ class phpbb_user extends phpbb_session
 				return;
 			}
 
-			$subset_lang = $this->include_lang_file($language_filename);
-			$lang = array_merge($lang, $subset_lang);
+			// Do not suppress error if in DEBUG_EXTRA mode
+			$include_result = (defined('DEBUG_EXTRA')) ? (include $language_filename) : (@include $language_filename);
 
-			return $subset_lang;
+			if ($include_result === false)
+			{
+				trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
+			}
 		}
 		else if ($use_db)
 		{
@@ -640,7 +643,7 @@ class phpbb_user extends phpbb_session
 	 */
 	function include_lang_file($language_filename)
 	{
-		// Do not suppress error if in DEBUG_EXTRA mode
+		// Do not suppress error if in DEBUG mode
 		$include_result = (defined('DEBUG')) ? (include $language_filename) : (@include $language_filename);
 	
 		if ($include_result === false)

@@ -43,7 +43,10 @@ class filespec
 
 	var $upload = '';
 
-	var $plupload = false;
+	/**
+	 * Are we using plupload for the current upload?
+	 */
+	private $is_plupload = false;
 
 	/**
 	* File Class
@@ -51,6 +54,8 @@ class filespec
 	*/
 	function filespec($upload_ary, $upload_namespace)
 	{
+		global $request;
+	
 		if (!isset($upload_ary))
 		{
 			$this->init_error = true;
@@ -83,8 +88,7 @@ class filespec
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
 
-		$headers = getallheaders();
-		$this->plupload = isset($headers['X-Using-Plupload']);
+		$this->is_plupload = $request->header('X-phpBB-Using-Plupload', false);
 	}
 
 	/**
@@ -166,12 +170,12 @@ class filespec
 	*/
 	function is_uploaded()
 	{
-		if (!$this->local && !$this->plupload && !is_uploaded_file($this->filename))
+		if (!$this->local && !$this->is_plupload && !is_uploaded_file($this->filename))
 		{
 			return false;
 		}
 
-		if (($this->local || $this->plupload) && !file_exists($this->filename))
+		if (($this->local || $this->is_plupload) && !file_exists($this->filename))
 		{
 			return false;
 		}
@@ -1059,27 +1063,35 @@ class fileupload
 	/**
 	 * Plupload allows for chunking so we must check for that and assemble
 	 * the whole file first before performing any checks on it.
+	 *
+	 * @param string $form_name The name of the file element in the upload form
+	 * @return null If there are no chunks to piece together
+	 * @return array Returns an array containing the path to the pieced-together
+	 * 				 file and its size
 	 */
 	function handle_plupload($form_name)
 	{
-		global $config;
+		global $config, $request, $phpbb_root_path;
+
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
 		$tmp_dir = $config['upload_path'] . DIRECTORY_SEPARATOR . 'plupload';
 		$max_file_age = 5 * 3600;
 		
-		$chunk = intval(request_var('chunk', 0));
-		$chunks = intval(request_var('chunks', 0));
+		$chunk = request_var('chunk', 0);
+		$chunks_expected = request_var('chunks', 0);
 		$file_name = request_var('name', '');
 
 		// If chunking is disabled or we are not using plupload, just return
 		// and handle the file as usual
-		if ($chunks < 2)
+		if ($chunks_expected < 2)
 		{
 			return;
 		}
 
-		$file_name = preg_replace('/[^\w\._]+]/', '_', $file_name);
+		// Must preserve the extension
+		$ext = filespec::get_extension($file_name);
+		$file_name = md5($config['plupload_salt'] . $file_name) . ".$ext";
 		$file_path = $tmp_dir . DIRECTORY_SEPARATOR . $file_name;
 
 		// If the plupload subdirectory does not exist in the tmp upload
@@ -1087,37 +1099,10 @@ class fileupload
 		if (!file_exists($tmp_dir))
 		{
 			mkdir($tmp_dir);
-		}
-
-		// Remove old temporary file (perhaps failed uploads?)
-		if (is_dir($tmp_dir) && ($dir = opendir($tmp_dir)))
-		{
-			while (($file = readdir($dir)) !== false)
-			{
-				$tmp_file_path = $tmp_dir . DIRECTORY_SEPARATOR . $file;
-				if (
-					preg_match('/\.part$/', $file)
-					&& (filemtime($tmp_file_path) < time() - $max_file_age)
-					&& ($tmp_file_path !== "{$file_path}.part")
-				)
-				{
-					@unlink($tmp_file_path);
-				}
-			}
-
-			closedir($dir);
-		}
-		else
-		{
-			// Probably need translation strings for these errors
-			die('{
-				"jsonrpc": "2.0",
-				"error": {
-					"code": 100,
-					"message": "Failed to open temp directory."
-				},
-				"id": "id"
-			}');
+			copy(
+				$config['upload_path'] . DIRECTORY_SEPARATOR . 'index.htm',
+				$tmp_dir . DIRECTORY_SEPARATOR . 'index.htm'
+			);
 		}
 
 		$headers = getallheaders();
@@ -1128,7 +1113,7 @@ class fileupload
 		// multipart in HTML5"
 		// So this may not be necessary any more if we do not intend to
 		// support those old versions of WebKit
-		$multipart = (strpos($content_type, 'multipart') !== false);
+		$is_multipart = (strpos($content_type, 'multipart') !== false);
 		
 		if (
 			$multipart
@@ -1138,14 +1123,14 @@ class fileupload
 			)
 		)
 		{
-			die('{
-				"jsonrpc": "2.0",
-				"error": {
-					"code": 103,
-					"message": "Failed to move uploaded file."
-				},
-				"id": "id"
-			}');
+			phpbb_json_response::send(array(
+				'jsonrpc' => '2.0',
+				'id' => 'id',
+				'error' => array(
+					'code' => 103,
+					'message' => 'Failed to move uploaded file.',
+				),
+			));
 		}
 
 		// Move the file safely to our working tmp dir to read from it
@@ -1156,20 +1141,20 @@ class fileupload
 			. basename($_FILES[$form_name]['tmp_name']);
 		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
 		{
-			die('{
-				"jsonrpc": "2.0",
-				"error": {
-					"code": 103,
-					"message": "Failed to move uploaded file."
-				},
-				"id": "id"
-			}');
+			phpbb_json_response::send(array(
+				'jsonrpc' => '2.0',
+				'id' => 'id',
+				'error' => array(
+					'code' => 103,
+					'message' => 'Failed to move uploaded file.',
+				),
+			));
 		}
 		
 		$out = fopen("{$file_path}.part", $chunk == 0 ? 'wb' : 'ab');
 		if ($out)
 		{
-			$in = fopen(($multipart) ? $tmp_file : 'php://input', 'rb');
+			$in = fopen(($is_multipart) ? $tmp_file : 'php://input', 'rb');
 
 			if ($in)
 			{
@@ -1180,40 +1165,40 @@ class fileupload
 			}
 			else
 			{
-				die('{
-					"jsonrpc": "2.0",
-					"error": {
-						"code": 101,
-						"message": "Failed to open input stream."
-					},
-					"id" : "id"
-				}');
+				phpbb_json_response::send(array(
+					'jsonrpc' => '2.0',
+					'id' => 'id',
+					'error' => array(
+						'code' => 101,
+						'message' => 'Failed to open input stream.',
+					),
+				));
 			}
 
 			fclose($in);
 			fclose($out);
 
-			if ($multipart)
+			if ($is_multipart)
 			{
 				unlink($tmp_file);
 			}
 		}
 		else
 		{
-			die('{
-				"jsonrpc": "2.0",
-				"error": {
-					"code": 102,
-					"message": "Failed to open output stream."
-				},
-				"id": "id"
-			}');
+			phpbb_json_response::send(array(
+				'jsonrpc' => '2.0',
+				'id' => 'id',
+				'error' => array(
+					'code' => 102,
+					'message' => 'Failed to open output stream.',
+				),
+			));
 		}
 
 		// If we are done with all the chunks, strip the .part suffix and then
 		// handle the resulting file as normal, otherwise die and await the
 		// next chunk
-		if ($chunk == $chunks - 1)
+		if ($chunk == $chunks_expected - 1)
 		{
 			rename("{$file_path}.part", $file_path);
 
@@ -1222,12 +1207,16 @@ class fileupload
 			return array(
 				'tmp_name' => $file_path,
 				'name' => $file_name,
-				'size' => filesize($file_path)
+				'size' => filesize($file_path),
 			);
 		}
 		else
 		{
-			die('{"jsonrpc": "2.0", "result": null, "id": "id"}');
+			phpbb_json_response::send(array(
+				'jsonrpc' => '2.0',
+				'id' => 'id',
+				'result' => null,
+			));
 		}
 	}
 }

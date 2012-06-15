@@ -2587,27 +2587,21 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 /**
  * Configure plupload
  */
-function plupload_configure()
+function plupload_configure($cache, $template, $config, $user, $s_action, $forum_id)
 {
-	global $cache, $template, $config, $user, $s_action;
-	
 	$extensions = $cache->obtain_attach_extensions($forum_id);
+	unset($extensions['_allowed_']);
 	$groups = array();
 
 	// Re-arrange the extension array to $groups[$group_name][]
-	foreach ($extensions as $k => $extension)
+	foreach ($extensions as $extension => $extension_info)
 	{
-		if ($k === '_allowed_')
+		if (!isset($groups[$extension_info['group_name']]))
 		{
-			continue;
+			$groups[$extension_info['group_name']] = array();
 		}
 
-		if (!isset($groups[$extension['group_name']]))
-		{
-			$groups[$extension['group_name']] = array();
-		}
-
-		$groups[$extension['group_name']][] = $k;
+		$groups[$extension_info['group_name']][] = $extension;
 	}
 
 	$filters = array();
@@ -2636,10 +2630,8 @@ function plupload_configure()
 		'S_PLUPLOAD'		=> true,
 		'FILTERS'			=> implode(',', $filters),
 		'CHUNK_SIZE'		=> $chunk_size,
-		'S_PLUPLOAD_URL'	=> str_replace('&amp;', '&', $s_action),
+		'S_PLUPLOAD_URL'	=> htmlspecialchars_decode($s_action),
 	));
 
-	// Assign the plupload i18n strings
-	$assign = $user->add_lang('plupload');
-	$template->assign_vars($assign);
+	$user->add_lang('plupload');
 }
