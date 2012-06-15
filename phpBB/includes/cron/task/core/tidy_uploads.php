@@ -23,9 +23,24 @@ if (!defined('IN_PHPBB'))
 class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 {
 	/**
-	 * How old a file must be before it's deleted (24 hours)
-	 */
-	const max_file_age = 86400;
+	* How old a file must be before it's deleted (24 hours)
+	*/
+	const MAX_FILE_AGE = 86400;
+
+	/**
+	* Config array
+	* @var array
+	*/
+	protected $config;
+
+	/**
+	* Constructor method
+	*/
+	public function __construct()
+	{
+		global $config;
+		$this->config = $config;
+	}
 
 	/**
 	* Runs this cron task.
@@ -34,10 +49,8 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function run()
 	{
-		global $config;
-		
 		// Remove old temporary file (perhaps failed uploads?)
-		$dir = $config['upload_path'] . '/plupload';
+		$dir = $this->config['upload_path'] . '/plupload';
 		try
 		{
 			$it = new DirectoryIterator($dir);
@@ -48,7 +61,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 					continue;
 				}
 
-				if ($file->getMTime() < time() - self::max_file_age)
+				if ($file->getMTime() < time() - self::MAX_FILE_AGE)
 				{
 					@unlink($file->getPathname());
 				}
@@ -69,8 +82,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		global $config;
-		return file_exists($config['upload_path'] . '/plupload');
+		return file_exists($this->config['upload_path'] . '/plupload');
 	}
 
 	/**
@@ -84,7 +96,6 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		global $config;
-		return $config['plupload_last_gc'] < time() - self::max_file_age;
+		return $this->config['plupload_last_gc'] < time() - self::MAX_FILE_AGE;
 	}
 }
