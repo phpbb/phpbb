@@ -213,12 +213,14 @@ class acp_board
 						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 
-						'legend3'						=> 'POST_REVISIONS',
-						'track_post_revisions'			=> array('lang' => 'REVISION_HISTORY',		'validate' => 'bool', 	'type' => 'radio:yes_no', 'explain' => true),
-						'post_revisions_max_age'		=> array('lang' => 'REVISION_MAX_AGE', 		'validate' => 'int:0',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang('DAYS')),
-						'revisions_per_post_max'		=> array('lang' => 'REVISION_LIMIT',		'validate' => 'int:0',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . strtolower($user->lang('POST_REVISIONS'))),
-						'revisions_allow_wiki'			=> array('lang' => 'REVISION_WIKI_ALLOW',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'revisions_per_wiki_post_max'	=> array('lang' => 'REVISION_WIKI_LIMIT',	'validate' => 'int:0',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . strtolower($user->lang('POST_REVISIONS'))),
+						'legend3'							=> 'POST_REVISIONS',
+						'track_post_revisions'				=> array('lang' => 'REVISION_HISTORY',					'validate' => 'bool', 	'type' => 'radio:yes_no',	'explain' => true),
+						'post_revisions_max_age'			=> array('lang' => 'REVISION_MAX_AGE', 					'validate' => 'int:0',	'type' => 'text:3:4',		'explain' => true, 'append' => ' ' . $user->lang('DAYS')),
+						'revision_cron_age_frequency'		=> array('lang' => 'REVISION_CRON_AGE_FREQUENCY',		'validate' => 'int:0',	'type' => 'text:3:4',		'explain' => true, 'append' => ' ' . $user->lang('SECONDS')),
+						'revision_cron_excess_frequency'	=> array('lang' => 'REVISION_CRON_EXCESS_FREQUENCY',	'validate' => 'int:0',	'type' => 'text:3:4',		'explain' => true, 'append' => ' ' . $user->lang('SECONDS')),
+						'revisions_per_post_max'			=> array('lang' => 'REVISION_LIMIT',					'validate' => 'int:0',	'type' => 'text:3:4',		'explain' => true, 'append' => ' ' . strtolower($user->lang('POST_REVISIONS'))),
+						'revisions_allow_wiki'				=> array('lang' => 'REVISION_WIKI_ALLOW',				'validate' => 'bool',	'type' => 'radio:yes_no',	'explain' => true),
+						'revisions_per_wiki_post_max'		=> array('lang' => 'REVISION_WIKI_LIMIT',				'validate' => 'int:0',	'type' => 'text:3:4',		'explain' => true, 'append' => ' ' . strtolower($user->lang('POST_REVISIONS'))),
 
 						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)

@@ -118,6 +118,6 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	*/
 	public function should_run()
 	{
-		return $this->config['excess_revisions_last_prune_time'] < (time() - $this->config['excess_revisions_prune_wait_time']);
+		return $this->config['excess_revisions_last_prune_time'] < (time() - $this->config['revision_cron_excess_frequency']);
 	}
 }

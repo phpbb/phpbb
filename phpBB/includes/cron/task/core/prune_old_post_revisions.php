@@ -107,6 +107,6 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		return $this->config['old_revisions_last_prune_time'] < (time() - $this->config['excess_revisions_prune_wait_time']);
+		return $this->config['old_revisions_last_prune_time'] < (time() - $this->config['revision_cron_age_frequency']);
 	}
 }
