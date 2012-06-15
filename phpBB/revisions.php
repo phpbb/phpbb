@@ -35,6 +35,8 @@ if (!$post_id)
 	if ($revert)
 	{
 		$revert_revision = new phpbb_revisions_revision($revert, $db);
+
+		$post_id = $revert_revision->get_post_id();
 	}
 	else if ($compare)
 	{
@@ -68,7 +70,7 @@ if (!$post_id)
 			$post_id = $first->get_post_id();
 		}
 	}
-	
+
 	// If we still don't have a post ID, we error
 	if (!$post_id)
 	{
@@ -85,8 +87,6 @@ if (empty($post_data['post_id']))
 }
 
 $revisions = $post->get_revisions();
-
-// Get the total number of revisions
 $total_revisions = sizeof($revisions);
 
 if (!$total_revisions)
@@ -187,22 +187,24 @@ if ($revert)
 				break;
 			}
 
-			trigger_error($lang);
+			$u_return_post = append("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id";
+			$u_return_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id));
+
+			trigger_error($lang . '
+				<br /><a href="' . $u_return_post . '">' . $user->lang('RETURN_POST') . '</a>
+				<br /><a href="' . $u_return_revision . '">' . $user->lang('RETURN_REVISION') . '</a>');
 		}
 	}
 	else
 	{
-		$s_hidden_fields = build_hidden_fields(array(
-			'post_id'	=> $post_id,
-			'revert'	=> $revert,
-		));
-
 		$template->assign_vars(array(
 			'U_ACTION'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revert)),
-			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
+				'post_id'	=> $post_id,
+				'revert'	=> $revert,
+			)),
 		));
 
-		// Ready the page for viewing
 		page_header($user->lang('REVISIONS_REVERT_TITLE'), false);
 
 		$template->set_filenames(array(
