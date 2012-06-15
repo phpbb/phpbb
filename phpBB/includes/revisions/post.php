@@ -29,6 +29,7 @@ class phpbb_revisions_post
 	const REVISION_NOT_FOUND = 2;
 	const REVISION_INSERT_FAIL = 3;
 	const REVISION_POST_UPDATE_FAIL = 4;
+	const POST_EDIT_LOCKED = 5;
 
 	/**
 	* phpBB DBAL Object
@@ -41,6 +42,12 @@ class phpbb_revisions_post
 	* @var array
 	*/
 	private $config;
+
+	/**
+	* Auth object
+	* @var phpbb_auth
+	*/
+	private $auth;
 
 	/**
 	* Post ID number
@@ -66,9 +73,11 @@ class phpbb_revisions_post
 	* @param int $post_id Post ID
 	* @param dbal $dbal phpBB DBAL object
 	*/
-	public function __construct($post_id, dbal $db)
+	public function __construct($post_id, dbal $db, $config, phpbb_auth $auth)
 	{
 		$this->db = $db;
+		$this->config = $config;
+		$this->auth = $auth;
 
 		$this->post_id = (int) $post_id;
 
@@ -237,6 +246,12 @@ class phpbb_revisions_post
 			return self::REVISION_NOT_FOUND;
 		}
 
+		// Only a moderator can revert a post if it is edit locked
+		if ($this->post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions'))
+		{
+			return self::POST_EDIT_LOCKED;
+		}
+
 		$this->db->sql_transaction('begin');
 
 		// We need to create a new revision with the current post information.
@@ -263,8 +278,8 @@ class phpbb_revisions_post
 		}
 
 		// But we do want to make sure we only have the maximum number of revisions allowed on a post
-		$remove_amount = sizeof($this->revisions) - $config['max_revisions_per_post'];
-		if ($config['max_revisions_per_post'] && $remove_amount)
+		$remove_amount = sizeof($this->revisions) - $this->config['max_revisions_per_post'];
+		if ($this->config['max_revisions_per_post'] && $remove_amount)
 		{
 			// Delete the oldest one(s) until there aren't more than the max amount
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '

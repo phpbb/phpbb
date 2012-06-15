@@ -40,6 +40,7 @@ $lang = array_merge($lang, array(
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
 	'ERROR_REVISION_INSERT_FAIL'		=> 'An error occurred when attempting to insert a new revisions.',
 	'ERROR_REVISION_POST_UPDATE_FAIL'	=> 'An error occurred when attempting to update the post to the specified revision.',
+	'ERROR_POST_EDIT_LOCKED'			=> 'This post is locked from editing; only an authorized user can revert it to another revision.',
 
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
 
