@@ -37,7 +37,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 		global $config;
 		
 		// Remove old temporary file (perhaps failed uploads?)
-		$dir = $config['upload_path'] . DIRECTORY_SEPARATOR . 'plupload';
+		$dir = $config['upload_path'] . '/plupload';
 		try
 		{
 			$it = new DirectoryIterator($dir);
@@ -70,7 +70,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	public function is_runnable()
 	{
 		global $config;
-		return file_exists($config['upload_path'] . DIRECTORY_SEPARATOR . 'plupload');
+		return file_exists($config['upload_path'] . '/plupload');
 	}
 
 	/**

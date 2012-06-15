@@ -1075,7 +1075,7 @@ class fileupload
 
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
-		$tmp_dir = $config['upload_path'] . DIRECTORY_SEPARATOR . 'plupload';
+		$tmp_dir = $config['upload_path'] . '/plupload';
 		$max_file_age = 5 * 3600;
 		
 		$chunk = request_var('chunk', 0);
@@ -1092,7 +1092,7 @@ class fileupload
 		// Must preserve the extension
 		$ext = filespec::get_extension($file_name);
 		$file_name = md5($config['plupload_salt'] . $file_name) . ".$ext";
-		$file_path = $tmp_dir . DIRECTORY_SEPARATOR . $file_name;
+		$file_path = $tmp_dir . '/' . $file_name;
 
 		// If the plupload subdirectory does not exist in the tmp upload
 		// directory then create it
@@ -1100,8 +1100,8 @@ class fileupload
 		{
 			mkdir($tmp_dir);
 			copy(
-				$config['upload_path'] . DIRECTORY_SEPARATOR . 'index.htm',
-				$tmp_dir . DIRECTORY_SEPARATOR . 'index.htm'
+				$config['upload_path'] . '/index.htm',
+				$tmp_dir . '/index.htm'
 			);
 		}
 
@@ -1137,7 +1137,7 @@ class fileupload
 		// race condition?
 		$tmp_file =
 			$tmp_dir
-			. DIRECTORY_SEPARATOR
+			. '/'
 			. basename($_FILES[$form_name]['tmp_name']);
 		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
 		{
