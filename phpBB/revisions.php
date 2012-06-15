@@ -181,6 +181,10 @@ if ($revert)
 				case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
 					$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
 				break;
+
+				case phpbb_revisions_post::POST_EDIT_LOCKED:
+					$lang = 'ERROR_POST_EDIT_LOCKED';
+				break;
 			}
 
 			trigger_error($lang);
