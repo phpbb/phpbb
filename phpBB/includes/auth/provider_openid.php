@@ -268,7 +268,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			if (isset($sreg_data['language']))
 			{
-				$data['language'] = $sreg_data['language'];
+				$data['lang'] = $sreg_data['language'];
 			}
 
 			if (isset($sreg_data['timezone']))
@@ -280,7 +280,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				$registrant_dt = new DateTime('now', $registrant_dtz);
 
 				// Timezone is in hours, not seconds.
-				$data['timezone'] = $utc_dt->getOffset($registrant_dt) / (60 * 60);
+				$data['tz'] = $utc_dt->getOffset($registrant_dt) / (60 * 60);
 			}
 		}
 
@@ -293,5 +293,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		// Perform registration.
+		$this->register($data);
 	}
 }

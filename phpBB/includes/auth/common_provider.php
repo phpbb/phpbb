@@ -220,4 +220,221 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		$redirect_to = reapply_sid($redirect_to);
 		redirect($redirect_to);
 	}
+
+	/**
+	 * Validates information going to be used in registration.
+	 *
+	 * @param array $data
+	 * @return boolean true on success
+	 */
+	protected function register_check_data($data)
+	{
+		$data_to_validate = array();
+
+		$data_to_validate['username'] = array(
+					array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
+					array('username', ''),);
+
+		$data_to_validate['email'] = array(
+					array('string', false, 6, 60),
+					array('email'),);
+
+		$data_to_validate['tz'] = array('num', false, -14, 14);
+
+		$data_to_validate['lang'] = array('language_iso_name');
+
+		if (isset($data['new_password']))
+		{
+			$data_to_validate['new_password'] = array(
+					array('string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']),
+					array('password'));
+		}
+
+		$error = validate_data($data, $data_to_validate);
+
+		if(sizeof($error))
+		{
+			throw new phpbb_auth_exception($error);
+		}
+
+		return true;
+	}
+
+	protected function register($data, $coppa = false)
+	{
+		if (is_empty($data))
+		{
+			throw new phpbb_auth_exception('No registration data supplied.');
+		}
+		else
+		{
+			if (!isset($data['username'], $data['email'], $data['tz'], $data['lang']))
+			{
+				throw new phpbb_auth_exception('Required data missing.');
+			}
+
+			// Convert data to its proper format.
+			$data['username'] = utf8_normalize_nfc($data['username']);
+			$data['email'] = strtolower($data['email']);
+			$data['lang'] = basename($data['lang']);
+
+			// Check to see if registration data is valid.
+			$this->check_registration_data($data);
+		}
+
+		// Which group by default?
+		$group_name = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $this->db->sql_escape($group_name) . "'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			throw new phpbb_auth_exception('NO_GROUP');
+		}
+
+		$group_id = $row['group_id'];
+
+		if (($coppa ||
+			$this->config['require_activation'] == USER_ACTIVATION_SELF ||
+			$this->config['require_activation'] == USER_ACTIVATION_ADMIN) && $this->config['email_enable'])
+		{
+			$user_actkey = gen_rand_string(mt_rand(6, 10));
+			$user_type = USER_INACTIVE;
+			$user_inactive_reason = INACTIVE_REGISTER;
+			$user_inactive_time = time();
+		}
+		else
+		{
+			$user_type = USER_NORMAL;
+			$user_actkey = '';
+			$user_inactive_reason = 0;
+			$user_inactive_time = 0;
+		}
+
+		$user_row = array(
+			'username'				=> $data['username'],
+			'user_password'			=> phpbb_hash($data['new_password']),
+			'user_email'			=> $data['email'],
+			'group_id'				=> (int) $group_id,
+			'user_timezone'			=> (float) $data['tz'],
+			'user_dst'				=> $this->config['board_dst'],
+			'user_lang'				=> $data['lang'],
+			'user_type'				=> $user_type,
+			'user_actkey'			=> $user_actkey,
+			'user_ip'				=> $this->user->ip,
+			'user_regdate'			=> time(),
+			'user_inactive_reason'	=> $user_inactive_reason,
+			'user_inactive_time'	=> $user_inactive_time,
+		);
+
+		if ($this->config['new_member_post_limit'])
+		{
+			$user_row['user_new'] = 1;
+		}
+
+		// Register user.
+		$user_id = user_add($user_row, $cp_data);
+
+		// This should not happen, because the required variables are listed above.
+		if ($user_id === false)
+		{
+			throw new phpbb_auth_exception('NO_USER');
+		}
+
+		if ($coppa && $this->config['email_enable'])
+		{
+			$message = $this->user->lang['ACCOUNT_COPPA'];
+			$email_template = 'coppa_welcome_inactive';
+		}
+		else if ($this->config['require_activation'] == USER_ACTIVATION_SELF && $this->config['email_enable'])
+		{
+			$message = $this->user->lang['ACCOUNT_INACTIVE'];
+			$email_template = 'user_welcome_inactive';
+		}
+		else if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN && $this->config['email_enable'])
+		{
+			$message = $this->user->lang['ACCOUNT_INACTIVE_ADMIN'];
+			$email_template = 'admin_welcome_inactive';
+		}
+		else
+		{
+			$message = $this->user->lang['ACCOUNT_ADDED'];
+			$email_template = 'user_welcome';
+		}
+
+		if ($this->config['email_enable'])
+		{
+			global $phpbb_root_path, $phpEx;
+			$server_url = generate_board_url();
+			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+			$messenger = new messenger(false);
+
+			$messenger->template($email_template, $data['lang']);
+
+			$messenger->to($data['email'], $data['username']);
+
+			$messenger->anti_abuse_headers($this->config, $this->user);
+
+			$messenger->assign_vars(array(
+				'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($this->user->lang['WELCOME_SUBJECT'], $this->config['sitename'])),
+				'USERNAME'		=> htmlspecialchars_decode($data['username']),
+				'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
+				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+			);
+
+			if ($coppa)
+			{
+				$messenger->assign_vars(array(
+					'FAX_INFO'		=> $this->config['coppa_fax'],
+					'MAIL_INFO'		=> $this->config['coppa_mail'],
+					'EMAIL_ADDRESS'	=> $data['email'])
+				);
+			}
+
+			$messenger->send(NOTIFY_EMAIL);
+
+			if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
+			{
+				// Grab an array of user_id's with a_user permissions ... these users can activate a user
+				$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+				$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
+
+				// Also include founders
+				$where_sql = ' WHERE user_type = ' . USER_FOUNDER;
+
+				if (sizeof($admin_ary))
+				{
+					$where_sql .= ' OR ' . $this->db->sql_in_set('user_id', $admin_ary);
+				}
+
+				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
+					FROM ' . USERS_TABLE . ' ' .
+					$where_sql;
+				$result = $this->db->sql_query($sql);
+
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$messenger->template('admin_activate', $row['user_lang']);
+					$messenger->to($row['user_email'], $row['username']);
+					$messenger->im($row['user_jabber'], $row['username']);
+
+					$messenger->assign_vars(array(
+						'USERNAME'			=> htmlspecialchars_decode($data['username']),
+						'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&u=$user_id",
+						'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+					);
+
+					$messenger->send($row['user_notify_type']);
+				}
+				$this->db->sql_freeresult($result);
+			}
+		}
+	}
 }
