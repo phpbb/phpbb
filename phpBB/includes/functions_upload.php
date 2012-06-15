@@ -1116,7 +1116,7 @@ class fileupload
 		$is_multipart = (strpos($content_type, 'multipart') !== false);
 		
 		if (
-			$multipart
+			$is_multipart
 			&& (
 				!isset($_FILES[$form_name]['tmp_name'])
 				|| !is_uploaded_file($_FILES[$form_name]['tmp_name'])
