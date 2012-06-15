@@ -215,16 +215,8 @@ if ($revert)
 	}
 }
 
-$template->assign_vars(array(
-	// Comparison template variables
-	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $text_diff_rendered,
-	'SUBJECT_DIFF'			=> $subject_diff_renedered,
-	//'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-	//'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-));
-
 $revision_number = 1;
+$revision_users = array();
 foreach ($revisions as $revision)
 {
 	$template->assign_block_vars('revision', array(
@@ -242,8 +234,27 @@ foreach ($revisions as $revision)
 		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post())). '#p' . $revision->get_post(),
 		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post(), 'revert' => $revision->get_id())),
 	));
+
+	// We assign it the user ID as the key so we don't have to think about potential duplications
+	$revision_users[$revision->get_user_id()] = true;
 	$revision_number++;
 }
+
+$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . '
+	' . $user->lang('BY') . '
+	' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
+$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_diff->additions_count() + $subject_diff->additions_count()) . '
+	' . $user->lang('AND') . '
+	' . $user->lang('REVISION_DELETIONS', $text_diff->deletions_count() + $subject_diff->deletions_count());
+
+$template->assign_vars(array(
+	// Comparison template variables
+	'DISPLAY_COMPARISON'	=> true,
+	'TEXT_DIFF'				=> $text_diff_rendered,
+	'SUBJECT_DIFF'			=> $subject_diff_renedered,
+	'L_COMPARE_SUMMARY'		=> $l_compare_summary,
+	'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
+));
 
 page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
 

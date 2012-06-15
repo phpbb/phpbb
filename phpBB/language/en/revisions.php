@@ -64,7 +64,6 @@ $lang = array_merge($lang, array(
 		2 => '%1$s additions',
 	),
 	'REVISION_COUNT'					=> array(
-		0		=> '0 revisions',
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
