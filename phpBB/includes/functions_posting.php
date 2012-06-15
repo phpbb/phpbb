@@ -2589,12 +2589,12 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
  */
 function plupload_configure($cache, $template, $config, $user, $s_action, $forum_id)
 {
-	$extensions = $cache->obtain_attach_extensions($forum_id);
-	unset($extensions['_allowed_']);
+	$attach_extensions = $cache->obtain_attach_extensions($forum_id);
+	unset($attach_extensions['_allowed_']);
 	$groups = array();
 
 	// Re-arrange the extension array to $groups[$group_name][]
-	foreach ($extensions as $extension => $extension_info)
+	foreach ($attach_extensions as $extension => $extension_info)
 	{
 		if (!isset($groups[$extension_info['group_name']]))
 		{
@@ -2605,7 +2605,6 @@ function plupload_configure($cache, $template, $config, $user, $s_action, $forum
 	}
 
 	$filters = array();
-	// $extensions redefined!
 	foreach ($groups as $group => $extensions)
 	{
 		$filters[] = sprintf(
