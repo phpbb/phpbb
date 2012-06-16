@@ -1071,7 +1071,7 @@ class fileupload
 	 */
 	function handle_plupload($form_name)
 	{
-		global $config, $request;
+		global $config, $request, $user;
 
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
@@ -1088,6 +1088,8 @@ class fileupload
 		{
 			return;
 		}
+
+		$user->add_lang('plupload');
 
 		// Must preserve the extension
 		$ext = filespec::get_extension($file_name);
@@ -1128,7 +1130,7 @@ class fileupload
 				'id' => 'id',
 				'error' => array(
 					'code' => 103,
-					'message' => 'Failed to move uploaded file.',
+					'message' => $user->lang('PLUPLOAD_ERR_MOVE_UPLOADED'),
 				),
 			));
 		}
@@ -1146,7 +1148,7 @@ class fileupload
 				'id' => 'id',
 				'error' => array(
 					'code' => 103,
-					'message' => 'Failed to move uploaded file.',
+					'message' => $user->lang('PLUPLOAD_ERR_MOVE_UPLOADED'),
 				),
 			));
 		}
@@ -1170,7 +1172,7 @@ class fileupload
 					'id' => 'id',
 					'error' => array(
 						'code' => 101,
-						'message' => 'Failed to open input stream.',
+						'message' => $user->lang('PLUPLOAD_ERR_INPUT'),
 					),
 				));
 			}
@@ -1190,7 +1192,7 @@ class fileupload
 				'id' => 'id',
 				'error' => array(
 					'code' => 102,
-					'message' => 'Failed to open output stream.',
+					'message' => $user->lang('PLUPLOAD_ERR_OUTPUT'),
 				),
 			));
 		}
