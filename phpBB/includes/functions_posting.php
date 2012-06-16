@@ -2623,9 +2623,18 @@ function plupload_configure($cache, $template, $config, $user, $s_action, $forum
 		$config['max_filesize']
 	);
 
+	$resize = '';
+	if (intval($config['img_max_height']) > 0 && intval($config['img_max_width']) > 0)
+	{
+		$resize = sprintf(
+			'resize: {width: %d, height: %d, quality: 100},',
+			$config['img_max_height'],
+			$config['img_max_width']
+		);
+	}
+
 	$template->assign_vars(array(
-		'IMG_MAX_HEIGHT'	=> $config['img_max_height'],
-		'IMG_MAX_WIDTH'		=> $config['img_max_width'],
+		'S_RESIZE'			=> $resize,
 		'S_PLUPLOAD'		=> true,
 		'FILTERS'			=> implode(',', $filters),
 		'CHUNK_SIZE'		=> $chunk_size,
