@@ -250,7 +250,7 @@ class phpbb_revisions_revision
 	public function get_avatar($width = 0, $height = 0)
 	{
 		$height = $height ?: $this->avatar_height;
-		$width = $width ?: $this->avatar_width);
+		$width = $width ?: $this->avatar_width;
 		return get_user_avatar($this->avatar, $this->avatar_type, $width, $height);
 	}
 
@@ -269,7 +269,7 @@ class phpbb_revisions_revision
 	*
 	* @return int Post ID
 	*/
-	public function get_post_id();
+	public function get_post_id()
 	{
 		return (int) $this->post_id;
 	}
@@ -282,6 +282,16 @@ class phpbb_revisions_revision
 	public function get_user_id()
 	{
 		return (int) $this->user;
+	}
+
+	/**
+	* Get the username of the poster.
+	*
+	* @return string Revision username
+	*/
+	public function get_username()
+	{
+		return $this->username;
 	}
 
 	/**
@@ -299,7 +309,7 @@ class phpbb_revisions_revision
 	*
 	* @return string Parsed text
 	*/
-	public function get_text();
+	public function get_text()
 	{
 		return $this->text;
 	}
