@@ -78,7 +78,7 @@ if (!$post_id)
 	}
 }
 
-$post = new phpbb_revisions_post($post_id, $db);
+$post = new phpbb_revisions_post($post_id, $db, $config, $auth);
 $post_data = $post->get_post_data();
 
 if (empty($post_data['post_id']))
@@ -231,11 +231,10 @@ foreach ($revisions as $revision)
 		'CURRENT_REVISION'	=> $revision->get_id() === 0,
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
-		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post())). '#p' . $revision->get_post(),
-		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post(), 'revert' => $revision->get_id())),
+		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
+		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())),
 	));
 
-	// We assign it the user ID as the key so we don't have to think about potential duplications
 	$revision_users[$revision->get_user_id()] = true;
 	$revision_number++;
 }
