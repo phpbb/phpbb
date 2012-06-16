@@ -1442,6 +1442,20 @@ class parse_message extends bbcode_firstpass
 					// post. :)
 					$filedata['post_attach'] = false;
 				}
+				else if (sizeof($error) && $filedata->is_plupload)
+				{
+					// If this is a plupload (and thus ajax) request, give the
+					// client the first error we have
+					$json_response = new phpbb_json_response();
+					$json_response->send(array(
+						'jsonrpc' => '2.0',
+						'id' => 'id',
+						'error' => array(
+							'code' => 105,
+							'message' => current($error),
+						),
+					));
+				}
 			}
 			else
 			{

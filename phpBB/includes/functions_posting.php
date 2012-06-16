@@ -436,6 +436,19 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		$file->remove();
 
+		if ($file->is_plupload)
+		{
+			$json_response = new phpbb_json_response();
+			$json_response->send(array(
+				'jsonrpc' => '2.0',
+				'id' => 'id',
+				'error' => array(
+					'code' => 104,
+					'message' => $user->lang('ATTACHED_IMAGE_NOT_IMAGE'),
+				),
+			));
+		}
+
 		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
 		// Since the image category is displaying content inline we need to catch this.
 		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);

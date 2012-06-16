@@ -46,7 +46,7 @@ class filespec
 	/**
 	 * Are we using plupload for the current upload?
 	 */
-	private $is_plupload = false;
+	public $is_plupload = false;
 
 	/**
 	* File Class
