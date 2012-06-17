@@ -422,6 +422,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
 	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name);
+	$filedata['is_plupload'] = $file->is_plupload;
 
 	if ($file->init_error)
 	{
@@ -2600,7 +2601,7 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 /**
  * Configure plupload
  */
-function plupload_configure($cache, $template, $config, $user, $s_action, $forum_id)
+function phpbb_plupload_configure($cache, $template, $config, $user, $s_action, $forum_id)
 {
 	$attach_extensions = $cache->obtain_attach_extensions($forum_id);
 	unset($attach_extensions['_allowed_']);

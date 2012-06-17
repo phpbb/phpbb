@@ -1442,20 +1442,6 @@ class parse_message extends bbcode_firstpass
 					// post. :)
 					$filedata['post_attach'] = false;
 				}
-				else if (sizeof($error) && $filedata->is_plupload)
-				{
-					// If this is a plupload (and thus ajax) request, give the
-					// client the first error we have
-					$json_response = new phpbb_json_response();
-					$json_response->send(array(
-						'jsonrpc' => '2.0',
-						'id' => 'id',
-						'error' => array(
-							'code' => 105,
-							'message' => current($error),
-						),
-					));
-				}
 			}
 			else
 			{
@@ -1465,6 +1451,7 @@ class parse_message extends bbcode_firstpass
 
 		if ($preview || $refresh || sizeof($error))
 		{
+			$json_response = new phpbb_json_response();
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
@@ -1509,6 +1496,10 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
+					if ($request->header('X-phpBB-Using-Plupload', false))
+					{
+						$json_response->send($this->attachment_data);
+					}
 				}
 			}
 			else if (($add_file || $preview) && $upload_file)
@@ -1546,11 +1537,32 @@ class parse_message extends bbcode_firstpass
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
+
+						if ($filedata['is_plupload'])
+						{
+							// Send the client the attachment data to maintain
+							// state
+							$json_response->send($this->attachment_data);
+						}
 					}
 				}
 				else
 				{
 					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
+				}
+
+				if (sizeof($error) && $filedata['is_plupload'])
+				{
+					// If this is a plupload (and thus ajax) request, give the
+					// client the first error we have
+					$json_response->send(array(
+						'jsonrpc' => '2.0',
+						'id' => 'id',
+						'error' => array(
+							'code' => 105,
+							'message' => current($error),
+						),
+					));
 				}
 			}
 		}
