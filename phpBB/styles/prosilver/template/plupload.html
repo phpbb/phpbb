@@ -2,7 +2,7 @@
 <script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.html5.js"></script>
 <script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
 <script type="text/javascript">
-plupload.phpBB = {
+plupload.phpbb = {
 	i18n: {
 		'Select files': '{L_PLUPLOAD_SELECT_FILES}',
 		'Add files to the upload queue and click the start button.': '{L_PLUPLOAD_ADD_FILES_TO_QUEUE}',
@@ -34,7 +34,7 @@ plupload.phpBB = {
 		unique_names: true,
 		filters: [{FILTERS}],
 		{S_RESIZE}
-		headers: {'X-phpBB-Using-Plupload': '1'},
+		headers: {'X-PHPBB-USING-PLUPLOAD': '1'},
 		file_data_name: 'fileupload',
 		multipart_params: {'add_file': '{L_ADD_FILE}'},
 		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',

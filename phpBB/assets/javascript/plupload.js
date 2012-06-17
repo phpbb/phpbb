@@ -1,22 +1,4 @@
-/**
- * Not true currying but returns a function with partial arguments already set
- */
-Function.prototype.curry = function()
-{
-	if (arguments.length < 1)
-	{
-		return this;
-	}
-	
-	var __method = this;
-	var args = Array.prototype.slice.call(arguments);
-	return function()
-	{
-		return __method.apply(this, args.concat(Array.prototype.slice.call(arguments)));
-	}
-}
-
-plupload.addI18n(plupload.phpBB.i18n);
+plupload.addI18n(plupload.phpbb.i18n);
 plupload.attachment_data = [];
 
 /**
@@ -77,9 +59,9 @@ function plupload_clear_params(obj)
 	}
 }
 
-$(function() {
-	$(plupload.phpBB.config.element_hook).pluploadQueue(plupload.phpBB.config);
-	var uploader = $(plupload.phpBB.config.element_hook).pluploadQueue();
+jQuery(function($) {
+	$(plupload.phpbb.config.element_hook).pluploadQueue(plupload.phpbb.config);
+	var uploader = $(plupload.phpbb.config.element_hook).pluploadQueue();
 
 	/**
 	 * Fired when a single chunk of any given file is uploaded. This parses the
@@ -96,7 +78,13 @@ $(function() {
 		try
 		{
 			json = $.parseJSON(response.response);
-		} catch (e) {}
+		} catch (e) {
+			if (console && console.log)
+			{
+				console.log('Error parsing server response.');
+				console.log(response);
+			}
+		}
 		
 		if (json.error)
 		{
@@ -117,7 +105,13 @@ $(function() {
 		try
 		{
 			json = $.parseJSON(response.response);
-		} catch (e) {}
+		} catch (e) {
+			if (console && console.log)
+			{
+				console.log('Error parsing server response.');
+				console.log(response);
+			}
+		}
 		
 		if (json.error)
 		{
@@ -151,26 +145,33 @@ $(function() {
 		$('.plupload_buttons').css('display', 'block');
 
 		files.forEach(function(file) {
-			$('#' + file.id).mouseenter(function(evt) {
+			var mouseenter = function(evt)
+			{
 				$(evt.target).attr('class', 'plupload_delete');
 				$(evt.target).css('cursor', 'pointer');
-			}).mouseleave(function(evt) {
+			};
+
+			var mouseleave = function(evt)
+			{
 				$(evt.target).attr('class', 'plupload_done');
-			}).click(function(file, evt) {
-				var throbber = "url('" + plupload.phpBB.config.img_path + "/throbber.gif')";
+			};
+
+			var click = function(evt)
+			{
+				var throbber = "url('" + plupload.phpbb.config.img_path + "/throbber.gif')";
 				$(evt.target).find('a').css('background', throbber);
 				
 				var idx = plupload_find_attachment_idx(file.attachment_data.id);
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
-				
-				$.ajax(plupload.phpBB.config.url, {
-					type: 'POST',
-					data: $.extend(fields, plupload_attachment_data_serialize()),
-					headers: {'X-phpBB-Using-Plupload': '1'}
-				}).always(function() {
+
+				var always = function()
+				{
 					$(evt.target).find('a').css('background', '');
-				}).done(function(response) {
+				};
+
+				var done = function(response)
+				{
 					up.removeFile(file);
 					plupload.attachment_data = response;
 					plupload_clear_params(up.settings.multipart_params);
@@ -178,8 +179,21 @@ $(function() {
 						up.settings.multipart_params,
 						plupload_attachment_data_serialize()
 					);
-				});
-			}.curry(file));
+				};
+				
+				$.ajax(plupload.phpbb.config.url, {
+					type: 'POST',
+					data: $.extend(fields, plupload_attachment_data_serialize()),
+					headers: {'X-PHPBB-USING-PLUPLOAD': '1'}
+				})
+				.always(always)
+				.done(done);
+			};
+			
+			$('#' + file.id)
+			.mouseenter(mouseenter)
+			.mouseleave(mouseleave)
+			.click(click);
 		});
 	});
 });

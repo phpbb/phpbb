@@ -1496,7 +1496,7 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
-					if ($request->header('X-phpBB-Using-Plupload', false))
+					if ($request->header('X-PHPBB-USING-PLUPLOAD', false))
 					{
 						$json_response->send($this->attachment_data);
 					}

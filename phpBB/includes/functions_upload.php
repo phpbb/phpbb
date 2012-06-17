@@ -88,7 +88,7 @@ class filespec
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
 
-		$this->is_plupload = $request->header('X-phpBB-Using-Plupload', false);
+		$this->is_plupload = $request->header('X-PHPBB-USING-PLUPLOAD', false);
 	}
 
 	/**
@@ -1140,6 +1140,7 @@ class fileupload
 			$tmp_dir
 			. '/'
 			. basename($_FILES[$form_name]['tmp_name']);
+
 		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
 		{
 			$json_response->send(array(
