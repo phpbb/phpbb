@@ -37,8 +37,9 @@ plupload.phpBB = {
 		headers: {'X-phpBB-Using-Plupload': '1'},
 		file_data_name: 'fileupload',
 		multipart_params: {'add_file': '{L_ADD_FILE}'},
-		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img'
+		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',
+		element_hook: '#attach-panel .inner'
 	}
 };
 </script>
-<!-- INCLUDEJS template/plupload.js -->
+<script type="text/javascript" src="{T_ASSETS_PATH}/javascript/plupload.js"></script>

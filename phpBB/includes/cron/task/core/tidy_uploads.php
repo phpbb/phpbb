@@ -28,6 +28,11 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	const MAX_FILE_AGE = 86400;
 
 	/**
+	* How often we run the cron
+	*/
+	const CRON_FREQUENCY = 86400;
+
+	/**
 	* Config array
 	* @var array
 	*/
@@ -69,7 +74,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 		}
 		catch (UnexpectedValueException $e) {}
 
-		set_config('plupload_last_gc', time(), true);
+		$this->config->set('plupload_last_gc', time(), true);
 	}
 
 	/**
@@ -96,6 +101,6 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function should_run()
 	{
-		return $this->config['plupload_last_gc'] < time() - self::MAX_FILE_AGE;
+		return $this->config['plupload_last_gc'] < time() - self::CRON_FREQUENCY;
 	}
 }

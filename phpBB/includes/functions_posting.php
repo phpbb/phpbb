@@ -2638,12 +2638,12 @@ function phpbb_plupload_configure($cache, $template, $config, $user, $s_action, 
 	);
 
 	$resize = '';
-	if (intval($config['img_max_height']) > 0 && intval($config['img_max_width']) > 0)
+	if ($config['img_max_height'] > 0 && $config['img_max_width'] > 0)
 	{
 		$resize = sprintf(
 			'resize: {width: %d, height: %d, quality: 100},',
-			$config['img_max_height'],
-			$config['img_max_width']
+			(int) $config['img_max_height'],
+			(int) $config['img_max_width']
 		);
 	}
 

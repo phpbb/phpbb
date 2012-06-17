@@ -1076,7 +1076,6 @@ class fileupload
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
 		$tmp_dir = $config['upload_path'] . '/plupload';
-		$max_file_age = 5 * 3600;
 		
 		$chunk = $request->variable('chunk', 0);
 		$chunks_expected = $request->variable('chunks', 0);

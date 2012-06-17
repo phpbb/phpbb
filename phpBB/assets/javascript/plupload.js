@@ -51,8 +51,8 @@ function plupload_clear_params (obj) {
 }
 
 $(function () {
-	$('#attach-panel .inner').pluploadQueue(plupload.phpBB.config);
-	var uploader = $('#attach-panel .inner').pluploadQueue();
+	$(plupload.phpBB.config.element_hook).pluploadQueue(plupload.phpBB.config);
+	var uploader = $(plupload.phpBB.config.element_hook).pluploadQueue();
 
 	uploader.bind('ChunkUploaded', function (up, file, response) {
 		if (response.chunk >= response.chunks - 1) {
