@@ -1,29 +1,27 @@
 function phpbb_switch_tz_date(keep_selection)
 {
-	var timezone_groups = document.getElementById("timezone");
-	for (var i = 0; i < timezone_groups.childElementCount; i++) {
-		if (timezone_groups.children[i].tagName == "OPTGROUP" &&
-			timezone_groups.children[i].label != document.getElementById("tz_date").value)
-		{
-			timezone_groups.children[i].style.display = "none";
-		}
-		else if (timezone_groups.children[i].tagName == "OPTGROUP")
-		{
-			// Display other options
-			timezone_groups.children[i].style.display = "block";
-		}
+	$('#timezone > optgroup').css("display", "none");
+	$("#timezone > optgroup[label='" + $('#tz_date').val() + "']").css("display", "block");
+
+	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1)
+	{
+		// If there is only one timezone for the selected date, we just select that automatically.
+		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr("selected", true);
+		keep_selection = true;
 	}
+
 	if (typeof keep_selection !== 'undefined')
 	{
 		if (!keep_selection)
 		{
-			timezone_groups.children[0].selected = true;
+			$('#timezone > option:first').attr("selected", true);
 		}
 	}
 }
 
 function phpbb_enable_tz_dates()
 {
-	var tz_select_date = document.getElementById("tz_select_date");
-	tz_select_date.style.display = "block";
+	$('#tz_select_date').css("display", "block");
 }
+
+phpbb_enable_tz_dates();

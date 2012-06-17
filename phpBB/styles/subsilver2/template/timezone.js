@@ -1,37 +1,32 @@
 function phpbb_switch_tz_date(keep_selection)
 {
-	var timezone_groups = document.getElementById("timezone");
-	for (var i = 0; i < timezone_groups.childElementCount; i++) {
-		if (timezone_groups.children[i].tagName == "OPTGROUP" &&
-			timezone_groups.children[i].label != document.getElementById("tz_date").value)
-		{
-			timezone_groups.children[i].style.display = "none";
-		}
-		else if (timezone_groups.children[i].tagName == "OPTGROUP")
-		{
-			// Display other options
-			timezone_groups.children[i].style.display = "block";
-		}
+	$('#timezone > optgroup').css("display", "none");
+	$("#timezone > optgroup[label='" + $('#tz_date').val() + "']").css("display", "block");
+
+	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() == 1)
+	{
+		// If there is only one timezone for the selected date, we just select that automatically.
+		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr("selected", true);
+		keep_selection = true;
 	}
+
 	if (typeof keep_selection !== 'undefined')
 	{
 		if (!keep_selection)
 		{
-			timezone_groups.children[0].selected = true;
+			$('#timezone > option:first').attr("selected", true);
 		}
 	}
 }
 
 function phpbb_enable_tz_dates()
 {
-	var tz_select_date = document.getElementById("tz_select_date");
-	tz_select_date.style.display = "block";
+	$('#tz_select_date').css("display", "block");
 }
 
 function phpbb_preselect_tz_select(force_selector, l_suggestion)
 {
 
-	var selector = document.getElementById('tz_date');
 	// The offset returned here is in minutes and negated.
 	// http://www.w3schools.com/jsref/jsref_getTimezoneOffset.asp
 	var offset = (new Date()).getTimezoneOffset();
@@ -62,20 +57,23 @@ function phpbb_preselect_tz_select(force_selector, l_suggestion)
 	{
 		minutes = minutes.toString();
 	}
+
 	var prefix = 'GMT' + sign + hours + ':' + minutes;
 	var prefix_length = prefix.length;
-	for (var i = 0; i < selector.options.length; ++i)
+
+	var selector_options = $('#tz_date > option');
+	for (var i = 0; i < selector_options.length; ++i)
 	{
-		var option = selector.options[i];
+		var option = selector_options[i];
 		if (option.value.substring(0, prefix_length) == prefix)
 		{
-			if (selector.value && selector.value != option.value && !force_selector)
+			if ($('#tz_date').val() != option.value && !force_selector)
 			{
 				// We do not select the option for the user, but notify him,
 				// that we would suggest a different setting.
-				document.getElementById("tz_select_date_suggest").style.display = "inline";
-				document.getElementById("tz_select_date_suggest").title = l_suggestion.replace("%s", option.innerHTML);
-				document.getElementById("tz_select_date_suggest").innerHTML = l_suggestion.replace("%s", option.innerHTML.substring(0, 9));
+				$('#tz_select_date_suggest').css("display", "inline");
+				$('#tz_select_date_suggest').attr("title", l_suggestion.replace("%s", option.innerHTML));
+				$('#tz_select_date_suggest').html(l_suggestion.replace("%s", option.innerHTML.substring(0, 9)));
 				phpbb_switch_tz_date(true);
 			}
 			else
@@ -87,9 +85,12 @@ function phpbb_preselect_tz_select(force_selector, l_suggestion)
 				// about that here unfortunately.
 				option.selected = true;
 				phpbb_switch_tz_date(!force_selector);
-				document.getElementById("tz_select_date_suggest").style.display = "none";
+				$('#tz_select_date_suggest').css("display", "none");
 			}
 			break;
 		}
 	}
 }
+
+phpbb_enable_tz_dates();
+phpbb_preselect_tz_select(is_registration, l_timezone_date_suggestion);

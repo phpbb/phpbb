@@ -15,8 +15,10 @@
 			{S_TZ_OPTIONS}
 		</select>
 
-		<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
-		<script type="text/javascript">phpbb_enable_tz_dates();</script>
-		<script type="text/javascript">phpbb_preselect_tz_select(<!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->, '{L_TIMEZONE_DATE_SUGGESTION}');</script>
+		<script type="text/javascript">
+			var is_registration = <!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->;
+			var l_timezone_date_suggestion = "{L_TIMEZONE_DATE_SUGGESTION}";
+		</script>
+		<!-- INCLUDEJS template/timezone.js -->
 	</dd>
 </dl>
