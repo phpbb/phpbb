@@ -1,11 +1,17 @@
-Function.prototype.curry = function () {
-	if (arguments.length < 1) {
+/**
+ * Not true currying but returns a function with partial arguments already set
+ */
+Function.prototype.curry = function()
+{
+	if (arguments.length < 1)
+	{
 		return this;
 	}
 	
 	var __method = this;
 	var args = Array.prototype.slice.call(arguments);
-	return function () {
+	return function()
+	{
 		return __method.apply(this, args.concat(Array.prototype.slice.call(arguments)));
 	}
 }
@@ -13,10 +19,17 @@ Function.prototype.curry = function () {
 plupload.addI18n(plupload.phpBB.i18n);
 plupload.attachment_data = [];
 
-function plupload_find_attachment_idx (id) {
+/**
+ * Returns the index of the plupload.attachment_data array where the given
+ * attach id appears
+ */
+function plupload_find_attachment_idx(id)
+{
 	var data = plupload.attachment_data;
-	for (var i = 0; i < data.length; i++) {
-		if (data[i].id === id) {
+	for (var i = 0; i < data.length; i++)
+	{
+		if (data[i].id === id)
+		{
 			return i;
 		}
 	}
@@ -24,12 +37,20 @@ function plupload_find_attachment_idx (id) {
 	return false;
 }
 
-function plupload_attachment_data_serialize () {
+/**
+ * Converts an array of objects into an object that PHP would expect as POST
+ * data
+ */
+function plupload_attachment_data_serialize()
+{
 	var obj = {};
-	for (var i = 0; i < plupload.attachment_data.length; i++) {
+	for (var i = 0; i < plupload.attachment_data.length; i++)
+	{
 		var datum = plupload.attachment_data[i];
-		for (var key in datum) {
-			if (!datum.hasOwnProperty(key)) {
+		for (var key in datum)
+		{
+			if (!datum.hasOwnProperty(key))
+			{
 				continue;
 			}
 
@@ -40,9 +61,15 @@ function plupload_attachment_data_serialize () {
 	return obj;
 }
 
-function plupload_clear_params (obj) {
-	for (var key in obj) {
-		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0) {
+/**
+ * Unsets all elements in an object whose keys begin with 'attachment_data['
+ */
+function plupload_clear_params(obj)
+{
+	for (var key in obj)
+	{
+		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0)
+		{
 			continue;
 		}
 
@@ -50,37 +77,55 @@ function plupload_clear_params (obj) {
 	}
 }
 
-$(function () {
+$(function() {
 	$(plupload.phpBB.config.element_hook).pluploadQueue(plupload.phpBB.config);
 	var uploader = $(plupload.phpBB.config.element_hook).pluploadQueue();
 
-	uploader.bind('ChunkUploaded', function (up, file, response) {
-		if (response.chunk >= response.chunks - 1) {
+	/**
+	 * Fired when a single chunk of any given file is uploaded. This parses the
+	 * response from the server and checks for an error. If an error occurs it
+	 * is reported to the user and the upload of this particular file is halted
+	 */
+	uploader.bind('ChunkUploaded', function(up, file, response) {
+		if (response.chunk >= response.chunks - 1)
+		{
 			return;
 		}
 
 		var json = {};
-		try {
+		try
+		{
 			json = $.parseJSON(response.response);
 		} catch (e) {}
 		
-		if (json.error) {
+		if (json.error)
+		{
 			file.status = plupload.FAILED;
 			alert(json.error.message);
 			uploader.trigger('FileUploaded', up, file);
 		}
 	});
 
-	uploader.bind('FileUploaded', function (up, file, response) {
+	/**
+	 * Fires when an entire file has been uploaded. It checks for errors
+	 * returned by the server otherwise parses the list of attachment data and
+	 * appends it to the next file upload so that the server can maintain state
+	 * with regards to the attachments in a given post
+	 */
+	uploader.bind('FileUploaded', function(up, file, response) {
 		var json = {};
-		try {
+		try
+		{
 			json = $.parseJSON(response.response);
 		} catch (e) {}
 		
-		if (json.error) {
+		if (json.error)
+		{
 			file.status = plupload.FAILED;
 			alert(json.error.message);
-		} else {
+		}
+		else if (file.status === plupload.DONE)
+		{
 			plupload.attachment_data = json;
 			file.attachment_data = json[0];
 			up.settings.multipart_params = $.extend(
@@ -90,17 +135,28 @@ $(function () {
 		}
 	});
 
-	uploader.bind('UploadComplete', function (up, files) {
+	/**
+	 * Fires when the entire queue of files have been uploaded. It resets the
+	 * 'add files' button to allow more files to be uploaded and also attaches
+	 * several events to each row of the currently-uploaded files to facilitate
+	 * deleting any one of the files.
+	 *
+	 * Deleting a file removes it from the queue and fires an ajax event to the
+	 * server to tell it to remove the temporary attachment. The server
+	 * responds with the updated attachment data list so that any future
+	 * uploads can maintain state with the server
+	 */
+	uploader.bind('UploadComplete', function(up, files) {
 		$('.plupload_upload_status').css('display', 'none');
 		$('.plupload_buttons').css('display', 'block');
 
-		files.forEach(function (file) {
-			$('#' + file.id).mouseenter(function (evt) {
+		files.forEach(function(file) {
+			$('#' + file.id).mouseenter(function(evt) {
 				$(evt.target).attr('class', 'plupload_delete');
 				$(evt.target).css('cursor', 'pointer');
-			}).mouseleave(function (evt) {
+			}).mouseleave(function(evt) {
 				$(evt.target).attr('class', 'plupload_done');
-			}).click(function (file, evt) {
+			}).click(function(file, evt) {
 				var throbber = "url('" + plupload.phpBB.config.img_path + "/throbber.gif')";
 				$(evt.target).find('a').css('background', throbber);
 				
@@ -112,9 +168,9 @@ $(function () {
 					type: 'POST',
 					data: $.extend(fields, plupload_attachment_data_serialize()),
 					headers: {'X-phpBB-Using-Plupload': '1'}
-				}).always(function () {
+				}).always(function() {
 					$(evt.target).find('a').css('background', '');
-				}).done(function (response) {
+				}).done(function(response) {
 					up.removeFile(file);
 					plupload.attachment_data = response;
 					plupload_clear_params(up.settings.multipart_params);
