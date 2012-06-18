@@ -38,13 +38,16 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	protected $config;
 
+	protected $root_path;
+
 	/**
 	* Constructor method
 	*/
 	public function __construct()
 	{
-		global $config;
+		global $config, $phpbb_root_path;
 		$this->config = $config;
+		$this->root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -90,7 +93,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		return file_exists($this->config['upload_path'] . '/plupload');
+		return file_exists($this->root_path . $this->config['upload_path'] . '/plupload');
 	}
 
 	/**
