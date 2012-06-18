@@ -66,6 +66,26 @@ jQuery(function($) {
 	$(plupload.phpbb.config.element_hook).pluploadQueue(plupload.phpbb.config);
 	var uploader = $(plupload.phpbb.config.element_hook).pluploadQueue();
 
+	// Check the page for already-existing attachment data and add it to the
+	// array
+	var form = $(plupload.phpbb.config.form_hook)[0];
+	for (var i = 0; i < form.length; i++) {
+		if (form[i].name.indexOf('attachment_data[') !== 0) {
+			continue;
+		}
+		
+		var matches = form[i].name.match(/\[(\d+)\]\[([^\]]+)\]/);
+		var index = matches[1];
+		var property = matches[2];
+		
+		if (!plupload.attachment_data[index]) {
+			plupload.attachment_data[index] = {};
+		}
+		
+		plupload.attachment_data[index][property] = form[i].value;
+		uploader.settings.multipart_params[form[i].name] = form[i].value;
+	}
+
 	/**
 	 * Fired when a single chunk of any given file is uploaded. This parses the
 	 * response from the server and checks for an error. If an error occurs it
@@ -158,6 +178,29 @@ jQuery(function($) {
 	uploader.bind('UploadComplete', function(up, files) {
 		$('.plupload_upload_status').css('display', 'none');
 		$('.plupload_buttons').css('display', 'block');
+
+		// Insert a bunch of hidden input elements containing the attachment
+		// data so that the save/preview/submit buttons work as expected.
+		var form = $(plupload.phpbb.config.form_hook)[0];
+		var data = plupload_attachment_data_serialize();
+
+		// Update already existing hidden inputs
+		for (var i = 0; i < form.length; i++) {
+			if (data.hasOwnProperty(form[i].name)) {
+				form[i].value = data[form[i].name];
+				delete data[form[i].name];
+			}
+		}
+
+		// Append new inputs
+		for (var key in data) {
+			if (!data.hasOwnProperty(key)) {
+				continue;
+			}
+
+			var input = '<input type="hidden" name="' + key + '" value="' + data[key] + '"/>';
+			$(form).append($(input));
+		}
 
 		files.forEach(function(file) {
 			if (file.status !== plupload.DONE) {
