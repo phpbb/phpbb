@@ -72,7 +72,10 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 				}
 			}
 		}
-		catch (UnexpectedValueException $e) {}
+		catch (UnexpectedValueException $e)
+		{
+			add_log('admin', 'LOG_PLUPLOAD_TIDY_FAILED');
+		}
 
 		$this->config->set('plupload_last_gc', time(), true);
 	}
