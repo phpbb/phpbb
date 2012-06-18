@@ -26,7 +26,7 @@ function plupload_find_attachment_idx(id) {
  * Converts an array of objects into an object that PHP would expect as POST
  * data
  *
- * @return object A object in the form 'attachment_data[i][key]': value as
+ * @return object An object in the form 'attachment_data[i][key]': value as
  * 	expected by the server
  */
 function plupload_attachment_data_serialize() {
@@ -92,11 +92,12 @@ jQuery(function($) {
 				console.log(response);
 			}
 		}
-		
+
 		if (json.error) {
 			file.status = plupload.FAILED;
-			alert(json.error.message);
-			uploader.trigger('FileUploaded', up, file);
+			up.trigger('FileUploaded', file, {
+				response: '{"error": {"message": "' + json.error.message + '"}}'
+			});
 		}
 	});
 
@@ -123,10 +124,10 @@ jQuery(function($) {
 				console.log(response);
 			}
 		}
-		
+
 		if (json.error) {
 			file.status = plupload.FAILED;
-			alert(json.error.message);
+			file.error = json.error.message;
 		} else if (file.status === plupload.DONE) {
 			plupload.attachment_data = json;
 			file.attachment_data = json[0];
@@ -159,6 +160,18 @@ jQuery(function($) {
 		$('.plupload_buttons').css('display', 'block');
 
 		files.forEach(function(file) {
+			if (file.status !== plupload.DONE) {
+				console.log(file);
+				var click = function(evt) {
+					alert(file.error);
+				}
+
+				$('#' + file.id).attr('title', file.error);
+				$('#' + file.id).click(click);
+
+				return;
+			}
+
 			var mouseenter = function(evt) {
 				$(evt.target).attr('class', 'plupload_delete');
 				$(evt.target).css('cursor', 'pointer');
