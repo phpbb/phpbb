@@ -1068,6 +1068,13 @@ function style_select($default = '', $all = false)
 	return $style_options;
 }
 
+/**
+* Format the timezone offset with hours and minutes
+*
+* @param	int		$tz_offset	Timezone offset in seconds
+* @return	string		Normalized offset string:	-7200 => -02:00
+*													16200 => +04:30
+*/
 function phpbb_format_timezone_offset($tz_offset)
 {
 	$sign = ($tz_offset < 0) ? '-' : '+';
@@ -1081,9 +1088,11 @@ function phpbb_format_timezone_offset($tz_offset)
 	return $offset_string;
 }
 
-// Compares two time zone labels.
-// Arranges them in increasing order by timezone offset.
-// Places UTC before other timezones in the same offset.
+/**
+* Compares two time zone labels.
+* Arranges them in increasing order by timezone offset.
+* Places UTC before other timezones in the same offset.
+*/
 function tz_select_compare($a, $b)
 {
 	$a_sign = $a[3];
@@ -1129,6 +1138,14 @@ function tz_select_compare($a, $b)
 
 /**
 * Pick a timezone
+*
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+* @param	boolean		$return_tzs_only	Shall we just return the options for the timezone selector,
+*											or also return the options for the time selector.
+*
+* @return		string/array		Returns either the options for timezone selector
+*									or an array, also containing the options for the time selector.
 */
 function tz_select($default = '', $truncate = false, $return_tzs_only = true)
 {
