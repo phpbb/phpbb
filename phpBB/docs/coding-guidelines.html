@@ -295,10 +295,16 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 	<p>We will not be using any form of hungarian notation in our naming conventions. Many of us believe that hungarian naming is one of the primary code obfuscation techniques currently in use.</p>
 
 	<h4>Variable Names:</h4>
-	<p>Variable names should be in all lowercase, with words separated by an underscore, example:</p>
+	<p>In PHP, variable names should be in all lowercase, with words separated by an underscore, example:</p>
 
 	<div class="indent">
 		<p><code>$current_user</code> is right, but <code>$currentuser</code> and <code> $currentUser</code> are not.</p>
+	</div>
+	
+	<p>In JavaScript, variable names should use camel case:</p>
+	
+	<div class="indent">
+		<p><code>currentUser</code> is right, but <code>currentuser</code> and <code>current_user</code> are not.</p>
 	</div>
 
 	<p>Names should be descriptive, but concise. We don't want huge sentences as our variable names, but typing an extra couple of characters is always better than wondering what exactly a certain variable is for. </p>
@@ -317,7 +323,7 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	</pre></div>
 
 	<h4>Function Names:</h4>
-	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character. Function names should preferably have a verb in them somewhere. Good function names are <code>print_login_status()</code>, <code>get_user_data()</code>, etc. </p>
+	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character in PHP, and camel caps in JavaScript. Function names should preferably have a verb in them somewhere. Good function names are <code>print_login_status()</code>, <code>get_user_data()</code>, etc. Constructor functions in JavaScript should begin with a capital letter.</p>
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
@@ -397,7 +403,7 @@ for ($i = 0; $i &lt; size; $i++)
 	</pre></div>
 
 	<h4>Where to put the braces:</h4>
-	<p>This one is a bit of a holy war, but we're going to use a style that can be summed up in one sentence: Braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
+	<p>In PHP code, braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
 
 	<div class="codebox"><pre>
 if (condition)
@@ -424,6 +430,30 @@ while (condition)
 
 function do_stuff()
 {
+	...
+}
+	</pre></div>
+	
+	<p>In JavaScript code, braces always go on the same line:</p>
+
+	<div class="codebox"><pre>
+if (condition) {
+	while (condition2) {
+		...
+	}
+} else {
+	...
+}
+
+for (var i = 0; i &lt; size; i++) {
+	...
+}
+
+while (condition) {
+	...
+}
+
+function do_stuff() {
 	...
 }
 	</pre></div>
@@ -502,7 +532,7 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
 
 	<h4>Commas after every array element:</h4>
-	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line</p>
+	<p>If an array is defined with each element on its own line, you still have to modify the previous line to add a comma when appending a new element. PHP allows for trailing (useless) commas in array definitions. These should always be used so each element including the comma can be appended with a single line. In JavaScript, do not use the trailing comma, as it causes browsers to throw errors.</p>
 
 	<p class="bad">// wrong</p>
 	<div class="codebox"><pre>
