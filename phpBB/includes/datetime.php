@@ -21,7 +21,7 @@ class phpbb_datetime extends DateTime
 	/**
 	* @var user User who is the context for this DateTime instance
 	*/
-	protected $_user;
+	protected $user;
 
 	/**
 	* @var array Date formats are preprocessed by phpBB, to save constant recalculation they are cached.
@@ -38,9 +38,9 @@ class phpbb_datetime extends DateTime
 	*/
 	public function __construct($time = 'now', DateTimeZone $timezone = null, $user = null)
 	{
-		$this->_user	= $user ? $user : $GLOBALS['user'];
+		$this->user	= $user ?: $GLOBALS['user'];
 
-		$timezone		= (!$timezone && $this->_user->tz instanceof DateTimeZone) ? $this->_user->tz : $timezone;
+		$timezone		= (!$timezone && $this->user->tz instanceof DateTimeZone) ? $this->user->tz : $timezone;
 
 		parent::__construct($time, $timezone);
 	}
@@ -72,10 +72,10 @@ class phpbb_datetime extends DateTime
 	*/
 	public function format($format = '', $force_absolute = false)
 	{
-		$format		= $format ? $format : $this->_user->date_format;
-		$format		= self::_format_cache($format, $this->_user);
+		$format		= $format ? $format : $this->user->date_format;
+		$format		= self::_format_cache($format, $this->user);
 		$relative	= ($format['is_short'] && !$force_absolute);
-		$now		= new self('now', $this->_user->tz, $this->_user);
+		$now		= new self('now', $this->user->tz, $this->user);
 
 		$timestamp	= $this->getTimestamp();
 		$now_ts		= $now->getTimeStamp();
@@ -88,9 +88,9 @@ class phpbb_datetime extends DateTime
 			// and the delta not more than a minute in the past
 			// and the delta is either greater than -5 seconds or timestamp and current time are of the same minute (they must be in the same hour already)
 			// finally check that relative dates are supported by the language pack
-			if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->_user->lang['datetime']['AGO']))
+			if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->user->lang['datetime']['AGO']))
 			{
-				return $this->_user->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
+				return $this->user->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
 			}
 			else
 			{
@@ -117,7 +117,7 @@ class phpbb_datetime extends DateTime
 				if ($day !== false)
 				{
 					// Format using the short formatting and finally swap out the relative token placeholder with the correct value
-					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->_user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
+					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
 				}
 			}
 		}
