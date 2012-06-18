@@ -36,9 +36,8 @@ function phpbb_enable_tz_dates()
 * Preselect a date/time or suggest one, if it is not picked.
 *
 * @param	bool	force_selector		Shall we select the suggestion?
-* @param	string	l_suggestion		The language string which we use, to display the selection
 */
-function phpbb_preselect_tz_select(force_selector, l_suggestion)
+function phpbb_preselect_tz_select(force_selector)
 {
 
 	// The offset returned here is in minutes and negated.
@@ -86,8 +85,8 @@ function phpbb_preselect_tz_select(force_selector, l_suggestion)
 				// We do not select the option for the user, but notify him,
 				// that we would suggest a different setting.
 				$('#tz_select_date_suggest').css("display", "inline");
-				$('#tz_select_date_suggest').attr("title", l_suggestion.replace("%s", option.innerHTML));
-				$('#tz_select_date_suggest').html(l_suggestion.replace("%s", option.innerHTML.substring(0, 9)));
+				$('#tz_select_date_suggest').attr("title", $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML));
+				$('#tz_select_date_suggest').attr("value", $('#tz_select_date_suggest').attr('data-l-suggestion').replace("%s", option.innerHTML.substring(0, 9)));
 				phpbb_switch_tz_date(true);
 			}
 			else
@@ -101,5 +100,9 @@ function phpbb_preselect_tz_select(force_selector, l_suggestion)
 	}
 }
 
+$('#tz_select_date_suggest').click(function(){
+	phpbb_preselect_tz_select(true, '');
+});
+
 phpbb_enable_tz_dates();
-phpbb_preselect_tz_select(is_registration, l_timezone_date_suggestion);
+phpbb_preselect_tz_select($('#tz_select_date_suggest').attr('data-is-registration') == "true");
