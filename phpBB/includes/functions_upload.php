@@ -1071,11 +1071,11 @@ class fileupload
 	 */
 	function handle_plupload($form_name)
 	{
-		global $config, $request, $user;
+		global $config, $request, $user, $phpbb_root_path;
 
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
-		$tmp_dir = $config['upload_path'] . '/plupload';
+		$tmp_dir = $phpbb_root_path . $config['upload_path'] . '/plupload';
 		
 		$chunk = $request->variable('chunk', 0);
 		$chunks_expected = $request->variable('chunks', 0);
@@ -1101,7 +1101,7 @@ class fileupload
 		{
 			mkdir($tmp_dir);
 			copy(
-				$config['upload_path'] . '/index.htm',
+				$phpbb_root_path . $config['upload_path'] . '/index.htm',
 				$tmp_dir . '/index.htm'
 			);
 		}
