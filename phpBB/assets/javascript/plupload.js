@@ -4,14 +4,17 @@ plupload.attachment_data = [];
 /**
  * Returns the index of the plupload.attachment_data array where the given
  * attach id appears
+ *
+ * @param int id The attachment id of the file
+ *
+ * @return bool	Returns false if the id cannot be found
+ * @return int	Returns the index in the main array where the attachment id
+ * 	was found
  */
-function plupload_find_attachment_idx(id)
-{
+function plupload_find_attachment_idx(id) {
 	var data = plupload.attachment_data;
-	for (var i = 0; i < data.length; i++)
-	{
-		if (data[i].id === id)
-		{
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].id === id) {
 			return i;
 		}
 	}
@@ -22,17 +25,16 @@ function plupload_find_attachment_idx(id)
 /**
  * Converts an array of objects into an object that PHP would expect as POST
  * data
+ *
+ * @return object A object in the form 'attachment_data[i][key]': value as
+ * 	expected by the server
  */
-function plupload_attachment_data_serialize()
-{
+function plupload_attachment_data_serialize() {
 	var obj = {};
-	for (var i = 0; i < plupload.attachment_data.length; i++)
-	{
+	for (var i = 0; i < plupload.attachment_data.length; i++) {
 		var datum = plupload.attachment_data[i];
-		for (var key in datum)
-		{
-			if (!datum.hasOwnProperty(key))
-			{
+		for (var key in datum) {
+			if (!datum.hasOwnProperty(key)) {
 				continue;
 			}
 
@@ -45,13 +47,14 @@ function plupload_attachment_data_serialize()
 
 /**
  * Unsets all elements in an object whose keys begin with 'attachment_data['
+ *
+ * @param object The object to be cleared
+ *
+ * @return undefined
  */
-function plupload_clear_params(obj)
-{
-	for (var key in obj)
-	{
-		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0)
-		{
+function plupload_clear_params(obj) {
+	for (var key in obj) {
+		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0) {
 			continue;
 		}
 
@@ -67,27 +70,30 @@ jQuery(function($) {
 	 * Fired when a single chunk of any given file is uploaded. This parses the
 	 * response from the server and checks for an error. If an error occurs it
 	 * is reported to the user and the upload of this particular file is halted
+	 *
+	 * @param object up			The plupload.Uploader object
+	 * @param object file		The plupload.File object whose chunk has just
+	 * 	been uploaded
+	 * @param string response	The response string from the server
+	 *
+	 * @return undefined
 	 */
 	uploader.bind('ChunkUploaded', function(up, file, response) {
-		if (response.chunk >= response.chunks - 1)
-		{
+		if (response.chunk >= response.chunks - 1) {
 			return;
 		}
 
 		var json = {};
-		try
-		{
+		try {
 			json = $.parseJSON(response.response);
 		} catch (e) {
-			if (console && console.log)
-			{
+			if (console && console.log) {
 				console.log('Error parsing server response.');
 				console.log(response);
 			}
 		}
 		
-		if (json.error)
-		{
+		if (json.error) {
 			file.status = plupload.FAILED;
 			alert(json.error.message);
 			uploader.trigger('FileUploaded', up, file);
@@ -99,27 +105,29 @@ jQuery(function($) {
 	 * returned by the server otherwise parses the list of attachment data and
 	 * appends it to the next file upload so that the server can maintain state
 	 * with regards to the attachments in a given post
+	 *
+	 * @param object up			The plupload.Uploader object
+	 * @param object file		The plupload.File object that has just been
+	 * 	uploaded
+	 * @param string response	The response string from the server
+	 *
+	 * @return undefined
 	 */
 	uploader.bind('FileUploaded', function(up, file, response) {
 		var json = {};
-		try
-		{
+		try {
 			json = $.parseJSON(response.response);
 		} catch (e) {
-			if (console && console.log)
-			{
+			if (console && console.log) {
 				console.log('Error parsing server response.');
 				console.log(response);
 			}
 		}
 		
-		if (json.error)
-		{
+		if (json.error) {
 			file.status = plupload.FAILED;
 			alert(json.error.message);
-		}
-		else if (file.status === plupload.DONE)
-		{
+		} else if (file.status === plupload.DONE) {
 			plupload.attachment_data = json;
 			file.attachment_data = json[0];
 			up.settings.multipart_params = $.extend(
@@ -139,25 +147,28 @@ jQuery(function($) {
 	 * server to tell it to remove the temporary attachment. The server
 	 * responds with the updated attachment data list so that any future
 	 * uploads can maintain state with the server
+	 *
+	 * @param object up		The plupload.Uploader object
+	 * @param array files	An array of plupload.File objects that have just
+	 * 	been uploaded as part of a queue
+	 *
+	 * @return undefined
 	 */
 	uploader.bind('UploadComplete', function(up, files) {
 		$('.plupload_upload_status').css('display', 'none');
 		$('.plupload_buttons').css('display', 'block');
 
 		files.forEach(function(file) {
-			var mouseenter = function(evt)
-			{
+			var mouseenter = function(evt) {
 				$(evt.target).attr('class', 'plupload_delete');
 				$(evt.target).css('cursor', 'pointer');
 			};
 
-			var mouseleave = function(evt)
-			{
+			var mouseleave = function(evt) {
 				$(evt.target).attr('class', 'plupload_done');
 			};
 
-			var click = function(evt)
-			{
+			var click = function(evt) {
 				var throbber = "url('" + plupload.phpbb.config.img_path + "/throbber.gif')";
 				$(evt.target).find('a').css('background', throbber);
 				
@@ -165,13 +176,11 @@ jQuery(function($) {
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
 
-				var always = function()
-				{
+				var always = function() {
 					$(evt.target).find('a').css('background', '');
 				};
 
-				var done = function(response)
-				{
+				var done = function(response) {
 					up.removeFile(file);
 					plupload.attachment_data = response;
 					plupload_clear_params(up.settings.multipart_params);
