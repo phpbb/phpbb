@@ -1061,6 +1061,11 @@ class parse_message extends bbcode_firstpass
 	var $mode;
 
 	/**
+	* The plupload object used for dealing with attachments
+	*/
+	private $plupload;
+
+	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1496,7 +1501,7 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
-					if ($request->header('X-PHPBB-USING-PLUPLOAD', false))
+					if ($this->plupload->active)
 					{
 						$json_response->send($this->attachment_data);
 					}
@@ -1506,7 +1511,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->plupload);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1538,7 +1543,7 @@ class parse_message extends bbcode_firstpass
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
 
-						if ($filedata['is_plupload'])
+						if ($this->plupload->active)
 						{
 							// Send the client the attachment data to maintain
 							// state
@@ -1551,7 +1556,7 @@ class parse_message extends bbcode_firstpass
 					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 				}
 
-				if (sizeof($error) && $filedata['is_plupload'])
+				if (sizeof($error) && $this->plupload->active)
 				{
 					// If this is a plupload (and thus ajax) request, give the
 					// client the first error we have
@@ -1723,5 +1728,17 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+	}
+
+	/**
+	* Setter function for passing the plupload object
+	*
+	* @param object $plupload The plupload object
+	*
+	* @return null
+	*/
+	public function set_plupload($plupload)
+	{
+		$this->plupload = $plupload;
 	}
 }

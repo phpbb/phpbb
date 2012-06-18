@@ -386,7 +386,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 * Upload Attachment - filedata is generated here
 * Uses upload class
 */
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, $plupload = false)
 {
 	global $auth, $user, $config, $db, $cache;
 	global $phpbb_root_path, $phpEx;
@@ -421,8 +421,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
-	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name);
-	$filedata['is_plupload'] = $file->is_plupload;
+	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name, $plupload);
 
 	if ($file->init_error)
 	{
@@ -437,7 +436,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		$file->remove();
 
-		if ($file->is_plupload)
+		if ($plupload && $plupload->active)
 		{
 			$json_response = new phpbb_json_response();
 			$json_response->send(array(
@@ -2596,64 +2595,4 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
 	return $url;
-}
-
-/**
- * Configure plupload
- */
-function phpbb_plupload_configure($cache, $template, $config, $user, $s_action, $forum_id)
-{
-	$attach_extensions = $cache->obtain_attach_extensions($forum_id);
-	unset($attach_extensions['_allowed_']);
-	$groups = array();
-
-	// Re-arrange the extension array to $groups[$group_name][]
-	foreach ($attach_extensions as $extension => $extension_info)
-	{
-		if (!isset($groups[$extension_info['group_name']]))
-		{
-			$groups[$extension_info['group_name']] = array();
-		}
-
-		$groups[$extension_info['group_name']][] = $extension;
-	}
-
-	$filters = array();
-	foreach ($groups as $group => $extensions)
-	{
-		$filters[] = sprintf(
-			"{title: '%s', extensions: '%s'}",
-			ucfirst(strtolower($group)),
-			implode(',', $extensions)
-		);
-	}
-
-	// Get the maximum 'safe' chunk size
-	$ini = new phpbb_php_ini();
-	$chunk_size = min(
-		$ini->get_bytes('upload_max_filesize'),
-		$ini->get_bytes('post_max_size'),
-		$ini->get_bytes('memory_limit'),
-		$config['max_filesize']
-	);
-
-	$resize = '';
-	if ($config['img_max_height'] > 0 && $config['img_max_width'] > 0)
-	{
-		$resize = sprintf(
-			'resize: {width: %d, height: %d, quality: 100},',
-			(int) $config['img_max_height'],
-			(int) $config['img_max_width']
-		);
-	}
-
-	$template->assign_vars(array(
-		'S_RESIZE'			=> $resize,
-		'S_PLUPLOAD'		=> true,
-		'FILTERS'			=> implode(',', $filters),
-		'CHUNK_SIZE'		=> $chunk_size,
-		'S_PLUPLOAD_URL'	=> htmlspecialchars_decode($s_action),
-	));
-
-	$user->add_lang('plupload');
 }

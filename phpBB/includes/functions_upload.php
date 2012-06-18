@@ -44,18 +44,16 @@ class filespec
 	var $upload = '';
 
 	/**
-	 * Are we using plupload for the current upload?
+	 * The plupload object
 	 */
-	public $is_plupload = false;
+	private $plupload;
 
 	/**
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace)
+	function filespec($upload_ary, $upload_namespace, $plupload = false)
 	{
-		global $request;
-	
 		if (!isset($upload_ary))
 		{
 			$this->init_error = true;
@@ -87,8 +85,7 @@ class filespec
 
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
-
-		$this->is_plupload = $request->header('X-PHPBB-USING-PLUPLOAD', false);
+		$this->plupload = $plupload;
 	}
 
 	/**
@@ -170,12 +167,14 @@ class filespec
 	*/
 	function is_uploaded()
 	{
-		if (!$this->local && !$this->is_plupload && !is_uploaded_file($this->filename))
+		$is_plupload = ($this->plupload && $this->plupload->active);
+
+		if (!$this->local && !$is_plupload && !is_uploaded_file($this->filename))
 		{
 			return false;
 		}
 
-		if (($this->local || $this->is_plupload) && !file_exists($this->filename))
+		if (($this->local || $is_plupload) && !file_exists($this->filename))
 		{
 			return false;
 		}
@@ -573,21 +572,23 @@ class fileupload
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function form_upload($form_name)
+	function form_upload($form_name, $plupload = false)
 	{
 		global $user, $request;
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
 
-		// Program flow note: handle_plupload utilises die() a lot
-		$result = $this->handle_plupload($form_name);
-		if (is_array($result))
+		if ($plupload)
 		{
-			$upload[$form_name] = array_merge($upload[$form_name], $result);
+			$result = $plupload->handle_upload($form_name);
+			if (is_array($result))
+			{
+				$upload[$form_name] = array_merge($upload[$form_name], $result);
+			}
 		}
 
-		$file = new filespec($upload[$form_name], $this);
+		$file = new filespec($upload[$form_name], $this, $plupload);
 
 		if ($file->init_error)
 		{
@@ -1058,167 +1059,5 @@ class fileupload
 			IMAGETYPE_WBMP		=> array('wbmp'),
 			IMAGETYPE_XBM		=> array('xbm'),
 		);
-	}
-
-	/**
-	 * Plupload allows for chunking so we must check for that and assemble
-	 * the whole file first before performing any checks on it.
-	 *
-	 * @param string $form_name The name of the file element in the upload form
-	 * @return null If there are no chunks to piece together
-	 * @return array Returns an array containing the path to the pieced-together
-	 * 				 file and its size
-	 */
-	function handle_plupload($form_name)
-	{
-		global $config, $request, $user, $phpbb_root_path;
-
-		// Most of this code is adapted from the sample upload script provided
-		// with plupload
-		$tmp_dir = $phpbb_root_path . $config['upload_path'] . '/plupload';
-		
-		$chunk = $request->variable('chunk', 0);
-		$chunks_expected = $request->variable('chunks', 0);
-		$file_name = $request->variable('name', '');
-
-		// If chunking is disabled or we are not using plupload, just return
-		// and handle the file as usual
-		if ($chunks_expected < 2)
-		{
-			return;
-		}
-
-		$user->add_lang('plupload');
-
-		// Must preserve the extension
-		$ext = filespec::get_extension($file_name);
-		$file_name = md5($config['plupload_salt'] . $file_name) . ".$ext";
-		$file_path = $tmp_dir . '/' . $file_name;
-
-		// If the plupload subdirectory does not exist in the tmp upload
-		// directory then create it
-		if (!file_exists($tmp_dir))
-		{
-			mkdir($tmp_dir);
-			copy(
-				$phpbb_root_path . $config['upload_path'] . '/index.htm',
-				$tmp_dir . '/index.htm'
-			);
-		}
-
-		$json_response = new phpbb_json_response();
-		$content_type = $request->server('CONTENT_TYPE');
-
-		// The following block of code has the comment:
-		// "Handle non multipart uploads older WebKit versions didn't support
-		// multipart in HTML5"
-		// So this may not be necessary any more if we do not intend to
-		// support those old versions of WebKit
-		$is_multipart = (strpos($content_type, 'multipart') !== false);
-		
-		if (
-			$is_multipart
-			&& (
-				!isset($_FILES[$form_name]['tmp_name'])
-				|| !is_uploaded_file($_FILES[$form_name]['tmp_name'])
-			)
-		)
-		{
-			$json_response->send(array(
-				'jsonrpc' => '2.0',
-				'id' => 'id',
-				'error' => array(
-					'code' => 103,
-					'message' => $user->lang('PLUPLOAD_ERR_MOVE_UPLOADED'),
-				),
-			));
-		}
-
-		// Move the file safely to our working tmp dir to read from it
-		// race condition?
-		$tmp_file =
-			$tmp_dir
-			. '/'
-			. basename($_FILES[$form_name]['tmp_name']);
-
-		if (!move_uploaded_file($_FILES[$form_name]['tmp_name'], $tmp_file))
-		{
-			$json_response->send(array(
-				'jsonrpc' => '2.0',
-				'id' => 'id',
-				'error' => array(
-					'code' => 103,
-					'message' => $user->lang('PLUPLOAD_ERR_MOVE_UPLOADED'),
-				),
-			));
-		}
-		
-		$out = fopen("{$file_path}.part", $chunk == 0 ? 'wb' : 'ab');
-		if ($out)
-		{
-			$in = fopen(($is_multipart) ? $tmp_file : 'php://input', 'rb');
-
-			if ($in)
-			{
-				while ($buf = fread($in, 4096))
-				{
-					fwrite($out, $buf);
-				}
-			}
-			else
-			{
-				$json_response->send(array(
-					'jsonrpc' => '2.0',
-					'id' => 'id',
-					'error' => array(
-						'code' => 101,
-						'message' => $user->lang('PLUPLOAD_ERR_INPUT'),
-					),
-				));
-			}
-
-			fclose($in);
-			fclose($out);
-
-			if ($is_multipart)
-			{
-				unlink($tmp_file);
-			}
-		}
-		else
-		{
-			$json_response->send(array(
-				'jsonrpc' => '2.0',
-				'id' => 'id',
-				'error' => array(
-					'code' => 102,
-					'message' => $user->lang('PLUPLOAD_ERR_OUTPUT'),
-				),
-			));
-		}
-
-		// If we are done with all the chunks, strip the .part suffix and then
-		// handle the resulting file as normal, otherwise die and await the
-		// next chunk
-		if ($chunk == $chunks_expected - 1)
-		{
-			rename("{$file_path}.part", $file_path);
-
-			// Need to modify some of the $_FILES values to reflect the new
-			// file
-			return array(
-				'tmp_name' => $file_path,
-				'name' => $file_name,
-				'size' => filesize($file_path),
-			);
-		}
-		else
-		{
-			$json_response->send(array(
-				'jsonrpc' => '2.0',
-				'id' => 'id',
-				'result' => null,
-			));
-		}
 	}
 }
