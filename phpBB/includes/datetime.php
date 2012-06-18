@@ -45,24 +45,6 @@ class phpbb_datetime extends DateTime
 	}
 
 	/**
-	* Returns a UNIX timestamp representation of the date time.
-	*
-	* @internal This method is for backwards compatibility with 5.2, hence why it doesn't use our method naming standards.
-	* @return int UNIX timestamp
-	*/
-	public function getTimestamp()
-	{
-		static $compat;
-
-		if (!isset($compat))
-		{
-			$compat = !method_exists('DateTime', 'getTimestamp');
-		}
-
-		return !$compat ? parent::getTimestamp() : (int) parent::format('U');
-	}
-
-	/**
 	* Formats the current date time into the specified format
 	*
 	* @param string $format Optional format to use for output, defaults to users chosen format
