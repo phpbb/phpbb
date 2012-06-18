@@ -154,7 +154,7 @@ if ($revert)
 {
 	add_form_key('revert_form');
 
-	$revert_confirm = $request->variable('confirm', 0);
+	$revert_confirm = $request->is_set_post('confirm');
 	if ($revert_confirm && check_form_key('revert_form', 120))
 	{
 		$revert_result = $post->revert($revert);
