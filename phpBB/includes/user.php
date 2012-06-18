@@ -648,6 +648,21 @@ class phpbb_user extends phpbb_session
 	}
 
 	/**
+	* Get the UNIX timestamp for a datetime in the users timezone, so we can store it in the database.
+	*
+	* @param	string			$format		Format of the entered date/time
+	* @param	string			$time		Date/time with the timezone applied
+	* @param	DateTimeZone	$timezone	Timezone of the date/time, falls back to timezone of current user
+	* @return	int			Returns the unix timestamp
+	*/
+	public function get_timestamp_from_format($format, $time, DateTimeZone $timezone = null)
+	{
+		$timezone = $timezone ?: $this->tz;
+		$date = DateTime::createFromFormat($format, $time, $timezone);
+		return ($date !== false) ? $date->format('U') : false;
+	}
+
+	/**
 	* Get language id currently used by the user
 	*/
 	function get_iso_lang_id()
