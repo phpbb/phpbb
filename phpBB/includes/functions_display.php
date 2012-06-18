@@ -417,12 +417,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
 		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? $row['forum_posts'] : '';
 
-		$s_subforums_list = array();
-		foreach ($subforums_list as $subforum)
-		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['UNREAD_POSTS'] : $user->lang['NO_UNREAD_POSTS']) . '">' . $subforum['name'] . '</a>';
-		}
-		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
 
 		if ($row['forum_type'] != FORUM_LINK)
@@ -451,7 +445,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_AUTH_READ'		=> $auth->acl_get('f_read', $row['forum_id']),
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
-			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
 			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $config['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
@@ -472,7 +465,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'MODERATORS'			=> $moderators_list,
-			'SUBFORUMS'				=> $s_subforums_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
 			'L_MODERATOR_STR'		=> $l_moderator,
