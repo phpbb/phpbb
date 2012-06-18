@@ -14,7 +14,7 @@ plupload.attachment_data = [];
 function plupload_find_attachment_idx(id) {
 	var data = plupload.attachment_data;
 	for (var i = 0; i < data.length; i++) {
-		if (data[i].id === id) {
+		if (data[i].attach_id == id) {
 			return i;
 		}
 	}
@@ -204,7 +204,6 @@ jQuery(function($) {
 
 		files.forEach(function(file) {
 			if (file.status !== plupload.DONE) {
-				console.log(file);
 				var click = function(evt) {
 					alert(file.error);
 				}
@@ -228,7 +227,7 @@ jQuery(function($) {
 				var throbber = "url('" + plupload.phpbb.config.img_path + "/throbber.gif')";
 				$(evt.target).find('a').css('background', throbber);
 				
-				var idx = plupload_find_attachment_idx(file.attachment_data.id);
+				var idx = plupload_find_attachment_idx(file.attachment_data.attach_id);
 				var fields = {};
 				fields['delete_file[' + idx + ']'] = 1;
 
