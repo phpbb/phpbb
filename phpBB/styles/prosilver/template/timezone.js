@@ -1,3 +1,8 @@
+/**
+* Hide the optgroups that are not the selected timezone
+*
+* @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
+*/
 function phpbb_switch_tz_date(keep_selection)
 {
 	$('#timezone > optgroup').css("display", "none");
@@ -19,11 +24,20 @@ function phpbb_switch_tz_date(keep_selection)
 	}
 }
 
+/**
+* Display the date/time select
+*/
 function phpbb_enable_tz_dates()
 {
 	$('#tz_select_date').css("display", "block");
 }
 
+/**
+* Preselect a date/time or suggest one, if it is not picked.
+*
+* @param	bool	force_selector		Shall we select the suggestion?
+* @param	string	l_suggestion		The language string which we use, to display the selection
+*/
 function phpbb_preselect_tz_select(force_selector, l_suggestion)
 {
 
@@ -78,11 +92,6 @@ function phpbb_preselect_tz_select(force_selector, l_suggestion)
 			}
 			else
 			{
-				// Firefox scrolls the selector only to put the option into view;
-				// for negative-offset timezones, this means the first timezone
-				// of a particular offset will be the bottom one, and selected,
-				// with all other timezones not visible. Not much can be done
-				// about that here unfortunately.
 				option.selected = true;
 				phpbb_switch_tz_date(!force_selector);
 				$('#tz_select_date_suggest').css("display", "none");

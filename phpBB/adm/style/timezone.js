@@ -1,3 +1,8 @@
+/**
+* Hide the optgroups that are not the selected timezone
+*
+* @param	bool	keep_selection		Shall we keep the value selected, or shall the user be forced to repick one.
+*/
 function phpbb_switch_tz_date(keep_selection)
 {
 	$('#timezone > optgroup').css("display", "none");
@@ -19,6 +24,9 @@ function phpbb_switch_tz_date(keep_selection)
 	}
 }
 
+/**
+* Display the date/time select
+*/
 function phpbb_enable_tz_dates()
 {
 	$('#tz_select_date').css("display", "block");
