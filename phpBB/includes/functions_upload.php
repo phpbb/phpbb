@@ -154,7 +154,7 @@ class filespec
 		$finfo = new finfo(FILEINFO_MIME_TYPE);
 		$mimetype = $finfo->file($this->filename);
 
-		return (strpos($mimetype, 'image/') !== false) ? true : false;
+		return (strpos($mimetype, 'image/') === 0);
 	}
 
 	/**
