@@ -1093,7 +1093,7 @@ function phpbb_format_timezone_offset($tz_offset)
 * Arranges them in increasing order by timezone offset.
 * Places UTC before other timezones in the same offset.
 */
-function tz_select_compare($a, $b)
+function phpbb_tz_select_compare($a, $b)
 {
 	$a_sign = $a[3];
 	$b_sign = $b[3];
@@ -1178,7 +1178,7 @@ function tz_select($default = '', $truncate = false, $return_tzs_only = true)
 		}
 		unset($unsorted_timezones);
 
-		uksort($timezones, 'tz_select_compare');
+		uksort($timezones, 'phpbb_tz_select_compare');
 	}
 
 	$tz_select = $tz_dates = $opt_group = '';
