@@ -2588,6 +2588,33 @@ function change_database_data(&$no_updates, $version)
 				$config->set('assets_version', '1');
 			}
 
+			// If the column exists, we did not yet update the users timezone
+			if ($db_tools->sql_column_exists(USERS_TABLE, 'user_dst'))
+			{
+				// Update timezones
+				// user_dst is 0 if not in dst and 1 if in dst;
+				// this happens to be exactly the correction that should be added to the timezone offset
+				// to obtain dst offset.
+				// Parenthesize here because we operate on this value later.
+				$active_offset = '(user_timezone + user_dst)';
+
+				// Now we have a tricky problem of forcing the plus sign into the expression.
+				// Build it via a conditional since there cannot be a portable printf equivalent in databases.
+				// Note that active offset is not an absolute value here - it is an expression that will
+				// be evaluated by the database during query execution.
+				// We don't print - (minus) here because it will come from active offset.
+				$sign = $db->sql_conditional("$active_offset < 0", '', '+');
+
+				// Use database-specific escaping because strings are quoted differently by different databases.
+				$new_value = $db->sql_concatenate($db->sql_escape('GMT'), $sign, $active_offset);
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_timezone = ' . $new_value;
+				_sql($sql, $errored, $error_ary);
+
+				// After we have calculated the timezones we can delete user_dst column from user table.
+				$db_tools->sql_column_remove(USERS_TABLE, 'user_dst');
+			}
+
 		break;
 	}
 }
