@@ -1062,6 +1062,7 @@ class parse_message extends bbcode_firstpass
 
 	/**
 	* The plupload object used for dealing with attachments
+	* @var object
 	*/
 	private $plupload;
 
@@ -1456,7 +1457,11 @@ class parse_message extends bbcode_firstpass
 
 		if ($preview || $refresh || sizeof($error))
 		{
-			$json_response = new phpbb_json_response();
+			if (isset($this->plupload) && $this->plupload->active)
+			{
+				$json_response = new phpbb_json_response();
+			}
+
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
@@ -1501,7 +1506,7 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
-					if ($this->plupload->active)
+					if (isset($this->plupload) && $this->plupload->active)
 					{
 						$json_response->send($this->attachment_data);
 					}
@@ -1543,7 +1548,7 @@ class parse_message extends bbcode_firstpass
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
 
-						if ($this->plupload->active)
+						if (isset($this->plupload) && $this->plupload->active)
 						{
 							// Send the client the attachment data to maintain
 							// state
@@ -1556,7 +1561,7 @@ class parse_message extends bbcode_firstpass
 					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 				}
 
-				if (sizeof($error) && $this->plupload->active)
+				if (sizeof($error) && isset($this->plupload) && $this->plupload->active)
 				{
 					// If this is a plupload (and thus ajax) request, give the
 					// client the first error we have

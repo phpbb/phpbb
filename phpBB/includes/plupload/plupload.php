@@ -22,10 +22,29 @@ if (!defined('IN_PHPBB'))
  */
 class phpbb_plupload
 {
-	private $config, $request, $user, $root_path;
+	/**
+	 * @var array
+	 */
+	private $config;
+
+	/**
+	 * @var object
+	 */
+	private $request;
+
+	/**
+	 * @var object
+	 */
+	private $user;
+
+	/**
+	 * @var string
+	 */
+	private $root_path;
 
 	/**
 	 * Whether the current page request is from plupload or not
+	 * @var boolean
 	 */
 	public $active;
 
@@ -33,10 +52,10 @@ class phpbb_plupload
 	 * Constructor function, just used to store the class variables and check
 	 * whether plupload is sending the page request or not
 	 *
-	 * @param object $config
+	 * @param array $config
 	 * @param object $request
 	 * @param object $user
-	 * @param object $phpbb_root_path
+	 * @param string $phpbb_root_path
 	 *
 	 * @return null
 	 */

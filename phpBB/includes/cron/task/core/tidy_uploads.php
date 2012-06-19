@@ -59,6 +59,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	{
 		// Remove old temporary file (perhaps failed uploads?)
 		$dir = $this->config['upload_path'] . '/plupload';
+		$time_difference = time() - self::MAX_FILE_AGE;
 		try
 		{
 			$it = new DirectoryIterator($dir);
@@ -69,7 +70,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 					continue;
 				}
 
-				if ($file->getMTime() < time() - self::MAX_FILE_AGE)
+				if ($file->getMTime() < $time_difference)
 				{
 					@unlink($file->getPathname());
 				}
@@ -77,7 +78,13 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 		}
 		catch (UnexpectedValueException $e)
 		{
-			add_log('admin', 'LOG_PLUPLOAD_TIDY_FAILED');
+			add_log(
+				'admin',
+				'LOG_PLUPLOAD_TIDY_FAILED',
+				$dir,
+				$e->getMessage(),
+				$e->getTraceAsString()
+			);
 		}
 
 		$this->config->set('plupload_last_gc', time(), true);
