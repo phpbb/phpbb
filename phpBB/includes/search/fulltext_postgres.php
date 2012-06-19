@@ -22,14 +22,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_fulltext_postgres extends phpbb_search_base
 {
-	var $stats = array();
-	var $word_length = array();
-	var $split_words = array();
-	var $search_query;
-	var $tsearch_query;
-	var $common_words = array();
-	var $tsearch_usable = false;
-	var $version;
+	private $stats = array();
+	private $split_words = array();
+	private $tsearch_usable = false;
+	private $version;
+	private $tsearch_query;
+	public $search_query;
+	public $common_words = array();
+	public $word_length = array();
 
 	public function __construct(&$error)
 	{
