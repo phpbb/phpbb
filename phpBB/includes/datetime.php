@@ -39,7 +39,7 @@ class phpbb_datetime extends DateTime
 	{
 		$this->user	= $user ?: $GLOBALS['user'];
 
-		$timezone		= (!$timezone && $this->user->tz instanceof DateTimeZone) ? $this->user->tz : $timezone;
+		$timezone	= $timezone ?: $this->user->tz;
 
 		parent::__construct($time, $timezone);
 	}
@@ -54,7 +54,7 @@ class phpbb_datetime extends DateTime
 	public function format($format = '', $force_absolute = false)
 	{
 		$format		= $format ? $format : $this->user->date_format;
-		$format		= self::_format_cache($format, $this->user);
+		$format		= self::format_cache($format, $this->user);
 		$relative	= ($format['is_short'] && !$force_absolute);
 		$now		= new self('now', $this->user->tz, $this->user);
 
@@ -68,7 +68,8 @@ class phpbb_datetime extends DateTime
 			/**
 			* Check the delta is less than or equal to 1 hour
 			* and the delta not more than a minute in the past
-			* and the delta is either greater than -5 seconds or timestamp and current time are of the same minute (they must be in the same hour already)
+			* and the delta is either greater than -5 seconds or timestamp
+			* and current time are of the same minute (they must be in the same hour already)
 			* finally check that relative dates are supported by the language pack
 			*/
 			if ($delta <= 3600 && $delta > -60 && ($delta >= -5 || (($now_ts / 60) % 60) == (($timestamp / 60) % 60)) && isset($this->user->lang['datetime']['AGO']))
@@ -125,7 +126,7 @@ class phpbb_datetime extends DateTime
 	* @param user $user User object to use for localisation
 	* @return array Processed date format
 	*/
-	static protected function _format_cache($format, $user)
+	static protected function format_cache($format, $user)
 	{
 		$lang = $user->lang_name;
 
