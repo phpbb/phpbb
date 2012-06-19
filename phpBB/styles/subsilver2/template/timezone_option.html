@@ -3,7 +3,7 @@
 	<td class="row2">
 		<!-- IF S_TZ_DATE_OPTIONS -->
 		<div id="tz_select_date" style="display: none;">
-			<select name="tz_date" id="tz_date" class="autowidth tz_select" onchange="phpbb_switch_tz_date(false);">
+			<select name="tz_date" id="tz_date" class="autowidth tz_select">
 				<option value="">{L_SELECT_CURRENT_TIME}</option>
 				{S_TZ_DATE_OPTIONS}
 			</select><br />
@@ -15,10 +15,6 @@
 			{S_TZ_OPTIONS}
 		</select>
 
-		<script type="text/javascript">
-			var is_registration = <!-- IF S_REGISTRATION -->true<!-- ELSE -->false<!-- ENDIF -->;
-			var l_timezone_date_suggestion = "{L_TIMEZONE_DATE_SUGGESTION}";
-		</script>
 		<!-- INCLUDEJS template/timezone.js -->
 	</td>
 </tr>
