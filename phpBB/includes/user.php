@@ -29,6 +29,10 @@ class phpbb_user extends phpbb_session
 	var $help = array();
 	var $theme = array();
 	var $date_format;
+
+	/**
+	* DateTimeZone object holding the timezone of the user
+	*/
 	public $tz;
 
 	var $lang_name = false;
@@ -125,7 +129,7 @@ class phpbb_user extends phpbb_session
 
 		if (is_numeric($this->tz))
 		{
-			// Might still be numeric by chance
+			// Might still be numeric
 			$this->tz = sprintf('Etc/GMT%+d', $this->tz);
 		}
 
