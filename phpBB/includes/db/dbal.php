@@ -284,6 +284,23 @@ class dbal
 	}
 
 	/**
+	* Build a conditional SQL query
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL statement that is used, if the condition is true
+	* @param	string	$action_else	SQL statement that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	function sql_conditional($condition, $action_true, $action_false = false)
+	{
+		$sql_condition = 'CASE WHEN ' . $condition;
+		$sql_condition .= ' THEN ' . $action_true;
+		$sql_condition .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_condition .= ' END';
+		return $sql_condition;
+	}
+
+	/**
 	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
 	*
 	* @return bool Whether buffering is required.
