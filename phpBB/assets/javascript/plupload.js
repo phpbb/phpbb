@@ -87,6 +87,24 @@ jQuery(function($) {
 	}
 
 	/**
+	 * Fires before a given file is about to be uploaded. This allows us to
+	 * send the real filename along with the chunk. This is necessary because
+	 * for some reason the filename is set to 'blob' whenever a file is chunked
+	 *
+	 * @param object up		The plupload.Uploader object
+	 * @param object file	The plupload.File object that is about to be
+	 * 	uploaded
+	 *
+	 * @return undefined
+	 */
+	uploader.bind('BeforeUpload', function(up, file) {
+		up.settings.multipart_params = $.extend(
+			up.settings.multipart_params,
+			{'real_filename': file.name}
+		);
+	});
+
+	/**
 	 * Fired when a single chunk of any given file is uploaded. This parses the
 	 * response from the server and checks for an error. If an error occurs it
 	 * is reported to the user and the upload of this particular file is halted

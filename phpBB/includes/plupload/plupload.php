@@ -255,6 +255,7 @@ class phpbb_plupload
 		$chunk = $this->request->variable('chunk', 0);
 		$chunks_expected = $this->request->variable('chunks', 0);
 		$file_name = $this->request->variable('name', '');
+		$realname = $this->request->variable('real_filename', '');
 
 		// If chunking is disabled or we are not using plupload, just return
 		// and handle the file as usual
@@ -309,7 +310,7 @@ class phpbb_plupload
 			// file
 			return array(
 				'tmp_name' => $file_path,
-				'name' => $file_name,
+				'name' => $realname,
 				'size' => filesize($file_path),
 			);
 		}
