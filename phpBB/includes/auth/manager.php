@@ -1,11 +1,11 @@
 <?php
 /**
-*
-* @package auth
-* @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package auth
+ * @copyright (c) 2012 phpBB Group
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 /**
 * @ignore
@@ -16,10 +16,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* This class handles the selection of authentication provider to use.
-*
-* @package auth
-*/
+ * This class handles the selection of which authentication provider to use for
+ * login and registration.
+ *
+ * @package auth
+ */
 class phpbb_auth_manager
 {
 	protected $request;

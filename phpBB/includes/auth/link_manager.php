@@ -30,6 +30,8 @@ class phpbb_auth_link_manager {
 
 	/**
 	 * Stores the dbal for later use.
+	 *
+	 * @param dbal $db
 	 */
 	public function __construct($db)
 	{

@@ -31,10 +31,10 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	/**
 	 * Links a user to provider and an index.
 	 *
-	 * @param integer $user_id The user id of the account requested to be linked.
+	 * @param int $user_id The user id of the account requested to be linked.
 	 * @param string $provider The authentication provider.
 	 * @param string $index The index needed to discover additional information from the authentication provider.
-	 * @return boolean true on success
+	 * @throws phpbb_auth_exception Throws on invalid user id or inability to find the associated account.
 	 */
 	protected function link($user_id, $provider, $index)
 	{
@@ -46,7 +46,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		// Verify that the user exists.
 		$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
+				WHERE user_id = ' . (int)$user_id;
 		$result = $this->db->sql_query($sql);
 		if (!$result)
 		{
@@ -56,8 +56,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 		$link_manager = new phpbb_auth_link_manager($this->db);
 		$link_manager->add_link($provider, $user_id, $index);
-
-		return true;
 	}
 
 	/**
@@ -66,11 +64,11 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	 *
 	 * @global string $SID
 	 * @global string $_SID
-	 * @param integer $user_id The ID of the user attempting to log in.
+	 * @param int $user_id The ID of the user attempting to log in.
 	 * @param boolean $admin Whether the user is trying to reauthenticate for the administration panel.
 	 * @param boolean $autologin Whether the user wants to autologin.
 	 * @param boolean $viewonline Whether the user wants to appear online or offline.
-	 * @return boolean true on success
+	 * @throws phpbb_auth_exception On user not found, inactive user, or session creation error.
 	 */
 	protected function login($user_id, $admin = false, $autologin = false, $viewonline = true)
 	{
@@ -108,6 +106,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			throw new phpbb_auth_exception('ACTIVE_ERROR');
 		}
 
+		// Admin reauthentication can be allowed or disallowed on a provider-by-provider basis.
 		if ($admin)
 		{
 			// Save the old session id so the session can be deleted.
@@ -137,7 +136,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 					AND session_user_id = ' . $row['user_id'];
 				$this->db->sql_query($sql);
 			}
-			return true;
 		}
 		else
 		{
@@ -149,13 +147,14 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	 * Handles the limiting of login activity if authentication fails. This may
 	 * prompt additional requirements for authentication such as CAPTCHA.
 	 *
-	 * @param integer $user_id
+	 * @param int $user_id
 	 * @param string $username
 	 * @param string $username_clean
+	 * @throws phpbb_auth_exception Invalid user id and excess login attempts.
 	 */
 	protected function login_auth_fail($user_id, $username = 0, $username_clean = 0)
 	{
-		if(!is_int($user_id))
+		if (!is_int($user_id))
 		{
 			throw new phpbb_auth_exception('Invalid user_id');
 		}
@@ -163,7 +162,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		// Password incorrect - increase login attempts
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_login_attempts = user_login_attempts + 1
-			WHERE user_id = ' . $user_id . '
+			WHERE user_id = ' . (int)$user_id . '
 				AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
 		$this->db->sql_query($sql);
 
@@ -215,8 +214,13 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	 *
 	 * @param string $redirect_to
 	 */
-	protected function redirect($redirect_to = 'index.php')
+	protected function redirect($redirect_to = null)
 	{
+		if ($redirect_to === null)
+		{
+			GLOBAL $phpEx;
+			$redirect_to = 'index.' . $phpEx;
+		}
 		$redirect_to = reapply_sid($redirect_to);
 		redirect($redirect_to);
 	}
