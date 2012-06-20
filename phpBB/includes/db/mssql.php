@@ -94,6 +94,18 @@ class dbal_mssql extends dbal
 	/**
 	* {@inheritDoc}
 	*/
+	function sql_conditional($condition, $action_true, $action_false = false)
+	{
+		$sql_condition = 'CASE WHEN ' . $condition;
+		$sql_condition .= ' THEN CAST(' . $action_true . ' AS VARCHAR)';
+		$sql_condition .= ($action_false !== false) ? ' ELSE CAST(' . $action_false . ' AS VARCHAR)' : '';
+		$sql_condition .= ' END';
+		return $sql_condition;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function sql_concatenate($string1, $string2)
 	{
 		return $string1 . ' + ' . $string2;

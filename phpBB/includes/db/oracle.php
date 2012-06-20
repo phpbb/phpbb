@@ -90,6 +90,18 @@ class dbal_oracle extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	function sql_conditional($condition, $action_true, $action_false = false)
+	{
+		$sql_condition = 'CASE WHEN ' . $condition;
+		$sql_condition .= ' THEN CAST(' . $action_true . ' AS clob)';
+		$sql_condition .= ($action_false !== false) ? ' ELSE CAST(' . $action_false . ' AS clob)' : '';
+		$sql_condition .= ' END';
+		return $sql_condition;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
