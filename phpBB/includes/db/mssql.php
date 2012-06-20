@@ -96,6 +96,7 @@ class dbal_mssql extends dbal
 	*/
 	function sql_case($condition, $action_true, $action_false = false)
 	{
+		// To ensure, that both expressions have the same type, we cast them to varchar manually
 		$sql_case = 'CASE WHEN ' . $condition;
 		$sql_case .= ' THEN CAST(' . $action_true . ' AS VARCHAR)';
 		$sql_case .= ($action_false !== false) ? ' ELSE CAST(' . $action_false . ' AS VARCHAR)' : '';
