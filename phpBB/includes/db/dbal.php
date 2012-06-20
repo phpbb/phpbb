@@ -301,6 +301,18 @@ class dbal
 	}
 
 	/**
+	* Build a concatenated string
+	*
+	* @param	string	$string1		Base SQL statement where we append the second one
+	* @param	string	$string2		SQL statement that is appended on the first statement
+	* @return	string		Concatenated string
+	*/
+	function sql_concatenate($string1, $string2)
+	{
+		return 'CONCAT(' . $string1 . ', ' . $string2 . ')';
+	}
+
+	/**
 	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
 	*
 	* @return bool Whether buffering is required.

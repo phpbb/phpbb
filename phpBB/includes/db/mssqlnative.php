@@ -260,6 +260,14 @@ class dbal_mssqlnative extends dbal
 	/**
 	* {@inheritDoc}
 	*/
+	function sql_concatenate($string1, $string2)
+	{
+		return $string1 . ' + ' . $string2;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function sql_buffer_nested_transactions()
 	{
 		return true;

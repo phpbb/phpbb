@@ -73,6 +73,14 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	function sql_concatenate($string1, $string2)
+	{
+		return $string1 . ' || ' . $string2;
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
