@@ -1111,10 +1111,12 @@ function phpbb_tz_select_compare($a, $b)
 		if ($a_name == $b_name)
 		{
 			return 0;
-		} else if ($a_name == 'UTC')
+		}
+		else if ($a_name == 'UTC')
 		{
 			return -1;
-		} else if ($b_name == 'UTC')
+		}
+		else if ($b_name == 'UTC')
 		{
 			return 1;
 		}
