@@ -120,7 +120,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	);
 
 	$vars = array('sql_ary');
-	extract($phpbb_dispatcher->trigger_event('core.display_forums_sql_inject', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_build_query', compact($vars)));
 
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
