@@ -201,10 +201,23 @@ class phpbb_revisions_post
 		}
 		$this->db->sql_freeresult($result);
 
-		// The final revision is the current post state, so we can just put the post data into a revision object
-		// We store it as index 0 because it doesn't have a revision ID but we can always know how to access it
-		$this->revisions[0] = new phpbb_revisions_revision(0, $this->db, false);
-		$this->revisions[0]->set_data(array(
+		return $this->revisions;
+	}
+
+	/**
+	* Put the current version of the post into a revision object
+	*
+	* @return false
+	*/
+	public function get_current_revision()
+	{
+		if (empty($this->post_data))
+		{
+			return false;
+		}
+
+		$current = new phpbb_revisions_revision(0, $this->db, false);
+		$current->set_data(array(
 			'revision_subject'		=> $this->post_data['post_subject'],
 			'revision_text'			=> $this->post_data['post_text'],
 			'revision_checksum'		=> $this->post_data['post_checksum'],
@@ -230,7 +243,7 @@ class phpbb_revisions_post
 			'revision_reason'		=> $this->post_data['post_edit_reason'],
 		));
 
-		return $this->revisions;
+		return $current;
 	}
 
 	/**

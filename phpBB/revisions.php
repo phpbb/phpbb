@@ -26,56 +26,47 @@ $post_id	= $request->variable('p', 0);
 $revert		= $request->variable('revert', 0);
 $compare	= $request->variable('compare', '');
 
+$revert_confirm = $request->is_set_post('confirm');
+
 // Variables for first and last revisions for comparison
 $first = $last = null;
+$first_id = $last_id = 0;
 
+// If we are given some potential comparison information, try to grab the IDs from the URL
+if ($compare)
+{
+	$matches = array();
+	preg_match('/([0-9]+)\.{3}([0-9]+)/', $compare, $matches);
+
+	// Note that $matches[0], in the case of a match, will be X...Y, where X and Y are the given numbers
+	// We don't actually have any use for it, we just want the X and Y, so that's what we look at below
+	// If we don't see the X...Y pattern, set starting revision ID to the integer value of $compare
+	$first_id = (sizeof($matches) == 3) ? $matches[1] : (int) $compare;
+	$last_id = (sizeof($matches) == 3) ? $matches[2] : 0;
+
+	// If we don't have a post_id, use the given IDs to figure it out
+	// Note that if we don't have a first_id, we don't have a last_id
+	if ($first_id && !$post_id)
+	{
+		// We don't want to load all of the revision's data yet, as we will do that once we have the post ID
+		// Right now all we want to do is get the post ID, so we pass the third parameter as false
+		$temp_rev = new phpbb_revisions_revision($first_id, $db, false);
+		$post_id = $temp_rev->get_post_id();
+	}
+}
+
+// Regardless of the provided post ID in the URL, if we are trying to revert a revision,
+// we set the post ID to the revision's post ID
+if ($revert)
+{
+	$revert_revision = new phpbb_revisions_revision($revert, $db, false);
+	$post_id = $revert_revision->get_post_id();
+}
+
+// If we still can't manage to come up with a post ID, we have nothing else to do here
 if (!$post_id)
 {
-	// If not given a post ID, try to get it from other information
-	if ($revert)
-	{
-		$revert_revision = new phpbb_revisions_revision($revert, $db);
-
-		$post_id = $revert_revision->get_post_id();
-	}
-	else if ($compare)
-	{
-		$matches = array();
-		preg_match('/([0-9]+)\.{3}([0-9]+)/', $compare, $matches);
-		if (!empty($matches))
-		{
-			// Note that $matches[0], in the case of a match, will be X...Y, where X and Y are the given numbers
-			// We don't actually have any use for it, we just want the X and Y, so that's what we look at below
-
-			// If the first number is not 0 (current revision) we can use it to figure out the post ID
-			if (!empty($matches[1]))
-			{
-				$first = phpbb_revisions_revision($matches[1], $db);
-				$post_id = $first->get_post_id();
-			}
-
-			// If the second number is not 0 (current revision) we can use it to figure out the post ID
-			if (!empty($matches[2]))
-			{
-				$last = phpbb_revisions_revision($matches[2], $db);
-				$post_id = $post_id ?: $last->get_post_id();
-			}
-		}
-		else
-		{
-			// If we don't see the X...Y pattern in $compare, we assume a single ID was given
-			// Set the "to" revision to the current post
-			$first = phpbb_revisions_revision((int) $compare, $db);
-
-			$post_id = $first->get_post_id();
-		}
-	}
-
-	// If we still don't have a post ID, we error
-	if (!$post_id)
-	{
-		trigger_error('NO_POST');
-	}
+	trigger_error('NO_POST');
 }
 
 $post = new phpbb_revisions_post($post_id, $db, $config, $auth);
@@ -94,7 +85,51 @@ if (!$total_revisions)
 	trigger_error('NO_REVISIONS_POST');
 }
 
-$current = $revisions[0];
+if ($revert_confirm && check_form_key('revert_form', 120))
+{
+	$revert_result = $post->revert($revert);
+	if ($revert_result === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
+	{
+		// Because we've changed things up, we need to update our arrays
+		$post_data = $post->get_post_data(true);
+		$revisions = $post->get_revisions(true);
+
+		$template->assign_vars(array(
+			'S_POST_REVERTED'	=> true,
+		));
+	}
+	else
+	{
+		switch ($revert_result)
+		{
+			default:
+			case phpbb_revisions_post::REVISION_NOT_FOUND:
+				$lang = 'ERROR_REVISION_NOT_FOUND';
+			break;
+
+			case phpbb_revisions_post::REVISION_INSERT_FAIL:
+				$lang = 'ERROR_REVISION_INSERT_FAIL';
+			break;
+
+			case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
+				$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
+			break;
+
+			case phpbb_revisions_post::POST_EDIT_LOCKED:
+				$lang = 'ERROR_POST_EDIT_LOCKED';
+			break;
+		}
+
+		$u_return_post = append("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id";
+		$u_return_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id));
+
+		trigger_error($lang . '
+			<br /><a href="' . $u_return_post . '">' . $user->lang('RETURN_POST') . '</a>
+			<br /><a href="' . $u_return_revision . '">' . $user->lang('RETURN_REVISION') . '</a>');
+	}
+}
+
+$current = $post->get_current_revision();
 
 if (empty($revisions) || ($revert && empty($revisions[$revert])))
 {
@@ -102,21 +137,20 @@ if (empty($revisions) || ($revert && empty($revisions[$revert])))
 }
 
 // If we are reverting, the from revision is the current post
-// Otherwise, it's the second array element (the first is the current)
-if (empty($first))
-{
-	$first = $revert ? $current : next($revisions);
-}
+// Otherwise, it's our first revision in the array
+$first = $revert ? $current : current($revisions);
 
 // If we are reversting the, the to revision is the given revision ID
 // Otherwise, it is the final (i.e. current) revision
-if (empty($last))
-{
-	$last = $revert ? $revisions[$revert] : $current;
-}
+$last = $revert ? $revisions[$revert] : $current;
+
+// Ensure that we have the proper revision IDs
+$first_id = $first->get_id();
+$last_id = $last->get_id();
 
 // Let's get our diff driver
-// @todo either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
+// @todo #1 - either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
+// @todo #2 - make a new function for this... e.g. generate_text_diff($from, $to[, $engine = 'finediff'])
 $text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(), $last->get_text_decoded());
 $subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $last->get_subject());
 
@@ -133,8 +167,8 @@ $template->assign_vars(array(
 	'AVATAR'			=> get_user_avatar($post_data['user_avatar'], $post_data['user_avatar_type'], $post_data['user_avatar_width'], $post_data['user_avatar_height']),
 
 	'POST_DATE'			=> $user->format_date($post_data['post_time']),
-	'POST_SUBJECT'		=> $revert ? $subject_diff_renedered : $current->get_subject(),
-	'MESSAGE'			=> $revert ? $text_diff_rendered : $current->get_text(),
+	'POST_SUBJECT'		=> $revert && !$revert_confirm ? $subject_diff_renedered : $current->get_subject(),
+	'MESSAGE'			=> $revert && !$revert_confirm ? $text_diff_rendered : $current->get_text(),
 	'SIGNATURE'			=> ($post_data['enable_sig']) ? $post_data['user_sig_parsed'] : '',
 
 	'POSTER_JOINED'		=> $user->format_date($post_data['user_regdate']),
@@ -150,69 +184,27 @@ $template->assign_vars(array(
 	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
 ));
 
-if ($revert)
+$bad_form = ($revert_confirm && !check_form_key('revert_form', 120));
+if ($revert && (!$revert_confirm || $bad_form))
 {
 	add_form_key('revert_form');
 
-	$revert_confirm = $request->is_set_post('confirm');
-	if ($revert_confirm && check_form_key('revert_form', 120))
-	{
-		$revert_result = $post->revert($revert);
-		if ($revert_result === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
-		{
-			// Because we've changed things up, we need to update our arrays
-			$post_data = $post->get_post_data(true);
-			$revisions = $post->get_revisions(true);
-			$template->assign_var('S_POST_REVERTED', true);
-		}
-		else
-		{
-			switch ($revert_result)
-			{
-				default:
-				case phpbb_revisions_post::REVISION_NOT_FOUND:
-					$lang = 'ERROR_REVISION_NOT_FOUND';
-				break;
+	$template->assign_vars(array(
+		'U_ACTION'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revert)),
+		'BAD_FORM'			=> $bad_form,
+		'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
+			'post_id'	=> $post_id,
+			'revert'	=> $revert,
+		)),
+	));
 
-				case phpbb_revisions_post::REVISION_INSERT_FAIL:
-					$lang = 'ERROR_REVISION_INSERT_FAIL';
-				break;
+	page_header($user->lang('REVISIONS_REVERT_TITLE'), false);
 
-				case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
-					$lang = 'ERROR_REVISION_POST_UPDATE_FAIL';
-				break;
+	$template->set_filenames(array(
+		'body'		=> 'revisions_revert_body.html',
+	));
 
-				case phpbb_revisions_post::POST_EDIT_LOCKED:
-					$lang = 'ERROR_POST_EDIT_LOCKED';
-				break;
-			}
-
-			$u_return_post = append("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id";
-			$u_return_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id));
-
-			trigger_error($lang . '
-				<br /><a href="' . $u_return_post . '">' . $user->lang('RETURN_POST') . '</a>
-				<br /><a href="' . $u_return_revision . '">' . $user->lang('RETURN_REVISION') . '</a>');
-		}
-	}
-	else
-	{
-		$template->assign_vars(array(
-			'U_ACTION'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revert)),
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
-				'post_id'	=> $post_id,
-				'revert'	=> $revert,
-			)),
-		));
-
-		page_header($user->lang('REVISIONS_REVERT_TITLE'), false);
-
-		$template->set_filenames(array(
-			'body'		=> 'revisions_revert_body.html',
-		));
-
-		page_footer();		
-	}
+	page_footer();
 }
 
 $revision_number = 1;
@@ -227,8 +219,7 @@ foreach ($revisions as $revision)
 		'ID'				=> $revision->get_id(),
 		'NUMBER'			=> $revision_number,
 
-		'IN_RANGE'			=> true, // @todo when viewing revision ranges is implemented, this will need to be changed
-		'CURRENT_REVISION'	=> $revision->get_id() === 0,
+		'IN_RANGE'			=> $revision->get_id() >= $first_id && $revision->get_id() <= $last_id,
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
 		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
