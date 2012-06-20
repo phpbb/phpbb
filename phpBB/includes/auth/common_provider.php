@@ -270,21 +270,19 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		{
 			throw new phpbb_auth_exception('No registration data supplied.');
 		}
-		else
+
+		if (!isset($data['username'], $data['email'], $data['tz'], $data['lang']))
 		{
-			if (!isset($data['username'], $data['email'], $data['tz'], $data['lang']))
-			{
-				throw new phpbb_auth_exception('Required data missing.');
-			}
-
-			// Convert data to its proper format.
-			$data['username'] = utf8_normalize_nfc($data['username']);
-			$data['email'] = strtolower($data['email']);
-			$data['lang'] = basename($data['lang']);
-
-			// Check to see if registration data is valid.
-			$this->check_registration_data($data);
+			throw new phpbb_auth_exception('Required data missing.');
 		}
+
+		// Convert data to its proper format.
+		$data['username'] = utf8_normalize_nfc($data['username']);
+		$data['email'] = strtolower($data['email']);
+		$data['lang'] = basename($data['lang']);
+
+		// Check to see if registration data is valid.
+		$this->check_registration_data($data);
 
 		// Which group by default?
 		$group_name = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
