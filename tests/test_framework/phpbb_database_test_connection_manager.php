@@ -243,7 +243,7 @@ class phpbb_database_test_connection_manager
 		$filename = $directory . $schema . '_schema.sql';
 
 		$queries = file_get_contents($filename);
-		$sql = remove_comments($queries);
+		$sql = phpbb_remove_comments($queries);
 		
 		$sql = split_sql_file($sql, $this->dbms['DELIM']);
 
