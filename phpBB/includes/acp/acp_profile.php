@@ -878,7 +878,7 @@ class acp_profile
 						}
 
 						$vars = array('field_row', 'visibility_ary', 'exclude');
-						extract($phpbb_dispatcher->trigger_event('core.acp_profile_edit', compact($vars)));
+						extract($phpbb_dispatcher->trigger_event('core.acp_profile_field_edit', compact($vars)));
 
 					break;
 				}
