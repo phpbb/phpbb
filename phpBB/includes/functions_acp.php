@@ -35,7 +35,7 @@ function adm_page_header($page_title)
 	$adm_page_header_override = false;
 
 	$vars = array('page_title', 'adm_page_header_override');
-	extract($phpbb_dispatcher->trigger_event('core.adm_page_header_override', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_header', compact($vars)));
 	if ($adm_page_header_override)
 	{
 		return;
@@ -114,7 +114,7 @@ function adm_page_footer($copyright_html = true)
 	$adm_page_footer_override = false;
 
 	$vars = array('copyright_html', 'adm_page_footer_override');
-	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer_override', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer', compact($vars)));
 
 	if ($adm_page_footer_override)
 	{
