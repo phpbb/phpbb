@@ -25,7 +25,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $request;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -107,9 +107,6 @@ class acp_forums
 						'forum_id'		=>	$forum_id
 					);
 
-					$vars = array('forum_data');
-					extract($phpbb_dispatcher->trigger_event('core.acp_forums_add_forum_data', compact($vars)));
-
 				// No break here
 
 				case 'add':
@@ -152,6 +149,9 @@ class acp_forums
 						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
+
+					$vars = array('action', 'forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_modify_forum_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
