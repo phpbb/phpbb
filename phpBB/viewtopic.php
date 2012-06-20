@@ -1582,13 +1582,15 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 	);
 
+	$user_poster_data = $user_cache[$poster_id];
+
+	$vars = array('row', 'cp_row', 'user_poster_data', 'postrow');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars)));
+
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
 		$postrow = array_merge($postrow, $cp_row['row']);
 	}
-
-	$vars = array('postrow');
-	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars)));
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
