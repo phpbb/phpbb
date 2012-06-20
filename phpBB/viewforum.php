@@ -690,7 +690,7 @@ if (sizeof($topic_list))
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
 
 		// Send vars to template
-		$topicrow = array(
+		$topic_row = array(
 			'FORUM_ID'					=> $row['forum_id'],
 			'TOPIC_ID'					=> $topic_id,
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -745,10 +745,10 @@ if (sizeof($topic_list))
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
 		);
 
-		$vars = array('row', 'topicrow');
+		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_topicrow', compact($vars)));
 
-		$template->assign_block_vars('topicrow', $topicrow);
+		$template->assign_block_vars('topicrow', $topic_row);
 
 		phpbb_generate_template_pagination($template, $view_topic_url, 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 
