@@ -485,7 +485,7 @@ class acp_board
 				}
 			}
 		}
-		
+
 		// Store news and exclude ids
 		if ($mode == 'feed' && $submit)
 		{
