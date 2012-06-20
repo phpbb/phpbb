@@ -1276,8 +1276,8 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 		{
 			// This allows extensions to change the default return when no avatar is given
 			// Useful for default avatars
-			$vars = array('default_avatar');
-			extract($phpbb_dispatcher->trigger_event('core.user_default_avatar', compact($vars)));
+			$vars = array('avatar', 'avatar_type', 'ignore_config', 'default_avatar');
+			extract($phpbb_dispatcher->trigger_event('core.get_user_avatar_default', compact($vars)));
 		}
 		return $default_avatar;
 	}
