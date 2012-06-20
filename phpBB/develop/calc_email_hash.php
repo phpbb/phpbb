@@ -68,5 +68,3 @@ do
 while ($start);
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

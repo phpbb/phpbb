@@ -409,5 +409,3 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 	unset($sql_ary);
 
 }
-
-?>

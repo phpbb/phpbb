@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -98,7 +97,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'DRIVER'		=> 'mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
-		),			
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -527,7 +526,7 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	$load_extensions = implode(',', $load_extensions);
 
 	$config_data = "<?php\n";
-	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
 	$config_data_array = array(
 		'dbms'			=> $dbms,
@@ -561,5 +560,3 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 
 	return $config_data;
 }
-
-?>

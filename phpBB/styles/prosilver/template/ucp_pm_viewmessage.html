@@ -2,7 +2,7 @@
 
 <!-- INCLUDE ucp_pm_message_header.html -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 
@@ -15,7 +15,7 @@
 
 
 <div id="post-{MESSAGE_ID}" class="post pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
-<div class="inner"><span class="corners-top"><span></span></span>
+<div class="inner">
 
 	<div class="postbody">
 
@@ -72,7 +72,12 @@
 		<dd><strong>{L_POSTS}:</strong> {AUTHOR_POSTS}</dd>
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}:</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}:</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
-		
+
+		<!-- BEGIN custom_fields -->
+			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}:</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+		<!-- END custom_fields -->
+
+
 		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->
 		<dd>
 			<ul class="profile-icons">
@@ -91,7 +96,7 @@
 
 	<div class="back2top"><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF S_VIEW_MESSAGE -->

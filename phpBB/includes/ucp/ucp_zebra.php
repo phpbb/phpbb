@@ -2,9 +2,8 @@
 /**
 *
 * @package ucp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -26,7 +25,7 @@ class ucp_zebra
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request;
 
 		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
@@ -199,8 +198,24 @@ class ucp_zebra
 							}
 						}
 					}
-
-					if ($updated)
+					
+					if ($request->is_ajax())
+					{
+						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
+						
+						$json_response = new phpbb_json_response;
+						$json_response->send(array(
+							'success' => $updated,
+							
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $message,
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3,
+								'url'		=> $this->u_action
+							)
+						));
+					}
+					else if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -253,5 +268,3 @@ class ucp_zebra
 		$this->page_title = 'UCP_ZEBRA_' . $l_mode;
 	}
 }
-
-?>

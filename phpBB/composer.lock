@@ -1,0 +1,10 @@
+{
+    "hash": "9bada3748ec2933fe0864dcfafbcd671",
+    "packages": [
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "v2.0.10"
+        }
+    ],
+    "aliases": []
+}

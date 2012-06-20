@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1427,7 +1426,7 @@ function validate_username($username, $allowed_username = false)
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+	if (phpbb_pcre_utf8_support())
 	{
 		$pcre = true;
 	}
@@ -1564,7 +1563,7 @@ function validate_password($password)
 	$pcre = $mbstring = false;
 
 	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+	if (phpbb_pcre_utf8_support())
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
@@ -1709,15 +1708,15 @@ function validate_jabber($jid)
 		return false;
 	}
 
-	$seperator_pos = strpos($jid, '@');
+	$separator_pos = strpos($jid, '@');
 
-	if ($seperator_pos === false)
+	if ($separator_pos === false)
 	{
 		return 'WRONG_DATA';
 	}
 
-	$username = substr($jid, 0, $seperator_pos);
-	$realm = substr($jid, $seperator_pos + 1);
+	$username = substr($jid, 0, $separator_pos);
+	$realm = substr($jid, $separator_pos + 1);
 
 	if (strlen($username) == 0 || strlen($realm) < 3)
 	{
@@ -2010,7 +2009,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2019,7 +2018,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			$error[] = phpbb_avatar_error_wrong_size($width, $height);
 			return false;
 		}
 	}
@@ -2359,7 +2358,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+				$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 			}
 		}
 
@@ -2369,7 +2368,7 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 			{
 				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
 				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+					$error[] = phpbb_avatar_error_wrong_size($data['width'], $data['height']);
 				}
 			}
 		}
@@ -2415,6 +2414,41 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 	return (sizeof($error)) ? false : true;
 }
 
+/**
+* Returns a language string with the avatar size of the new avatar and the allowed maximum and minimum
+*
+* @param $width		int		The width of the new uploaded/selected avatar
+* @param $height	int		The height of the new uploaded/selected avatar
+* @return string
+*/
+function phpbb_avatar_error_wrong_size($width, $height)
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_WRONG_SIZE',
+		$user->lang('PIXELS', (int) $config['avatar_min_width']),
+		$user->lang('PIXELS', (int) $config['avatar_min_height']),
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		$user->lang('PIXELS', (int) $width),
+		$user->lang('PIXELS', (int) $height));
+}
+
+/**
+* Returns an explanation string with maximum avatar settings
+*
+* @return string
+*/
+function phpbb_avatar_explanation_string()
+{
+	global $config, $user;
+
+	return $user->lang('AVATAR_EXPLAIN',
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		round($config['avatar_filesize'] / 1024));
+}
+
 //
 // Usergroup functions
 //
@@ -2451,6 +2485,69 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
+		$current_legend = phpbb_group_positions::GROUP_DISABLED;
+		$current_teampage = phpbb_group_positions::GROUP_DISABLED;
+
+		$legend = new phpbb_group_positions($db, 'legend');
+		$teampage = new phpbb_group_positions($db, 'teampage');
+		if ($group_id)
+		{
+			$current_legend = $legend->get_group_value($group_id);
+			$current_teampage = $teampage->get_group_value($group_id);
+		}
+
+		if (!empty($group_attributes['group_legend']))
+		{
+			if (($group_id && ($current_legend == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not in the legend or new group, add at the end.
+				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
+			}
+			else
+			{
+				// Group stayes in the legend
+				$group_attributes['group_legend'] = $current_legend;
+			}
+		}
+		else if ($group_id && ($current_legend > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the legend
+			$legend->delete_group($group_id, true);
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_legend'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		if (!empty($group_attributes['group_teampage']))
+		{
+			if (($group_id && ($current_teampage == phpbb_group_positions::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not on the teampage or new group, add at the end.
+				$group_attributes['group_teampage'] = 1 + $teampage->get_group_count();
+			}
+			else
+			{
+				// Group stayes on the teampage
+				$group_attributes['group_teampage'] = $current_teampage;
+			}
+		}
+		else if ($group_id && ($current_teampage > phpbb_group_positions::GROUP_DISABLED))
+		{
+			// Group is removed from the teampage
+			$teampage->delete_group($group_id, true);
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_teampage'] = phpbb_group_positions::GROUP_DISABLED;
+		}
+
+		// Unset the objects, we don't need them anymore.
+		unset($legend);
+		unset($teampage);
+
 		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
@@ -2674,6 +2771,14 @@ function group_delete($group_id, $group_name = false)
 		$db->sql_freeresult($result);
 	}
 	while ($start);
+
+	// Delete group from legend and teampage
+	$legend = new phpbb_group_positions($db, 'legend');
+	$legend->delete_group($group_id);
+	unset($legend);
+	$teampage = new phpbb_group_positions($db, 'teampage');
+	$teampage->delete_group($group_id);
+	unset($teampage);
 
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
@@ -3590,5 +3695,3 @@ function phpbb_get_banned_user_ids($user_ids = array())
 
 	return $banned_ids_list;
 }
-
-?>

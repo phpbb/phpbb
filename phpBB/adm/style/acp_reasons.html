@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_REASON -->
 
@@ -99,7 +99,7 @@
 					<!-- ENDIF -->
 					<a href="{reasons.U_EDIT}">{ICON_EDIT}</a> 
 					<!-- IF reasons.U_DELETE -->
-						<a href="{reasons.U_DELETE}">{ICON_DELETE}</a>
+						<a href="{reasons.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 					<!-- ELSE -->
 						{ICON_DELETE_DISABLED}
 					<!-- ENDIF -->

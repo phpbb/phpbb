@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
@@ -273,6 +272,18 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+						
+						if ($request->is_ajax())
+						{
+							$json_response = new phpbb_json_response;
+							$json_response->send(array(
+								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+								'MESSAGE_TEXT'	=> $user->lang['BBCODE_DELETED'],
+								'REFRESH_DATA'	=> array(
+									'time'	=> 3
+								)
+							));
+						}
 					}
 					else
 					{
@@ -317,16 +328,7 @@ class acp_bbcodes
 		$bbcode_tpl = trim($bbcode_tpl);
 		$utf8 = strpos($bbcode_match, 'INTTEXT') !== false;
 
-		// make sure we have utf8 support
-		$utf8_pcre_properties = false;
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
-		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$utf8_pcre_properties = true;
-			}
-		}
+		$utf8_pcre_properties = phpbb_pcre_utf8_support();
 
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
@@ -472,5 +474,3 @@ class acp_bbcodes
 		);
 	}
 }
-
-?>
