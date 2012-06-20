@@ -22,7 +22,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
