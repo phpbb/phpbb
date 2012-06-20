@@ -151,7 +151,7 @@ class acp_forums
 					);
 
 					$vars = array('action', 'forum_data');
-					extract($phpbb_dispatcher->trigger_event('core.acp_forums_get_forum_data', compact($vars)));
+					extract($phpbb_dispatcher->trigger_event('core.acp_forums_request_forum_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
