@@ -4757,7 +4757,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$page_header_override = false;
 
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
-	extract($phpbb_dispatcher->trigger_event('core.page_header_override', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
 
 	if ($page_header_override)
 	{
@@ -5044,9 +5044,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
 
-	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
-	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
-
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
 
@@ -5076,7 +5073,7 @@ function page_footer($run_cron = true)
 	$page_footer_override = false;
 
 	$vars = array('run_cron', 'page_footer_override');
-	extract($phpbb_dispatcher->trigger_event('core.page_footer_override', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
 
 	if ($page_footer_override)
 	{
