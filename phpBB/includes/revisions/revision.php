@@ -271,6 +271,16 @@ class phpbb_revisions_revision
 	*/
 	public function get_post_id()
 	{
+		if (!$this->post_id && $this->revision_id)
+		{
+			$sql = 'SELECT post_id
+				FROM ' . POST_REVISIONS_TABLE . '
+				WHERE revision_id = ' . (int) $this->revision_id;
+			$result = $this->db->sql_query($sql);
+			$this->post_id = (int) $this->db->sql_fetchfield('post_id');
+			$this->db->sql_freeresult($result);
+		}
+
 		return (int) $this->post_id;
 	}
 
