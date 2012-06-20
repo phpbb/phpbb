@@ -1506,7 +1506,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	)));
 
 	//
-	$postrow = array(
+	$post_row = array(
 		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'POST_AUTHOR_COLOUR'	=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_colour'] : get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'POST_AUTHOR'			=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_username'] : get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1584,16 +1584,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	$user_poster_data = $user_cache[$poster_id];
 
-	$vars = array('row', 'cp_row', 'user_poster_data', 'postrow');
+	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_postrow', compact($vars)));
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
-		$postrow = array_merge($postrow, $cp_row['row']);
+		$post_row = array_merge($post_row, $cp_row['row']);
 	}
 
 	// Dump vars into template
-	$template->assign_block_vars('postrow', $postrow);
+	$template->assign_block_vars('postrow', $post_row);
 
 	if (!empty($cp_row['blockrow']))
 	{
