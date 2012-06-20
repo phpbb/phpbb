@@ -745,7 +745,7 @@ if (sizeof($topic_list))
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
 		);
 
-		$vars = array('topicrow');
+		$vars = array('row', 'topicrow');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_topicrow', compact($vars)));
 
 		$template->assign_block_vars('topicrow', $topicrow);
