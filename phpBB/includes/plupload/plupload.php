@@ -28,12 +28,12 @@ class phpbb_plupload
 	private $config;
 
 	/**
-	 * @var object
+	 * @var object phpbb_request
 	 */
 	private $request;
 
 	/**
-	 * @var object
+	 * @var object phpbb_user
 	 */
 	private $user;
 
