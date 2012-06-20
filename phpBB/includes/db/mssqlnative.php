@@ -272,9 +272,9 @@ class dbal_mssqlnative extends dbal
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_concatenate($string1, $string2)
+	function sql_concatenate($expr1, $expr2)
 	{
-		return $string1 . ' + ' . $string2;
+		return $expr1 . ' + ' . $expr2;
 	}
 
 	/**

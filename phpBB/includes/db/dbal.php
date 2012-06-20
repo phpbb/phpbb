@@ -301,15 +301,15 @@ class dbal
 	}
 
 	/**
-	* Build a concatenated string
+	* Build a concatenated expression
 	*
-	* @param	string	$string1		Base SQL statement where we append the second one
-	* @param	string	$string2		SQL statement that is appended on the first statement
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
 	* @return	string		Concatenated string
 	*/
-	function sql_concatenate($string1, $string2)
+	function sql_concatenate($expr1, $expr2)
 	{
-		return 'CONCAT(' . $string1 . ', ' . $string2 . ')';
+		return 'CONCAT(' . $expr1 . ', ' . $expr2 . ')';
 	}
 
 	/**
