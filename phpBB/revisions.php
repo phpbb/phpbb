@@ -85,8 +85,13 @@ if (!$total_revisions)
 	trigger_error('NO_REVISIONS_POST');
 }
 
-if ($revert_confirm && check_form_key('revert_form', 120))
+if ($revert && $revert_confirm && check_form_key('revert_form', 120))
 {
+	if (empty($revisions[$revert]))
+	{
+		trigger_error('ERROR_REVISION_NOT_FOUND');
+	}
+
 	$revert_result = $post->revert($revert);
 	if ($revert_result === phpbb_revisions_post::REVISION_REVERT_SUCCESS)
 	{
@@ -131,11 +136,6 @@ if ($revert_confirm && check_form_key('revert_form', 120))
 
 $current = $post->get_current_revision();
 
-if (empty($revisions) || ($revert && empty($revisions[$revert])))
-{
-	trigger_error('ERROR_REVISION_NOT_FOUND');
-}
-
 // If we are reverting, the from revision is the current post
 // Otherwise, it's our first revision in the array
 $first = $revert ? $current : current($revisions);
@@ -156,6 +156,43 @@ $subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), 
 
 $text_diff_rendered = bbcode_nl2br($text_diff->render());
 $subject_diff_renedered = bbcode_nl2br($subject_diff->render());
+
+$reverse = $first_id > $last_id || !$last->is_current();
+
+if ($reverse)
+{
+	$revisions = array_reverse($revisions, true);
+}
+
+$revision_number = 1;
+$revision_users = array();
+foreach ($revisions as $revision)
+{
+	$template->assign_block_vars('revision', array(
+		'USERNAME'			=> $revision->get_username(),
+		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
+		'DATE'				=> $user->format_date($revision->get_time()),
+		'REASON'			=> $revision->get_reason(),
+		'ID'				=> $revision->get_id(),
+		'NUMBER'			=> $revision_number,
+
+		'IN_RANGE'			=> true, //@todo: work out this logic >> ($last_id == $current->get_id() || $revision->get_id() <= $last_id) && $revision->get_id() >= $first_id,
+
+		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
+		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
+		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())),
+	));
+
+	$revision_users[$revision->get_user_id()] = true;
+	$revision_number++;
+}
+
+$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . '
+	' . $user->lang('BY') . '
+	' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
+$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_diff->additions_count() + $subject_diff->additions_count()) . '
+	' . $user->lang('AND') . '
+	' . $user->lang('REVISION_DELETIONS', $text_diff->deletions_count() + $subject_diff->deletions_count());
 
 $template->assign_vars(array(
 	'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -182,7 +219,15 @@ $template->assign_vars(array(
 	'POSTER_ID'			=> $post_data['poster_id'],
 
 	'L_LAST_REVISION_TIME'	=> $user->lang('LAST_REVISION_TIME', $user->format_date($current->get_time())),
+
+	'TEXT_DIFF'				=> $text_diff_rendered,
+	'SUBJECT_DIFF'			=> $subject_diff_renedered,
+	'L_COMPARE_SUMMARY'		=> $l_compare_summary,
+	'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));
+
+$page_title = 'REVISIONS_COMPARE_TITLE';
+$tpl_name = 'revisions_body.html';
 
 $bad_form = ($revert_confirm && !check_form_key('revert_form', 120));
 if ($revert && (!$revert_confirm || $bad_form))
@@ -198,58 +243,14 @@ if ($revert && (!$revert_confirm || $bad_form))
 		)),
 	));
 
-	page_header($user->lang('REVISIONS_REVERT_TITLE'), false);
-
-	$template->set_filenames(array(
-		'body'		=> 'revisions_revert_body.html',
-	));
-
-	page_footer();
+	$page_title = 'REVISIONS_REVERT_TITLE';
+	$tpl_name = 'revisions_revert_body.html';
 }
 
-$revision_number = 1;
-$revision_users = array();
-foreach ($revisions as $revision)
-{
-	$template->assign_block_vars('revision', array(
-		'USERNAME'			=> $revision->get_username(),
-		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
-		'DATE'				=> $user->format_date($revision->get_time()),
-		'REASON'			=> $revision->get_reason(),
-		'ID'				=> $revision->get_id(),
-		'NUMBER'			=> $revision_number,
-
-		'IN_RANGE'			=> $revision->get_id() >= $first_id && $revision->get_id() <= $last_id,
-
-		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
-		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
-		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())),
-	));
-
-	$revision_users[$revision->get_user_id()] = true;
-	$revision_number++;
-}
-
-$l_compare_summary = $user->lang('REVISION_COUNT', $total_revisions) . '
-	' . $user->lang('BY') . '
-	' . $user->lang('REVISION_USER_COUNT', sizeof($revision_users));
-$l_lines_added_removed = $user->lang('REVISION_ADDITIONS', $text_diff->additions_count() + $subject_diff->additions_count()) . '
-	' . $user->lang('AND') . '
-	' . $user->lang('REVISION_DELETIONS', $text_diff->deletions_count() + $subject_diff->deletions_count());
-
-$template->assign_vars(array(
-	// Comparison template variables
-	'DISPLAY_COMPARISON'	=> true,
-	'TEXT_DIFF'				=> $text_diff_rendered,
-	'SUBJECT_DIFF'			=> $subject_diff_renedered,
-	'L_COMPARE_SUMMARY'		=> $l_compare_summary,
-	'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
-));
-
-page_header($user->lang('REVISIONS_COMPARE_TITLE'), false);
+page_header($page_title, false);
 
 $template->set_filenames(array(
-	'body'		=> 'revisions_body.html',
+	'body'		=> $tpl_name,
 ));
 
 page_footer();

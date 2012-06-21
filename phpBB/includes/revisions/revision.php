@@ -136,6 +136,12 @@ class phpbb_revisions_revision
 	private $avatar;
 
 	/**
+	* Whether or not the revision contains the current version of the post
+	* @var bool
+	*/
+	private $is_current = false;
+
+	/**
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
@@ -238,6 +244,8 @@ class phpbb_revisions_revision
 
 		$this->poster_id = $row['poster_id'];
 		$this->forum_id = $row['forum_id'];
+
+		$this->is_current = !empty($row['is_current']);
 	}
 
 	/**
@@ -413,5 +421,15 @@ class phpbb_revisions_revision
 	public function set_id($revision_id)
 	{
 		$this->revision_id = (int) $revision_id;
+	}
+
+	/**
+	* Returns whether or not this revision contains the current version of the post
+	*
+	* @return bool
+	*/
+	public function is_current()
+	{
+		return (bool) $this->is_current;
 	}
 }
