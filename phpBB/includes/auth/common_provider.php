@@ -284,11 +284,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		// Check to see if registration data is valid.
 		$this->register_check_data($data);
 
-		if (!sizeof($cp_error))
-		{
-			throw new phpbb_auth_exception($cp_error);
-		}
-
 		// Which group by default?
 		$group_name = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 
