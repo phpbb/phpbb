@@ -43,22 +43,26 @@ $lang = array_merge($lang, array(
 	'ERROR_POST_EDIT_LOCKED'			=> 'This post is locked from editing; only an authorized user can revert it to another revision.',
 
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
+	'LOGIN_REVISION'			=> 'You must login in order to view the revisions for this post.',
 
-	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view these revisions.',
+	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view the revisions for this post.',
+	'NO_AUTH_REVERT'			=> 'You do not have permission to revert this post to another revision.',
 	'NO_DIFF'					=> 'There are no differences to display within the specified revision range.',
 	'NO_POST'					=> 'The specified post does not exist.',
 	'NO_REVISIONS'				=> 'The specified revision does not exist.',
 	'NO_REVISIONS_POST'			=> 'There are no revisions associated with the specified post ID.',
 	'NO_REASON'					=> 'No reason given.',
 
-	'POST_REVERTED_SUCCESS'			=> 'The post has been reverted to the selected revision.',
+	'POST_REVERTED_SUCCESS'		=> 'The post has been reverted to the selected revision.',
 
 	'RETURN_POST'				=> 'Return to the topic.',
 	'RETURN_REVISION'			=> 'Return to the post revisions page.',
+	'REVERT'					=> 'Revert',
 	'REVERT_POST_TITLE'			=> 'Revert post to another revision',
 	'REVERT_POST_TITLE_CONFIRM'	=> '<strong>Are you sure you wish to revert this post to the selected revision?</strong><br />A new revision containing the current post will be created so that you can undo this change later if desired.',
-	'REVISION'							=> 'Revision',
-	'REVISIONS'							=> 'Revisions',
+	'REVERT_TO_THIS'			=> 'Revert the post to this revision',
+	'REVISION'					=> 'Revision',
+	'REVISIONS'					=> 'Revisions',
 	'REVISION_ADDITIONS'		=> array(
 		1 =>'1 addition',
 		2 => '%1$s additions',
