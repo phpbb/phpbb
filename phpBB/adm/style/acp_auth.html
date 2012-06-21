@@ -14,13 +14,18 @@
 <!-- ENDIF -->
 
 <form id="acp_auth" method="post" action="{U_ACTION}">
+	<!-- BEGIN providers_loop -->
+		{providers_loop.PROVIDER}<br/>
+		<fieldset>
+			{providers_loop.ENABLED_DISABLED}<br/>
+		</fieldset>
+	<!-- END provider -->
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</p>
 	{S_FORM_TOKEN}
-</fieldset>
 </form>
 
 <!-- INCLUDE overall_footer.html -->

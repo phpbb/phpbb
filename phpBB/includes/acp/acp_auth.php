@@ -52,6 +52,35 @@ class acp_auth {
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
+		// Temporary array until provider list is generated dynamically
+		$providers_loop = array(
+			'facebook_connect'	=> array(
+				'ENABLED' => false,
+			),
+			'olympus'			=> array(
+				'ENABLED' => true,
+			),
+			'openid'			=> array(
+				'ENABLED' => true,
+			),
+		);
+
+		foreach($providers_loop as $provider => $index) {
+			if ($index['ENABLED'] == true)
+			{
+				$enabled_disabled = '<input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="ENABLED" checked> {L_ENABLED} <input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="DISABLED"> {L_DISABLED}';
+			}
+			else
+			{
+				$enabled_disabled = '<input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="ENABLED"> {L_ENABLED} <input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="DISABLED" checked> {L_DISABLED}';
+			}
+
+			$template->assign_block_vars('providers_loop', array(
+				'PROVIDER'			=> $provider,
+				'ENABLED_DISABLED'	=> $enabled_disabled,
+			));
+		}
+
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$display_vars['title']],
 			'L_TITLE_EXPLAIN'	=> $user->lang[$display_vars['title'] . '_EXPLAIN'],
@@ -59,7 +88,7 @@ class acp_auth {
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
 
-			'U_ACTION'			=> $this->u_action)
-		);
+			'U_ACTION'			=> $this->u_action,
+		));
 	}
 }
