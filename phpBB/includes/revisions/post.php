@@ -241,6 +241,7 @@ class phpbb_revisions_post
 			'enable_smilies'		=> $this->post_data['enable_smilies'],
 			'enable_magic_url'		=> $this->post_data['enable_magic_url'],
 			'revision_reason'		=> $this->post_data['post_edit_reason'],
+			'is_current'			=> true,
 		));
 
 		return $current;

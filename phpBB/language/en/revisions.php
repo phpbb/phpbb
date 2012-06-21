@@ -81,5 +81,7 @@ $lang = array_merge($lang, array(
 		2		=> '%1$s users',
 	),
 
+	'SUBMIT_FORM_AGAIN'			=> 'This form has timed out. Please try again by resubmitting the form.',
+
 	'WITH'						=> 'with',
 ));
