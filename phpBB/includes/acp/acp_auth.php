@@ -68,19 +68,28 @@ class acp_auth {
 		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
 		$providers = $auth_manager->get_registered_providers(); // TODO: Make options non-static
 
-		foreach($providers as $provider) {
+		foreach($providers as $provider)
+		{
 			$provider_configuration = $provider->get_configuration();
+
+			$provider_name = explode('_', $provider_configuration['NAME']);
+			foreach($provider_name as &$name_part)
+			{
+				$name_part = ucfirst($name_part);
+			}
+			$provider_name = implode(' ', $provider_name);
+
 			if ($provider_configuration['ENABLED'] == true)
 			{
-				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED" checked> {L_ENABLED} <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED"> {L_DISABLED}';
+				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED" checked> '. $user->lang['ENABLED'] .' <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED"> '. $user->lang['DISABLED'];
 			}
 			else
 			{
-				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED"> {L_ENABLED} <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED" checked> {L_DISABLED}';
+				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED"> '. $user->lang['ENABLED'] .' <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED" checked> '. $user->lang['DISABLED'];
 			}
 
 			$template->assign_block_vars('providers_loop', array(
-				'PROVIDER'			=> $provider_configuration['NAME'],
+				'PROVIDER'			=> $provider_name,
 				'ENABLED_DISABLED'	=> $enabled_disabled,
 			));
 		}
