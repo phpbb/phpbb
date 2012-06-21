@@ -282,7 +282,12 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		$data['lang'] = basename($data['lang']);
 
 		// Check to see if registration data is valid.
-		$this->check_registration_data($data);
+		$this->register_check_data($data);
+
+		if (!sizeof($cp_error))
+		{
+			throw new phpbb_auth_exception($cp_error);
+		}
 
 		// Which group by default?
 		$group_name = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
@@ -341,7 +346,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		}
 
 		// Register user.
-		$user_id = user_add($user_row, $cp_data);
+		$user_id = user_add($user_row, false);
 
 		// This should not happen, because the required variables are listed above.
 		if ($user_id === false)
