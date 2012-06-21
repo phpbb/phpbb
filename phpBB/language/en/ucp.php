@@ -404,6 +404,7 @@ $lang = array_merge($lang, array(
 	'RULE_ADDED'						=> 'Rule successfully added.',
 	'RULE_ALREADY_DEFINED'				=> 'This rule was defined previously.',
 	'RULE_DELETED'						=> 'Rule successfully removed.',
+	'RULE_LIMIT_REACHED'				=> 'You cannot add more PM rules. You have reached the maximum number of rules.',
 	'RULE_NOT_DEFINED'					=> 'Rule not correctly specified.',
 	'RULE_REMOVED_MESSAGES'				=> array(
 		1	=> '%d private message was removed due to private message filters.',
