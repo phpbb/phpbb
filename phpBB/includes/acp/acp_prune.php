@@ -184,7 +184,7 @@ class acp_prune
 			$template->assign_vars(array(
 				'U_ACTION'			=> $this->u_action,
 				'S_SELECT_FORUM'	=> true,
-				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false))
+				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, true))
 			);
 		}
 		else
