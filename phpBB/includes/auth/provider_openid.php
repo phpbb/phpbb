@@ -63,9 +63,9 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	{
 		return array(
 			'NAME'		=> 'openid',
-			'ENABLED'	=> true,
 			'OPTIONS'	=> array(
-				'ADMIN'		=> false,
+				'enabled'	=> array('setting' => true, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => false, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}

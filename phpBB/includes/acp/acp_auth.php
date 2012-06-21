@@ -79,19 +79,44 @@ class acp_auth {
 			}
 			$provider_name = implode(' ', $provider_name);
 
-			if ($provider_configuration['ENABLED'] == true)
-			{
-				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED" checked> '. $user->lang['ENABLED'] .' <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED"> '. $user->lang['DISABLED'];
-			}
-			else
-			{
-				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED"> '. $user->lang['ENABLED'] .' <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED" checked> '. $user->lang['DISABLED'];
-			}
-
 			$template->assign_block_vars('providers_loop', array(
-				'PROVIDER'			=> $provider_name,
-				'ENABLED_DISABLED'	=> $enabled_disabled,
+				'PROVIDER'	=> $provider_name,
 			));
+
+			foreach ($provider_configuration['OPTIONS'] as $config_key => $vars)
+			{
+				$config_key = $provider_configuration['NAME'] . '_' . $config_key;
+
+				$type = explode(':', $vars['type']);
+
+				$l_explain = '';
+				if ($vars['explain'] && isset($vars['lang_explain']))
+				{
+					$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+				}
+				else if ($vars['explain'])
+				{
+					$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+				}
+
+				$this->new_config->set($config_key, $vars['setting'], false);
+
+				$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+
+				if (empty($content))
+				{
+					continue;
+				}
+
+				$template->assign_block_vars('options', array(
+					'KEY'			=> $config_key,
+					'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+					'S_EXPLAIN'		=> $vars['explain'],
+					'TITLE_EXPLAIN'	=> $l_explain,
+					'CONTENT'		=> $content,
+					)
+				);
+			}
 		}
 
 		$template->assign_vars(array(

@@ -45,9 +45,9 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	{
 		return array(
 			'NAME'		=> 'olympus',
-			'ENABLED'	=> true,
 			'OPTIONS'	=> array(
-				'ADMIN'		=> true,
+				'enabled'	=> array('setting' => false, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => true, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}

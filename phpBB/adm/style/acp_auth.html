@@ -18,8 +18,14 @@
 		<fieldset>
 			<legend>{providers_loop.PROVIDER}</legend>
 			{providers_loop.ENABLED_DISABLED}<br/>
+			<!-- BEGIN options -->
+				<dl>
+					<dt><label for="{options.KEY}">{providers_loop.options.TITLE}:</label><!-- IF providers_loop.options.S_EXPLAIN --><br /><span>{providers_loop.options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+					<dd>{providers_loop.options.CONTENT}</dd>
+				</dl>
+			<!-- END options -->
 		</fieldset>
-	<!-- END provider -->
+	<!-- END providers_loop -->
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;

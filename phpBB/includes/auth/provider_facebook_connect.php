@@ -47,7 +47,8 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 			'NAME'		=> 'facebook_connect',
 			'ENABLED'	=> false,
 			'OPTIONS'	=> array(
-				'ADMIN'		=> false,
+				'enabled'	=> array('setting' => true, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => false, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}
