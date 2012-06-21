@@ -485,6 +485,8 @@ function user_delete($mode, $user_id, $post_username = false)
 			// Delete posts, attachments, etc.
 			delete_posts('poster_id', $user_id);
 
+			// Delete votes from this user on open polls
+			phpbb_delete_user_poll_votes($user_id);
 		break;
 	}
 
