@@ -58,8 +58,10 @@ $lang = array_merge($lang, array(
 	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users e-mail address.',
 
 	'DELETE_POSTS'			=> 'Delete posts',
+	'DELETE_POSTS_AND_VOTES'=> 'Delete posts and votes of open polls',
 	'DELETE_USER'			=> 'Delete user',
 	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered.',
+	'DELETE_VOTES'			=> 'Delete votes of open polls',
 
 	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
 	'FOUNDER'						=> 'Founder',
@@ -86,6 +88,8 @@ $lang = array_merge($lang, array(
 	'REGISTERED'			=> 'Registered',
 	'REGISTERED_IP'			=> 'Registered from IP',
 	'RETAIN_POSTS'			=> 'Retain posts',
+	'RETAIN_POSTS_AND_VOTES'=> 'Retain posts and votes',
+	'RETAIN_VOTES'			=> 'Retain votes',
 
 	'SELECT_FORM'			=> 'Select form',
 	'SELECT_USER'			=> 'Select user',
