@@ -85,9 +85,35 @@ if (!$total_revisions)
 	trigger_error('NO_REVISIONS_POST');
 }
 
+$can_revert_wiki = $post_data['post_wiki']
+	&& $auth->acl_getf('f_wiki_edit', $post_data['forum_id'])
+	&& !$post_data['post_edit_locked'];
+$can_revert_own = $user->data['user_id'] == $post_data['poster_id']
+	&& $auth->acl_getf('f_revisions', $post_data['forum_id'])
+	&& !$post_data['post_edit_locked'];
+$can_revert = $auth->acl_get('m_revisions') || $can_revert_wiki || $can_revert_own;
+
+$can_view_wiki_revisions = $post_data['post_wiki'] && $auth->acl_getf('f_wiki_edit', $post_data['forum_id']);
+$can_view_own_revisions = $user->data['user_id'] == $post_data['poster_id'] && $auth->acl_getf('f_revisions', $post_data['forum_id']);
+$can_view_post_revisions = $auth->acl_get('m_revisions') || $can_view_wiki_revisions ||  $can_view_own_revisions;
+
+if (!$can_view_post_revisions)
+{
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error('NO_AUTH_VIEW_REVISIONS');
+	}
+
+	login_box('', $user->lang('LOGIN_REVISION'));
+}
+
 if ($revert && $revert_confirm && check_form_key('revert_form', 120))
 {
-	if (empty($revisions[$revert]))
+	if (!$can_revert)
+	{
+		trigger_error('NO_AUTH_REVERT');
+	}
+	else if (empty($revisions[$revert]))
 	{
 		trigger_error('ERROR_REVISION_NOT_FOUND');
 	}
@@ -180,7 +206,7 @@ foreach ($revisions as $revision)
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
 		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
-		'U_REVERT_TO'		=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())),
+		'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())) : '',
 	));
 
 	$revision_users[$revision->get_user_id()] = true;
@@ -232,6 +258,11 @@ $tpl_name = 'revisions_body.html';
 $bad_form = ($revert_confirm && !check_form_key('revert_form', 120));
 if ($revert && (!$revert_confirm || $bad_form))
 {
+	if (!$can_revert)
+	{
+		trigger_error('NO_AUTH_REVERT');
+	}
+
 	add_form_key('revert_form');
 
 	$template->assign_vars(array(
