@@ -41,6 +41,20 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_configuration()
+	{
+		return array(
+			'NAME'		=> 'olympus',
+			'ENABLED'	=> true,
+			'OPTIONS'	=> array(
+				'ADMIN'		=> true,
+			),
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function process()
 	{
 

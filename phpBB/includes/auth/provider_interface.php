@@ -33,6 +33,11 @@ interface phpbb_auth_provider_interface
 	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user);
 
 	/**
+	 * Gets the current configuration of the provider.
+	 */
+	public function get_configuration();
+
+	/**
 	 * This function as implemented, should process the start of a login or
 	 * registration request if providing third party support, it should have
 	 * redirects sent to check_auth_{provider}.php in the root of the phpbb

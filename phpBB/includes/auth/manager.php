@@ -48,4 +48,20 @@ class phpbb_auth_manager
 			throw new phpbb_auth_exception('Authentication provider, ' . $provider . ', not found.');
 		}
 	}
+
+	// Return temporary set array of providers.
+	public function get_registered_providers() {
+		$providers = array(
+			'olympus',
+			'openid',
+			'facebook_connect',
+		);
+
+		foreach($providers as &$provider)
+		{
+			$provider = $this->get_provider($provider);
+		}
+
+		return $providers;
+	}
 }

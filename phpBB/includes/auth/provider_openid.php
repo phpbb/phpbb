@@ -57,6 +57,20 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function get_configuration()
+	{
+		return array(
+			'NAME'		=> 'openid',
+			'ENABLED'	=> true,
+			'OPTIONS'	=> array(
+				'ADMIN'		=> false,
+			),
+		);
+	}
+
+	/**
 	 * Performs the login request on the external server specified by
 	 * openid_identifier. Redirects the browser first to the external server
 	 * for authentication then back to /check_auth_openid.php to complete

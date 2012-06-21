@@ -24,10 +24,12 @@ class acp_auth {
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/auth');
+
+		$submit = ($request->is_set_post('submit') || $request->is_set_post('allow_quick_reply_enable')) ? true : false;
 
 		$form_key = 'acp_auth';
 		add_form_key($form_key);
@@ -52,31 +54,33 @@ class acp_auth {
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
-		// Temporary array until provider list is generated dynamically
-		$providers_loop = array(
-			'facebook_connect'	=> array(
-				'ENABLED' => false,
-			),
-			'olympus'			=> array(
-				'ENABLED' => true,
-			),
-			'openid'			=> array(
-				'ENABLED' => true,
-			),
-		);
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 
-		foreach($providers_loop as $provider => $index) {
-			if ($index['ENABLED'] == true)
+		// Do not write values if there is an error
+		if (sizeof($error))
+		{
+			$submit = false;
+		}
+
+		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+		$providers = $auth_manager->get_registered_providers(); // TODO: Make options non-static
+
+		foreach($providers as $provider) {
+			$provider_configuration = $provider->get_configuration();
+			if ($provider_configuration['ENABLED'] == true)
 			{
-				$enabled_disabled = '<input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="ENABLED" checked> {L_ENABLED} <input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="DISABLED"> {L_DISABLED}';
+				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED" checked> {L_ENABLED} <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED"> {L_DISABLED}';
 			}
 			else
 			{
-				$enabled_disabled = '<input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="ENABLED"> {L_ENABLED} <input type="radio" name="' . $provider . '_ENABLED_DISABLED" value="DISABLED" checked> {L_DISABLED}';
+				$enabled_disabled = '<input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="ENABLED"> {L_ENABLED} <input type="radio" name="' . $provider_configuration['NAME'] . '_ENABLED_DISABLED" value="DISABLED" checked> {L_DISABLED}';
 			}
 
 			$template->assign_block_vars('providers_loop', array(
-				'PROVIDER'			=> $provider,
+				'PROVIDER'			=> $provider_configuration['NAME'],
 				'ENABLED_DISABLED'	=> $enabled_disabled,
 			));
 		}

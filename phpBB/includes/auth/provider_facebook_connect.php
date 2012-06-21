@@ -41,6 +41,20 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_configuration()
+	{
+		return array(
+			'NAME'		=> 'facebook_connect',
+			'ENABLED'	=> false,
+			'OPTIONS'	=> array(
+				'ADMIN'		=> false,
+			),
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function process()
 	{
 
