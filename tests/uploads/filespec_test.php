@@ -11,12 +11,14 @@ require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_upload.php';
 require_once __DIR__ . '/../mock/fileupload.php';
+require_once __DIR__ . '/../mock/request.php';
 
 class phpbb_filespec_test extends phpbb_test_case
 {
 	const TEST_COUNT = 100;
 	const PREFIX = 'phpbb_';
 	const MAX_STR_LEN = 50;
+	const UPLOAD_MAX_FILESIZE = 1000;
 
 	private $config;
 	private $filespec;
@@ -38,6 +40,22 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->config = $config;
 		$this->path = __DIR__ . '/fixture/';
 		$this->init_filespec();
+
+		// Create copies of the files for use in testing move_file
+		$it = new DirectoryIterator($this->path);
+		foreach ($it as $fileinfo)
+		{
+			if ($fileinfo->isDot())
+			{
+				continue;
+			}
+
+			copy($fileinfo->getPathname(), $this->path . $fileinfo->getFilename() . '_copy');
+			if ($fileinfo->getFilename() === 'TXT')
+			{
+				copy($fileinfo->getPathname(), $this->path . $fileinfo->getFilename() . '_copy_2');
+			}
+		}
 	}
 
 	public function additional_checks_variables()
@@ -95,6 +113,30 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('TIF', 'image/tif', true),
 			array('TXT', 'text/plain', false),
 		);
+	}
+
+	public function move_file_variables()
+	{
+		return array(
+			array('GIF_copy', 'GIF_moved', 'image/gif', 'gif', false, true),
+			array('non_existant', 'still_non_existant', 'text/plain', 'txt', true, false),
+			array('TXT_copy', 'TXT_as_img', 'image/jpg', 'txt', true, true),
+			array('TXT_copy_2', 'TXT_moved', 'text/plain', 'txt', false, true),
+			array('JPG_copy', 'JPG_moved', 'image/png', 'jpg', false, true),
+			array('PNG_copy', 'PNG_moved', 'image/png', 'jpg', true, true),
+		);
+	}
+
+	protected function tearDown()
+	{
+		$it = new DirectoryIterator($this->path);
+		foreach ($it as $fileinfo)
+		{
+			if (strlen($fileinfo->getFilename()) > 3)
+			{
+				unlink($fileinfo->getPathname());
+			}
+		}
 	}
 
 	/**
@@ -181,5 +223,32 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		$this->init_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
 		$this->assertEquals($expected, $this->filespec->is_image());
+	}
+
+	/**
+	 * @dataProvider move_file_variables
+	 */
+	public function test_move_file($tmp_name, $realname, $mime_type, $extension, $error, $expected)
+	{
+		global $request, $phpbb_root_path, $phpEx;
+		$phpbb_root_path = '';
+		$phpEx = 'php';
+		$request = new phpbb_mock_request();
+
+		$upload = new phpbb_mock_fileupload();
+		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
+
+		$this->init_filespec(array(
+			'tmp_name' => $this->path . $tmp_name,
+			'name' => $realname,
+			'type' => $mime_type,
+		));
+		$this->filespec->extension = $extension;
+		$this->filespec->upload = $upload;
+		$this->filespec->local = true;
+
+		$this->assertEquals($expected, $this->filespec->move_file($this->path));
+		$this->assertEquals($error, (bool) sizeof($this->filespec->error));
+		$this->assertEquals($this->filespec->file_moved, file_exists($this->path . $realname));
 	}
 }
