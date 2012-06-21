@@ -1,5 +1,5 @@
 var phpbb = {};
-phpbb.alert_time = 100;
+phpbb.alertTime = 100;
 
 (function($) {  // Avoid conflicts with other libraries
 
@@ -12,35 +12,31 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loading_alert = $('#loadingalert');
+var loadingAlert = $('#loadingalert');
 
 
 /**
- * Display a loading screen.
+ * Display a loading screen
  *
- * @returns object Returns loading_alert.
+ * @returns object Returns loadingAlert.
  */
-phpbb.loading_alert = function() {
-	if (dark.is(':visible'))
-	{
-		loading_alert.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
-		loading_alert.show();
-		dark.fadeIn(phpbb.alert_time, function() {
+phpbb.loadingAlert = function() {
+	if (dark.is(':visible')) {
+		loadingAlert.fadeIn(phpbb.alertTime);
+	} else {
+		loadingAlert.show();
+		dark.fadeIn(phpbb.alertTime, function() {
 			// Wait five seconds and display an error if nothing has been returned by then.
 			setTimeout(function() {
-				if (loading_alert.is(':visible'))
-				{
+				if (loadingAlert.is(':visible')) {
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 				}
 			}, 5000);
 		});
 	}
 
-	return loading_alert;
-}
+	return loadingAlert;
+};
 
 /**
  * Display a simple alert similar to JSs native alert().
@@ -67,7 +63,7 @@ phpbb.alert = function(title, msg, fadedark) {
 
 		div.find('.alert_close').unbind('click');
 		fade = (typeof fadedark !== 'undefined' && !fadedark) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 
@@ -90,27 +86,22 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loading_alert.is(':visible'))
-	{
-		loading_alert.fadeOut(phpbb.alert_time, function() {
+	if (loadingAlert.is(':visible')) {
+		loadingAlert.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
-			div.fadeIn(phpbb.alert_time);
+			div.fadeIn(phpbb.alertTime);
 		});
-	}
-	else if (dark.is(':visible'))
-	{
+	} else if (dark.is(':visible')) {
 		dark.append(div);
-		div.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
+		div.fadeIn(phpbb.alertTime);
+	} else {
 		dark.append(div);
 		div.show();
-		dark.fadeIn(phpbb.alert_time);
+		dark.fadeIn(phpbb.alertTime);
 	}
 
 	return div;
-}
+};
 
 /**
  * Display a simple yes / no box to the user.
@@ -136,7 +127,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	var click_handler = function(e) {
 		var res = this.className === 'button1';
 		var fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 		div.find('input[type="button"]').unbind('click', click_handler);
@@ -151,7 +142,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	dark.one('click', function(e) {
 		div.find('.alert_close').unbind('click');
-		dark.fadeOut(phpbb.alert_time, function() {
+		dark.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 		callback(false);
@@ -174,7 +165,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 
 	div.find('.alert_close').one('click', function(e) {
 		var fade = (typeof fadedark !== 'undefined' && fadedark) ? div : dark;
-		fade.fadeOut(phpbb.alert_time, function() {
+		fade.fadeOut(phpbb.alertTime, function() {
 			div.hide();
 		});
 		callback(false);
@@ -182,27 +173,22 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loading_alert.is(':visible'))
-	{
-		loading_alert.fadeOut(phpbb.alert_time, function() {
+	if (loadingAlert.is(':visible')) {
+		loadingAlert.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
-			div.fadeIn(phpbb.alert_time);
+			div.fadeIn(phpbb.alertTime);
 		});
-	}
-	else if (dark.is(':visible'))
-	{
+	} else if (dark.is(':visible')) {
 		dark.append(div);
-		div.fadeIn(phpbb.alert_time);
-	}
-	else
-	{
+		div.fadeIn(phpbb.alertTime);
+	} else {
 		dark.append(div);
 		div.show();
-		dark.fadeIn(phpbb.alert_time);
+		dark.fadeIn(phpbb.alertTime);
 	}
 
 	return div;
-}
+};
 
 /**
  * Turn a querystring into an array.
@@ -214,13 +200,12 @@ phpbb.parse_querystring = function(string) {
 	var params = {}, i, split;
 
 	string = string.split('&');
-	for (i = 0; i < string.length; i++)
-	{
+	for (i = 0; i < string.length; i++) {
 		split = string[i].split('=');
 		params[split[0]] = decodeURIComponent(split[1]);
 	}
 	return params;
-}
+};
 
 
 /**
@@ -246,14 +231,13 @@ phpbb.ajaxify = function(options) {
 		refresh = options.refresh,
 		callback = options.callback,
 		overlay = (typeof options.overlay !== 'undefined') ? options.overlay : true,
-		is_form = elements.is('form'),
-		event_name = is_form ? 'submit' : 'click';
+		isForm = elements.is('form'),
+		eventName = isForm ? 'submit' : 'click';
 
-	elements.bind(event_name, function(event) {
+	elements.bind(eventName, function(event) {
 		var action, method, data, submit, that = this, $this = $(this);
 
-		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false')
-		{
+		if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false') {
 			return;
 		}
 
@@ -267,84 +251,69 @@ phpbb.ajaxify = function(options) {
 		 *
 		 * @param object res The object sent back by the server.
 		 */
-		function return_handler(res)
-		{
+		function returnHandler(res) {
 			var alert;
 
 			// Is a confirmation required?
-			if (typeof res.S_CONFIRM_ACTION === 'undefined')
-			{
+			if (typeof res.S_CONFIRM_ACTION === 'undefined') {
 				// If a confirmation is not required, display an alert and call the
 				// callbacks.
-				if (typeof res.MESSAGE_TITLE !== 'undefined')
-				{
+				if (typeof res.MESSAGE_TITLE !== 'undefined') {
 					alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				}
-				else
-				{
-					dark.fadeOut(phpbb.alert_time);
+				} else {
+					dark.fadeOut(phpbb.alertTime);
 				}
 
-				if (typeof phpbb.ajax_callbacks[callback] === 'function')
-				{
-					phpbb.ajax_callbacks[callback].call(that, res);
+				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
+					phpbb.ajaxCallbacks[callback].call(that, res);
 				}
 
 				// If the server says to refresh the page, check whether the page should
 				// be refreshed and refresh page after specified time if required.
-				if (res.REFRESH_DATA)
-				{
-					if (typeof refresh === 'function')
-					{
+				if (res.REFRESH_DATA) {
+					if (typeof refresh === 'function') {
 						refresh = refresh(res.REFRESH_DATA.url);
-					}
-					else if (typeof refresh !== 'boolean')
-					{
+					} else if (typeof refresh !== 'boolean') {
 						refresh = false;
 					}
 
 					setTimeout(function() {
-						if (refresh)
-						{
+						if (refresh) {
 							window.location = res.REFRESH_DATA.url;
 						}
 
 						// Hide the alert even if we refresh the page, in case the user
 						// presses the back button.
-						dark.fadeOut(phpbb.alert_time, function() {
+						dark.fadeOut(phpbb.alertTime, function() {
 							alert.hide();
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
-			}
-			else
-			{
+			} else {
 				// If confirmation is required, display a diologue to the user.
 				phpbb.confirm(res.MESSAGE_TEXT, function(del) {
-					if (del)
-					{
-						phpbb.loading_alert();
+					if (del) {
+						phpbb.loadingAlert();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
 							data: data + '&confirm=' + res.YES_VALUE,
-							success: return_handler,
-							error: error_handler
+							success: returnHandler,
+							error: errorHandler
 						});
 					}
 				}, false);
 			}
 		}
 
-		function error_handler()
-		{
+		function errorHandler() {
 			var alert;
 
 			alert = phpbb.alert(dark.attr('data-ajax-error-title'), dark.attr('data-ajax-error-text'));
 
 			setTimeout(function () {
-				dark.fadeOut(phpbb.alert_time, function() {
+				dark.fadeOut(phpbb.alertTime, function() {
 					alert.hide();
 				});
 			}, 5000);
@@ -352,25 +321,21 @@ phpbb.ajaxify = function(options) {
 
 		// If the element is a form, POST must be used and some extra data must
 		// be taken from the form.
-		var run_filter = (typeof options.filter === 'function');
+		var runFilter = (typeof options.filter === 'function');
 
-		if (is_form)
-		{
+		if (isForm) {
 			action = $this.attr('action').replace('&amp;', '&');
 			data = $this.serializeArray();
 			method = $this.attr('method') || 'GET';
 
-			if ($this.find('input[type="submit"][data-clicked]'))
-			{
+			if ($this.find('input[type="submit"][data-clicked]')) {
 				submit = $this.find('input[type="submit"][data-clicked]');
 				data.push({
 					name: submit.attr('name'),
 					value: submit.val()
 				});
 			}
-		}
-		else
-		{
+		} else {
 			action = this.href;
 			data = null;
 			method = 'GET';
@@ -378,28 +343,26 @@ phpbb.ajaxify = function(options) {
 
 		// If filter function returns false, cancel the AJAX functionality,
 		// and return true (meaning that the HTTP request will be sent normally).
-		if (run_filter && !options.filter.call(this, data))
-		{
+		if (runFilter && !options.filter.call(this, data)) {
 			return;
 		}
 
-		if (overlay)
-		{
-			phpbb.loading_alert();
+		if (overlay) {
+			phpbb.loadingAlert();
 		}
 
 		$.ajax({
 			url: action,
 			type: method,
 			data: data,
-			success: return_handler,
-			error: error_handler
+			success: returnHandler,
+			error: errorHandler
 		});
 
 		event.preventDefault();
 	});
 
-	if (is_form) {
+	if (isForm) {
 		elements.find('input:submit').click(function () {
 			var $this = $(this);
 
@@ -409,9 +372,9 @@ phpbb.ajaxify = function(options) {
 	}
 
 	return this;
-}
+};
 
-phpbb.ajax_callbacks = {};
+phpbb.ajaxCallbacks = {};
 
 /**
  * Adds an AJAX callback to be used by phpbb.ajaxify.
@@ -421,14 +384,12 @@ phpbb.ajax_callbacks = {};
  * @param string id The name of the callback.
  * @param function callback The callback to be called.
  */
-phpbb.add_ajax_callback = function(id, callback)
-{
-	if (typeof callback === 'function')
-	{
-		phpbb.ajax_callbacks[id] = callback;
+phpbb.add_ajax_callback = function(id, callback) {
+	if (typeof callback === 'function') {
+		phpbb.ajaxCallbacks[id] = callback;
 	}
 	return this;
-}
+};
 
 
 /**
@@ -438,11 +399,11 @@ phpbb.add_ajax_callback = function(id, callback)
  */
 phpbb.add_ajax_callback('alt_text', function(data) {
 	var el = $(this),
-		alt_text;
+		altText;
 
-	alt_text = el.attr('data-alt-text');
-	el.attr('title', alt_text);
-	el.text(alt_text);
+	altText = el.attr('data-alt-text');
+	el.attr('title', altText);
+	el.text(altText);
 });
 
 
