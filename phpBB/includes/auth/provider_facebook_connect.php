@@ -44,11 +44,11 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	public function get_configuration()
 	{
 		return array(
+			'CUSTOM_ACP'=> false,
 			'NAME'		=> 'facebook_connect',
-			'ENABLED'	=> false,
 			'OPTIONS'	=> array(
-				'enabled'	=> array('setting' => true, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-				'admin'		=> array('setting' => false, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'enabled'	=> array('setting' => $this->config['facebook_connect_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => $this->config['facebook_connect_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}
@@ -58,7 +58,11 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	 */
 	public function process()
 	{
-
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
 	}
 
 	/**
@@ -66,30 +70,10 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	 */
 	public function verify()
 	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function login()
-	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function register()
-	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function link()
-	{
-
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
 	}
 }

@@ -44,10 +44,11 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	public function get_configuration()
 	{
 		return array(
+			'CUSTOM_ACP'=> false,
 			'NAME'		=> 'olympus',
 			'OPTIONS'	=> array(
-				'enabled'	=> array('setting' => false, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-				'admin'		=> array('setting' => true, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'enabled'	=> array('setting' => $this->config['olympus_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => $this->config['olympus_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}
@@ -57,7 +58,11 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	 */
 	public function process()
 	{
-
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
 	}
 
 	/**
@@ -65,30 +70,10 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	 */
 	public function verify()
 	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function login()
-	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function register()
-	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function link()
-	{
-
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
 	}
 }

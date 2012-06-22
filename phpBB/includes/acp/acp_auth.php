@@ -87,6 +87,13 @@ class acp_auth {
 			{
 				$config_key = $provider_configuration['NAME'] . '_' . $config_key;
 
+				$this->new_config[$config_key] = $config_value = $cfg_array[$config_key];
+
+				if ($submit)
+				{
+					set_config($config_key, $config_value);
+				}
+
 				$type = explode(':', $vars['type']);
 
 				$l_explain = '';
@@ -98,8 +105,6 @@ class acp_auth {
 				{
 					$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 				}
-
-				$this->new_config->set($config_key, $vars['setting'], false);
 
 				$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 

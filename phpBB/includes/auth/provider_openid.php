@@ -62,10 +62,11 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
+			'CUSTOM_ACP'=> false,
 			'NAME'		=> 'openid',
 			'OPTIONS'	=> array(
-				'enabled'	=> array('setting' => true, 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-				'admin'		=> array('setting' => false, 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'enabled'	=> array('setting' => $this->config['openid_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => $this->config['openid_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 			),
 		);
 	}
@@ -78,6 +79,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 */
 	public function process()
 	{
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
+
 		$storage = new phpbb_auth_zend_storage($this->db);
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
@@ -143,6 +150,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 */
 	public function verify()
 	{
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
+
 		$storage = new phpbb_auth_zend_storage($this->db);
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
@@ -181,7 +194,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 					throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
 				}
 
-				$admin = false; // OpenID can not be used for admin login.
+				$admin = $provider_config['OPTIONS']['admin']['settings']; // OpenID can not be used for admin login.
 				$autologin = (bool)$this->request->variable('phpbb_autologin', false);
 				$viewonline = (bool)$this->request->variable('phpbb_viewonline', true);
 

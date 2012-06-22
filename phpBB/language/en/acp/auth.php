@@ -37,7 +37,7 @@ $lang = array_merge($lang, array(
 	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into or register on the board.',
 
 	'ALLOW_ADMIN_LOGIN'			=> 'Admin reauthentication',
-	'ALLOW_ADMIN_LOGIN_EXPLAIN'	=> 'Allows a user to reauthenticate for access to the administration control panel.',
+	'ALLOW_ADMIN_LOGIN_EXPLAIN'	=> 'Allows a user to reauthenticate for access to the administration control panel. Enabling reauthentication for authentication providers not solely under the administrators control is not reccomended.',
 	'AUTH_ENABLE'				=> 'Enable Authentication Provider',
 
 	'OLYMPUS_AUTH_METHOD'				=> 'Select an authentication method',
