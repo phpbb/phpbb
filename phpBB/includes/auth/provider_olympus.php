@@ -68,7 +68,7 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 		global $phpbb_root_path, $phpEx;
 
 		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id));
-		$s_autologin_enabled = ($config['allow_autologin']) ? true : false;
+		$s_autologin_enabled = ($this->config['allow_autologin']) ? true : false;
 
 		$s_hidden_fields = array(
 			'sid'			=> $this->user->session_id,
@@ -94,8 +94,8 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 
 		$password_credential = ($admin) ? 'password_' . $credential : 'password';
 
-		$u_send_password = ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '';
-		$u_resend_activation = ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '';
+		$u_send_password = ($this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '';
+		$u_resend_activation = ($this->config['require_activation'] == USER_ACTIVATION_SELF && $this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '';
 
 		$tpl = '
 		<script type="text/javascript">
@@ -112,7 +112,7 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 		$tpl .= '").focus();\');
 		// ]]>
 		</script>
-		<form action="' . $s_login_action . '" method="post" id="login">
+		<form action="' . $s_login_action . '" method="post" id="olympus_login">
 			<div>
 				<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
 					<dl>
@@ -155,7 +155,7 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 						<dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> ' . $this->user->lang['LOG_ME_IN'] . '</label></dd>';
 			}
 			$tpl .= '
-						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['LOG_HIDE_ME'] . '</label></dd>
+						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['HIDE_ME'] . '</label></dd>
 					</dl>';
 		}
 

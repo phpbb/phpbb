@@ -3003,15 +3003,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$auth_provider = $request->variable('auth_provider', '');
 		$auth_provider = $auth_manager->get_provider($auth_provider);
 
-		// Verify information provided by a third party.
-		if ($request->variable('auth_step', 'process') == 'verify')
+		// Perform any additional procedures requested by the provider.
+		$auth_step = $request->variable('auth_step', '');
+		if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
 		{
-			$auth_provider->verify();
+			$auth_provider->$auth_step();
 		}
 		else
 		{
 			if($redirect) {
-				$this->request->overwrite('redirect_to', $redirect);
+				$request->overwrite('redirect_to', $redirect);
 			}
 			$auth_provider->process($admin);
 		}
@@ -3150,6 +3151,40 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'S_ADMIN_AUTH'			=> $admin,
 	));
+
+	$providers = $auth_manager->get_enabled_providers();
+	foreach($providers as &$provider)
+	{
+		if ($admin)
+		{
+			$provider_config = $provider->get_configuration();
+			if ($provider_config['OPTIONS']['admin']['setting'] != true)
+			{
+				unset($provider);
+				continue;
+			}
+		}
+
+		$tpl = $provider->generate_login_box($redirect, $admin, $s_display);
+
+		if ($tpl === null)
+		{
+			unset($provider);
+			continue;
+		}
+
+		print('<pre>');
+		//print_r($tpl);
+		print('</pre>');
+		$template->assign_block_vars('providers_loop', array(
+			'TPL'	=> $tpl,
+		));
+	}
+
+	if (empty($providers))
+	{
+		trigger_error('NO_PROVIDERS');
+	}
 
 	page_header($user->lang['LOGIN'], false);
 

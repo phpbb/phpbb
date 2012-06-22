@@ -86,7 +86,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		global $phpbb_root_path, $phpEx;
 
 		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id));
-		$s_autologin_enabled = ($config['allow_autologin']) ? true : false;
+		$s_autologin_enabled = ($this->config['allow_autologin']) ? true : false;
 
 		$s_hidden_fields = array(
 			'sid'			=> $this->user->session_id,
@@ -111,14 +111,15 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
 		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
 
+		$openid_identifier = 'openid_identifier';
 		$tpl = '
-		<dt>'. $this->user->lang['AUTH_PROVIDER_OPENID'] .'</dt>
+		<dt>' . $this->user->lang['AUTH_PROVIDER_OPENID'] . '</dt>
 		<dd>
 			<div>
-				<form action="' . $s_login_action . '" method="post" id="login">
+				<form action="' . $s_login_action . '" method="post" id="openid_login">
 					<dl>
-						<dt><label for="openid_identifier"><img src="' . $theme_path . '/images/logo_openid_small.gif" alt="'. $this->user->lang['OPENID'] .'"/></label></dt>
-						<dd><input type="text" tabindex="1" name="openid_identifier" id="openid_identifier" size="25" value="" class="inputbox autowidth" /></dd>
+						<dt><label for="' . $openid_identifier . '"><img src="' . $theme_path . '/images/logo_openid_small.gif" alt="'. $this->user->lang['AUTH_PROVIDER_OPENID'] .'"/></label></dt>
+						<dd><input type="text" tabindex="1" name="' . $openid_identifier . '" id="' . $openid_identifier . '" size="25" value="" class="inputbox autowidth" /></dd>
 					</dl>';
 		if (!$admin)
 		{
@@ -131,7 +132,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 						';
 			}
 		$tpl .= '
-						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['LOG_HIDE_ME'] . '</label></dd>
+						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['HIDE_ME'] . '</label></dd>
 					</dl>';
 		}
 		$tpl .= '
@@ -190,7 +191,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			global $phpEx;
 			$redirect_to = $this->request->variable('redirect_to', 'index.' . $phpEx);
-			$return_to = '?auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
+			$return_to = $this->user->page['page'].'?mode=login&auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
 		elseif ($auth_action === 'link')
@@ -199,12 +200,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}
-			$return_to = '?phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$return_to = $this->user->page['page'].'?mode=register&auth_step=verify&auth_provider=openid&phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
 		elseif ($auth_action === 'register')
 		{
-			$return_to = '?phpbb.auth_action=register';
+			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&phpbb.auth_action=register';
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);

@@ -70,7 +70,7 @@ class phpbb_auth_manager
 		$providers = $this->get_registered_providers();
 
 		foreach($providers as &$provider) {
-			$provider_config->get_configuration();
+			$provider_config = $provider->get_configuration();
 			if(!$provider_config['OPTIONS']['enabled']['setting'])
 			{
 				unset($provider);
