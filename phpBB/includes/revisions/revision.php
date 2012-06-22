@@ -97,7 +97,7 @@ class phpbb_revisions_revision
 	* ID of user who made revision
 	* @var int
 	*/
-	private $user;
+	private $user_id;
 
 	/**
 	* Checksum of post text
@@ -149,7 +149,7 @@ class phpbb_revisions_revision
 	*				This is helpful if we already have the data and don't want to load it but still
 	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id = 0, dbal $db, $autoload = true)
+	public function __construct($revision_id, dbal $db, $autoload = true)
 	{
 		$this->db = $db;
 
@@ -234,7 +234,7 @@ class phpbb_revisions_revision
 		$this->checksum = md5($this->text_raw);
 		$this->reason = $row['revision_reason'];
 		
-		$this->user = $row['user_id'];
+		$this->user_id = $row['user_id'];
 		$this->username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		
 		$this->avatar = $row['user_avatar'];
@@ -299,7 +299,7 @@ class phpbb_revisions_revision
 	*/
 	public function get_user_id()
 	{
-		return (int) $this->user;
+		return (int) $this->user_id;
 	}
 
 	/**
