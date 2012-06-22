@@ -3141,58 +3141,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 	}
 
-	// Assign credential for username/password pair
-	$credential = ($admin) ? md5(unique_id()) : false;
-
-	$s_hidden_fields = array(
-		'sid'		=> $user->session_id,
-	);
-
-	if ($redirect)
-	{
-		$s_hidden_fields['redirect'] = $redirect;
-	}
-
-	if ($admin)
-	{
-		$s_hidden_fields['credential'] = $credential;
-	}
-
-	$s_hidden_openid_fields = $s_hidden_fields;
-	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-
-	// Temporary values for enabled providers until a way is created to select
-	// which are and which are not enabled. This should become automated at
-	// some point.
-	$s_hidden_openid_fields['auth_provider'] = 'openid';
-	$s_hidden_openid_fields['auth_action'] = 'login';
-	$s_hidden_openid_fields = build_hidden_fields($s_hidden_openid_fields);
-	$template->assign_vars(array(
-		'OPENID_IDENTIFIER'					=> 'openid_identifier',
-		'S_AUTH_PROVIDER_NON_OLYMPUS_COUNT'	=> 2,
-		'S_AUTH_PROVIDER_FACEBOOK_CONNECT'	=> true,
-		'S_AUTH_PROVIDER_OLYMPUS'			=> true,
-		'S_AUTH_PROVIDER_OPENID'			=> true,
-		'S_HIDDEN_OPENID_FIELDS'			=> $s_hidden_openid_fields,
-	));
-
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
-		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
-		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
-
 		'S_ADMIN_AUTH'			=> $admin,
-		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
-
-		'USERNAME_CREDENTIAL'	=> 'username',
-		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
 
 	page_header($user->lang['LOGIN'], false);

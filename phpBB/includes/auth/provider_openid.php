@@ -74,7 +74,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function generate_login_box($redirect = '', $admin = false)
+	public function generate_login_box($redirect = '', $admin = false, $s_display = true)
 	{
 		$provider_config = $this->get_configuration();
 		if (!$provider_config['OPTIONS']['enabled']['setting']
@@ -96,6 +96,10 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		if ($redirect)
 		{
 			$s_hidden_fields['redirect'] = $redirect;
+		}
+		else
+		{
+			$s_hidden_fields['redirect'] = build_url();
 		}
 		if ($admin)
 		{
