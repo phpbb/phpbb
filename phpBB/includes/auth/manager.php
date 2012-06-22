@@ -17,7 +17,8 @@ if (!defined('IN_PHPBB'))
 
 /**
  * This class handles the selection of which authentication provider to use for
- * login and registration.
+ * login and registration. It also provides functions to get enabled and
+ * registered providers.
  *
  * @package auth
  */
@@ -60,6 +61,20 @@ class phpbb_auth_manager
 		foreach($providers as &$provider)
 		{
 			$provider = $this->get_provider($provider);
+		}
+
+		return $providers;
+	}
+
+	public function get_enabled_providers() {
+		$providers = $this->get_registered_providers();
+
+		foreach($providers as &$provider) {
+			$provider_config->get_configuration();
+			if(!$provider_config['OPTIONS']['enabled']['setting'])
+			{
+				unset($provider);
+			}
 		}
 
 		return $providers;
