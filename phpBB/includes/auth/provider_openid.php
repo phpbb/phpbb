@@ -76,8 +76,10 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 * openid_identifier. Redirects the browser first to the external server
 	 * for authentication then back to /check_auth_openid.php to complete
 	 * login.
+	 *
+	 * @param boolean $admin Whether reauthentication is being requested for administrative login. This can be prevented by disabling admin reauthentication on the ACP.
 	 */
-	public function process()
+	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
 		if(!$provider_config['OPTIONS']['enabled']['setting'])
@@ -102,10 +104,17 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'login')
 		{
+			if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
+			{
+				throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
+			}
+
 			$autologin = $this->request->variable('autologin', 'off');
 			$viewonline = $this->request->variable('viewonline', 'off');
-			$redirect_to = $this->request->variable('redirect_to', 'index.php');
-			$return_to = 'check_auth_openid.php?phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to;
+
+			global $phpEx;
+			$redirect_to = $this->request->variable('redirect_to', 'index.' . $phpEx);
+			$return_to = '?auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
 		elseif ($auth_action === 'link')
@@ -114,12 +123,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}
-			$return_to = 'check_auth_openid.php?phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$return_to = '?phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
 		elseif ($auth_action === 'register')
 		{
-			$return_to = 'check_auth_openid.php?phpbb.auth_action=register';
+			$return_to = '?phpbb.auth_action=register';
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
@@ -194,7 +203,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 					throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
 				}
 
-				$admin = $provider_config['OPTIONS']['admin']['settings']; // OpenID can not be used for admin login.
+				$admin = (bool)$this->request->variable('phpbb_admin', false);
+				if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
+				{
+					throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
+				}
+
 				$autologin = (bool)$this->request->variable('phpbb_autologin', false);
 				$viewonline = (bool)$this->request->variable('phpbb_viewonline', true);
 

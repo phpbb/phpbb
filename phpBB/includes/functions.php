@@ -2994,12 +2994,24 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if ($request->is_set_post('auth_provider'))
+	if ($request->is_set('auth_provider'))
 	{
-		$auth_provider = $request->variable('auth_provider', '', false, phpbb_request_interface::POST);
+		$auth_provider = $request->variable('auth_provider', '');
 		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
 		$auth_provider = $auth_manager->get_provider($auth_provider);
-		$auth_provider->process();
+
+		// Verify information provided by a third party.
+		if ($request->variable('auth_step', 'process') == 'verify')
+		{
+			$auth_provider->verify();
+		}
+		else
+		{
+			if($redirect) {
+				$this->request->overwrite('redirect_to', $redirect);
+			}
+			$auth_provider->process($admin);
+		}
 	}
 	elseif ($request->is_set_post('login'))
 	{

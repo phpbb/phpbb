@@ -56,7 +56,7 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	/**
 	 * {@inheritDoc}
 	 */
-	public function process()
+	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
 		if(!$provider_config['OPTIONS']['enabled']['setting'])

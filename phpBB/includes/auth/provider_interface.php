@@ -42,8 +42,10 @@ interface phpbb_auth_provider_interface
 	 * registration request if providing third party support, it should have
 	 * redirects sent to check_auth_{provider}.php in the root of the phpbb
 	 * installation.
+	 *
+	 * @param boolean $admin Whether reauthentication is being requested for administrative login. This can be prevented by disabling admin reauthentication on the ACP.
 	 */
-	public function process();
+	public function process($admin);
 
 	/**
 	 * This function should verify any data that is submitted to the provider
