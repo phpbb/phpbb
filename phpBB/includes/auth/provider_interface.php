@@ -38,6 +38,15 @@ interface phpbb_auth_provider_interface
 	public function get_configuration();
 
 	/**
+	 * Generates a rendered template for use in login.
+	 *
+	 * @param string $redirect The location where the script should redirect the user to following execution.
+	 * @param boolean $admin Whether reauthentication is the goal or not.
+	 * @return string|null On success, returns the rendered template $tpl; on failure, returns null.
+	 */
+	public function generate_login_box($redirect, $admin);
+
+	/**
 	 * This function as implemented, should process the start of a login or
 	 * registration request if providing third party support, it should have
 	 * redirects sent to check_auth_{provider}.php in the root of the phpbb

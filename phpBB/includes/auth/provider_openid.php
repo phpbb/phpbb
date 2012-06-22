@@ -72,6 +72,78 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function generate_login_box($redirect = '', $admin = false)
+	{
+		$provider_config = $this->get_configuration();
+		if (!$provider_config['OPTIONS']['enabled']['setting']
+				|| (!$provider_config['OPTIONS']['admin']['setting'] && $admin == true))
+		{
+			return null;
+		}
+
+		global $phpbb_root_path, $phpEx;
+
+		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id));
+		$s_autologin_enabled = ($config['allow_autologin']) ? true : false;
+
+		$s_hidden_fields = array(
+			'sid'			=> $this->user->session_id,
+			'auth_provider'	=> 'openid',
+			'auth_action'	=> 'login',
+		);
+		if ($redirect)
+		{
+			$s_hidden_fields['redirect'] = $redirect;
+		}
+		if ($admin)
+		{
+			$s_hidden_fields['credential'] = md5(unique_id());
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+		$board_url = generate_board_url() . '/';
+		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
+
+		$tpl = '
+		<dt>'. $this->user->lang['AUTH_PROVIDER_OPENID'] .'</dt>
+		<dd>
+			<div>
+				<form action="' . $s_login_action . '" method="post" id="login">
+					<dl>
+						<dt><label for="openid_identifier"><img src="' . $theme_path . '/images/logo_openid_small.gif" alt="'. $this->user->lang['OPENID'] .'"/></label></dt>
+						<dd><input type="text" tabindex="1" name="openid_identifier" id="openid_identifier" size="25" value="" class="inputbox autowidth" /></dd>
+					</dl>';
+		if (!$admin)
+		{
+			$tpl .= '
+					<dl>';
+			if ($s_autologin_enabled)
+			{
+				$tpl .= '
+						<dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> ' . $this->user->lang['LOG_ME_IN'] . '</label></dd>
+						';
+			}
+		$tpl .= '
+						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['LOG_HIDE_ME'] . '</label></dd>
+					</dl>';
+		}
+		$tpl .= '
+					<dl>
+						<dt>&nbsp;</dt>
+						<dd>' . $s_hidden_fields . '<input type="submit" name="login" tabindex="6" value="' . $this->user->lang['LOGIN'] . '" class="button1" /></dd>
+					</dl>
+				</form>
+			</div>
+		</dd>
+		';
+
+		return $tpl;
+	}
+
+	/**
 	 * Performs the login request on the external server specified by
 	 * openid_identifier. Redirects the browser first to the external server
 	 * for authentication then back to /check_auth_openid.php to complete
@@ -82,7 +154,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
-		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		if (!$provider_config['OPTIONS']['enabled']['setting'])
 		{
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}

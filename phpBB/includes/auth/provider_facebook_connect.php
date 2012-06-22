@@ -56,6 +56,14 @@ class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interf
 	/**
 	 * {@inheritDoc}
 	 */
+	public function generate_login_box($redirect = '', $admin = false)
+	{
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();

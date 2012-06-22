@@ -62,27 +62,6 @@
 				<dl>
 					<dt>{L_FEDERATED_LOGIN}:</dt>
 					<dd>
-						<!-- IF S_AUTH_PROVIDER_OPENID --><dl>
-							<dt>{L_AUTH_PROVIDER_OPENID}</dt>
-							<dd><div><img style="width: 133px; height: 33px;" src="{T_THEME_PATH}/images/logo_google.png" alt="Google"/></div>
-								<div>
-									<form action="{S_LOGIN_ACTION}" method="post" id="login">
-										<dl>
-											<dt><label for="{OPENID_IDENTIFIER}">OpenID:</label></dt>
-											<dd><input type="text" tabindex="1" name="{OPENID_IDENTIFIER}" id="{OPENID_IDENTIFIER}" size="25" value="" class="inputbox autowidth" /></dd>
-										</dl>
-										<dl>
-											<!-- IF S_AUTOLOGIN_ENABLED --><dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> {L_LOG_ME_IN}</label></dd><!-- ENDIF -->
-											<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> {L_HIDE_ME}</label></dd>
-										</dl>
-										<dl>
-											<dt>&nbsp;</dt>
-											<dd>{S_HIDDEN_OPENID_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></dd>
-										</dl>
-									</form>
-								</div>
-							</dd>
-						</dl><!-- ENDIF -->
 						<!-- IF S_AUTH_PROVIDER_FACEBOOK_CONNECT --><div><a href="">Facebook</a></div><!-- ENDIF -->
 					</dd>
 				</dl>

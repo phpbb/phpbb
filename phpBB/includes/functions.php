@@ -2994,10 +2994,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
+	// Initialize the authentication manager for use in generating the template and processing login.
+	$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+
+	// Process login requests.
 	if ($request->is_set('auth_provider'))
 	{
 		$auth_provider = $request->variable('auth_provider', '');
-		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
 		$auth_provider = $auth_manager->get_provider($auth_provider);
 
 		// Verify information provided by a third party.
