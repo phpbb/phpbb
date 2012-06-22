@@ -32,6 +32,12 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	public $word_length = array();
 	public $phrase_search = false;
 
+	/**
+	 * Constructor
+	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
+	 *
+	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 */
 	public function __construct(&$error)
 	{
 		global $db, $config;
@@ -56,6 +62,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	* Returns the name of this search backend to be displayed to administrators
 	*
 	* @return string Name
+	*
+	* @access public
 	*/
 	public function get_name()
 	{
@@ -64,6 +72,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Checks for correct PostgreSQL version and stores min/max word length in the config
+	*
+	* @return string|bool Language key of the error/incompatiblity occured
+	*
+	* @access public
 	*/
 	function init()
 	{
@@ -86,9 +98,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	* Splits keywords entered by a user into an array of words stored in $this->split_words
 	* Stores the tidied search query in $this->search_query
 	*
-	* @param string &$keywords Contains the keyword as entered by the user
-	* @param string $terms is either 'all' or 'any'
-	* @return bool false if no valid keywords were found and otherwise true
+	* @param	string	&$keywords	Contains the keyword as entered by the user
+	* @param	string	$terms	is either 'all' or 'any'
+	* @return	bool	false	if no valid keywords were found and otherwise true
+	*
+	* @access	public
 	*/
 	function split_keywords(&$keywords, $terms)
 	{
@@ -181,6 +195,9 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Turns text into an array of words
+	* @param string $text contains post text/subject
+	*
+	* @access public
 	*/
 	function split_message($text)
 	{
@@ -565,7 +582,14 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	/**
 	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated.
 	*
-	* @param string $mode contains the post mode: edit, post, reply, quote ...
+	* @param	string		$mode		contains the post mode: edit, post, reply, quote ...
+	* @param	int			$post_id	contains the post id of the post to index
+	* @param	string		$message	contains the post text of the post
+	* @param	string		$subject	contains the subject of the post to index
+	* @param	int			$poster_id	contains the user id of the poster
+	* @param	int			$forum_id	contains the forum id of parent forum of the post
+	*
+	* @access public
 	*/
 	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
@@ -588,6 +612,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Destroy cached results, that might be outdated after deleting a post
+	*
+	* @access public
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
@@ -596,6 +622,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Destroy old cache entries
+	*
+	* @access public
 	*/
 	function tidy()
 	{
@@ -609,6 +637,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Create fulltext index
+	*
+	* @return string|bool error string is returned incase of errors otherwise false
+	*
+	* @access public
 	*/
 	function create_index($acp_module, $u_action)
 	{
@@ -642,6 +674,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Drop fulltext index
+	*
+	* @return string|bool error string is returned incase of errors otherwise false
+	*
+	* @access public
 	*/
 	function delete_index($acp_module, $u_action)
 	{
@@ -675,6 +711,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Returns true if both FULLTEXT indexes exist
+	*
+	* @access public
 	*/
 	function index_created()
 	{
@@ -688,6 +726,8 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 
 	/**
 	* Returns an associative array containing information about the indexes
+	*
+	* @access public
 	*/
 	function index_stats()
 	{
@@ -703,6 +743,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		);
 	}
 
+	/**
+	 * Computes the stats and store them in the $this->stats associative array
+	 *
+	 * @access private
+	 */
 	function get_stats()
 	{
 		global $db, $config;
@@ -742,7 +787,11 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	}
 
 	/**
-	* Display a note, that UTF-8 support is not available with certain versions of PHP
+	* Display various options that can be configured for the backend from the acp
+	*
+	* @return associative array containing template and config variables
+	*
+	* @access public
 	*/
 	function acp()
 	{
