@@ -108,7 +108,7 @@ class acp_auth {
 					continue;
 				}
 
-				$template->assign_block_vars('options', array(
+				$template->assign_block_vars('providers_loop.options', array(
 					'KEY'			=> $config_key,
 					'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
 					'S_EXPLAIN'		=> $vars['explain'],
