@@ -1140,19 +1140,16 @@ function phpbb_delete_user_pms($user_id)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
-		{
-			// Undelivered messages
-			$undelivered_msg[] = $row['msg_id'];
+		// Undelivered messages
+		$undelivered_msg[] = $row['msg_id'];
 
-			if (isset($undelivered_user[$row['user_id']]))
-			{
-				++$undelivered_user[$row['user_id']];
-			}
-			else
-			{
-				$undelivered_user[$row['user_id']] = 1;
-			}
+		if (isset($undelivered_user[$row['user_id']]))
+		{
+			++$undelivered_user[$row['user_id']];
+		}
+		else
+		{
+			$undelivered_user[$row['user_id']] = 1;
 		}
 
 		$delete_ids[(int) $row['msg_id']] = (int) $row['msg_id'];
