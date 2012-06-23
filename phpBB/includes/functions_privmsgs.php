@@ -1103,13 +1103,14 @@ function phpbb_delete_user_pms($user_id)
 
 	// Get PM Information for later deleting
 	// The two queries where split, so we can use our indexes
+	$undelivered_msg = $undelivered_user = $delete_ids = array();
+
 	// Part 1: get PMs the user received
 	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE user_id = ' . $user_id;
 	$result = $db->sql_query($sql);
 
-	$undelivered_msg = $undelivered_user = $delete_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
