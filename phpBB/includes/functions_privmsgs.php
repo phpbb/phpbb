@@ -1173,7 +1173,7 @@ function phpbb_delete_user_pms($user_id)
 		$db->sql_query($sql);
 	}
 
-	// Reset the user´s pm count to 0
+	// Reset the user's pm count to 0
 	if (isset($undelivered_user[$user_id]))
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
