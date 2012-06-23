@@ -1135,7 +1135,7 @@ function phpbb_delete_user_pms($user_id)
 	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE author_id = ' . $user_id . '
-				AND folder_id = ' . PRIVMSGS_NO_BOX;
+			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
