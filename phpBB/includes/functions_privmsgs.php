@@ -1133,7 +1133,7 @@ function phpbb_delete_user_pms($user_id)
 	}
 	$db->sql_freeresult($result);
 
-	// Part 2: get PMs the user sent
+	// Part 2: get PMs the user sent, but has yet to be received
 	$sql = 'SELECT msg_id, user_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE author_id = ' . $user_id . '
