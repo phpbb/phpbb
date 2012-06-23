@@ -1181,6 +1181,7 @@ function phpbb_delete_user_pms($user_id)
 				user_unread_privmsg = 0
 			WHERE user_id = ' . $user_id;
 		$db->sql_query($sql);
+
 		unset($undelivered_user[$user_id]);
 	}
 
