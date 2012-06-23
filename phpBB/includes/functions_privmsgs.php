@@ -1106,7 +1106,7 @@ function phpbb_delete_user_pms($user_id)
 	$undelivered_msg = $undelivered_user = $delete_ids = array();
 
 	// Part 1: get PMs the user received
-	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
+	$sql = 'SELECT msg_id, user_id, author_id, folder_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE user_id = ' . $user_id;
 	$result = $db->sql_query($sql);
@@ -1134,7 +1134,7 @@ function phpbb_delete_user_pms($user_id)
 	$db->sql_freeresult($result);
 
 	// Part 2: get PMs the user sent
-	$sql = 'SELECT msg_id, author_id, folder_id, pm_unread, pm_new
+	$sql = 'SELECT msg_id, user_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE author_id = ' . $user_id . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
