@@ -536,10 +536,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
 
-	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
-	if (!sizeof($id_ary) && !$search_id)
+	// display error if $start is negative or exceeds the amount
+	if (($start >= $total_match_count || $start < 0) && ($start != 0))
 	{
-		trigger_error('NO_SEARCH_RESULTS');
+		trigger_error('PAGE_NOT_FOUND');
 	}
 
 	$sql_where = '';
