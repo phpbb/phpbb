@@ -14,6 +14,7 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 {
 	public function test_form_upload()
 	{
+		$this->markTestIncomplete();
 		$path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
