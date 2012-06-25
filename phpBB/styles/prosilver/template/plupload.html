@@ -1,7 +1,8 @@
 <script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.js"></script>
 <script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.html5.js"></script>
 <script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
-<script type="text/javascript">//<![CDATA[
+<script type="text/javascript">
+//<![CDATA[
 plupload.phpbb = {
 	i18n: {
 		'Select files': '{LA_PLUPLOAD_SELECT_FILES}',
@@ -36,11 +37,12 @@ plupload.phpbb = {
 		{S_RESIZE}
 		headers: {'X-PHPBB-USING-PLUPLOAD': '1'},
 		file_data_name: 'fileupload',
-		multipart_params: {'add_file': '{L_ADD_FILE}'},
+		multipart_params: {'add_file': '{LA_ADD_FILE}'},
 		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',
 		element_hook: '#attach-panel .inner',
 		form_hook: '#postform'
 	}
 };
-//]]></script>
+//]]>
+</script>
 <script type="text/javascript" src="{T_ASSETS_PATH}/javascript/plupload.js"></script>
