@@ -2209,9 +2209,17 @@ function change_database_data(&$no_updates, $version)
 
 			if (!isset($config['fulltext_postgres_ts_name']))
 			{
-				set_config('fulltext_postgres_max_word_len', 254);
-				set_config('fulltext_postgres_min_word_len', 4);
 				set_config('fulltext_postgres_ts_name', 'simple');
+			}
+
+			if (!isset($config['fulltext_postgres_min_word_len']))
+			{
+				set_config('fulltext_postgres_min_word_len', 4);
+			}
+
+			if (!isset($config['fulltext_postgres_max_word_len']))
+			{
+				set_config('fulltext_postgres_max_word_len', 254);
 			}
 
 			if (!isset($config['load_jquery_cdn']))
