@@ -49,7 +49,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		{
 			$pgsql_version = explode(',', substr($db->sql_server_info(), 10));
 			$this->version = trim($pgsql_version[0]);
-			if(version_compare($this->version, '8.3', '>='))
+			if (version_compare($this->version, '8.3', '>='))
 			{
 				$this->tsearch_usable = true;
 			}
@@ -752,7 +752,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	{
 		global $db, $config;
 
-		if($db->sql_layer != 'postgres')
+		if ($db->sql_layer != 'postgres')
 		{
 			$this->stats = array();
 			return;

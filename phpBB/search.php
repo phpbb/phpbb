@@ -596,7 +596,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
-	//check if search backend supports phrase search or not
+	// Check if search backend supports phrase search or not
 	$l_phrase_search_disabled = '';
 	if (strpos(html_entity_decode($keywords), '"') !== false && isset($search->phrase_search))
 	{
