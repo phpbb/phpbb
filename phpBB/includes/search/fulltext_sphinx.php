@@ -226,7 +226,7 @@ class phpbb_search_fulltext_sphinx
 			$config_object = new sphinx_config($config['fulltext_sphinx_config_path'] . 'sphinx.conf');
 
 			$config_data = array(
-				"source source_phpbb_{$this->id}_main" => array(
+				'source source_phpbb_' . $this->id . '_main' => array(
 					array('type',						'mysql'),
 					array('sql_host',					$dbhost),
 					array('sql_user',					$dbuser),
@@ -265,7 +265,7 @@ class phpbb_search_fulltext_sphinx
 					array('sql_attr_timestamp'	,		'topic_last_post_time'),
 					array('sql_attr_str2ordinal',		'post_subject'),
 				),
-				"source source_phpbb_{$this->id}_delta : source_phpbb_{$this->id}_main" => array(
+				'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
 					array('sql_query_pre',				''),
 					array('sql_query_range',			''),
 					array('sql_range_step',				''),
@@ -286,9 +286,9 @@ class phpbb_search_fulltext_sphinx
 							p.topic_id = t.topic_id
 							AND p.post_id >=  ( SELECT max_doc_id FROM ' . SPHINX_TABLE . ' WHERE counter_id=1 )'),
 				),
-				"index index_phpbb_{$this->id}_main" => array(
-					array('path',						$config['fulltext_sphinx_data_path'] . "index_phpbb_{$this->id}_main"),
-					array('source',						"source_phpbb_{$this->id}_main"),
+				'index index_phpbb_' . $this->id . '_main' => array(
+					array('path',						$config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_main'),
+					array('source',						'source_phpbb_' . $this->id . '_main'),
 					array('docinfo',					'extern'),
 					array('morphology',					'none'),
 					array('stopwords',					(file_exists($config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt') && $config['fulltext_sphinx_stopwords']) ? $config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt' : ''),
@@ -298,9 +298,9 @@ class phpbb_search_fulltext_sphinx
 					array('min_prefix_len',				'0'),
 					array('min_infix_len',				'0'),
 				),
-				"index index_phpbb_{$this->id}_delta : index_phpbb_{$this->id}_main" => array(
-					array('path',						$config['fulltext_sphinx_data_path'] . "index_phpbb_{$this->id}_delta"),
-					array('source',						"source_phpbb_{$this->id}_delta"),
+				'index index_phpbb_' . $this->id . '_delta : index_phpbb_' . $this->id . '_main' => array(
+					array('path',						$config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_delta'),
+					array('source',						'source_phpbb_' . $this->id . '_delta'),
 				),
 				'indexer' => array(
 					array('mem_limit',					$config['fulltext_sphinx_indexer_mem_limit'] . 'M'),
