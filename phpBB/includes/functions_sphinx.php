@@ -44,7 +44,7 @@ class sphinx_config
 	* @param	string 					$name	The name of the section that shall be returned
 	* @return	sphinx_config_section			The section object or null if none was found
 	*/
-	function &get_section_by_name($name)
+	function get_section_by_name($name)
 	{
 		for ($i = 0, $size = sizeof($this->sections); $i < $size; $i++)
 		{
@@ -62,7 +62,7 @@ class sphinx_config
 	* @param	string					$name	The name for the new section
 	* @return	sphinx_config_section			The newly created section object
 	*/
-	function &add_section($name)
+	function add_section($name)
 	{
 		$this->sections[] = new sphinx_config_section($name, '');
 		return $this->sections[sizeof($this->sections) - 1];
@@ -345,7 +345,7 @@ class sphinx_config_section
 	* @return	sphinx_config_section			The first variable object from this section with the
 	*											given name or null if none was found
 	*/
-	function &get_variable_by_name($name)
+	function get_variable_by_name($name)
 	{
 		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
@@ -382,7 +382,7 @@ class sphinx_config_section
 	* @param	string					$value	The value for the new variable
 	* @return	sphinx_config_variable			Variable object that was created
 	*/
-	function &create_variable($name, $value)
+	function create_variable($name, $value)
 	{
 		$this->variables[] = new sphinx_config_variable($name, $value, '');
 		return $this->variables[sizeof($this->variables) - 1];

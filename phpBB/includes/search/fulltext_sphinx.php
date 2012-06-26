@@ -323,10 +323,10 @@ class phpbb_search_fulltext_sphinx
 
 			foreach ($config_data as $section_name => $section_data)
 			{
-				$section = &$config_object->get_section_by_name($section_name);
+				$section = $config_object->get_section_by_name($section_name);
 				if (!$section)
 				{
-					$section = &$config_object->add_section($section_name);
+					$section = $config_object->add_section($section_name);
 				}
 
 				foreach ($delete as $key => $void)
@@ -346,10 +346,10 @@ class phpbb_search_fulltext_sphinx
 
 					if (!isset($non_unique[$key]))
 					{
-						$variable = &$section->get_variable_by_name($key);
+						$variable = $section->get_variable_by_name($key);
 						if (!$variable)
 						{
-							$variable = &$section->create_variable($key, $value);
+							$variable = $section->create_variable($key, $value);
 						}
 						else
 						{
@@ -358,7 +358,7 @@ class phpbb_search_fulltext_sphinx
 					}
 					else
 					{
-						$variable = &$section->create_variable($key, $value);
+						$variable = $section->create_variable($key, $value);
 					}
 				}
 			}
