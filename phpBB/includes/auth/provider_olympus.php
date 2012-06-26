@@ -56,7 +56,7 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function generate_login_box($redirect = '', $admin = false, $s_display = true)
+	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
 	{
 		$provider_config = $this->get_configuration();
 		if (!$provider_config['OPTIONS']['enabled']['setting']
@@ -97,77 +97,29 @@ class phpbb_auth_provider_olympus implements phpbb_auth_provider_interface
 		$u_send_password = ($this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '';
 		$u_resend_activation = ($this->config['require_activation'] == USER_ACTIVATION_SELF && $this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '';
 
-		$tpl = '
-		<script type="text/javascript">
-		// <![CDATA[
-			onload_functions.push(\'document.getElementById("';
-		if ($admin)
-		{
-			$tpl .= $password_credential;
-		}
-		else
-		{
-			$tpl .= $username_credential;
-		}
-		$tpl .= '").focus();\');
-		// ]]>
-		</script>
-		<form action="' . $s_login_action . '" method="post" id="olympus_login">
-			<div>
-				<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
-					<dl>
-						<dt><label for="' . $username_credential . '">' . $this->user->lang['USERNAME'] . ':</label></dt>
-						<dd><input type="text" tabindex="1" name="' . $username_credential . '" id="' . $username_credential . '" size="25" value="' . $username . '" class="inputbox autowidth" /></dd>
-					</dl>
-					<dl>
-						<dt><label for="' . $password_credential . '">' . $this->user->lang['PASSWORD'] . ':</label></dt>
-						<dd><input type="password" tabindex="2" id="' . $password_credential . '" name="' . $password_credential . '" size="25" class="inputbox autowidth" /></dd>';
+		$template->assign_vars(array(
+			'ADMIN'					=> $admin,
+			'USERNAME'				=> $username,
+			'USERNAME_CREDENTIAL'	=> $username_credential,
+			'PASSWORD_CREDENTIAL'	=> $password_credential,
 
-		if ($s_display)
+			'S_AUTOLOGIN_ENABLED'	=> $s_autologin_enabled,
+			'S_DISPLAY'				=> $s_display,
+			'S_LOGIN_ACTION'		=> $s_login_action,
+			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+
+			'U_SEND_PASSWORD'		=> $u_send_password,
+			'U_RESEND_ACTIVATION'	=> $u_resend_activation,
+		));
+
+		$template->set_filenames(array(
+			'login_body_olympus' => 'login_body_olympus.html')
+		);
+		$tpl = $template->assign_display('login_body_olympus', '', true);
+		if (!$tpl)
 		{
-			if ($u_send_password)
-			{
-				$tpl .= '
-						<dd><a href="' . $u_send_password . '">' . $this->user->lang['FORGOT_PASS'] . '</a></dd>';
-			}
-			if ($u_resend_activation)
-			{
-				$tpl .= '
-						<dd><a href="' . $u_resend_activation . '">' . $this->user->lang['RESEND_ACTIVATION'] . '</a></dd>';
-			}
+			return null;
 		}
-
-		$tpl .= '
-					</dl>';
-		/* Disabled until Olympus is refactored into this provider class
-		$tpl .= '
-					<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
-						<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
-						<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
-					<!-- ENDIF -->';*/
-		if ($s_display)
-		{
-			$tpl .= '
-					<dl>';
-			if ($s_autologin_enabled)
-			{
-				$tpl .= '
-						<dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> ' . $this->user->lang['LOG_ME_IN'] . '</label></dd>';
-			}
-			$tpl .= '
-						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['HIDE_ME'] . '</label></dd>
-					</dl>';
-		}
-
-		$tpl .= '
-					<dl>
-						<dt>&nbsp;</dt>
-						<dd>' . $s_hidden_fields . '<input type="submit" name="login" tabindex="6" value="' . $this->user->lang['LOGIN'] . '" class="button1" /></dd>
-					</dl>
-				</fieldset>
-			</div>
-		</form>';
-
 		return $tpl;
 	}
 

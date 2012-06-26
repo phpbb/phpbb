@@ -3165,7 +3165,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		$tpl = $provider->generate_login_box($redirect, $admin, $s_display);
+		$tpl = $provider->generate_login_box($template, $redirect, $admin, $s_display);
 
 		if ($tpl === null)
 		{

@@ -74,7 +74,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function generate_login_box($redirect = '', $admin = false, $s_display = true)
+	public function generate_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
 	{
 		$provider_config = $this->get_configuration();
 		if (!$provider_config['OPTIONS']['enabled']['setting']
@@ -112,39 +112,25 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
 
 		$openid_identifier = 'openid_identifier';
-		$tpl = '
-		<dt>' . $this->user->lang['AUTH_PROVIDER_OPENID'] . '</dt>
-		<dd>
-			<div>
-				<form action="' . $s_login_action . '" method="post" id="openid_login">
-					<dl>
-						<dt><label for="' . $openid_identifier . '"><img src="' . $theme_path . '/images/logo_openid_small.gif" alt="'. $this->user->lang['AUTH_PROVIDER_OPENID'] .'"/></label></dt>
-						<dd><input type="text" tabindex="1" name="' . $openid_identifier . '" id="' . $openid_identifier . '" size="25" value="" class="inputbox autowidth" /></dd>
-					</dl>';
-		if (!$admin)
-		{
-			$tpl .= '
-					<dl>';
-			if ($s_autologin_enabled)
-			{
-				$tpl .= '
-						<dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> ' . $this->user->lang['LOG_ME_IN'] . '</label></dd>
-						';
-			}
-		$tpl .= '
-						<dd><label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> ' . $this->user->lang['HIDE_ME'] . '</label></dd>
-					</dl>';
-		}
-		$tpl .= '
-					<dl>
-						<dt>&nbsp;</dt>
-						<dd>' . $s_hidden_fields . '<input type="submit" name="login" tabindex="6" value="' . $this->user->lang['LOGIN'] . '" class="button1" /></dd>
-					</dl>
-				</form>
-			</div>
-		</dd>
-		';
 
+		$template->assign_vars(array(
+			'ADMIN'					=> $admin,
+			'OPENID_IDENTIFIER'		=> $openid_identifier,
+			'THEME_PATH'			=> $theme_path,
+
+			'S_AUTOLOGIN_ENABLED'	=> $s_autologin_enabled,
+			'S_LOGIN_ACTION'		=> $s_login_action,
+			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+		));
+
+		$template->set_filenames(array(
+			'login_body_openid' => 'login_body_openid.html')
+		);
+		$tpl = $template->assign_display('login_body_openid', '', true);
+		if (!$tpl)
+		{
+			return null;
+		}
 		return $tpl;
 	}
 
