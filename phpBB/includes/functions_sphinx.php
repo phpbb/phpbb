@@ -46,16 +46,14 @@ class sphinx_config
 	*/
 	function &get_section_by_name($name)
 	{
-		for ($i = 0, $n = sizeof($this->sections); $i < $n; $i++)
+		for ($i = 0, $size = sizeof($this->sections); $i < $size; $i++)
 		{
 			// make sure this is really a section object and not a comment
-			if (is_a($this->sections[$i], 'sphinx_config_section') && $this->sections[$i]->get_name() == $name)
+			if (($this->sections[$i] instanceof sphinx_config_section) && $this->sections[$i]->get_name() == $name)
 			{
 				return $this->sections[$i];
 			}
 		}
-		$null = null;
-		return $null;
 	}
 
 	/**
@@ -116,7 +114,7 @@ class sphinx_config
 					$section_name = '';
 					$section_name_comment = '';
 					$found_opening_bracket = false;
-					for ($j = 0, $n = strlen($line); $j < $n; $j++)
+					for ($j = 0, $length = strlen($line); $j < $length; $j++)
 					{
 						if ($line[$j] == '#')
 						{
@@ -189,15 +187,15 @@ class sphinx_config
 					$in_value = false;
 					$end_section = false;
 
-					// ... then we should prase this line char by char:
-					// - first there's the variable name
-					// - then an equal sign
-					// - the variable value
-					// - possibly a backslash before the linefeed in this case we need to continue
-					//   parsing the value in the next line
-					// - a # indicating that the rest of the line is a comment
-					// - a closing curly bracket indicating the end of this section
-					for ($j = 0, $n = strlen($line); $j < $n; $j++)
+					/* ... then we should prase this line char by char:
+					 - first there's the variable name
+					 - then an equal sign
+					 - the variable value
+					 - possibly a backslash before the linefeed in this case we need to continue
+					   parsing the value in the next line
+					 - a # indicating that the rest of the line is a comment
+					 - a closing curly bracket indicating the end of this section*/
+					for ($j = 0, $length = strlen($line); $j < $length; $j++)
 					{
 						if ($line[$j] == '#')
 						{
@@ -223,7 +221,7 @@ class sphinx_config
 						}
 						else
 						{
-							if ($line[$j] == '\\' && $j == $n - 1)
+							if ($line[$j] == '\\' && $j == $length - 1)
 							{
 								$value .= "\n";
 								$in_value = true;
@@ -349,16 +347,14 @@ class sphinx_config_section
 	*/
 	function &get_variable_by_name($name)
 	{
-		for ($i = 0, $n = sizeof($this->variables); $i < $n; $i++)
+		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
 			// make sure this is a variable object and not a comment
-			if (is_a($this->variables[$i], 'sphinx_config_variable') && $this->variables[$i]->get_name() == $name)
+			if (($this->variables[$i] instanceof sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				return $this->variables[$i];
 			}
 		}
-		$null = null;
-		return $null;
 	}
 
 	/**
@@ -368,10 +364,10 @@ class sphinx_config_section
 	*/
 	function delete_variables_by_name($name)
 	{
-		for ($i = 0; $i < sizeof($this->variables); $i++)
+		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
 			// make sure this is a variable object and not a comment
-			if (is_a($this->variables[$i], 'sphinx_config_variable') && $this->variables[$i]->get_name() == $name)
+			if (($this->variables[$i] instanceof sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				array_splice($this->variables, $i, 1);
 				$i--;
