@@ -733,8 +733,6 @@ class phpbb_search_fulltext_sphinx
 
 		if (!isset($config['fulltext_sphinx_configured']) || !$config['fulltext_sphinx_configured'])
 		{
-			$user->add_lang('mods/fulltext_sphinx');
-
 			return $user->lang['FULLTEXT_SPHINX_CONFIGURE_FIRST'];
 		}
 
@@ -902,8 +900,6 @@ class phpbb_search_fulltext_sphinx
 			$this->get_stats();
 		}
 
-		$user->add_lang('mods/fulltext_sphinx');
-
 		return array(
 			$user->lang['FULLTEXT_SPHINX_MAIN_POSTS']			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
 			$user->lang['FULLTEXT_SPHINX_DELTA_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
@@ -965,8 +961,6 @@ class phpbb_search_fulltext_sphinx
 	function acp()
 	{
 		global $user, $config;
-
-		$user->add_lang('mods/fulltext_sphinx');
 
 		$config_vars = array(
 			'fulltext_sphinx_autoconf' => 'bool',
