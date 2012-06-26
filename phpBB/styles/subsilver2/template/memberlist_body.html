@@ -4,9 +4,9 @@
 	<!-- INCLUDE overall_header.html -->
 <!-- ENDIF -->
 
-<div class="panel" id="memberlist_search"<!-- IF not S_SEARCH_USER --> style="display: none;"<!-- ENDIF -->>
+<!-- IF S_SEARCH_USER -->
 	<!-- INCLUDE memberlist_search.html -->	
-</div>
+<!-- ENDIF -->
 
 <!-- IF S_SHOW_GROUP --><!-- INCLUDE memberlist_group.html --><!-- ENDIF -->
 
@@ -21,9 +21,9 @@
 					<!-- END first_char -->
 				</select>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></td>
 	<!-- IF U_FIND_MEMBER and not S_SEARCH_USER -->
-			<td class="genmed" align="{S_CONTENT_FLOW_END}"><a href="{U_FIND_MEMBER}" onclick="return toggle_section(this, 'memberlist_search', '{LA_FIND_USERNAME}', '{LA_HIDE_MEMBER_SEARCH}')">{L_FIND_USERNAME}</a></td>
+			<td class="genmed" align="{S_CONTENT_FLOW_END}"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td>
 	<!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP -->
-			<td class="genmed" align="{S_CONTENT_FLOW_END}"><a href="{U_HIDE_FIND_MEMBER}" onclick="return toggle_section(this, 'memberlist_search', '{LA_FIND_USERNAME}', '{LA_HIDE_MEMBER_SEARCH}')">{L_HIDE_MEMBER_SEARCH}</a></td>
+			<td class="genmed" align="{S_CONTENT_FLOW_END}"><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a></td>
 	<!-- ENDIF -->
 		</tr>
 		</table>

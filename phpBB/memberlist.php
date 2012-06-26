@@ -1025,7 +1025,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if ((in_array($mode, array('', 'searchuser')) || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
@@ -1377,7 +1377,7 @@ switch ($mode)
 		}
 
 		// Some search user specific data
-		if (in_array($mode, array('', 'searchuser')) && ($config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
@@ -1447,7 +1447,7 @@ switch ($mode)
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
-				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? true : false,
+				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
 				'S_SELECT_SINGLE'		=> $select_single,
