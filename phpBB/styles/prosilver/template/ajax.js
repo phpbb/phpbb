@@ -192,6 +192,17 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
-
+/**
+* Toggle the member search panel in memberlist.php.
+*/
+$('#member_search').click(function () {
+	$('#memberlist_search').slideToggle('fast');
+	phpbb.ajax_callbacks['alt_text'].call(this);
+	//Focus on the username textbox if it's available and displayed
+	if ($('#username').length > 0 && $('#memberlist_search').is(':visible')) {
+		$('#username').focus();
+	}
+	return false;
+});
 
 })(jQuery); // Avoid conflicts with other libraries
