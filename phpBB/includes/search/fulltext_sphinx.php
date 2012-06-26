@@ -53,7 +53,7 @@ class phpbb_search_fulltext_sphinx
 		$this->id = $config['avatar_salt'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
 
-		$this->sphinx = new SphinxClient ();
+		$this->sphinx = new SphinxClient();
 
 		if (!empty($config['fulltext_sphinx_configured']))
 		{
@@ -648,18 +648,28 @@ class phpbb_search_fulltext_sphinx
 		}
 		else if ($mode != 'post' && $post_id)
 		{
-			// update topic_last_post_time for full topic
-			$sql = 'SELECT p1.post_id
-				FROM ' . POSTS_TABLE . ' p1
-				LEFT JOIN ' . POSTS_TABLE . ' p2 ON (p1.topic_id = p2.topic_id)
-				WHERE p2.post_id = ' . $post_id;
+			// Update topic_last_post_time for full topic
+			$sql_array = array(
+				'SELECT'	=> 'p1.post_id',
+				'FROM'		=> array(
+					POSTS_TABLE	=> 'p1',
+				),
+				'LEFT_JOIN'	=> array(array(
+					'FROM'	=> array(
+						POSTS_TABLE	=> 'p2'
+					),
+					'ON'	=> 'p1.topic_id = p2.topic_id',
+				)),
+			);
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 
 			$post_updates = array();
 			$post_time = time();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_updates[(int)$row['post_id']] = array((int) $post_time);
+				$post_updates[(int)$row['post_id']] = array($post_time);
 			}
 			$db->sql_freeresult($result);
 
