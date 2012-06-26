@@ -467,7 +467,9 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason text(65535) NOT NULL DEFAULT '',
 	post_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	akismet_spam INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	akismet_ham INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_posts_forum_id ON phpbb_posts (forum_id);

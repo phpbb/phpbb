@@ -481,6 +481,8 @@ CREATE TABLE phpbb_posts (
 	post_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	akismet_spam tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	akismet_ham tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (post_id),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),

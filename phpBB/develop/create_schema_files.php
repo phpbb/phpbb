@@ -1350,6 +1350,8 @@ function get_schema_struct()
 			'post_edit_user'		=> array('UINT', 0),
 			'post_edit_count'		=> array('USINT', 0),
 			'post_edit_locked'		=> array('BOOL', 0),
+			'akismet_spam'	   		=> array('BOOL', 0),
+			'akismet_ham'	   		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'post_id',
 		'KEYS'			=> array(
