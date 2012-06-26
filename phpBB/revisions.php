@@ -151,30 +151,37 @@ if ($revert && $revert_confirm && check_form_key('revert_form', 120))
 			break;
 		}
 
-		$u_return_post = append("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id";
-		$u_return_revision = append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id));
-
 		trigger_error($lang . '
-			<br /><a href="' . $u_return_post . '">' . $user->lang('RETURN_POST') . '</a>
-			<br /><a href="' . $u_return_revision . '">' . $user->lang('RETURN_REVISION') . '</a>');
+			<br /><a href="' . append("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>
+			<br /><a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)) . '">' . $user->lang('RETURN_REVISION') . '</a>');
 	}
 }
 
 $current = $post->get_current_revision();
 
-// If we are reverting, the from revision is the current post
-// Otherwise, it's our first revision in the array
-$first = $revert ? $current : current($revisions);
+if ($compare && $first_id && $last_id)
+{
+	$first = $revisions[$first_id];
+	$last = $revisions[$last_id];
 
-// If we are reversting the, the to revision is the given revision ID
-// Otherwise, it is the final (i.e. current) revision
-$last = $revert ? $revisions[$revert] : $current;
+	$reverse = $first_id < $last_id || !$last->is_current();
 
-// Ensure that we have the proper revision IDs
-$first_id = $first->get_id();
-$last_id = $last->get_id();
+	if ($reverse)
+	{
+		$revisions = array_reverse($revisions, true);
+	}
+}
+else if ($revert)
+{
+	$first = $current;
+	$last = $revisions[$revert];
+}
+else
+{
+	$first = current($revisions);
+	$last = $current;
+}
 
-// Let's get our diff driver
 // @todo #1 - either pick a diff engine to use forever, or make this dynamic; for now we go with what we have
 // @todo #2 - make a new function for this... e.g. generate_text_diff($from, $to[, $engine = 'finediff'])
 $text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(), $last->get_text_decoded());
@@ -183,17 +190,14 @@ $subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), 
 $text_diff_rendered = bbcode_nl2br($text_diff->render());
 $subject_diff_renedered = bbcode_nl2br($subject_diff->render());
 
-$reverse = $first_id > $last_id || !$last->is_current();
-
-if ($reverse)
-{
-	$revisions = array_reverse($revisions, true);
-}
-
 $revision_number = 1;
 $revision_users = array();
 foreach ($revisions as $revision)
 {
+	$in_range = ($first == $current && $revision->get_id() >= $last->get_id())
+		|| ($last == $current && $revision->get_id() <= $first->get_id())
+		|| ($revision->get_id() >= $first->get_id() && $revision->get_id() <= $last->get_id());
+
 	$template->assign_block_vars('revision', array(
 		'USERNAME'			=> $revision->get_username(),
 		'USER_AVATAR'		=> $revision->get_avatar(20, 20),
@@ -202,7 +206,7 @@ foreach ($revisions as $revision)
 		'ID'				=> $revision->get_id(),
 		'NUMBER'			=> $revision_number,
 
-		'IN_RANGE'			=> true, //@todo: work out this logic >> ($last_id == $current->get_id() || $revision->get_id() <= $last_id) && $revision->get_id() >= $first_id,
+		'IN_RANGE'			=> $in_range,
 
 		'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
 		'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
