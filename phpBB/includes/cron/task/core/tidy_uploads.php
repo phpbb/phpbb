@@ -38,6 +38,10 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	protected $config;
 
+	/**
+	* phpBB's installed root path
+	* @var string
+	*/
 	protected $root_path;
 
 	/**
@@ -62,8 +66,8 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 		$time_difference = time() - self::MAX_FILE_AGE;
 		try
 		{
-			$it = new DirectoryIterator($dir);
-			foreach ($it as $file)
+			$iterator = new DirectoryIterator($dir);
+			foreach ($iterator as $file)
 			{
 				if ($file->getBasename() === 'index.htm')
 				{
@@ -100,7 +104,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		return file_exists($this->root_path . $this->config['upload_path'] . '/plupload');
+		return is_dir($this->root_path . $this->config['upload_path'] . '/plupload');
 	}
 
 	/**
