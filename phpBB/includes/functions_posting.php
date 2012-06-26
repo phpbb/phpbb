@@ -1723,7 +1723,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
-				'post_edit_locked'	=> $data['post_edit_locked']
+				'post_edit_locked'	=> $data['post_edit_locked'],
+				'akismet_spam'		=> $data['phpbb_akismet_spam'],
 			);
 		break;
 
@@ -1787,7 +1788,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
-				'post_edit_locked'	=> $data['post_edit_locked'])
+				'post_edit_locked'	=> $data['post_edit_locked'],
+				'akismet_spam'		=> $data['phpbb_akismet_spam'])
 			);
 
 			if ($update_message)

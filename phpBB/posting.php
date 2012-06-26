@@ -1065,6 +1065,7 @@ if ($submit || $preview || $refresh)
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
+				'phpbb_akismet_spam'	=> false,
 			);
 
 			if ($mode == 'edit')
@@ -1072,6 +1073,26 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies_real'] = $post_data['topic_replies_real'];
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
+
+			// Start phpBB-Akismet
+			if ($config['phpbb_akismet_enabled'] && $config['phpbb_akismet_key'])
+			{
+				if (!class_exists('phpbb_akismet'))
+				{
+					include($phpbb_root_path . 'includes/akismet/phpbb_akismet.' . $phpEx);
+				}
+				$phpbb_akismet = new phpbb_akismet();
+
+				$message_decoded = $message_parser->message;
+				decode_message($message_decoded, $message_parser->bbcode_uid);
+
+				if ($phpbb_akismet->isCommentSpam($message_decoded))
+				{
+					$data['phpbb_akismet_spam'] = true;
+					$data['force_approved_state'] = false; // Force disapproved
+				}
+			}
+			// End phpBB-Akismet
 
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);

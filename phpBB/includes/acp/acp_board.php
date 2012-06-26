@@ -197,7 +197,13 @@ class acp_board
 						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 
-						'legend3'					=> 'ACP_SUBMIT_CHANGES',
+						// Start phpBB-Akismet
+						'legend3'				=> 'PHPBB_AKISMET',
+						'phpbb_akismet_enabled'	=> array('lang' => 'PHPBB_AKISMET_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
+						'phpbb_akismet_key'		=> array('lang' => 'PHPBB_AKISMET_API_KEY',	'validate' => 'string',	'type' => 'text:20:20', 'explain' => true),
+						// End phpBB-Akismet
+
+						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -446,6 +452,24 @@ class acp_board
 
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
+
+		// Start phpBB-Akismet
+		$user->add_lang('mods/phpbb_akismet');
+
+		if ($submit && isset($cfg_array['phpbb_akismet_key']) && $cfg_array['phpbb_akismet_key'])
+		{
+			if (!class_exists('phpbb_akismet'))
+			{
+				include($phpbb_root_path . 'includes/akismet/phpbb_akismet.' . $phpEx);
+			}
+			$phpbb_akismet = new phpbb_akismet();
+
+			if (!$phpbb_akismet->isKeyValid($cfg_array['phpbb_akismet_key']))
+			{
+				$error[] = $user->lang['PHPBB_AKISMET_INVALID_KEY'];
+			}
+		}
+		// End phpBB-Akismet
 
 		if ($submit && !check_form_key($form_key))
 		{
@@ -786,7 +810,7 @@ class acp_board
 		{
 			$act_ary['ACC_USER'] = USER_ACTIVATION_SELF;
 			$act_ary['ACC_ADMIN'] = USER_ACTIVATION_ADMIN;
-		}		
+		}
 		$act_options = '';
 
 		foreach ($act_ary as $key => $value)

@@ -1041,6 +1041,11 @@ while ($row = $db->sql_fetchrow($result))
 		'enable_sig'		=> $row['enable_sig'],
 		'friend'			=> $row['friend'],
 		'foe'				=> $row['foe'],
+
+		// Start phpBB-Akismet
+		'akismet_spam'		=> (isset($row['akismet_spam'])) ? $row['akismet_spam'] : 0,
+		'akismet_ham'		=> (isset($row['akismet_ham'])) ? $row['akismet_ham'] : 0,
+		// End phpBB-Akismet
 	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
@@ -1579,6 +1584,24 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.custom_fields', $field_data);
 		}
 	}
+
+	// Start phpBB-Akismet
+	if ($config['phpbb_akismet_enabled'] && $config['phpbb_akismet_key'])
+	{
+		if (!isset($user->lang['AKISMET']))
+		{
+			$user->add_lang('mods/phpbb_akismet');
+		}
+
+		if (!$row['akismet_spam'])
+		{
+			$template->assign_block_vars('postrow.custom_fields', array(
+				'PROFILE_FIELD_NAME'		=> $user->lang['AKISMET'],
+				'PROFILE_FIELD_VALUE'		=> '<a href="' . append_sid("{$phpbb_root_path}phpbb_akismet.$phpEx", "p={$row['post_id']}") . '">' . $user->lang['PHPBB_AKISMET_REMOVE_SPAM'] . '</a>',
+			));
+		}
+	}
+	// End phpBB-Akismet
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (!empty($attachments[$row['post_id']]))

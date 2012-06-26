@@ -1092,6 +1092,10 @@ function database_update_info()
 				GROUPS_TABLE		=> array(
 					'group_teampage'	=> array('UINT', 0, 'after' => 'group_legend'),
 				),
+				POSTS_TABLE	=> array(
+					'akismet_spam'		=> array('BOOL', 0),
+					'akismet_ham'		=> array('BOOL', 0),
+				),
 				PROFILE_FIELDS_TABLE	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
@@ -2581,15 +2585,21 @@ function change_database_data(&$no_updates, $version)
 
 			// Create config value for displaying last subject on forum list
 			if (!isset($config['display_last_subject']))
-			{			
+			{
 				$config->set('display_last_subject', '1');
 			}
-			
+
 			$no_updates = false;
 
 			if (!isset($config['assets_version']))
 			{
 				$config->set('assets_version', '1');
+			}
+
+			if (!isset($config['phpbb_akismet_enabled']))
+			{
+				$config->set('phpbb_akismet_enabled', '1');
+				$config->set('phpbb_akismet_key', '');
 			}
 
 		break;
