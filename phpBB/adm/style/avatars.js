@@ -1,17 +1,9 @@
 function avatar_simplify() {
-    var node = document.getElementById('av_options');
-    for (var i = 0; i < node.children.length; i++) {
-        child = node.children[i];
-        child.style.display = 'none';
-    }
+    $('#av_options').hide();
 
-    var selected = document.getElementById('avatar_driver').value;
-    var id = 'av_option_' + selected;
-    node = document.getElementById(id);
-    if (node != null) {
-        node.style.display = 'block';
-    }
+    var selected = $('#avatar_driver').val();
+    $('#av_option_' + selected).show();
 }
 
 avatar_simplify();
-document.getElementById('avatar_driver').onchange = avatar_simplify;
+$('#avatar_driver').on('change', avatar_simplify);
