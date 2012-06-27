@@ -189,6 +189,12 @@ $config = new phpbb_config_db($db, $cache->get_driver(), CONFIG_TABLE);
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
+// Update asset_version
+if (isset($config['assets_version']))
+{
+	set_config('assets_version', $config['assets_version'] + 1);
+}
+
 // phpbb_db_tools will be taken from new files (under install/update/new)
 // if possible, falling back to the board's copy.
 $db_tools = new phpbb_db_tools($db, true);
@@ -254,7 +260,7 @@ if ($has_global && !$ga_forum_id)
 		</form>
 	<?php
 	_print_footer();
-	exit;
+	exit_handler();
 }
 
 header('Content-type: text/html; charset=UTF-8');
@@ -1021,7 +1027,7 @@ function database_update_info()
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
 						// in 3.0.9-RCX installations and has to be dropped in
-						// 3.0.11 after the db_tools class is capable of properly
+						// 3.0.12 after the db_tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
@@ -1063,8 +1069,10 @@ function database_update_info()
 		'3.0.10-RC2'	=> array(),
 		// No changes from 3.0.10-RC3 to 3.0.10
 		'3.0.10-RC3'	=> array(),
+		// No changes from 3.0.10 to 3.0.11-RC1
+		'3.0.10'		=> array(),
 
-		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.11-RC1 */
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
 
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		'3.1.0-dev'		=> array(
@@ -1106,20 +1114,6 @@ function database_update_info()
 					'user_avatar_type'		=> array('VCHAR:32', 0),
 				),
 			),
-			'drop_columns'      => array(
-			    STYLES_TABLE		    => array(
-			        'imageset_id',
-			        'template_id',
-			        'theme_id',
-                ),
-            ),
-            'drop_tables'       => array(
-                STYLES_IMAGESET_TABLE,
-                STYLES_IMAGESET_DATA_TABLE,
-                STYLES_TEMPLATE_TABLE,
-                STYLES_TEMPLATE_DATA_TABLE,
-                STYLES_THEME_TABLE,
-            ),
 		),
 	);
 }
@@ -1131,7 +1125,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx, $db_tools;
 
 	switch ($version)
 	{
@@ -2151,6 +2145,70 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.10-RC3':
 		break;
 
+		// Changes from 3.0.10 to 3.0.11-RC1
+		case '3.0.10':
+			// Updates users having current style a deactivated one
+			$sql = 'SELECT style_id
+				FROM ' . STYLES_TABLE . '
+				WHERE style_active = 0';
+			$result = $db->sql_query($sql);
+
+			$deactivated_style_ids = array();
+			while ($style_id = $db->sql_fetchfield('style_id', false, $result))
+			{
+				$deactivated_style_ids[] = (int) $style_id;
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($deactivated_style_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $config['default_style'] .'
+					WHERE ' . $db->sql_in_set('user_style', $deactivated_style_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
+			// Delete orphan private messages
+			$batch_size = 500;
+
+			$sql_array = array(
+				'SELECT'	=> 'p.msg_id',
+				'FROM'		=> array(
+					PRIVMSGS_TABLE	=> 'p',
+				),
+				'LEFT_JOIN'	=> array(
+					array(
+						'FROM'	=> array(PRIVMSGS_TO_TABLE => 't'),
+						'ON'	=> 'p.msg_id = t.msg_id',
+					),
+				),
+				'WHERE'		=> 't.user_id IS NULL',
+			);
+			$sql = $db->sql_build_query('SELECT', $sql_array);
+
+			do
+			{
+				$result = $db->sql_query_limit($sql, $batch_size);
+
+				$delete_pms = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$delete_pms[] = (int) $row['msg_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (!empty($delete_pms))
+				{
+					$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+						WHERE ' . $db->sql_in_set('msg_id', $delete_pms);
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+			while (sizeof($delete_pms) == $batch_size);
+
+			$no_updates = false;
+		break;
+
 		// Changes from 3.1.0-dev to 3.1.0-A1
 		case '3.1.0-dev':
 
@@ -2282,13 +2340,6 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
-				'edit'	=> array(
-					'base'		=> 'acp_styles',
-					'class'		=> 'acp',
-					'title'		=> 'ACP_STYLES_EDIT',
-					'auth'		=> 'acl_a_styles',
-					'cat'		=> 'ACP_STYLE_MANAGEMENT',
-				),
 				'cache'	=> array(
 					'base'		=> 'acp_styles',
 					'class'		=> 'acp',
@@ -2296,12 +2347,19 @@ function change_database_data(&$no_updates, $version)
 					'auth'		=> 'acl_a_styles',
 					'cat'		=> 'ACP_STYLE_MANAGEMENT',
 				),
+				'autologin_keys'	=> array(
+					'base'		=> 'ucp_profile',
+					'class'		=> 'ucp',
+					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
+					'auth'		=> '',
+					'cat'		=> 'UCP_PROFILE',
+				),
 			);
 
 			_add_modules($modules_to_install);
 
 			$sql = 'DELETE FROM ' . MODULES_TABLE . "
-			    WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
+				WHERE (module_basename = 'styles' OR module_basename = 'acp_styles') AND (module_mode = 'imageset' OR module_mode = 'theme' OR module_mode = 'template')";
 			_sql($sql, $errored, $error_ary);
 
 			// Localise Global Announcements
@@ -2392,11 +2450,144 @@ function change_database_data(&$no_updates, $version)
 				set_config('teampage_memberships', '1');
 			}
 
-			// Clear styles table and add prosilver entry
-			_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+			// Check if styles table was already updated
+			if ($db_tools->sql_table_exists(STYLES_THEME_TABLE))
+			{
+				// Get list of valid 3.1 styles
+				$available_styles = array('prosilver');
 
-			$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
-			_sql($sql, $errored, $error_ary);
+				$iterator = new DirectoryIterator($phpbb_root_path . 'styles');
+				$skip_dirs = array('.', '..', 'prosilver');
+				foreach ($iterator as $fileinfo)
+				{
+					if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/style.cfg'))
+					{
+						$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
+						if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+						{
+							// 3.1 style
+							$available_styles[] = $fileinfo->getFilename();
+						}
+					}
+				}
+
+				// Get all installed styles
+				if ($db_tools->sql_table_exists(STYLES_IMAGESET_TABLE))
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id, i.imageset_path
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id
+							AND i.imageset_id = s.imageset_id";
+				}
+				else
+				{
+					$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id
+						FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . " c
+						WHERE t.template_id = s.template_id
+							AND c.theme_id = s.theme_id";
+				}
+				$result = $db->sql_query($sql);
+
+				$styles = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$styles[] = $row;
+				}
+				$db->sql_freeresult($result);
+
+				// Decide which styles to keep, all others will be deleted
+				$valid_styles = array();
+				foreach ($styles as $style_row)
+				{
+					if (
+						// Delete styles with parent style (not supported yet)
+						$style_row['template_inherits_id'] == 0 &&
+						// Check if components match
+						$style_row['template_path'] == $style_row['theme_path'] && (!isset($style_row['imageset_path']) || $style_row['template_path'] == $style_row['imageset_path']) &&
+						// Check if components are valid
+						in_array($style_row['template_path'], $available_styles)
+						)
+					{
+						// Valid style. Keep it
+						$sql_ary = array(
+							'style_path'	=> $style_row['template_path'],
+							'bbcode_bitfield'	=> $style_row['bbcode_bitfield'],
+							'style_parent_id'	=> 0,
+							'style_parent_tree'	=> '',
+						);
+						_sql('UPDATE ' . STYLES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE style_id = ' . $style_row['style_id'], $errored, $error_ary);
+						$valid_styles[] = (int) $style_row['style_id'];
+					}
+				}
+
+				// Remove old styles tables
+				$changes = array(
+					'drop_columns'	=> array(
+						STYLES_TABLE		=> array(
+							'imageset_id',
+							'template_id',
+							'theme_id',
+						),
+					),
+
+					'drop_tables'	=> array(
+						STYLES_IMAGESET_TABLE,
+						STYLES_IMAGESET_DATA_TABLE,
+						STYLES_TEMPLATE_TABLE,
+						STYLES_TEMPLATE_DATA_TABLE,
+						STYLES_THEME_TABLE,
+					)
+				);
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
+				{
+					_sql($sql, $errored, $error_ary);
+				}
+
+				// Remove old entries from styles table
+				if (!sizeof($valid_styles))
+				{
+					// No valid styles: remove everything and add prosilver
+					_sql('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+
+					$sql = 'INSERT INTO ' . STYLES_TABLE . " (style_name, style_copyright, style_active, style_path, bbcode_bitfield, style_parent_id, style_parent_tree) VALUES ('prosilver', '&copy; phpBB Group', 1, 'prosilver', 'kNg=', 0, '')";
+					_sql($sql, $errored, $error_ary);
+
+					$sql = 'SELECT style_id
+						FROM ' . $table . "
+						WHERE style_name = 'prosilver'";
+					$result = _sql($sql, $errored, $error_ary);
+					$default_style = $db->sql_fetchfield($result);
+					$db->sql_freeresult($result);
+
+					set_config('default_style', $default_style);
+
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
+					_sql($sql, $errored, $error_ary);
+				}
+				else
+				{
+					// There are valid styles in styles table. Remove styles that are outdated
+					_sql('DELETE FROM ' . STYLES_TABLE . ' WHERE ' . $db->sql_in_set('style_id', $valid_styles, true), $errored, $error_ary);
+
+					// Change default style
+					if (!in_array($config['default_style'], $valid_styles))
+					{
+						set_config('default_style', $valid_styles[0]);
+					}
+
+					// Reset styles for users
+					_sql('UPDATE ' . USERS_TABLE . ' SET user_style = 0 WHERE ' . $db->sql_in_set('user_style', $valid_styles, true), $errored, $error_ary);
+				}
+			}
+
+			// Create config value for displaying last subject on forum list
+			if (!isset($config['display_last_subject']))
+			{
+				$config->set('display_last_subject', '1');
+			}
 
 			// Update avatars to modular types
 			$avatar_type_map = array(
@@ -2419,6 +2610,11 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$no_updates = false;
+
+			if (!isset($config['assets_version']))
+			{
+				$config->set('assets_version', '1');
+			}
 
 		break;
 	}

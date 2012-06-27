@@ -52,11 +52,13 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language, $phpbb_root_path;
+		global $lang, $template, $language, $phpbb_root_path, $cache;
 
 		switch ($sub)
 		{
 			case 'intro':
+				$cache->purge();
+
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
@@ -104,6 +106,7 @@ class install_install extends module
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
+				$this->disable_avatars_if_unwritable();
 
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
@@ -128,7 +131,7 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false, 'imagesize' => false,);
+		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false, 'imagesize' => false, 'json' => false,);
 
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
@@ -165,25 +168,28 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-		// Check for register_globals being enabled
-		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+		// Don't check for register_globals on 5.4+
+		if (version_compare($php_version, '5.4.0-dev') < 0)
 		{
-			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			// Check for register_globals being enabled
+			if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+			{
+				$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+			}
+			else
+			{
+				$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+			}
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
+				'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+				'RESULT'		=> $result,
+
+				'S_EXPLAIN'		=> true,
+				'S_LEGEND'		=> false,
+			));
 		}
-		else
-		{
-			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
-		}
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
-			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
-			'RESULT'		=> $result,
-
-			'S_EXPLAIN'		=> true,
-			'S_LEGEND'		=> false,
-		));
-
 
 		// Check for url_fopen
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
@@ -239,6 +245,26 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'TITLE'			=> $lang['PCRE_UTF_SUPPORT'],
 			'TITLE_EXPLAIN'	=> $lang['PCRE_UTF_SUPPORT_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+		
+		// Check for php json support
+		if (@extension_loaded('json'))
+		{
+			$passed['json'] = true;
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+		}
+		else
+		{
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PHP_JSON_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_JSON_SUPPORT_EXPLAIN'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> true,
@@ -1849,6 +1875,21 @@ class install_install extends module
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
+	}
+
+	/**
+	* Check if the avatar directory is writable and disable avatars
+	* if it isn't writable.
+	*/
+	function disable_avatars_if_unwritable()
+	{
+		global $phpbb_root_path;
+
+		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
+		{
+			set_config('allow_avatar', 0);
+			set_config('allow_avatar_upload', 0);
+		}
 	}
 
 	/**

@@ -22,16 +22,15 @@ onload_functions.push('subPanels()');
 
 <div id="minitabs">
 	<ul>
-		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<span class="corners-top"><span></span></span>
+		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->	
 			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			<span class="corners-top"><span></span></span>
+			
 			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<span class="corners-top"><span></span></span>
+			
 			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_POSTS}</span></a>
 		</li>
 	</ul>
@@ -41,7 +40,7 @@ onload_functions.push('subPanels()');
 <form id="mcp" method="post" action="{S_MCP_ACTION}">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset id="display-panel" class="fields2">
 	<dl>
@@ -68,7 +67,7 @@ onload_functions.push('subPanels()');
 
 	<dl>
 		<dt><label for="subject">{L_SPLIT_SUBJECT}:</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SPLIT_SUBJECT}" title="{L_SPLIT_SUBJECT}" class="inputbox" /></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_SPLIT_FORUM}:</label></dt>
@@ -91,11 +90,11 @@ onload_functions.push('subPanels()');
 	</fieldset>
 <!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3 id="review">
 		<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
@@ -105,7 +104,7 @@ onload_functions.push('subPanels()');
 	<div id="topicreview">
 		<!-- BEGIN postrow -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<div class="postbody" id="pr{postrow.POST_ID}">
 				<ul class="profile-icons"><li class="info-icon"><a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}"><span>{L_POST_DETAILS}</span></a></li><li><label for="post_id_list_select_{postrow.POST_ID}">{L_SELECT}: <input type="checkbox" id="post_id_list_select_{postrow.POST_ID}" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></label></li></ul>
@@ -133,7 +132,7 @@ onload_functions.push('subPanels()');
 
 			</div>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 		<!-- END postrow -->
 	</div>
@@ -149,7 +148,7 @@ onload_functions.push('subPanels()');
 	</ul>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="display-actions">

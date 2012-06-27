@@ -1099,7 +1099,7 @@ while ($row = $db->sql_fetchrow($result))
 		{
 			$user_sig = '';
 
-			// We add the signature to every posters entry because enable_sig is post dependant
+			// We add the signature to every posters entry because enable_sig is post dependent
 			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
@@ -1629,7 +1629,8 @@ else
 	$all_marked_read = true;
 }
 
-// If there are absolutely no more unread posts in this forum and unread posts shown, we can savely show the #unread link
+// If there are absolutely no more unread posts in this forum
+// and unread posts shown, we can safely show the #unread link
 if ($all_marked_read)
 {
 	if ($post_unread)

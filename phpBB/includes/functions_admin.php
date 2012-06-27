@@ -2556,7 +2556,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		{
 			$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
 		}
-		$sql_keywords .= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
+		$sql_lower = $db->sql_lower_text('l.log_data');
+		$sql_keywords .= "$sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
 	}
 
 	if ($log_count !== false)

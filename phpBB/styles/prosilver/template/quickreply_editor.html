@@ -1,11 +1,11 @@
 <form method="post" action="{U_QR_ACTION}" id="qr_postform">
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 				<h2>{L_QUICKREPLY}</h2>
 				<fieldset class="fields1">
 					<dl style="clear: left;">
 						<dt><label for="subject">{L_SUBJECT}:</label></dt>
-						<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
+						<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
 					</dl>
 				<div id="message-box">
 					<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
@@ -17,6 +17,6 @@
 					<input type="submit" accesskey="f" tabindex="6" name="preview" value="{L_FULL_EDITOR}" class="button2" data-ajax="false" id="qr_full_editor" />&nbsp;
 					<input type="submit" accesskey="s" tabindex="7" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 				</fieldset>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 </form>

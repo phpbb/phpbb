@@ -343,7 +343,7 @@ function still_on_time($extra_time = 15)
 
 /**
 *
-* @version Version 0.1 / slightly modified for phpBB 3.0.x (using $H$ as hash type identifier)
+* @version Version 0.1 / slightly modified for phpBB 3.1.x (using $H$ as hash type identifier)
 *
 * Portable PHP password hashing framework.
 *
@@ -1691,14 +1691,17 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else
 		{
-			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
+			$sql = 'SELECT t.forum_id
+				FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt
+					ON (tt.topic_id = t.topic_id
+						AND tt.user_id = ' . $user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0 ' .
 					$sql_update_unapproved . '
-					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
-				GROUP BY t.forum_id';
+					AND (tt.topic_id IS NULL
+						OR tt.mark_time < t.topic_last_post_time)';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -3247,7 +3250,7 @@ function get_preg_expression($mode)
 		case 'email':
 			// Regex written by James Watts and Francisco Jose Martin Moreno
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
-			return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
+			return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
 		break;
 
 		case 'bbcode_htm':
@@ -4767,10 +4770,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
+		'T_ASSETS_VERSION'		=> $config['assets_version'],
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/template',
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
@@ -4778,16 +4782,15 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/stylesheet.css',
-		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->theme['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css',
-		'T_STYLESHEET_NAME'		=> $user->theme['style_name'],
-		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js",
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
+		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
+		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
 		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
 
-		'T_THEME_NAME'			=> rawurlencode($user->theme['style_path']),
+		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
-		'T_TEMPLATE_NAME'		=> $user->theme['style_path'],
-		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->theme['style_parent_tree']) && $user->theme['style_parent_tree']) ? $user->theme['style_parent_tree'] : $user->theme['style_path']),
+		'T_TEMPLATE_NAME'		=> $user->style['style_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],
@@ -4982,4 +4985,17 @@ function phpbb_pcre_utf8_support()
 		$utf8_pcre_properties = (@preg_match('/\p{L}/u', 'a') !== false);
 	}
 	return $utf8_pcre_properties;
+}
+
+/**
+* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
+*
+* @param string $input		A numeric string.
+*
+* @return int|float			Integer $input if $input fits integer,
+*							float $input otherwise.
+*/
+function phpbb_to_numeric($input)
+{
+	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 }

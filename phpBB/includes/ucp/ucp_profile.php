@@ -682,6 +682,60 @@ class ucp_profile
 				));
 
 			break;
+
+			case 'autologin_keys':
+
+				add_form_key('ucp_autologin_keys');
+
+				if ($submit)
+				{
+					$keys = request_var('keys', array(''));
+
+					if (!check_form_key('ucp_autologin_keys'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+					if (!sizeof($error))
+					{
+						if (!empty($keys))
+						{
+							$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+								WHERE user_id = ' . (int) $user->data['user_id'] . '
+								AND ' . $db->sql_in_set('key_id', $keys) ;
+
+							$db->sql_query($sql);
+
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['AUTOLOGIN_SESSION_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
+					}
+
+					// Replace "error" strings with their real, localised form
+					$error = array_map(array($user, 'lang'), $error);
+				}
+
+				$sql = 'SELECT key_id, last_ip, last_login
+					FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE user_id = ' . (int) $user->data['user_id'];
+
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('sessions', array(
+						'errors' => $error,
+
+						'KEY' => $row['key_id'],
+						'IP' => $row['last_ip'],
+						'LOGIN_TIME' => $user->format_date($row['last_login']),
+					));
+				}
+
+				$db->sql_freeresult($result);
+
+			break;
 		}
 
 		$template->assign_vars(array(

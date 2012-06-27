@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 class acp_styles
 {
 	public $u_action;
-	
+
 	protected $u_base_action;
 	protected $s_hidden_fields;
 	protected $mode;
@@ -1056,7 +1056,7 @@ class acp_styles
 	*/
 	protected function read_style_cfg($dir)
 	{
-		static $required = array('name', 'version', 'copyright');
+		static $required = array('name', 'phpbb_version', 'copyright');
 		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
 
 		// Check if it is a valid file

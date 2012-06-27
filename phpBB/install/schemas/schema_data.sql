@@ -8,10 +8,10 @@
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote_upload', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
@@ -88,6 +88,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('dbms_version', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subject', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
@@ -99,7 +100,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_post', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_topic', '10');

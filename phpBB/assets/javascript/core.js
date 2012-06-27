@@ -245,6 +245,7 @@ phpbb.ajaxify = function(options) {
 	var elements = $(options.selector),
 		refresh = options.refresh,
 		callback = options.callback,
+		overlay = (typeof options.overlay !== 'undefined') ? options.overlay : true,
 		is_form = elements.is('form'),
 		event_name = is_form ? 'submit' : 'click';
 
@@ -382,7 +383,10 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		phpbb.loading_alert();
+		if (overlay)
+		{
+			phpbb.loading_alert();
+		}
 
 		$.ajax({
 			url: action,

@@ -9,7 +9,6 @@
 *
 */
 
-
 //
 // Security message:
 //
@@ -176,7 +175,7 @@ foreach ($schema_data as $table_name => $table_data)
 			$column_type = $dbms_type_map['mysql_41'][$column_data[0]];
 		}
 
-		// Adjust default value if db-dependant specified
+		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
 		{
 			$column_data[1] = (isset($column_data[1][$dbms])) ? $column_data[1][$dbms] : $column_data[1]['default'];

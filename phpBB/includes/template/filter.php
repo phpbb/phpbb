@@ -35,7 +35,7 @@ if (!defined('IN_PHPBB'))
 * @see template_compile
 * @package phpBB3
 */
-class phpbb_style_template_filter extends php_user_filter
+class phpbb_template_filter extends php_user_filter
 {
 	const REGEX_NS = '[a-z_][a-z_0-9]+';
 
@@ -138,7 +138,7 @@ class phpbb_style_template_filter extends php_user_filter
 	/**
 	* Initializer, called on creation.
 	*
-	* Get the allow_php option, root directory and locator from params, 
+	* Get the allow_php option, root directory and locator from params,
 	* which are passed to stream_filter_append.
 	*/
 	public function onCreate()
@@ -895,22 +895,22 @@ class phpbb_style_template_filter extends php_user_filter
 
 		// Locate file
 		$filename = $this->locator->get_first_file_location(array($tag_args), false, true);
-		
+
 		if ($filename === false)
 		{
 			// File does not exist, find it during run time
 			return ' $_template->_js_include(\'' . addslashes($tag_args) . '\', true); ';
 		}
-		
+
 		if (substr($filename, 0, strlen($this->phpbb_root_path)) != $this->phpbb_root_path)
 		{
 			// Absolute path, include as is
-			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false); ';
+			return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, false); ';
 		}
 
 		// Relative path, remove root path from it
 		$filename = substr($filename, strlen($this->phpbb_root_path));
-		return ' global $phpbb_root_path; $_template->_js_include($phpbb_root_path . \'' . addslashes($filename) . '\', false); ';
+		return ' $_template->_js_include(\'' . addslashes($filename) . '\', false, true); ';
 	}
 
 	/**

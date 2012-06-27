@@ -439,24 +439,6 @@ class dbal_mssqlnative extends dbal
 	}
 
 	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		$seek = new result_mssqlnative($query_id);
-		$row = $seek->seek($rownum);
-		return ($row = $seek->fetch()) ? $row : false;
-	}
-
-	/**
 	* Get last inserted id after insert statement
 	*/
 	function sql_nextid()
@@ -507,6 +489,14 @@ class dbal_mssqlnative extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_lower_text($column_name)
+	{
+		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
 	}
 
 	/**

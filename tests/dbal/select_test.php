@@ -125,7 +125,33 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	public function query_limit_data()
+	public static function fetchfield_seek_data()
+	{
+		return array(
+			array(1, 'foobar'),
+			array(0, 'barfoo'),
+			array(2, 'bertie'),
+		);
+	}
+
+	/**
+	* @dataProvider fetchfield_seek_data
+	*/
+	public function test_fetchfield_seek($rownum, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			ORDER BY user_id ASC');
+
+		$field = $db->sql_fetchfield('username_clean', $rownum, $result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($expected, $field);
+	}
+
+	public static function query_limit_data()
 	{
 		return array(
 			array(0, 0, array(array('username_clean' => 'barfoo'),
@@ -349,7 +375,9 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT * FROM (SELECT 1) AS TBL WHERE 1 = 0';
+		$sql = 'SELECT user_id
+			FROM phpbb_users
+			WHERE 1 = 0';
 		$result = $db->sql_query($sql);
 
 		$row = $db->sql_fetchrow($result);

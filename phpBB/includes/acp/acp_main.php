@@ -210,7 +210,7 @@ class acp_main
 						// No maximum post id? :o
 						if (!$max_post_id)
 						{
-							$sql = 'SELECT MAX(post_id)
+							$sql = 'SELECT MAX(post_id) as max_post_id
 								FROM ' . POSTS_TABLE;
 							$result = $db->sql_query($sql);
 							$max_post_id = (int) $db->sql_fetchfield('max_post_id');

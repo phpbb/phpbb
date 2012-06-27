@@ -307,7 +307,7 @@ class mcp_warn
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
-		$rank_title = $rank_img = '';
+		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 		$avatar_img = get_user_avatar($user_row);
 
 		$template->assign_vars(array(
@@ -412,7 +412,7 @@ class mcp_warn
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
-		$rank_title = $rank_img = '';
+		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 		$avatar_img = get_user_avatar($user_row);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so

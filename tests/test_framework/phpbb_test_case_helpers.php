@@ -63,9 +63,19 @@ class phpbb_test_case_helpers
 			));
 		}
 
-		if (file_exists(dirname(__FILE__) . '/../test_config.php'))
+		if (isset($_SERVER['PHPBB_TEST_CONFIG']))
 		{
-			include(dirname(__FILE__) . '/../test_config.php');
+			// Could be an absolute path
+			$test_config = $_SERVER['PHPBB_TEST_CONFIG'];
+		}
+		else
+		{
+			$test_config = dirname(__FILE__) . '/../test_config.php';
+		}
+
+		if (file_exists($test_config))
+		{
+			include($test_config);
 
 			$config = array_merge($config, array(
 				'dbms'		=> $dbms,
