@@ -24,25 +24,27 @@ class phpbb_avatar_manager
 	private $phpEx;
 	private $config;
 	private $request;
+	private $extension_manager;
 	private $cache;
 	private static $valid_drivers = false;
 
 	/**
 	* @TODO
 	**/
-	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_request $request, phpbb_cache_driver_interface $cache = null)
+	public function __construct($phpbb_root_path, $phpEx, phpbb_config $config, phpbb_request $request, phpbb_extension_manager $extension_manager, phpbb_cache_driver_interface $cache = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->config = $config;
 		$this->request = $request;
+		$this->extension_manager = $extension_manager;
 		$this->cache = $cache;
 	}
 
 	/**
 	* @TODO
 	**/
-	public function get_driver($avatar_type, $new = false)
+	public function get_driver($avatar_type)
 	{
 		if (self::$valid_drivers === false)
 		{
@@ -53,30 +55,33 @@ class phpbb_avatar_manager
 		switch ($avatar_type)
 		{
 			case AVATAR_GALLERY:
-				$avatar_type = 'local';
+				$avatar_type = 'phpbb_avatar_driver_local';
 				break;
 			case AVATAR_UPLOAD:
-				$avatar_type = 'upload';
+				$avatar_type = 'phpbb_avatar_driver_upload';
 				break;
 			case AVATAR_REMOTE:
-				$avatar_type = 'remote';
+				$avatar_type = 'phpbb_avatar_driver_remote';
 				break;
 		}
 
-		if (isset(self::$valid_drivers[$avatar_type]))
-		{
-			if ($new || !is_object(self::$valid_drivers[$avatar_type]))
-			{
-				$class_name = 'phpbb_avatar_driver_' . $avatar_type;
-				self::$valid_drivers[$avatar_type] = new $class_name($this->config, $this->request, $this->phpbb_root_path, $this->phpEx, $this->cache);
-			}
-
-			return self::$valid_drivers[$avatar_type];
-		}
-		else
+		if (false === array_search($avatar_type, self::$valid_drivers))
 		{
 			return null;
 		}
+
+		$r = new ReflectionClass($avatar_type);
+
+		if ($r->isSubClassOf('phpbb_avatar_driver')) {
+			$driver = new $avatar_type($this->config, $this->request, $this->phpbb_root_path, $this->phpEx, $this->cache);
+		} else if ($r->implementsInterface('phpbb_avatar_driver')) {
+			$driver = new $avatar_type();
+		} else {
+			$message = "Invalid avatar driver class name '%s' provided. It must implement phpbb_avatar_driver_interface.";
+			trigger_error(sprintf($message, $avatar_type));
+		}
+
+		return $driver;
 	}
 
 	/**
@@ -93,18 +98,12 @@ class phpbb_avatar_manager
 		{
 			self::$valid_drivers = array();
 
-			$iterator = new DirectoryIterator($this->phpbb_root_path . 'includes/avatar/driver');
+			$finder = $this->extension_manager->get_finder();
 
-			foreach ($iterator as $file)
-			{
-				// Match all files that appear to be php files
-				if (preg_match("/^(.*)\.{$this->phpEx}$/", $file, $match))
-				{
-					self::$valid_drivers[] = $match[1];
-				}
-			}
-
-			self::$valid_drivers = array_flip(self::$valid_drivers);
+			self::$valid_drivers = $finder
+				->extension_directory('/avatar/driver/')
+				->core_path('includes/avatar/driver/core/')
+				->get_classes();
 
 			if ($this->cache)
 			{
@@ -123,7 +122,7 @@ class phpbb_avatar_manager
 			$this->load_valid_drivers();
 		}
 
-		return array_keys(self::$valid_drivers);
+		return self::$valid_drivers;
 	}
 
 	/**

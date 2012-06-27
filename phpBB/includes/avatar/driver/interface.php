@@ -57,4 +57,14 @@ interface phpbb_avatar_driver_interface
 	* @TODO
 	**/
 	public function delete($row);
+
+	/**
+	* @TODO
+	**/
+	public function is_enabled();
+
+	/**
+	* @TODO
+	**/
+	public function get_template_name();
 }

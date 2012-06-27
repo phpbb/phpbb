@@ -130,7 +130,7 @@ $phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_
 $phpbb_subscriber_loader = new phpbb_event_extension_subscriber_loader($phpbb_dispatcher, $phpbb_extension_manager);
 $phpbb_subscriber_loader->load();
 
-$phpbb_avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $cache->get_driver());
+$phpbb_avatar_manager = new phpbb_avatar_manager($phpbb_root_path, $phpEx, $config, $request, $phpbb_extension_manager, $cache->get_driver());
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

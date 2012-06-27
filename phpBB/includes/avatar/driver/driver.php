@@ -119,4 +119,25 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	{
 		return true;
 	}
+
+	/**
+	* @inheritdoc
+	**/
+	public function is_enabled()
+	{
+		$driver = preg_replace('#^phpbb_avatar_driver_core_#', '', get_class($this));
+
+		return $this->config["allow_avatar_$driver"];
+	}
+
+	/**
+	* @inheritdoc
+	**/
+	public function get_template_name()
+	{
+		$driver = preg_replace('#^phpbb_avatar_driver_core_#', '', get_class($this));
+		$template = "ucp_avatar_options_$driver.html";
+
+		return $template;
+	}
 }

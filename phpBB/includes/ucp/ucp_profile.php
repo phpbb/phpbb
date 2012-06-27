@@ -623,17 +623,17 @@ class ucp_profile
 					}
 
 					$focused_driver = request_var('avatar_driver', $user->data['user_avatar_type']);
-					
+
 					foreach ($avatar_drivers as $driver)
 					{
-						if ($config["allow_avatar_$driver"])
+						$avatar = $phpbb_avatar_manager->get_driver($driver);
+
+						if ($avatar->is_enabled())
 						{
 							$avatars_enabled = true;
 							$template->set_filenames(array(
-								'avatar' => "ucp_avatar_options_$driver.html",
+								'avatar' => $avatar->get_template_name(),
 							));
-
-							$avatar = $phpbb_avatar_manager->get_driver($driver);
 
 							if ($avatar->prepare_form($template, $avatar_data, $error))
 							{
