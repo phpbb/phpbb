@@ -1,3 +1,7 @@
+(function($) {  // Avoid conflicts with other libraries
+
+"use strict";
+
 function avatar_simplify() {
     $('#av_options').hide();
 
@@ -7,3 +11,5 @@ function avatar_simplify() {
 
 avatar_simplify();
 $('#avatar_driver').on('change', avatar_simplify);
+
+})(jQuery); // Avoid conflicts with other libraries
