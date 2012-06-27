@@ -46,7 +46,7 @@ interface phpbb_avatar_driver_interface
 	/**
 	* @TODO
 	**/
-	public function prepare_form($template, $row, &$error, &$override_focus);
+	public function prepare_form($template, $row, &$error);
 
 	/**
 	* @TODO

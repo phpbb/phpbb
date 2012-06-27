@@ -38,13 +38,13 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	* @type string
 	*/
 	protected $phpbb_root_path;
-	
+
 	/**
 	* Current $phpEx
 	* @type string
 	*/
 	protected $phpEx;
-	
+
 	/**
 	* A cache driver
 	* @type phpbb_cache_driver_interface
@@ -99,7 +99,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* @inheritdoc
 	**/
-	public function prepare_form($template, $row, &$error, &$override_focus)
+	public function prepare_form($template, $row, &$error)
 	{
 		return false;
 	}

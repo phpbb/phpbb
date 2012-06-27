@@ -43,7 +43,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 			);
 		}
 	}
-	
+
 	/**
 	* @inheritdoc
 	*/
@@ -103,7 +103,7 @@ class phpbb_avatar_driver_local extends phpbb_avatar_driver
 
 		return true;
 	}
-	
+
 	/**
 	* @inheritdoc
 	*/
