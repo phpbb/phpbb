@@ -139,7 +139,7 @@ class phpbb_avatar_manager
 			{
 				return preg_replace('#^(?:user_|group_)#', '', $key);
 			},
-			$row
+			$keys
 		);
 
 		return array_combine($keys, $values);
