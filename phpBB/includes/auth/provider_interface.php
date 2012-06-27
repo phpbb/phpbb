@@ -49,21 +49,10 @@ interface phpbb_auth_provider_interface
 	public function generate_login_box(phpbb_template $template, $redirect, $admin, $s_display);
 
 	/**
-	 * This function as implemented, should process the start of a login or
-	 * registration request if providing third party support, it should have
-	 * redirects sent to check_auth_{provider}.php in the root of the phpbb
-	 * installation.
+	 * This function as implemented, should process the initial login stage if
+	 * more than one exists.
 	 *
 	 * @param boolean $admin Whether reauthentication is being requested for administrative login. This can be prevented by disabling admin reauthentication on the ACP.
 	 */
 	public function process($admin);
-
-	/**
-	 * This function should verify any data that is submitted to the provider
-	 * either from a user or from an external source. It should then ask for
-	 * more information, redirect the user to an appropriate page, display an
-	 * appropriate error message, or login, register or link an account to a
-	 * verified provider source.
-	 */
-	public function verify();
 }

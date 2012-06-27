@@ -85,7 +85,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		global $phpbb_root_path, $phpEx;
 
-		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id));
+		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $this->user->session_id));
 		$s_autologin_enabled = ($this->config['allow_autologin']) ? true : false;
 
 		$s_hidden_fields = array(

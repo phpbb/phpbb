@@ -3019,41 +3019,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	}
 	elseif ($request->is_set_post('login'))
 	{
-		// Get credential
-		if ($admin)
-		{
-			$credential = request_var('credential', '');
-
-			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
-			{
-				if ($user->data['is_registered'])
-				{
-					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
-				}
-				trigger_error('NO_AUTH_ADMIN');
-			}
-
-			$password	= request_var('password_' . $credential, '', true);
-		}
-		else
-		{
-			$password	= request_var('password', '', true);
-		}
-
-		$username	= request_var('username', '', true);
-		$autologin	= $request->is_set_post('autologin');
-		$viewonline = (int) !$request->is_set_post('viewonline');
-		$admin 		= ($admin) ? 1 : 0;
-		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
-
-		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
-		{
-			// We log the attempt to use a different username...
-			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
-			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
-		}
-
 		// If authentication is successful we redirect user to previous page
 		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
 

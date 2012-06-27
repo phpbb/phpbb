@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_facebook_connect implements phpbb_auth_provider_interface
+class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 {
 	protected $request;
 	protected $db;

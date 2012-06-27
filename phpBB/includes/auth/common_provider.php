@@ -82,6 +82,10 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 		if(!$row)
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			$this->login_auth_fail($user_id);
 			throw new phpbb_auth_exception('User not found.');
 		}
@@ -103,6 +107,10 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		// User inactive...
 		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			throw new phpbb_auth_exception('ACTIVE_ERROR');
 		}
 
@@ -131,6 +139,8 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			// If admin re-authentication we remove the old session entry because a new one has been created.
 			if ($admin)
 			{
+				add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 					WHERE session_id = \'' . $this->db->sql_escape($old_session_id) . '\'
 					AND session_user_id = ' . $row['user_id'];
@@ -139,6 +149,10 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		}
 		else
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			throw new phpbb_auth_exception($result);
 		}
 	}
