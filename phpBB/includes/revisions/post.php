@@ -108,10 +108,12 @@ class phpbb_revisions_post
 		}
 
 		$sql_ary = array(
-			'SELECT'	=> 'p.*, u.*, r.*',
+			'SELECT'	=> 'p.*, t.topic_title, f.forum_name, u.*, r.*',
 
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
+				TOPICS_TABLE	=> 't',
+				FORUMS_TABLE	=> 'f',
 			),
 
 			'LEFT_JOIN'	=> array(

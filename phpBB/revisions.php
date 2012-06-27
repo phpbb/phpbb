@@ -256,6 +256,17 @@ $template->assign_vars(array(
 	'L_LINES_ADDED_REMOVED'	=> $l_lines_added_removed,
 ));
 
+$navlinks = array(
+	array(
+		'name'	=> $post_data['forum_name'],
+		'link'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", array('f' => $post_data['forum_id'])),
+	),
+	array(
+		'name'	=> $post_data['topic_title'],
+		'link'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'])),
+	),
+);
+
 $page_title = 'REVISIONS_COMPARE_TITLE';
 $tpl_name = 'revisions_body.html';
 
@@ -280,6 +291,26 @@ if ($revert && (!$revert_confirm || $bad_form))
 
 	$page_title = 'REVISIONS_REVERT_TITLE';
 	$tpl_name = 'revisions_revert_body.html';
+
+	$navlinks[] = array(
+		'name'	=> $user->lang('REVERTING_POST'),
+		'link'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", array('t' => $post_data['topic_id'])),
+	);
+}
+else
+{
+	$navlinks[] = array(
+		'name'	=> $user->lang('VIEWING_POST_REVISIONS'),
+		'link'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", array('t' => $post_data['topic_id'])),
+	);
+}
+
+foreach ($navlinks as $link)
+{
+	$template->assign_block_vars('navlinks', array(
+		'FORUM_NAME'	=> $link['name'],
+		'U_VIEW_FORUM'	=> $link['link'],
+	));
 }
 
 page_header($page_title, false);

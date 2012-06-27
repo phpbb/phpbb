@@ -88,4 +88,9 @@ $lang = array_merge($lang, array(
 	'SUBMIT_FORM_AGAIN'			=> 'This form has timed out. Please try again by resubmitting the form.',
 
 	'WITH'						=> 'with',
+
+	// Breadcrumb titles
+	'VIEWING_POST_REVISIONS'	=> 'Viewing Post Revisions',
+	// @todo -- think of a better way of saying this
+	'REVERTING_POST'			=> 'Reverting Post',
 ));
