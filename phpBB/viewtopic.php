@@ -1529,6 +1529,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$auth->acl_get('f_edit', $forum_id) &&
 		!$row['post_edit_locked'] &&
 		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
+	) || (
+		// @todo - Find out if guests should be able to have the wiki edit permission
+		// If so, this OR chunk needs to be moved to after the very end of the conditional
+		$config['revisions_allow_wiki'] &&
+		$row['post_wiki'] &&
+		$auth->acl_get('f_wiki_edit', $forum_id) &&
+		!$row['post_edit_locked']
 	)));
 
 	$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || (
