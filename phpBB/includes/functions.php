@@ -3792,6 +3792,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		return;
 	}
 
+	// If a language entry is passed get the correct string
+	$msg_text = $user->lang($msg_text);
+
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
