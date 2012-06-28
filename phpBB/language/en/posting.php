@@ -250,6 +250,7 @@ $lang = array_merge($lang, array(
 	'VIEW_MESSAGE'				=> '%sView your submitted message%s',
 	'VIEW_PRIVATE_MESSAGE'		=> '%sView your submitted private message%s',
 
+	'WIKI_POST'					=> 'Allow public (wiki-style) editing for users with permission',
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s.',
 	'WRONG_SIZE'				=> 'The image must be at least %1$s wide, %2$s high and at most %3$s wide and %4$s high. The submitted image is %5$s wide and %6$s high.',
 ));

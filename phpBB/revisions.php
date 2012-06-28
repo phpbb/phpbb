@@ -188,7 +188,7 @@ $text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded()
 $subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(), $last->get_subject());
 
 $text_diff_rendered = bbcode_nl2br($text_diff->render());
-$subject_diff_renedered = bbcode_nl2br($subject_diff->render());
+$subject_diff_renedered = $subject_diff->render();
 
 $revision_number = 1;
 $revision_users = array();

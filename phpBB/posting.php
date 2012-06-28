@@ -282,7 +282,9 @@ switch ($mode)
 	break;
 
 	case 'edit':
-		if ($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+		if ($user->data['is_registered']
+			&& ($auth->acl_gets('f_edit', 'm_edit', $forum_id)
+				 || (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id))))
 		{
 			$is_authed = true;
 		}
@@ -714,6 +716,7 @@ if ($submit || $preview || $refresh)
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
+	$post_wiki			= (isset($_POST['wiki_post']));
 
 	if ($submit)
 	{
@@ -1116,6 +1119,7 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
+				'post_wiki'				=> $post_wiki,
 
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
@@ -1464,6 +1468,8 @@ $template->assign_vars(array(
 	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $mode != 'edit') ? true : false,
 	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
+	'S_WIKI_ALLOWED'			=> $config['revisions_allow_wiki'] && ($auth->acl_gets('m_revisions', 'f_wiki_create', $forum_id) || $auth->acl_get('f_revisions', $forum_id)),
+	'S_WIKI_CHECKED'			=> !empty($post_data['post_wiki']) ? ' checked="checked"' : '',
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,
