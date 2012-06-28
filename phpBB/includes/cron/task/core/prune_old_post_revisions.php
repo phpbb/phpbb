@@ -38,7 +38,7 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	protected $db;
 
 	/**
-	* Constructor that provides $
+	* Constructor that makes available the config and dbal objects
 	*/
 	public function __construct()
 	{
@@ -87,7 +87,7 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 			}
 		}
 
-		set_config('old_revisions_last_prune_time', time());
+		$this->config->set('old_revisions_last_prune_time', time());
 	}
 
 	/**

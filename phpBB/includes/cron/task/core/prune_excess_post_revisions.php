@@ -98,7 +98,7 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 			}
 		}
 
-		set_config('excess_revisions_last_prune_time', time());
+		$this->config->set('excess_revisions_last_prune_time', time());
 	}
 
 	/**
