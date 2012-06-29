@@ -81,4 +81,65 @@ class phpbb_auth_manager
 
 		return $providers;
 	}
+
+	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$s_login_action = ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $this->user->session_id));
+		$s_autologin_enabled = ($this->config['allow_autologin']) ? true : false;
+
+		$s_hidden_fields = array(
+			'sid'			=> $this->user->session_id,
+			'auth_provider'	=> 'common',
+			'auth_action'	=> 'login',
+		);
+		if ($redirect)
+		{
+			$s_hidden_fields['redirect'] = $redirect;
+		}
+		else
+		{
+			$s_hidden_fields['redirect'] = build_url();
+		}
+		if ($admin)
+		{
+			$credential = md5(unique_id());
+			$s_hidden_fields['credential'] = $credential;
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+		$username = ($admin) ? $this->user->data['username'] : '';
+		$username_credential = 'username';
+
+		$password_credential = ($admin) ? 'password_' . $credential : 'password';
+
+		$u_send_password = ($this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '';
+		$u_resend_activation = ($this->config['require_activation'] == USER_ACTIVATION_SELF && $this->config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '';
+
+		$template->assign_vars(array(
+			'ADMIN'					=> $admin,
+			'USERNAME'				=> $username,
+			'USERNAME_CREDENTIAL'	=> $username_credential,
+			'PASSWORD_CREDENTIAL'	=> $password_credential,
+
+			'S_AUTOLOGIN_ENABLED'	=> $s_autologin_enabled,
+			'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
+			'S_LOGIN_ACTION'		=> $s_login_action,
+			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+
+			'U_SEND_PASSWORD'		=> $u_send_password,
+			'U_RESEND_ACTIVATION'	=> $u_resend_activation,
+		));
+
+		$template->set_filenames(array(
+			'login_body_common' => 'login_body_common.html')
+		);
+		$tpl = $template->assign_display('login_body_common', '', true);
+		if (!$tpl)
+		{
+			return null;
+		}
+		return $tpl;
+	}
 }

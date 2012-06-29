@@ -3,14 +3,18 @@
 <div class="panel">
 	<div class="inner">
 
-	<div class="content">
-		<div>
-			<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
-		</div>
-		<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
-		<!-- BEGIN providers_loop -->
-			{providers_loop.TPL}
-		<!-- END providers_loop -->
+		<div class="content">
+			<div>
+				<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
+			</div>
+			<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
+			<!-- BEGIN providers_loop -->
+				{providers_loop.TPL}
+			<!-- END providers_loop -->
+			<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE --><div>
+				<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+				<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+			</div><!-- ENDIF -->
 		</div>
 	</div>
 </div>
