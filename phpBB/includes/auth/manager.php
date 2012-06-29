@@ -53,7 +53,9 @@ class phpbb_auth_manager
 	// Return temporary set array of providers.
 	public function get_registered_providers() {
 		$providers = array(
-			'olympus',
+			'native',
+			'apache',
+			'ldap',
 			'openid',
 			'facebook_connect',
 		);

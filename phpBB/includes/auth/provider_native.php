@@ -45,10 +45,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	{
 		return array(
 			'CUSTOM_ACP'=> false,
-			'NAME'		=> 'olympus',
+			'NAME'		=> 'native',
 			'OPTIONS'	=> array(
-				'enabled'	=> array('setting' => $this->config['auth_provider_native_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-				'admin'		=> array('setting' => $this->config['auth_provider_native_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'enabled'	=> array('setting' => $this->config['auth_provider_native_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
+				'admin'		=> array('setting' => $this->config['auth_provider_native_admin'],		'lang' => 'ALLOW_ADMIN_LOGIN',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
 			),
 		);
 	}
@@ -101,11 +101,11 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 				throw new phpbb_auth_exception('NO_AUTH_ADMIN');
 			}
 
-			$password = $this->request->variable('password_' . $credential, '', true);
+			$password = $this->request->variable('password_' . $credential, '', true,  phpbb_request_interface::POST);
 		}
 		else
 		{
-			$password = $this->request->variable('password', '', true);
+			$password = $this->request->variable('password', '', true,  phpbb_request_interface::POST);
 		}
 
 		if ($password === '')
@@ -117,7 +117,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			throw new phpbb_auth_exception('NO_PASSWORD_SUPPLIED');
 		}
 
-		$username = $this->request->variable('username', '', true);
+		$username = $this->request->variable('username', '', true,  phpbb_request_interface::POST);
 		if ($username === '')
 		{
 			if ($admin && $this->user->data['is_registered'])
