@@ -110,12 +110,20 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 
 		if ($password === '')
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			throw new phpbb_auth_exception('NO_PASSWORD_SUPPLIED');
 		}
 
 		$username = $this->request->variable('username', '', true);
 		if ($username === '')
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			throw new phpbb_auth_exception('NO_USERNAME_SUPPLIED');
 		}
 
@@ -143,6 +151,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 
 		if (!$row)
 		{
+			if ($admin && $this->user->data['is_registered'])
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
 			$this->login_auth_fail(null, $username, $username_clean);
 			throw new phpbb_auth_exception('LOGIN_ERROR_USERNAME');
 		}
@@ -152,6 +164,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		{
 			if (!$captcha->confirm_visual_captcha())
 			{
+				if ($admin && $this->user->data['is_registered'])
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
 				$this->login_auth_fail((int)$row['user_id'], $username, utf8_clean_string($username));
 			}
 		}
@@ -206,6 +222,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		}
 
 		// Give status about wrong password...
+		if ($admin && $this->user->data['is_registered'])
+		{
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		}
 		$this->login_auth_fail((int)$row['user_id'], $username, utf8_clean_string($username));
 		throw new phpbb_auth_exception('LOGIN_ERROR_PASSWORD');
 	}
