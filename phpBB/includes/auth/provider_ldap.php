@@ -44,7 +44,9 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'=> false,
+			'CUSTOM_ACP'		=> false,
+			'CUSTOM_LOGIN_BOX'	=> false,
+
 			'NAME'		=> 'ldap',
 			'OPTIONS'	=> array(
 				'enabled'			=> array('setting' => $this->config['auth_provider_ldap_enabled'],		'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),

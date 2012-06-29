@@ -44,7 +44,9 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	public function get_configuration()
 	{
 		return array(
-			'CUSTOM_ACP'=> false,
+			'CUSTOM_ACP'		=> false,
+			'CUSTOM_LOGIN_BOX'	=> true,
+
 			'NAME'		=> 'facebook_connect',
 			'OPTIONS'	=> array(
 				'enabled'	=> array('setting' => $this->config['facebook_connect_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
