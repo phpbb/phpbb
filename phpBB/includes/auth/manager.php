@@ -82,6 +82,34 @@ class phpbb_auth_manager
 		return $providers;
 	}
 
+	public function get_common_providers() {
+		$providers = $this->get_registered_providers();
+
+		foreach($providers as &$provider) {
+			$provider_config = $provider->get_configuration();
+			if(!$provider_config['CUSTOM_LOGIN_BOX'])
+			{
+				unset($provider);
+			}
+		}
+
+		return $providers;
+	}
+
+	public function get_enabled_common_providers() {
+		$enabled_providers = $this->get_enabled_providers();
+		$common_providers = $this->get_common_providers();
+
+		$providers = array();
+		foreach ($enabled_providers as $key=>$value){
+			if (in_array($value,$common_providers)){
+				$providers[] = $value;
+			}
+		}
+
+		return $providers;
+	}
+
 	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)
 	{
 		global $phpbb_root_path, $phpEx;

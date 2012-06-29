@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_native extends phpbb_auth_common_provider
+class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 {
 	protected $request;
 	protected $db;

@@ -3001,77 +3001,82 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if ($request->is_set('auth_provider'))
 	{
 		$auth_provider = $request->variable('auth_provider', '');
-		$auth_provider = $auth_manager->get_provider($auth_provider);
-
-		// Perform any additional procedures requested by the provider.
-		$auth_step = $request->variable('auth_step', '');
-		if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
+		if ($auth_provider == 'common')
 		{
-			$auth_provider->$auth_step();
+			$auth_providers = $auth_manager->get_enabled_common_providers();
+			foreach ($auth_providers as $auth_provider)
+			{
+				// Perform any additional procedures requested by the provider.
+				$auth_step = $request->variable('auth_step', '');
+				if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
+				{
+					try {
+						$auth_provider->$auth_step();
+						break;
+					}
+					catch (phpbb_auth_exception $e)
+					{
+						$err = $e->getMessage();
+					}
+				}
+				else
+				{
+					if($redirect) {
+						$request->overwrite('redirect_to', $redirect);
+					}
+					try
+					{
+						$auth_provider->process($admin);
+						break;
+					}
+					catch (phpbb_auth_exception $e)
+					{
+						$err = $e->getMessage();
+					}
+				}
+			}
 		}
 		else
 		{
-			if($redirect) {
-				$request->overwrite('redirect_to', $redirect);
-			}
-			$auth_provider->process($admin);
-		}
-	}
-	elseif ($request->is_set_post('login'))
-	{
-		// If authentication is successful we redirect user to previous page
-		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
-
-		// If admin authentication and login, we will log if it was a success or not...
-		// We also break the operation on the first non-success login - it could be argued that the user already knows
-		if ($admin)
-		{
-			if ($result['status'] == LOGIN_SUCCESS)
+			$auth_provider = $auth_manager->get_provider($auth_provider);
+			// Perform any additional procedures requested by the provider.
+			$auth_step = $request->variable('auth_step', '');
+			if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
 			{
-				add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+				try {
+					$auth_provider->$auth_step();
+				}
+				catch (phpbb_auth_exception $e)
+				{
+					$err = $e->getMessage();
+				}
 			}
 			else
 			{
-				// Only log the failed attempt if a real user tried to.
-				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
-				if ($user->data['is_registered'])
+				if($redirect) {
+					$request->overwrite('redirect_to', $redirect);
+				}
+				try
 				{
-					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+					$auth_provider->process($admin);
+				}
+				catch (phpbb_auth_exception $e)
+				{
+					$err = $e->getMessage();
 				}
 			}
 		}
 
-		// The result parameter is always an array, holding the relevant information...
-		if ($result['status'] == LOGIN_SUCCESS)
+		// We need to get all error messages standardardized.
+		if ($err !== '')
 		{
-			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
-			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
-			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "{$phpbb_root_path}index.$phpEx" || $redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
-
-			// append/replace SID (may change during the session for AOL users)
-			$redirect = reapply_sid($redirect);
-
-			// Special case... the user is effectively banned, but we allow founders to login
-			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
+			if ($err == 'LOGIN_ERROR_USERNAME' || $err == 'LOGIN_ERROR_PASSWORD')
 			{
-				return;
+				// Assign admin contact to some error messages
+				$err = (!$config['board_contact']) ? sprintf($user->lang[$err], '', '') : sprintf($user->lang[$err], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 			}
-
-			$redirect = meta_refresh(3, $redirect);
-			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
-		}
-
-		// Something failed, determine what...
-		if ($result['status'] == LOGIN_BREAK)
-		{
-			trigger_error($result['error_msg']);
-		}
-
-		// Special cases... determine
-		switch ($result['status'])
-		{
-			case LOGIN_ERROR_ATTEMPTS:
-
+			elseif ($err == 'LOGIN_ERROR_ATTEMPTS')
+			{
 				$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 				$captcha->init(CONFIRM_LOGIN);
 				// $captcha->reset();
@@ -3080,30 +3085,22 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
 				));
 
-				$err = $user->lang[$result['error_msg']];
-			break;
-
-			case LOGIN_ERROR_PASSWORD_CONVERT:
+				$err = $user->lang[$err];
+			}
+			elseif ($err == 'LOGIN_ERROR_PASSWORD_CONVERT')
+			{
 				$err = sprintf(
-					$user->lang[$result['error_msg']],
+					$user->lang[$err],
 					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
 					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
 					($config['board_contact']) ? '</a>' : ''
 				);
-			break;
-
-			// Username, password, etc...
-			default:
-				$err = $user->lang[$result['error_msg']];
-
-				// Assign admin contact to some error messages
-				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
-				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
-				}
-
-			break;
+			}
+			elseif (isset($user->lang[$err]))
+			{
+				$err = $user->lang[$err];
+			}
 		}
 	}
 
@@ -3118,16 +3115,23 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	));
 
 	$providers = $auth_manager->get_enabled_providers();
+	$common_template = false;
 	foreach($providers as &$provider)
 	{
+		$provider_config = $provider->get_configuration();
 		if ($admin)
 		{
-			$provider_config = $provider->get_configuration();
 			if ($provider_config['OPTIONS']['admin']['setting'] != true)
 			{
 				unset($provider);
 				continue;
 			}
+		}
+
+		if ($provider_config['CUSTOM_LOGIN_BOX'] === false)
+		{
+			$common_template = true;
+			continue;
 		}
 
 		$tpl = $provider->generate_login_box($template, $redirect, $admin, $s_display);
@@ -3138,15 +3142,19 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			continue;
 		}
 
-		print('<pre>');
-		//print_r($tpl);
-		print('</pre>');
 		$template->assign_block_vars('providers_loop', array(
 			'TPL'	=> $tpl,
 		));
 	}
 
-	if (empty($providers))
+	if ($common_template)
+	{
+		$common_tpl = $auth_manager->generate_common_login_box($template, $redirect, $admin, $s_display);
+		$template->assign_vars(array(
+			'COMMON_TPL'	=> $common_tpl,
+			));
+	}
+	elseif (empty($providers))
 	{
 		trigger_error('NO_PROVIDERS');
 	}

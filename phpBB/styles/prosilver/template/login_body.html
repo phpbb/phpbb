@@ -8,6 +8,7 @@
 				<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
 			</div>
 			<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
+			<!-- IF COMMON_TPL -->{COMMON_TPL}<!-- ENDIF -->
 			<!-- BEGIN providers_loop -->
 				{providers_loop.TPL}
 			<!-- END providers_loop -->

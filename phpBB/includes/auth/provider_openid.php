@@ -63,12 +63,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	{
 		return array(
 			'CUSTOM_ACP'		=> false,
-			'CUSTOM_LOGIN_BOX'	=> false,
+			'CUSTOM_LOGIN_BOX'	=> true,
 
 			'NAME'		=> 'openid',
 			'OPTIONS'	=> array(
-				'enabled'	=> array('setting' => $this->config['openid_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-				'admin'		=> array('setting' => $this->config['openid_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'enabled'	=> array('setting' => $this->config['auth_provider_openid_enabled'],	'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
+				'admin'		=> array('setting' => $this->config['auth_provider_openid_admin'],		'lang' => 'ALLOW_ADMIN_LOGIN',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
 			),
 		);
 	}
