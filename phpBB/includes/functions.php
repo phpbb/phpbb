@@ -3012,7 +3012,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					try {
 						$auth_provider->$auth_step();
-						break;
+						break 3;
 					}
 					catch (phpbb_auth_exception $e)
 					{
@@ -3027,7 +3027,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					try
 					{
 						$auth_provider->process($admin);
-						break;
+						break 3;
 					}
 					catch (phpbb_auth_exception $e)
 					{
