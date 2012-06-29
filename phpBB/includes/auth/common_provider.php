@@ -29,6 +29,19 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	protected $user;
 
 	/**
+	 * Implements phpbb_auth_provider_interface->generate_login_box(). Returns
+	 * null. Providers should override this for a custom login box.
+	 * @param phpbb_template $template
+	 * @param string $redirect
+	 * @param boolean $admin
+	 * @param boolean $s_display
+	 * @return null
+	 */
+	public function generate_login_box(phpbb_template $template, $redirect, $admin, $s_display) {
+		return null;
+	}
+
+	/**
 	 * Links a user to provider and an index.
 	 *
 	 * @param int $user_id The user id of the account requested to be linked.

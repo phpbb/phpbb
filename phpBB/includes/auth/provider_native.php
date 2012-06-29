@@ -1,0 +1,276 @@
+<?php
+/**
+*
+* @package auth
+* @copyright (c) 2012 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
+* This auth provider uses the SQL database with a username/password login scheme.
+*
+* @package auth
+*/
+class phpbb_auth_provider_native extends phpbb_auth_common_provider
+{
+	protected $request;
+	protected $db;
+	protected $config;
+	protected $user;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	{
+		$this->request = $request;
+		$this->db = $db;
+		$this->config = $config;
+		$this->user = $user;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_configuration()
+	{
+		return array(
+			'CUSTOM_ACP'=> false,
+			'NAME'		=> 'olympus',
+			'OPTIONS'	=> array(
+				'enabled'	=> array('setting' => $this->config['auth_provider_native_enabled'], 'lang' => 'AUTH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'admin'		=> array('setting' => $this->config['auth_provider_native_admin'], 'lang' => 'ALLOW_ADMIN_LOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+			),
+		);
+	}
+
+	public function process($admin = false)
+	{
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
+
+		$auth_action = $this->request->variable('auth_action', '', false, phpbb_request_interface::POST);
+
+		switch($auth_action)
+		{
+			case 'login':
+				$this->internal_login($admin);
+				$this->redirect($this->request->variable('redirect_to', ''));
+				break;
+			case 'register':
+				break;
+			default:
+				throw new phpbb_auth_exception('INVALID_AUTH_ACTION');
+		}
+	}
+
+	/**
+	 * Processes the nitty, gritty, ugly part of login.
+	 *
+	 * @global string $phpbb_root_path
+	 * @global string $phpEx
+	 * @param boolean $admin Is this admin authentication?
+	 * @return int	The user id of the user.
+	 * @throws phpbb_auth_exception
+	 */
+	protected function internal_login($admin)
+	{
+		// Get credential
+		if ($admin)
+		{
+			$credential = $this->request->variable('credential', '');
+
+			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
+			{
+				if ($this->user->data['is_registered'])
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
+				throw new phpbb_auth_exception('NO_AUTH_ADMIN');
+			}
+
+			$password = $this->request->variable('password_' . $credential, '', true);
+		}
+		else
+		{
+			$password = $this->request->variable('password', '', true);
+		}
+
+		if ($password === '')
+		{
+			throw new phpbb_auth_exception('NO_PASSWORD_SUPPLIED');
+		}
+
+		$username = $this->request->variable('username', '', true);
+		if ($username === '')
+		{
+			throw new phpbb_auth_exception('NO_USERNAME_SUPPLIED');
+		}
+
+		$autologin	= $this->request->is_set_post('autologin');
+		$viewonline = !$this->request->is_set_post('viewonline');
+		$admin 		= ($admin) ? 1 : 0;
+		$viewonline = ($admin) ? $this->user->data['session_viewonline'] : $viewonline;
+
+		// Check if the supplied username is equal to the one stored within the database if re-authenticating
+		if ($admin && utf8_clean_string($username) != utf8_clean_string($this->user->data['username']))
+		{
+			// We log the attempt to use a different username...
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			throw new phpbb_auth_exception('NO_AUTH_ADMIN_USER_DIFFER');
+		}
+
+		$username_clean = utf8_clean_string($username);
+
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
+			FROM ' . USERS_TABLE . "
+			WHERE username_clean = '" . $this->db->sql_escape($username_clean) . "'";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			$this->login_auth_fail(null, $username, $username_clean);
+			throw new phpbb_auth_exception('LOGIN_ERROR_USERNAME');
+		}
+
+		$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
+		if ($captcha->need_captcha($row['user_login_attempts']))
+		{
+			if (!$captcha->confirm_visual_captcha())
+			{
+				$this->login_auth_fail((int)$row['user_id'], $username, utf8_clean_string($username));
+			}
+		}
+
+		if ($row['user_pass_convert'])
+		{
+			$row = $this->user_password_convert($password, $row);
+		}
+
+		// Check password ...
+		if (!$row['user_pass_convert'] && phpbb_check_hash($password, $row['user_password']))
+		{
+			// Check for old password hash...
+			if (strlen($row['user_password']) == 32)
+			{
+				$hash = phpbb_hash($password);
+
+				// Update the password in the users table to the new format
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_password = '" . $this->db->sql_escape($hash) . "',
+						user_pass_convert = 0
+					WHERE user_id = {$row['user_id']}";
+				$this->db->sql_query($sql);
+
+				$row['user_password'] = $hash;
+			}
+
+			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+				WHERE user_id = ' . $row['user_id'];
+			$this->db->sql_query($sql);
+
+			if ($row['user_login_attempts'] != 0)
+			{
+				// Successful, reset login attempts (the user passed all stages)
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_login_attempts = 0
+					WHERE user_id = ' . $row['user_id'];
+				$this->db->sql_query($sql);
+			}
+
+			// User inactive...
+			if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+			{
+				throw new phpbb_auth_exception('ACTIVE_ERROR');
+			}
+
+			// Successful login, return user id to complete login.
+			if (!$this->login($row['user_id'], $admin, $autologin, $viewonline))
+			{
+				$this->login_auth_fail($row['user_id'], $username, utf8_clean_string($username));
+			}
+		}
+
+		// Give status about wrong password...
+		$this->login_auth_fail((int)$row['user_id'], $username, utf8_clean_string($username));
+		throw new phpbb_auth_exception('LOGIN_ERROR_PASSWORD');
+	}
+
+	/**
+	 * Converts a user's password from its phpBB2 to its phpBB3 hash.
+	 *
+	 * @global str $phpbb_root_path
+	 * @global str $phpEx
+	 * @param str $password the password being claimed.
+	 * @param array $row returned from a database call on the USERS_TABLE
+	 * @return array $row as passed in with any necessary modifications made.
+	 * @throws phpbb_auth_exception
+	 */
+	protected function user_password_convert($password, $row)
+	{
+		// enable super globals to get literal value
+		// this is needed to prevent unicode normalization
+		$super_globals_disabled = $this->request->super_globals_disabled();
+		if ($super_globals_disabled)
+		{
+			$this->request->enable_super_globals();
+		}
+
+		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
+		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
+		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
+		$password_new_format = $this->request->variable('password', '', true);
+
+		if ($super_globals_disabled)
+		{
+			$this->request->disable_super_globals();
+		}
+
+		if ($password == $password_new_format)
+		{
+			if (!function_exists('utf8_to_cp1252'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+			}
+
+			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
+			// plain md5 support left in for conversions from other systems.
+			if ((strlen($row['user_password']) == 34 && (phpbb_check_hash(md5($password_old_format), $row['user_password']) || phpbb_check_hash(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
+				|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])))
+			{
+				$hash = phpbb_hash($password_new_format);
+
+				// Update the password in the users table to the new format and remove user_pass_convert flag
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_password = \'' . $this->db->sql_escape($hash) . '\',
+						user_pass_convert = 0
+					WHERE user_id = ' . $row['user_id'];
+				$this->db->sql_query($sql);
+
+				$row['user_pass_convert'] = 0;
+				$row['user_password'] = $hash;
+			}
+			else
+			{
+				throw new phpbb_auth_exception('LOGIN_ERROR_PASSWORD_CONVERT');
+			}
+		}
+
+		return $row;
+	}
+}
