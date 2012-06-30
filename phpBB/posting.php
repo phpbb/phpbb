@@ -1144,14 +1144,11 @@ if ($submit || $preview || $refresh)
 			}
 			else
 			{
+				$message = '';
 				if ($auth->acl_get('f_read', $forum_id))
 				{
 					$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
 					$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
-				}
-				else
-				{
-					$message = '';
 				}
 				
 				meta_refresh(3, $redirect_url);
