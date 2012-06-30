@@ -1,13 +1,14 @@
 <?php
-/** 
+/**
 *
 * @package search
-* @copyright (c) 2005 phpBB Group 
+* @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -15,12 +16,12 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* sphinx_config
+* phpbb_search_sphinx_config
 * An object representing the sphinx configuration
 * Can read it from file and write it back out after modification
 * @package search
 */
-class sphinx_config
+class phpbb_search_sphinx_config
 {
 	var $loaded = false;
 	var $sections = array();
@@ -30,7 +31,7 @@ class sphinx_config
 	*
 	* @param	string	$filename	The path to a file containing the sphinx configuration
 	*/
-	function sphinx_config($filename = false)
+	function __construct($filename = false)
 	{
 		if ($filename !== false && file_exists($filename))
 		{
@@ -41,15 +42,15 @@ class sphinx_config
 	/**
 	* Get a section object by its name
 	*
-	* @param	string 					$name	The name of the section that shall be returned
-	* @return	sphinx_config_section			The section object or null if none was found
+	* @param	string 								$name	The name of the section that shall be returned
+	* @return	phpbb_search_sphinx_config_section			The section object or null if none was found
 	*/
 	function get_section_by_name($name)
 	{
 		for ($i = 0, $size = sizeof($this->sections); $i < $size; $i++)
 		{
 			// make sure this is really a section object and not a comment
-			if (($this->sections[$i] instanceof sphinx_config_section) && $this->sections[$i]->get_name() == $name)
+			if (($this->sections[$i] instanceof phpbb_search_sphinx_config_section) && $this->sections[$i]->get_name() == $name)
 			{
 				return $this->sections[$i];
 			}
@@ -59,12 +60,12 @@ class sphinx_config
 	/**
 	* Appends a new empty section to the end of the config
 	*
-	* @param	string					$name	The name for the new section
-	* @return	sphinx_config_section			The newly created section object
+	* @param	string								$name	The name for the new section
+	* @return	phpbb_search_sphinx_config_section			The newly created section object
 	*/
 	function add_section($name)
 	{
-		$this->sections[] = new sphinx_config_section($name, '');
+		$this->sections[] = new phpbb_search_sphinx_config_section($name, '');
 		return $this->sections[sizeof($this->sections) - 1];
 	}
 
@@ -104,7 +105,7 @@ class sphinx_config
 				// that way they're not deleted when reassembling the file from the sections
 				if (!$line || $line[0] == '#')
 				{
-					$this->sections[] = new sphinx_config_comment($config_file[$i]);
+					$this->sections[] = new phpbb_search_sphinx_config_comment($config_file[$i]);
 					continue;
 				}
 				else
@@ -138,7 +139,7 @@ class sphinx_config
 
 					// and then we create the new section object
 					$section_name = trim($section_name);
-					$section = new sphinx_config_section($section_name, $section_name_comment);
+					$section = new phpbb_search_sphinx_config_section($section_name, $section_name_comment);
 				}
 			}
 			else // if we're looking for variables inside a section
@@ -152,7 +153,7 @@ class sphinx_config
 					// of this section so they're not deleted on reassembly
 					if (!$line || $line[0] == '#')
 					{
-						$section->add_variable(new sphinx_config_comment($config_file[$i]));
+						$section->add_variable(new phpbb_search_sphinx_config_comment($config_file[$i]));
 						continue;
 					}
 	
@@ -168,7 +169,7 @@ class sphinx_config
 						}
 						else
 						{
-							$section->add_variable(new sphinx_config_comment($config_file[$i]));
+							$section->add_variable(new phpbb_search_sphinx_config_comment($config_file[$i]));
 							continue;
 						}
 					}
@@ -234,7 +235,7 @@ class sphinx_config
 					// if a name and an equal sign were found then we have append a new variable object to the section
 					if ($name && $found_assignment)
 					{
-						$section->add_variable(new sphinx_config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
+						$section->add_variable(new phpbb_search_sphinx_config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
 						continue;
 					}
 
@@ -251,7 +252,7 @@ class sphinx_config
 
 				// if we did not find anything meaningful up to here, then just treat it as a comment
 				$comment = ($skip_first) ? "\t" . substr(ltrim($config_file[$i]), 1) : $config_file[$i];
-				$section->add_variable(new sphinx_config_comment($comment));
+				$section->add_variable(new phpbb_search_sphinx_config_comment($comment));
 			}
 		}
 
@@ -284,219 +285,3 @@ class sphinx_config
 		fclose($fp);
 	}
 }
-
-/**
-* sphinx_config_section
-* Represents a single section inside the sphinx configuration
-*/
-class sphinx_config_section
-{
-	var $name;
-	var $comment;
-	var $end_comment;
-	var $variables = array();
-
-	/**
-	* Construct a new section
-	*
-	* @param	string	$name		Name of the section
-	* @param	string	$comment	Comment that should be appended after the name in the
-	*								textual format.
-	*/
-	function sphinx_config_section($name, $comment)
-	{
-		$this->name = $name;
-		$this->comment = $comment;
-		$this->end_comment = '';
-	}
-
-	/**
-	* Add a variable object to the list of variables in this section
-	*
-	* @param	sphinx_config_variable	$variable	The variable object
-	*/
-	function add_variable($variable)
-	{
-		$this->variables[] = $variable;
-	}
-
-	/**
-	* Adds a comment after the closing bracket in the textual representation
-	*/
-	function set_end_comment($end_comment)
-	{
-		$this->end_comment = $end_comment;
-	}
-
-	/**
-	* Getter for the name of this section
-	*
-	* @return	string	Section's name
-	*/
-	function get_name()
-	{
-		return $this->name;
-	}
-
-	/**
-	* Get a variable object by its name
-	*
-	* @param	string 					$name	The name of the variable that shall be returned
-	* @return	sphinx_config_section			The first variable object from this section with the
-	*											given name or null if none was found
-	*/
-	function get_variable_by_name($name)
-	{
-		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
-		{
-			// make sure this is a variable object and not a comment
-			if (($this->variables[$i] instanceof sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
-			{
-				return $this->variables[$i];
-			}
-		}
-	}
-
-	/**
-	* Deletes all variables with the given name
-	*
-	* @param	string	$name	The name of the variable objects that are supposed to be removed
-	*/
-	function delete_variables_by_name($name)
-	{
-		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
-		{
-			// make sure this is a variable object and not a comment
-			if (($this->variables[$i] instanceof sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
-			{
-				array_splice($this->variables, $i, 1);
-				$i--;
-			}
-		}
-	}
-
-	/**
-	* Create a new variable object and append it to the variable list of this section
-	*
-	* @param	string					$name	The name for the new variable
-	* @param	string					$value	The value for the new variable
-	* @return	sphinx_config_variable			Variable object that was created
-	*/
-	function create_variable($name, $value)
-	{
-		$this->variables[] = new sphinx_config_variable($name, $value, '');
-		return $this->variables[sizeof($this->variables) - 1];
-	}
-
-	/**
-	* Turns this object into a string which can be written to a config file
-	*
-	* @return	string	Config data in textual form, parsable for sphinx
-	*/
-	function to_string()
-	{
-		$content = $this->name . " " . $this->comment . "\n{\n";
-
-		// make sure we don't get too many newlines after the opening bracket
-		while (trim($this->variables[0]->to_string()) == "")
-		{
-			array_shift($this->variables);
-		}
-
-		foreach ($this->variables as $variable)
-		{
-			$content .= $variable->to_string();
-		}
-		$content .= '}' . $this->end_comment . "\n";
-
-		return $content;
-	}
-}
-
-/**
-* sphinx_config_variable
-* Represents a single variable inside the sphinx configuration
-*/
-class sphinx_config_variable
-{
-	var $name;
-	var $value;
-	var $comment;
-
-	/**
-	* Constructs a new variable object
-	*
-	* @param	string	$name		Name of the variable
-	* @param	string	$value		Value of the variable
-	* @param	string	$comment	Optional comment after the variable in the
-	*								config file
-	*/
-	function sphinx_config_variable($name, $value, $comment)
-	{
-		$this->name = $name;
-		$this->value = $value;
-		$this->comment = $comment;
-	}
-
-	/**
-	* Getter for the variable's name
-	*
-	* @return	string	The variable object's name
-	*/
-	function get_name()
-	{
-		return $this->name;
-	}
-
-	/**
-	* Allows changing the variable's value
-	*
-	* @param	string	$value	New value for this variable
-	*/
-	function set_value($value)
-	{
-		$this->value = $value;
-	}
-
-	/**
-	* Turns this object into a string readable by sphinx
-	*
-	* @return	string	Config data in textual form
-	*/
-	function to_string()
-	{
-		return "\t" . $this->name . ' = ' . str_replace("\n", "\\\n", $this->value) . ' ' . $this->comment . "\n";
-	}
-}
-
-
-/**
-* sphinx_config_comment
-* Represents a comment inside the sphinx configuration
-*/
-class sphinx_config_comment
-{
-	var $exact_string;
-
-	/**
-	* Create a new comment
-	*
-	* @param	string	$exact_string	The content of the comment including newlines, leading whitespace, etc.
-	*/
-	function sphinx_config_comment($exact_string)
-	{
-		$this->exact_string = $exact_string;
-	}
-
-	/**
-	* Simply returns the comment as it was created
-	*
-	* @return	string	The exact string that was specified in the constructor
-	*/
-	function to_string()
-	{
-		return $this->exact_string;
-	}
-}
-
-?>

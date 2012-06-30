@@ -207,11 +207,6 @@ class phpbb_search_fulltext_sphinx
 			// now that we're sure everything was entered correctly, generate a config for the index
 			// we misuse the avatar_salt for this, as it should be unique ;-)
 
-			if (!class_exists('sphinx_config'))
-			{
-				include($phpbb_root_path . 'includes/functions_sphinx.php');
-			}
-
 			if (!file_exists($config['fulltext_sphinx_config_path'] . 'sphinx.conf'))
 			{
 				$filename = $config['fulltext_sphinx_config_path'] . 'sphinx.conf';
@@ -223,7 +218,7 @@ class phpbb_search_fulltext_sphinx
 				@fclose($fp);
 			}
 
-			$config_object = new sphinx_config($config['fulltext_sphinx_config_path'] . 'sphinx.conf');
+			$config_object = new phpbb_search_sphinx_config($config['fulltext_sphinx_config_path'] . 'sphinx.conf');
 
 			$config_data = array(
 				'source source_phpbb_' . $this->id . '_main' => array(
