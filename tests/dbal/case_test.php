@@ -18,47 +18,35 @@ class phpbb_dbal_case_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT config_name, ' . $db->sql_case('is_dynamic = 1', "'" . $db->sql_escape('true') . "'", "'" . $db->sql_escape('false') . "'") . ' AS string
+		$sql = 'SELECT ' . $db->sql_case('1 = 1', '1', '0') . ' AS bool
 			FROM phpbb_config';
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, 1);
 
-		$db->sql_return_on_error(false);
+		$this->assertEquals(true, (bool) $db->sql_fetchfield('bool'));
 
-		$this->assertEquals(array(
-				array(
-					'config_name'	=> 'config1',
-					'string'		=> 'false',
-				),
-				array(
-					'config_name'	=> 'config2',
-					'string'		=> 'true',
-				),
-			),
-			$db->sql_fetchrowset($result)
-		);
+		$sql = 'SELECT ' . $db->sql_case('1 = 0', '1', '0') . ' AS bool
+			FROM phpbb_config';
+		$result = $db->sql_query_limit($sql, 1);
+
+		$this->assertEquals(false, (bool) $db->sql_fetchfield('bool'));
 	}
 
 	public function test_case_statement()
 	{
 		$db = $this->new_dbal();
 
-		$sql = 'SELECT config_name, ' . $db->sql_case('is_dynamic = 1', 'is_dynamic', 'config_value') . ' AS string
-			FROM phpbb_config';
-		$result = $db->sql_query($sql);
+		$sql = 'SELECT ' . $db->sql_case('is_dynamic = 1', 'is_dynamic', '0') . " AS bool
+			FROM phpbb_config
+			WHERE is_dynamic = 1";
+		$result = $db->sql_query_limit($sql, 1);
 
-		$db->sql_return_on_error(false);
+		$this->assertEquals(true, (bool) $db->sql_fetchfield('bool'));
 
-		$this->assertEquals(array(
-				array(
-					'config_name'	=> 'config1',
-					'string'		=> 'foo',
-				),
-				array(
-					'config_name'	=> 'config2',
-					'string'		=> '1',
-				),
-			),
-			$db->sql_fetchrowset($result)
-		);
+		$sql = 'SELECT ' . $db->sql_case('is_dynamic = 1', '1', 'is_dynamic') . " AS bool
+			FROM phpbb_config
+			WHERE is_dynamic = 0";
+		$result = $db->sql_query_limit($sql, 1);
+
+		$this->assertEquals(false, (bool) $db->sql_fetchfield('bool'));
 	}
 }
