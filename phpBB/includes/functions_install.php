@@ -486,7 +486,7 @@ function remove_remarks(&$sql)
 }
 
 /**
-* Removes comments from $input.
+* Removes "/* style" as well as "# style" comments from $input.
 *
 * @param string $input		Input string
 *
