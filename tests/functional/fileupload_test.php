@@ -51,8 +51,14 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 
 	public function test_remote_upload()
 	{
+		// Note: we cannot check for the actual value of the error messages
+		// since they are passed through the translator which will result in
+		// blank strings within this test framework.
+
 		// Only doing this within the functional framework because we need a
 		// URL
+
+		// Global $config required by unique_id
 		global $config;
 
 		if (!is_array($config))
@@ -83,5 +89,7 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 		$file = $upload->remote_upload($this->root_url . 'styles/prosilver/theme/images/forum_read.gif');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertTrue(file_exists($file->filename));
+
+		$config = array();
 	}
 }

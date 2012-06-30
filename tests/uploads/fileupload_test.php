@@ -18,6 +18,8 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	protected function setUp()
 	{
+		// Global $config required by unique_id
+		// Global $user required by several functions dealing with translations
 		global $config, $user;
 
 		if (!is_array($config))
@@ -44,8 +46,20 @@ class phpbb_fileupload_test extends phpbb_test_case
 		return $filespec;
 	}
 
+	protected function tearDown()
+	{
+		// Clear globals
+		global $config, $user;
+		$config = array();
+		$user = null;
+	}
+
 	public function test_common_checks()
 	{
+		// Note: we cannot check for the actual value of the error messages
+		// since they are passed through the translator which will result in
+		// blank strings within this test framework.
+
 		// Test 1: Valid file
 		$upload = new fileupload('', array('jpg'), 1000);
 		$file = $this->gen_valid_filespec();
@@ -77,10 +91,10 @@ class phpbb_fileupload_test extends phpbb_test_case
 	{
 		$upload = new fileupload('', array('jpg'), 1000);
 
-		copy($this->path . 'JPG', $this->path . 'JPG.jpg');
-		$file = $upload->local_upload($this->path . 'JPG.jpg');
+		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
+		$file = $upload->local_upload($this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
-		unlink($this->path . 'JPG.jpg');
+		unlink($this->path . 'jpg.jpg');
 	}
 
 	public function test_valid_dimensions()
