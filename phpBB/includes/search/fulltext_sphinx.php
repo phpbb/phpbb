@@ -395,14 +395,7 @@ class phpbb_search_fulltext_sphinx
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
-		$match = array();
-		// Keep quotes
-		$match[] = "#&quot;#";
-		// KeepNew lines
-		$match[] = "#[\n]+#";
-
-		$replace = array('"', " ");
-
+		// Keep quotes and new lines
 		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
 
 		if (strlen($keywords) > 0)
