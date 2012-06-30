@@ -26,7 +26,6 @@ require($phpbb_root_path . "includes/sphinxapi-0.9.8." . $phpEx);
 
 define('INDEXER_NAME', 'indexer');
 define('SEARCHD_NAME', 'searchd');
-define('SPHINX_TABLE', $table_prefix . 'sphinx');
 
 define('MAX_MATCHES', 20000);
 define('CONNECT_RETRIES', 3);
