@@ -38,15 +38,21 @@ define('CONNECT_WAIT_TIME', 300);
 */
 class phpbb_search_fulltext_sphinx
 {
-	var $stats = array();
-	var $word_length = array();
-	var $split_words = array();
-	var $search_query;
-	var $common_words = array();
-	var $id;
-	var $indexes;
-	var $sphinx;
+	private $stats = array();
+	private $split_words = array();
+	private $id;
+	private $indexes;
+	private $sphinx;
+	public $word_length = array();
+	public $search_query;
+	public $common_words = array();
 
+	/**
+	 * Constructor
+	 * Creates a new phpbb_search_fulltext_postgres, which is used as a search backend.
+	 *
+	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 */
 	public function __construct(&$error)
 	{
 		global $config;
@@ -81,6 +87,8 @@ class phpbb_search_fulltext_sphinx
 	* Returns the name of this search backend to be displayed to administrators
 	*
 	* @return string Name
+	*
+	* @access public
 	*/
 	public function get_name()
 	{
@@ -89,6 +97,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Checks permissions and paths, if everything is correct it generates the config file
+	*
+	* @return string|bool Language key of the error/incompatiblity occured
+	*
+	* @access public
 	*/
 	function init()
 	{
@@ -110,6 +122,13 @@ class phpbb_search_fulltext_sphinx
 		return false;
 	}
 
+	/**
+	 * Updates the config file sphinx.conf and generates the same in case autoconf is selected
+	 *
+	 * @return string|bool Language key of the error/incompatiblity occured otherwise false
+	 *
+	 * @access private
+	 */
 	function config_updated()
 	{
 		global $db, $user, $config, $phpbb_root_path, $phpEx;
@@ -378,6 +397,8 @@ class phpbb_search_fulltext_sphinx
 	* @param string $keywords Contains the keyword as entered by the user
 	* @param string $terms is either 'all' or 'any'
 	* @return false if no valid keywords were found and otherwise true
+	*
+	* @access public
 	*/
 	function split_keywords(&$keywords, $terms)
 	{
@@ -619,14 +640,14 @@ class phpbb_search_fulltext_sphinx
 	/**
 	 * Updates wordlist and wordmatch tables when a message is posted or changed
 	 *
-	 * @param string   $mode    Contains the post mode: edit, post, reply, quote
-	 * @param int      $post_id The id of the post which is modified/created
-	 * @param string   &$message   New or updated post content
-	 * @param string   &$subject   New or updated post subject
-	 * @param int      $poster_id  Post author's user id
-	 * @param int      $forum_id   The id of the forum in which the post is located
+	 * @param	string	$mode	Contains the post mode: edit, post, reply, quote
+	 * @param	int	$post_id	The id of the post which is modified/created
+	 * @param	string	&$message	New or updated post content
+	 * @param	string	&$subject	New or updated post subject
+	 * @param	int	$poster_id	Post author's user id
+	 * @param	int	$forum_id	The id of the forum in which the post is located
 	 *
-	 * @access   public
+	 * @access public
 	 */
 	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
@@ -686,6 +707,8 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Delete a post from the index after it was deleted
+	*
+	* @access public
 	*/
 	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
@@ -700,6 +723,8 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Destroy old cache entries
+	*
+	* @access public
 	*/
 	function tidy($create = false)
 	{
@@ -724,6 +749,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Create sphinx table
+	*
+	* @return string|bool error string is returned incase of errors otherwise false
+	*
+	* @access public
 	*/
 	function create_index($acp_module, $u_action)
 	{
@@ -758,6 +787,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Drop sphinx table
+	*
+	* @return string|bool error string is returned incase of errors otherwise false
+	*
+	* @access public
 	*/
 	function delete_index($acp_module, $u_action)
 	{
@@ -785,6 +818,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Returns true if the sphinx table was created
+	*
+	* @return bool true if sphinx table was created
+	*
+	* @access public
 	*/
 	function index_created($allow_new_files = true)
 	{
@@ -817,6 +854,8 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Kills the searchd process and makes sure there's no locks left over
+	*
+	* @access private
 	*/
 	function shutdown_searchd()
 	{
@@ -846,6 +885,8 @@ class phpbb_search_fulltext_sphinx
 	* files by calling shutdown_searchd.
 	*
 	* @return	boolean	Whether searchd is running or not
+	*
+	* @access	private
 	*/
 	function searchd_running()
 	{
@@ -890,6 +931,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Returns an associative array containing information about the indexes
+	*
+	* @return string|bool Language string of error false otherwise
+	*
+	* @access public
 	*/
 	function index_stats()
 	{
@@ -910,6 +955,8 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Collects stats that can be displayed on the index maintenance page
+	*
+	* @access private
 	*/
 	function get_stats()
 	{
@@ -957,6 +1004,10 @@ class phpbb_search_fulltext_sphinx
 
 	/**
 	* Returns a list of options for the ACP to display
+	*
+	* @return associative array containing template and config variables
+	*
+	* @access public
 	*/
 	function acp()
 	{
@@ -1112,6 +1163,8 @@ class phpbb_search_fulltext_sphinx
 *
 * @param	string	$path		Path from which files shall be deleted
 * @param	string	$pattern	PCRE pattern that a file needs to match in order to be deleted
+*
+* @access	private
 */
 function sphinx_unlink_by_pattern($path, $pattern)
 {
@@ -1132,6 +1185,8 @@ function sphinx_unlink_by_pattern($path, $pattern)
 * @param	string	$file		The filename from which the lines shall be read
 * @param	int		$amount		The number of lines to be read from the end
 * @return	string				Last lines of the file
+*
+* @access	private
 */
 function sphinx_read_last_lines($file, $amount)
 {
