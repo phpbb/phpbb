@@ -30,6 +30,7 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	public $search_query;
 	public $common_words = array();
 	public $word_length = array();
+	public $phrase_search = false;
 
 	public function __construct(&$error)
 	{
@@ -109,39 +110,6 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 		$matches = array();
 		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
 		$this->split_words = $matches[1];
-
-		// to allow phrase search, we need to concatenate quoted words
-		$tmp_split_words = array();
-		$phrase = '';
-		foreach ($this->split_words as $word)
-		{
-			if ($phrase)
-			{
-				$phrase .= ' ' . $word;
-				if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
-				{
-					$tmp_split_words[] = $phrase;
-					$phrase = '';
-				}
-			}
-			else if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
-			{
-				$phrase = $word;
-			}
-			else
-			{
-				$tmp_split_words[] = $word . ' ';
-			}
-		}
-		if ($phrase)
-		{
-			$tmp_split_words[] = $phrase;
-		}
-
-		$this->split_words = $tmp_split_words;
-
-		unset($tmp_split_words);
-		unset($phrase);
 
 		foreach ($this->split_words as $i => $word)
 		{

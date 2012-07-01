@@ -596,6 +596,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
+	//check if search backend supports phrase search or not
+	$l_phrase_search_disabled = '';
+	if (strpos(html_entity_decode($keywords), '"') !== false && isset($search->phrase_search))
+	{
+		$l_phrase_search_disabled = $search->phrase_search ? false : true;
+	}
+
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
@@ -603,6 +610,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? implode(' ', $search->common_words) : '',
 		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
 		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
+
+		'PHRASE_SEARCH_DISABLED'		=> $l_phrase_search_disabled,
+
 		'TOTAL_MATCHES'		=> $total_match_count,
 		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
 
