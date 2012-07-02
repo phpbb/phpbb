@@ -27,10 +27,10 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	private $tsearch_usable = false;
 	private $version;
 	private $tsearch_query;
+	private $phrase_search = false;
 	public $search_query;
 	public $common_words = array();
 	public $word_length = array();
-	public $phrase_search = false;
 
 	/**
 	 * Constructor
@@ -68,6 +68,18 @@ class phpbb_search_fulltext_postgres extends phpbb_search_base
 	public function get_name()
 	{
 		return 'PostgreSQL Fulltext';
+	}
+
+	/**
+	 * Returns if phrase search is supported or not
+	 *
+	 * @return bool
+	 *
+	 * @access public
+	 */
+	public function supports_phrase_search()
+	{
+		return $this->phrase_search;
 	}
 
 	/**

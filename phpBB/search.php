@@ -598,9 +598,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// Check if search backend supports phrase search or not
 	$phrase_search_disabled = '';
-	if (strpos(html_entity_decode($keywords), '"') !== false && isset($search->phrase_search))
+	if (strpos(html_entity_decode($keywords), '"') !== false && method_exists($search, 'supports_phrase_search'))
 	{
-		$phrase_search_disabled = $search->phrase_search ? false : true;
+		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
 	}
 
 	$template->assign_vars(array(
