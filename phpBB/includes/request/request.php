@@ -217,7 +217,7 @@ class phpbb_request implements phpbb_request_interface
 
 		if (!isset($this->input[$super_global][$var_name]))
 		{
-			return (is_array($default)) ? array() : $default;
+			return $default;
 		}
 		$var = $this->input[$super_global][$var_name];
 
@@ -232,7 +232,7 @@ class phpbb_request implements phpbb_request_interface
 				}
 				else
 				{
-					return (is_array($default)) ? array() : $default;
+					return $default;
 				}
 			}
 		}
