@@ -311,7 +311,7 @@ class dbal
 	*/
 	function sql_concatenate($expr1, $expr2)
 	{
-		return 'CONCAT(' . $expr1 . ', ' . $expr2 . ')';
+		return $expr1 . ' || ' . $expr2;
 	}
 
 	/**
