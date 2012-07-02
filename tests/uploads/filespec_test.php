@@ -43,8 +43,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->init_filespec();
 
 		// Create copies of the files for use in testing move_file
-		$it = new DirectoryIterator($this->path);
-		foreach ($it as $fileinfo)
+		$iterator = new DirectoryIterator($this->path);
+		foreach ($iterator as $fileinfo)
 		{
 			if ($fileinfo->isDot())
 			{
@@ -142,10 +142,24 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	protected function tearDown()
 	{
-		$it = new DirectoryIterator($this->path);
-		foreach ($it as $fileinfo)
+		$files = array(
+			'gif_copy' => 1,
+			'jpg_copy' => 1,
+			'png_copy' => 1,
+			'txt_copy' => 1,
+			'txt_copy_2' => 1,
+			'tif_copy' => 1,
+			'gif_moved' => 1,
+			'jpg_moved' => 1,
+			'png_moved' => 1,
+			'txt_as_img' => 1,
+			'txt_moved' => 1,
+		);
+
+		$iterator = new DirectoryIterator($this->path);
+		foreach ($iterator as $fileinfo)
 		{
-			if (strlen($fileinfo->getFilename()) > 3)
+			if (isset($files[$fileinfo->getFilename()]))
 			{
 				unlink($fileinfo->getPathname());
 			}
