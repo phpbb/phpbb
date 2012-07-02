@@ -286,6 +286,8 @@ class dbal
 	/**
 	* Build a case expression
 	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
 	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
 	* @param	string	$action_true	SQL expression that is used, if the condition is true
 	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
