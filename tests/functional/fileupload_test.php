@@ -14,7 +14,13 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 {
 	public function test_form_upload()
 	{
+		// This test is marked as incomplete due to an apparent bug in the
+		// symfony framework which causes it to lose the mimetype of any file
+		// uploaded. Since filespec::is_image() relies on the mimetype, all
+		// image uploads fail. filespec::is_image() is fixed in:
+		// https://github.com/phpbb/phpbb3/pull/833
 		$this->markTestIncomplete();
+
 		$path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
