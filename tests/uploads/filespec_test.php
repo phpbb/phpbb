@@ -195,7 +195,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$this->filespec->clean_filename('unique', self::PREFIX);
 			$name = $this->filespec->realname;
 			
-			$this->assertTrue(strlen($name) === 32 + strlen(self::PREFIX));
+			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
 			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
