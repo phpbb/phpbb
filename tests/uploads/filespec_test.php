@@ -59,50 +59,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 	}
 
-	public function additional_checks_variables()
-	{
-		return array(
-			array('gif', true),
-			array('jpg', false),
-			array('png', true),
-			array('tif', false),
-			array('txt', true),
-		);
-	}
-
-	public function check_content_variables()
-	{
-		return array(
-			array('gif', true),
-			array('jpg', true),
-			array('png', true),
-			array('tif', true),
-			array('txt', false),
-		);
-	}
-
-	public function clean_filename_variables()
-	{
-		$chunks = str_split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\'\\" /:*?<>|[];(){},#+=-_`', 8);
-		return array(
-			array($chunks[0] . $chunks[7]),
-			array($chunks[1] . $chunks[8]),
-			array($chunks[2] . $chunks[9]),
-			array($chunks[3] . $chunks[4]),
-			array($chunks[5] . $chunks[6]),
-		);
-	}
-
-	public function get_extension_variables()
-	{
-		return array(
-			array('file.png', 'png'),
-			array('file.phpbb.gif', 'gif'),
-			array('file..', ''),
-			array('.file..jpg.webp', 'webp'),
-		);
-	}
-
 	private function init_filespec($override = array())
 	{
 		// Initialise a blank filespec object for use with trivial methods
@@ -115,29 +71,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		);
 
 		$this->filespec = new filespec(array_merge($upload_ary, $override), null);
-	}
-
-	public function is_image_variables()
-	{
-		return array(
-			array('gif', 'image/gif', true),
-			array('jpg', 'image/jpg', true),
-			array('png', 'image/png', true),
-			array('tif', 'image/tif', true),
-			array('txt', 'text/plain', false),
-		);
-	}
-
-	public function move_file_variables()
-	{
-		return array(
-			array('gif_copy', 'gif_moved', 'image/gif', 'gif', false, true),
-			array('non_existant', 'still_non_existant', 'text/plain', 'txt', true, false),
-			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', true, true),
-			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
-			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
-			array('png_copy', 'png_moved', 'image/png', 'jpg', true, true),
-		);
 	}
 
 	protected function tearDown()
@@ -168,6 +101,17 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->config = array();
 	}
 
+	public function additional_checks_variables()
+	{
+		return array(
+			array('gif', true),
+			array('jpg', false),
+			array('png', true),
+			array('tif', false),
+			array('txt', true),
+		);
+	}
+
 	/**
 	 * @dataProvider additional_checks_variables
 	 */
@@ -188,6 +132,17 @@ class phpbb_filespec_test extends phpbb_test_case
 		$user = null;
 	}
 
+	public function check_content_variables()
+	{
+		return array(
+			array('gif', true),
+			array('jpg', true),
+			array('png', true),
+			array('tif', true),
+			array('txt', false),
+		);
+	}
+
 	/**
 	 * @dataProvider check_content_variables
 	 */
@@ -196,6 +151,18 @@ class phpbb_filespec_test extends phpbb_test_case
 		$disallowed_content = explode('|', $this->config['mime_triggers']);
 		$this->init_filespec(array('tmp_name' => $this->path . $filename));
 		$this->assertEquals($expected, $this->filespec->check_content($disallowed_content));
+	}
+
+	public function clean_filename_variables()
+	{
+		$chunks = str_split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\'\\" /:*?<>|[];(){},#+=-_`', 8);
+		return array(
+			array($chunks[0] . $chunks[7]),
+			array($chunks[1] . $chunks[8]),
+			array($chunks[2] . $chunks[9]),
+			array($chunks[3] . $chunks[4]),
+			array($chunks[5] . $chunks[6]),
+		);
 	}
 
 	/**
@@ -232,12 +199,33 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 	}
 
+	public function get_extension_variables()
+	{
+		return array(
+			array('file.png', 'png'),
+			array('file.phpbb.gif', 'gif'),
+			array('file..', ''),
+			array('.file..jpg.webp', 'webp'),
+		);
+	}
+
 	/**
 	 * @dataProvider get_extension_variables
 	 */
 	public function test_get_extension($filename, $expected)
 	{
 		$this->assertEquals($expected, $this->filespec->get_extension($filename));
+	}
+
+	public function is_image_variables()
+	{
+		return array(
+			array('gif', 'image/gif', true),
+			array('jpg', 'image/jpg', true),
+			array('png', 'image/png', true),
+			array('tif', 'image/tif', true),
+			array('txt', 'text/plain', false),
+		);
 	}
 
 	/**
@@ -247,6 +235,18 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		$this->init_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
 		$this->assertEquals($expected, $this->filespec->is_image());
+	}
+
+	public function move_file_variables()
+	{
+		return array(
+			array('gif_copy', 'gif_moved', 'image/gif', 'gif', false, true),
+			array('non_existant', 'still_non_existant', 'text/plain', 'txt', true, false),
+			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', true, true),
+			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
+			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
+			array('png_copy', 'png_moved', 'image/png', 'jpg', true, true),
+		);
 	}
 
 	/**
