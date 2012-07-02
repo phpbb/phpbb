@@ -31,6 +31,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed_last_update'] = time() + 600;
 
 		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
 		$this->path = __DIR__ . '/fixture/';
 	}
 
@@ -56,10 +57,6 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks()
 	{
-		// Note: we cannot check for the actual value of the error messages
-		// since they are passed through the translator which will result in
-		// blank strings within this test framework.
-
 		// Test 1: Valid file
 		$upload = new fileupload('', array('jpg'), 1000);
 		$file = $this->gen_valid_filespec();
@@ -71,20 +68,20 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$file = $this->gen_valid_filespec();
 		$file->filesize = 1000;
 		$upload->common_checks($file);
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
 
 		// Test 3: Invalid filename
 		$upload = new fileupload('', array('jpg'), 100);
 		$file = $this->gen_valid_filespec();
 		$file->realname = 'invalid?';
 		$upload->common_checks($file);
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('INVALID_FILENAME', $file->error[0]);
 
 		// Test 4: Invalid extension
 		$upload = new fileupload('', array('png'), 100);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
 	}
 
 	public function test_local_upload()

@@ -27,7 +27,9 @@ class phpbb_filespec_test extends phpbb_test_case
 	protected function setUp()
 	{
 		// Global $config required by unique_id
-		global $config;
+		// Global $user required by filespec::additional_checks and
+		// filespec::move_file
+		global $config, $user;
 
 		if (!is_array($config))
 		{
@@ -37,6 +39,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 		$config['mime_triggers'] = 'body|head|html|img|plaintext|a href|pre|script|table|title';
+
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
 
 		$this->config = &$config;
 		$this->path = __DIR__ . '/fixture/';
@@ -75,6 +80,8 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	protected function tearDown()
 	{
+		global $user;
+		
 		$files = array(
 			'gif_copy' => 1,
 			'jpg_copy' => 1,
@@ -99,6 +106,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 
 		$this->config = array();
+		$user = null;
 	}
 
 	public function additional_checks_variables()
@@ -117,10 +125,6 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_additional_checks($filename, $expected)
 	{
-		// Global $user required by filespec::additional_checks
-		global $user;
-		$user = new phpbb_mock_user();
-
 		$upload = new phpbb_mock_fileupload();
 		$this->init_filespec(array('tmp_name', $this->path . $filename));
 		$this->filespec->upload = $upload;
@@ -170,7 +174,6 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_clean_filename_real($filename)
 	{
-		
 		$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
 		$this->init_filespec(array('name' => $filename));
 		$this->filespec->clean_filename('real', self::PREFIX);
@@ -241,11 +244,11 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		return array(
 			array('gif_copy', 'gif_moved', 'image/gif', 'gif', false, true),
-			array('non_existant', 'still_non_existant', 'text/plain', 'txt', true, false),
-			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', true, true),
+			array('non_existant', 'still_non_existant', 'text/plain', 'txt', 'GENERAL_UPLOAD_ERROR', false),
+			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', 'UNABLE_GET_IMAGE_SIZE', true),
 			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
 			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
-			array('png_copy', 'png_moved', 'image/png', 'jpg', true, true),
+			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH', true),
 		);
 	}
 
@@ -272,8 +275,11 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->filespec->local = true;
 
 		$this->assertEquals($expected, $this->filespec->move_file($this->path));
-		$this->assertEquals($error, (bool) sizeof($this->filespec->error));
 		$this->assertEquals($this->filespec->file_moved, file_exists($this->path . $realname));
+		if ($error)
+		{
+			$this->assertEquals($error, $this->filespec->error[0]);
+		}
 
 		$phpEx = '';
 	}

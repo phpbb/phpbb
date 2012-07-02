@@ -57,15 +57,12 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 
 	public function test_remote_upload()
 	{
-		// Note: we cannot check for the actual value of the error messages
-		// since they are passed through the translator which will result in
-		// blank strings within this test framework.
-
 		// Only doing this within the functional framework because we need a
 		// URL
 
 		// Global $config required by unique_id
-		global $config;
+		// Global $user required by fileupload::remote_upload
+		global $config, $user;
 
 		if (!is_array($config))
 		{
@@ -75,20 +72,23 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
+
 		// Test 1: Invalid extension
 		$upload = new fileupload('', array('jpg'), 100);
 		$file = $upload->remote_upload('http://example.com/image.gif');
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('URL_INVALID',$file->error[0]);
 
 		// Test 2: Non-existant file
 		$upload = new fileupload('', array('jpg'), 100);
 		$file = $upload->remote_upload('http://example.com/image.jpg');
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('EMPTY_REMOTE_DATA', $file->error[0]);
 
 		// Test 3: File too large
 		$upload = new fileupload('', array('gif'), 100);
 		$file = $upload->remote_upload($this->root_url . 'styles/prosilver/theme/images/forum_read.gif');
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
 
 		// Test 4: Successful upload
 		$upload = new fileupload('', array('gif'), 1000);
@@ -97,5 +97,6 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 		$this->assertTrue(file_exists($file->filename));
 
 		$config = array();
+		$user = null;
 	}
 }
