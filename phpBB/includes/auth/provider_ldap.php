@@ -51,14 +51,14 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 			'OPTIONS'	=> array(
 				'enabled'			=> array('setting' => $this->config['auth_provider_ldap_enabled'],		'lang' => 'AUTH_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => false),
 				'admin'				=> array('setting' => $this->config['auth_provider_ldap_admin'],		'lang' => 'ALLOW_ADMIN_LOGIN',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
-				'ldap_server'		=> array('setting' => $this->config['auth_provider_ldap_server'],		'lang' => 'LDAP_SERVER',		'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_port'			=> array('setting' => $this->config['auth_provider_ldap_port'],			'lang' => 'LDAP_PORT',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_base_dn'		=> array('setting' => $this->config['auth_provider_ldap_base_dn'],		'lang' => 'LDAP_DN',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_uid'			=> array('setting' => $this->config['auth_provider_ldap_uid'],			'lang' => 'LDAP_UID',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_user_filter'	=> array('setting' => $this->config['auth_provider_ldap_user_filter'],	'lang' => 'LDAP_USER_FILTER',	'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_email'		=> array('setting' => $this->config['auth_provider_ldap_email'],		'lang' => 'LDAP_EMAIL',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_user'			=> array('setting' => $this->config['auth_provider_ldap_user'],			'lang' => 'LDAP_USER',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
-				'ldap_password'		=> array('setting' => $this->config['auth_provider_ldap_password'],		'lang' => 'LDAP_PASSWORD',		'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'server'			=> array('setting' => $this->config['auth_provider_ldap_server'],		'lang' => 'LDAP_SERVER',		'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'port'				=> array('setting' => $this->config['auth_provider_ldap_port'],			'lang' => 'LDAP_PORT',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'base_dn'			=> array('setting' => $this->config['auth_provider_ldap_base_dn'],		'lang' => 'LDAP_DN',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'uid'				=> array('setting' => $this->config['auth_provider_ldap_uid'],			'lang' => 'LDAP_UID',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'user_filter'		=> array('setting' => $this->config['auth_provider_ldap_user_filter'],	'lang' => 'LDAP_USER_FILTER',	'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'email'				=> array('setting' => $this->config['auth_provider_ldap_email'],		'lang' => 'LDAP_EMAIL',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'user'				=> array('setting' => $this->config['auth_provider_ldap_user'],			'lang' => 'LDAP_USER',			'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
+				'password'			=> array('setting' => $this->config['auth_provider_ldap_password'],		'lang' => 'LDAP_PASSWORD',		'validate' => 'string',	'type' => 'text:40:255',			'explain' => true),
 			),
 		);
 	}
@@ -293,7 +293,7 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	 *
 	 * @return boolean|string false if the user is identified and else an error message
 	 */
-	public function init_ldap()
+	public function init()
 	{
 		if (!@extension_loaded('ldap'))
 		{

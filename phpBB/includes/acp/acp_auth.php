@@ -48,7 +48,7 @@ class acp_auth {
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = ($request->is_set('config')) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -66,7 +66,7 @@ class acp_auth {
 		}
 
 		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
-		$providers = $auth_manager->get_registered_providers(); // TODO: Make options non-static
+		$providers = $auth_manager->get_registered_providers();
 
 		foreach($providers as $provider)
 		{
@@ -83,13 +83,34 @@ class acp_auth {
 				'PROVIDER'	=> $provider_name,
 			));
 
-			foreach ($provider_configuration['OPTIONS'] as $config_key => $vars)
+			$err = false;
+
+			validate_config_vars($provider_configuration['OPTIONS'], $cfg_array, $error);
+			if (sizeof($error))
 			{
-				$config_key = $provider_configuration['NAME'] . '_' . $config_key;
+				$err = true;
+			}
+
+			foreach ($provider_configuration['OPTIONS'] as $config_key_orig => $vars)
+			{
+				$config_key = 'auth_provider_' . $provider_configuration['NAME'] . '_' . $config_key_orig;
+				if ($config_key_orig === 'enabled' && $vars['setting'] == false && $cfg_array[$config_key] == true && method_exists($provider, 'init'))
+				{
+					$init = 'init';
+					try
+					{
+						$provider->$init();
+					}
+					catch (Exception $e)
+					{
+						$err = true;
+						$error[] = $user->lang[$e->getMessage()];
+					}
+				}
 
 				$this->new_config[$config_key] = $config_value = $cfg_array[$config_key];
 
-				if ($submit)
+				if ($submit && $err === false)
 				{
 					set_config($config_key, $config_value);
 				}

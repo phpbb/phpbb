@@ -194,7 +194,7 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 	 *
 	 * @return boolean|string false if the user is identified and else an error message
 	 */
-	public function init_apache()
+	public function init()
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
 		{
