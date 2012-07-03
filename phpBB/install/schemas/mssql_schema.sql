@@ -819,9 +819,7 @@ CREATE TABLE [phpbb_posts] (
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_count] [int] DEFAULT (0) NOT NULL ,
-	[post_edit_locked] [int] DEFAULT (0) NOT NULL ,
-	[akismet_spam] [int] DEFAULT (0) NOT NULL ,
-	[akismet_ham] [int] DEFAULT (0) NOT NULL 
+	[post_edit_locked] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1111,7 +1109,7 @@ CREATE TABLE [phpbb_reports] (
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
-	[reported_post_text] [text] DEFAULT ('') NOT NULL 
+	[reported_post_text] [text] DEFAULT ('') NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

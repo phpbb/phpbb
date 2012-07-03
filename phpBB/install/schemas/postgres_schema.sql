@@ -655,8 +655,6 @@ CREATE TABLE phpbb_posts (
 	post_edit_user INT4 DEFAULT '0' NOT NULL CHECK (post_edit_user >= 0),
 	post_edit_count INT2 DEFAULT '0' NOT NULL CHECK (post_edit_count >= 0),
 	post_edit_locked INT2 DEFAULT '0' NOT NULL CHECK (post_edit_locked >= 0),
-	akismet_spam INT2 DEFAULT '0' NOT NULL CHECK (akismet_spam >= 0),
-	akismet_ham INT2 DEFAULT '0' NOT NULL CHECK (akismet_ham >= 0),
 	PRIMARY KEY (post_id)
 );
 

@@ -646,20 +646,6 @@ function approve_post($post_id_list, $id, $mode)
 			}
 		}
 
-		// Start phpBB-Akismet
-		if ($config['phpbb_akismet_enabled'] && $config['phpbb_akismet_key'])
-		{
-			if (!class_exists('phpbb_akismet'))
-			{
-				include($phpbb_root_path . 'includes/akismet/phpbb_akismet.' . $phpEx);
-			}
-			$phpbb_akismet = new phpbb_akismet();
-
-			// Report as ham
-			$phpbb_akismet->report_ham(array_keys($post_info));
-		}
-		// End phpBB-Akismet
-
 		if (sizeof($post_id_list) == 1)
 		{
 			$post_data = $post_info[$post_id_list[0]];
