@@ -132,8 +132,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->filespec->filesize = $this->filespec->get_filesize($this->path . $filename);
 
 		$this->assertEquals($expected, $this->filespec->additional_checks());
-
-		$user = null;
 	}
 
 	public function check_content_variables()

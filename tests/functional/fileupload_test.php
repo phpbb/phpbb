@@ -78,7 +78,7 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 		// Test 1: Invalid extension
 		$upload = new fileupload('', array('jpg'), 100);
 		$file = $upload->remote_upload('http://example.com/image.gif');
-		$this->assertEquals('URL_INVALID',$file->error[0]);
+		$this->assertEquals('URL_INVALID', $file->error[0]);
 
 		// Test 2: Non-existant file
 		$upload = new fileupload('', array('jpg'), 100);
