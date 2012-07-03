@@ -21,7 +21,6 @@ class phpbb_filespec_test extends phpbb_test_case
 	const UPLOAD_MAX_FILESIZE = 1000;
 
 	private $config;
-	private $filespec;
 	public $path;
 
 	protected function setUp()
@@ -45,7 +44,6 @@ class phpbb_filespec_test extends phpbb_test_case
 
 		$this->config = &$config;
 		$this->path = __DIR__ . '/fixture/';
-		$this->init_filespec();
 
 		// Create copies of the files for use in testing move_file
 		$iterator = new DirectoryIterator($this->path);
@@ -64,7 +62,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 	}
 
-	private function init_filespec($override = array())
+	private function get_filespec($override = array())
 	{
 		// Initialise a blank filespec object for use with trivial methods
 		$upload_ary = array(
@@ -75,7 +73,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$this->filespec = new filespec(array_merge($upload_ary, $override), null);
+		return new filespec(array_merge($upload_ary, $override), null);
 	}
 
 	protected function tearDown()
@@ -126,12 +124,12 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_additional_checks($filename, $expected)
 	{
 		$upload = new phpbb_mock_fileupload();
-		$this->init_filespec(array('tmp_name', $this->path . $filename));
-		$this->filespec->upload = $upload;
-		$this->filespec->file_moved = true;
-		$this->filespec->filesize = $this->filespec->get_filesize($this->path . $filename);
+		$filespec = $this->get_filespec(array('tmp_name', $this->path . $filename));
+		$filespec->upload = $upload;
+		$filespec->file_moved = true;
+		$filespec->filesize = $filespec->get_filesize($this->path . $filename);
 
-		$this->assertEquals($expected, $this->filespec->additional_checks());
+		$this->assertEquals($expected, $filespec->additional_checks());
 	}
 
 	public function check_content_variables()
@@ -151,8 +149,8 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_check_content($filename, $expected)
 	{
 		$disallowed_content = explode('|', $this->config['mime_triggers']);
-		$this->init_filespec(array('tmp_name' => $this->path . $filename));
-		$this->assertEquals($expected, $this->filespec->check_content($disallowed_content));
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename));
+		$this->assertEquals($expected, $filespec->check_content($disallowed_content));
 	}
 
 	public function clean_filename_variables()
@@ -173,9 +171,9 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_clean_filename_real($filename)
 	{
 		$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
-		$this->init_filespec(array('name' => $filename));
-		$this->filespec->clean_filename('real', self::PREFIX);
-		$name = $this->filespec->realname;
+		$filespec = $this->get_filespec(array('name' => $filename));
+		$filespec->clean_filename('real', self::PREFIX);
+		$name = $filespec->realname;
 
 		$this->assertEquals(0, preg_match('/%(\w{2})/', $name));
 		foreach ($bad_chars as $char)
@@ -189,9 +187,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filenames = array();
 		for ($tests = 0; $tests < self::TEST_COUNT; $tests++)
 		{
-			$this->init_filespec();
-			$this->filespec->clean_filename('unique', self::PREFIX);
-			$name = $this->filespec->realname;
+			$filespec = $this->get_filespec();
+			$filespec->clean_filename('unique', self::PREFIX);
+			$name = $filespec->realname;
 			
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
 			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
@@ -215,7 +213,8 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_get_extension($filename, $expected)
 	{
-		$this->assertEquals($expected, $this->filespec->get_extension($filename));
+		$filespec = $this->get_filespec();
+		$this->assertEquals($expected, $filespec->get_extension($filename));
 	}
 
 	public function is_image_variables()
@@ -234,8 +233,8 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_is_image($filename, $mimetype, $expected)
 	{
-		$this->init_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
-		$this->assertEquals($expected, $this->filespec->is_image());
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$this->assertEquals($expected, $filespec->is_image());
 	}
 
 	public function move_file_variables()
@@ -263,20 +262,20 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload = new phpbb_mock_fileupload();
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
 
-		$this->init_filespec(array(
+		$filespec = $this->get_filespec(array(
 			'tmp_name' => $this->path . $tmp_name,
 			'name' => $realname,
 			'type' => $mime_type,
 		));
-		$this->filespec->extension = $extension;
-		$this->filespec->upload = $upload;
-		$this->filespec->local = true;
+		$filespec->extension = $extension;
+		$filespec->upload = $upload;
+		$filespec->local = true;
 
-		$this->assertEquals($expected, $this->filespec->move_file($this->path));
-		$this->assertEquals($this->filespec->file_moved, file_exists($this->path . $realname));
+		$this->assertEquals($expected, $filespec->move_file($this->path));
+		$this->assertEquals($filespec->file_moved, file_exists($this->path . $realname));
 		if ($error)
 		{
-			$this->assertEquals($error, $this->filespec->error[0]);
+			$this->assertEquals($error, $filespec->error[0]);
 		}
 
 		$phpEx = '';
