@@ -79,32 +79,27 @@ class phpbb_filespec_test extends phpbb_test_case
 	protected function tearDown()
 	{
 		global $user;
-		
-		$files = array(
-			'gif_copy' => 1,
-			'jpg_copy' => 1,
-			'png_copy' => 1,
-			'txt_copy' => 1,
-			'txt_copy_2' => 1,
-			'tif_copy' => 1,
-			'gif_moved' => 1,
-			'jpg_moved' => 1,
-			'png_moved' => 1,
-			'txt_as_img' => 1,
-			'txt_moved' => 1,
-		);
-
-		$iterator = new DirectoryIterator($this->path);
-		foreach ($iterator as $fileinfo)
-		{
-			if (isset($files[$fileinfo->getFilename()]))
-			{
-				unlink($fileinfo->getPathname());
-			}
-		}
-
 		$this->config = array();
 		$user = null;
+		
+		$files = array(
+			'gif_copy',
+			'jpg_copy',
+			'png_copy',
+			'txt_copy',
+			'txt_copy_2',
+			'tif_copy',
+			'gif_moved',
+			'jpg_moved',
+			'png_moved',
+			'txt_as_img',
+			'txt_moved',
+		);
+
+		foreach ($files as $file)
+		{
+			@unlink($this->path . $file);
+		}
 	}
 
 	public function additional_checks_variables()
