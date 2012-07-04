@@ -334,8 +334,6 @@ class acp_styles
 	*/
 	protected function action_deactivate()
 	{
-		global $config;
-
 		// Get list of styles to deactivate
 		$ids = $this->request_vars('id', 0, true);
 
@@ -350,7 +348,7 @@ class acp_styles
 
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_style = ' . (int) $config['default_style'] . '
+			SET user_style = ' . (int) $this->config['default_style'] . '
 			WHERE user_style IN (' . implode(', ', $ids) . ')';
 		$this->db->sql_query($sql);
 
