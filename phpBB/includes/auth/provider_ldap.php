@@ -291,13 +291,14 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	 * Only allow changing authentication to ldap if we can connect to the ldap server
 	 * Called in acp_board while setting authentication plugins
 	 *
-	 * @return boolean|string false if the user is identified and else an error message
+	 * @return boolean false if the user is identified
+	 * @throws phpbb_auth_exception
 	 */
 	public function init()
 	{
 		if (!@extension_loaded('ldap'))
 		{
-			return $this->user->lang['LDAP_NO_LDAP_EXTENSION'];
+			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_LDAP_EXTENSION']);
 		}
 
 		$this->config['ldap_port'] = (int) $this->config['ldap_port'];
@@ -312,7 +313,7 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 
 		if (!$ldap)
 		{
-			return $this->user->lang['LDAP_NO_SERVER_CONNECTION'];
+			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_SERVER_CONNECTION']);
 		}
 
 		@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -322,7 +323,7 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 		{
 			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user']), htmlspecialchars_decode($this->config['ldap_password'])))
 			{
-				return $this->user->lang['LDAP_INCORRECT_USER_PASSWORD'];
+				throw new phpbb_auth_exception($this->user->lang['LDAP_INCORRECT_USER_PASSWORD']);
 			}
 		}
 
@@ -340,7 +341,7 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 
 		if ($search === false)
 		{
-			return $this->user->lang['LDAP_SEARCH_FAILED'];
+			throw new phpbb_auth_exception($this->user->lang['LDAP_SEARCH_FAILED']);
 		}
 
 		$result = @ldap_get_entries($ldap, $search);
@@ -350,12 +351,12 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 
 		if (!is_array($result) || sizeof($result) < 2)
 		{
-			return sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']);
+			throw new phpbb_auth_exception(sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']));
 		}
 
 		if (!empty($this->config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['ldap_email'])]))
 		{
-			return $this->user->lang['LDAP_NO_EMAIL'];
+			throw new phpbb_auth_exception($this->user->lang['LDAP_NO_EMAIL']);
 		}
 
 		return false;

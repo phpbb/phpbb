@@ -91,27 +91,27 @@ class acp_auth {
 				$err = true;
 			}
 
+			$updated_auth_settings = false;
+			$old_auth_config = array();
+			$init = false;
 			foreach ($provider_configuration['OPTIONS'] as $config_key_orig => $vars)
 			{
 				$config_key = 'auth_provider_' . $provider_configuration['NAME'] . '_' . $config_key_orig;
 				if ($config_key_orig === 'enabled' && $vars['setting'] == false && $cfg_array[$config_key] == true && method_exists($provider, 'init'))
 				{
-					$init = 'init';
-					try
-					{
-						$provider->$init();
-					}
-					catch (Exception $e)
-					{
-						$err = true;
-						$error[] = $user->lang[$e->getMessage()];
-					}
+					$init = true;
 				}
 
-				$this->new_config[$config_key] = $config_value = $cfg_array[$config_key];
-
-				if ($submit && $err === false)
+				if (!isset($config[$config_key]))
 				{
+					set_config($config_key, '');
+				}
+
+				if ($submit && !$err)
+				{
+					$updated_auth_settings = true;
+					$old_auth_config[$config_key] = $config[$config_key];
+					$this->new_config[$config_key] = $config_value = $cfg_array[$config_key];
 					set_config($config_key, $config_value);
 				}
 
@@ -142,6 +142,26 @@ class acp_auth {
 					'CONTENT'		=> $content,
 					)
 				);
+			}
+
+			if ($init)
+			{
+				try
+				{
+					$provider->init();
+				}
+				catch (Exception $e)
+				{
+					$err = true;
+					$error[] = $e->getMessage();
+					if ($updated_auth_settings)
+					{
+						foreach ($old_auth_config as $config_key => $config_value)
+						{
+							set_config($config_key, $config_value);
+						}
+					}
+				}
 			}
 		}
 
