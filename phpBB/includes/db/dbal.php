@@ -293,7 +293,7 @@ class dbal
 	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
 	* @return	string			CASE expression including the condition and statements
 	*/
-	function sql_case($condition, $action_true, $action_false = false)
+	public function sql_case($condition, $action_true, $action_false = false)
 	{
 		$sql_case = 'CASE WHEN ' . $condition;
 		$sql_case .= ' THEN ' . $action_true;
@@ -309,7 +309,7 @@ class dbal
 	* @param	string	$expr2		SQL expression that is appended to the first expression
 	* @return	string		Concatenated string
 	*/
-	function sql_concatenate($expr1, $expr2)
+	public function sql_concatenate($expr1, $expr2)
 	{
 		return $expr1 . ' || ' . $expr2;
 	}
