@@ -1245,6 +1245,26 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
 			}
 		}
+
+		// Check if users have permission to read PMs
+		// Only check if not a moderator or admin, since they are allowed to override this user setting
+		if (true)//!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		{
+			$can_read = $auth->acl_get_list(false, 'u_readpm');
+			$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
+
+			$cannot_read_list = array_diff(array_keys($address_list['u']), $can_read);
+
+			if (!empty($cannot_read_list))
+			{
+				foreach ($cannot_read_list as $cannot_read)
+				{
+					unset($address_list['u'][$cannot_read]);
+				}
+
+				$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+			}
+		}
 	}
 }
 
