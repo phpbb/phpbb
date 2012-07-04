@@ -180,7 +180,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			global $phpEx;
 			$redirect_to = $this->request->variable('redirect', 'index.' . $phpEx);
-			$return_to = $this->user->page['page'].'?mode=login&auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
+			$return_to = '?mode=login&auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
 		elseif ($auth_action === 'link')
