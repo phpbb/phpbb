@@ -1148,7 +1148,14 @@ class acp_styles
 		$style_count = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$style_count[$row['user_style']] = $row['style_count'];
+			if ($this->config['override_user_style'])
+			{
+				$style_count[$this->config['default_style']] = $row['style_count'];
+			}
+			else
+			{
+				$style_count[$row['user_style']] = $row['style_count'];
+			}
 		}
 		$this->db->sql_freeresult($result);
 
