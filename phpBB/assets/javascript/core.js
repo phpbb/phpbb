@@ -452,24 +452,31 @@ phpbb.add_ajax_callback('alt_text', function() {
  * It replaces the current text with the text in the alt-text data attribute,
  * and replaces the text in the attribute with the current text so that the
  * process can be repeated.
- * Additionally it replaces the icon of the link and changes the link itself.
+ * Additionally it replaces the class of the link's parent
+ * and changes the link itself.
  */
-phpbb.add_ajax_callback('toggle_subscribe', function() {
+phpbb.add_ajax_callback('toggle_link', function() {
 	var el = $(this),
-		alt_text;
+		toggle_text,
+		toggle_url,
+		toggle_class;
 
-	phpbb.ajax_callbacks['alt_text'].call(this);
+	// Toggle link text
 
-	if (el.attr('href').indexOf('unwatch') !== -1)
-	{
-		el.attr('href', el.attr('href').replace('unwatch', 'watch'));
-		el.parent().attr('class', 'icon-subscribe');
-	}
-	else
-	{
-		el.attr('href', el.attr('href').replace('watch', 'unwatch'));
-		el.parent().attr('class', 'icon-unsubscribe');
-	}
+	toggle_text = el.attr('data-toggle-text');
+	el.attr('data-toggle-text', el.text());
+	el.attr('title', toggle_text);
+	el.text(toggle_text);
+
+	// Toggle link url
+	toggle_url = el.attr('data-toggle-url');
+	el.attr('data-toggle-url', el.attr('href'));
+	el.attr('href', toggle_url);
+
+	// Toggle class of link parent
+	toggle_class = el.attr('data-toggle-class');
+	el.attr('data-toggle-class', el.parent().attr('class'));
+	el.parent().attr('class', toggle_class);
 });
 
 })(jQuery); // Avoid conflicts with other libraries

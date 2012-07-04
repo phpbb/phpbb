@@ -449,8 +449,9 @@ $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&a
 // Are we watching this topic?
 $s_watching_topic = array(
 	'link'			=> '',
+	'link_toggle'	=> '',
 	'title'			=> '',
-	'toggle'			=> '',
+	'title_toggle'	=> '',
 	'is_watching'	=> false,
 );
 
@@ -651,8 +652,9 @@ $template->assign_vars(array(
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;t=$topic_id") : '',
 
 	'U_WATCH_TOPIC'			=> $s_watching_topic['link'],
+	'U_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['link_toggle'],
 	'S_WATCH_TOPIC_TITLE'	=> $s_watching_topic['title'],
-	'S_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['toggle'],
+	'S_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['title_toggle'],
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
 	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
