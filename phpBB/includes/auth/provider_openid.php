@@ -164,7 +164,8 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$identifier = $this->request->variable('openid_identifier', '');
 		}
 
-		$root = 'http://192.168.0.112/';
+		$protocol = ($this->request->server('HTTPS') == '') ? 'http://' : 'https://';
+		$root = $protocol . $this->request->server('HTTP_HOST');
 
 		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'login')
