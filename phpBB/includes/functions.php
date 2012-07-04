@@ -3010,7 +3010,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$auth_step = $request->variable('auth_step', '');
 				if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
 				{
-					try {
+					try
+					{
 						$auth_provider->$auth_step();
 						break 3;
 					}
@@ -3021,8 +3022,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				}
 				else
 				{
-					if($redirect) {
-						$request->overwrite('redirect_to', $redirect);
+					if ($redirect)
+					{
+						$request->overwrite('redirect', $redirect);
 					}
 					try
 					{
