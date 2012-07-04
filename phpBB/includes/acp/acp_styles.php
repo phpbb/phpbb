@@ -512,6 +512,13 @@ class acp_styles
 				{
 					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
 				}
+
+				// Reset default style for users who use selected styles
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $id . '
+					WHERE user_style = ' . (int) $this->config['default_style'];
+				$this->db->sql_query($sql);
+
 				set_config('default_style', $id);
 				$this->cache->purge();
 			}
