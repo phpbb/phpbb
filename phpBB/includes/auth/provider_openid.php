@@ -283,10 +283,13 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				}
 				$this->redirect($this->request->variable('phpbb_redirect_to', ''));
 			}
-			elseif ($auth_action == 'register' && $this->register($extensions['sreg']->getProperties()))
+			elseif ($auth_action == 'register')
 			{
+				$sreg_data = $extensions['sreg']->getProperties();
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
+
+				$this->internal_register($sreg_data);
 				return true; // TODO: Change this to a redirect.
 			}
 			elseif ($auth_action == 'link')
@@ -319,7 +322,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 *
 	 * @param array $sreg_data Holds returned data from the OpenID provider that is needed to perform registration.
 	 */
-	protected function register($sreg_data)
+	protected function internal_register($sreg_data)
 	{
 		// Data array to hold all returned values.
 		$data = array();
@@ -394,7 +397,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		{
 			// TODO HTTP request the missing, required data.
 			// Temporary exception.
-			$this->request->disable_super_globals();
 			throw new phpbb_auth_exception($req_data);
 		}
 
