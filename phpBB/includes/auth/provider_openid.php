@@ -260,6 +260,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
 
+				$admin = (bool)$this->request->variable('phpbb_admin', false);
+				if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
+				{
+					throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
+				}
+
 				// Check to see if a link exists.
 				$link_manager = new phpbb_auth_link_manager($this->db);
 				$link = $link_manager->get_link_by_index('openid', $this->request->variable('openid_identity', ''));
@@ -268,19 +274,10 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 					throw new phpbb_auth_exception('Can not find a link between ' . $this->request->variable('openid_identity', '') . ' and any known account.');
 				}
 
-				$admin = (bool)$this->request->variable('phpbb_admin', false);
-				if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
-				{
-					throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
-				}
-
 				$autologin = (bool)$this->request->variable('phpbb_autologin', false);
 				$viewonline = (bool)$this->request->variable('phpbb_viewonline', true);
 
-				if (!$this->login((int) $link['user_id'], $admin, $autologin, $viewonline))
-				{
-					$this->login_auth_fail((int) $link['user_id']);
-				}
+				$this->login((int) $link['user_id'], $admin, $autologin, $viewonline);
 				$this->redirect($this->request->variable('phpbb_redirect_to', ''));
 			}
 			elseif ($auth_action == 'register')
