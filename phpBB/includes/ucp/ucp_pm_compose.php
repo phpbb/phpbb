@@ -1265,6 +1265,23 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 			}
 		}
+
+		// Check if users have permission to read PMs
+		// Only check if not a moderator or admin, since they are allowed to override this user setting
+		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		{
+			$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']));
+
+			if (!empty($banned_user_list))
+			{
+				foreach ($banned_user_list as $banned_user)
+				{
+					unset($address_list['u'][$banned_user]);
+				}
+
+				$error[] = $user->lang['PM_USERS_REMOVED_BANNED'];
+			}
+		}
 	}
 }
 
