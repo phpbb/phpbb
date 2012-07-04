@@ -1143,6 +1143,7 @@ class acp_styles
 	{
 		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
 			FROM ' . USERS_TABLE . '
+			WHERE user_type <> ' . USER_IGNORE . '
 			GROUP BY user_style';
 		$result = $this->db->sql_query($sql);
 
