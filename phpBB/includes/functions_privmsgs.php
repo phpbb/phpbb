@@ -1216,31 +1216,34 @@ function phpbb_delete_user_pms($user_id)
 		WHERE user_id = ' . (int) $user_id;
 	$db->sql_query($sql);
 
-	// Now we have to check which messages we can delete completely
-	$sql = 'SELECT msg_id
-		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		unset($delete_ids[$row['msg_id']]);
-	}
-	$db->sql_freeresult($result);
-
 	if (!empty($delete_ids))
 	{
-		// Check if there are any attachments we need to remove
-		if (!function_exists('delete_attachments'))
-		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		}
-
-		delete_attachments('message', $delete_ids, false);
-
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+		// Now we have to check which messages we can delete completely
+		$sql = 'SELECT msg_id
+			FROM ' . PRIVMSGS_TO_TABLE . '
 			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
-		$db->sql_query($sql);
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			unset($delete_ids[$row['msg_id']]);
+		}
+		$db->sql_freeresult($result);
+
+		if (!empty($delete_ids))
+		{
+			// Check if there are any attachments we need to remove
+			if (!function_exists('delete_attachments'))
+			{
+				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			}
+
+			delete_attachments('message', $delete_ids, false);
+
+			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	// Set the remaining author id to anonymous
