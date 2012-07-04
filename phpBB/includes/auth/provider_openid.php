@@ -178,7 +178,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$viewonline = $this->request->variable('viewonline', 'off');
 
 			global $phpEx;
-			$redirect_to = $this->request->variable('redirect_to', 'index.' . $phpEx);
+			$redirect_to = $this->request->variable('redirect', 'index.' . $phpEx);
 			$return_to = $this->user->page['page'].'?mode=login&auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}

@@ -69,7 +69,6 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 		{
 			case 'login':
 				$this->internal_login($admin);
-				$this->redirect($this->request->variable('redirect_to', ''));
 				break;
 			case 'register':
 				break;
@@ -172,11 +171,8 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 					throw new phpbb_auth_exception('ACTIVE_ERROR');
 				}
 
-				if (!$this->login((int)$row['user_id'], $admin, $autologin, $viewonline))
-				{
-					$this->login_auth_fail((int)$row['user_id'], $username, utf8_clean_string($username));
-				}
-				return;
+				$this->login((int)$row['user_id'], $admin, $autologin, $viewonline);
+				$this->redirect($this->request->variable('redirect', ''));
 			}
 		}
 

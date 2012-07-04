@@ -149,6 +149,13 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 	$db->sql_freeresult($result);
 }
 
+$s_login_hidden_fields = array(
+	'sid'			=> $user->session_id,
+	'auth_provider'	=> 'common',
+	'auth_action'	=> 'login',
+);
+$s_login_hidden_fields = build_hidden_fields($s_login_hidden_fields);
+
 // Assign index specific vars
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
@@ -166,6 +173,7 @@ $template->assign_vars(array(
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
+	'S_LOGIN_HIDDEN_FIELDS'		=> $s_login_hidden_fields,
 
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')

@@ -69,7 +69,6 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		{
 			case 'login':
 				$this->internal_login($admin);
-				$this->redirect($this->request->variable('redirect_to', ''));
 				break;
 			case 'register':
 				break;
@@ -216,11 +215,9 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 				throw new phpbb_auth_exception('ACTIVE_ERROR');
 			}
 
-			// Successful login, return user id to complete login.
-			if (!$this->login($row['user_id'], $admin, $autologin, $viewonline))
-			{
-				$this->login_auth_fail($row['user_id'], $username, utf8_clean_string($username));
-			}
+			// Complete login.
+			$this->login($row['user_id'], $admin, $autologin, $viewonline);
+			$this->redirect($this->request->variable('redirect', ''));
 		}
 
 		// Give status about wrong password...
