@@ -1103,10 +1103,10 @@ function phpbb_delete_user_pms($user_id)
 
 	// Get PM Information for later deleting
 	// The two queries where split, so we can use our indexes
-	$undelivered_msg = $undelivered_user = $delete_ids = array();
+	$undelivered_msg = $delete_ids = array();
 
 	// Part 1: get PMs the user received
-	$sql = 'SELECT msg_id, user_id, author_id, folder_id
+	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE user_id = ' . $user_id;
 	$result = $db->sql_query($sql);
@@ -1115,26 +1115,13 @@ function phpbb_delete_user_pms($user_id)
 	{
 		$msg_id = (int) $row['msg_id'];
 		$delete_ids[$msg_id] = $msg_id;
-
-		if ($row['author_id'] == $user_id && $row['folder_id'] == PRIVMSGS_NO_BOX)
-		{
-			// Undelivered messages
-			$undelivered_msg[] = $msg_id;
-
-			if (isset($undelivered_user[$row['user_id']]))
-			{
-				++$undelivered_user[$row['user_id']];
-			}
-			else
-			{
-				$undelivered_user[$row['user_id']] = 1;
-			}
-		}
 	}
 	$db->sql_freeresult($result);
 
 	// Part 2: get PMs the user sent, but has yet to be received
-	$sql = 'SELECT msg_id, user_id
+	// We can not simply delete them. First we have to check,
+	// whether another user already received and read the message.
+	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE author_id = ' . $user_id . '
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
@@ -1143,61 +1130,90 @@ function phpbb_delete_user_pms($user_id)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$msg_id = (int) $row['msg_id'];
-		$delete_ids[$msg_id] = $msg_id;
-
-		// Undelivered messages
-		$undelivered_msg[] = $msg_id;
-
-		if (isset($undelivered_user[$row['user_id']]))
-		{
-			++$undelivered_user[$row['user_id']];
-		}
-		else
-		{
-			$undelivered_user[$row['user_id']] = 1;
-		}
+		$undelivered_msg[$msg_id] = $msg_id;
 	}
 	$db->sql_freeresult($result);
 
-	if (empty($delete_ids))
+	if (empty($delete_ids) && empty($undelivered_msg))
 	{
 		return false;
 	}
 
 	$db->sql_transaction('begin');
 
-	if (sizeof($undelivered_msg))
+	if (!empty($undelivered_msg))
 	{
-		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-		$db->sql_query($sql);
+		// A pm is not undelivered, if for any receipt the message was moved
+		// from their NO_BOX to another folder.
+		$sql = 'SELECT msg_id
+			FROM ' . PRIVMSGS_TO_TABLE . '
+			WHERE author_id = ' . $user_id . '
+				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
+				AND folder_id <> ' . PRIVMSGS_OUTBOX . '
+				AND folder_id <> ' . PRIVMSGS_SENTBOX;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$msg_id = (int) $row['msg_id'];
+			unset($undelivered_msg[$msg_id]);
+		}
+		$db->sql_freeresult($result);
+
+		if (!empty($undelivered_msg))
+		{
+			$undelivered_user = array();
+
+			// Count the messages we delete, so we can correct the user pm data
+			$sql = 'SELECT user_id
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE author_id = ' . $user_id . '
+					AND folder_id = ' . PRIVMSGS_NO_BOX . '
+					AND ' . $db->sql_in_set('msg_id', $undelivered_msg);
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (isset($undelivered_user[$row['user_id']]))
+				{
+					++$undelivered_user[$row['user_id']];
+				}
+				else
+				{
+					$undelivered_user[$row['user_id']] = 1;
+				}
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($undelivered_user as $undelivered_user_id => $count)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_new_privmsg = user_new_privmsg - ' . $count . ',
+						user_unread_privmsg = user_unread_privmsg - ' . $count . '
+					WHERE user_id = ' . $undelivered_user_id;
+				$db->sql_query($sql);
+			}
+
+			$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
+				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
+			$db->sql_query($sql);
+		}
 	}
 
 	// Reset the user's pm count to 0
-	if (isset($undelivered_user[$user_id]))
-	{
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = 0,
-				user_unread_privmsg = 0
-			WHERE user_id = ' . $user_id;
-		$db->sql_query($sql);
+	$sql = 'UPDATE ' . USERS_TABLE . '
+		SET user_new_privmsg = 0,
+			user_unread_privmsg = 0
+		WHERE user_id = ' . $user_id;
+	$db->sql_query($sql);
 
-		unset($undelivered_user[$user_id]);
-	}
-
-	foreach ($undelivered_user as $_user_id => $count)
-	{
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg - ' . $count . ',
-				user_unread_privmsg = user_unread_privmsg - ' . $count . '
-			WHERE user_id = ' . $_user_id;
-		$db->sql_query($sql);
-	}
-
-	// Delete private message data
-	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
-		WHERE user_id = $user_id
-			AND " . $db->sql_in_set('msg_id', $delete_ids);
+	// Delete private message data of the user
+	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE user_id = ' . (int) $user_id;
 	$db->sql_query($sql);
 
 	// Now we have to check which messages we can delete completely
