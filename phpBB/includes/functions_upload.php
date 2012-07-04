@@ -151,9 +151,7 @@ class filespec
 	*/
 	function is_image()
 	{
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		$mimetype = $finfo->file($this->filename);
-
+		$mimetype = $this->get_mimetype($this->filename);
 		return (strpos($mimetype, 'image/') === 0);
 	}
 
@@ -203,17 +201,12 @@ class filespec
 	}
 
 	/**
-	* Get mimetype. Utilize mime_content_type if the function exist.
-	* Not used at the moment...
+	* Get mimetype. Utilises the finfo class.
 	*/
 	function get_mimetype($filename)
 	{
-		$mimetype = '';
-
-		if (function_exists('mime_content_type'))
-		{
-			$mimetype = mime_content_type($filename);
-		}
+		$finfo = new finfo(FILEINFO_MIME_TYPE);
+		$mimetype = $finfo->file($filename);
 
 		// Some browsers choke on a mimetype of application/octet-stream
 		if (!$mimetype || $mimetype == 'application/octet-stream')
