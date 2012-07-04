@@ -156,6 +156,9 @@ $s_login_hidden_fields = array(
 );
 $s_login_hidden_fields = build_hidden_fields($s_login_hidden_fields);
 
+$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
+$count_common_providers = count($auth_manager->get_enabled_common_providers());
+
 // Assign index specific vars
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
@@ -171,6 +174,7 @@ $template->assign_vars(array(
 	'FORUM_LOCKED_IMG'		=> $user->img('forum_read_locked', 'NO_UNREAD_POSTS_LOCKED'),
 	'FORUM_UNREAD_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'UNREAD_POSTS_LOCKED'),
 
+	'S_COMMON_LOGIN_ENABLED'	=> (bool)$count_common_providers,
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 	'S_LOGIN_HIDDEN_FIELDS'		=> $s_login_hidden_fields,

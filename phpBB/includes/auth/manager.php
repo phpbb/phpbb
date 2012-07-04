@@ -51,7 +51,8 @@ class phpbb_auth_manager
 	}
 
 	// Return temporary set array of providers.
-	public function get_registered_providers() {
+	public function get_registered_providers()
+	{
 		$providers = array(
 			'native',
 			'apache',
@@ -68,46 +69,52 @@ class phpbb_auth_manager
 		return $providers;
 	}
 
-	public function get_enabled_providers() {
+	public function get_enabled_providers()
+	{
 		$providers = $this->get_registered_providers();
 
-		foreach($providers as &$provider) {
+		$enabled_providers = array();
+		foreach($providers as $provider) {
 			$provider_config = $provider->get_configuration();
-			if(!$provider_config['OPTIONS']['enabled']['setting'])
+			if($provider_config['OPTIONS']['enabled']['setting'] == true)
 			{
-				unset($provider);
+				$enabled_providers[] = $provider;
 			}
 		}
 
-		return $providers;
+		return $enabled_providers;
 	}
 
-	public function get_common_providers() {
+	public function get_common_providers()
+	{
 		$providers = $this->get_registered_providers();
 
-		foreach($providers as &$provider) {
+		$common_providers = array();
+		foreach($providers as $provider)
+		{
 			$provider_config = $provider->get_configuration();
-			if(!$provider_config['CUSTOM_LOGIN_BOX'])
+			if ($provider_config['CUSTOM_LOGIN_BOX'] == false)
 			{
-				unset($provider);
+				$common_providers[] = $provider;
 			}
 		}
 
-		return $providers;
+		return $common_providers;
 	}
 
-	public function get_enabled_common_providers() {
-		$enabled_providers = $this->get_enabled_providers();
-		$common_providers = $this->get_common_providers();
+	public function get_enabled_common_providers()
+	{
+		$providers = $this->get_registered_providers();
 
-		$providers = array();
-		foreach ($enabled_providers as $key=>$value){
-			if (in_array($value,$common_providers)){
-				$providers[] = $value;
+		$enabled_common_providers = array();
+		foreach ($providers as $provider){
+			$provider_config = $provider->get_configuration();
+			if ($provider_config['CUSTOM_LOGIN_BOX'] == false && $provider_config['OPTIONS']['enabled']['setting'] === 1){
+				$enabled_common_providers[] = $provider;
 			}
 		}
 
-		return $providers;
+		return $enabled_common_providers;
 	}
 
 	public function generate_common_login_box(phpbb_template $template, $redirect = '', $admin = false, $s_display = true)

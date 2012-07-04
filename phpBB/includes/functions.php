@@ -3130,7 +3130,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		if ($provider_config['CUSTOM_LOGIN_BOX'] === false)
+		if ($provider_config['CUSTOM_LOGIN_BOX'] == false)
 		{
 			$common_template = true;
 			continue;
