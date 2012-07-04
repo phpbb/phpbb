@@ -106,16 +106,20 @@ if (!defined('EXT_TABLE'))
 {
 	define('EXT_TABLE', $table_prefix . 'ext');
 }
-if(!defined(AUTH_OPENID_ASSOC_TABLE)) {
+if (!defined('AUTH_OPENID_ASSOC_TABLE'))
+{
 	define('AUTH_OPENID_ASSOC_TABLE', $table_prefix . 'auth_openid_assoc');
 }
-if(!defined(AUTH_OPENID_DISCOVERY_TABLE)) {
+if (!defined('AUTH_OPENID_DISCOVERY_TABLE'))
+{
 	define('AUTH_OPENID_DISCOVERY_TABLE', $table_prefix . 'auth_openid_discovery');
 }
-if(!defined(AUTH_OPENID_NONCE_TABLE)) {
+if (!defined('AUTH_OPENID_NONCE_TABLE'))
+{
 	define('AUTH_OPENID_NONCE_TABLE',	$table_prefix . 'auth_openid_nonce');
 }
-if(!defined(AUTH_LINK_TABLE)) {
+if (!defined('AUTH_LINK_TABLE'))
+{
 	define('AUTH_LINK_TABLE',	$table_prefix . 'auth_link');
 }
 
@@ -2443,6 +2447,13 @@ function change_database_data(&$no_updates, $version)
 					'title'		=> 'UCP_PROFILE_AUTOLOGIN_KEYS',
 					'auth'		=> '',
 					'cat'		=> 'UCP_PROFILE',
+				),
+				'auth' => array(
+					'base'		=> 'acp_auth',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_AUTH',
+					'auth'		=> 'acl_a_server',
+					'cat'		=> 'ACP_CLIENT_COMMUNICATION',
 				),
 			);
 
