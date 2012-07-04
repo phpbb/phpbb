@@ -74,7 +74,7 @@ class phpbb_user extends phpbb_session
 	{
 		global $db, $phpbb_style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
-		if ($this->data['user_id'] != ANONYMOUS)
+		if ($this->data['user_id'] != ANONYMOUS && !$this->data['is_bot'])
 		{
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 
