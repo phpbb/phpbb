@@ -28,14 +28,23 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 				2,
 				array(
 					array('msg_id' => 1),
-					array('msg_id' => 2),
+					//array('msg_id' => 2),
+					//array('msg_id' => 3),
+					//array('msg_id' => 4),
+					//array('msg_id' => 5),
 				),
 				array(
 					//array('msg_id' => 1, 'user_id' => 2),
 					array('msg_id' => 1, 'user_id' => 3),
 					array('msg_id' => 1, 'user_id' => 4),
 					//array('msg_id' => 2, 'user_id' => 2),
-					array('msg_id' => 2, 'user_id' => 4),
+					//array('msg_id' => 2, 'user_id' => 4),
+					//array('msg_id' => 4, 'user_id' => 3),
+					//array('msg_id' => 3, 'user_id' => 2),
+					//array('msg_id' => 4, 'user_id' => 3),
+					//array('msg_id' => 5, 'user_id' => 2),
+					//array('msg_id' => 5, 'user_id' => 3),
+					//array('msg_id' => 5, 'user_id' => 4),
 				),
 			),
 			array(
@@ -43,6 +52,9 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 				array(
 					array('msg_id' => 1),
 					array('msg_id' => 2),
+					array('msg_id' => 3),
+					//array('msg_id' => 4),
+					array('msg_id' => 5),
 				),
 				array(
 					array('msg_id' => 1, 'user_id' => 2),
@@ -50,6 +62,11 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 					array('msg_id' => 1, 'user_id' => 4),
 					array('msg_id' => 2, 'user_id' => 2),
 					array('msg_id' => 2, 'user_id' => 4),
+					array('msg_id' => 3, 'user_id' => 2),
+					//array('msg_id' => 4, 'user_id' => 3),
+					array('msg_id' => 5, 'user_id' => 2),
+					//array('msg_id' => 5, 'user_id' => 3),
+					array('msg_id' => 5, 'user_id' => 4),
 				),
 			),
 			array(
@@ -57,6 +74,9 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 				array(
 					array('msg_id' => 1),
 					array('msg_id' => 2),
+					array('msg_id' => 3),
+					array('msg_id' => 4),
+					array('msg_id' => 5),
 				),
 				array(
 					array('msg_id' => 1, 'user_id' => 2),
@@ -64,6 +84,11 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 					array('msg_id' => 1, 'user_id' => 4),
 					array('msg_id' => 2, 'user_id' => 2),
 					array('msg_id' => 2, 'user_id' => 4),
+					array('msg_id' => 3, 'user_id' => 2),
+					array('msg_id' => 4, 'user_id' => 3),
+					array('msg_id' => 5, 'user_id' => 2),
+					array('msg_id' => 5, 'user_id' => 3),
+					array('msg_id' => 5, 'user_id' => 4),
 				),
 			),
 		);

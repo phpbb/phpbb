@@ -66,14 +66,50 @@
 			<value>0</value>
 			<value>2</value>
 			<value>#1</value>
-			<value>#1</value>
+			<value>
+				2 - outbox
+				3 - inbox
+				4 - nobox
+			</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>0</value>
 			<value>2</value>
 			<value>#2</value>
-			<value>#2</value>
+			<value>
+				2 - outbox
+				4 - nobox
+			</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#3</value>
+			<value>
+				2 - outbox
+			</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#4</value>
+			<value>
+				3 - nobox
+			</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>0</value>
+			<value>2</value>
+			<value>#5</value>
+			<value>
+				2 - outbox
+				3 - nobox
+				4 - nobox
+			</value>
 		</row>
 	</table>
 	<table name="phpbb_privmsgs_to">
@@ -117,6 +153,46 @@
 		</row>
 		<row>
 			<value>2</value>
+			<value>4</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>3</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>2</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-2</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>3</value>
+			<value>2</value>
+			<value>0</value>
+			<value>0</value>
+			<value>-3</value>
+		</row>
+		<row>
+			<value>5</value>
 			<value>4</value>
 			<value>2</value>
 			<value>0</value>
