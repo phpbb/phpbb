@@ -1266,7 +1266,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			}
 		}
 
-		// Check if users have permission to read PMs
+		// Check if users are banned
 		// Only check if not a moderator or admin, since they are allowed to override this user setting
 		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
