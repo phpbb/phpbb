@@ -34,7 +34,7 @@
 	<!-- INCLUDE forumlist_body.html -->
 <!-- ENDIF -->
 
-<!-- IF S_DISPLAY_POST_INFO or PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
+<!-- IF S_DISPLAY_POST_INFO or .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
 	<div class="topic-actions" <!-- IF S_HAS_SUBFORUM -->style="margin-top: 2em;"<!-- ENDIF -->>
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
@@ -55,11 +55,27 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
+	<!-- IF .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
-			<!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="true">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF --><!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS}<!-- ENDIF -->
-			<!-- IF PAGE_NUMBER -->
-				<!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF -->
+			<!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="true">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
+			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS} &bull; <!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+				<ul>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+					<!-- ELSEIF pagination.S_IS_CURRENT -->
+					<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+					<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+					<!-- ELSE -->
+					<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
@@ -142,7 +158,20 @@
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG and S_TOPIC_ICONS --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
-					<!-- IF topicrow.PAGINATION --><strong class="pagination"><span>{topicrow.PAGINATION}</span></strong><!-- ENDIF -->
+					<!-- IF .topicrow.pagination -->
+					<div class="pagination">
+						<ul>
+						<!-- BEGIN pagination -->
+							<!-- IF topicrow.pagination.S_IS_PREV -->
+							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+							<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+							<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+							<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+							<!-- ENDIF -->
+						<!-- END pagination -->
+						</ul>
+					</div>
+					<!-- ENDIF -->
 					<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 					<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
 				</dt>
@@ -193,13 +222,29 @@
 		</div>
 		<!-- ENDIF -->
 
-		<!-- IF PAGINATION or TOTAL_POSTS or TOTAL_TOPICS -->
+		<!-- IF PAGE_NUMBER or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
 			<!-- IF TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
-			<!-- IF TOTAL_POSTS and not NEWEST_USER --> {TOTAL_POSTS}<!-- ELSEIF TOTAL_TOPICS and not NEWEST_USER --> {TOTAL_TOPICS}<!-- ENDIF -->
-			<!-- IF TOTAL_USERS -->{TOTAL_USERS}<!-- ENDIF -->
-			<!-- IF PAGINATION --> &bull;  <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a>
-			 &bull;  <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF -->
+			<!-- IF TOTAL_POSTS and not NEWEST_USER --> {TOTAL_POSTS}<!-- ELSEIF TOTAL_TOPICS and not NEWEST_USER --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
+			<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull; <!-- ENDIF -->
+			<!-- IF .pagination --> 
+				<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+				<ul class="pagination>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+					<!-- ELSEIF pagination.S_IS_CURRENT -->
+					<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+					<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+					<!-- ELSE -->
+					<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			<!-- ELSE --> 
+				{PAGE_NUMBER}
+			<!-- ENDIF -->
 		</div>
 		<!-- ENDIF -->
 	</div>

@@ -670,8 +670,9 @@ class ucp_main
 
 		if ($topics_count)
 		{
+			generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start);
+		
 			$template->assign_vars(array(
-				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
 			));
@@ -813,7 +814,6 @@ class ucp_main
 
 				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 
-				'PAGINATION'		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id")),
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
 				'TOPIC_TITLE'		=> censor_text($row['topic_title']),
@@ -837,6 +837,8 @@ class ucp_main
 				'U_VIEW_TOPIC'			=> $view_topic_url,
 				'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 			));
+			
+			generate_pagination(append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id"), $replies + 1, $config['posts_per_page'], 1, '', true, true, 'topicrow');
 		}
 	}
 }

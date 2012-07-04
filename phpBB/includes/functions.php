@@ -1884,85 +1884,99 @@ function tracking_unserialize($string, $max_depth = 3)
 * Pagination routine, generates page number sequence
 * tpl_prefix is for using different pagination blocks at one page
 */
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
+function generate_pagination($base_url, $num_items, $per_page, $start_item = 1, $tpl_prefix = '', $reverse_count = false, $ignore_on_page = false, $block_var_name = '')
 {
 	global $template, $user;
 
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
-	$separator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
 	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
 	{
-		return false;
+		return;
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-
-	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
-
-	if ($total_pages > 5)
+	$block_var_name = ($block_var_name) ? $block_var_name . '.pagination' : 'pagination';
+	
+	if ($reverse_count)
 	{
-		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
-		$end_cnt = max(min($total_pages, $on_page + 4), 6);
-
-		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
-
-		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $end_cnt - 1)
-			{
-				$page_string .= $separator;
-			}
-		}
-
-		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
+		$start_cnt = ($total_pages > 5) ? $total_pages - 3 : 1;
+		$end_cnt = $total_pages;
 	}
 	else
 	{
-		$page_string .= $separator;
-
-		for ($i = 2; $i < $total_pages; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $total_pages)
-			{
-				$page_string .= $separator;
-			}
-		}
+		$start_cnt = ($total_pages > 5) ? min(max(1, $on_page - 4), $total_pages - 5) : 1;
+		$end_cnt = ($total_pages > 5) ? max(min($total_pages, $on_page + 4), 6) : $total_pages;
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
-
-	if ($add_prevnext_text)
+	if ($on_page != $total_pages)
 	{
-		if ($on_page != 1)
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> '', 
+			'PAGE_URL'		=> $base_url . "{$url_delim}start=" . ($on_page * $per_page),
+			'S_IS_CURRENT'	=> false, 
+			'S_IS_PREV'		=> false,  
+			'S_IS_NEXT'		=> true, 
+			'S_IS_ELLIPSIS'	=> false, 
+		));
+	}	
+	
+	$i = 1;
+	do
+	{
+		$page_url = $base_url . (($i == 1) ? '' : $url_delim . 'start=' . (($i - 1) * $per_page));
+		
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> $i,  
+			'PAGE_URL'		=> $page_url,
+			'S_IS_CURRENT'	=> (!$ignore_on_page && $i == $on_page) ? true : false, 
+			'S_IS_NEXT'		=> false, 
+			'S_IS_PREV'		=> false, 
+			'S_IS_ELLIPSIS'	=> ($i == 2 && $start_cnt > 1) || ($i == $total_pages - 1 && $end_cnt < $total_pages) ? true : false, 
+		));
+		
+		if ($i > 1 && $i < $start_cnt - 1)
 		{
-			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+			$i = $start_cnt;
 		}
-
-		if ($on_page != $total_pages)
+		elseif ($i == $end_cnt && $end_cnt < $total_pages - 1)
 		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+			$i = $total_pages - 1;
+		}
+		else
+		{
+			$i++;
 		}
 	}
+	while ($i <= $total_pages);
 
+	if ($on_page != 1)
+	{
+		$template->assign_block_vars($block_var_name, array(
+			'PAGE_NUMBER'	=> '', 
+			'PAGE_URL'		=> $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
+			'S_IS_CURRENT'	=> false, 
+			'S_IS_PREV'		=> true, 
+			'S_IS_NEXT'		=> false, 
+			'S_IS_ELLIPSIS'	=> false, 
+		));
+	}
+	
 	$template->assign_vars(array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
 		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	));
 
-	return $page_string;
+	return;
 }
 
 /**

@@ -20,8 +20,25 @@
 		<li class="rightside pagination">
 			<!-- IF S_VIEW_MESSAGE --><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_CURRENT_FOLDER}">{L_RETURN_TO} {CUR_FOLDER_NAME}</a><!-- ENDIF -->
 			<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
-				<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
+				<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES} &bull; <!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull;
+					<ul>
+					<!-- BEGIN pagination -->
+						<!-- IF pagination.S_IS_PREV -->
+						<!-- ELSEIF pagination.S_IS_CURRENT -->
+						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+						<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+						<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+						<!-- ELSEIF pagination.S_IS_NEXT -->
+						<!-- ELSE -->
+						<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					</ul>
+				<!-- ELSE --> 
+					{PAGE_NUMBER}
+				<!-- ENDIF -->
 			<!-- ENDIF -->
 		</li>
 	</ul>

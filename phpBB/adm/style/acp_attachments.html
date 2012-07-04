@@ -378,11 +378,26 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<!-- IF PAGINATION  or TOTAL_FILES -->
 	<div class="pagination">
-		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE}<!-- IF S_ON_PAGE --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {S_ON_PAGE}<!-- ENDIF --><!-- ENDIF -->
-	</div>
+	<!-- IF .pagination  or TOTAL_FILES -->
+		{L_NUMBER_FILES}: {TOTAL_FILES} &bull; {L_TOTAL_SIZE}: {TOTAL_SIZE} &bull;
+		<!-- IF .pagination --> 
+			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; 
+			<ul>
+			<!-- BEGIN pagination -->
+				<!-- IF pagination.S_IS_PREV --><li><a href="{pagination.PAGE_URL}">{L_PREVIOUS}</a></li>
+				<!-- ELSEIF pagination.S_IS_CURRENT --><li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+				<!-- ELSEIF pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+				<!-- ELSEIF pagination.S_IS_NEXT --><li><a href="{pagination.PAGE_URL}">{L_NEXT}</a></li>
+				<!-- ELSE --><li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+				<!-- ENDIF -->
+			<!-- END pagination -->
+			</ul>
+		<!-- ELSE --> 
+			{S_ON_PAGE}
+		<!-- ENDIF -->
 	<!-- ENDIF -->
+	</div>
 
 	<table cellspacing="1">
 	<thead>

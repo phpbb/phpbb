@@ -1572,9 +1572,10 @@ switch ($mode)
 			}
 		}
 
+		generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start);
+		
 		// Generate page
 		$template->assign_vars(array(
-			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
 			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
