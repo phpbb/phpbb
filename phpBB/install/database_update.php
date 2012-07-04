@@ -120,7 +120,7 @@ if (!defined('AUTH_OPENID_NONCE_TABLE'))
 }
 if (!defined('AUTH_LINK_TABLE'))
 {
-	define('AUTH_LINK_TABLE',	$table_prefix . 'auth_link');
+	define('AUTH_LINK_TABLE',	$table_prefix . 'auth_links');
 }
 
 $phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', ".$phpEx");
