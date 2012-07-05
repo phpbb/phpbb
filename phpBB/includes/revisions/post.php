@@ -182,7 +182,7 @@ class phpbb_revisions_post
 
 			'WHERE'		=> 'r.post_id = ' . $this->post_id,
 
-			'ORDER_BY'	=> 'r.revision_id DESC',
+			'ORDER_BY'	=> 'r.revision_id ASC',
 		);
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
