@@ -1882,15 +1882,115 @@ function tracking_unserialize($string, $max_depth = 3)
 
 /**
 * Pagination routine, generates page number sequence
-* tpl_prefix is for using different pagination blocks at one page
+* To generate pagination which is rendered fully within the template use generate_template_pagination
+*
+* @param string $base_url the base url is prepended to all links generated within the function
+* @param int $num_items the total number of items, posts, topics, etc., used to determine the number of pages to produce
+* @param int $per_page the number of items, posts, topics, etc. to display per page, used to determine the number of pages to produce
+* @param int $start_item the item which should be considered currently active, used to determine the page we're on
+* @param bool $add_prevnext_text appends and prepends next and previous links (true) or not (false)
+* @param string $tpl_prefix is for using different pagination blocks at one page
 */
-function generate_pagination($base_url, $num_items, $per_page, $start_item = 1, $tpl_prefix = '', $reverse_count = false, $ignore_on_page = false, $block_var_name = '')
+function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
 {
 	global $template, $user;
 
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
+	$separator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
+	$total_pages = ceil($num_items / $per_page);
+
+	if ($total_pages == 1 || !$num_items)
+	{
+		return false;
+	}
+
+	$on_page = floor($start_item / $per_page) + 1;
+	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
+
+	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
+
+	if ($total_pages > 5)
+	{
+		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
+		$end_cnt = max(min($total_pages, $on_page + 4), 6);
+
+		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
+
+		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
+		{
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			if ($i < $end_cnt - 1)
+			{
+				$page_string .= $separator;
+			}
+		}
+
+		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
+	}
+	else
+	{
+		$page_string .= $separator;
+
+		for ($i = 2; $i < $total_pages; $i++)
+		{
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			if ($i < $total_pages)
+			{
+				$page_string .= $separator;
+			}
+		}
+	}
+
+	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
+
+	if ($add_prevnext_text)
+	{
+		if ($on_page != 1)
+		{
+			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+		}
+
+		if ($on_page != $total_pages)
+		{
+			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+		}
+	}
+
+	$template->assign_vars(array(
+		$tpl_prefix . 'BASE_URL'		=> $base_url,
+		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
+		$tpl_prefix . 'PER_PAGE'		=> $per_page,
+
+		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
+		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
+		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
+		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
+	));
+
+	return $page_string;
+}
+
+/**
+* Generate template rendered pagination
+* Allows full control of rendering of pagination with the template
+*
+* @param string $base_url is url prepended to all links generated within the function
+* @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
+* @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
+* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
+* @param int $start_item the item which should be considered currently active, used to determine the page we're on
+* @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
+* @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
+* 
+*/
+function generate_template_pagination($base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
+{
+	global $template;
+
+	// Make sure $per_page is a valid value
+	$per_page = ($per_page <= 0) ? 1 : $per_page;
 	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
@@ -1900,17 +2000,31 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item = 1, 
 
 	$on_page = floor($start_item / $per_page) + 1;
 	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-	$block_var_name = ($block_var_name) ? $block_var_name . '.pagination' : 'pagination';
 	
 	if ($reverse_count)
 	{
-		$start_cnt = ($total_pages > 5) ? $total_pages - 3 : 1;
-		$end_cnt = $total_pages;
+		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
+		$end_page = $total_pages;
 	}
 	else
 	{
-		$start_cnt = ($total_pages > 5) ? min(max(1, $on_page - 4), $total_pages - 5) : 1;
-		$end_cnt = ($total_pages > 5) ? max(min($total_pages, $on_page + 4), 6) : $total_pages;
+		// What we're doing here is calculating what the "start" and "end" pages should be. We
+		// do this by assuming pagination is "centered" around the currently active page with 
+		// the three previous and three next page links displayed. Anything more than that and 
+		// we display the ellipsis, likewise anything less. 
+		//
+		// $start_page is the page at which we start creating the list. When we have five or less
+		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
+		// and we calculate the start based on the active page. This is the min/max calculation.
+		// First (max) would we end up starting on a page less than 1? Next (min) would we end
+		// up starting so close to the end that we'd not display our minimum number of pages.
+		//
+		// $end_page is the last page in the list to display. Like $start_page we use a min/max to
+		// determine this number. Again at most five pages? Then just display them all. More than
+		// five and we first (min) determine whether we'd end up listing more pages than exist.
+		// We then (max) ensure we're displaying the minimum number of pages.
+		$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
+		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
 	if ($on_page != $total_pages)
@@ -1924,35 +2038,48 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item = 1, 
 			'S_IS_ELLIPSIS'	=> false, 
 		));
 	}	
-	
-	$i = 1;
+
+	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
+	// to display the first and last page in the list plus any ellipsis. We use this loop to jump 
+	// around a little within the list depending on where we're starting (and ending). 
+	$at_page = 1;
 	do
 	{
-		$page_url = $base_url . (($i == 1) ? '' : $url_delim . 'start=' . (($i - 1) * $per_page));
-		
+		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . 'start=' . (($at_page - 1) * $per_page));
+
+		// We decide whether to display the ellipsis during the loop. The ellipsis is always
+		// displayed as either the second or penultimate item in the list. So are we at either
+		// of those points and of course do we even need to display it, i.e. is the list starting
+		// on at least page 3 and ending three pages before the final item.
 		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> $i,  
+			'PAGE_NUMBER'	=> $at_page,  
 			'PAGE_URL'		=> $page_url,
-			'S_IS_CURRENT'	=> (!$ignore_on_page && $i == $on_page) ? true : false, 
+			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page), 
 			'S_IS_NEXT'		=> false, 
 			'S_IS_PREV'		=> false, 
-			'S_IS_ELLIPSIS'	=> ($i == 2 && $start_cnt > 1) || ($i == $total_pages - 1 && $end_cnt < $total_pages) ? true : false, 
+			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1), 
 		));
-		
-		if ($i > 1 && $i < $start_cnt - 1)
+
+		// We may need to jump around in the list depending on whether we have or need to display 
+		// the ellipsis. Are we on page 2 and are we more than one page away from the start
+		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of 
+		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
+		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
+		// going
+		if ($at_page == 2 && $at_page < $start_page - 1)
 		{
-			$i = $start_cnt;
+			$at_page = $start_page;
 		}
-		elseif ($i == $end_cnt && $end_cnt < $total_pages - 1)
+		else if ($at_page == $end_page && $end_page < $total_pages - 1)
 		{
-			$i = $total_pages - 1;
+			$at_page = $total_pages - 1;
 		}
 		else
 		{
-			$i++;
+			$at_page++;
 		}
 	}
-	while ($i <= $total_pages);
+	while ($at_page <= $total_pages);
 
 	if ($on_page != 1)
 	{
@@ -1965,24 +2092,19 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item = 1, 
 			'S_IS_ELLIPSIS'	=> false, 
 		));
 	}
-	
-	$template->assign_vars(array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
-		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
-		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-	));
-
-	return;
 }
 
 /**
-* Return current page (pagination)
+* Return current page 
+* This function also sets certain specific template variables
+*
+* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
+* @param int $num_items the total number of items, posts, topics, etc.
+* @param int $per_page the number of items, posts, etc. per page
+* @param int $start the item which should be considered currently active, used to determine the page we're on
+* 
 */
-function on_page($num_items, $per_page, $start)
+function on_page($base_url, $num_items, $per_page, $start)
 {
 	global $template, $user;
 
@@ -1992,8 +2114,11 @@ function on_page($num_items, $per_page, $start)
 	$on_page = floor($start / $per_page) + 1;
 
 	$template->assign_vars(array(
-		'ON_PAGE'		=> $on_page)
-	);
+		'PER_PAGE'		=> $per_page,
+		'ON_PAGE'		=> $on_page, 
+		
+		'A_BASE_URL'	=> addslashes($base_url), 
+	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }

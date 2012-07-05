@@ -1222,13 +1222,14 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				generate_pagination($this->u_action . "&amp;$u_sort_param", $num_files, $attachments_per_page, $start);
+				$base_url = $this->u_action . "&amp;$u_sort_param";
+				generate_template_pagination($base_url, 'pagination', $num_files, $attachments_per_page, $start);
 				
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
 
-					'S_ON_PAGE'			=> on_page($num_files, $attachments_per_page, $start),
+					'S_ON_PAGE'			=> on_page($base_url, $num_files, $attachments_per_page, $start),
 					'S_LIMIT_DAYS'		=> $s_limit_days,
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir)

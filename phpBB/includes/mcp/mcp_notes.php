@@ -215,7 +215,8 @@ class mcp_notes
 			}
 		}
 
-		generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start);
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		generate_template_pagination($base_url, 'pagination', $log_count, $config['topics_per_page'], $start);
 		
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -227,7 +228,7 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> on_page($base_url, $log_count, $config['topics_per_page'], $start),
 			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,

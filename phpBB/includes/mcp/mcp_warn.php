@@ -175,7 +175,8 @@ class mcp_warn
 			));
 		}
 
-		generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start);
+		$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd");
+		generate_template_pagination($base_url, 'pagination', $user_count, $config['topics_per_page'], $start);
 		
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -184,7 +185,7 @@ class mcp_warn
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> on_page($base_url, $user_count, $config['topics_per_page'], $start),
 			'TOTAL_USERS'		=> $user->lang('LIST_USERS', (int) $user_count),
 		));
 	}

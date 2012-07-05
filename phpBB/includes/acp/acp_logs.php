@@ -129,14 +129,15 @@ class acp_logs
 		$log_count = 0;
 		$start = view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
 
-		generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start);
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		generate_template_pagination($base_url, 'pagination', $log_count, $config['topics_per_page'], $start);
 		
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
 
-			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
+			'S_ON_PAGE'		=> on_page($base_url, $log_count, $config['topics_per_page'], $start),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
