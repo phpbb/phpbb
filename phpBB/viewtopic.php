@@ -1497,7 +1497,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	)));
 
 	// Can this user receive a Private Message?
-	$can_receive_pm = ($user_cache[$poster_id]['user_type'] <> USER_IGNORE && (($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || ($user_cache[$poster_id]['allow_pm'] && in_array($poster_id, $can_receive_pm_list) && !in_array($poster_id, $banned_users))) ? true : false;
+	$can_receive_pm = ($user_cache[$poster_id]['user_type'] <> USER_IGNORE && $user_cache[$poster_id]['user_type'] <> USER_INACTIVE && (($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || ($user_cache[$poster_id]['allow_pm'] && in_array($poster_id, $can_receive_pm_list) && !in_array($poster_id, $banned_users))) ? true : false;
 
 	//
 	$postrow = array(

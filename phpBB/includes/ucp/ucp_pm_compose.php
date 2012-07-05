@@ -1194,7 +1194,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		if (sizeof($usernames))
 		{
 			$user_id_ary = array();
-			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
+			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER));
 
 			// If there are users not existing, we will at least print a notice...
 			if (!sizeof($user_id_ary))
