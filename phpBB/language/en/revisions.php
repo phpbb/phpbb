@@ -71,7 +71,6 @@ $lang = array_merge($lang, array(
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
-	'REVISIONS_COMPARE_TITLE'			=> 'Post Revision History',
 	'REVISIONS_REVERT_TITLE'			=> 'Revert Post to Selected Revision',
 	'REVISIONS_REVERT_EXPLAIN'			=> 'The changes between the current revision and the selected revision are displayed below. If you are satisfied with those changes, click Submit.',
 	'REVISION_DELETIONS'		=> array(
@@ -90,7 +89,7 @@ $lang = array_merge($lang, array(
 	'WITH'						=> 'with',
 
 	// Breadcrumb titles
-	'VIEWING_POST_REVISIONS'	=> 'Viewing Post Revisions',
-	// @todo -- think of a better way of saying this
-	'REVERTING_POST'			=> 'Reverting Post',
+	'VIEWING_POST_REVISION_HISTORY'	=> 'Viewing Post Revision History',
+	'VIEWING_POST_REVISION'			=> 'Viewing Post Revision',
+	'REVERTING_POST'				=> 'Reverting Post',
 ));
