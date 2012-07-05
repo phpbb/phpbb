@@ -231,9 +231,9 @@ if ($display_comparison)
 	$revision_users = array();
 	foreach ($revisions as $revision)
 	{
-		$in_range = ($first == $current && $revision->get_id() >= $last->get_id())
-			|| ($last == $current && $revision->get_id() <= $first->get_id())
-			|| ($revision->get_id() >= $first->get_id() && $revision->get_id() <= $last->get_id());
+		$in_range = ($first == $current && $revision->get_id() <= $last->get_id())
+			|| ($last == $current && $revision->get_id() >= $first->get_id())
+			|| ($revision->get_id() <= $first->get_id() && $revision->get_id() >= $last->get_id());
 
 		$template->assign_block_vars('revision', array(
 			'DATE'				=> $user->format_date($revision->get_time()),
