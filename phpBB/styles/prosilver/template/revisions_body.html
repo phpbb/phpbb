@@ -8,7 +8,7 @@
 		</div>
 <!-- ENDIF -->
 
-<h2>{L_REVISIONS_COMPARE_TITLE}</h2>
+<h2><!-- IF S_DISPLAY_COMPARISON -->{L_VIEWING_POST_REVISION_HISTORY}<!-- ELSE -->{L_VIEWING_POST_REVISION}<!-- ENDIF --></h2>
 <div class="post bg1">
 	<div class="inner">
 		<div class="postbody">
@@ -33,6 +33,7 @@
 		</dl>
 	</div>
 </div>
+<!-- IF S_DISPLAY_COMPARISON -->
 <p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
 <div class="right-box"></div></p>
 <hr />
@@ -64,5 +65,5 @@
 		</div>
 	</div>
 </div>
-
+<!-- ENDIF -->
 <!-- INCLUDE overall_footer.html -->

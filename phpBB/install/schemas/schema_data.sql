@@ -233,6 +233,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('revision_cron_age_frequency', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('revision_cron_excess_frequency', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_per_post_max', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_per_wiki_post_max', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('revisions_allow_wiki', '0');
