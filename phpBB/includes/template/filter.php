@@ -885,10 +885,14 @@ class phpbb_template_filter extends php_user_filter
 		// Process dynamic includes
 		if ($tag_args[0] == '{')
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
+			// This code handles the case of including paths of the form
+			// {FOO}/other/stuff
+			$segments = explode('/', $tag_args);
+			$var = $this->get_varref($segments[0], $is_expr);
+			$segments[0] = '';
 			if (!$is_expr)
 			{
-				return " \$_template->_js_include($var, true);";
+				return " if (isset($var)) { \$_template->_js_include($var . '" . implode('/', $segments) . "', false); }";
 			}
 			return '';
 		}
