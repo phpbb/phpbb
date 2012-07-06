@@ -3008,7 +3008,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			{
 				// Perform any additional procedures requested by the provider.
 				$auth_step = $request->variable('auth_step', '');
-				if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
+				if ($auth_step != '' && method_exists($auth_provider, $auth_step))
 				{
 					try
 					{
@@ -3043,9 +3043,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$auth_provider = $auth_manager->get_provider($auth_provider);
 			// Perform any additional procedures requested by the provider.
 			$auth_step = $request->variable('auth_step', '');
-			if ($auth_step != '' && function_exists($auth_provider->$auth_step()))
+			if ($auth_step != '' && method_exists($auth_provider, $auth_step))
 			{
-				try {
+				try
+				{
 					$auth_provider->$auth_step();
 				}
 				catch (phpbb_auth_exception $e)
