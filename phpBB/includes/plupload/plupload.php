@@ -40,7 +40,7 @@ class phpbb_plupload
 	/**
 	 * @var string
 	 */
-	private $root_path;
+	private $phpbb_root_path;
 
 	/**
 	 * Whether the current page request is from plupload or not
@@ -64,7 +64,7 @@ class phpbb_plupload
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
-		$this->root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->is_active();
 	}
@@ -106,7 +106,7 @@ class phpbb_plupload
 		{
 			mkdir($tmp_dir);
 			copy(
-				$this->root_path . $this->config['upload_path'] . '/index.htm',
+				$this->phpbb_root_path . $this->config['upload_path'] . '/index.htm',
 				$tmp_dir . '/index.htm'
 			);
 		}
@@ -250,7 +250,7 @@ class phpbb_plupload
 	{
 		// Most of this code is adapted from the sample upload script provided
 		// with plupload
-		$tmp_dir = $this->root_path . $this->config['upload_path'] . '/plupload';
+		$tmp_dir = $this->phpbb_root_path . $this->config['upload_path'] . '/plupload';
 
 		$chunk = $this->request->variable('chunk', 0);
 		$chunks_expected = $this->request->variable('chunks', 0);

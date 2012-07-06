@@ -42,7 +42,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	* phpBB's installed root path
 	* @var string
 	*/
-	protected $root_path;
+	protected $phpbb_root_path;
 
 	/**
 	* Constructor method
@@ -51,7 +51,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	{
 		global $config, $phpbb_root_path;
 		$this->config = $config;
-		$this->root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -104,7 +104,7 @@ class phpbb_cron_task_core_tidy_uploads extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		return is_dir($this->root_path . $this->config['upload_path'] . '/plupload');
+		return is_dir($this->phpbb_root_path . $this->config['upload_path'] . '/plupload');
 	}
 
 	/**
