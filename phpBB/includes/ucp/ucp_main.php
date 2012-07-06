@@ -670,7 +670,7 @@ class ucp_main
 
 		if ($topics_count)
 		{
-			generate_template_pagination($this->u_action, 'pagination', $topics_count, $config['topics_per_page'], $start);
+			phpbb_generate_template_pagination($this->u_action, 'pagination', $topics_count, $config['topics_per_page'], $start);
 		
 			$template->assign_vars(array(
 				'PAGE_NUMBER'	=> on_page($this->u_action, $topics_count, $config['topics_per_page'], $start),
@@ -838,7 +838,7 @@ class ucp_main
 				'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 			));
 			
-			generate_template_pagination(append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id"), 'topicrow.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
+			phpbb_generate_template_pagination(append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . "&amp;t=$topic_id"), 'topicrow.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
 		}
 	}
 }

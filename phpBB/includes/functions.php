@@ -1882,7 +1882,7 @@ function tracking_unserialize($string, $max_depth = 3)
 
 /**
 * Pagination routine, generates page number sequence
-* To generate pagination which is rendered fully within the template use generate_template_pagination
+* To generate pagination which is rendered fully within the template use phpbb_generate_template_pagination
 *
 * @param string $base_url the base url is prepended to all links generated within the function
 * @param int $num_items the total number of items, posts, topics, etc., used to determine the number of pages to produce
@@ -1985,7 +1985,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 * @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
 * 
 */
-function generate_template_pagination($base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
+function phpbb_generate_template_pagination($base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
 {
 	global $template;
 

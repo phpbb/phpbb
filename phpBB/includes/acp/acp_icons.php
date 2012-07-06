@@ -928,7 +928,7 @@ class acp_icons
 		}
 		$db->sql_freeresult($result);
 		
-		generate_template_pagination($this->u_action, 'pagination', $item_count, $config['smilies_per_page'], $pagination_start);		
+		phpbb_generate_template_pagination($this->u_action, 'pagination', $item_count, $config['smilies_per_page'], $pagination_start);		
 	}
 
 	/**

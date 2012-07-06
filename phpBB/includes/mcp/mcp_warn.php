@@ -176,7 +176,7 @@ class mcp_warn
 		}
 
 		$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd");
-		generate_template_pagination($base_url, 'pagination', $user_count, $config['topics_per_page'], $start);
+		phpbb_generate_template_pagination($base_url, 'pagination', $user_count, $config['topics_per_page'], $start);
 		
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,

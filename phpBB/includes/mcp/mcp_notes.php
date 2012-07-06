@@ -216,7 +216,7 @@ class mcp_notes
 		}
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		generate_template_pagination($base_url, 'pagination', $log_count, $config['topics_per_page'], $start);
+		phpbb_generate_template_pagination($base_url, 'pagination', $log_count, $config['topics_per_page'], $start);
 		
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,

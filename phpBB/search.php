@@ -603,7 +603,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
 	}
 
-	generate_template_pagination($u_search, 'pagination', $total_match_count, $per_page, $start);
+	phpbb_generate_template_pagination($u_search, 'pagination', $total_match_count, $per_page, $start);
 	
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
@@ -1006,7 +1006,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			
 			if ($show_results == 'topics')
 			{
-				generate_template_pagination($view_topic_url, 'searchresults.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
+				phpbb_generate_template_pagination($view_topic_url, 'searchresults.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
 			}
 		}
 
