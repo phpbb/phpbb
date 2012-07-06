@@ -334,6 +334,14 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function get_varref($text_blocks, &$is_expr)
 	{
+		// This implementation seems broken. It assumes that the only thing
+		// present in the string is of the form '{FOO}' and then converts it
+		// into something like $_rootref['FOO']. This is problematic if the
+		// string is in actual fact of the form {FOO}/other/stuff as it will
+		// return $_rootref['FOO']/other/stuff and functions that call it will
+		// be expecting a valid variable name, which this is not. Please see
+		// the note in compile_tag_include for an example.
+
 		// change template varrefs into PHP varrefs
 		$varrefs = array();
 
@@ -773,6 +781,10 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include($tag_args)
 	{
+		// Try placing <!-- INCLUDE {T_ASSETS_DIR}/test.php --> in a template
+		// and it will cause an error because of the problems mentioned in
+		// get_varref.
+	
 		// Process dynamic includes
 		if ($tag_args[0] == '{')
 		{
@@ -885,10 +897,17 @@ class phpbb_template_filter extends php_user_filter
 		// Process dynamic includes
 		if ($tag_args[0] == '{')
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
+			// Temporary workaround to deal with get_varref behaviour.
+			// Note, this only works if only the first element is a dynamic
+			// include however this should not be a problem as in all cases
+			// only the first character is checked for '{' so only this case
+			// would be supported anyway.
+			$segments = explode('/', $tag_args);
+			$var = $this->get_varref($segments[0], $is_expr);
+			$segments[0] = '';
 			if (!$is_expr)
 			{
-				return " \$_template->_js_include($var, true);";
+				return " if (isset($var)) { \$_template->_js_include($var . '" . implode('/', $segments) . "', false); }";
 			}
 			return '';
 		}
