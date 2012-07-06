@@ -514,7 +514,7 @@ class phpbb_template
 		$file .= 'assets_version=' . $this->config['assets_version'];
 
 		// Add HTML code
-		$code = '<script src="' . htmlspecialchars($file) . '"></script>';
+		$code = '<script type="text/javascript" src="' . htmlspecialchars($file) . '"></script>';
 		$this->context->append_var('SCRIPTS', $code);
 	}
 }
