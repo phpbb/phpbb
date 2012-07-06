@@ -64,6 +64,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		return array(
 			'CUSTOM_ACP'		=> false,
 			'CUSTOM_LOGIN_BOX'	=> true,
+			'CUSTOM_REGISTER'	=> true,
 
 			'NAME'		=> 'openid',
 			'OPTIONS'	=> array(

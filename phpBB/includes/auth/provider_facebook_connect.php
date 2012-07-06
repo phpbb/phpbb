@@ -46,6 +46,7 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 		return array(
 			'CUSTOM_ACP'		=> false,
 			'CUSTOM_LOGIN_BOX'	=> true,
+			'CUSTOM_REGISTER'	=> true,
 
 			'NAME'		=> 'facebook_connect',
 			'OPTIONS'	=> array(

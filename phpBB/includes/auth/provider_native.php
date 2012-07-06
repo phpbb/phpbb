@@ -46,6 +46,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		return array(
 			'CUSTOM_ACP'		=> false,
 			'CUSTOM_LOGIN_BOX'	=> false,
+			'CUSTOM_REGISTER'	=> false,
 
 			'NAME'		=> 'native',
 			'OPTIONS'	=> array(
