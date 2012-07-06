@@ -291,7 +291,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		return true;
 	}
 
-	protected function register($data, $coppa = false)
+	protected function register($data, $coppa = false, $cp_data = false)
 	{
 		if (is_empty($data))
 		{
@@ -368,7 +368,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		}
 
 		// Register user.
-		$user_id = user_add($user_row, false);
+		$user_id = user_add($user_row, $cp_data);
 
 		// This should not happen, because the required variables are listed above.
 		if ($user_id === false)

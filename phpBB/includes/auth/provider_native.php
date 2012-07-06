@@ -164,7 +164,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
 		if ($captcha->need_captcha($row['user_login_attempts']))
 		{
-			if (!$captcha->confirm_visual_captcha())
+			if (!$captcha->confirm_visual_login_captcha())
 			{
 				if ($admin && $this->user->data['is_registered'])
 				{
@@ -292,5 +292,73 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		}
 
 		return $row;
+	}
+
+	protected function internal_register()
+	{
+		$coppa			= $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
+		$agreed			= (int) $this->request->variable('agreed', false);
+
+		$cp = new custom_profile();
+		$error = $cp_data = $cp_error = array();
+
+		$data = array(
+			'username'			=> utf8_normalize_nfc($this->request->variable('username', '', true)),
+			'new_password'		=> $this->request->variable('new_password', '', true),
+			'password_confirm'	=> $this->request->variable('password_confirm', '', true),
+			'email'				=> strtolower($this->request->variable('email', '')),
+			'lang'				=> basename($this->request->variable('lang', $user->lang_name)),
+			'tz'				=> $this->request->variable('tz', (float) $timezone),
+		);
+
+		if (!check_form_key('ucp_register'))
+		{
+			$error[] = $this->user->lang['FORM_INVALID'];
+		}
+
+		// Replace "error" strings with their real, localised form
+		$error = array_map(array($this->user, 'lang'), $error);
+
+		if ($this->config['enable_confirm'])
+		{
+			$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
+			$captcha_response = $captcha->confirm_visual_registration_captcha($data);
+			if ($captcha_response !== true)
+			{
+				$error = array_merge($error, $captcha_response);
+			}
+		}
+
+		// DNSBL check
+		if ($this->config['check_dnsbl'])
+		{
+			if (($dnsbl = $this->user->check_dnsbl('register')) !== false)
+			{
+				$error[] = sprintf($this->user->lang['IP_BLACKLISTED'], $this->user->ip, $dnsbl[1]);
+			}
+		}
+
+		// validate custom profile fields
+		$cp->submit_cp_field('register', $this->user->get_iso_lang_id(), $cp_data, $error);
+
+		if (!sizeof($error))
+		{
+			if ($data['new_password'] != $data['password_confirm'])
+			{
+				$error[] = $this->user->lang['NEW_PASSWORD_ERROR'];
+			}
+		}
+
+		if (!sizeof($error))
+		{
+			$this->register($data, $coppa, $cp_data);
+			if ($this->config['enable_confirm'] && isset($captcha))
+			{
+				$captcha->reset();
+			}
+			$this->redirect();
+		}
+
+		throw new phpbb_auth_exception($error);
 	}
 }

@@ -65,7 +65,7 @@ class phpbb_auth_captcha
 			($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 	}
 
-	public function confirm_visual_captcha()
+	public function confirm_visual_login_captcha($row)
 	{
 		// Visual Confirmation handling
 		if (!class_exists('phpbb_captcha_factory', false))
@@ -86,6 +86,51 @@ class phpbb_auth_captcha
 			$captcha->reset();
 			return true;
 		}
+	}
 
+	public function confirm_visual_registration_captcha($data)
+	{
+		if (!class_exists('phpbb_captcha_factory', false))
+		{
+			global $phpbb_root_path, $phpEx;
+			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+		}
+
+		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+		$captcha->init(CONFIRM_REG);
+
+		$vc_response = $captcha->validate($data);
+		$error = array();
+		if ($vc_response !== false)
+		{
+			$error[] = $vc_response;
+		}
+
+		if ($this->config['max_reg_attempts'] && $captcha->get_attempt_count() > $this->config['max_reg_attempts'])
+		{
+			$error[] = $this->user->lang['TOO_MANY_REGISTERS'];
+		}
+
+		if (sizeof($error))
+		{
+			return $error;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	public function reset_registration_captcha()
+	{
+		if (!class_exists('phpbb_captcha_factory', false))
+		{
+			global $phpbb_root_path, $phpEx;
+			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+		}
+
+		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+		$captcha->init(CONFIRM_REG);
+		$captcha->reset();
 	}
 }
