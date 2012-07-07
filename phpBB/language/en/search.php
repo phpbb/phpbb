@@ -72,6 +72,7 @@ $lang = array_merge($lang, array(
 	'WORDS_IN_NO_POST'		=> 'No posts were found because the words <strong>%s</strong> are not contained in any post.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
+	'PHRASE_SEARCH_DISABLED'	=> 'Searching by exact phrase is not supported on this board.',
 
 	'RECENT_SEARCHES'		=> 'Recent searches',
 	'RESULT_DAYS'			=> 'Limit results to previous',

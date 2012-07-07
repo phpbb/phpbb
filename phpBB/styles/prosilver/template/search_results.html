@@ -2,6 +2,7 @@
 
 <h2><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->: <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 <!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}: <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
+<!-- IF PHRASE_SEARCH_DISABLED --> <p><strong>{L_PHRASE_SEARCH_DISABLED}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->
 	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO}: {SEARCH_TOPIC}</a></p>
