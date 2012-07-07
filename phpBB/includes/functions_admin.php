@@ -2294,6 +2294,21 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 }
 
 /**
+* remove_comments will strip the sql comment lines out of an uploaded sql file
+* specifically for mssql and postgres type files in the install....
+*
+* @deprecated		Use phpbb_remove_comments() instead.
+*/
+function remove_comments(&$output)
+{
+	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+	$output = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $output);
+
+	// Return by reference and value.
+	return $output;
+}
+
+/**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
 */
