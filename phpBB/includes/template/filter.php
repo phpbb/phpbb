@@ -362,6 +362,52 @@ class phpbb_template_filter extends php_user_filter
 	}
 
 	/**
+	* Parse paths of the form {FOO}/a/{BAR}/b
+	* Note: this method assumes at least one variable in the path, this should
+	* be checked before this method is called.
+	*
+	* @param string $path The path to parse
+	* @param string $include_type The type of template function to call
+	* @return string An appropriately formatted string to include in the
+	* 	template
+	*/
+	private function parse_dynamic_path($path, $include_type)
+	{
+		$segments = explode('/', $path);
+		$is_expr = true;
+		$str = array();
+		$vars = array();
+
+		foreach ($segments as $segment)
+		{
+			if ($segment[0] === '{')
+			{
+				$var = $this->get_varref($segment, $tmp_is_expr);
+				$is_expr = $is_expr && $tmp_is_expr;
+				$vars[] = "isset($var)";
+				$str[] = "$var . '/'";
+			}
+			else
+			{
+				$str[] = "'$segment/'";
+			}
+		}
+
+		// Remove trailing slash from last element
+		$last = array_pop($str);
+		$str[] = str_replace('/', '', $last);
+
+		if (!$is_expr)
+		{
+			return ' if (' . implode(' && ', $vars) . ") { \$_template->$include_type(" . implode(' . ', $str) . ', true); }';
+		}
+		else
+		{
+			return '';
+		}
+	}
+
+	/**
 	* Compile variables
 	*
 	* @param string $text_blocks Variable reference in source template
@@ -774,15 +820,9 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include($tag_args)
 	{
 		// Process dynamic includes
-		if ($tag_args[0] == '{')
+		if (strpos($tag_args, '{') !== false)
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
-
-			// Make sure someone didn't try to include S_FIRST_ROW or similar
-			if (!$is_expr)
-			{
-				return "if (isset($var)) { \$_template->_tpl_include($var); }";
-			}
+			return $this->parse_dynamic_path($tag_args, '_tpl_include');
 		}
 
 		return "\$_template->_tpl_include('$tag_args');";
@@ -796,6 +836,11 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include_php($tag_args)
 	{
+		if (strpos($tag_args, '{') !== false)
+		{
+			return $this->parse_dynamic_path($tag_args, '_php_include');
+		}
+
 		return "\$_template->_php_include('$tag_args');";
 	}
 
@@ -883,14 +928,9 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_include_js($tag_args)
 	{
 		// Process dynamic includes
-		if ($tag_args[0] == '{')
+		if (strpos($tag_args, '{') !== false)
 		{
-			$var = $this->get_varref($tag_args, $is_expr);
-			if (!$is_expr)
-			{
-				return " \$_template->_js_include($var, true);";
-			}
-			return '';
+			return $this->parse_dynamic_path($tag_args, '_js_include');
 		}
 
 		// Locate file
