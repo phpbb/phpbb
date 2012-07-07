@@ -14,13 +14,6 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 {
 	public function test_form_upload()
 	{
-		// This test is marked as incomplete due to an apparent bug in the
-		// symfony framework which causes it to lose the mimetype of any file
-		// uploaded. Since filespec::is_image() relies on the mimetype, all
-		// image uploads fail. filespec::is_image() is fixed in:
-		// https://github.com/phpbb/phpbb3/pull/833
-		$this->markTestIncomplete();
-
 		$path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
@@ -30,21 +23,23 @@ class phpbb_functional_fileupload_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($path . 'illegal-extension.bif');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals(1, $crawler->filter('p.error')->count());
+		$this->assertEquals('The extension bif is not allowed.', $crawler->filter('p.error')->text());
 
 		// Test 2: Empty file
 		$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($path . 'empty.png');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals(1, $crawler->filter('p.error')->count());
+		$this->assertEquals('The image file you tried to attach is invalid.', $crawler->filter('div#message p')->text());
 
 		// Test 3: File too large
-		$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
+		// Cannot be tested by an admin account which this functional framework
+		// provides
+		/*$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($path . 'too-large.png');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals(1, $crawler->filter('div#message')->count());
+		$this->assertEquals(1, $crawler->filter('div#message')->count());*/
 
 		// Test 4: Valid file
 		$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
