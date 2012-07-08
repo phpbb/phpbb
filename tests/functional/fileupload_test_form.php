@@ -43,11 +43,12 @@ class phpbb_functional_fileupload_test_form extends phpbb_functional_test_case
 	{
 		// Cannot be tested by an admin account which this functional framework
 		// provides
-		/*$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
+		$this->markTestIncomplete();
+		$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($path . 'too-large.png');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals(1, $crawler->filter('div#message')->count());*/
+		$this->assertEquals(1, $crawler->filter('div#message')->count());
 	}
 
 	public function test_valid_file()
