@@ -591,10 +591,10 @@ if ($s_display_active)
 $total_topic_count = $topics_count - sizeof($global_announce_forums);
 
 $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
-phpbb_generate_template_pagination($base_url, 'pagination', $topics_count, $config['topics_per_page'], $start);
+phpbb_generate_template_pagination($template, $base_url, 'pagination', $topics_count, $config['topics_per_page'], $start);
 
 $template->assign_vars(array(
-	'PAGE_NUMBER'	=> on_page($base_url, $topics_count, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $topics_count, $config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
 ));
 
@@ -745,7 +745,7 @@ if (sizeof($topic_list))
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)
 		);
 
-		phpbb_generate_template_pagination($view_topic_url, 'topicrow.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
+		phpbb_generate_template_pagination($template, $view_topic_url, 'topicrow.pagination', $replies + 1, $config['posts_per_page'], 1, true, true);
 		
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 

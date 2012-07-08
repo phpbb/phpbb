@@ -309,7 +309,7 @@ function mcp_topic_view($id, $mode, $action)
 	$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir");
 	if ($posts_per_page)
 	{
-		phpbb_generate_template_pagination($base_url, 'pagination', $total, $posts_per_page, $start);
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', $total, $posts_per_page, $start);
 	}
 	
 	$template->assign_vars(array(
@@ -350,7 +350,7 @@ function mcp_topic_view($id, $mode, $action)
 		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
-		'PAGE_NUMBER'		=> on_page($base_url, $total, $posts_per_page, $start),
+		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $total, $posts_per_page, $start),
 		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
 	));
 }

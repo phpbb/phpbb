@@ -171,10 +171,10 @@ class ucp_attachments
 		$db->sql_freeresult($result);
 
 		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
-		phpbb_generate_template_pagination($base_url, 'pagination', $num_attachments, $config['topics_per_page'], $start);		
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', $num_attachments, $config['topics_per_page'], $start);		
 		
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> on_page($base_url, $num_attachments, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],

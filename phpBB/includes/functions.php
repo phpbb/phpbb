@@ -1881,101 +1881,10 @@ function tracking_unserialize($string, $max_depth = 3)
 // Pagination functions
 
 /**
-* Pagination routine, generates page number sequence
-* To generate pagination which is rendered fully within the template use phpbb_generate_template_pagination
-*
-* @param string $base_url the base url is prepended to all links generated within the function
-* @param int $num_items the total number of items, posts, topics, etc., used to determine the number of pages to produce
-* @param int $per_page the number of items, posts, topics, etc. to display per page, used to determine the number of pages to produce
-* @param int $start_item the item which should be considered currently active, used to determine the page we're on
-* @param bool $add_prevnext_text appends and prepends next and previous links (true) or not (false)
-* @param string $tpl_prefix is for using different pagination blocks at one page
-*/
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
-{
-	global $template, $user;
-
-	// Make sure $per_page is a valid value
-	$per_page = ($per_page <= 0) ? 1 : $per_page;
-
-	$separator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
-	$total_pages = ceil($num_items / $per_page);
-
-	if ($total_pages == 1 || !$num_items)
-	{
-		return false;
-	}
-
-	$on_page = floor($start_item / $per_page) + 1;
-	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-
-	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
-
-	if ($total_pages > 5)
-	{
-		$start_cnt = min(max(1, $on_page - 4), $total_pages - 5);
-		$end_cnt = max(min($total_pages, $on_page + 4), 6);
-
-		$page_string .= ($start_cnt > 1) ? '<span class="page-dots"> ... </span>' : $separator;
-
-		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $end_cnt - 1)
-			{
-				$page_string .= $separator;
-			}
-		}
-
-		$page_string .= ($end_cnt < $total_pages) ? '<span class="page-dots"> ... </span>' : $separator;
-	}
-	else
-	{
-		$page_string .= $separator;
-
-		for ($i = 2; $i < $total_pages; $i++)
-		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
-			if ($i < $total_pages)
-			{
-				$page_string .= $separator;
-			}
-		}
-	}
-
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
-
-	if ($add_prevnext_text)
-	{
-		if ($on_page != 1)
-		{
-			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
-		}
-
-		if ($on_page != $total_pages)
-		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
-		}
-	}
-
-	$template->assign_vars(array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
-		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
-		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-	));
-
-	return $page_string;
-}
-
-/**
 * Generate template rendered pagination
 * Allows full control of rendering of pagination with the template
 *
+* @param object $template the template object
 * @param string $base_url is url prepended to all links generated within the function
 * @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
 * @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
@@ -1983,12 +1892,10 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 * @param int $start_item the item which should be considered currently active, used to determine the page we're on
 * @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
 * @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
-* 
+* @return null
 */
-function phpbb_generate_template_pagination($base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
+function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
 {
-	global $template;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 	$total_pages = ceil($num_items / $per_page);
@@ -2098,16 +2005,16 @@ function phpbb_generate_template_pagination($base_url, $block_var_name, $num_ite
 * Return current page 
 * This function also sets certain specific template variables
 *
+* @param object $template the template object
+* @param object $user the user object
 * @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
 * @param int $num_items the total number of items, posts, topics, etc.
 * @param int $per_page the number of items, posts, etc. per page
 * @param int $start the item which should be considered currently active, used to determine the page we're on
-* 
+* @return null
 */
-function on_page($base_url, $num_items, $per_page, $start)
+function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $start)
 {
-	global $template, $user;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
