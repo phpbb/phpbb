@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/message_parser.php';
-require_once dirname(__FILE__) . '/../mock_user.php';
+require_once dirname(__FILE__) . '/../mock/user.php';
 
 class phpbb_url_bbcode_test extends phpbb_test_case
 {
