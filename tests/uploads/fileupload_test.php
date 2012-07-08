@@ -55,33 +55,38 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$user = null;
 	}
 
-	public function test_common_checks()
+	public function test_common_checks_invalid_extension()
 	{
-		// Test 1: Valid file
-		$upload = new fileupload('', array('jpg'), 1000);
+		$upload = new fileupload('', array('png'), 100);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
+	}
 
-		// Test 2: File too large
-		$upload = new fileupload('', array('jpg'), 100);
-		$file = $this->gen_valid_filespec();
-		$file->filesize = 1000;
-		$upload->common_checks($file);
-		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
-
-		// Test 3: Invalid filename
+	public function test_common_checks_invalid_filename()
+	{
 		$upload = new fileupload('', array('jpg'), 100);
 		$file = $this->gen_valid_filespec();
 		$file->realname = 'invalid?';
 		$upload->common_checks($file);
 		$this->assertEquals('INVALID_FILENAME', $file->error[0]);
+	}
 
-		// Test 4: Invalid extension
-		$upload = new fileupload('', array('png'), 100);
+	public function test_common_checks_too_large()
+	{
+		$upload = new fileupload('', array('jpg'), 100);
+		$file = $this->gen_valid_filespec();
+		$file->filesize = 1000;
+		$upload->common_checks($file);
+		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
+	}
+
+	public function test_common_checks_valid_file()
+	{
+		$upload = new fileupload('', array('jpg'), 1000);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
-		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
+		$this->assertEquals(0, sizeof($file->error));
 	}
 
 	public function test_local_upload()
