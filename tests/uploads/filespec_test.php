@@ -237,7 +237,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		return array(
 			array('gif_copy', 'gif_moved', 'image/gif', 'gif', false, true),
 			array('non_existant', 'still_non_existant', 'text/plain', 'txt', 'GENERAL_UPLOAD_ERROR', false),
-			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', 'UNABLE_GET_IMAGE_SIZE', true),
+			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', false, true),
 			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
 			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
 			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH', true),
