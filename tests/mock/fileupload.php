@@ -21,6 +21,13 @@ class phpbb_mock_fileupload
 		return true;
 	}
 
+	/**
+	 * Copied verbatim from phpBB/includes/functions_upload.php's fileupload
+	 * class to ensure the correct behaviour of filespec::move_file.
+	 *
+	 * Maps file extensions to the constant in second index of the array
+	 * returned by getimagesize()
+	 */
 	public function image_types()
 	{
 		return array(

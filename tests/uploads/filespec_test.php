@@ -37,6 +37,9 @@ class phpbb_filespec_test extends phpbb_test_case
 
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
+		// This config value is normally pulled from the database which is set
+		// to this value at install time.
+		// See: phpBB/install/schemas/schema_data.sql
 		$config['mime_triggers'] = 'body|head|html|img|plaintext|a href|pre|script|table|title';
 
 		$user = new phpbb_mock_user();
@@ -104,6 +107,9 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function additional_checks_variables()
 	{
+		// False here just indicates the file is too large and fails the
+		// filespec::additional_checks method because of it. All other code
+		// paths in that method are covered elsewhere.
 		return array(
 			array('gif', true),
 			array('jpg', false),
@@ -129,6 +135,8 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function check_content_variables()
 	{
+		// False here indicates that a file is non-binary and contains
+		// disallowed content that makes IE report the mimetype incorrectly.
 		return array(
 			array('gif', true),
 			array('jpg', true),
