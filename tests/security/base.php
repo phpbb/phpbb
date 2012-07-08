@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/request.php';
-
 abstract class phpbb_security_test_base extends phpbb_test_case
 {
 	/**
