@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/cache.php';
 require_once dirname(__FILE__) . '/ext/bar/ext.php';
 require_once dirname(__FILE__) . '/ext/foo/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
