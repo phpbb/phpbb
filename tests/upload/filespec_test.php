@@ -52,15 +52,15 @@ class phpbb_filespec_test extends phpbb_test_case
 		$iterator = new DirectoryIterator($this->path);
 		foreach ($iterator as $fileinfo)
 		{
-			if ($fileinfo->isDot())
+			if ($fileinfo->isDot() || $fileinfo->isDir())
 			{
 				continue;
 			}
 
-			copy($fileinfo->getPathname(), $this->path . $fileinfo->getFilename() . '_copy');
+			copy($fileinfo->getPathname(), $this->path . 'copies/' . $fileinfo->getFilename() . '_copy');
 			if ($fileinfo->getFilename() === 'txt')
 			{
-				copy($fileinfo->getPathname(), $this->path . $fileinfo->getFilename() . '_copy_2');
+				copy($fileinfo->getPathname(), $this->path . 'copies/' . $fileinfo->getFilename() . '_copy_2');
 			}
 		}
 	}
@@ -84,24 +84,10 @@ class phpbb_filespec_test extends phpbb_test_case
 		global $user;
 		$this->config = array();
 		$user = null;
-		
-		$files = array(
-			'gif_copy',
-			'jpg_copy',
-			'png_copy',
-			'txt_copy',
-			'txt_copy_2',
-			'tif_copy',
-			'gif_moved',
-			'jpg_moved',
-			'png_moved',
-			'txt_as_img',
-			'txt_moved',
-		);
 
-		foreach ($files as $file)
+		foreach (glob($this->path . 'copies/*') as $file)
 		{
-			@unlink($this->path . $file);
+			unlink($file);
 		}
 	}
 
@@ -266,7 +252,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
 
 		$filespec = $this->get_filespec(array(
-			'tmp_name' => $this->path . $tmp_name,
+			'tmp_name' => $this->path . 'copies/' . $tmp_name,
 			'name' => $realname,
 			'type' => $mime_type,
 		));
@@ -274,8 +260,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec->upload = $upload;
 		$filespec->local = true;
 
-		$this->assertEquals($expected, $filespec->move_file($this->path));
-		$this->assertEquals($filespec->file_moved, file_exists($this->path . $realname));
+		$this->assertEquals($expected, $filespec->move_file($this->path . 'copies'));
+		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/' . $realname));
 		if ($error)
 		{
 			$this->assertEquals($error, $filespec->error[0]);
