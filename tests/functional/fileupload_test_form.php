@@ -41,9 +41,7 @@ class phpbb_functional_fileupload_test_form extends phpbb_functional_test_case
 
 	public function test_too_large()
 	{
-		// Cannot be tested by an admin account which this functional framework
-		// provides
-		$this->markTestIncomplete();
+		$this->markTestIncomplete('Functional tests use an admin account which ignores maximum upload size.');
 		$crawler = $this->request('GET', 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($path . 'too-large.png');
