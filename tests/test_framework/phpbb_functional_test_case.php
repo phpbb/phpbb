@@ -238,7 +238,48 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db_conn_mgr->recreate_db();
 	}
 
-	protected function login()
+	/**
+	* Creates a new user with limited permissions
+	*
+	* @param string $username Also doubles up as the user's password
+	*/
+	protected function create_user($username)
+	{
+		// Required by unique_id
+		global $config;
+
+		if (!is_array($config))
+		{
+			$config = array();
+		}
+
+		$config['rand_seed'] = '';
+		$config['rand_seed_last_update'] = time() + 600;
+		
+		$db = $this->get_db();
+		$query = "
+			INSERT INTO " . self::$config['table_prefix'] . "users
+				(user_type, group_id, username, username_clean, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd)
+			VALUES
+				(0, 2, 'user', 'user', 0, '" . phpbb_hash($username) . "', 'nobody@example.com', 'en', 1, 0, '', 1, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '')
+		";
+
+		$db->sql_query($query);
+	}
+
+	/**
+	* Deletes a user
+	*
+	* @param string $username The username of the user to delete
+	*/
+	protected function delete_user($username)
+	{
+		$db = $this->get_db();
+		$query = "DELETE FROM " . self::$config['table_prefix'] . "users WHERE username = '" . $db->sql_escape($username) . "'";
+		$db->sql_query($query);
+	}
+
+	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
 
@@ -246,7 +287,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$login = $this->client->submit($form, array('username' => 'admin', 'password' => 'admin'));
+		$login = $this->client->submit($form, array('username' => $username, 'password' => $username));
 
 		$cookies = $this->cookieJar->all();
 
