@@ -373,33 +373,21 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function parse_dynamic_path($path, $include_type)
 	{
-		$segments = explode('/', $path);
-		$is_expr = true;
-		$str = array();
-		$vars = array();
+		$matches = array();
+		$replace = array();
 
-		foreach ($segments as $segment)
+		preg_match_all('/{[^}]+}/', $path, $matches);
+		foreach ($matches[0] as $var_str)
 		{
-			if ($segment[0] === '{')
-			{
-				$var = $this->get_varref($segment, $tmp_is_expr);
-				$is_expr = $is_expr && $tmp_is_expr;
-				$vars[] = "isset($var)";
-				$str[] = "$var . '/'";
-			}
-			else
-			{
-				$str[] = "'$segment/'";
-			}
+			$var = $this->get_varref($var_str, $tmp_is_expr);
+			$is_expr = $is_expr && $tmp_is_expr;
+			$vars[] = "isset($var)";
+			$replace[] = "' . $var . '";
 		}
-
-		// Remove trailing slash from last element
-		$last = array_pop($str);
-		$str[] = str_replace('/', '', $last);
 
 		if (!$is_expr)
 		{
-			return ' if (' . implode(' && ', $vars) . ") { \$_template->$include_type(" . implode(' . ', $str) . ', true); }';
+			return ' if (' . implode(' && ', $vars) . ") { \$_template->$include_type('" . str_replace($matches[0], $replace, $path) . "', true); }";
 		}
 		else
 		{
