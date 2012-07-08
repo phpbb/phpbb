@@ -241,6 +241,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new user with limited permissions
 	*
+	* Note that creating two users with the same name results in undefined
+	* login behaviour. Always call delete_user after running a test that
+	* requires create_user.
+	*
 	* @param string $username Also doubles up as the user's password
 	*/
 	protected function create_user($username)
