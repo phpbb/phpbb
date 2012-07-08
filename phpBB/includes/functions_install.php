@@ -472,19 +472,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* Removes comments from schema files
-*
-* @deprecated		Use phpbb_remove_comments() instead.
-*/
-function remove_remarks(&$sql)
-{
-	// Remove # style comments
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-
-	// Return by reference
-}
-
-/**
 * Removes "/* style" as well as "# style" comments from $input.
 *
 * @param string $input		Input string
@@ -493,17 +480,11 @@ function remove_remarks(&$sql)
 */
 function phpbb_remove_comments($input)
 {
-	if (!function_exists('remove_comments'))
-	{
-		global $phpbb_root_path, $phpEx;
-		require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-	}
-
-	// Remove /* */ comments
-	remove_comments($input);
+	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+	$input = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $input);
 
 	// Remove # style comments
-	remove_remarks($input);
+	$input = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $input));
 
 	return $input;
 }
