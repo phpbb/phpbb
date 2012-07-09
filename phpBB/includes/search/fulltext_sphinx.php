@@ -43,6 +43,7 @@ class phpbb_search_fulltext_sphinx
 	private $auth;
 	private $config;
 	private $db;
+	private $db_tools;
 	private $user;
 	public $word_length = array();
 	public $search_query;
@@ -56,11 +57,19 @@ class phpbb_search_fulltext_sphinx
 	 */
 	public function __construct(&$error)
 	{
-		global $config, $db, $user, $auth;
+		global $config, $db, $user, $auth, $phpbb_root_path, $phpEx;
 		$this->config = $config;
 		$this->user = $user;
 		$this->db = $db;
 		$this->auth = $auth;
+
+		if (!class_exists('phpbb_db_tools'))
+		{
+			require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
+		}
+		
+		// Initialize phpbb_db_tools object
+		$this->db_tools = new phpbb_db_tools($this->db);
 
 		$this->id = $config['avatar_salt'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
@@ -604,11 +613,14 @@ class phpbb_search_fulltext_sphinx
 	{
 		if (!$this->index_created())
 		{
-			$sql = 'CREATE TABLE IF NOT EXISTS ' . SPHINX_TABLE . ' (
-				counter_id INT NOT NULL PRIMARY KEY,
-				max_doc_id INT NOT NULL
-			)';
-			$this->db->sql_query($sql);
+			$table_data = array(
+				'COLUMNS'	=> array(
+					'counter_id'	=> array('UINT', 0),
+					'max_doc_id'	=> array('UINT', 0),
+				),
+				'PRIMARY_KEY'	=> 'counter_id',
+			);
+			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
 
 			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
 			$this->db->sql_query($sql);
@@ -631,8 +643,7 @@ class phpbb_search_fulltext_sphinx
 			return false;
 		}
 
-		$sql = 'DROP TABLE ' . SPHINX_TABLE;
-		$this->db->sql_query($sql);
+		$this->db_tools->sql_table_drop(SPHINX_TABLE);
 
 		return false;
 	}
