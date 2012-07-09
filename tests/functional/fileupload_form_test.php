@@ -28,7 +28,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($this->path . 'empty.png');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals('The image file you tried to attach is invalid.', $crawler->filter('div#message p')->text());
+		$this->assertEquals($this->lang('ATTACHED_IMAGE_NOT_IMAGE'), $crawler->filter('div#message p')->text());
 	}
 
 	public function test_invalid_extension()
@@ -37,7 +37,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('add_file')->form();
 		$form['fileupload']->upload($this->path . 'illegal-extension.bif');
 		$crawler = $this->client->submit($form);
-		$this->assertEquals('The extension bif is not allowed.', $crawler->filter('p.error')->text());
+		$this->assertEquals($this->lang('DISALLOWED_EXTENSION', 'bif'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_too_large()
