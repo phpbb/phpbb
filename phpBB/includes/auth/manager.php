@@ -195,6 +195,7 @@ class phpbb_auth_manager
 
 	public function generate_common_registration_form(phpbb_template $template)
 	{
+		global $phpbb_root_path, $phpEx;
 		if ($this->config['enable_confirm'])
 		{
 			$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
