@@ -315,6 +315,7 @@ class phpbb_search_fulltext_sphinx
 					array('max_children',				'30'),
 					array('pid_file',					$config['fulltext_sphinx_data_path'] . "searchd.pid"),
 					array('max_matches',				(string) MAX_MATCHES),
+					array('binlog_path',				$config['fulltext_sphinx_data_path']),
 				),
 			);
 
