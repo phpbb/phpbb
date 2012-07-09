@@ -44,6 +44,8 @@ class phpbb_search_fulltext_sphinx
 	var $search_query;
 	var $common_words = array();
 	var $id;
+	var $indexes;
+	var $sphinx;
 
 	public function __construct(&$error)
 	{
