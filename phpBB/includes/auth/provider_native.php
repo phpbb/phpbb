@@ -354,7 +354,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			$this->register($data, $coppa, $cp_data);
 			if ($this->config['enable_confirm'] && isset($captcha))
 			{
-				$captcha->reset();
+				$captcha->reset_registration_captcha();
 			}
 			return;
 		}

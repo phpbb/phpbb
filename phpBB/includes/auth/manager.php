@@ -197,10 +197,7 @@ class phpbb_auth_manager
 	{
 		if ($this->config['enable_confirm'])
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
-			$captcha->init(CONFIRM_REG);
+			$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
 		}
 
 		$coppa	= $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
@@ -230,7 +227,7 @@ class phpbb_auth_manager
 
 		if ($this->config['enable_confirm'])
 		{
-			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
+			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields(CONFIRM_REG));
 		}
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
@@ -238,7 +235,7 @@ class phpbb_auth_manager
 		if ($this->config['enable_confirm'])
 		{
 			$template->assign_vars(array(
-				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
+				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(CONFIRM_REG),
 			));
 		}
 

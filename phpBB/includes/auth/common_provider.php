@@ -285,7 +285,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 		if(sizeof($error))
 		{
-			throw new phpbb_auth_exception($error);
+			throw new phpbb_auth_exception(implode('<br />', $error));
 		}
 
 		return true;
@@ -293,7 +293,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 	protected function register($data, $coppa = false, $cp_data = false)
 	{
-		if (is_empty($data))
+		if (empty($data))
 		{
 			throw new phpbb_auth_exception('No registration data supplied.');
 		}

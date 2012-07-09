@@ -26,12 +26,33 @@ class phpbb_auth_captcha
 	protected $db;
 	protected $config;
 	protected $user;
+	protected static $captcha = null;
 
 	public function __construct(dbal $db, phpbb_config_db $config, phpbb_user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
+	}
+
+	protected function get_captcha($init_type)
+	{
+		if (self::$captcha !== null)
+		{
+			return;
+		}
+
+		if (!class_exists('phpbb_captcha_factory', false))
+		{
+			global $phpbb_root_path, $phpEx;
+			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+		}
+
+		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+		$captcha->init($init_type);
+
+		self::$captcha = $captcha;
+		return;
 	}
 
 	public function need_captcha($user_login_attempts = 0)
@@ -67,46 +88,30 @@ class phpbb_auth_captcha
 
 	public function confirm_visual_login_captcha($row)
 	{
-		// Visual Confirmation handling
-		if (!class_exists('phpbb_captcha_factory', false))
-		{
-			global $phpbb_root_path, $phpEx;
-			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		}
-
-		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
-		$captcha->init(CONFIRM_LOGIN);
-		$vc_response = $captcha->validate($row);
+		$this->get_captcha(CONFIRM_LOGIN);
+		$vc_response = self::$captcha->validate($row);
 		if ($vc_response)
 		{
 			return false;
 		}
 		else
 		{
-			$captcha->reset();
+			self::$captcha->reset();
 			return true;
 		}
 	}
 
 	public function confirm_visual_registration_captcha($data)
 	{
-		if (!class_exists('phpbb_captcha_factory', false))
-		{
-			global $phpbb_root_path, $phpEx;
-			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		}
-
-		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
-		$captcha->init(CONFIRM_REG);
-
-		$vc_response = $captcha->validate($data);
+		$this->get_captcha(CONFIRM_REG);
+		$vc_response = self::$captcha->validate($data);
 		$error = array();
 		if ($vc_response !== false)
 		{
 			$error[] = $vc_response;
 		}
 
-		if ($this->config['max_reg_attempts'] && $captcha->get_attempt_count() > $this->config['max_reg_attempts'])
+		if ($this->config['max_reg_attempts'] && self::$captcha->get_attempt_count() > $this->config['max_reg_attempts'])
 		{
 			$error[] = $this->user->lang['TOO_MANY_REGISTERS'];
 		}
@@ -123,14 +128,19 @@ class phpbb_auth_captcha
 
 	public function reset_registration_captcha()
 	{
-		if (!class_exists('phpbb_captcha_factory', false))
-		{
-			global $phpbb_root_path, $phpEx;
-			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		}
+		$this->get_captcha(CONFIRM_REG);
+		self::$captcha->reset();
+	}
 
-		$captcha = phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
-		$captcha->init(CONFIRM_REG);
-		$captcha->reset();
+	public function get_hidden_fields($init_type)
+	{
+		$this->get_captcha($init_type);
+		return self::$captcha->get_hidden_fields();
+	}
+
+	public function get_template($init_type)
+	{
+		$this->get_captcha($init_type);
+		return self::$captcha->get_template();
 	}
 }
