@@ -42,10 +42,13 @@ class ucp_register
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
+		$auth_provider = $request->variable('auth_provider', '');
+		$auth_action = $request->variable('auth_action', '');
 
-		if (!$submit && $request->is_set_post('auth_action'))
+		if ($submit == false && $auth_action != '' && $auth_provider != 'common')
 		{
 			$submit = true;
+			$agreed = true;
 		}
 		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
 		$common_provider_enabled = (bool)count($auth_manager->get_enabled_common_registration_providers());
@@ -161,11 +164,9 @@ class ucp_register
 		}
 
 		$error = array();
-		$auth_action = $request->variable('auth_action', '');
 
-		if ($auth_action && $submit)
+		if ($auth_action & $auth_provider)
 		{
-			$auth_provider = $request->variable('auth_provider', '');
 			$auth_step = $request->variable('auth_step', 'process');
 			if ($auth_provider == 'common')
 			{
@@ -181,6 +182,7 @@ class ucp_register
 					try
 					{
 						$provider->$auth_step();
+						$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
 						break;
 					}
 					catch (phpbb_auth_exception $e)
@@ -197,7 +199,15 @@ class ucp_register
 					$error['NO_AUTH_STEP'] = 'NO_AUTH_STEP';
 				}
 
-				$provider->$auth_step();
+				try
+				{
+					$provider->$auth_step();
+					$coppa	= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
+				}
+				catch (phpbb_auth_exception $e)
+				{
+					$error[] = $e->getMessage();
+				}
 			}
 
 			if (!sizeof($error))
@@ -221,6 +231,33 @@ class ucp_register
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
+		}
+
+		$providers = $auth_manager->get_enabled_providers();
+		foreach($providers as $provider)
+		{
+			$provider_config = $provider->get_configuration();
+			if ($provider_config['CUSTOM_REGISTER'] == false)
+			{
+				continue;
+			}
+
+			$tpl = $provider->generate_registration($template);
+
+			if ($tpl === null)
+			{
+				unset($provider);
+				continue;
+			}
+
+			$template->assign_block_vars('providers_loop', array(
+				'TPL'	=> $tpl,
+			));
+		}
+
+		if (empty($providers))
+		{
+			trigger_error('NO_PROVIDERS');
 		}
 
 		$common_tpl = $auth_manager->generate_common_registration_form($template);

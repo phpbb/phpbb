@@ -41,6 +41,11 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		return null;
 	}
 
+	public function generate_registration($template)
+	{
+		return null;
+	}
+
 	/**
 	 * Links a user to provider and an index.
 	 *
@@ -465,5 +470,6 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 				$this->db->sql_freeresult($result);
 			}
 		}
+		return $user_id;
 	}
 }

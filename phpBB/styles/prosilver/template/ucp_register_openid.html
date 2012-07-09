@@ -1,0 +1,18 @@
+<dt>{L_AUTH_PROVIDER_OPENID}</dt>
+<dd>
+	<div>
+		<form action="{S_UCP_ACTION}" method="post" id="openid_registration
+			  <!-- IF L_REG_COND -->
+				<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
+			<!-- ENDIF -->">
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd><label for="{OPENID_IDENTIFIER}"><img src="{THEME_PATH}/images/logo_openid_small.gif" alt="{AUTH_PROVIDER_OPENID}"/></label><input type="text" name="{OPENID_IDENTIFIER}" id="{OPENID_IDENTIFIER}" size="25" value="" class="inputbox autowidth" /></dd>
+			</dl>
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" value="{L_REGISTER}" class="button1" /></dd>
+			</dl>
+		</form>
+	</div>
+</dd>

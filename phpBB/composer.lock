@@ -1,5 +1,5 @@
 {
-    "hash": "e0ec3f91ec0ba03fd9bb1aa1b5667412",
+    "hash": "f6ae4153285f1605af647efd11107832",
     "packages": [
         {
             "package": "symfony/event-dispatcher",
@@ -19,6 +19,10 @@
         },
         {
             "package": "zendframework/zend-openid",
+            "version": "2.0.0-beta5"
+        },
+        {
+            "package": "zendframework/zend-registry",
             "version": "2.0.0-beta5"
         },
         {

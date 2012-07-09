@@ -203,6 +203,7 @@ class phpbb_auth_manager
 
 		$coppa	= $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 		$timezone = $this->config['board_timezone'];
+		$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 		$data = array(
 			'username'			=> utf8_normalize_nfc($this->request->variable('username', '', true)),
 			'new_password'		=> $this->request->variable('new_password', '', true),

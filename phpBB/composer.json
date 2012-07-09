@@ -11,6 +11,7 @@
 		"zendframework/zend-eventmanager": "2.0.*",
 		"zendframework/zend-http": "2.0.*",
 		"zendframework/zend-openid": "2.0.*",
+		"zendframework/zend-registry": "2.0.*",
 		"zendframework/zend-session": "2.0.*"
 	},
 	"require-dev": {

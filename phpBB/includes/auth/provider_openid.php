@@ -138,6 +138,77 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function generate_registration($template)
+	{
+		$provider_config = $this->get_configuration();
+		if (!$provider_config['OPTIONS']['enabled']['setting']
+				|| (!$provider_config['OPTIONS']['admin']['setting'] && $admin == true))
+		{
+			return null;
+		}
+
+		global $phpbb_root_path, $phpEx;
+
+		$s_hidden_fields = array(
+			'agreed'		=> 'true',
+			'change_lang'	=> 0,
+
+			'auth_provider'	=> 'openid',
+			'auth_action'	=> 'register',
+			'auth_step'		=> 'process',
+		);
+
+		$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
+		if ($this->config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+		$l_reg_cond = '';
+		switch ($this->config['require_activation'])
+		{
+			case USER_ACTIVATION_SELF:
+				$l_reg_cond = $this->user->lang['UCP_EMAIL_ACTIVATE'];
+			break;
+
+			case USER_ACTIVATION_ADMIN:
+				$l_reg_cond = $this->user->lang['UCP_ADMIN_ACTIVATE'];
+			break;
+		}
+
+		$board_url = generate_board_url() . '/';
+		$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+		$theme_path = $web_path . 'styles/' . rawurlencode($this->user->theme['style_path']) . '/theme';
+
+		$openid_identifier = 'openid_identifier';
+
+		$template->assign_vars(array(
+			'L_REG_COND'				=> $l_reg_cond,
+
+			'S_REGISTRATION'	=> true,
+			'S_COPPA'			=> $coppa,
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+
+			'OPENID_IDENTIFIER'		=> $openid_identifier,
+			'THEME_PATH'			=> $theme_path,
+		));
+
+		$template->set_filenames(array(
+			'ucp_register_openid' => 'ucp_register_openid.html')
+		);
+		$tpl = $template->assign_display('ucp_register_openid', '', true);
+		if (!$tpl)
+		{
+			return null;
+		}
+		return $tpl;
+	}
+
+	/**
 	 * Performs the login request on the external server specified by
 	 * openid_identifier. Redirects the browser first to the external server
 	 * for authentication then back to /check_auth_openid.php to complete
@@ -182,7 +253,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			global $phpEx;
 			$return_to = ($admin) ? 'index.' . $phpEx : 'ucp.' . $phpEx ;
-			$return_to .= '?mode=login&auth_step=verify&auth_provider=openid&phpbb.auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
+			$return_to .= '?mode=login&auth_step=verify&auth_provider=openid&auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
 		elseif ($auth_action === 'link')
@@ -191,12 +262,14 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}
-			$return_to = $this->user->page['page'].'?mode=register&auth_step=verify&auth_provider=openid&phpbb.auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
 		elseif ($auth_action === 'register')
 		{
-			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&phpbb.auth_action=register';
+			global $phpEx;
+			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
+			$return_to = 'ucp.' . $phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa;
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
@@ -237,7 +310,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$storage->purgeNonces(time());
 		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
 
-		$auth_action = $this->request->variable('phpbb_auth_action', '');
+		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'register')
 		{
 			$extensions = array(
@@ -289,7 +362,9 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();
 
-				$this->internal_register($sreg_data);
+				$user_id = $this->internal_register($sreg_data);
+				$identity = $this->request->variable('openid_identity', '');
+				$this->link($user_id, 'openid', $identity);
 				return true; // TODO: Change this to a redirect.
 			}
 			elseif ($auth_action == 'link')
@@ -306,7 +381,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		else
 		{
 			$this->request->disable_super_globals();
-			throw new phpbb_auth_exception('OpenID authentication failed.');
+			throw new phpbb_auth_exception('OpenID authentication failed: ' . $consumer->getError());
 		}
 
 		$this->request->disable_super_globals();
@@ -402,5 +477,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		// Perform registration.
 		$this->register($data);
+		return $user_id;
 	}
 }
