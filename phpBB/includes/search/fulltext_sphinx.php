@@ -193,7 +193,7 @@ class phpbb_search_fulltext_sphinx
 					array('source',						'source_phpbb_' . $this->id . '_main'),
 					array('docinfo',					'extern'),
 					array('morphology',					'none'),
-					array('stopwords',					(file_exists($config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt') && $config['fulltext_sphinx_stopwords']) ? $config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt' : ''),
+					array('stopwords',					$config['fulltext_sphinx_stopwords'] ? $config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt' : ''),
 					array('min_word_len',				'2'),
 					array('charset_type',				'utf-8'),
 					array('charset_table',				'U+FF10..U+FF19->0..9, 0..9, U+FF41..U+FF5A->a..z, U+FF21..U+FF3A->a..z, A..Z->a..z, a..z, U+0149, U+017F, U+0138, U+00DF, U+00FF, U+00C0..U+00D6->U+00E0..U+00F6, U+00E0..U+00F6, U+00D8..U+00DE->U+00F8..U+00FE, U+00F8..U+00FE, U+0100->U+0101, U+0101, U+0102->U+0103, U+0103, U+0104->U+0105, U+0105, U+0106->U+0107, U+0107, U+0108->U+0109, U+0109, U+010A->U+010B, U+010B, U+010C->U+010D, U+010D, U+010E->U+010F, U+010F, U+0110->U+0111, U+0111, U+0112->U+0113, U+0113, U+0114->U+0115, U+0115, U+0116->U+0117, U+0117, U+0118->U+0119, U+0119, U+011A->U+011B, U+011B, U+011C->U+011D, U+011D, U+011E->U+011F, U+011F, U+0130->U+0131, U+0131, U+0132->U+0133, U+0133, U+0134->U+0135, U+0135, U+0136->U+0137, U+0137, U+0139->U+013A, U+013A, U+013B->U+013C, U+013C, U+013D->U+013E, U+013E, U+013F->U+0140, U+0140, U+0141->U+0142, U+0142, U+0143->U+0144, U+0144, U+0145->U+0146, U+0146, U+0147->U+0148, U+0148, U+014A->U+014B, U+014B, U+014C->U+014D, U+014D, U+014E->U+014F, U+014F, U+0150->U+0151, U+0151, U+0152->U+0153, U+0153, U+0154->U+0155, U+0155, U+0156->U+0157, U+0157, U+0158->U+0159, U+0159, U+015A->U+015B, U+015B, U+015C->U+015D, U+015D, U+015E->U+015F, U+015F, U+0160->U+0161, U+0161, U+0162->U+0163, U+0163, U+0164->U+0165, U+0165, U+0166->U+0167, U+0167, U+0168->U+0169, U+0169, U+016A->U+016B, U+016B, U+016C->U+016D, U+016D, U+016E->U+016F, U+016F, U+0170->U+0171, U+0171, U+0172->U+0173, U+0173, U+0174->U+0175, U+0175, U+0176->U+0177, U+0177, U+0178->U+00FF, U+00FF, U+0179->U+017A, U+017A, U+017B->U+017C, U+017C, U+017D->U+017E, U+017E, U+0410..U+042F->U+0430..U+044F, U+0430..U+044F, U+4E00..U+9FFF'),
@@ -759,6 +759,7 @@ class phpbb_search_fulltext_sphinx
 
 		$defaults = array(
 			'fulltext_sphinx_indexer_mem_limit' => '512',
+			'fulltext_sphinx_stopwords' => '0',
 		);
 
 		foreach ($config_vars as $config_var => $type)
@@ -772,27 +773,6 @@ class phpbb_search_fulltext_sphinx
 				}
 				set_config($config_var, $default);
 			}
-		}
-
-		$bin_path		= $config['fulltext_sphinx_bin_path'];
-
-		// rewrite config if fulltext sphinx is enabled
-		if ($config['fulltext_sphinx_autoconf'] && isset($config['fulltext_sphinx_configured']) && $config['fulltext_sphinx_configured'])
-		{
-			$this->config_updated();
-		}
-
-		// check whether stopwords file is available and enabled
-		if (@file_exists($config['fulltext_sphinx_config_path'] . 'sphinx_stopwords.txt'))
-		{
-			$stopwords_available = true;
-			$stopwords_active = $config['fulltext_sphinx_stopwords'];
-		}
-		else
-		{
-			$stopwords_available = false;
-			$stopwords_active = false;
-			set_config('fulltext_sphinx_stopwords', '0');
 		}
 
 		$tpl = '
@@ -809,11 +789,11 @@ class phpbb_search_fulltext_sphinx
 			<dt><label for="fulltext_sphinx_data_path">' . $user->lang['FULLTEXT_SPHINX_DATA_PATH'] . ':</label><br /><span>' . $user->lang['FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $config['fulltext_sphinx_data_path'] . '" /></dd>
 		</dl>
-		<span class="error">' . $user->lang['FULLTEXT_SPHINX_CONFIGURE_AFTER']. '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_stopwords">' . $user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE'] . ':</label><br /><span>' . $user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_sphinx_stopwords" name="config[fulltext_sphinx_stopwords]" value="1"' . (($stopwords_active) ? ' checked="checked"' : '') . ((!$stopwords_available) ? ' disabled="disabled"' : '') . ' class="radio" /> ' . $user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_sphinx_stopwords]" value="0"' . ((!$stopwords_active) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['NO'] . '</label></dd>
+			<dd><label><input type="radio" id="fulltext_sphinx_stopwords" name="config[fulltext_sphinx_stopwords]" value="1"' . (($config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_sphinx_stopwords]" value="0"' . ((!$config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['NO'] . '</label></dd>
 		</dl>
+		<span class="error">' . $user->lang['FULLTEXT_SPHINX_CONFIGURE_AFTER']. '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $user->lang['FULLTEXT_SPHINX_PORT'] . ':</label><br /><span>' . $user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_port" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $config['fulltext_sphinx_port'] . '" /></dd>
