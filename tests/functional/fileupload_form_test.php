@@ -10,12 +10,13 @@
 /**
  * @group functional
  */
-class phpbb_functional_fileupload_test_form extends phpbb_functional_test_case
+class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 {
 	private $path;
 
-	protected function setUp()
+	public function setUp()
 	{
+		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();

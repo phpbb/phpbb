@@ -10,10 +10,11 @@
 /**
  * @group functional
  */
-class phpbb_functional_fileupload_test_remote extends phpbb_functional_test_case
+class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 {
-	protected function setUp()
+	public function setUp()
 	{
+		parent::setUp();
 		// Only doing this within the functional framework because we need a
 		// URL
 
@@ -33,7 +34,7 @@ class phpbb_functional_fileupload_test_remote extends phpbb_functional_test_case
 		$user->lang = new phpbb_mock_lang();
 	}
 
-	protected function tearDown()
+	public function tearDown()
 	{
 		global $config, $user;
 		$user = null;
