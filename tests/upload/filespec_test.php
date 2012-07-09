@@ -104,7 +104,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('jpg', false),
 			array('png', true),
 			array('tif', false),
-			array('txt', true),
+			array('txt', false),
 		);
 	}
 
