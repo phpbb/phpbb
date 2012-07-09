@@ -83,9 +83,14 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->config = array();
 		$user = null;
 
-		foreach (glob($this->path . 'copies/*') as $file)
+		$iterator = new DirectoryIterator($this->path . 'copies');
+		foreach ($iterator as $fileinfo)
 		{
-			unlink($file);
+			$name = $fileinfo->getFilename();
+			if ($name[0] !== '.')
+			{
+				unlink($fileinfo->getPathname());
+			}
 		}
 	}
 
