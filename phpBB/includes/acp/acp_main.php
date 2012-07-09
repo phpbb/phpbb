@@ -100,6 +100,10 @@ class acp_main
 						$confirm = true;
 						$confirm_lang = 'PURGE_SESSIONS_CONFIRM';
 					break;
+					case 'purge_revisions':
+						$confirm = true;
+						$confirm_lang = 'PURGE_REVISIONS_CONFIRM';
+					break;
 
 					default:
 						$confirm = true;
@@ -366,6 +370,19 @@ class acp_main
 						if ($request->is_ajax())
 						{
 							trigger_error('PURGE_CACHE_SUCCESS');
+						}
+					break;
+
+					case 'purge_revisions':
+						global $cache;
+						
+						phpbb_purge_post_revisions($db);
+
+						add_log('admin', 'LOG_PURGE_REVISIONS');
+						
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_REVISIONS_SUCCESS');
 						}
 					break;
 
