@@ -1,8 +1,11 @@
 <script type="text/javascript">
 // <![CDATA[
-	onload_functions.push('document.getElementById("<!-- IF ADMIN -->{PASSWORD_CREDENITAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();');
+	onload_functions.push(function () {
+		document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();
+	});
 // ]]>
 </script>
+
 <form action="{S_LOGIN_ACTION}" method="post" id="olympus_login">
 	<div>
 		<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>

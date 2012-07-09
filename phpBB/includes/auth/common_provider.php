@@ -270,7 +270,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 					array('string', false, 6, 60),
 					array('email'),);
 
-		$data_to_validate['tz'] = array('num', false, -14, 14);
+		$data_to_validate['tz'] = array('timezone');
 
 		$data_to_validate['lang'] = array('language_iso_name');
 
@@ -351,7 +351,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			'user_password'			=> phpbb_hash($data['new_password']),
 			'user_email'			=> $data['email'],
 			'group_id'				=> (int) $group_id,
-			'user_timezone'			=> (float) $data['tz'],
+			'user_timezone'			=> $data['tz'],
 			'user_dst'				=> $this->config['board_dst'],
 			'user_lang'				=> $data['lang'],
 			'user_type'				=> $user_type,

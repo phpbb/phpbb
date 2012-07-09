@@ -72,6 +72,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 				$this->internal_login($admin);
 				break;
 			case 'register':
+				$this->internal_register();
 				break;
 			default:
 				throw new phpbb_auth_exception('INVALID_AUTH_ACTION');
@@ -296,25 +297,24 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 
 	protected function internal_register()
 	{
+		if (!check_form_key('ucp_register'))
+		{
+			$error[] = $this->user->lang['FORM_INVALID'];
+		}
+
 		$coppa			= $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
-		$agreed			= (int) $this->request->variable('agreed', false);
 
 		$cp = new custom_profile();
-		$error = $cp_data = $cp_error = array();
+		$error = $cp_data = array();
 
 		$data = array(
 			'username'			=> utf8_normalize_nfc($this->request->variable('username', '', true)),
 			'new_password'		=> $this->request->variable('new_password', '', true),
 			'password_confirm'	=> $this->request->variable('password_confirm', '', true),
 			'email'				=> strtolower($this->request->variable('email', '')),
-			'lang'				=> basename($this->request->variable('lang', $user->lang_name)),
-			'tz'				=> $this->request->variable('tz', (float) $timezone),
+			'lang'				=> basename($this->request->variable('lang', $this->user->lang_name)),
+			'tz'				=> $this->request->variable('tz', (float) $this->config['board_timezone']),
 		);
-
-		if (!check_form_key('ucp_register'))
-		{
-			$error[] = $this->user->lang['FORM_INVALID'];
-		}
 
 		// Replace "error" strings with their real, localised form
 		$error = array_map(array($this->user, 'lang'), $error);
@@ -356,9 +356,9 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			{
 				$captcha->reset();
 			}
-			$this->redirect();
+			return;
 		}
 
-		throw new phpbb_auth_exception($error);
+		throw new phpbb_auth_exception(implode('<br />', $error));
 	}
 }

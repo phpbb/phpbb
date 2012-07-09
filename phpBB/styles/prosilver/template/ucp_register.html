@@ -18,104 +18,17 @@
 // ]]>
 </script>
 
-<form method="post" action="{S_UCP_ACTION}" id="register">
-
 <div class="panel">
 	<div class="inner" >
+		<h2>{SITENAME} - {L_REGISTRATION}</h2>
 
-	<h2>{SITENAME} - {L_REGISTRATION}</h2>
-
-	<div style="width: 40%;float: left;"><fieldset class="fields2">
-	<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
-	<!-- IF L_REG_COND -->
-		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
-	<!-- ENDIF -->
-	<dl>
-		<dt><label for="username">{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
-		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" title="{L_USERNAME}" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
-		<dd><input type="text" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="new_password">{L_PASSWORD}:</label><br /><span>{L_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" tabindex="4" name="new_password" id="new_password" size="25" value="{PASSWORD}" class="inputbox autowidth" title="{L_NEW_PASSWORD}" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label></dt>
-		<dd><input type="password"  tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
-	</dl>
-
-	<hr />
-
-	<dl>
-		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
-		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
-	</dl>
-
-	<!-- INCLUDE timezone_option.html -->
-
-	<!-- IF .profile_fields -->
-		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
-
-	<!-- BEGIN profile_fields -->
-		<dl>
-			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}:<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
-			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF -->
-			<!-- IF profile_fields.ERROR --><br /><span class="error">{profile_fields.ERROR}</span><!-- ENDIF --></dt>
-			<dd>{profile_fields.FIELD}</dd>
-		</dl>
-	<!-- END profile_fields -->
-	<!-- ENDIF -->
-
-	</fieldset>
-	</div>
-	<div>
-		{L_OR}
-	</div>
-	<div style="width: 40%;float:right;">
-		<dl>
-			<dt>{L_FEDERATED_REGISTRATION}:</dt>
-			<dd><div><a href=""><img style="width: 133px; height: 33px;" src="{T_THEME_PATH}/images/logo_google.png" alt="Google"/></a></div>
-				<div><a href="">Facebook</a></div>
-				<div><a href="">OpenID</a></div>
-			</dd>
-		</dl>
-	</div>
-	</div>
-</div>
-<!-- IF CAPTCHA_TEMPLATE -->
-	<!-- DEFINE $CAPTCHA_TAB_INDEX = 8 -->
-	<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
-<!-- ENDIF -->
-
-<!-- IF S_COPPA -->
-
-
-<div class="panel">
-	<div class="inner">
-
-	<h4>{L_COPPA_COMPLIANCE}</h4>
-
-	<p>{L_COPPA_EXPLAIN}</p>
-	</div>
-</div>
-<!-- ENDIF -->
-
-<div class="panel">
-	<div class="inner">
-
-	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}
-		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-		<input type="submit" tabindex="9" name="submit" id="submit" value="{L_SUBMIT}" class="button1 default-submit-action" />
-		{S_FORM_TOKEN}
-	</fieldset>
+		<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
+		<!-- IF S_COMMON_TPL -->
+			{COMMON_TPL}
+		<!-- ENDIF -->
 
 	</div>
 </div>
-</form>
 
 <script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/timezone.js"></script>
 <script type="text/javascript">phpbb_preselect_tz_select();</script>

@@ -3003,7 +3003,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$auth_provider = $request->variable('auth_provider', '');
 		if ($auth_provider == 'common')
 		{
-			$auth_providers = $auth_manager->get_enabled_common_providers();
+			$auth_providers = $auth_manager->get_enabled_common_login_providers();
 			foreach ($auth_providers as $auth_provider)
 			{
 				// Perform any additional procedures requested by the provider.
