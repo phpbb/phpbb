@@ -181,7 +181,7 @@ class ucp_register
 					try
 					{
 						$provider->$auth_step();
-						break 2;
+						break;
 					}
 					catch (phpbb_auth_exception $e)
 					{
