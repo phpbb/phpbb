@@ -59,11 +59,8 @@ class phpbb_search_fulltext_sphinx
 
 		$this->sphinx = new SphinxClient();
 
-		if (!empty($config['fulltext_sphinx_configured']))
-		{
-			// we only support localhost for now
-			$this->sphinx->SetServer('localhost', (isset($config['fulltext_sphinx_port']) && $config['fulltext_sphinx_port']) ? (int) $config['fulltext_sphinx_port'] : 3312);
-		}
+		// We only support localhost for now
+		$this->sphinx->SetServer('localhost', (isset($config['fulltext_sphinx_port']) && $config['fulltext_sphinx_port']) ? (int) $config['fulltext_sphinx_port'] : 3312);
 
 		$config['fulltext_sphinx_min_word_len'] = 2;
 		$config['fulltext_sphinx_max_word_len'] = 400;
@@ -125,7 +122,7 @@ class phpbb_search_fulltext_sphinx
 
 			// now that we're sure everything was entered correctly, generate a config for the index
 			// we misuse the avatar_salt for this, as it should be unique ;-)
-			$config_object = new phpbb_search_sphinx_config($config['fulltext_sphinx_config_path'] . 'sphinx.conf');
+		$config_object = new phpbb_search_sphinx_config($config['fulltext_sphinx_config_path'] . 'sphinx.conf');
 
 			$config_data = array(
 				'source source_phpbb_' . $this->id . '_main' => array(
@@ -265,10 +262,6 @@ class phpbb_search_fulltext_sphinx
 					}
 				}
 			}
-
-		set_config('fulltext_sphinx_configured', '1');
-
-		$this->tidy();
 
 		return false;
 	}
@@ -613,11 +606,6 @@ class phpbb_search_fulltext_sphinx
 	{
 		global $db, $user, $config;
 
-		if (!isset($config['fulltext_sphinx_configured']) || !$config['fulltext_sphinx_configured'])
-		{
-			return $user->lang['FULLTEXT_SPHINX_CONFIGURE_FIRST'];
-		}
-
 		if (!$this->index_created())
 		{
 			$sql = 'CREATE TABLE IF NOT EXISTS ' . SPHINX_TABLE . ' (
@@ -629,9 +617,6 @@ class phpbb_search_fulltext_sphinx
 			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
 			$db->sql_query($sql);
 		}
-
-		// start indexing process
-		$this->tidy(true);
 
 		return false;
 	}
@@ -645,7 +630,7 @@ class phpbb_search_fulltext_sphinx
 	*/
 	function delete_index($acp_module, $u_action)
 	{
-		global $db, $config;
+		global $db;
 
 		if (!$this->index_created())
 		{
@@ -715,7 +700,7 @@ class phpbb_search_fulltext_sphinx
 	*/
 	function get_stats()
 	{
-		global $db, $config;
+		global $db;
 
 		if ($this->index_created())
 		{
