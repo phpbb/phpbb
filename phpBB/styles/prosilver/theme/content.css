@@ -114,7 +114,12 @@ ul.revisions li.revision_reason {
 
 ul.revisions li.revision_date {
 	text-align: right;
-	width: 25%;
+	width: 15%;
+}
+
+ul.revisions li.revision_options {
+	text-align: right;
+	width: 10%;
 }
 
 dl.revision {
