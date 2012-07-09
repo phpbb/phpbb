@@ -526,7 +526,8 @@ CREATE TABLE phpbb_post_revisions (
 	revision_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	bbcode_uid varchar(8) NOT NULL DEFAULT '',
-	revision_reason text(65535) NOT NULL DEFAULT ''
+	revision_reason text(65535) NOT NULL DEFAULT '',
+	revision_protected INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id);

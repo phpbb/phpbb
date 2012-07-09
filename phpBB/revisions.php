@@ -281,6 +281,7 @@ if ($display_comparison)
 			'REASON'			=> $revision->get_reason(),
 			'USERNAME'			=> $revision->get_username(),
 			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
+			'PROTECTED'			=> $revision->is_protected(), // @todo - Find a good "lock" icon (maybe phpBB already has one?)
 
 			'U_DELETE'			=> $auth->acl_get('m_revisions') ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id(), 'mode' => 'delete')) : '',
 			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())) : '',

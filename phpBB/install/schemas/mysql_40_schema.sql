@@ -542,6 +542,7 @@ CREATE TABLE phpbb_post_revisions (
 	bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
 	revision_reason blob NOT NULL,
+	revision_protected tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (revision_id),
 	KEY post_id (post_id),
 	KEY user_id (user_id),

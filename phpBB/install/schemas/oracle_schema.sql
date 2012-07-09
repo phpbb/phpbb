@@ -1018,6 +1018,7 @@ CREATE TABLE phpbb_post_revisions (
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(8) DEFAULT '' ,
 	revision_reason varchar2(765) DEFAULT '' ,
+	revision_protected number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_post_revisions PRIMARY KEY (revision_id)
 )
 /

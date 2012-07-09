@@ -1415,6 +1415,7 @@ function get_schema_struct()
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:8', ''),
 			'revision_reason'		=> array('STEXT_UNI', ''),
+			'revision_protected'	=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'revision_id',
 		'KEYS'			=> array(

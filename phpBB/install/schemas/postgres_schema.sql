@@ -728,6 +728,7 @@ CREATE TABLE phpbb_post_revisions (
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	revision_reason varchar(255) DEFAULT '' NOT NULL,
+	revision_protected INT2 DEFAULT '0' NOT NULL CHECK (revision_protected >= 0),
 	PRIMARY KEY (revision_id)
 );
 
