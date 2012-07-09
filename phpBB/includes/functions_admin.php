@@ -3132,3 +3132,35 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 		' . $sql_more;
 	$db->sql_query($sql);
 }
+
+/**
+ * Purge all post revisions. This is called from the ACP Main page, just like Purge Cache
+ *
+ * @param dbal $db Database object
+ *
+ * @return null
+ */
+function phpbb_purge_post_revisions($db)
+{
+	// Get all post IDs of effected posts (not all posts will have revisions)
+	$post_ids = array();
+	$sql = 'SELECT post_id
+		FROM ' . POST_REVISIONS_TABLE;
+	$result = $db->sql_query($sql);
+	while($row = $db->sql_fetchrow($result));
+	{
+		// We set it as keys so we don't have to use array_unique or SELECT DISTINCT
+		$post_ids[$row['post_id']] = true;
+	}
+
+	$db->sql_transaction('begin');
+
+	$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET post_edit_count = 0, post_edit_time = 0, post_edit_user = 0, post_edit_reason = ''";
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
+}

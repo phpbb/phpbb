@@ -198,6 +198,13 @@
 			</form>
 			<!-- ENDIF -->
 
+			<form id="action_purge_revisions_form" method="post" action="{U_ACTION}" data-ajax="true">
+				<dl>
+					<dt><label for="action_purge_revisions">{L_PURGE_REVISIONS}</label><br /><span>{L_PURGE_REVISIONS_EXPLAIN}</span></dt>
+					<dd><input type="hidden" name="action" value="purge_revisions" /><input class="button2" type="submit" id="action_purge_revisions" name="action_purge_revisions" value="{L_RUN}" /></dd>
+				</dl>
+			</form>
+
 			<form id="action_purge_cache_form" method="post" action="{U_ACTION}" data-ajax="true">
 				<dl>
 					<dt><label for="action_purge_cache">{L_PURGE_CACHE}</label><br /><span>{L_PURGE_CACHE_EXPLAIN}</span></dt>
