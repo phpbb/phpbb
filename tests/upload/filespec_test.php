@@ -114,7 +114,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_additional_checks($filename, $expected)
 	{
 		$upload = new phpbb_mock_fileupload();
-		$filespec = $this->get_filespec(array('tmp_name', $this->path . $filename));
+		$filespec = $this->get_filespec();
 		$filespec->upload = $upload;
 		$filespec->file_moved = true;
 		$filespec->filesize = $filespec->get_filesize($this->path . $filename);
