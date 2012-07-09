@@ -742,24 +742,6 @@ class phpbb_search_fulltext_sphinx
 			'fulltext_sphinx_indexer_mem_limit' => 'int',
 		);
 
-		$defaults = array(
-			'fulltext_sphinx_indexer_mem_limit' => '512',
-			'fulltext_sphinx_stopwords' => '0',
-		);
-
-		foreach ($config_vars as $config_var => $type)
-		{
-			if (!isset($config[$config_var]))
-			{
-				$default = '';
-				if (isset($defaults[$config_var]))
-				{
-					$default = $defaults[$config_var];
-				}
-				set_config($config_var, $default);
-			}
-		}
-
 		$tpl = '
 		<span class="error">' . $user->lang['FULLTEXT_SPHINX_CONFIGURE_BEFORE']. '</span>
 		<dl>
