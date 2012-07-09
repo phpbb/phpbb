@@ -63,7 +63,8 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 
 		$sql = 'SELECT revision_id
 			FROM ' . POST_REVISIONS_TABLE . '
-			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']);
+			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']) . '
+				AND revision_protected = 0';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

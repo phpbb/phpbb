@@ -62,7 +62,8 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 		// Now we get post IDs of posts with > the max number of revisions 
 		$sql = 'SELECT post_id, post_edit_count
 			FROM ' . POSTS_TABLE . '
-			WHERE post_edit_count > ' . (int) $this->config['revisions_per_post_max'];
+			WHERE post_edit_count > ' . (int) $this->config['revisions_per_post_max'] . '
+				AND revision_protected = 0';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

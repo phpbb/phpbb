@@ -142,6 +142,12 @@ class phpbb_revisions_revision
 	private $is_current = false;
 
 	/**
+	* Whether or not the revision is marked as protected, i.e. will not be deleted in pruning functions
+	* @var bool
+	*/
+	private $is_protected = false;
+
+	/**
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
@@ -431,5 +437,18 @@ class phpbb_revisions_revision
 	public function is_current()
 	{
 		return (bool) $this->is_current;
+	}
+
+	/**
+	* Returns whether or not this revision is marked as protected.
+	* Protected revisions are not deleted by automatic prunes, and
+	* can only be deleted manually, either en mass via the ACP or
+	* individually when viewing a post's revisions.
+	*
+	* @return bool
+	*/
+	public function is_protected()
+	{
+		return (bool) $this->is_protected;
 	}
 }
