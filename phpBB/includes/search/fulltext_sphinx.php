@@ -24,9 +24,9 @@ if (!defined('IN_PHPBB'))
 global $phpbb_root_path, $phpEx, $table_prefix;
 require($phpbb_root_path . "includes/sphinxapi-0.9.8." . $phpEx);
 
-define('MAX_MATCHES', 20000);
-define('CONNECT_RETRIES', 3);
-define('CONNECT_WAIT_TIME', 300);
+define('SPHINX_MAX_MATCHES', 20000);
+define('SPHINX_CONNECT_RETRIES', 3);
+define('SPHINX_CONNECT_WAIT_TIME', 300);
 
 /**
 * fulltext_sphinx
@@ -216,7 +216,7 @@ class phpbb_search_fulltext_sphinx
 					array('read_timeout',				'5'),
 					array('max_children',				'30'),
 					array('pid_file',					$config['fulltext_sphinx_data_path'] . "searchd.pid"),
-					array('max_matches',				(string) MAX_MATCHES),
+					array('max_matches',				(string) SPHINX_MAX_MATCHES),
 					array('binlog_path',				$config['fulltext_sphinx_data_path']),
 				),
 			);
@@ -451,14 +451,14 @@ class phpbb_search_fulltext_sphinx
 
 		$this->sphinx->SetFilter('deleted', array(0));
 
-		$this->sphinx->SetLimits($start, (int) $per_page, MAX_MATCHES);
+		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
 		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
 
 		// could be connection to localhost:3312 failed (errno=111, msg=Connection refused) during rotate, retry if so
-		$retries = CONNECT_RETRIES;
+		$retries = SPHINX_CONNECT_RETRIES;
 		while (!$result && (strpos($this->sphinx->_error, "errno=111,") !== false) && $retries--)
 		{
-			usleep(CONNECT_WAIT_TIME);
+			usleep(SPHINX_CONNECT_WAIT_TIME);
 			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
 		}
 
