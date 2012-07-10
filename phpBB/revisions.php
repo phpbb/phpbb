@@ -20,7 +20,7 @@ include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup(array('revisions', 'viewtopic'));
+$user->setup(array('viewtopic', 'revisions'));
 
 $post_id		= $request->variable('p', 0);
 $revision_id	= $request->variable('r', 0);
@@ -85,7 +85,8 @@ $total_revisions = sizeof($revisions);
 
 if (!$total_revisions)
 {
-	trigger_error('NO_REVISIONS_POST');
+	trigger_error($user->lang('NO_REVISIONS_POST') . '
+		<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>');
 }
 
 $can_revert_wiki = $post_data['post_wiki']
@@ -157,7 +158,7 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 			break;
 		}
 
-		trigger_error($lang . $l_return);
+		trigger_error($user->lang($lang) . $l_return);
 	}
 }
 
@@ -261,6 +262,8 @@ $template->assign_vars(array(
 
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $post_data['poster_id'],
+
+	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
 ));
 
 if ($display_comparison)
@@ -341,6 +344,7 @@ if ($revert_id && (!$revert_confirm || $bad_form))
 	$template->assign_vars(array(
 		'U_ACTION'			=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revert_id)),
 		'BAD_FORM'			=> $bad_form,
+		'VIEWING_REVERT'	=> true,
 		'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
 			'post_id'	=> $post_id,
 			'revert'	=> $revert_id,
