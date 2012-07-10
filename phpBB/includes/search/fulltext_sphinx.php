@@ -690,7 +690,6 @@ class phpbb_search_fulltext_sphinx
 			$this->user->lang['FULLTEXT_SPHINX_MAIN_POSTS']			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
 			$this->user->lang['FULLTEXT_SPHINX_DELTA_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
 			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
-			$this->user->lang['FULLTEXT_SPHINX_LAST_SEARCHES']		=> nl2br($this->stats['last_searches']),
 		);
 	}
 
@@ -717,8 +716,6 @@ class phpbb_search_fulltext_sphinx
 			$this->stats['main_posts'] = (int) $this->db->sql_fetchfield('main_posts');
 			$this->db->sql_freeresult($result);
 		}
-
-		$this->stats['last_searches'] = '';
 	}
 
 	/**
