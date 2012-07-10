@@ -28,7 +28,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			'tmp_name' => $this->path . 'valid.jpg',
 			'name' => 'valid.jpg',
 			'type' => 'image/jpeg',
-			'size' => 554,
+			'size' => filesize($this->path . 'valid.jpg'),
 			'error' => UPLOAD_ERR_OK,
 		);
 
