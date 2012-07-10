@@ -1828,7 +1828,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 		return;
 	}
 
-	// Get permanently banned users (do not allow sending to these users)
+	// Get permanently banned users (do not notify these users)
 	if (!function_exists('phpbb_get_banned_user_ids'))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -1836,12 +1836,18 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients), false);
 	$recipients = array_diff(array_keys($recipients), $banned_users);
 
+	// Get the list of users who can read PMs (only notify those who can read PMs)
+	$can_read = $auth->acl_get_list($recipients, 'u_readpm');
+	$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
+	$recipients = array_intersect($recipients, $can_read);
+
 	if (!sizeof($recipients))
 	{
 		return;
 	}
 
-	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
+	// Get the list of users who want to receive notifications, are "normal" and not deactivated, and have a non-blank email address
+	$sql = 'SELECT user_id, username, user_type, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set('user_id', $recipients);
 	$result = $db->sql_query($sql);
@@ -1849,7 +1855,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 	$msg_list_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['user_notify_pm'] == 1 && trim($row['user_email']))
+		if ($row['user_notify_pm'] == 1 && $row['user_type'] != USER_IGNORE && $row['user_type'] != USER_INACTIVE && trim($row['user_email']))
 		{
 			$msg_list_ary[] = array(
 				'method'	=> $row['user_notify_type'],

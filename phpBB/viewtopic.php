@@ -1322,7 +1322,7 @@ $can_receive_pm_list = $auth->acl_get_list(array_keys($user_cache), 'u_readpm');
 $can_receive_pm_list = (empty($can_receive_pm_list) || !isset($can_receive_pm_list[0]['u_readpm'])) ? array() : $can_receive_pm_list[0]['u_readpm'];
 
 // Get the list of permanently banned users
-$banned_users = phpbb_get_banned_user_ids(array_keys($user_cache), false);
+$permanently_banned_users = phpbb_get_banned_user_ids(array_keys($user_cache), false);
 
 $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
@@ -1497,7 +1497,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	)));
 
 	// Can this user receive a Private Message?
-	$can_receive_pm = ($user_cache[$poster_id]['user_type'] <> USER_INACTIVE && (($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || ($user_cache[$poster_id]['allow_pm'] && in_array($poster_id, $can_receive_pm_list) && !in_array($poster_id, $banned_users)))) ? true : false;
+	$can_receive_pm = (
+		$user_cache[$poster_id]['user_type'] != USER_IGNORE && // They must be a "normal" user
+		$user_cache[$poster_id]['user_type'] != USER_INACTIVE && // They must not be deactivated by the administrator
+		in_array($poster_id, $can_receive_pm_list) && // They must be able to read PMs
+		!in_array($poster_id, $permanently_banned_users) && // They must not be permanently banned
+		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm']) // They must allow users to contact via PM
+	) ? true : false;
 
 	//
 	$postrow = array(
