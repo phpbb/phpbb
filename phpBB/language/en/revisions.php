@@ -55,8 +55,8 @@ $lang = array_merge($lang, array(
 
 	'POST_REVERTED_SUCCESS'		=> 'The post has been reverted to the selected revision.',
 
-	'RETURN_POST'				=> 'Return to the topic.',
-	'RETURN_REVISION'			=> 'Return to the post revisions page.',
+	'RETURN_POST'				=> 'Return to the post',
+	'RETURN_REVISION'			=> 'Return to the post revisions page',
 	'REVERT'					=> 'Revert',
 	'REVERT_POST_TITLE'			=> 'Revert post to another revision',
 	'REVERT_POST_TITLE_CONFIRM'	=> '<strong>Are you sure you wish to revert this post to the selected revision?</strong><br />A new revision containing the current post will be created so that you can undo this change later if desired.',
