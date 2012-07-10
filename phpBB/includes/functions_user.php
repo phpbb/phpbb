@@ -3668,9 +3668,12 @@ function remove_newly_registered($user_id, $user_data = false)
 *
 * @param array $user_ids Array of users' ids to check for banning,
 *						leave empty to get complete list of banned ids
+* @param bool|int $ban_end Bool True to get users currently banned
+* 						Bool False to only get permanently banned users
+* 						Int Unix timestamp to get users banned until that time
 * @return array	Array of banned users' ids if any, empty array otherwise
 */
-function phpbb_get_banned_user_ids($user_ids = array())
+function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 {
 	global $db;
 
@@ -3682,9 +3685,26 @@ function phpbb_get_banned_user_ids($user_ids = array())
 	$sql = 'SELECT ban_userid
 		FROM ' . BANLIST_TABLE . "
 		WHERE $sql_user_ids
-			AND ban_exclude <> 1
-			AND (ban_end > " . time() . '
+			AND ban_exclude <> 1";
+
+	if ($ban_end === true)
+	{
+		// Banned currently
+		$sql .= " AND (ban_end > " . time() . '
 				OR ban_end = 0)';
+	}
+	else if ($ban_end === false)
+	{
+		// Permanently banned
+		$sql .= " AND ban_end = 0";
+	}
+	else
+	{
+		// Banned until a specified time
+		$sql .= " AND (ban_end > " . (int) $ban_end . '
+				OR ban_end = 0)';
+	}
+
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
 	{

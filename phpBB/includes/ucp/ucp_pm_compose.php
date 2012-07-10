@@ -1270,7 +1270,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		// Only check if not a moderator or admin, since they are allowed to override this user setting
 		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
-			$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']));
+			$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
 
 			if (!empty($banned_user_list))
 			{

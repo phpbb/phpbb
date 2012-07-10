@@ -1696,7 +1696,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	}
 
 	// Can this user receive a Private Message?
-	$can_receive_pm = ($data['user_type'] <> USER_IGNORE && $data['user_type'] <> USER_INACTIVE && (($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || ($data['user_allow_pm'] && sizeof($auth->acl_get_list($user_id, 'u_readpm')) && !sizeof(phpbb_get_banned_user_ids($user_id))))) ? true : false;
+	$can_receive_pm = ($data['user_type'] <> USER_IGNORE && $data['user_type'] <> USER_INACTIVE && (($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || ($data['user_allow_pm'] && sizeof($auth->acl_get_list($user_id, 'u_readpm')) && !sizeof(phpbb_get_banned_user_ids($user_id, false))))) ? true : false;
 
 	// Dump it out to the template
 	return array(

@@ -1321,8 +1321,8 @@ if ($bbcode_bitfield !== '')
 $can_receive_pm_list = $auth->acl_get_list(array_keys($user_cache), 'u_readpm');
 $can_receive_pm_list = (empty($can_receive_pm_list) || !isset($can_receive_pm_list[0]['u_readpm'])) ? array() : $can_receive_pm_list[0]['u_readpm'];
 
-// Get the list of banned users
-$banned_users = phpbb_get_banned_user_ids(array_keys($user_cache));
+// Get the list of permanently banned users
+$banned_users = phpbb_get_banned_user_ids(array_keys($user_cache), false);
 
 $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
