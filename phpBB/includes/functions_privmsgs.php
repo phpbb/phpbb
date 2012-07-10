@@ -1828,12 +1828,12 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 		return;
 	}
 
-	// Get permanently banned users (do not notify these users)
+	// Get currently banned users (do not notify these users)
 	if (!function_exists('phpbb_get_banned_user_ids'))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
-	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients), false);
+	$banned_users = phpbb_get_banned_user_ids(array_keys($recipients));
 	$recipients = array_diff(array_keys($recipients), $banned_users);
 
 	// Get the list of users who can read PMs (only notify those who can read PMs)
