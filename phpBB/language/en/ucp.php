@@ -367,7 +367,6 @@ $lang = array_merge($lang, array(
 	'PM_SENTBOX'				=> 'Sent messages',
 	'PM_SUBJECT'				=> 'Message subject',
 	'PM_TO'						=> 'Send to',
-	'PM_USERS_REMOVED_BANNED'	=> 'Some users couldn’t be added as they are banned.',
 	'PM_USERS_REMOVED_NO_PERMISSION'	=> 'Some users couldn’t be added as they do not have permission to read private messages.',
 	'PM_USERS_REMOVED_NO_PM'	=> 'Some users couldn’t be added as they have disabled private message receipt.',
 	'POPUP_ON_PM'				=> 'Pop up window on new private message',

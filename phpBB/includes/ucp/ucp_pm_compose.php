@@ -1194,7 +1194,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		if (sizeof($usernames))
 		{
 			$user_id_ary = array();
-			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER));
+			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
 
 			// If there are users not existing, we will at least print a notice...
 			if (!sizeof($user_id_ary))
@@ -1246,6 +1246,33 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			}
 		}
 
+		// Administrator deactivated users check
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+				AND user_type = ' . USER_INACTIVE . '
+				AND user_inactive_reason = ' . INACTIVE_MANUAL;
+		$result = $db->sql_query($sql);
+
+		$removed = false;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$removed = true;
+			unset($address_list['u'][$row['user_id']]);
+		}
+		$db->sql_freeresult($result);
+
+		// print a notice about users not being added who do not want to receive pms
+		if ($removed)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+		}
+
+		if (!sizeof(array_keys($address_list['u'])))
+		{
+			return;
+		}
+
 		// Check if users have permission to read PMs
 		$can_read = $auth->acl_get_list(array_keys($address_list['u']), 'u_readpm');
 		$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
@@ -1269,7 +1296,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				unset($address_list['u'][$banned_user]);
 			}
 
-			$error[] = $user->lang['PM_USERS_REMOVED_BANNED'];
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
 }

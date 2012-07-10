@@ -1109,7 +1109,9 @@ while ($row = $db->sql_fetchrow($result))
 			$id_cache[] = $poster_id;
 
 			$user_cache[$poster_id] = array(
-				'user_type'		=> $row['user_type'],
+				'user_type'					=> $row['user_type'],
+				'user_inactive_reason'		=> $row['user_inactive_reason'],
+
 				'joined'		=> $user->format_date($row['user_regdate']),
 				'posts'			=> $row['user_posts'],
 				'warnings'		=> (isset($row['user_warnings'])) ? $row['user_warnings'] : 0,
@@ -1499,7 +1501,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Can this user receive a Private Message?
 	$can_receive_pm = (
 		$user_cache[$poster_id]['user_type'] != USER_IGNORE && // They must be a "normal" user
-		$user_cache[$poster_id]['user_type'] != USER_INACTIVE && // They must not be deactivated by the administrator
+		($user_cache[$poster_id]['user_type'] != USER_INACTIVE && $user_cache[$poster_id]['user_inactive_reason'] == INACTIVE_MANUAL) && // They must not be deactivated by the administrator
 		in_array($poster_id, $can_receive_pm_list) && // They must be able to read PMs
 		!in_array($poster_id, $permanently_banned_users) && // They must not be permanently banned
 		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm']) // They must allow users to contact via PM

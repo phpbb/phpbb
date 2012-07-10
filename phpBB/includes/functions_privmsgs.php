@@ -1847,7 +1847,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 	}
 
 	// Get the list of users who want to receive notifications, are "normal" and not deactivated, and have a non-blank email address
-	$sql = 'SELECT user_id, username, user_type, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
+	$sql = 'SELECT user_id, username, user_type, user_inactive_reason, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set('user_id', $recipients);
 	$result = $db->sql_query($sql);
@@ -1855,7 +1855,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message, $msg_i
 	$msg_list_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['user_notify_pm'] == 1 && $row['user_type'] != USER_IGNORE && $row['user_type'] != USER_INACTIVE && trim($row['user_email']))
+		if ($row['user_notify_pm'] == 1 && $row['user_type'] != USER_IGNORE && !($row['user_type'] == USER_INACTIVE && $row['user_inactive_reason'] == INACTIVE_MANUAL) && trim($row['user_email']))
 		{
 			$msg_list_ary[] = array(
 				'method'	=> $row['user_notify_type'],
