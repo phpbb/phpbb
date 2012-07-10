@@ -739,7 +739,6 @@ class phpbb_search_fulltext_sphinx
 		$config_vars = array(
 			'fulltext_sphinx_config_path' => 'string',
 			'fulltext_sphinx_data_path' => 'string',
-			'fulltext_sphinx_bin_path' => 'string',
 			'fulltext_sphinx_port' => 'int',
 			'fulltext_sphinx_stopwords'	=> 'bool',
 			'fulltext_sphinx_indexer_mem_limit' => 'int',
@@ -750,10 +749,6 @@ class phpbb_search_fulltext_sphinx
 		<dl>
 			<dt><label for="fulltext_sphinx_config_path">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_PATH'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_PATH_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_config_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_config_path]" value="' . $this->config['fulltext_sphinx_config_path'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="fulltext_sphinx_bin_path">' . $this->user->lang['FULLTEXT_SPHINX_BIN_PATH'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_BIN_PATH_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_bin_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_bin_path]" value="' . $bin_path . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_data_path">' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'] . '</span></dt>

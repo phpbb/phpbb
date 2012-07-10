@@ -57,7 +57,6 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'	=> 'Words with at least this many characters will be indexed for searching. You or your host can only change this setting by changing the mysql configuration.',
 	'FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching. You or your host can only change this setting by changing the mysql configuration.',
 
-<<<<<<< HEAD
 	'FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL.',
 	'FULLTEXT_POSTGRES_TS_NOT_USABLE'	=> 'The PostgreSQL fulltext backend can only be used with PostgreSQL 8.3 and above.',
 	'FULLTEXT_POSTGRES_TOTAL_POSTS'			=> 'Total number of indexed posts',
@@ -70,8 +69,6 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'			=> 'Words with at least this many characters will be included in the query to the database.',
 	'FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'			=> 'Words with no more than this many characters will be included in the query to the database.',
 
-	'FULLTEXT_SPHINX_BIN_PATH'				=> 'Path to executables directory',
-	'FULLTEXT_SPHINX_BIN_PATH_EXPLAIN'		=> 'Skip if autorun is disabled. If this path could not be determined automatically you have to enter the path to the directory in which the sphinx executables <samp>indexer</samp> and <samp>searchd</samp> reside.',
 	'FULLTEXT_SPHINX_CONFIG_PATH'			=> 'Path to configuration directory',
 	'FULLTEXT_SPHINX_CONFIG_PATH_EXPLAIN'	=> 'Skip if autoconf is disabled. You should create this config directory outside the web accessable directories. It has to be writable by the user as which your webserver is running (often www-data or nobody).',
 	'FULLTEXT_SPHINX_CONFIGURE_FIRST'		=> 'Before you create an index you have to enable and configure sphinx under GENERAL -> SERVER CONFIGURATION -> Search settings.',
