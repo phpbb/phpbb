@@ -147,7 +147,7 @@ class phpbb_plupload
 	 *
 	 * @return null
 	 */
-	private function emit_error($code, $msg)
+	public function emit_error($code, $msg)
 	{
 		$json_response = new phpbb_json_response();
 		$json_response->send(array(
