@@ -79,7 +79,7 @@ class phpbb_search_sphinx_config_section
 	{
 		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
-			// make sure this is a variable object and not a comment
+			// Make sure this is a variable object and not a comment
 			if (($this->variables[$i] instanceof phpbb_search_sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				return $this->variables[$i];
@@ -96,7 +96,7 @@ class phpbb_search_sphinx_config_section
 	{
 		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
-			// make sure this is a variable object and not a comment
+			// Make sure this is a variable object and not a comment
 			if (($this->variables[$i] instanceof phpbb_search_sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				array_splice($this->variables, $i, 1);
@@ -127,7 +127,7 @@ class phpbb_search_sphinx_config_section
 	{
 		$content = $this->name . ' ' . $this->comment . "\n{\n";
 
-		// make sure we don't get too many newlines after the opening bracket
+		// Make sure we don't get too many newlines after the opening bracket
 		while (trim($this->variables[0]->to_string()) == '')
 		{
 			array_shift($this->variables);

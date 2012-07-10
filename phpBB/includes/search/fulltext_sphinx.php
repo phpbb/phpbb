@@ -116,7 +116,7 @@ class phpbb_search_fulltext_sphinx
 			return $error;
 		}
 
-		// move delta to main index each hour
+		// Move delta to main index each hour
 		set_config('search_gc', 3600);
 
 		return false;
@@ -135,8 +135,9 @@ class phpbb_search_fulltext_sphinx
 
 			include ($phpbb_root_path . 'config.' . $phpEx);
 
-			// now that we're sure everything was entered correctly, generate a config for the index
-			// we misuse the avatar_salt for this, as it should be unique ;-)
+			/* Now that we're sure everything was entered correctly,
+			generate a config for the index. We misuse the avatar_salt
+			for this, as it should be unique. */
 		$config_object = new phpbb_search_sphinx_config($this->config['fulltext_sphinx_config_path'] . 'sphinx.conf');
 
 			$config_data = array(
@@ -396,7 +397,7 @@ class phpbb_search_fulltext_sphinx
 			}
 		}
 
-		// most narrow filters first
+		// Most narrow filters first
 		if ($topic_id)
 		{
 			$this->sphinx->SetFilter('topic_id', array($topic_id));
@@ -407,31 +408,37 @@ class phpbb_search_fulltext_sphinx
 		switch($fields)
 		{
 			case 'titleonly':
-				// only search the title
+				// Only search the title
 				if ($terms == 'all')
 				{
 					$search_query_prefix = '@title ';
 				}
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1)); // weight for the title
-				$this->sphinx->SetFilter('topic_first_post', array(1)); // 1 is first_post, 0 is not first post
+				// Weight for the title
+				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
+				// 1 is first_post, 0 is not first post
+				$this->sphinx->SetFilter('topic_first_post', array(1));
 			break;
 
 			case 'msgonly':
-				// only search the body
+				// Only search the body
 				if ($terms == 'all')
 				{
 					$search_query_prefix = '@data ';
 				}
-				$this->sphinx->SetFieldWeights(array("title" => 1, "data" => 5)); // weight for the body
+				// Weight for the body
+				$this->sphinx->SetFieldWeights(array("title" => 1, "data" => 5));
 			break;
 
 			case 'firstpost':
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1)); // more relative weight for the title, also search the body
-				$this->sphinx->SetFilter('topic_first_post', array(1)); // 1 is first_post, 0 is not first post
+				// More relative weight for the title, also search the body
+				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
+				// 1 is first_post, 0 is not first post
+				$this->sphinx->SetFilter('topic_first_post', array(1));
 			break;
 
 			default:
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1)); // more relative weight for the title, also search the body
+				// More relative weight for the title, also search the body
+				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
 			break;
 		}
 
@@ -458,7 +465,8 @@ class phpbb_search_fulltext_sphinx
 		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
 		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
 
-		// could be connection to localhost:3312 failed (errno=111, msg=Connection refused) during rotate, retry if so
+		/* Could be connection to localhost:3312 failed (errno=111,
+		msg=Connection refused) during rotate, retry if so */
 		$retries = SPHINX_CONNECT_RETRIES;
 		while (!$result && (strpos($this->sphinx->_error, "errno=111,") !== false) && $retries--)
 		{
