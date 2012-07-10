@@ -1682,7 +1682,9 @@ class acp_users
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
 					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
+
 					'S_IS_BOT'			=> ($user_row['user_type'] == USER_IGNORE && $user_id != ANONYMOUS) ? true : false,
+					'S_IS_ANONYMOUS'	=> ($user_id != ANONYMOUS) ? true : false,
 					)
 				);
 
