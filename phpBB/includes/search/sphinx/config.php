@@ -27,15 +27,15 @@ class phpbb_search_sphinx_config
 	var $sections = array();
 
 	/**
-	* Constructor which optionally loads data from a file
+	* Constructor which optionally loads data from a variable
 	*
-	* @param	string	$filename	The path to a file containing the sphinx configuration
+	* @param	string	$config_data	Variable containing the sphinx configuration data
 	*/
-	function __construct($filename = false)
+	function __construct($config_data)
 	{
-		if ($filename !== false && file_exists($filename))
+		if ($config_data != '')
 		{
-			$this->read($filename);
+			$this->read($config_data);
 		}
 	}
 
@@ -70,22 +70,19 @@ class phpbb_search_sphinx_config
 	}
 
 	/**
-	* Parses the config file at the given path, which is stored in $this->loaded for later use
+	* Reads the config file data
 	*
-	* @param	string	$filename	The path to the config file
+	* @param	string	$config_data	The config file data
 	*/
-	function read($filename)
+	function read($config_data)
 	{
-		// Split the file into lines, we'll process it line by line
-		$config_file = file($filename);
-
 		$this->sections = array();
 
 		$section = null;
 		$found_opening_bracket = false;
 		$in_value = false;
 
-		foreach ($config_file as $i => $line)
+		foreach ($config_data as $i => $line)
 		{
 			/* If the value of a variable continues to the next line because the line
 			break was escaped then we don't trim leading space but treat it as a part of the value */
@@ -262,32 +259,21 @@ class phpbb_search_sphinx_config
 			}
 		}
 
-		// Keep the filename for later use
-		$this->loaded = $filename;
 	}
 
 	/**
-	* Writes the config data into a file
+	* Returns the config data
 	*
-	* @param	string	$filename	The optional filename into which the config data shall be written.
-	*								If it's not specified it will be written into the file that the config
-	*								was originally read from.
+	* @return	string	$data	The config data that is generated.
 	*/
-	function write($filename = false)
+	function get_data()
 	{
-		if ($filename === false && $this->loaded)
-		{
-			$filename = $this->loaded;
-		}
-
 		$data = "";
 		foreach ($this->sections as $section)
 		{
 			$data .= $section->to_string();
 		}
 
-		$fp = fopen($filename, 'wb');
-		fwrite($fp, $data);
-		fclose($fp);
+		return $data;
 	}
 }
