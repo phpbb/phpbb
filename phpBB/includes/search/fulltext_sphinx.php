@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * function and the variables used are in global space.
 */
 global $phpbb_root_path, $phpEx, $table_prefix;
-require($phpbb_root_path . "includes/sphinxapi-0.9.8." . $phpEx);
+require($phpbb_root_path . 'includes/sphinxapi-0.9.8.' . $phpEx);
 
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
@@ -224,11 +224,11 @@ class phpbb_search_fulltext_sphinx
 					array('compat_sphinxql_magics'	,	'0'),
 					array('listen'	,					'127.0.0.1'),
 					array('port',						($this->config['fulltext_sphinx_port']) ? $this->config['fulltext_sphinx_port'] : '3312'),
-					array('log',						$this->config['fulltext_sphinx_data_path'] . "log/searchd.log"),
-					array('query_log',					$this->config['fulltext_sphinx_data_path'] . "log/sphinx-query.log"),
+					array('log',						$this->config['fulltext_sphinx_data_path'] . 'log/searchd.log'),
+					array('query_log',					$this->config['fulltext_sphinx_data_path'] . 'log/sphinx-query.log'),
 					array('read_timeout',				'5'),
 					array('max_children',				'30'),
-					array('pid_file',					$this->config['fulltext_sphinx_data_path'] . "searchd.pid"),
+					array('pid_file',					$this->config['fulltext_sphinx_data_path'] . 'searchd.pid'),
 					array('max_matches',				(string) SPHINX_MAX_MATCHES),
 					array('binlog_path',				$this->config['fulltext_sphinx_data_path']),
 				),
@@ -352,9 +352,9 @@ class phpbb_search_fulltext_sphinx
 
 		$id_ary = array();
 
-		$join_topic = ($type == 'posts') ? false : true;
+		$join_topic = ($type != 'posts');
 
-		// sorting
+		// Sorting
 
 		if ($type == 'topics')
 		{
@@ -405,7 +405,7 @@ class phpbb_search_fulltext_sphinx
 
 		$search_query_prefix = '';
 
-		switch($fields)
+		switch ($fields)
 		{
 			case 'titleonly':
 				// Only search the title
@@ -483,7 +483,7 @@ class phpbb_search_fulltext_sphinx
 			}
 			else
 			{
-				foreach($result['matches'] as $key => $value)
+				foreach ($result['matches'] as $key => $value)
 				{
 					$id_ary[] = $value['attrs']['topic_id'];
 				}
