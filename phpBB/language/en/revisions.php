@@ -45,6 +45,7 @@ $lang = array_merge($lang, array(
 	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
 	'LOGIN_REVISION'			=> 'You must login in order to view the revisions for this post.',
 
+	'NO_AUTH_DELETE_REVISIONS'	=> 'You do not have permission to delete revisions for this post.',
 	'NO_AUTH_REVERT'			=> 'You do not have permission to revert this post to another revision.',
 	'NO_AUTH_VIEW_REVISIONS'	=> 'You do not have permission to view the revisions for this post.',
 	'NO_DIFF'					=> 'There are no differences to display within the specified revision range.',
@@ -71,9 +72,12 @@ $lang = array_merge($lang, array(
 		1		=> '1 revision',
 		2		=> '%1$s revisions',
 	),
-	'REVISION_DELETE'			=> 'Delete revision',
-	'REVISION_DELETE_CONFIRM'	=> 'Are you sure you wish to delete this revision? This cannot be undone.',
-	'REVISION_DELETED_SUCCESS'	=> 'The revision has been deleted.',
+	'REVISION_DELETE'			=> 'Delete revision(s)',
+	'REVISION_DELETE_CONFIRM'	=> 'Are you sure you wish to delete the selected revision(s)? This cannot be undone.',
+	'REVISIONS_DELETED_SUCCESS'	=> array(
+		1 => 'The selected revision has been deleted.',
+		2 => 'The selected revisions have been deleted.',
+	),
 	'REVISION_DELETIONS'		=> array(
 		1 =>'1 deletion',
 		2 => '%1$s deletions',

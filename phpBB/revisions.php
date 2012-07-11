@@ -26,7 +26,7 @@ $post_id		= $request->variable('p', 0);
 $revision_id	= $request->variable('r', 0);
 $revert_id		= $request->variable('revert', 0);
 $compare		= $request->variable('compare', '');
-$mode			= $request->variable('mode', '');
+$delete_ids		= $request->variable('delete_ids', array(0));
 
 $display_comparison = true;
 $revert_confirm = $request->is_set_post('confirm');
@@ -114,6 +114,71 @@ if (!$can_view_post_revisions)
 $l_return = '<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>
 			<br /><a href="' . append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)) . '">' . $user->lang('RETURN_REVISION') . '</a>';
 
+if (sizeof($delete_ids))
+{
+	if (!$auth->acl_get('m_revisions'))
+	{
+		trigger_error('NO_AUTH_DELETE_REVISIONS');
+	}
+
+	if (confirm_box(true))
+	{
+		// We have a separate counter instead of relying on sizeof()
+		// because we can potentially skip IDs within the loop
+		$count = 0;
+		foreach ($delete_ids as $delete_id)
+		{
+			// We only want to delete IDs of revisions on the current post
+			// If somehow someone injected IDs of revisions on another post
+			// we skip them
+			if (empty($revisions[$delete_id]))
+			{	
+				continue;
+			}
+
+			$db->sql_transaction('begin');
+
+			// Delete the revision
+			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+				WHERE revision_id = ' . (int) $revision_id;
+			$db->sql_query($sql);
+
+			// Decrement the post edit count
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_edit_count = post_edit_count - 1
+				WHERE post_id = ' . (int) $post_id;
+			$db->sql_query($sql);
+
+			$db->sql_transaction('commit');
+			$count++;
+		}
+
+		// Assuming we actually did something, we reload the post data and revisions arrays
+		// and we ouput a notification at the top of the page, like we do below for when a post is reverted
+		if ($count)
+		{
+			// Because we've changed things up, we need to update our arrays
+			$post_data = $post->get_post_data(true);
+			$revisions = $post->get_revisions(true);
+
+			$template->assign_vars(array(
+				'S_REVISION_DELETED'			=> true,
+				'L_REVISIONS_DELETED_SUCCESS'	=> $user->lang('REVISIONS_DELETED_SUCCESS', $count),
+			));
+		}
+	}
+	else
+	{
+		$s_hidden_fields = build_hidden_fields(array(
+			'mode'	=> 'delete',
+			'r'		=> (int) $revision_id,
+			'p'		=> $post_id,
+
+		));
+		confirm_box(false, 'REVISION_DELETE', $s_hidden_fields);
+	}
+}
+
 if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 {
 	if (!$can_revert)
@@ -185,42 +250,6 @@ else if ($revision_id)
 {
 	$display_comparison = false;
 	$current = $revisions[$revision_id];
-
-	// We check for the mode and the permission.
-	// If either is not true, we just act as if we are viewing the revision and
-	// don't even try to delete it.
-	if ($mode == 'delete' && $auth->acl_get('m_revisions'))
-	{
-		if (confirm_box(true))
-		{
-			$db->sql_transaction('begin');
-
-			// Delete the revision
-			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-				WHERE revision_id = ' . (int) $revision_id;
-			$db->sql_query($sql);
-
-			// Decrement the post edit count
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_edit_count = post_edit_count - 1
-				WHERE post_id = ' . (int) $post_id;
-			$db->sql_query($sql);
-
-			$db->sql_transaction('commit');
-
-			trigger_error($user->lang('REVISION_DELETED_SUCCESS') . $l_return);
-		}
-		else
-		{
-			$s_hidden_fields = build_hidden_fields(array(
-				'mode'	=> 'delete',
-				'r'		=> (int) $revision_id,
-				'p'		=> $post_id,
-
-			));
-			confirm_box(false, 'REVISION_DELETE', $s_hidden_fields);
-		}
-	}
 }
 else
 {
@@ -257,13 +286,13 @@ $template->assign_vars(array(
 	'POSTER_POSTS'		=> $post_data['user_posts'],
 	'POSTER_LOCATION'	=> $post_data['user_from'],
 
-	'MINI_POST_IMG'		=> $user->img('icon_post_target', 'POST'),
-	'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
+	'POST_IMG'		=> $user->img('icon_post_target', 'POST'),
 
 	'POST_ID'			=> $post_data['post_id'],
 	'POSTER_ID'			=> $post_data['poster_id'],
 
 	'U_VIEW_REVISIONS'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id)),
+	'U_VIEW_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
 ));
 
 if ($display_comparison)
@@ -286,9 +315,8 @@ if ($display_comparison)
 			'USER_AVATAR'		=> $revision->get_avatar(20, 20),
 			'PROTECTED'			=> $revision->is_protected(), // @todo - Find a good "lock" icon (maybe phpBB already has one?)
 
-			'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_POST'),
+			'S_DELETE'			=> $auth->acl_get('m_revisions'),
 
-			'U_DELETE'			=> $auth->acl_get('m_revisions') ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id(), 'mode' => 'delete')) : '',
 			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())) : '',
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
 			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
