@@ -150,7 +150,7 @@ class phpbb_search_fulltext_sphinx
 				array('sql_pass',					$dbpasswd),
 				array('sql_db',						$dbname),
 				array('sql_port',					$dbport),
-				array('sql_query_pre',				'SET NAMES utf8'),
+				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_pre',				'REPLACE INTO ' . SPHINX_TABLE . ' SELECT 1, MAX(post_id) FROM ' . POSTS_TABLE . ''),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
 				array('sql_range_step',				'5000'),
