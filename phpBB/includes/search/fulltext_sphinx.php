@@ -667,14 +667,9 @@ class phpbb_search_fulltext_sphinx
 	*/
 	function index_created($allow_new_files = true)
 	{
-		$sql = 'SHOW TABLES LIKE \'' . SPHINX_TABLE . '\'';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
 		$created = false;
 
-		if ($row)
+		if ($this->db_tools->sql_table_exists(SPHINX_TABLE))
 		{
 			$created = true;
 		}
