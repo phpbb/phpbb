@@ -23,13 +23,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_sphinx_config
 {
-	var $loaded = false;
-	var $sections = array();
+	private $sections = array();
 
 	/**
 	* Constructor which optionally loads data from a variable
 	*
 	* @param	string	$config_data	Variable containing the sphinx configuration data
+	*
+	* @access	public
 	*/
 	function __construct($config_data)
 	{
@@ -44,6 +45,8 @@ class phpbb_search_sphinx_config
 	*
 	* @param	string 								$name	The name of the section that shall be returned
 	* @return	phpbb_search_sphinx_config_section			The section object or null if none was found
+	*
+	* @access	public
 	*/
 	function get_section_by_name($name)
 	{
@@ -62,6 +65,8 @@ class phpbb_search_sphinx_config
 	*
 	* @param	string								$name	The name for the new section
 	* @return	phpbb_search_sphinx_config_section			The newly created section object
+	*
+	* @access	public
 	*/
 	function add_section($name)
 	{
@@ -73,6 +78,8 @@ class phpbb_search_sphinx_config
 	* Reads the config file data
 	*
 	* @param	string	$config_data	The config file data
+	*
+	* @access	private
 	*/
 	function read($config_data)
 	{
@@ -264,7 +271,9 @@ class phpbb_search_sphinx_config
 	/**
 	* Returns the config data
 	*
-	* @return	string	$data	The config data that is generated.
+	* @return	string	$data	The config data that is generated
+	*
+	* @access	public
 	*/
 	function get_data()
 	{

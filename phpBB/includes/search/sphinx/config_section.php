@@ -21,10 +21,10 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_sphinx_config_section
 {
-	var $name;
-	var $comment;
-	var $end_comment;
-	var $variables = array();
+	private $name;
+	private $comment;
+	private $end_comment;
+	private $variables = array();
 
 	/**
 	* Construct a new section
@@ -32,6 +32,8 @@ class phpbb_search_sphinx_config_section
 	* @param	string	$name		Name of the section
 	* @param	string	$comment	Comment that should be appended after the name in the
 	*								textual format.
+	*
+	* @access	public
 	*/
 	function __construct($name, $comment)
 	{
@@ -44,6 +46,8 @@ class phpbb_search_sphinx_config_section
 	* Add a variable object to the list of variables in this section
 	*
 	* @param	phpbb_search_sphinx_config_variable	$variable	The variable object
+	*
+	* @access	public
 	*/
 	function add_variable($variable)
 	{
@@ -52,6 +56,10 @@ class phpbb_search_sphinx_config_section
 
 	/**
 	* Adds a comment after the closing bracket in the textual representation
+	*
+	* @param	string	$end_comment
+	*
+	* @access	public
 	*/
 	function set_end_comment($end_comment)
 	{
@@ -62,6 +70,8 @@ class phpbb_search_sphinx_config_section
 	* Getter for the name of this section
 	*
 	* @return	string	Section's name
+	*
+	* @access	public
 	*/
 	function get_name()
 	{
@@ -74,6 +84,8 @@ class phpbb_search_sphinx_config_section
 	* @param	string 								$name	The name of the variable that shall be returned
 	* @return	phpbb_search_sphinx_config_section			The first variable object from this section with the
 	*														given name or null if none was found
+	*
+	* @access	public
 	*/
 	function get_variable_by_name($name)
 	{
@@ -91,6 +103,8 @@ class phpbb_search_sphinx_config_section
 	* Deletes all variables with the given name
 	*
 	* @param	string	$name	The name of the variable objects that are supposed to be removed
+	*
+	* @access	public
 	*/
 	function delete_variables_by_name($name)
 	{
@@ -111,6 +125,8 @@ class phpbb_search_sphinx_config_section
 	* @param	string								$name	The name for the new variable
 	* @param	string								$value	The value for the new variable
 	* @return	phpbb_search_sphinx_config_variable			Variable object that was created
+	*
+	* @access	public
 	*/
 	function create_variable($name, $value)
 	{
@@ -122,6 +138,8 @@ class phpbb_search_sphinx_config_section
 	* Turns this object into a string which can be written to a config file
 	*
 	* @return	string	Config data in textual form, parsable for sphinx
+	*
+	* @access	public
 	*/
 	function to_string()
 	{

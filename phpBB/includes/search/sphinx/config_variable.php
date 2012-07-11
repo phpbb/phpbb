@@ -21,9 +21,9 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_sphinx_config_variable
 {
-	var $name;
-	var $value;
-	var $comment;
+	private $name;
+	private $value;
+	private $comment;
 
 	/**
 	* Constructs a new variable object
@@ -32,6 +32,8 @@ class phpbb_search_sphinx_config_variable
 	* @param	string	$value		Value of the variable
 	* @param	string	$comment	Optional comment after the variable in the
 	*								config file
+	*
+	* @access	public
 	*/
 	function __construct($name, $value, $comment)
 	{
@@ -44,6 +46,8 @@ class phpbb_search_sphinx_config_variable
 	* Getter for the variable's name
 	*
 	* @return	string	The variable object's name
+	*
+	* @access	public
 	*/
 	function get_name()
 	{
@@ -54,6 +58,8 @@ class phpbb_search_sphinx_config_variable
 	* Allows changing the variable's value
 	*
 	* @param	string	$value	New value for this variable
+	*
+	* @access	public
 	*/
 	function set_value($value)
 	{
@@ -64,6 +70,8 @@ class phpbb_search_sphinx_config_variable
 	* Turns this object into a string readable by sphinx
 	*
 	* @return	string	Config data in textual form
+	*
+	* @access	public
 	*/
 	function to_string()
 	{

@@ -21,12 +21,14 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_search_sphinx_config_comment
 {
-	var $exact_string;
+	private $exact_string;
 
 	/**
 	* Create a new comment
 	*
 	* @param	string	$exact_string	The content of the comment including newlines, leading whitespace, etc.
+	*
+	* @access	public
 	*/
 	function __construct($exact_string)
 	{
@@ -37,6 +39,8 @@ class phpbb_search_sphinx_config_comment
 	* Simply returns the comment as it was created
 	*
 	* @return	string	The exact string that was specified in the constructor
+	*
+	* @access	public
 	*/
 	function to_string()
 	{
