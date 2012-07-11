@@ -746,7 +746,7 @@ class phpbb_search_fulltext_sphinx
 		);
 
 		$tpl = '
-		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE_BEFORE']. '</span>
+		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE']. '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_path">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_PATH'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_PATH_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_config_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_config_path]" value="' . $this->config['fulltext_sphinx_config_path'] . '" /></dd>
@@ -759,7 +759,6 @@ class phpbb_search_fulltext_sphinx
 			<dt><label for="fulltext_sphinx_stopwords">' . $this->user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_STOPWORDS_FILE_EXPLAIN'] . '</span></dt>
 			<dd><label><input type="radio" id="fulltext_sphinx_stopwords" name="config[fulltext_sphinx_stopwords]" value="1"' . (($this->config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_sphinx_stopwords]" value="0"' . ((!$this->config['fulltext_sphinx_stopwords']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
 		</dl>
-		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE_AFTER']. '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_port" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
