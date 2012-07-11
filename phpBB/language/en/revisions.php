@@ -74,10 +74,6 @@ $lang = array_merge($lang, array(
 	),
 	'REVISION_DELETE'			=> 'Delete revision(s)',
 	'REVISION_DELETE_CONFIRM'	=> 'Are you sure you wish to delete the selected revision(s)? This cannot be undone.',
-	'REVISIONS_DELETED_SUCCESS'	=> array(
-		1 => 'The selected revision has been deleted.',
-		2 => 'The selected revisions have been deleted.',
-	),
 	'REVISION_DELETIONS'		=> array(
 		1 =>'1 deletion',
 		2 => '%1$s deletions',
@@ -89,6 +85,14 @@ $lang = array_merge($lang, array(
 	),
 
 	'REVISIONS'							=> 'Revisions',
+	'REVISIONS_DELETED_SUCCESS'			=> array(
+		1 => 'The selected revision has been deleted.',
+		2 => 'The selected revisions have been deleted.',
+	),
+	'REVISIONS_DELETED_SUCCESS_NO_MORE'	=> array(
+		1 => 'The selected revision has been deleted. There are no more revisions to display.',
+		2 => 'The selected revisions have been deleted. There are no more revisions to display.',
+	),
 	'REVISIONS_FROM_DIFFERENT_POSTS'	=> 'You cannot compare revisions from separate posts.',
 	'REVISIONS_REVERT_TITLE'			=> 'Revert Post to Selected Revision',
 	'REVISIONS_REVERT_EXPLAIN'			=> 'The changes between the current revision and the selected revision are displayed below. If you are satisfied with those changes, click Submit.',

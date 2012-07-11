@@ -140,7 +140,7 @@ if (sizeof($delete_ids))
 
 			// Delete the revision
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-				WHERE revision_id = ' . (int) $revision_id;
+				WHERE revision_id = ' . (int) $delete_id;
 			$db->sql_query($sql);
 
 			// Decrement the post edit count
@@ -153,27 +153,31 @@ if (sizeof($delete_ids))
 			$count++;
 		}
 
-		// Assuming we actually did something, we reload the post data and revisions arrays
-		// and we ouput a notification at the top of the page, like we do below for when a post is reverted
+		// Assuming we actually did something, we ouput a notification at the top of the page
 		if ($count)
 		{
-			// Because we've changed things up, we need to update our arrays
-			$post_data = $post->get_post_data(true);
-			$revisions = $post->get_revisions(true);
-
 			$template->assign_vars(array(
 				'S_REVISION_DELETED'			=> true,
 				'L_REVISIONS_DELETED_SUCCESS'	=> $user->lang('REVISIONS_DELETED_SUCCESS', $count),
 			));
+
+			$post_data = $post->get_post_data(true);
+			$revisions = $post->get_revisions(true);
+
+			// If we just deleted the last available revision,
+			// let them know.
+			if (!sizeof($revisions))
+			{
+				trigger_error($user->lang('REVISIONS_DELETED_SUCCESS_NO_MORE') . '
+					<br /><a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('p' => $post_id)) . "#p$post_id" . '">' . $user->lang('RETURN_POST') . '</a>');
+			}
 		}
 	}
 	else
 	{
 		$s_hidden_fields = build_hidden_fields(array(
-			'mode'	=> 'delete',
-			'r'		=> (int) $revision_id,
-			'p'		=> $post_id,
-
+			'p'				=> $post_id,
+			'delete_ids'	=> $delete_ids,
 		));
 		confirm_box(false, 'REVISION_DELETE', $s_hidden_fields);
 	}

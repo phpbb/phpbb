@@ -107,6 +107,8 @@ class phpbb_revisions_post
 			return false;
 		}
 
+		$this->post_data = array();
+
 		$sql_ary = array(
 			'SELECT'	=> 'p.*, t.topic_title, f.forum_name, u.*, r.*',
 
@@ -165,6 +167,8 @@ class phpbb_revisions_post
 		{
 			return false;
 		}
+
+		$this->revisions = array();
 
 		$sql_ary = array(
 			'SELECT'	=> 'r.*, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height',
