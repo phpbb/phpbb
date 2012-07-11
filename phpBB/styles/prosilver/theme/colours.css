@@ -209,7 +209,7 @@ li.reported:hover {
 	/* you can add a background for stickies and announcements*/
 }
 
-div.revision_reverted_success {
+div.revision_action_success {
 	background-color: #d7ecd4;
 	color: #4dbc29;
 }
