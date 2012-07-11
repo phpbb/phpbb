@@ -383,7 +383,7 @@ phpbb.ajaxify = function(options) {
 			return;
 		}
 
-		if (overlay)
+		if (overlay && (!$this.attr('data-overlay') || $this.attr('data-overlay') == true))
 		{
 			phpbb.loading_alert();
 		}
