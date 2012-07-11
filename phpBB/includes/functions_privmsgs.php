@@ -1143,7 +1143,7 @@ function phpbb_delete_user_pms($user_id)
 
 	if (!empty($undelivered_msg))
 	{
-		// A pm is not undelivered, if for any receipt the message was moved
+		// A pm is delivered, if for any receipt the message was moved
 		// from their NO_BOX to another folder.
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
@@ -1165,23 +1165,17 @@ function phpbb_delete_user_pms($user_id)
 			$undelivered_user = array();
 
 			// Count the messages we delete, so we can correct the user pm data
-			$sql = 'SELECT user_id
+			$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE author_id = ' . $user_id . '
 					AND folder_id = ' . PRIVMSGS_NO_BOX . '
-					AND ' . $db->sql_in_set('msg_id', $undelivered_msg);
+					AND ' . $db->sql_in_set('msg_id', $undelivered_msg) . '
+				GROUP BY user_id';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (isset($undelivered_user[$row['user_id']]))
-				{
-					++$undelivered_user[$row['user_id']];
-				}
-				else
-				{
-					$undelivered_user[$row['user_id']] = 1;
-				}
+				$undelivered_user[$row['user_id']] = (int) $row['num_undelivered_privmsgs'];
 			}
 			$db->sql_freeresult($result);
 
