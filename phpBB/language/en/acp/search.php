@@ -85,6 +85,9 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_SPHINX_WRONG_DATABASE'		=> 'The sphinx plugin for phpBB currently only supports MySQL',
 	'FULLTEXT_SPHINX_STOPWORDS_FILE'		=> 'Stopwords activated',
 	'FULLTEXT_SPHINX_STOPWORDS_FILE_EXPLAIN'	=> 'This setting only works with autoconf enabled. You can place a file called sphinx_stopwords.txt containing one word in each line in your config directory. If this file is present these words will be excluded from the indexing process.',
+	'FULLTEXT_SPHINX_CONFIG_FILE'			=> 'Sphinx config file',
+	'FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'	=> 'The generated content of the sphinx config file. This data needs to be pasted into the sphinx.conf which is used by sphinx search daemon.',
+	'FULLTEXT_SPHINX_NO_CONFIG_DATA'		=> 'The sphinx data and config directory paths are not defined. Please define them to generate the config file.',
 
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',

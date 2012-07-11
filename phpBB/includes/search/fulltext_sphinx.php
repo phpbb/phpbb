@@ -112,11 +112,6 @@ class phpbb_search_fulltext_sphinx
 			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
 		}
 
-		if ($error = $this->config_updated())
-		{
-			return $error;
-		}
-
 		// Move delta to main index each hour
 		set_config('search_gc', 3600);
 
@@ -124,15 +119,20 @@ class phpbb_search_fulltext_sphinx
 	}
 
 	/**
-	 * Updates the config file sphinx.conf and generates the same in case autoconf is selected
+	 * Generates content of sphinx.conf
 	 *
-	 * @return string|bool Language key of the error/incompatiblity occured otherwise false
+	 * @return bool True if sphinx.conf content is correctly generated, false otherwise
 	 *
 	 * @access private
 	 */
-	function config_updated()
+	function config_generate()
 	{
 		global $phpbb_root_path, $phpEx;
+
+		if (!$this->config['fulltext_sphinx_data_path'] || !$this->config['fulltext_sphinx_config_path'])
+		{
+			return false;
+		}
 
 		include ($phpbb_root_path . 'config.' . $phpEx);
 
@@ -280,7 +280,7 @@ class phpbb_search_fulltext_sphinx
 		}
 		$this->config_file_data = $config_object->get_data();
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -767,6 +767,10 @@ class phpbb_search_fulltext_sphinx
 			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="text" size="4" maxlength="10" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" />' . $this->user->lang['MIB'] . '</dd>
 		</dl>
+		<dl>
+			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</dt>
+			<dd>' . (($this->config_generate()) ? '<textarea disabled="disabled" rows="6">' . $this->config_file_data . '</textarea>' : $this->user->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA')) . '</dd>
+		<dl>
 		';
 
 		// These are fields required in the config table
