@@ -98,7 +98,7 @@ class phpbb_search_sphinx_config
 			// If we're not inside a section look for one
 			if (!$section)
 			{
-				/* add empty lines and comments as comment objects to the section list
+				/* Add empty lines and comments as comment objects to the section list
 				that way they're not deleted when reassembling the file from the sections*/
 				if (!$line || $line[0] == '#')
 				{
@@ -107,7 +107,7 @@ class phpbb_search_sphinx_config
 				}
 				else
 				{
-					/* otherwise we scan the line reading the section name until we find
+					/* Otherwise we scan the line reading the section name until we find
 					an opening curly bracket or a comment */
 					$section_name = '';
 					$section_name_comment = '';
@@ -147,7 +147,7 @@ class phpbb_search_sphinx_config
 				// If we're not in a value continuing over the line feed
 				if (!$in_value)
 				{
-					/* then add empty lines and comments as comment objects to the variable list
+					/* Then add empty lines and comments as comment objects to the variable list
 					of this section so they're not deleted on reassembly */
 					if (!$line || $line[0] == '#')
 					{
@@ -240,7 +240,7 @@ class phpbb_search_sphinx_config
 						continue;
 					}
 
-					/* if we found a closing curly bracket this section has been completed
+					/* If we found a closing curly bracket this section has been completed
 					and we can append it to the section list and continue with looking for 
 					the next section */
 					if ($end_section)

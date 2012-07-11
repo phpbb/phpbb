@@ -135,7 +135,7 @@ class phpbb_search_fulltext_sphinx
 			return false;
 		}
 
-		include ($phpbb_root_path . 'config.' . $phpEx);
+		include($phpbb_root_path . 'config.' . $phpEx);
 
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
