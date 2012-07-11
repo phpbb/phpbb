@@ -72,16 +72,17 @@ class phpbb_search_fulltext_sphinx
 		// Initialize phpbb_db_tools object
 		$this->db_tools = new phpbb_db_tools($this->db);
 
-		$this->id = $config['avatar_salt'];
+		if(!$this->config['fulltext_sphinx_id'])
+		{
+			set_config('fulltext_sphinx_id', unique_id());
+		}
+		$this->id = $this->config['fulltext_sphinx_id'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
 
 		$this->sphinx = new SphinxClient();
 
 		// We only support localhost for now
-		$this->sphinx->SetServer('localhost', (isset($config['fulltext_sphinx_port']) && $config['fulltext_sphinx_port']) ? (int) $config['fulltext_sphinx_port'] : 3312);
-
-		$config['fulltext_sphinx_min_word_len'] = 2;
-		$config['fulltext_sphinx_max_word_len'] = 400;
+		$this->sphinx->SetServer('localhost', (isset($this->config['fulltext_sphinx_port']) && $this->config['fulltext_sphinx_port']) ? (int) $this->config['fulltext_sphinx_port'] : 3312);
 
 		$error = false;
 	}
@@ -137,8 +138,8 @@ class phpbb_search_fulltext_sphinx
 		include ($phpbb_root_path . 'config.' . $phpEx);
 
 		/* Now that we're sure everything was entered correctly,
-		generate a config for the index. We misuse the avatar_salt
-		for this, as it should be unique. */
+		generate a config for the index. We use a config value
+		fulltext_sphinx_id for this, as it should be unique. */
 		$config_object = new phpbb_search_sphinx_config($this->config_file_data);
 
 		$config_data = array(
