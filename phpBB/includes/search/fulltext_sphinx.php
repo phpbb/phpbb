@@ -44,6 +44,7 @@ class phpbb_search_fulltext_sphinx
 	private $config;
 	private $db;
 	private $db_tools;
+	private $dbtype;
 	private $user;
 	private $config_file_data = '';
 	public $word_length = array();
@@ -130,8 +131,25 @@ class phpbb_search_fulltext_sphinx
 	{
 		global $phpbb_root_path, $phpEx;
 
+		// Check if Database is supported by Sphinx
+		if ($this->db->sql_layer =='mysql' || $this->db->sql_layer == 'mysql4' || $this->db->sql_layer == 'mysqli')
+		{
+			$this->dbtype = 'mysql';
+		}
+		else if ($this->db->sql_layer == 'postgres')
+		{
+			$this->dbtype = 'pgsql';
+		}
+		else
+		{
+			$this->config_file_data = $this->user->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
+			return false;
+		}
+
+		// Check if directory paths have been filled
 		if (!$this->config['fulltext_sphinx_data_path'] || !$this->config['fulltext_sphinx_config_path'])
 		{
+			$this->config_file_data = $this->user->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA');
 			return false;
 		}
 
@@ -141,10 +159,9 @@ class phpbb_search_fulltext_sphinx
 		generate a config for the index. We use a config value
 		fulltext_sphinx_id for this, as it should be unique. */
 		$config_object = new phpbb_search_sphinx_config($this->config_file_data);
-
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
-				array('type',						'mysql'),
+				array('type',						$this->dbtype),
 				array('sql_host',					$dbhost),
 				array('sql_user',					$dbuser),
 				array('sql_pass',					$dbpasswd),
@@ -771,7 +788,7 @@ class phpbb_search_fulltext_sphinx
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . ':</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</dt>
-			<dd>' . (($this->config_generate()) ? '<textarea disabled="disabled" rows="6">' . $this->config_file_data . '</textarea>' : $this->user->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA')) . '</dd>
+			<dd>' . (($this->config_generate()) ? '<textarea disabled="disabled" rows="6">' . $this->config_file_data . '</textarea>' : $this->config_file_data) . '</dd>
 		<dl>
 		';
 
