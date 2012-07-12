@@ -93,6 +93,7 @@ class phpbb_revisions_revision
 	* @var string
 	*/
 	private $reason;
+
 	/**
 	* ID of user who made revision
 	* @var int
