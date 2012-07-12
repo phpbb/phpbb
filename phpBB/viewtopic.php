@@ -584,7 +584,7 @@ if (!empty($_EXTRA_URL))
 
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
-phpbb_generate_template_pagination($template, $base_url, 'pagination', $total_posts, $config['posts_per_page'], $start);
+phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
 // Send vars to template
 $template->assign_vars(array(

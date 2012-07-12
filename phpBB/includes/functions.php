@@ -1887,6 +1887,7 @@ function tracking_unserialize($string, $max_depth = 3)
 * @param object $template the template object
 * @param string $base_url is url prepended to all links generated within the function
 * @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
+* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
 * @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
 * @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
 * @param int $start_item the item which should be considered currently active, used to determine the page we're on
@@ -1894,7 +1895,7 @@ function tracking_unserialize($string, $max_depth = 3)
 * @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
 * @return null
 */
-function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
+function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $start_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
 {
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
@@ -1938,7 +1939,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	{
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '', 
-			'PAGE_URL'		=> $base_url . "{$url_delim}start=" . ($on_page * $per_page),
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
 			'S_IS_CURRENT'	=> false, 
 			'S_IS_PREV'		=> false,  
 			'S_IS_NEXT'		=> true, 
@@ -1952,7 +1953,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	$at_page = 1;
 	do
 	{
-		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . 'start=' . (($at_page - 1) * $per_page));
+		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
 
 		// We decide whether to display the ellipsis during the loop. The ellipsis is always
 		// displayed as either the second or penultimate item in the list. So are we at either
@@ -1992,7 +1993,7 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	{
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '', 
-			'PAGE_URL'		=> $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
+			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
 			'S_IS_CURRENT'	=> false, 
 			'S_IS_PREV'		=> true, 
 			'S_IS_NEXT'		=> false, 

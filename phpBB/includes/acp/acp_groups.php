@@ -683,7 +683,7 @@ class acp_groups
 				}
 
 				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', $total_members, $config['topics_per_page'], $start);				
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);				
 				
 				$template->assign_vars(array(
 					'S_LIST'			=> true,

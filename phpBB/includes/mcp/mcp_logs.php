@@ -172,7 +172,7 @@ class mcp_logs
 		$start = view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', $log_count, $config['topics_per_page'], $start);		
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);		
 		
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),

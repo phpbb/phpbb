@@ -102,7 +102,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');
-	phpbb_generate_template_pagination($template, $base_url, 'pagination', $forum_topics, $topics_per_page, $start);
+	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
 	
 	$template->assign_vars(array(
 		'ACTION'				=> $action,

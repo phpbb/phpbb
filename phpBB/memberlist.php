@@ -1572,7 +1572,7 @@ switch ($mode)
 			}
 		}
 
-		phpbb_generate_template_pagination($template, $pagination_url, 'pagination', $total_users, $config['topics_per_page'], $start);
+		phpbb_generate_template_pagination($template, $pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
 		
 		// Generate page
 		$template->assign_vars(array(

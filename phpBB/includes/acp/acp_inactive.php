@@ -289,7 +289,7 @@ class acp_inactive
 		}
 
 		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', $inactive_count, $per_page, $start);		
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $inactive_count, $per_page, $start);		
 		
 		$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,

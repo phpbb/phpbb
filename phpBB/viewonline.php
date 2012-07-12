@@ -385,7 +385,7 @@ $db->sql_freeresult($result);
 meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
 
 $base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
-phpbb_generate_template_pagination($template, $base_url, 'pagination', $counter, $config['topics_per_page'], $start);
+phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
 
 // Send data to template
 $template->assign_vars(array(

@@ -1223,7 +1223,7 @@ class acp_attachments
 				$db->sql_freeresult($result);
 
 				$base_url = $this->u_action . "&amp;$u_sort_param";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', $num_files, $attachments_per_page, $start);
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
 				
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,

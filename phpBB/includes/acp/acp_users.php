@@ -1121,7 +1121,7 @@ class acp_users
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', $log_count, $config['topics_per_page'], $start);
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 				
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
@@ -2038,7 +2038,7 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', $num_attachments, $config['topics_per_page'], $start);
+				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
 				
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
