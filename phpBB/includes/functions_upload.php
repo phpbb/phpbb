@@ -152,6 +152,11 @@ class filespec
 	function is_image()
 	{
 		$mimetype = $this->get_mimetype($this->filename);
+		if (!$mimetype)
+		{
+			$mimetype = $this->mimetype;
+		}
+
 		return (strpos($mimetype, 'image/') === 0);
 	}
 
@@ -202,9 +207,17 @@ class filespec
 
 	/**
 	* Get mimetype. Utilises the finfo class.
+	*
+	* @return string Returns the mimetype if found. If the finfo class does not
+	* 	exist, it returns false.
 	*/
 	function get_mimetype($filename)
 	{
+		if (!class_exists('finfo', false))
+		{
+			return false;
+		}
+
 		$finfo = new finfo(FILEINFO_MIME_TYPE);
 		$mimetype = $finfo->file($filename);
 
