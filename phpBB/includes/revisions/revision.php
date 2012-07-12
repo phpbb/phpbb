@@ -295,7 +295,7 @@ class phpbb_revisions_revision
 			$this->db->sql_freeresult($result);
 		}
 
-		return (int) $this->post_id ?: 0;
+		return $this->post_id;
 	}
 
 	/**
