@@ -78,14 +78,14 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
-		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		if (!$provider_config['OPTIONS']['enabled']['setting'])
 		{
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}
 
 		$auth_action = $this->request->variable('auth_action', '', false, phpbb_request_interface::POST);
 
-		switch($auth_action)
+		switch ($auth_action)
 		{
 			case 'login':
 				$this->internal_login($admin);

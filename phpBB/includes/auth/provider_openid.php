@@ -245,7 +245,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$auth_action = $this->request->variable('auth_action', '');
 		if ($auth_action === 'login')
 		{
-			if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
+			if ($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
 			{
 				throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
 			}
@@ -260,7 +260,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 		elseif ($auth_action === 'link')
 		{
-			if(!isset($this->user->data['user_id']))
+			if (!isset($this->user->data['user_id']))
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}

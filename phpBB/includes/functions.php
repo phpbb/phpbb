@@ -3152,7 +3152,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$common_tpl = $auth_manager->generate_common_login_box($template, $redirect, $admin, $s_display);
 		$template->assign_vars(array(
 			'COMMON_TPL'	=> $common_tpl,
-			));
+		));
 	}
 	elseif (!$rendered_template)
 	{

@@ -81,7 +81,7 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	public function process($admin = false)
 	{
 		$provider_config = $this->get_configuration();
-		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		if (!$provider_config['OPTIONS']['enabled']['setting'])
 		{
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}
@@ -93,7 +93,7 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	public function verify()
 	{
 		$provider_config = $this->get_configuration();
-		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		if (!$provider_config['OPTIONS']['enabled']['setting'])
 		{
 			throw new phpbb_auth_exception('AUTH_DISABLED');
 		}

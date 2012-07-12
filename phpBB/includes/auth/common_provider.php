@@ -103,7 +103,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if(!$row)
+		if (!$row)
 		{
 			if ($admin && $this->user->data['is_registered'])
 			{

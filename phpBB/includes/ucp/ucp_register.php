@@ -207,7 +207,7 @@ class ucp_register
 
 		$providers = $auth_manager->get_enabled_providers();
 		$rendered_template = false;
-		foreach($providers as $provider)
+		foreach ($providers as $provider)
 		{
 			$tpl = $provider->generate_registration($template);
 
