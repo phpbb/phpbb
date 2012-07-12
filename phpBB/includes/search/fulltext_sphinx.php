@@ -151,7 +151,7 @@ class phpbb_search_fulltext_sphinx
 				array('sql_db',						$dbname),
 				array('sql_port',					$dbport),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
-				array('sql_query_pre',				'REPLACE INTO ' . SPHINX_TABLE . ' SELECT 1, MAX(post_id) FROM ' . POSTS_TABLE . ''),
+				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
 				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
 				array('sql_range_step',				'5000'),
 				array('sql_query',					'SELECT
@@ -171,7 +171,7 @@ class phpbb_search_fulltext_sphinx
 						p.topic_id = t.topic_id
 						AND p.post_id >= $start AND p.post_id <= $end'),
 				array('sql_query_post',				''),
-				array('sql_query_post_index',		'REPLACE INTO ' . SPHINX_TABLE . ' ( counter_id, max_doc_id ) VALUES ( 1, $maxid )'),
+				array('sql_query_post_index',		'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = $maxid WHERE counter_id = 1'),
 				array('sql_query_info',				'SELECT * FROM ' . POSTS_TABLE . ' WHERE post_id = $id'),
 				array('sql_attr_uint',				'forum_id'),
 				array('sql_attr_uint',				'topic_id'),
@@ -633,6 +633,13 @@ class phpbb_search_fulltext_sphinx
 			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
 
 			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
+			$this->db->sql_query($sql);
+
+			$data = array(
+				'counter_id'	=> '1',
+				'max_doc_id'	=> '0',
+			);
+			$sql = 'INSERT INTO ' . SPHINX_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);
 			$this->db->sql_query($sql);
 		}
 
