@@ -138,12 +138,10 @@ if (sizeof($delete_ids))
 
 			$db->sql_transaction('begin');
 
-			// Delete the revision
 			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
 				WHERE revision_id = ' . (int) $delete_id;
 			$db->sql_query($sql);
 
-			// Decrement the post edit count
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_edit_count = post_edit_count - 1
 				WHERE post_id = ' . (int) $post_id;
@@ -164,8 +162,6 @@ if (sizeof($delete_ids))
 			$post_data = $post->get_post_data(true);
 			$revisions = $post->get_revisions(true);
 
-			// If we just deleted the last available revision,
-			// let them know.
 			if (!sizeof($revisions))
 			{
 				trigger_error($user->lang('REVISIONS_DELETED_SUCCESS_NO_MORE') . '
