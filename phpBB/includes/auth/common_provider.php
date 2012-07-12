@@ -28,6 +28,11 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	protected $config;
 	protected $user;
 
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $SID;
+	protected $_SID;
+
 	/**
 	 * Implements phpbb_auth_provider_interface->generate_login_box(). Returns
 	 * null. Providers should override this for a custom login box.
@@ -93,7 +98,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		// Get user
 		$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
 				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
+				WHERE user_id = ' . (int)$user_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -146,8 +151,8 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 			$this->user->set_cookie('sid', '', $cookie_expire);
 			unset($cookie_expire);
 
-			$SID = '?sid=';
-			$this->user->session_id = $_SID = '';
+			$SID = $this->SID = '?sid=';
+			$this->user->session_id = $_SID = $this->_SID = '';
 		}
 
 		// Create a session.
@@ -250,8 +255,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	{
 		if ($redirect_to === null)
 		{
-			GLOBAL $phpEx;
-			$redirect_to = 'index.' . $phpEx;
+			$redirect_to = 'index.' . $this->phpEx;
 		}
 		$redirect_to = reapply_sid($redirect_to);
 		redirect($redirect_to);

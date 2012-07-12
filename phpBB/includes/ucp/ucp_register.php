@@ -45,13 +45,11 @@ class ucp_register
 		$auth_provider = $request->variable('auth_provider', '');
 		$auth_action = $request->variable('auth_action', '');
 
-		if ($submit == false && $auth_action != '' && $auth_provider != 'common')
+		if (!$submit && $auth_action && $auth_provider != 'native')
 		{
 			$submit = true;
-			$agreed = true;
 		}
 		$auth_manager = new phpbb_auth_manager($request, $db, $config, $user);
-		$common_provider_enabled = (bool)count($auth_manager->get_enabled_common_registration_providers());
 
 		if ($agreed)
 		{
@@ -168,46 +166,20 @@ class ucp_register
 		if ($auth_action & $auth_provider)
 		{
 			$auth_step = $request->variable('auth_step', 'process');
-			if ($auth_provider == 'common')
+			$provider = $auth_manager->get_provider($auth_provider);
+			if (!method_exists($provider, $auth_step))
 			{
-				$common_providers = $auth_manager->get_enabled_common_registration_providers();
-				foreach ($common_providers as $provider)
-				{
-					if (!method_exists($provider, $auth_step))
-					{
-						$error['NO_AUTH_STEP'] = 'NO_AUTH_STEP';
-						continue;
-					}
-
-					try
-					{
-						$provider->$auth_step();
-						$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
-						break;
-					}
-					catch (phpbb_auth_exception $e)
-					{
-						$error[] = $e->getMessage();
-					}
-				}
+				$error['NO_AUTH_STEP'] = 'NO_AUTH_STEP';
 			}
-			else
-			{
-				$provider = $auth_manager->get_provider($auth_provider);
-				if (!method_exists($provider, $auth_step))
-				{
-					$error['NO_AUTH_STEP'] = 'NO_AUTH_STEP';
-				}
 
-				try
-				{
-					$provider->$auth_step();
-					$coppa	= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
-				}
-				catch (phpbb_auth_exception $e)
-				{
-					$error[] = $e->getMessage();
-				}
+			try
+			{
+				$provider->$auth_step();
+				$coppa	= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
+			}
+			catch (phpbb_auth_exception $e)
+			{
+				$error[] = $e->getMessage();
 			}
 
 			if (!sizeof($error))
@@ -234,37 +206,27 @@ class ucp_register
 		}
 
 		$providers = $auth_manager->get_enabled_providers();
+		$rendered_template = false;
 		foreach($providers as $provider)
 		{
-			$provider_config = $provider->get_configuration();
-			if ($provider_config['CUSTOM_REGISTER'] == false)
-			{
-				continue;
-			}
-
 			$tpl = $provider->generate_registration($template);
 
-			if ($tpl === null)
+			if ($tpl)
 			{
-				unset($provider);
-				continue;
+				$template->assign_block_vars('providers_loop', array(
+					'TPL'	=> $tpl,
+				));
+				$rendered_template = true;
 			}
-
-			$template->assign_block_vars('providers_loop', array(
-				'TPL'	=> $tpl,
-			));
 		}
 
-		if (empty($providers))
+		if (!$rendered_template)
 		{
 			trigger_error('NO_PROVIDERS');
 		}
 
-		$common_tpl = $auth_manager->generate_common_registration_form($template);
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'S_COMMON_TPL'		=> $common_provider_enabled,
-			'COMMON_TPL'		=> $common_tpl,
 		));
 
 		//

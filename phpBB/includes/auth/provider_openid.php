@@ -27,6 +27,11 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	protected $config;
 	protected $user;
 
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $SID;
+	protected $_SID;
+
 	/**
 	 * This is the array of configurable OpenID Simple Registration Extension
 	 * data items that will be requested during registration using a third party
@@ -54,6 +59,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			"language"	=> false,
 			"timezone"	=> false,
 		);
+
+		global $phpbb_root_path, $phpEx, $SID, $_SID;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->SID = $SID;
+		$this->_SID = $_SID;
 	}
 
 	/**
@@ -130,10 +141,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			'login_body_openid' => 'login_body_openid.html')
 		);
 		$tpl = $template->assign_display('login_body_openid', '', true);
-		if (!$tpl)
-		{
-			return null;
-		}
 		return $tpl;
 	}
 
@@ -201,10 +208,6 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			'ucp_register_openid' => 'ucp_register_openid.html')
 		);
 		$tpl = $template->assign_display('ucp_register_openid', '', true);
-		if (!$tpl)
-		{
-			return null;
-		}
 		return $tpl;
 	}
 
@@ -251,8 +254,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$viewonline = $this->request->variable('viewonline', 'off');
 			$redirect_to = $this->request->variable('redirect', 'index.' . $phpEx);
 
-			global $phpEx;
-			$return_to = ($admin) ? 'index.' . $phpEx : 'ucp.' . $phpEx ;
+			$return_to = ($admin) ? 'index.' . $this->phpEx : 'ucp.' . $$this->phpEx ;
 			$return_to .= '?mode=login&auth_step=verify&auth_provider=openid&auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
@@ -262,14 +264,14 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			{
 				throw new phpbb_auth_exception('You may only link a logged in phpBB user to an OpenID provider.');
 			}
-			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&auth_action=link&phpbb.user_id=' . $this->user->data['user_id'];
+			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&auth_action=linkphpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
 		elseif ($auth_action === 'register')
 		{
 			global $phpEx;
 			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
-			$return_to = 'ucp.' . $phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa;
+			$return_to = 'ucp.' . $this->phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa . '&agreed=1';
 			$extensions = array(
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
 			);
@@ -476,7 +478,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		}
 
 		// Perform registration.
-		$this->register($data);
+		$user_id = $this->register($data);
 		return $user_id;
 	}
 }

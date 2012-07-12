@@ -3118,36 +3118,33 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	));
 
 	$providers = $auth_manager->get_enabled_providers();
+	$rendered_template = false;
 	$common_template = false;
-	foreach($providers as &$provider)
+	foreach($providers as $provider)
 	{
 		$provider_config = $provider->get_configuration();
 		if ($admin)
 		{
 			if ($provider_config['OPTIONS']['admin']['setting'] != true)
 			{
-				unset($provider);
 				continue;
 			}
 		}
 
 		if ($provider_config['CUSTOM_LOGIN_BOX'] == false)
 		{
-			$common_template = true;
+			$common_template = $rendered_template =  true;
 			continue;
 		}
 
 		$tpl = $provider->generate_login_box($template, $redirect, $admin, $s_display);
 
-		if ($tpl === null)
+		if ($tpl)
 		{
-			unset($provider);
-			continue;
+			$template->assign_block_vars('providers_loop', array(
+				'TPL'	=> $tpl,
+			));
 		}
-
-		$template->assign_block_vars('providers_loop', array(
-			'TPL'	=> $tpl,
-		));
 	}
 
 	if ($common_template)
@@ -3157,7 +3154,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			'COMMON_TPL'	=> $common_tpl,
 			));
 	}
-	elseif (empty($providers))
+	elseif (!$rendered_template)
 	{
 		trigger_error('NO_PROVIDERS');
 	}

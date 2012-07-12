@@ -27,6 +27,11 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 	protected $config;
 	protected $user;
 
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $SID;
+	protected $_SID;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -36,6 +41,12 @@ class phpbb_auth_provider_facebook_connect extends phpbb_auth_common_provider
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
+
+		global $phpbb_root_path, $phpEx, $SID, $_SID;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->SID = $SID;
+		$this->_SID = $_SID;
 	}
 
 	/**

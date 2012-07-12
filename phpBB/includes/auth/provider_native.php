@@ -27,6 +27,11 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	protected $config;
 	protected $user;
 
+	protected $phpbb_root_path;
+	protected $phpEx;
+	protected $SID;
+	protected $_SID;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -36,6 +41,12 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		$this->db = $db;
 		$this->config = $config;
 		$this->user = $user;
+
+		global $phpbb_root_path, $phpEx, $SID, $_SID;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+		$this->SID = $SID;
+		$this->_SID = $_SID;
 	}
 
 	/**
@@ -79,11 +90,101 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		}
 	}
 
+	public function generate_registration(phpbb_template $template)
+	{
+		if ($this->config['enable_confirm'])
+		{
+			$captcha = new phpbb_auth_captcha($this->db, $this->config, $this->user);
+		}
+
+		$timezone = $this->config['board_timezone'];
+		$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
+		$data = array(
+			'username'			=> utf8_normalize_nfc($this->request->variable('username', '', true)),
+			'new_password'		=> $this->request->variable('new_password', '', true),
+			'password_confirm'	=> $this->request->variable('password_confirm', '', true),
+			'email'				=> strtolower($this->request->variable('email', '')),
+			'lang'				=> basename($this->request->variable('lang', $this->user->lang_name)),
+			'tz'				=> $this->request->variable('tz', $timezone),
+		);
+
+		$s_hidden_fields = array(
+			'agreed'		=> 'true',
+			'change_lang'	=> 0,
+
+			'auth_provider'	=> 'native',
+			'auth_action'	=> 'register',
+			'auth_step'		=> 'process',
+		);
+
+		if ($this->config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+
+		if ($this->config['enable_confirm'])
+		{
+			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields(CONFIRM_REG));
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+		// Visual Confirmation - Show images
+		if ($this->config['enable_confirm'])
+		{
+			$template->assign_vars(array(
+				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(CONFIRM_REG),
+			));
+		}
+
+		$l_reg_cond = '';
+		switch ($this->config['require_activation'])
+		{
+			case USER_ACTIVATION_SELF:
+				$l_reg_cond = $this->user->lang['UCP_EMAIL_ACTIVATE'];
+			break;
+
+			case USER_ACTIVATION_ADMIN:
+				$l_reg_cond = $this->user->lang['UCP_ADMIN_ACTIVATE'];
+			break;
+		}
+
+		$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
+		$template->assign_vars(array(
+			'USERNAME'			=> $data['username'],
+			'PASSWORD'			=> $data['new_password'],
+			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
+			'EMAIL'				=> $data['email'],
+
+			'L_REG_COND'				=> $l_reg_cond,
+			'L_USERNAME_EXPLAIN'		=> $this->user->lang($this->config['allow_name_chars'] . '_EXPLAIN', $this->user->lang('CHARACTERS', (int) $this->config['min_name_chars']), $this->user->lang('CHARACTERS', (int) $this->config['max_name_chars'])),
+			'L_PASSWORD_EXPLAIN'		=> $this->user->lang($this->config['pass_complex'] . '_EXPLAIN', $this->user->lang('CHARACTERS', (int) $this->config['min_pass_chars']), $this->user->lang('CHARACTERS', (int) $this->config['max_pass_chars'])),
+
+			'S_LANG_OPTIONS'	=> language_select($data['lang']),
+			'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
+			'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
+			'S_CONFIRM_REFRESH'	=> ($this->config['enable_confirm'] && $this->config['confirm_refresh']) ? true : false,
+			'S_REGISTRATION'	=> true,
+			'S_COPPA'			=> $coppa,
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			'S_UCP_ACTION'		=> append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=register'),
+		));
+
+		$this->user->profile_fields = array();
+
+		// Generate profile fields -> Template Block Variable profile_fields
+		$cp = new custom_profile();
+		$cp->generate_profile_fields('register', $this->user->get_iso_lang_id());
+
+		$template->set_filenames(array(
+			'ucp_register_native' => 'ucp_register_native.html')
+		);
+		$tpl = $template->assign_display('ucp_register_native', '', true);
+		return $tpl;
+	}
+
 	/**
 	 * Processes the nitty, gritty, ugly part of login.
 	 *
-	 * @global string $phpbb_root_path
-	 * @global string $phpEx
 	 * @param boolean $admin Is this admin authentication?
 	 * @return int	The user id of the user.
 	 * @throws phpbb_auth_exception
@@ -234,8 +335,6 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 	/**
 	 * Converts a user's password from its phpBB2 to its phpBB3 hash.
 	 *
-	 * @global str $phpbb_root_path
-	 * @global str $phpEx
 	 * @param str $password the password being claimed.
 	 * @param array $row returned from a database call on the USERS_TABLE
 	 * @return array $row as passed in with any necessary modifications made.
@@ -265,8 +364,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 		{
 			if (!function_exists('utf8_to_cp1252'))
 			{
-				global $phpbb_root_path, $phpEx;
-				include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+				include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->phpEx);
 			}
 
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
