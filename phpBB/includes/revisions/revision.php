@@ -255,6 +255,29 @@ class phpbb_revisions_revision
 	}
 
 	/**
+	* Deletes the current revision. No authentication is checked,
+	* so only call this after checking it yourself.
+	*
+	* @return void
+	*/
+	public function delete()
+	{
+		$this->db->sql_transaction('begin');
+
+		$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
+			WHERE revision_id = ' . $this->get_id();
+		$this->db->sql_query($sql);
+
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET post_edit_count = post_edit_count - 1
+			WHERE post_id = ' . $this->get_post_id() . '
+				AND post_edit_count > 0';
+		$this->db->sql_query($sql);
+
+		$this->db->sql_transaction('commit');
+	}
+
+	/**
 	* Returns the Avatar of the user who made the revision
 	*
 	* @param int $width Custom width
