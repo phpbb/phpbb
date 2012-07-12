@@ -108,7 +108,7 @@ class phpbb_search_fulltext_sphinx
 	*/
 	function init()
 	{
-		if ($this->db->sql_layer != 'mysql' && $this->db->sql_layer != 'mysql4' && $this->db->sql_layer != 'mysqli')
+		if ($this->db->sql_layer != 'mysql' && $this->db->sql_layer != 'mysql4' && $this->db->sql_layer != 'mysqli' && $this->db->sql_layer != 'postgres')
 		{
 			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
 		}
