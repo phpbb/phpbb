@@ -136,18 +136,7 @@ if (sizeof($delete_ids))
 				continue;
 			}
 
-			$db->sql_transaction('begin');
-
-			$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-				WHERE revision_id = ' . (int) $delete_id;
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_edit_count = post_edit_count - 1
-				WHERE post_id = ' . (int) $post_id;
-			$db->sql_query($sql);
-
-			$db->sql_transaction('commit');
+			$revisions[$delete_id]->delete();
 			$count++;
 		}
 
