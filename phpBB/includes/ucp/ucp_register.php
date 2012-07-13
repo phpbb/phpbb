@@ -174,88 +174,58 @@ class ucp_register
 
 			try
 			{
-				$provider->$auth_step();
+				$return = $provider->$auth_step();
 				$coppa	= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
 			}
 			catch (phpbb_auth_exception $e)
 			{
-				$_error = $e->getMessage();
-				// Check to see if the error is actually a request for data.
-				if (strpos($_error, 'REQ_DATA'))
+				$error[] = $e->getMessage();
+			}
+
+			if ($return instanceof phpbb_auth_data_request)
+			{
+				if (isset($return->USERNAME))
 				{
-					$req_data = (array)$_error;
-					preg_match( '!\(([^\)]+)\)!', $req_data[0], $match);
-					$req_data = $match[1];
-					$req_data = explode(',', $req_data);
-					$req_data_clean = array();
-					foreach ($req_data as $req_index)
-					{
-						$req_index = explode('=>', $req_index);
-						if (preg_match( '!\'([^\)]+)\'!', $req_index[0], $match))
-						{
-							$key = $match[1];
-							if (preg_match( '!\'([^\)]+)\'!', $req_index[1], $match))
-							{
-								$index = $match[1];
-							}
-						}
-
-						if (!empty($key) && !empty($index))
-						{
-							$req_data_clean[$key] = $index;
-						}
-					}
-					$req_data = $req_data_clean;
-
-					$error = array();
-
-					if (isset($req_data['USERNAME']))
-					{
-						$error[] = (empty($user->lang[$req_data['USERNAME']])) ? $user->lang[$req_data['USERNAME'] . '_USERNAME'] : $user->lang[$req_data['USERNAME']];
-						$template->assign_vars(array(
-							'USERNAME'				=> true,
-							'L_USERNAME_EXPLAIN'	=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
-						));
-					}
-
-					if (isset($req_data['EMAIL']))
-					{
-						$error[] = (empty($user->lang[$req_data['EMAIL']])) ? $user->lang[$req_data['EMAIL'] . '_EMAIL'] : $user->lang[$req_data['EMAIL']];
-						$template->assign_vars(array(
-							'EMAIL'	=> true,
-						));
-					}
-
-					$get_vars = $request->variable_names(phpbb_request_interface::GET);
-					$post_vars = $request->variable_names(phpbb_request_interface::POST);
-					$vars = array_merge($get_vars, $post_vars);
-					$s_hidden_fields = array();
-					foreach ($vars as $var)
-					{
-						if ($var == 'auth_step')
-						{
-							$s_hidden_fields[$var] = $request->variable('auth_action', '') . '_req_data';
-						}
-						else
-						{
-							$s_hidden_fields[$var] = $request->variable($var, '');
-						}
-					}
-					$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-
+					$error[] = $return->USERNAME_ERROR;
 					$template->assign_vars(array(
-						'ERROR'				=> implode('<br />', $error),
-						'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+						'USERNAME'				=> true,
+						'L_USERNAME_EXPLAIN'	=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 					));
+				}
 
-					$this->tpl_name = 'ucp_register_request_data';
-					$this->page_title = 'UCP_REGISTRATION';
-					return;
-				}
-				else
+				if (isset($return->EMAIL))
 				{
-					$error[] = $e->getMessage();
+					$error[] = $return->EMAIL_ERROR;
+					$template->assign_vars(array(
+						'EMAIL'	=> true,
+					));
 				}
+
+				$get_vars = $request->variable_names(phpbb_request_interface::GET);
+				$post_vars = $request->variable_names(phpbb_request_interface::POST);
+				$vars = array_merge($get_vars, $post_vars);
+				$s_hidden_fields = array();
+				foreach ($vars as $var)
+				{
+					if ($var == 'auth_step')
+					{
+						$s_hidden_fields[$var] = $request->variable('auth_action', '') . '_req_data';
+					}
+					else
+					{
+						$s_hidden_fields[$var] = $request->variable($var, '');
+					}
+				}
+				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+				$template->assign_vars(array(
+					'ERROR'				=> implode('<br />', $error),
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+				));
+
+				$this->tpl_name = 'ucp_register_request_data';
+				$this->page_title = 'UCP_REGISTRATION';
+				return;
 			}
 
 			if (!sizeof($error))

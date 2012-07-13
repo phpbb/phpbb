@@ -365,6 +365,12 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				$this->request->disable_super_globals();
 
 				$user_id = $this->internal_register($sreg_data);
+
+				if ($user_id instanceof phpbb_auth_data_request)
+				{
+					return $user_id;
+				}
+
 				$identity = $this->request->variable('openid_identity', '');
 				$this->link($user_id, 'openid', $identity);
 				return true; // TODO: Change this to a redirect.
@@ -478,8 +484,8 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		if (!empty($req_data))
 		{
-			$req_data[] = 'REQ_DATA';
-			throw new phpbb_auth_exception(var_export($req_data, true));
+			$data_request = new phpbb_auth_data_request($this->user, $req_data);
+			return $data_request;
 		}
 
 		// Perform registration.
