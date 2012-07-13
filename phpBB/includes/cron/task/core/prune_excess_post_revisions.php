@@ -56,9 +56,6 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 	{
 		$prune_revision_ids = array();
 
-		$iteration = 0;
-		$ids_per_iteration = 500;
-
 		// Now we get post IDs of posts with > the max number of revisions 
 		$sql = 'SELECT post_id, post_edit_count
 			FROM ' . POSTS_TABLE . '
@@ -78,11 +75,7 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 			$inner_result = $this->db->sql_query_limit($inner_sql, $row['post_edit_count'] - $config['revisions_per_post_max']);
 			while ($inner_row = $this->db->sql_fetchrow($inner_result))
 			{
-				if (sizeof($prune_revision_ids[$iteration]) == $ids_per_iteration)
-				{
-					$iteration++;
-				}
-				$prune_revision_ids[$iteration][] = $inner_row['revision_id'];
+				$prune_revision_ids[] = $inner_row['revision_id'];
 			}
 			$this->db->sql_freeresult($inner_result);
 		}
@@ -91,10 +84,10 @@ class phpbb_cron_task_core_prune_excess_post_revisions extends phpbb_cron_task_b
 		// Finally, if we have any revisions that meet the criteria, we delete them
 		if (!empty($prune_revision_ids))
 		{
-			for($i = 0; $i < $iteration; $i++)
+			foreach ($prune_revision_ids as $revision_id)
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids[$i]);
+					WHERE revision_id = ' . (int) $revision_id;
 				$this->db->sql_query($sql);
 			}
 		}

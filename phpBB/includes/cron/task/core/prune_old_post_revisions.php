@@ -56,11 +56,6 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	{
 		$prune_revision_ids = array();
 
-		// This allows us to split up the IDs so that we don't try to delete a ton all at once
-		$iteration = 0;
-		// This is how many IDs to have per iteration
-		$ids_per_iteration = 20;
-
 		$sql = 'SELECT revision_id
 			FROM ' . POST_REVISIONS_TABLE . '
 			WHERE revision_time < ' . (time() - $this->config['post_revisions_max_age']) . '
@@ -68,22 +63,16 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (sizeof($prune_revision_ids[$iteration]) == $ids_per_iteration)
-			{
-				$iteration++;
-			}
-
-			$prune_revision_ids[$iteration][] = $row['revision_id'];
+			$prune_revision_ids[] = $row['revision_id'];
 		}
 		$this->db->sql_freeresult($result);
 
-		// Finally, if we have any revisions that meet the criteria, we delete them
 		if (!empty($prune_revision_ids))
 		{
-			for($i = 0; $i < $iteration; $i++)
+			foreach ($prune_revision_ids as $revision_id)
 			{
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
-					WHERE ' . $this->db->sql_in_set('revision_id', $prune_revision_ids[$i]);
+					WHERE revision_id = ' . (int) $revision_id;
 				$this->db->sql_query($sql);
 			}
 		}

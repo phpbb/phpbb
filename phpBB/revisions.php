@@ -118,7 +118,7 @@ if (sizeof($delete_ids))
 {
 	if (!$auth->acl_get('m_revisions'))
 	{
-		trigger_error('NO_AUTH_DELETE_REVISIONS');
+		trigger_error($user->lang('NO_AUTH_DELETE_REVISIONS') . $l_return);
 	}
 
 	if (confirm_box(true))
@@ -172,11 +172,11 @@ if ($revert_id && $revert_confirm && check_form_key('revert_form', 120))
 {
 	if (!$can_revert)
 	{
-		trigger_error('NO_AUTH_REVERT');
+		trigger_error($user->lang('NO_AUTH_REVERT') . $l_return);
 	}
 	else if (empty($revisions[$revert_id]))
 	{
-		trigger_error('ERROR_REVISION_NOT_FOUND');
+		trigger_error($user->lang('ERROR_REVISION_NOT_FOUND') . $l_return);
 	}
 
 	$revert_result = $post->revert($revert_id);
