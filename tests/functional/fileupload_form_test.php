@@ -44,7 +44,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_empty_file()
 	{
-		$crawler = $this->upload_file('empty.jpg', 'image/jpeg');
+		$crawler = $this->upload_file('empty.png', 'image/png');
 		$this->assertEquals($this->lang('ATTACHED_IMAGE_NOT_IMAGE'), $crawler->filter('div#message p')->text());
 	}
 
