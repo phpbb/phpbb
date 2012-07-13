@@ -3056,7 +3056,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 			else
 			{
-				if($redirect) {
+				if ($redirect) {
 					$request->overwrite('redirect_to', $redirect);
 				}
 				try

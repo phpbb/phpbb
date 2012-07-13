@@ -18,7 +18,8 @@ if (!defined('IN_PHPBB'))
 /**
 * @package acp
 */
-class acp_auth_info {
+class acp_auth_info
+{
 	function module()
     {
         return array(

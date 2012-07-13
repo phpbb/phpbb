@@ -42,7 +42,8 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	 * @param boolean $s_display
 	 * @return null
 	 */
-	public function generate_login_box(phpbb_template $template, $redirect, $admin, $s_display) {
+	public function generate_login_box(phpbb_template $template, $redirect, $admin, $s_display)
+	{
 		return null;
 	}
 

@@ -290,10 +290,10 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 				$hash = phpbb_hash($password);
 
 				// Update the password in the users table to the new format
-				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_password = '" . $this->db->sql_escape($hash) . "',
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_password = \'' . $this->db->sql_escape($hash) . '\',
 						user_pass_convert = 0
-					WHERE user_id = {$row['user_id']}";
+					WHERE user_id = ' . $row['user_id'];
 				$this->db->sql_query($sql);
 
 				$row['user_password'] = $hash;

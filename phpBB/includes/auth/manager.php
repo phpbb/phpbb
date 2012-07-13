@@ -74,7 +74,8 @@ class phpbb_auth_manager
 		$providers = $this->get_registered_providers();
 
 		$enabled_providers = array();
-		foreach($providers as $provider) {
+		foreach($providers as $provider)
+		{
 			$provider_config = $provider->get_configuration();
 			if($provider_config['OPTIONS']['enabled']['setting'] == true)
 			{
@@ -107,9 +108,11 @@ class phpbb_auth_manager
 		$providers = $this->get_registered_providers();
 
 		$enabled_common_providers = array();
-		foreach ($providers as $provider){
+		foreach ($providers as $provider)
+		{
 			$provider_config = $provider->get_configuration();
-			if ($provider_config['CUSTOM_LOGIN_BOX'] == false && $provider_config['OPTIONS']['enabled']['setting'] == 1){
+			if ($provider_config['CUSTOM_LOGIN_BOX'] == false && $provider_config['OPTIONS']['enabled']['setting'] == 1)
+			{
 				$enabled_common_providers[] = $provider;
 			}
 		}

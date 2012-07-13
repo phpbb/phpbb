@@ -258,7 +258,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$return_to .= '?mode=login&auth_step=verify&auth_provider=openid&auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
-		elseif ($auth_action === 'link')
+		else if ($auth_action === 'link')
 		{
 			if (!isset($this->user->data['user_id']))
 			{
@@ -267,7 +267,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$return_to = $this->user->page['page'].'?auth_step=verify&auth_provider=openid&auth_action=linkphpbb.user_id=' . $this->user->data['user_id'];
 			$extensions = null;
 		}
-		elseif ($auth_action === 'register')
+		else if ($auth_action === 'register')
 		{
 			global $phpEx;
 			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
@@ -319,7 +319,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 			);
 		}
-		elseif ($auth_action === 'login' | 'link')
+		else if ($auth_action === 'login' || $auth_action === 'link')
 		{
 			$extensions = null;
 		}
@@ -339,7 +339,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				$this->request->disable_super_globals();
 
 				$admin = (bool)$this->request->variable('phpbb_admin', false);
-				if($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
+				if ($admin == true && $provider_config['OPTIONS']['admin']['setting'] == false)
 				{
 					throw new phpbb_auth_exception('AUTH_ADMIN_DISABLED');
 				}
@@ -358,7 +358,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				$this->login((int) $link['user_id'], $admin, $autologin, $viewonline);
 				$this->redirect($this->request->variable('phpbb_redirect_to', ''));
 			}
-			elseif ($auth_action == 'register')
+			else if ($auth_action == 'register')
 			{
 				$sreg_data = $extensions['sreg']->getProperties();
 				// We no longer need super globals enabled.
@@ -369,7 +369,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				$this->link($user_id, 'openid', $identity);
 				return true; // TODO: Change this to a redirect.
 			}
-			elseif ($auth_action == 'link')
+			else if ($auth_action == 'link')
 			{
 				// We no longer need super globals enabled.
 				$this->request->disable_super_globals();

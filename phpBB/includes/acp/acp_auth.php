@@ -18,7 +18,8 @@ if (!defined('IN_PHPBB'))
 /**
 * @package acp
 */
-class acp_auth {
+class acp_auth
+{
 	var $u_action;
 	var $new_config;
 

@@ -20,7 +20,8 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_link_manager {
+class phpbb_auth_link_manager
+{
 	/**
 	 * The dbal being used by phpBB.
 	 *
@@ -125,7 +126,7 @@ class phpbb_auth_link_manager {
 		{
 			$sql = 'TRUNCATE ' . AUTH_LINK_TABLE;
 		}
-		elseif ($provider === null)
+		else if ($provider === null)
 		{
 			throw new phpbb_auth_exception('Provider must be specified unless ' . AUTH_LINK_TABLE . ' is being truncated.');
 		}
