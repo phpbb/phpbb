@@ -50,7 +50,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_invalid_extension()
 	{
-		$crawler = $this->upload_file('illegal-extension.bif', 'application/octetstream');
+		$crawler = $this->upload_file('illegal-extension.bif', 'application/octet-stream');
 		$this->assertEquals($this->lang('DISALLOWED_EXTENSION', 'bif'), $crawler->filter('p.error')->text());
 	}
 
