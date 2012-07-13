@@ -54,7 +54,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		$this->sreg_props = array(
 			"nickname"	=> true,
 			"email"		=> true,
-			"dob"		=> true,
+			"dob"		=> false,
 			"gender"	=> false,
 			"language"	=> false,
 			"timezone"	=> false,
@@ -252,9 +252,9 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			$autologin = $this->request->variable('autologin', 'off');
 			$viewonline = $this->request->variable('viewonline', 'off');
-			$redirect_to = $this->request->variable('redirect', 'index.' . $phpEx);
+			$redirect_to = $this->request->variable('redirect', 'index.' . $this->phpEx);
 
-			$return_to = ($admin) ? 'index.' . $this->phpEx : 'ucp.' . $$this->phpEx ;
+			$return_to = ($admin) ? 'index.' . $this->phpEx : 'ucp.' . $this->phpEx ;
 			$return_to .= '?mode=login&auth_step=verify&auth_provider=openid&auth_action=login&phpbb.autologin=' . $autologin . '&phpbb.viewonline=' . $viewonline . '&phpbb.redirect_to=' . $redirect_to . '&phpbb.admin=' . $admin;
 			$extensions = null;
 		}
@@ -273,7 +273,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 			$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 			$return_to = 'ucp.' . $this->phpEx . '?mode=register&auth_step=verify&auth_provider=openid&auth_action=register&coppa=' . (int)$coppa . '&agreed=1';
 			$extensions = array(
-				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
+				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 			);
 		}
 		else
@@ -316,7 +316,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		if ($auth_action === 'register')
 		{
 			$extensions = array(
-				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.0),
+				'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
 			);
 		}
 		elseif ($auth_action === 'login' | 'link')
@@ -409,40 +409,43 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 		// Handle OpenId simple registration extension (sreg) information from
 		// the OpenID provider.
-		if (!is_empty($sreg_data))
+		if (!empty($sreg_data))
 		{
 			if (!isset($sreg_data['email']))
 			{
-				$req_data[] = 'email';
+				$req_data['EMAIL'] = 'NO_EMAIL_SUPPLIED';
 			}
 			else
 			{
+				$error = validate_email($sreg_data['email']);
+				if ($error)
+				{
+					$req_data['EMAIL'] = $error;
+				}
 				$data['email'] = $sreg_data['email'];
 			}
 
-			if (!isset($sreg_data['dob']))
+			if (isset($sreg_data['dob']))
 			{
-				$req_data[] = 'dob';
-			}
-			else
-			{
-				$data['dob'] = $sreg_data['dob'];
+				$dob = explode('-', $sreg_data['dob']);
+				$dob = $dob[2] . '-' . $dob[1] . '-' . $dob[0];
+				$error = validate_date($dob);
+				if (!$error)
+				{
+					$data['dob'] = $dob;
+				}
 			}
 
 			if (!isset($sreg_data['nickname']))
 			{
-				$req_data[] = 'nickname';
+				$req_data['USERNAME'] = 'NO_USERNAME_SUPPLIED';
 			}
 			else
 			{
-				// Check to see if the username already exists.
-				$sql = 'SELECT username
-					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $this->db->sql_escape($sreg_data['nickname']) . "'";
-				$result = $this->db->sql_query($sql);
-				if ($result)
+				$error = validate_username($sreg_data['nickname']);
+				if ($error)
 				{
-					$req_data['Username already exists'] = 'nickname';
+					$req_data['USERNAME'] = $error;
 				}
 				$data['username'] = $sreg_data['nickname'];
 			}
@@ -454,27 +457,29 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 			if (isset($sreg_data['language']))
 			{
-				$data['lang'] = $sreg_data['language'];
+				$lang = strtolower($sreg_data['language']);
+				if (!validate_language_iso_name($lang))
+				{
+					$lang = $this->user->lang_name;
+				}
+				$data['lang'] = $lang;
 			}
 
 			if (isset($sreg_data['timezone']))
 			{
-				$utc_dtz = new DateTimeZone('UTC');
 				$registrant_dtz = new DateTimeZone($sreg_data['timezone']);
 
-				$utc_dt = new DateTime('now', $utc_dtz);
 				$registrant_dt = new DateTime('now', $registrant_dtz);
 
 				// Timezone is in hours, not seconds.
-				$data['tz'] = $utc_dt->getOffset($registrant_dt) / (60 * 60);
+				$data['tz'] = ($registrant_dt->getOffset()) / (60 * 60);
 			}
 		}
 
 		if (!empty($req_data))
 		{
-			// TODO HTTP request the missing, required data.
-			// Temporary exception.
-			throw new phpbb_auth_exception($req_data);
+			$req_data[] = 'REQ_DATA';
+			throw new phpbb_auth_exception(var_export($req_data, true));
 		}
 
 		// Perform registration.

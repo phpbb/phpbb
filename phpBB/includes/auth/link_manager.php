@@ -96,7 +96,7 @@ class phpbb_auth_link_manager {
 	 */
 	public function add_link($provider, $user, $index)
 	{
-		if (is_empty($provider) || !is_int($user) || is_empty($index))
+		if (empty($provider) || !is_int($user) || empty($index))
 		{
 			throw new phpbb_auth_exception('You may not provide an empty variable to link.');
 		}

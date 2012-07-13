@@ -283,12 +283,9 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 
 		$data_to_validate['lang'] = array('language_iso_name');
 
-		if (isset($data['new_password']))
-		{
-			$data_to_validate['new_password'] = array(
-					array('string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']),
-					array('password'));
-		}
+		$data_to_validate['new_password'] = array(
+				array('string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']),
+				array('password'));
 
 		$error = validate_data($data, $data_to_validate);
 
@@ -310,6 +307,12 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		if (!isset($data['username'], $data['email'], $data['tz'], $data['lang']))
 		{
 			throw new phpbb_auth_exception('Required data missing.');
+		}
+
+		// If no password is set by the provider, provide a random password.
+		if (isset($data['new_password']))
+		{
+			$data['new_password'] = gen_rand_string(16);
 		}
 
 		// Convert data to its proper format.

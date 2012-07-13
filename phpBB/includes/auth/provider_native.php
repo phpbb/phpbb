@@ -400,7 +400,7 @@ class phpbb_auth_provider_native extends phpbb_auth_common_provider
 			$error[] = $this->user->lang['FORM_INVALID'];
 		}
 
-		$coppa			= $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
+		$coppa = $this->request->is_set('coppa') ? (int) $this->request->variable('coppa', false) : false;
 
 		$cp = new custom_profile();
 		$error = $cp_data = array();
