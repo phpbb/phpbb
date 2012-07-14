@@ -104,7 +104,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-$legend = implode(', ', $legend);
+$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
 
 // Generate birthday list if required ...
 $birthday_list = array();

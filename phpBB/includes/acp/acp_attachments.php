@@ -98,7 +98,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -916,8 +916,8 @@ class acp_attachments
 							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
-						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
+						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode($user->lang['COMMA_SEPARATOR'], $delete_files));
+						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
 					$upload_list = array();
@@ -1470,7 +1470,7 @@ class acp_attachments
 			// Grab the list of entries
 			$ips = request_var('ips', '');
 			$ip_list = array_unique(explode("\n", $ips));
-			$ip_list_log = implode(', ', $ip_list);
+			$ip_list_log = implode($user->lang['COMMA_SEPARATOR'], $ip_list);
 
 			$ip_exclude = (int) $request->variable('ipexclude', false, false, phpbb_request_interface::POST);
 

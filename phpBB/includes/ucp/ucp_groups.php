@@ -846,7 +846,7 @@ class ucp_groups
 
 						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
 						phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
-						
+
 						$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
@@ -1069,7 +1069,8 @@ class ucp_groups
 								'mode'		=> $mode,
 								'action'	=> $action
 							);
-							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
+
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

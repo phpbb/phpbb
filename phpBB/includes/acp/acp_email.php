@@ -216,7 +216,7 @@ class acp_email
 				if ($usernames)
 				{
 					$usernames = explode("\n", $usernames);
-					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
+					add_log('admin', 'LOG_MASS_EMAIL', implode($user->lang['COMMA_SEPARATOR'], utf8_normalize_nfc($usernames)));
 				}
 				else
 				{

@@ -439,7 +439,7 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 
 	if ($add_log)
 	{
-		add_log('admin', 'LOG_FORUM_COPIED_PERMISSIONS', $src_forum_name, implode(', ', $dest_forum_names));
+		add_log('admin', 'LOG_FORUM_COPIED_PERMISSIONS', $src_forum_name, implode($user->lang['COMMA_SEPARATOR'], $dest_forum_names));
 	}
 
 	$db->sql_transaction('commit');

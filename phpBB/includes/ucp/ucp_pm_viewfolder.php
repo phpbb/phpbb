@@ -176,7 +176,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
@@ -266,9 +266,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 
-				// There is the chance that all recipients of the message got deleted. To avoid creating 
+				// There is the chance that all recipients of the message got deleted. To avoid creating
 				// exports without recipients, we add a bogus "undisclosed recipient".
-				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) && 
+				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) &&
 				    !(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
 				{
 					$address[$message_id]['u'] = array();
@@ -277,7 +277,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
-				
+
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
