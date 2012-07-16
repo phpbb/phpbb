@@ -299,9 +299,9 @@ if ($display_comparison)
 
 			'S_DELETE'			=> $auth->acl_get('m_revisions'),
 
-			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id(), 'revert' => $revision->get_id())) : '',
+			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id, 'revert' => $revision->get_id())) : '',
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
-			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id())). '#p' . $post_id(),
+			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id)) . '#p' . $post_id,
 		));
 
 		$revision_users[$revision->get_user_id()] = true;
