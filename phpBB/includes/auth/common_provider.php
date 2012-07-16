@@ -47,7 +47,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		return null;
 	}
 
-	public function generate_registration($template)
+	public function generate_registration(phpbb_template $template)
 	{
 		return null;
 	}
