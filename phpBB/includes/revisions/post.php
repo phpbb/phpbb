@@ -301,7 +301,7 @@ class phpbb_revisions_post
 		$remove_amount = sizeof($this->revisions) - $this->config['max_revisions_per_post'];
 		if ($this->config['max_revisions_per_post'] && $remove_amount)
 		{
-			for ($i = 0; $i < $remove_amount)
+			for ($i = 0; $i < $remove_amount; $i++)
 			{
 				// Delete the oldest one(s) until there aren't more than the max amount
 				$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE . '
