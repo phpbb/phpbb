@@ -631,7 +631,7 @@ class phpbb_user extends phpbb_session
 			$utc = new DateTimeZone('UTC');
 		}
 
-		$time = new phpbb_datetime("@$gmepoch", $utc, $this);
+		$time = new phpbb_datetime($this, "@$gmepoch", $utc);
 		$time->setTimezone($this->tz);
 
 		return $time->format($format, $forcedate);
@@ -648,7 +648,7 @@ class phpbb_user extends phpbb_session
 	public function create_datetime($time = 'now', DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->tz;
-		return new phpbb_datetime($time, $timezone, $this);
+		return new phpbb_datetime($this, $time, $timezone);
 	}
 
 	/**

@@ -35,10 +35,9 @@ class phpbb_datetime extends DateTime
 	* @param DateTimeZone $timezone Time zone of the time.
 	* @param user User object for context.
 	*/
-	public function __construct($time = 'now', DateTimeZone $timezone = null, $user = null)
+	public function __construct($user, $time = 'now', DateTimeZone $timezone = null)
 	{
-		$this->user	= $user ?: $GLOBALS['user'];
-
+		$this->user	= $user;
 		$timezone	= $timezone ?: $this->user->tz;
 
 		parent::__construct($time, $timezone);
@@ -56,7 +55,7 @@ class phpbb_datetime extends DateTime
 		$format		= $format ? $format : $this->user->date_format;
 		$format		= self::format_cache($format, $this->user);
 		$relative	= ($format['is_short'] && !$force_absolute);
-		$now		= new self('now', $this->user->tz, $this->user);
+		$now		= new self($this->user, 'now', $this->user->tz);
 
 		$timestamp	= $this->getTimestamp();
 		$now_ts		= $now->getTimeStamp();
