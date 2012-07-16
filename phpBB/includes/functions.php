@@ -5315,3 +5315,26 @@ function phpbb_to_numeric($input)
 {
 	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 }
+
+/**
+* Get the post ID given a revision ID
+*
+* @param int $revision_id ID of the revision
+* @return int Post ID that contains the given revision
+*/
+function phpbb_get_revision_post_id($revision_id, dbal $db)
+{
+	if (!$revision_id)
+	{
+		return false;
+	}
+
+	$sql = 'SELECT post_id
+		FROM ' . POST_REVISIONS_TABLE . '
+		WHERE revision_id = ' . (int) $revision_id;
+	$result = $db->sql_query($sql);
+	$post_id = $db->sql_fetchfield('post_id') ?: 0;
+	$db->sql_freeresult($result);
+
+	return (int) $post_id;
+}

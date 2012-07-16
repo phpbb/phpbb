@@ -51,20 +51,13 @@ if ($compare)
 	// Note that if we don't have a first_id, we don't have a last_id
 	if ($first_id && !$post_id)
 	{
-		// We don't want to load all of the revision's data yet, as we will do that once we have the post ID
-		// Right now all we want to do is get the post ID, so we pass the third parameter as false
-		$temp_rev = new phpbb_revisions_revision($first_id, $db, false);
-		$post_id = $temp_rev->get_post_id();
+		$post_id = phpbb_get_revision_post_id($first_id, $db);
 	}
 }
 
 // Regardless of the provided post ID in the URL, if we are trying to view or revert a revision,
 // we set the post ID to the revision's post ID
-if ($revert_id || $revision_id)
-{
-	$revision = new phpbb_revisions_revision($revert_id ?: $revision_id, $db, false);
-	$post_id = $revision->get_post_id();
-}
+$post_id = ($revert_id || $revision_id) ? phpbb_get_revision_post_id($revert_id ?: $revision_id, $db) : $post_id;
 
 // If we still can't manage to come up with a post ID, we have nothing else to do here
 if (!$post_id)
@@ -306,9 +299,9 @@ if ($display_comparison)
 
 			'S_DELETE'			=> $auth->acl_get('m_revisions'),
 
-			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $revision->get_post_id(), 'revert' => $revision->get_id())) : '',
+			'U_REVERT_TO'		=> $can_revert ? append_sid("{$phpbb_root_path}revisions.$phpEx", array('p' => $post_id(), 'revert' => $revision->get_id())) : '',
 			'U_REVISION_VIEW'	=> append_sid("{$phpbb_root_path}revisions.$phpEx", array('r' => $revision->get_id())),
-			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $revision->get_post_id())). '#p' . $revision->get_post_id(),
+			'U_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_id())). '#p' . $post_id(),
 		));
 
 		$revision_users[$revision->get_user_id()] = true;
