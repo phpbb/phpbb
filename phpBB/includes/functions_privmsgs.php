@@ -1175,16 +1175,29 @@ function phpbb_delete_user_pms($user_id)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$undelivered_user[$row['user_id']] = (int) $row['num_undelivered_privmsgs'];
+				$num_pms = (int) $row['num_undelivered_privmsgs'];
+				$undelivered_user[$num_pms][] = (int) $row['user_id'];
+
+				if (sizeof($undelivered_user[$num_pms]) > 50)
+				{
+					// If there are too many users affected the query might get
+					// too long, so we update the value for the first bunch here.
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
+							user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
+						WHERE ' . $db->sql_in_set('user_id', $undelivered_user[$num_pms]);
+					$db->sql_query($sql);
+					unset($undelivered_user[$num_pms]);
+				}
 			}
 			$db->sql_freeresult($result);
 
-			foreach ($undelivered_user as $undelivered_user_id => $count)
+			foreach ($undelivered_user as $num_pms => $undelivered_user_set)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_new_privmsg = user_new_privmsg - ' . $count . ',
-						user_unread_privmsg = user_unread_privmsg - ' . $count . '
-					WHERE user_id = ' . $undelivered_user_id;
+					SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
+						user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
+					WHERE ' . $db->sql_in_set('user_id', $undelivered_user_set);
 				$db->sql_query($sql);
 			}
 
