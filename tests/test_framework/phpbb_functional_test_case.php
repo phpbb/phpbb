@@ -30,14 +30,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $already_installed = false;
 
-	static public function setUpBeforeClass()
-	{
-		if (!extension_loaded('phar'))
-		{
-			self::markTestSkipped('phar extension is not loaded');
-		}
-	}
-
 	public function setUp()
 	{
 		if (!isset(self::$config['phpbb_functional_url']))
