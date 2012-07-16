@@ -80,10 +80,6 @@ class acp_auth
 			}
 			$provider_name = implode(' ', $provider_name);
 
-			$template->assign_block_vars('providers_loop', array(
-				'PROVIDER'	=> $provider_name,
-			));
-
 			$err = false;
 
 			validate_config_vars($provider_configuration['OPTIONS'], $cfg_array, $error);
@@ -91,6 +87,13 @@ class acp_auth
 			{
 				$err = true;
 			}
+
+			$custom_tpl = $provider->generate_acp_options($template, $this->new_config, $submit, $err);
+
+			$template->assign_block_vars('providers_loop', array(
+				'CUSTOM_TPL'=> $custom_tpl,
+				'PROVIDER'	=> $provider_name,
+			));
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
@@ -116,33 +119,36 @@ class acp_auth
 					set_config($config_key, $config_value);
 				}
 
-				$type = explode(':', $vars['type']);
-
-				$l_explain = '';
-				if ($vars['explain'] && isset($vars['lang_explain']))
+				if (!$custom_tpl)
 				{
-					$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
-				}
-				else if ($vars['explain'])
-				{
-					$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
-				}
+					$type = explode(':', $vars['type']);
 
-				$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+					$l_explain = '';
+					if ($vars['explain'] && isset($vars['lang_explain']))
+					{
+						$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+					}
+					else if ($vars['explain'])
+					{
+						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+					}
 
-				if (empty($content))
-				{
-					continue;
+					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+
+					if (empty($content))
+					{
+						continue;
+					}
+
+					$template->assign_block_vars('providers_loop.options', array(
+						'KEY'			=> $config_key,
+						'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+						'S_EXPLAIN'		=> $vars['explain'],
+						'TITLE_EXPLAIN'	=> $l_explain,
+						'CONTENT'		=> $content,
+						)
+					);
 				}
-
-				$template->assign_block_vars('providers_loop.options', array(
-					'KEY'			=> $config_key,
-					'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
-					'S_EXPLAIN'		=> $vars['explain'],
-					'TITLE_EXPLAIN'	=> $l_explain,
-					'CONTENT'		=> $content,
-					)
-				);
 			}
 
 			if ($init)

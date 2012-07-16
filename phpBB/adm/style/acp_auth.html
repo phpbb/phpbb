@@ -17,12 +17,14 @@
 	<!-- BEGIN providers_loop -->
 		<fieldset>
 			<legend>{providers_loop.PROVIDER}</legend>
-			<!-- BEGIN options -->
+			<!-- IF providers_loop.CUSTOM_TPL -->
+				{providers_loop.CUSTOM_TPL}
+			<!-- ELSE --><!-- BEGIN options -->
 				<dl>
 					<dt><label for="{providers_loop.options.KEY}">{providers_loop.options.TITLE}:</label><!-- IF providers_loop.options.S_EXPLAIN --><br /><span>{providers_loop.options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 					<dd>{providers_loop.options.CONTENT}</dd>
 				</dl>
-			<!-- END options -->
+			<!-- END options --><!-- ENDIF -->
 		</fieldset>
 	<!-- END providers_loop -->
 
