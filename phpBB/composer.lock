@@ -1,10 +1,53 @@
 {
-    "hash": "9bada3748ec2933fe0864dcfafbcd671",
+    "hash": "088edd4ff63a0b7583b3934ddcfe9dac",
     "packages": [
         {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "alias-pretty-version": "1.0.x-dev",
+            "alias-version": "1.0.9999999.9999999-dev"
+        },
+        {
+            "package": "fabpot/goutte",
+            "version": "dev-master",
+            "source-reference": "c2ea8d9a6682d14482e57ede2371001b8a5238d2",
+            "commit-date": "1340264258"
+        },
+        {
+            "package": "guzzle/guzzle",
+            "version": "v2.6.6"
+        },
+        {
+            "package": "symfony/browser-kit",
+            "version": "v2.1.0-BETA3"
+        },
+        {
+            "package": "symfony/css-selector",
+            "version": "v2.1.0-BETA3"
+        },
+        {
+            "package": "symfony/dom-crawler",
+            "version": "v2.1.0-BETA3"
+        },
+        {
             "package": "symfony/event-dispatcher",
-            "version": "v2.0.10"
+            "version": "v2.0.16"
+        },
+        {
+            "package": "symfony/finder",
+            "version": "v2.1.0-BETA3"
+        },
+        {
+            "package": "symfony/process",
+            "version": "v2.1.0-BETA3"
         }
     ],
-    "aliases": []
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "beta",
+    "stability-flags": {
+        "fabpot/goutte": 20
+    }
 }

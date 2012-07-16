@@ -17,7 +17,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->login();
 
 		// check for logout link
-		$crawler = $this->request('GET', 'index.php');
+		$crawler = $this->request('GET', 'index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGOUT_USER', 'admin'), $crawler->filter('.navbar')->text());
 	}
 
