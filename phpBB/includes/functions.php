@@ -5630,6 +5630,7 @@ function phpbb_to_numeric($input)
 }
 
 /**
+<<<<<<< HEAD
 * Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
 *
 * If $dbms is a valid 3.1 db driver class name, returns it unchanged.
@@ -5719,4 +5720,27 @@ function phpbb_create_symfony_request(phpbb_request $request)
 	$server_parameters['SCRIPT_NAME'] = '';
 
 	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
+}
+
+/**
+* Get the post ID given a revision ID
+*
+* @param int $revision_id ID of the revision
+* @return int Post ID that contains the given revision
+*/
+function phpbb_get_revision_post_id($revision_id, dbal $db)
+{
+	if (!$revision_id)
+	{
+		return false;
+	}
+
+	$sql = 'SELECT post_id
+		FROM ' . POST_REVISIONS_TABLE . '
+		WHERE revision_id = ' . (int) $revision_id;
+	$result = $db->sql_query($sql);
+	$post_id = $db->sql_fetchfield('post_id') ?: 0;
+	$db->sql_freeresult($result);
+
+	return (int) $post_id;
 }
