@@ -36,8 +36,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			self::markTestSkipped('phar extension is not loaded');
 		}
-
-		require_once 'phar://' . __DIR__ . '/../../vendor/goutte.phar';
 	}
 
 	public function setUp()
