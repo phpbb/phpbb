@@ -1248,10 +1248,21 @@ function validate_data($data, $val_ary)
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
 
-			if ($result = call_user_func_array('validate_' . $function, $validate))
+			if (function_exists('phpbb_validate_' . $function))
 			{
-				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
-				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				if ($result = call_user_func_array('phpbb_validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
+			}
+			else
+			{
+				if ($result = call_user_func_array('validate_' . $function, $validate))
+				{
+					// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+					$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				}
 			}
 		}
 	}
@@ -1407,7 +1418,7 @@ function validate_language_iso_name($lang_iso)
 *							a string which will be used as the error message
 *							(with the variable name appended)
 */
-function validate_timezone($timezone)
+function phpbb_validate_timezone($timezone)
 {
 	return (in_array($timezone, DateTimeZone::listIdentifiers())) ? false : 'TIMEZONE_INVALID';
 }
