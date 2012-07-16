@@ -284,6 +284,37 @@ class dbal
 	}
 
 	/**
+	* Build a case expression
+	*
+	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
+	*
+	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
+	* @param	string	$action_true	SQL expression that is used, if the condition is true
+	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
+	* @return	string			CASE expression including the condition and statements
+	*/
+	public function sql_case($condition, $action_true, $action_false = false)
+	{
+		$sql_case = 'CASE WHEN ' . $condition;
+		$sql_case .= ' THEN ' . $action_true;
+		$sql_case .= ($action_false !== false) ? ' ELSE ' . $action_false : '';
+		$sql_case .= ' END';
+		return $sql_case;
+	}
+
+	/**
+	* Build a concatenated expression
+	*
+	* @param	string	$expr1		Base SQL expression where we append the second one
+	* @param	string	$expr2		SQL expression that is appended to the first expression
+	* @return	string		Concatenated string
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return $expr1 . ' || ' . $expr2;
+	}
+
+	/**
 	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
 	*
 	* @return bool Whether buffering is required.
