@@ -84,6 +84,7 @@ class phpbb_test_case_helpers
 				'dbname'	=> $dbname,
 				'dbuser'	=> $dbuser,
 				'dbpasswd'	=> $dbpasswd,
+				'custom_dsn'	=> isset($custom_dsn) ? $custom_dsn : '',
 			));
 
 			if (isset($phpbb_functional_url))
@@ -100,7 +101,8 @@ class phpbb_test_case_helpers
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
 				'dbuser'	=> isset($_SERVER['PHPBB_TEST_DBUSER']) ? $_SERVER['PHPBB_TEST_DBUSER'] : '',
-				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : ''
+				'dbpasswd'	=> isset($_SERVER['PHPBB_TEST_DBPASSWD']) ? $_SERVER['PHPBB_TEST_DBPASSWD'] : '',
+				'custom_dsn'	=> isset($_SERVER['PHPBB_TEST_CUSTOM_DSN']) ? $_SERVER['PHPBB_TEST_CUSTOM_DSN'] : '',
 			));
 		}
 
