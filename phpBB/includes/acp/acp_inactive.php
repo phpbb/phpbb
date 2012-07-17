@@ -136,6 +136,8 @@ class acp_inactive
 								add_log('admin', 'LOG_USER_ACTIVE', $row['username']);
 								add_log('user', $row['user_id'], 'LOG_USER_ACTIVE_USER');
 							}
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
@@ -159,6 +161,8 @@ class acp_inactive
 							}
 
 							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
@@ -230,7 +234,8 @@ class acp_inactive
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
-						unset($usernames);
+
+						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
 
