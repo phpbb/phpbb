@@ -436,7 +436,7 @@ class dbal_mssqlnative extends dbal
 				unset($row['line2'], $row['line3']);
 			}
 		}
-		return $row;
+		return (sizeof($row)) ? $row : false;
 	}
 
 	/**
