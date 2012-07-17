@@ -1143,13 +1143,26 @@ function phpbb_tz_select_compare($a, $b)
 *
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
-* @param	boolean		$return_tzs_only	Shall we just return the options for the timezone selector,
-*											or also return the options for the time selector.
 *
-* @return		string/array		Returns either the options for timezone selector
-*									or an array, also containing the options for the time selector.
+* @return		string		Returns the options for timezone selector only
+*
+* @deprecated
 */
-function tz_select($default = '', $truncate = false, $return_tzs_only = true)
+function tz_select($default = '', $truncate = false)
+{
+	$timezone_select = phpbb_timezone_select($default, $truncate);
+	return $timezone_select['tz_select'];
+}
+
+/**
+* Options to pick a timezone and date/time
+*
+* @param	string		$default			A timezone to select
+* @param	boolean		$truncate			Shall we truncate the options text
+*
+* @return		array		Returns an array, also containing the options for the time selector.
+*/
+function phpbb_timezone_select($default = '', $truncate = false)
 {
 	global $user;
 
@@ -1219,11 +1232,6 @@ function tz_select($default = '', $truncate = false, $return_tzs_only = true)
 		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . ($selected ? ' ' . $user->lang['TIMEZONE_SELECTED'] : '') . '</option>';
 	}
 	$tz_select .= '</optgroup>';
-
-	if ($return_tzs_only)
-	{
-		return $tz_select;
-	}
 
 	return array(
 		'tz_select'		=> $tz_select,
