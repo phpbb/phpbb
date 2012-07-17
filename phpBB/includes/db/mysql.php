@@ -120,6 +120,14 @@ class dbal_mysql extends dbal
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function sql_concatenate($expr1, $expr2)
+	{
+		return 'CONCAT(' . $expr1 . ', ' . $expr2 . ')';
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/
