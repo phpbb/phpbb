@@ -571,6 +571,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_default_value varchar(255) DEFAULT '' NOT NULL,
 	field_validation varchar(20) DEFAULT '' NOT NULL,
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_novalue tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_profile tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
