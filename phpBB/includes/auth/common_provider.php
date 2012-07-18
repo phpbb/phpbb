@@ -34,6 +34,16 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 	protected $_SID;
 
 	/**
+	 * Sets $this->user for when the provider needs to modify the user.
+	 *
+	 * @param phpbb_user $user
+	 */
+	public function set_user(phpbb_user $user)
+	{
+		$this->user = $user;
+	}
+
+	/**
 	 * Implements phpbb_auth_provider_interface->generate_login_box(). Returns
 	 * null. Providers should override this for a custom login box.
 	 *

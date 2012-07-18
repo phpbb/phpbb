@@ -29,20 +29,29 @@ class phpbb_auth_manager
 	protected $config;
 	protected $user;
 
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
-		$this->user = $user;
 	}
+
+	public function set_user(phpbb_user $user)
+	{
+ 		$this->user = $user;
+ 	}
 
 	public function get_provider($auth_type)
 	{
 		$provider = 'phpbb_auth_provider_' . $auth_type;
 		if (class_exists($provider))
 		{
-			return new $provider($this->request, $this->db, $this->config, $this->user);
+			$provider = new $provider($this->request, $this->db, $this->config);
+			if ($this->user instanceof phpbb_user)
+			{
+				$provider->set_user($this->user);
+			}
+			return new $provider;
 		}
 		else
 		{

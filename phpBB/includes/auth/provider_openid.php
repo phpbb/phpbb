@@ -45,12 +45,11 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
-		$this->user = $user;
 		$this->sreg_props = array(
 			"nickname"	=> true,
 			"email"		=> true,

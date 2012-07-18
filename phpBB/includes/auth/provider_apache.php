@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_apache extends phpbb_auth_common_provider
+class phpbb_auth_provider_apache extends phpbb_auth_common_provider implements phpbb_auth_provider_sso_interface
 {
 	protected $request;
 	protected $db;
@@ -35,12 +35,11 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $configr)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
-		$this->user = $user;
 
 		global $phpbb_root_path, $phpEx, $SID, $_SID;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -208,6 +207,28 @@ class phpbb_auth_provider_apache extends phpbb_auth_common_provider
 		{
 			return $this->user->lang['APACHE_SETUP_BEFORE_USE'];
 		}
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function validate_session(&$user)
+	{
+		// Check if PHP_AUTH_USER is set and handle this case
+		if ($this->request->is_set('PHP_AUTH_USER', phpbb_request_interface::SERVER))
+		{
+			$php_auth_user = $this->request->server('PHP_AUTH_USER');
+
+			return ($php_auth_user === $user['username']) ? true : false;
+		}
+
+		// PHP_AUTH_USER is not set. A valid session is now determined by the user type (anonymous/bot or not)
+		if ($user['user_type'] == USER_IGNORE)
+		{
+			return true;
+		}
+
 		return false;
 	}
 }

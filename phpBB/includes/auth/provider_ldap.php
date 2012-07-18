@@ -35,12 +35,11 @@ class phpbb_auth_provider_ldap extends phpbb_auth_common_provider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config, phpbb_user $user)
+	public function __construct(phpbb_request $request, dbal $db, phpbb_config_db $config)
 	{
 		$this->request = $request;
 		$this->db = $db;
 		$this->config = $config;
-		$this->user = $user;
 
 		global $phpbb_root_path, $phpEx, $SID, $_SID;
 		$this->phpbb_root_path = $phpbb_root_path;

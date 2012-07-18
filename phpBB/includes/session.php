@@ -207,7 +207,7 @@ class phpbb_session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request;
+		global $request, $auth_manager;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -401,17 +401,15 @@ class phpbb_session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-					$method = basename(trim($config['auth_method']));
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'validate_session_' . $method;
-					if (function_exists($method))
-					{
-						if (!$method($this->data))
-						{
-							$session_expired = true;
-						}
-					}
+					$providers = $auth_manager->get_enabled_providers();
+					foreach ($providers as $provider)
+ 					{
+						if ($provider instanceof phpbb_auth_provider_sso_interface && !$provider->validate_session($this->data))
+ 						{
+ 							$session_expired = true;
+							break;
+ 						}
+ 					}
 
 					if (!$session_expired)
 					{
