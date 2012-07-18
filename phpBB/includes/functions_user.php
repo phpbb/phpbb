@@ -679,7 +679,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				$ban_end = max($current_time, $user->create_datetime()
 					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
 					->setTime(0, 0, 0)
-					->getTimestamp() + $user->tz->getOffset(new DateTime('UTC')));
+					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{

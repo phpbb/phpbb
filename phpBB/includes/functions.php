@@ -4821,9 +4821,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
-	$dt = new phpbb_datetime($user, 'now', $user->tz);
+	$dt = new phpbb_datetime($user, 'now', $user->timezone);
 	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
-	$timezone_name = $user->tz->getName();
+	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
 		$timezone_name = $user->lang['timezones'][$timezone_name];

@@ -33,7 +33,7 @@ class phpbb_user extends phpbb_session
 	/**
 	* DateTimeZone object holding the timezone of the user
 	*/
-	public $tz;
+	public $timezone;
 
 	var $lang_name = false;
 	var $lang_id = false;
@@ -127,7 +127,7 @@ class phpbb_user extends phpbb_session
 			*/
 		}
 
-		$this->tz = new DateTimeZone($user_timezone);
+		$this->timezone = new DateTimeZone($user_timezone);
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
@@ -623,7 +623,7 @@ class phpbb_user extends phpbb_session
 		}
 
 		$time = new phpbb_datetime($this, "@$gmepoch", $utc);
-		$time->setTimezone($this->tz);
+		$time->setTimezone($this->timezone);
 
 		return $time->format($format, $forcedate);
 	}
@@ -638,7 +638,7 @@ class phpbb_user extends phpbb_session
 	*/
 	public function create_datetime($time = 'now', DateTimeZone $timezone = null)
 	{
-		$timezone = $timezone ?: $this->tz;
+		$timezone = $timezone ?: $this->timezone;
 		return new phpbb_datetime($this, $time, $timezone);
 	}
 
@@ -652,7 +652,7 @@ class phpbb_user extends phpbb_session
 	*/
 	public function get_timestamp_from_format($format, $time, DateTimeZone $timezone = null)
 	{
-		$timezone = $timezone ?: $this->tz;
+		$timezone = $timezone ?: $this->timezone;
 		$date = DateTime::createFromFormat($format, $time, $timezone);
 		return ($date !== false) ? $date->format('U') : false;
 	}
