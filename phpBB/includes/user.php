@@ -127,12 +127,6 @@ class phpbb_user extends phpbb_session
 			*/
 		}
 
-		if (is_numeric($user_timezone))
-		{
-			// Might still be numeric
-			$user_timezone = sprintf('Etc/GMT%+d', $user_timezone);
-		}
-
 		$this->tz = new DateTimeZone($user_timezone);
 
 		// We include common language file here to not load it every time a custom language file is included

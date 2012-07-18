@@ -916,11 +916,6 @@ class acp_board
 
 		// Let the format_date function operate with the acp values
 		$old_tz = $user->tz;
-		if (is_numeric($config['board_timezone']))
-		{
-			// Might still be numeric
-			$config['board_timezone'] = sprintf('Etc/GMT%+d', $config['board_timezone']);
-		}
 		$user->tz = new DateTimeZone($config['board_timezone']);
 
 		$dateformat_options = '';
