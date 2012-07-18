@@ -39,7 +39,7 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		global $user;
 
 		$user = new phpbb_user();
-		$user->tz = new DateTimeZone($timezone);
+		$user->timezone = new DateTimeZone($timezone);
 		$user->lang['datetime'] = array(
 			'TODAY'		=> 'Today',
 			'TOMORROW'	=> 'Tomorrow',
