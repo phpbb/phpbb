@@ -431,7 +431,6 @@ $lang = array_merge($lang, array(
 	'TIMEZONE'					=> 'Timezone',
 	'TIMEZONE_DATE_SUGGESTION'	=> 'Suggestion: %s',
 	'TIMEZONE_INVALID'			=> 'The timezone you selected is invalid.',
-	'TIMEZONE_SELECTED'			=> '(currently selected)',
 	'TO'						=> 'To',
 	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
