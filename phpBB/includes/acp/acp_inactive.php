@@ -288,6 +288,9 @@ class acp_inactive
 			$option_ary += array('remind' => 'REMIND');
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
+		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $inactive_count, $per_page, $start);		
+		
 		$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,
 			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
@@ -295,8 +298,8 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> on_page($inactive_count, $per_page, $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page", $inactive_count, $per_page, $start, true),
+			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $inactive_count, $per_page, $start),
+			
 			'USERS_PER_PAGE'	=> $per_page,
 
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",

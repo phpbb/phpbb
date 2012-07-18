@@ -42,8 +42,17 @@
 				<!-- IF searchresults.S_TOPIC_REPORTED -->
 					<a href="{searchresults.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
-				<!-- IF searchresults.PAGINATION -->
-					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {searchresults.PAGINATION} ] </p>
+				<!-- IF .searchresults.pagination -->
+					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: 
+					<!-- BEGIN pagination -->
+						<!-- IF searchresults.pagination.S_IS_PREV -->
+						<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><strong>{searchresults.pagination.PAGE_NUMBER}</strong>
+						<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --> {L_ELLIPSIS} 
+						<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
+						<!-- ELSE --><a href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					] </p>
 				<!-- ENDIF -->
 				<p class="gensmall">{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></p>
 			</td>
