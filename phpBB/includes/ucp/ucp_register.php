@@ -179,6 +179,7 @@ class ucp_register
 			}
 			catch (phpbb_auth_exception $e)
 			{
+				$return = null;
 				$error[] = $e->getMessage();
 			}
 

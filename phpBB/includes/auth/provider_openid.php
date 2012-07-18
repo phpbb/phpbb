@@ -373,7 +373,7 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 
 				$identity = $this->request->variable('openid_identity', '');
 				$this->link($user_id, 'openid', $identity);
-				return true; // TODO: Change this to a redirect.
+				return true;
 			}
 			else if ($auth_action == 'link')
 			{
@@ -396,6 +396,56 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		return false;
 	}
 
+	public function register_req_data()
+	{
+		$provider_config = $this->get_configuration();
+		if(!$provider_config['OPTIONS']['enabled']['setting'])
+		{
+			throw new phpbb_auth_exception('AUTH_DISABLED');
+		}
+
+		//Get the SREG data
+		$storage = new phpbb_auth_zend_storage($this->db);
+		$storage->purgeNonces(time());
+		$consumer = new Zend\OpenId\Consumer\GenericConsumer($storage);
+
+		$extensions = array(
+			'sreg'	=> new Zend\OpenId\Extension\Sreg($this->sreg_props, null, 1.1),
+		);
+
+		$this->request->enable_super_globals();
+		$id = '';
+		if (!$consumer->verify($_GET, $id, $extensions))
+		{
+			$this->request->disable_super_globals();
+			throw new phpbb_auth_exception('OpenID authentication failed: ' . $consumer->getError());
+		}
+		$sreg_data = $extensions['sreg']->getProperties();
+		$this->request->disable_super_globals();
+
+		// Build the requested data array.
+		$requested_data = array();
+		if ($this->request->is_set('username'))
+		{
+			$requested_data['username'] = $this->request->variable('username', '');
+		}
+		if ($this->request->is_set('email'))
+		{
+			$requested_data['email'] = $this->request->variable('email', '');
+		}
+
+		// Complete registration
+		$user_id = $this->internal_register($sreg_data, $requested_data);
+		if ($user_id instanceof phpbb_auth_data_request)
+		{
+			return $user_id;
+		}
+
+		$identity = $this->request->variable('openid_identity', '');
+		$this->link($user_id, 'openid', $identity);
+		return true;
+	}
+
 	/**
 	 * Register an OpenID user with phpBB. Supports both simple registration
 	 * extension
@@ -404,8 +454,9 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 	 * (https://openid.net/specs/openid-attribute-exchange-1_0.html).
 	 *
 	 * @param array $sreg_data Holds returned data from the OpenID provider that is needed to perform registration.
+	 * @param array $request_data Data requested from the user.
 	 */
-	protected function internal_register($sreg_data)
+	protected function internal_register($sreg_data, $requested_data = array())
 	{
 		// Data array to hold all returned values.
 		$data = array();
@@ -413,15 +464,41 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 		// Data that must be supplied in order for registration to occur.
 		$req_data = array();
 
+		// Process requested data. If this data is not set, no need to request it as the next sections will cover it.
+		if (!empty($requested_data))
+		{
+			if (isset($requested_data['username']))
+			{
+				$error = validate_username($requested_data['username']);
+				if ($error)
+				{
+					$req_data['USERNAME'] = $error;
+				}
+				$data['username'] = $requested_data['username'];
+				unset($req_data['USERNAME']);
+			}
+
+			if (isset($requested_data['email']))
+			{
+				$error = validate_username($requested_data['email']);
+				if ($error)
+				{
+					$req_data['EMAIL'] = $error;
+				}
+				$data['email'] = $requested_data['email'];
+				unset($req_data['USERNAME']);
+			}
+		}
+
 		// Handle OpenId simple registration extension (sreg) information from
 		// the OpenID provider.
 		if (!empty($sreg_data))
 		{
-			if (!isset($sreg_data['email']))
+			if (!isset($sreg_data['email']) && !isset($data['email']))
 			{
 				$req_data['EMAIL'] = 'NO_EMAIL_SUPPLIED';
 			}
-			else
+			else if (!isset($data['email']))
 			{
 				$error = validate_email($sreg_data['email']);
 				if ($error)
@@ -442,11 +519,11 @@ class phpbb_auth_provider_openid extends phpbb_auth_common_provider
 				}
 			}
 
-			if (!isset($sreg_data['nickname']))
+			if (!isset($sreg_data['nickname']) && !isset($data['username']))
 			{
 				$req_data['USERNAME'] = 'NO_USERNAME_SUPPLIED';
 			}
-			else
+			else if (!isset($data['username']))
 			{
 				$error = validate_username($sreg_data['nickname']);
 				if ($error)

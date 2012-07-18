@@ -327,7 +327,7 @@ abstract class phpbb_auth_common_provider implements phpbb_auth_provider_interfa
 		}
 
 		// If no password is set by the provider, provide a random password.
-		if (isset($data['new_password']))
+		if (!isset($data['new_password']))
 		{
 			$data['new_password'] = gen_rand_string(16);
 		}
