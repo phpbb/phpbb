@@ -449,7 +449,9 @@ $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&a
 // Are we watching this topic?
 $s_watching_topic = array(
 	'link'			=> '',
+	'link_toggle'	=> '',
 	'title'			=> '',
+	'title_toggle'	=> '',
 	'is_watching'	=> false,
 );
 
@@ -649,13 +651,15 @@ $template->assign_vars(array(
 	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;t=$topic_id") : '',
 
-	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
-	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
+	'U_WATCH_TOPIC'			=> $s_watching_topic['link'],
+	'U_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['link_toggle'],
+	'S_WATCH_TOPIC_TITLE'	=> $s_watching_topic['title'],
+	'S_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['title_toggle'],
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
 	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
-	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
-	'L_BOOKMARK_TOPIC_REAL'	=> $user->lang['BOOKMARK_TOPIC'],
+	'S_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	'S_BOOKMARK_TOGGLE'		=> (!$user->data['is_registered'] || !$config['allow_bookmarks'] || !$topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 	'S_BOOKMARKED_TOPIC'	=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? true : false,
 
 	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id") : '',

@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/extension_manager.php';
-
 class phpbb_cron_task_provider_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()

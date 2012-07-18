@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/cache.php';
-
 class phpbb_config_db_test extends phpbb_database_test_case
 {
 	private $cache;

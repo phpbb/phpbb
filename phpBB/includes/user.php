@@ -27,7 +27,7 @@ class phpbb_user extends phpbb_session
 {
 	var $lang = array();
 	var $help = array();
-	var $theme = array();
+	var $style = array();
 	var $date_format;
 
 	/**
@@ -168,11 +168,11 @@ class phpbb_user extends phpbb_session
 			FROM ' . STYLES_TABLE . " s
 			WHERE s.style_id = $style_id";
 		$result = $db->sql_query($sql, 3600);
-		$this->theme = $db->sql_fetchrow($result);
+		$this->style = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// User has wrong style
-		if (!$this->theme && $style_id == $this->data['user_style'])
+		if (!$this->style && $style_id == $this->data['user_style'])
 		{
 			$style_id = $this->data['user_style'] = $config['default_style'];
 
@@ -185,20 +185,17 @@ class phpbb_user extends phpbb_session
 				FROM ' . STYLES_TABLE . " s
 				WHERE s.style_id = $style_id";
 			$result = $db->sql_query($sql, 3600);
-			$this->theme = $db->sql_fetchrow($result);
+			$this->style = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
 
-		if (!$this->theme)
+		if (!$this->style)
 		{
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
 		// Now parse the cfg file and cache it
-		$parsed_items = $cache->obtain_cfg_items($this->theme);
-
-		// We are only interested in the theme configuration for now
-		$parsed_items = $parsed_items['theme'];
+		$parsed_items = $cache->obtain_cfg_items($this->style);
 
 		$check_for = array(
 			'pagination_sep'    => (string) ', '
@@ -206,12 +203,12 @@ class phpbb_user extends phpbb_session
 
 		foreach ($check_for as $key => $default_value)
 		{
-			$this->theme[$key] = (isset($parsed_items[$key])) ? $parsed_items[$key] : $default_value;
-			settype($this->theme[$key], gettype($default_value));
+			$this->style[$key] = (isset($parsed_items[$key])) ? $parsed_items[$key] : $default_value;
+			settype($this->style[$key], gettype($default_value));
 
 			if (is_string($default_value))
 			{
-				$this->theme[$key] = htmlspecialchars($this->theme[$key]);
+				$this->style[$key] = htmlspecialchars($this->style[$key]);
 			}
 		}
 
